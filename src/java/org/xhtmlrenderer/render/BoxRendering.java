@@ -88,8 +88,10 @@ public class BoxRendering {
         }
 
         // move the origin down to account for the contents plus the margin, borders, and padding
-        oldBounds.y = oldBounds.y + block.height;
-        c.setExtents( oldBounds );
+        if ( ! box.absolute ) {
+          oldBounds.y = oldBounds.y + block.height;
+          c.setExtents( oldBounds );
+        }
 
         //reset style
         if ( style != null ) {
@@ -163,7 +165,27 @@ public class BoxRendering {
      * @param restyle
      */
     public static void paintFixed( Context c, Box block, boolean restyle ) {
-        paintFixedOrAbsolute( c, block, restyle );
+        Rectangle rect = c.getExtents();
+        //why this?
+        int xoff = -rect.x;
+        int yoff = -rect.y;
+
+        if ( block.top_set ) {
+            yoff += block.top;
+        }
+        if ( block.right_set ) {
+            xoff = -rect.x + rect.width - block.width - block.right;
+        }
+        if ( block.left_set ) {
+            xoff = block.left;
+        }
+        if ( block.bottom_set ) {
+            yoff = -rect.y + rect.height - block.height - block.bottom;
+        }
+        c.translate( xoff, yoff );
+        paintNormal( c, block, restyle );
+        c.translate( -xoff, -yoff );
+        
     }
 
     /**
@@ -174,7 +196,7 @@ public class BoxRendering {
      * @param restyle
      */
     //HACK: more or less copied paintFixed - tobe
-    //TODO: these were duplicates code blocks--need to decide how they differ, or leave as common method (PWW 25-01-05)
+    //TODO: paint fixed & absolute are duplicates code blocks--need to decide how they differ, or leave as common method (PWW 25-01-05)
     public static void paintAbsoluteBox( Context c, Box block, boolean restyle ) {
         Rectangle rect = c.getExtents();
         //why this?
@@ -288,16 +310,14 @@ public class BoxRendering {
         }
         return false;
     }
-
-    /**
-     * Description of the Method
-     *
-     * @param c        PARAM
-     * @param block    PARAM
-     * @param restyle  PARAM
-     */
-    private static void paintFixedOrAbsolute( Context c, Box block, boolean restyle ) {
-        paintFixedOrAbsolute( c, block, restyle );
-    }
 }
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.18  2005/03/26 11:53:30  pdoubleya
+ * paintFixed() was badly refactored before--now again a duplicate of paintAbsolute; added check for absolute boxes on paint(), so that they are not moved after render operation.
+ *
+ *
+ */
