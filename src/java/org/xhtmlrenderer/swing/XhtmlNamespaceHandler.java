@@ -22,9 +22,13 @@
 package org.xhtmlrenderer.swing;
 
 import org.apache.xpath.XPathAPI;
+import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Handles xhtml documents
@@ -98,18 +102,23 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
         return title;
     }
 
-    public String getInlineStyle(org.w3c.dom.Document doc, String media) {
-        StringBuffer style = new StringBuffer();
+    public InlineStyleInfo[] getInlineStyle(org.w3c.dom.Document doc) {
+        List list = new ArrayList();
         try {
             //org.apache.xpath.objects.XObject xo = XPathAPI.eval(doc.getDocumentElement(), "//xh:style[@type='text/css']", pres);
             //NOTE: type is required and we only handle css
             org.apache.xpath.objects.XObject xo = XPathAPI.eval(doc.getDocumentElement(), "//style[@type='text/css']");
             org.w3c.dom.NodeList nl = xo.nodelist();
             for (int i = 0, len = nl.getLength(); i < len; i++) {
+                StringBuffer style = new StringBuffer();
                 org.w3c.dom.Element elem = (org.w3c.dom.Element) nl.item(i);
                 String m = elem.getAttribute("media");
                 if ("".equals(m)) m = "screen";//default for HTML
-                if (m.indexOf("all") == -1 && media.indexOf("all") == -1 && m.indexOf(media) == -1) continue;
+                StylesheetInfo info = new StylesheetInfo();
+                info.setMedia(m);
+                info.setType(elem.getAttribute("type"));//I'd be surprised if this was not text/css!
+                info.setTitle(elem.getAttribute("title"));
+                info.setOrigin(StylesheetInfo.AUTHOR);
                 org.w3c.dom.NodeList children = elem.getChildNodes();
                 for (int j = 0; j < children.getLength(); j++) {
                     org.w3c.dom.Node txt = children.item(j);
@@ -117,16 +126,24 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
                         style.append(txt.getNodeValue());
                     }
                 }
+                InlineStyleInfo isi = new InlineStyleInfo();
+                isi.setInfo(info);
+                isi.setStyle(style.toString());
+                list.add(isi);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        return style.toString();
+        InlineStyleInfo[] infos = new InlineStyleInfo[list.size()];
+        for (int i = 0; i < infos.length; i++) {
+            infos[i] = (InlineStyleInfo) list.get(i);
+        }
+        return infos;
     }
 
     public StylesheetInfo[] getStylesheetLinks(org.w3c.dom.Document doc) {
-        java.util.List list = new java.util.ArrayList();
+        List list = new ArrayList();
         //get the processing-instructions (actually for XmlDocuments)
         StylesheetInfo[] refs = super.getStylesheetLinks(doc);
         list.addAll(java.util.Arrays.asList(refs));
@@ -152,7 +169,7 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
                 info.setMedia(a);
                 a = link.getAttribute("title");
                 info.setTitle(a);
-                list.add(info);
+                if (info.getType().equals("text/css")) list.add(info);
             }
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -28,6 +28,7 @@ import org.w3c.dom.css.CSSValueList;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
@@ -542,23 +543,17 @@ public class TBStyleReference implements StyleReference {
         }
         infos.addAll(Arrays.asList(refs));
 
-        String baseUri = _context.getRenderingContext().getBaseURL().toString();
-        uri = _context.getMedia() + "?-fs-media-?" + baseUri;
+        uri = _context.getRenderingContext().getBaseURL().toString();
         info = new StylesheetInfo();
-        info.setUri(baseUri);
-        info.setType("text/css");
+        info.setUri(uri);
         info.setOrigin(StylesheetInfo.AUTHOR);
-        info.setMedia(_context.getMedia());
         Stylesheet sheet = null;
         if (_stylesheetFactory.containsStylesheet(uri)) {
             sheet = _stylesheetFactory.getCachedStylesheet(uri);
         } else {
-            String inlineStyle = _nsh.getInlineStyle(_doc, _context.getMedia());
-            if (inlineStyle != null) {
-                reader = new java.io.StringReader(inlineStyle);
-                sheet = _stylesheetFactory.parse(reader, info);
-                _stylesheetFactory.putStylesheet(uri, sheet);
-            }
+            InlineStyleInfo[] inlineStyle = _nsh.getInlineStyle(_doc);
+            sheet = _stylesheetFactory.parseInlines(inlineStyle, info);
+            _stylesheetFactory.putStylesheet(uri, sheet);
         }
         info.setStylesheet(sheet);//add it here because matcher cannot look it up, uri:s are in a twist
         infos.add(info);
@@ -650,6 +645,9 @@ public class TBStyleReference implements StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2004/12/02 19:46:35  tobega
+ * Refactored handling of inline styles to fit with StylesheetInfo and media handling (is also now correct if there should be more than one style element)
+ *
  * Revision 1.18  2004/12/01 14:02:51  joshy
  * modified media to use the value from the rendering context
  * added the inline-block box

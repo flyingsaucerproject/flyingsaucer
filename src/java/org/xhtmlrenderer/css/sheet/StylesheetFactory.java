@@ -28,6 +28,7 @@ import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.io.Reader;
+import java.io.StringReader;
 import java.net.URL;
 
 
@@ -90,7 +91,7 @@ public class StylesheetFactory {
             throw new XRRuntimeException("IOException on parsing style seet from a Reader; don't know the URI.", e);
         }
 
-        Stylesheet sheet = new Stylesheet(info);
+        Stylesheet sheet = new Stylesheet(info.getUri(), info.getOrigin());
         CSSRuleList rl = style.getCssRules();
         pullRulesets(rl, sheet, info);
 
@@ -102,12 +103,26 @@ public class StylesheetFactory {
      *
      * @param info
      * @return Returns null if uri could not be loaded
-     *         TODO: what about relative uris? what are they relative to? how resolve?
      */
     public Stylesheet parse(StylesheetInfo info) {
         Reader r = _userAgent.getReaderForURI(info.getUri());
         if (r != null) return parse(r, info);
         return null;
+    }
+
+    public Stylesheet parseInlines(InlineStyleInfo[] isis, StylesheetInfo main) {
+        Stylesheet sheet = new Stylesheet(main.getUri(), main.getOrigin());
+        if (isis != null) {
+            for (int i = 0; i < isis.length; i++) {
+                Reader reader = new StringReader(isis[i].getStyle());
+                StylesheetInfo info = isis[i].getInfo();
+                info.setUri(main.getUri());
+                Stylesheet is = parse(reader, info);
+                info.setStylesheet(is);
+                sheet.addStylesheet(info);
+            }
+        }
+        return sheet;
     }
 
     /**
@@ -150,7 +165,7 @@ public class StylesheetFactory {
                 info.setMedia(cssmr.getMedia().getMediaText());
                 info.setOrigin(stylesheet.getOrigin());
                 info.setType("text/css");
-                Stylesheet mr = new Stylesheet(info);
+                Stylesheet mr = new Stylesheet(info.getUri(), info.getOrigin());
                 info.setStylesheet(mr);//there, the "dummy" connection is made
                 pullRulesets(cssmr.getCssRules(), mr, info);
                 stylesheet.addStylesheet(info);
@@ -226,6 +241,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/12/02 19:46:36  tobega
+ * Refactored handling of inline styles to fit with StylesheetInfo and media handling (is also now correct if there should be more than one style element)
+ *
  * Revision 1.9  2004/11/30 23:47:57  tobega
  * At-media rules should now work (not tested). Also fixed at-import rules, which got broken at previous modification.
  *

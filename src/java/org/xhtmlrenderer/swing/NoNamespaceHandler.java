@@ -22,6 +22,7 @@
 package org.xhtmlrenderer.swing;
 
 import org.apache.xpath.XPathAPI;
+import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ System.err.println("NoNamespace class!");
         return null;
     }
 
-    public String getInlineStyle(org.w3c.dom.Document doc, String media) {
+    public InlineStyleInfo[] getInlineStyle(org.w3c.dom.Document doc) {
         return null;
     }
 

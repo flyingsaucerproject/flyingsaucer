@@ -22,6 +22,7 @@
 package org.xhtmlrenderer.extend;
 
 import org.w3c.dom.Document;
+import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
 /**
@@ -30,15 +31,33 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 public interface NamespaceHandler {
 
     //javax.xml.transform.Source getSource();
-    
+
+    /**
+     * @return the namespace handled
+     */
     public String getNamespace();
 
+    /**
+     * @return the default CSS stylesheet for this namespace
+     */
     public java.io.Reader getDefaultStylesheet();
 
+    /**
+     * @param doc
+     * @return the title for this document, if any exists
+     */
     public String getDocumentTitle(Document doc);
 
-    public String getInlineStyle(Document doc, String media);
+    /**
+     * @param doc
+     * @return all CSS styles (type="text/css") defined inline in this document
+     */
+    public InlineStyleInfo[] getInlineStyle(Document doc);
 
+    /**
+     * @param doc
+     * @return all links to CSS stylesheets (type="text/css") in this document
+     */
     public StylesheetInfo[] getStylesheetLinks(Document doc);
     
     /** may return null */

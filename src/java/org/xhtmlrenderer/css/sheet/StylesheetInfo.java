@@ -21,11 +21,10 @@
 package org.xhtmlrenderer.css.sheet;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tobe
- * Date: 2004-nov-28
- * Time: 17:19:45
- * To change this template use File | Settings | File Templates.
+ * A reference to a stylesheet. If no stylesheet is set, the matcher will try to find the stylesheet by uri,
+ * first from the StylesheetFactory cache, then by loading the uri if it is not cached.
+ * <p>Therefore, either a stylesheet must be set, or a uri must be set
+ * <p>Origin defaults to USER_AGENT and media defaults to "all"
  */
 public class StylesheetInfo {
 
@@ -103,7 +102,7 @@ public class StylesheetInfo {
     private Stylesheet stylesheet = null;//just to be able to attach "dummy" stylesheets. Also might save a lookup if it's already looked up
     private String title;
     private String uri;
-    private String media;
-    private int origin;
+    private String media = "all";
+    private int origin = USER_AGENT;
     private String type;
 }

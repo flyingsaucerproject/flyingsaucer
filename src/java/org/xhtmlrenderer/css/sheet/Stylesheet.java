@@ -35,7 +35,8 @@ public class Stylesheet {
     /**
      * The info for this stylesheet
      */
-    private StylesheetInfo _info;
+    private String _uri;
+    private int _origin;
 
     /**
      * Description of the Field
@@ -45,10 +46,12 @@ public class Stylesheet {
     /**
      * Creates a new instance of Stylesheet
      *
-     * @param info
+     * @param uri
+     * @param origin
      */
-    public Stylesheet(StylesheetInfo info) {
-        _info = info;
+    public Stylesheet(String uri, int origin) {
+        _uri = uri;
+        _origin = origin;
         _rulesets = new java.util.LinkedList();
     }
 
@@ -58,7 +61,7 @@ public class Stylesheet {
      * @return The origin value
      */
     public int getOrigin() {
-        return _info.getOrigin();
+        return _origin;
     }
 
     /**
@@ -67,7 +70,7 @@ public class Stylesheet {
      * @return The URI
      */
     public String getURI() {
-        return _info.getUri();
+        return _uri;
     }
 
     /**
@@ -98,6 +101,9 @@ public class Stylesheet {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/12/02 19:46:36  tobega
+ * Refactored handling of inline styles to fit with StylesheetInfo and media handling (is also now correct if there should be more than one style element)
+ *
  * Revision 1.7  2004/11/29 23:25:39  tobega
  * Had to redo thinking about Stylesheets and StylesheetInfos. Now StylesheetInfos are passed around instead of Stylesheets because any Stylesheet should only be linked to its URI. Bonus: the external sheets get lazy-loaded only if needed for the medium.
  *
