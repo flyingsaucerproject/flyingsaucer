@@ -25,7 +25,6 @@ import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
-
 import org.xhtmlrenderer.css.RuleNormalizer;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.impl.XRPropertyImpl;
@@ -47,37 +46,24 @@ public class BorderColorPropertyFactory extends AbstractPropertyFactory {
     /** Constructor for the BorderColorPropertyFactory object */
     private BorderColorPropertyFactory() { }
 
-
-    /**
-     * Returns the singleton instance.
-     *
-     * @return   Returns
-     */
-    public static synchronized PropertyFactory instance() {
-        if ( _instance == null ) {
-            _instance = new BorderColorPropertyFactory();
-        }
-        return _instance;
-    }
-
     // thread-safe
     /**
      * If <code>propName</code> describes a shorthand property, explodes it into
      * the specific properties it is a shorthand for, and returns those as an
-     * Iterator of {@link org.xhtmlrenderer.css.XRProperty} instances;
-     * or just instantiates a single <code>XRProperty</code> for non-shorthand
-     * props.
+     * Iterator of {@link org.xhtmlrenderer.css.XRProperty} instances; or just
+     * instantiates a single <code>XRProperty</code> for non-shorthand props.
      *
      * @param style     The CSSStyleDeclaration from the SAC parser.
      * @param propName  The String property name for the property to explode.
      * @param sequence  Sequence in which the declaration was found in the
      *      containing stylesheet.
-     * @return          Iterator of one or more XRProperty instances representing the exploded values.
+     * @return          Iterator of one or more XRProperty instances
+     *      representing the exploded values.
      */
     public Iterator explodeProperties( CSSStyleDeclaration style, String propName, int sequence ) {
         List list = new ArrayList();
         CSSValue cssValue = style.getPropertyCSSValue( propName );
-        cssValue.setCssText(RuleNormalizer.getColorHex(cssValue.getCssText()));
+        cssValue.setCssText( RuleNormalizer.getColorHex( cssValue.getCssText() ) );
         String priority = style.getPropertyPriority( propName );
 
         // CAREFUL: note that with steadyState parser impl, their value class impl
@@ -140,7 +126,8 @@ public class BorderColorPropertyFactory extends AbstractPropertyFactory {
 
 
     /**
-     * Explodes a single shorthand property declaration into components (one per side).
+     * Explodes a single shorthand property declaration into components (one per
+     * side).
      *
      * @param primitive  PARAM
      * @param priority   PARAM
@@ -149,9 +136,9 @@ public class BorderColorPropertyFactory extends AbstractPropertyFactory {
      * @return           Returns
      */
     private List explodeOne( CSSPrimitiveValue primitive,
-            String priority,
-            CSSStyleDeclaration style,
-            int sequence ) {
+                             String priority,
+                             CSSStyleDeclaration style,
+                             int sequence ) {
 
         List list = new ArrayList();
         XRValueImpl val = null;
@@ -162,5 +149,30 @@ public class BorderColorPropertyFactory extends AbstractPropertyFactory {
         list.add( new XRPropertyImpl( CSSName.BORDER_COLOR_LEFT, sequence, val ) );
         return list;
     }
+
+
+    /**
+     * Returns the singleton instance.
+     *
+     * @return   Returns
+     */
+    public static synchronized PropertyFactory instance() {
+        if ( _instance == null ) {
+            _instance = new BorderColorPropertyFactory();
+        }
+        return _instance;
+    }
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.3  2004/10/23 13:14:12  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

@@ -20,19 +20,19 @@
  */
 package org.xhtmlrenderer.css.factory;
 
+import org.w3c.dom.css.CSSPrimitiveValue;
+import org.w3c.dom.css.CSSStyleDeclaration;
+import org.xhtmlrenderer.css.RuleNormalizer;
 import org.xhtmlrenderer.css.XRProperty;
 import org.xhtmlrenderer.css.XRValue;
 import org.xhtmlrenderer.css.impl.XRPropertyImpl;
 import org.xhtmlrenderer.css.impl.XRValueImpl;
-import org.xhtmlrenderer.css.RuleNormalizer;
-import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSStyleDeclaration;
+
 
 /**
  * Base class for <code>PropertyFactories</code>.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public abstract class AbstractPropertyFactory implements PropertyFactory {
     /**
@@ -46,22 +46,35 @@ public abstract class AbstractPropertyFactory implements PropertyFactory {
      * @return                 Returns
      */
     protected XRProperty newProperty(
-            String newPropertyName,
-            CSSPrimitiveValue primitive,
-            String priority,
-            CSSStyleDeclaration style,
-            int sequence ) {
+                                      String newPropertyName,
+                                      CSSPrimitiveValue primitive,
+                                      String priority,
+                                      CSSStyleDeclaration style,
+                                      int sequence ) {
 
-        if ( newPropertyName.indexOf("color") >=0 ) {
+        if ( newPropertyName.indexOf( "color" ) >= 0 ) {
             try {
-            if ( !primitive.getCssText().equals("transparent"))
-                primitive.setCssText(RuleNormalizer.getColorHex(primitive.getCssText()));
+                if ( !primitive.getCssText().equals( "transparent" ) ) {
+                    primitive.setCssText( RuleNormalizer.getColorHex( primitive.getCssText() ) );
+                }
             } catch ( Exception ex ) {
-                System.out.println("can't set color: " + primitive.getCssText());   
+                System.out.println( "can't set color: " + primitive.getCssText() );
             }
         }
         XRValue val = new XRValueImpl( primitive, priority );
         return new XRPropertyImpl( newPropertyName, sequence, val );
     }
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.3  2004/10/23 13:14:12  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

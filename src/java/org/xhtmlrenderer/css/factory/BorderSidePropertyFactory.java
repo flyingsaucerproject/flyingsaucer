@@ -25,59 +25,46 @@ import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
-
 import org.xhtmlrenderer.css.RuleNormalizer;
-
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.impl.XRValueImpl;
 
 
 /**
- * A PropertyFactory for CSS 2 "border" shorthand properties that are border side specific (top, bottom, left, right), instantiating XRProperties.
+ * A PropertyFactory for CSS 2 "border" shorthand properties that are border
+ * side specific (top, bottom, left, right), instantiating XRProperties.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public class BorderSidePropertyFactory extends AbstractPropertyFactory {
     /** Singleton instance. */
     private static BorderSidePropertyFactory _instance;
 
     /** TODO--used in property explosion */
-    private static final Map PROP_EXPLODE;
+    private final static Map PROP_EXPLODE;
 
-    private static final int WIDTH_IDX;
-    private static final int STYLE_IDX;
-    private static final int COLOR_IDX;
-    
+    /** Description of the Field */
+    private final static int WIDTH_IDX;
+    /** Description of the Field */
+    private final static int STYLE_IDX;
+    /** Description of the Field */
+    private final static int COLOR_IDX;
+
     /** Constructor for the BorderSidePropertyFactory object */
     private BorderSidePropertyFactory() { }
-
-
-    /**
-     * Returns the singleton instance.
-     *
-     * @return   Returns
-     */
-    public static synchronized PropertyFactory instance() {
-        if ( _instance == null ) {
-            _instance = new BorderSidePropertyFactory();
-        }
-        return _instance;
-    }
 
     // thread-safe
     /**
      * If <code>propName</code> describes a shorthand property, explodes it into
      * the specific properties it is a shorthand for, and returns those as an
-     * Iterator of {@link org.xhtmlrenderer.css.XRProperty} instances;
-     * or just instantiates a single <code>XRProperty</code> for non-shorthand
-     * props.
+     * Iterator of {@link org.xhtmlrenderer.css.XRProperty} instances; or just
+     * instantiates a single <code>XRProperty</code> for non-shorthand props.
      *
      * @param style     The CSSStyleDeclaration from the SAC parser.
      * @param propName  The String property name for the property to explode.
      * @param sequence  Sequence in which the declaration was found in the
      *      containing stylesheet.
-     * @return          Iterator of one or more XRProperty instances representing the exploded values.
+     * @return          Iterator of one or more XRProperty instances
+     *      representing the exploded values.
      */
     public Iterator explodeProperties( CSSStyleDeclaration style, String propName, int sequence ) {
         List list = new ArrayList();
@@ -93,33 +80,44 @@ public class BorderSidePropertyFactory extends AbstractPropertyFactory {
         // CAREFUL: note that with steadyState parser impl, their value class impl
         // both primitive and value list interfaces! use getCssValueType(), not instanceof!!
         if ( cssValue.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
-            addPrimitive(style, (CSSPrimitiveValue)cssValue, priority, sequence, explodes, list);
+            addPrimitive( style, (CSSPrimitiveValue)cssValue, priority, sequence, explodes, list );
         } else {
             // is a value list
             // border explodes differently based on number of supplied values
             // but values for color, style, width can be given in any order
-            // loop over the ones given and sniff them out to see if they 
-            // look like color, style, width, then apply to all four sides 
+            // loop over the ones given and sniff them out to see if they
+            // look like color, style, width, then apply to all four sides
 
             CSSValueList vList = (CSSValueList)cssValue;
             CSSPrimitiveValue primitive = null;
 
             for ( int i = 0, len = vList.getLength(); i < len; i++ ) {
                 primitive = (CSSPrimitiveValue)vList.item( i );
-                addPrimitive(style, primitive, priority, sequence, explodes, list);
-            }            
+                addPrimitive( style, primitive, priority, sequence, explodes, list );
+            }
         }
         return list.iterator();
     }
 
+    /**
+     * Adds a feature to the Primitive attribute of the
+     * BorderSidePropertyFactory object
+     *
+     * @param style      The feature to be added to the Primitive attribute
+     * @param primitive  The feature to be added to the Primitive attribute
+     * @param priority   The feature to be added to the Primitive attribute
+     * @param sequence   The feature to be added to the Primitive attribute
+     * @param explodeTo  The feature to be added to the Primitive attribute
+     * @param list       The feature to be added to the Primitive attribute
+     */
     private void addPrimitive(
-        CSSStyleDeclaration style,
-        CSSPrimitiveValue primitive, 
-        String priority,
-        int sequence,
-        List explodeTo,
-        List list) {
-            
+                               CSSStyleDeclaration style,
+                               CSSPrimitiveValue primitive,
+                               String priority,
+                               int sequence,
+                               List explodeTo,
+                               List list ) {
+
         String val = primitive.getCssText().trim();
         String propName = "";
         if ( RuleNormalizer.looksLikeAColor( val ) ) {
@@ -130,15 +128,28 @@ public class BorderSidePropertyFactory extends AbstractPropertyFactory {
             // HACK: as with background, we should go ahead and check this is a valid CSS length value (PWW 24-08-04)
             propName = (String)explodeTo.get( WIDTH_IDX );
         }
-        list.add( 
-            newProperty( 
-                propName, 
-                primitive, 
-                priority, 
-                style, 
-                sequence ) 
-            );
-    }    
+        list.add(
+                newProperty(
+                propName,
+                primitive,
+                priority,
+                style,
+                sequence )
+                 );
+    }
+
+
+    /**
+     * Returns the singleton instance.
+     *
+     * @return   Returns
+     */
+    public static synchronized PropertyFactory instance() {
+        if ( _instance == null ) {
+            _instance = new BorderSidePropertyFactory();
+        }
+        return _instance;
+    }
 
     static {
         WIDTH_IDX = 0;
@@ -171,4 +182,16 @@ public class BorderSidePropertyFactory extends AbstractPropertyFactory {
         PROP_EXPLODE.put( CSSName.BORDER_LEFT_SHORTHAND, l );
     }
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.3  2004/10/23 13:14:12  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

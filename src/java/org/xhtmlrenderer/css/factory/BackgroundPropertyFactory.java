@@ -25,12 +25,8 @@ import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
-
 import org.xhtmlrenderer.css.RuleNormalizer;
-
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.impl.XRPropertyImpl;
-import org.xhtmlrenderer.css.impl.XRValueImpl;
 
 
 /**
@@ -50,9 +46,8 @@ public class BackgroundPropertyFactory extends AbstractPropertyFactory {
     /**
      * If <code>propName</code> describes a shorthand property, explodes it into
      * the specific properties it is a shorthand for, and returns those as an
-     * Iterator of {@link org.xhtmlrenderer.css.XRProperty} instances;
-     * or just instantiates a single <code>XRProperty</code> for non-shorthand
-     * props.
+     * Iterator of {@link org.xhtmlrenderer.css.XRProperty} instances; or just
+     * instantiates a single <code>XRProperty</code> for non-shorthand props.
      *
      * @param style     The CSSStyleDeclaration from the SAC parser.
      * @param propName  The String property name for the property to explode.
@@ -69,17 +64,17 @@ public class BackgroundPropertyFactory extends AbstractPropertyFactory {
         // CAREFUL: note that with steadyState parser impl, their value class impl
         // both primitive and value list interfaces! use getCssValueType(), not instanceof!!
         if ( cssValue.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
-            addPrimitive(style, (CSSPrimitiveValue)cssValue, priority, sequence, list);
+            addPrimitive( style, (CSSPrimitiveValue)cssValue, priority, sequence, list );
         } else {
             // is a value list
             CSSValueList vList = (CSSValueList)cssValue;
 
-            // background shorthand can have color, image, repeat, 
-            // attachment, position in any order; so loop whatever's 
+            // background shorthand can have color, image, repeat,
+            // attachment, position in any order; so loop whatever's
             // provided and sniff for the value-type
             CSSPrimitiveValue primitive = null;
             CSSPrimitiveValue bgPosPrimitive = null;
-            StringBuffer bgPos = null; 
+            StringBuffer bgPos = null;
             for ( int i = 0, len = vList.getLength(); i < len; i++ ) {
                 primitive = (CSSPrimitiveValue)vList.item( i );
 
@@ -87,7 +82,7 @@ public class BackgroundPropertyFactory extends AbstractPropertyFactory {
                 String expPropName = "";
                 if ( RuleNormalizer.looksLikeAColor( val ) ) {
                     expPropName = CSSName.BACKGROUND_COLOR;
-                } else if ( RuleNormalizer.looksLikeAURI( val ) || "none".equals(val) ) {
+                } else if ( RuleNormalizer.looksLikeAURI( val ) || "none".equals( val ) ) {
                     expPropName = CSSName.BACKGROUND_IMAGE;
                 } else if ( RuleNormalizer.looksLikeABGRepeat( val ) ) {
                     expPropName = CSSName.BACKGROUND_REPEAT;
@@ -99,52 +94,62 @@ public class BackgroundPropertyFactory extends AbstractPropertyFactory {
                     // will not be flagged--so will defer proper BG-pos sniffing
                     // for later (PWW 24-08-04)
                     if ( bgPos == null ) {
-                        bgPos = new StringBuffer(val);
+                        bgPos = new StringBuffer( val );
                         bgPosPrimitive = primitive;
                     } else {
-                        bgPos.append(" " + val);
+                        bgPos.append( " " + val );
                     }
                     continue;
                 }
-                list.add( 
-                    newProperty( 
-                        expPropName, 
-                        primitive, 
-                        priority, 
-                        style, 
-                        sequence 
-                    ) 
-                );
+                list.add(
+                        newProperty(
+                        expPropName,
+                        primitive,
+                        priority,
+                        style,
+                        sequence
+                         )
+                         );
             }
             if ( bgPos != null ) {
-                String val = RuleNormalizer.convertIdent(CSSName.BACKGROUND_POSITION,bgPos.toString());
-                bgPosPrimitive.setCssText(val);
-                list.add( 
-                    newProperty( 
-                        CSSName.BACKGROUND_POSITION, 
-                        bgPosPrimitive, 
-                        priority, 
-                        style, 
-                        sequence 
-                    ) 
-                );
+                String val = RuleNormalizer.convertIdent( CSSName.BACKGROUND_POSITION, bgPos.toString() );
+                bgPosPrimitive.setCssText( val );
+                list.add(
+                        newProperty(
+                        CSSName.BACKGROUND_POSITION,
+                        bgPosPrimitive,
+                        priority,
+                        style,
+                        sequence
+                         )
+                         );
             }
         }// is a value list
         return list.iterator();
     }
 
+    /**
+     * Adds a feature to the Primitive attribute of the
+     * BackgroundPropertyFactory object
+     *
+     * @param style      The feature to be added to the Primitive attribute
+     * @param primitive  The feature to be added to the Primitive attribute
+     * @param priority   The feature to be added to the Primitive attribute
+     * @param sequence   The feature to be added to the Primitive attribute
+     * @param list       The feature to be added to the Primitive attribute
+     */
     private void addPrimitive(
-        CSSStyleDeclaration style,
-        CSSPrimitiveValue primitive, 
-        String priority,
-        int sequence,
-        List list) {
-            
+                               CSSStyleDeclaration style,
+                               CSSPrimitiveValue primitive,
+                               String priority,
+                               int sequence,
+                               List list ) {
+
         String val = primitive.getCssText().trim();
         String propName = "";
         if ( RuleNormalizer.looksLikeAColor( val ) ) {
             propName = CSSName.BACKGROUND_COLOR;
-        } else if ( RuleNormalizer.looksLikeAURI( val ) || "none".equals(val) ) {
+        } else if ( RuleNormalizer.looksLikeAURI( val ) || "none".equals( val ) ) {
             propName = CSSName.BACKGROUND_IMAGE;
         } else if ( RuleNormalizer.looksLikeABGRepeat( val ) ) {
             propName = CSSName.BACKGROUND_REPEAT;
@@ -157,15 +162,15 @@ public class BackgroundPropertyFactory extends AbstractPropertyFactory {
             // for later (PWW 24-08-04)
             propName = CSSName.BACKGROUND_POSITION;
         }
-        list.add( 
-            newProperty( 
-                propName, 
-                primitive, 
-                priority, 
-                style, 
-                sequence 
-            ) 
-        );
+        list.add(
+                newProperty(
+                propName,
+                primitive,
+                priority,
+                style,
+                sequence
+                 )
+                 );
     }
 
     /**
@@ -179,5 +184,17 @@ public class BackgroundPropertyFactory extends AbstractPropertyFactory {
         }
         return _instance;
     }
-} // end class
+}// end class
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.3  2004/10/23 13:14:12  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

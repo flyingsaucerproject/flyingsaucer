@@ -25,11 +25,8 @@ import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
-
 import org.xhtmlrenderer.css.RuleNormalizer;
-
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.impl.XRValueImpl;
 
 
 /**
@@ -51,11 +48,11 @@ public class BorderPropertyFactory extends AbstractPropertyFactory {
     /** TODO--used in property explosion */
     private final static String LISTS[][];
     /** TODO--used in property explosion */
-    private static final int WIDTH_IDX;
+    private final static int WIDTH_IDX;
     /** TODO--used in property explosion */
-    private static final int STYLE_IDX;
+    private final static int STYLE_IDX;
     /** TODO--used in property explosion */
-    private static final int COLOR_IDX;
+    private final static int COLOR_IDX;
 
     /** Constructor for the BorderPropertyFactory object */
     private BorderPropertyFactory() { }
@@ -64,9 +61,8 @@ public class BorderPropertyFactory extends AbstractPropertyFactory {
     /**
      * If <code>propName</code> describes a shorthand property, explodes it into
      * the specific properties it is a shorthand for, and returns those as an
-     * Iterator of {@link org.xhtmlrenderer.css.XRProperty} instances;
-     * or just instantiates a single <code>XRProperty</code> for non-shorthand
-     * props.
+     * Iterator of {@link org.xhtmlrenderer.css.XRProperty} instances; or just
+     * instantiates a single <code>XRProperty</code> for non-shorthand props.
      *
      * @param style     The CSSStyleDeclaration from the SAC parser.
      * @param propName  The String property name for the property to explode.
@@ -83,16 +79,16 @@ public class BorderPropertyFactory extends AbstractPropertyFactory {
         // CAREFUL: note that with steadyState parser impl, their value class impl
         // both primitive and value list interfaces! use getCssValueType(), not instanceof!!
         if ( cssValue.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
-            System.err.println("BORDER: PRIMITIVE VALUE. NOT CURRENTLY CODED.");
+            System.err.println( "BORDER: PRIMITIVE VALUE. NOT CURRENTLY CODED." );
         } else {
             // is a value list
             CSSValueList vList = (CSSValueList)cssValue;
 
             // border explodes differently based on number of supplied values
             // but values for color, style, width can be given in any order
-            // loop over the ones given and sniff them out to see if they 
-            // look like color, style, width, then apply to all four sides 
-            
+            // loop over the ones given and sniff them out to see if they
+            // look like color, style, width, then apply to all four sides
+
             CSSPrimitiveValue primitive = null;
 
             String sides[] = null;
@@ -168,3 +164,16 @@ public class BorderPropertyFactory extends AbstractPropertyFactory {
         LISTS[COLOR_IDX] = COLOR_PRP;
     }
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.3  2004/10/23 13:14:12  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
+
