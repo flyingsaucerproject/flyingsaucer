@@ -25,7 +25,7 @@ import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.layout.Context;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -136,7 +136,7 @@ System.err.println("NoNamespace class!");
         return refs;
     }
 
-    public JComponent getCustomComponent(Element e, UserAgentCallback ua) {
+    public JComponent getCustomComponent(Element e, Context c) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
     

@@ -25,6 +25,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+import org.xhtmlrenderer.layout.Context;
 
 import javax.swing.*;
 
@@ -77,9 +78,9 @@ public interface NamespaceHandler {
 
     /**
      * @param e
-     * @param ua
+     * @param c
      * @return null if no custom component, else the custom component to draw in place of this element and its descendants.
      */
-    public JComponent getCustomComponent(Element e, UserAgentCallback ua);
+    public JComponent getCustomComponent(Element e, Context c);
 
 }

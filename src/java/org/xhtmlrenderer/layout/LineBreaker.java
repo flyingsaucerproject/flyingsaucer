@@ -31,8 +31,8 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Font;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Description of the Class
@@ -238,13 +238,20 @@ public class LineBreaker {
      */
     public static InlineBox generateReplacedInlineBox(Context c, Content content, int avail, InlineBox prev_align, Font font) {
         //Uu.p("generating replaced Inline Box");
-
-        // get the layout for the replaced element
-        Layout layout = c.getLayout(content.getElement());
-        BlockBox block = (BlockBox) layout.layout(c, content);
-        //Uu.p("got a block box from the sub layout: " + block);
-        Rectangle bounds = new Rectangle(block.x, block.y, block.width, block.height);
-        //Uu.p("bounds = " + bounds);
+        Rectangle bounds = null;
+        BlockBox block = null;
+        JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c);//TODO:resolve this null
+        if (cc != null) {
+            bounds = cc.getBounds();
+        } else {
+            // get the layout for the replaced element
+            //Layout layout = c.getLayout(content.getElement());
+            Layout layout = new InlineLayout();
+            block = (BlockBox) layout.layout(c, content);
+            //Uu.p("got a block box from the sub layout: " + block);
+            bounds = new Rectangle(block.x, block.y, block.width, block.height);
+            //Uu.p("bounds = " + bounds);
+        }
         /*
          * joshy: change this to just modify the existing block instead of creating
          * a  new one
@@ -256,11 +263,12 @@ public class LineBreaker {
         //Uu.p("created a new inline box");
         box.replaced = true;
         box.sub_block = block;
-        block.setParent(box);
+        if (block != null) block.setParent(box);
+        box.component = cc;
 
         // set up the extents
-        box.width = bounds.width;
-        box.height = bounds.height;
+        box.width = bounds.width + box.totalHorizontalPadding(c.getCurrentStyle());
+        box.height = bounds.height + box.totalVerticalPadding(c.getCurrentStyle());
         box.break_after = false;
 
         // if it won't fit on this line, then put it on the next one
@@ -515,6 +523,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2005/01/02 02:12:48  tobega
+ * img tags now handled as custom components.
+ *
  * Revision 1.42  2004/12/29 10:39:33  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

@@ -25,11 +25,13 @@ import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -213,12 +215,19 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
 
     }
 
-    public JComponent getCustomComponent(Element e, UserAgentCallback ua) {
+    public JComponent getCustomComponent(Element e, Context c) {
         JComponent cc = null;
         if (e == null) return null;
-        if (e.getNodeName().equals("img")) {
-            //TODO: this is a hack. Go via ua to get url content
-            cc = new JButton(new ImageIcon(e.getAttribute("href")));
+        try {
+            if (e.getNodeName().equals("img")) {
+                //TODO: this is a hack. Go via ua to get url content
+                ImageIcon ii = new ImageIcon(new URL(c.getRenderingContext().getBaseURL(), e.getAttribute("src")));
+                cc = new JButton(ii);
+                cc.setSize(ii.getIconWidth(), ii.getIconHeight());
+                //cc.setBounds(0,0,ii.getIconWidth(),ii.getIconHeight());
+            }
+        } catch (MalformedURLException ex) {
+
         }
         return cc;
     }

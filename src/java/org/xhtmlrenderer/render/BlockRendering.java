@@ -21,7 +21,6 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -42,7 +41,7 @@ public class BlockRendering {
         //Uu.p("child count = " + box.getChildCount());
         //XRLog.render(Level.WARNING, "using default renderer paintChildren for " + box.getClass().getName());
         //TODO: work out how images and other replaced content really should be handled
-        if (box instanceof InlineBox && box.getChildCount() == 0) {
+        /*if (box instanceof InlineBox && box.getChildCount() == 0) {
             InlineBox inline = (InlineBox) box;
             if (inline.sub_block != null) {
                 ImageBox imgbox = (ImageBox) inline.sub_block;
@@ -51,6 +50,9 @@ public class BlockRendering {
                 //do nothing??
                 XRLog.render("Got childless inline box with no sub_block in block rendering context");
             }
+        } else*/
+        if (box.component != null) {
+            box.component.paint(c.getGraphics());
         } else
             for (int i = 0; i < box.getChildCount(); i++) {
                 Box child = (Box) box.getChild(i);

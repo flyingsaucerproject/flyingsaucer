@@ -292,7 +292,7 @@ public class LayoutFactory {
 
         addCustomLayout("ol", new BoxLayout());
         addCustomLayout("ul", new BoxLayout());
-        addCustomLayout("img", new ImageLayout());
+        //addCustomLayout("img", new ImageLayout());
 
         Layout table = new TableLayout2();
         addDisplayLayout("table", table);
@@ -317,6 +317,9 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.30  2005/01/02 02:12:48  tobega
+* img tags now handled as custom components.
+*
 * Revision 1.29  2005/01/01 23:38:38  tobega
 * Cleaned out old rendering code
 *
