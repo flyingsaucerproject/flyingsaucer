@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <project name="JoshyHTML" default="help" basedir=".">
     <description>checkout, build, test, and package the SPPM project.</description>
+
+    <property name="java.util.logging.config.class" value="org.xhtmlrenderer.util.LogStartupConfig" />
+    
     <target name="build" depends="compile" />
     <target name="build-clean" depends="clean-compile" />
     <target name="help">
@@ -46,6 +49,9 @@
         </javac>
         <mkdir dir="build/classes/resources/css"/>
         <copy todir="build/classes/resources/css/" file="src/css/default.css"/>
+        <mkdir dir="build/classes/resources/conf"/>
+        <copy todir="build/classes/resources/conf/" file="src/conf/xhtmlrenderer.conf"/>
+        <copy todir="build/classes/resources/conf/" file="src/conf/xr-logging.properties"/>
     </target>
     
     <target name="compile.browser" depends="compile">
@@ -205,6 +211,7 @@
             fork="true"
             >
             <arg value="demos/browser/xhtml/paragraph.xhtml"/>
+            <sysproperty key="java.util.logging.config.class" value="${java.util.logging.config.class}"/>
             <classpath>
                 <fileset dir="lib">
                     <include name="*.jar"/>
@@ -236,6 +243,7 @@
                 <fileset dir="lib"><include name="*.jar"/></fileset>
                 <fileset dir="build"><include name="*.jar"/></fileset>
             </classpath>
+            <sysproperty key="sun.java2D.opengl" value="false"/>
         </java>
     </target>
 
@@ -269,3 +277,13 @@
     </target>
 
 </project>
+
+
+<!-- 
+$Id$
+
+$Log$
+Revision 1.39  2004/10/13 22:55:36  pdoubleya
+Added system property to auto-load configuration for logging system.
+
+-->
