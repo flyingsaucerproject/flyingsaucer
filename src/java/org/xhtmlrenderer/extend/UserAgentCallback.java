@@ -35,6 +35,6 @@ public interface UserAgentCallback {
     public boolean isVisited(String uri);
     
     /** returns a NamespaceHandler for a namespace */
-    public NamespaceHandler getNamespaceHandler(String namespace);
+    //public NamespaceHandler getNamespaceHandler(String namespace);
     
 }

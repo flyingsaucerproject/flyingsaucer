@@ -18,9 +18,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
     public NaiveUserAgent() {
     }
     
-    public org.xhtmlrenderer.extend.NamespaceHandler getNamespaceHandler(String namespace) {
+    /*public org.xhtmlrenderer.extend.NamespaceHandler getNamespaceHandler(String namespace) {
         return new XhtmlNamespaceHandler();
-    }
+    }*/
     
     public java.io.Reader getReaderForURI(String uri) {
         java.io.InputStream is = null;
