@@ -48,7 +48,7 @@ public class StyleMap {
             if(immediateSiblingAxis != null) {
                 java.util.List tmp = immediateSiblingAxis;
                 immediateSiblingAxis = null;//clear immediately because it is only relevant for this element
-                for(java.util.Iterator i = immediateSiblingAxis.iterator(); i.hasNext();) {
+                for(java.util.Iterator i = tmp.iterator(); i.hasNext();) {
                     match((Ruleset.Selector) i.next(), e, childMapper);
                 }
             }
@@ -63,7 +63,7 @@ public class StyleMap {
         }
         
         private void match(Ruleset.Selector sel, org.w3c.dom.Element e, Mapper child) {
-            if(!sel.matches(e)) return;
+            if(!sel.matches(e, _idr)) return;
             Ruleset.Selector chain = sel.getChainedSelector();
             if(chain == null) {
                 child.propertyDeclarations.addAll(sel.getRuleset().getPropertyDeclarations());
@@ -101,15 +101,16 @@ public class StyleMap {
         return m.propertyDeclarations;
     }
     
-    /** create a StyleMap from a DOM document */
-    public static StyleMap createMap(org.w3c.dom.Document doc, java.util.List rulesets) {
+    /** create a StyleMap from a DOM document. If IDResolver is null, then identity conditions cannot match */
+    public static StyleMap createMap(org.w3c.dom.Document doc, java.util.List rulesets, IDResolver idr) {
         StyleMap map = new StyleMap();
-        map.mapDocument(doc, rulesets);
+        map.mapDocument(doc, rulesets, idr);
         return map;
     }
     
-    private void mapDocument(org.w3c.dom.Document doc, java.util.List rulesets) {
+    private void mapDocument(org.w3c.dom.Document doc, java.util.List rulesets, IDResolver idr) {
         _doc = doc;
+        _idr = idr;
         docMapper = new Mapper(rulesets);
         docMapper.mapChildren(_doc);
     }
@@ -120,6 +121,7 @@ public class StyleMap {
     
     private org.w3c.dom.Document _doc;
     private Mapper docMapper;
+    private IDResolver _idr;
     private java.util.HashMap map = new java.util.HashMap();
 
 }

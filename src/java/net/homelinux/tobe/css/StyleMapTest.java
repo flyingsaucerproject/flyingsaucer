@@ -36,7 +36,11 @@ public class StyleMapTest extends TestCase {
         root.appendChild(first);
         Element firstfirst = doc.createElement("first");
         first.appendChild(firstfirst);
-    }
+        Element second = doc.createElement("second");
+        first.appendChild(second);
+        Element secondsecond = doc.createElement("second");
+        first.appendChild(secondsecond);
+   }
    
     public void testDescendant() {
         System.out.println("testDescendant");
@@ -59,7 +63,7 @@ public class StyleMapTest extends TestCase {
         r.addPropertyDeclaration("firstfirstProperty");
         l.add(r);
         
-        StyleMap myStyles = StyleMap.createMap(doc, l);
+        StyleMap myStyles = StyleMap.createMap(doc, l, null);
         
         Element root = doc.getDocumentElement();
         java.util.List pl = myStyles.getMappedProperties(root);
@@ -85,8 +89,113 @@ public class StyleMapTest extends TestCase {
             else if(str.equals("firstfirstProperty")) flags += 2;
         }
         assertEquals("firstfirst should have firstProperty and firstfirstProperty", 3, flags);
+        
+        n = first.getElementsByTagName("second");
+        Element second = (Element) n.item(0);
+        pl = myStyles.getMappedProperties(second);
+        assertEquals("Should be no properties for second", 0, pl.size());
+        Element secondsecond = (Element) n.item(1);
+        pl = myStyles.getMappedProperties(secondsecond);
+        assertEquals("Should be no properties for secondsecond", 0, pl.size());
+    }
+   
+    public void testChild() {
+        System.out.println("testChild");
+        
+        java.util.List l = new java.util.LinkedList();
+        
+        Ruleset r = new Ruleset();
+        Ruleset.Selector s = r.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "root");
+        s.appendChainedSelector(Ruleset.Selector.CHILD_AXIS, "first");
+        r.addPropertyDeclaration("childProperty");
+        l.add(r);
+        
+        r = new Ruleset();
+        s = r.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "first");
+        s.appendChainedSelector(Ruleset.Selector.CHILD_AXIS, "first");
+        r.addPropertyDeclaration("firstChildProperty");
+        l.add(r);
+        
+        r = new Ruleset();
+        s = r.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "root");
+        s.appendChainedSelector(Ruleset.Selector.CHILD_AXIS, "second");
+        r.addPropertyDeclaration("noChildProperty");
+        l.add(r);
+        
+        StyleMap myStyles = StyleMap.createMap(doc, l, null);
+        
+        Element root = doc.getDocumentElement();
+        java.util.List pl = myStyles.getMappedProperties(root);
+        assertEquals("Should be no properties for root", 0, pl.size());
+        
+        NodeList n = root.getElementsByTagName("first");
+        Element first = (Element) n.item(0);
+        pl = myStyles.getMappedProperties(first);
+        assertEquals("Should be one property for first", 1, pl.size());
+        String str = (String) pl.get(0);
+        assertEquals("first should have childProperty", "childProperty", str);
+        
+        n = first.getElementsByTagName("first");
+        Element firstfirst = (Element) n.item(0);
+        pl = myStyles.getMappedProperties(firstfirst);
+        assertEquals("Should be one property for firstfirst", 1, pl.size());
+        str = (String) pl.get(0);
+        assertEquals("firstfirst should have firstChildProperty", "firstChildProperty", str);
+        
+        
+        n = first.getElementsByTagName("second");
+        Element second = (Element) n.item(0);
+        pl = myStyles.getMappedProperties(second);
+        assertEquals("Should be no properties for second", 0, pl.size());
+        Element secondsecond = (Element) n.item(1);
+        pl = myStyles.getMappedProperties(secondsecond);
+        assertEquals("Should be no properties for secondsecond", 0, pl.size());
     }
     
+    public void testImmediateSibling() {
+        System.out.println("testImmediateSibling");
+        
+        java.util.List l = new java.util.LinkedList();
+        
+        Ruleset r = new Ruleset();
+        Ruleset.Selector s = r.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "root");
+        s.appendChainedSelector(Ruleset.Selector.IMMEDIATE_SIBLING_AXIS, "first");
+        r.addPropertyDeclaration("noProperty");
+        l.add(r);
+        
+        r = new Ruleset();
+        s = r.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "first");
+        s.appendChainedSelector(Ruleset.Selector.IMMEDIATE_SIBLING_AXIS, "second");
+        r.addPropertyDeclaration("siblingProperty");
+        l.add(r);
+        
+        StyleMap myStyles = StyleMap.createMap(doc, l, null);
+        
+        Element root = doc.getDocumentElement();
+        java.util.List pl = myStyles.getMappedProperties(root);
+        assertEquals("Should be no properties for root", 0, pl.size());
+        
+        NodeList n = root.getElementsByTagName("first");
+        Element first = (Element) n.item(0);
+        pl = myStyles.getMappedProperties(first);
+        assertEquals("Should be no properties for first", 0, pl.size());
+        
+        n = first.getElementsByTagName("first");
+        Element firstfirst = (Element) n.item(0);
+        pl = myStyles.getMappedProperties(firstfirst);
+        assertEquals("Should be no properties for firstfirst", 0, pl.size());
+        
+        n = first.getElementsByTagName("second");
+        Element firstsecond = (Element) n.item(0);
+        pl = myStyles.getMappedProperties(firstsecond);
+        assertEquals("Should be one property for firstsecond", 1, pl.size());
+        String str = (String) pl.get(0);
+        assertEquals("firstsecond should have sibling property", "siblingProperty", str);
+        Element secondsecond = (Element) n.item(1);
+        pl = myStyles.getMappedProperties(secondsecond);
+        assertEquals("Should be no properties for secondsecond", 0, pl.size());
+    }
+   
     // TODO add test methods here, they have to start with 'test' name.
     // for example:
     // public void testHello() {}

@@ -9,12 +9,14 @@ package net.homelinux.tobe.css;
 /**
  * Rulesets should be created by the CSS parser. A list of Rulesets make up a CSS.
  *
+ * A ruleset contains a list of selectors and a list of property declarations.
+ *
  * @author  Torbjörn Gannholm
  */
 public class Ruleset {
 
      /**
-     * A Selector is really a chain of CSS selectors.
+     * A Selector is really a chain of CSS selectors that all need to be valid for the selector to match.
      *
      * @author  Torbjörn Gannholm
      */
@@ -33,28 +35,44 @@ public class Ruleset {
             _name = elementName;
         }
         
-        public boolean matches(org.w3c.dom.Element e) {
+        /** Check if the given Element matches this selector.
+         * Note: the parser should give all class
+         */
+        public boolean matches(org.w3c.dom.Element e, IDResolver idr) {
             //TODO: resolve question of how CSS should handle namespaces. Unfortunately getLocalName is null if no namespace.
             if(_name == null || _name.equals(e.getLocalName()) || (e.getLocalName() == null && _name.equals(e.getNodeName()))) {
                 //TODO: handle conditions
+                if(_id != null) {
+                    if(idr == null) return false;
+                    if(!idr.getID(e).equals(_id)) return false;
+                }
                 return true;
             }
             return false;
         }
 
+        /** append a selector to this chain, specifying which axis it should be evaluated on */
         public void appendChainedSelector(int axis, String elementName) {
             if(chainedSelector == null) chainedSelector = new Selector(axis, elementName);
             else chainedSelector.appendChainedSelector(axis, elementName);
         }
+        
+        /** only one ID-condition possible per element */
+        public void setIDCondition(String id) {
+            _id = id;
+        }
 
+        /** get the next selector in the chain, for matching against elements along the appropriate axis */
         public Selector getChainedSelector() {
             return chainedSelector;
         }
         
+        /** get the Ruleset that this Selector is part of */
         public Ruleset getRuleset() {
             return Ruleset.this;
         }
         
+        /** get the axis that this selector should be evaluated on */
         public int getAxis() {
             return _axis;
         }
@@ -63,6 +81,7 @@ public class Ruleset {
 
         private int _axis;
         private String _name;
+        private String _id;
 
     }
     
@@ -79,8 +98,9 @@ public class Ruleset {
     
     /** TODO: add property declarations to this ruleset
      *  This method's signature may change
+     *  Perhaps it might as well be Object, the mapping algorithm does not care
      */
-    public void addPropertyDeclaration(String declaration) {
+    public void addPropertyDeclaration(Object declaration) {
         declarations.add(declaration);
     }
     
