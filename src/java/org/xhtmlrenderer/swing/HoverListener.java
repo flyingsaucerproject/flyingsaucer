@@ -45,7 +45,7 @@ public class HoverListener extends MouseInputAdapter {
         if (prev != null) {
             boolean restyled = panel.getContext().getCss().isHoverStyled(prev.element);
             if (restyled) {
-                //prev.restyle = true;//notify rendering to restyle the box
+                prev.restyle = true;//notify rendering to restyle the box
                 //prev.hover = false;
                 needRepaint = true;
             }
@@ -71,7 +71,7 @@ public class HoverListener extends MouseInputAdapter {
 
             // if the block has a hover style then restyle it
             if (restyled) {
-                //ib.restyle = true;
+                ib.restyle = true;
                 //ib.hover = true;
                 needRepaint = true;
             }

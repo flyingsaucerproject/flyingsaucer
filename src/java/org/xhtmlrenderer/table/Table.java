@@ -36,6 +36,7 @@ import java.util.List;
  *
  * @author empty
  */
+//TODO: fix table rendering to handle restyles on render, fix table layout(boxing) to use ContentUtil, or at least restyle...
 public class Table {
     /**
      * Description of the Field
@@ -104,7 +105,7 @@ public class Table {
             return false;
         }
         // check the display value
-        CascadedStyle style = c.getCss().getCascadedStyle((Element) node);
+        CascadedStyle style = c.getCss().getCascadedStyle((Element) node, false);
         if (LayoutUtil.getDisplay(style).equals("table-row-group")) {
             return true;
         }
@@ -117,7 +118,7 @@ public class Table {
             return false;
         }
         // check the display value
-        CascadedStyle style = c.getCss().getCascadedStyle((Element) node);
+        CascadedStyle style = c.getCss().getCascadedStyle((Element) node, false);
         if (LayoutUtil.getDisplay(style).equals("table-row")) {
             return true;
         }
@@ -182,7 +183,7 @@ public class Table {
             return false;
         }
         // check the display value
-        CascadedStyle style = c.getCss().getCascadedStyle((Element) node);
+        CascadedStyle style = c.getCss().getCascadedStyle((Element) node, false);
         if (LayoutUtil.getDisplay(style).equals("table-cell")) {
             return true;
         }
@@ -268,7 +269,7 @@ public class Table {
         int col_count = 0;
         for (int i = 0; i < top_cells.size(); i++) {
             Cell cell = (Cell) top_cells.get(i);
-            if (c.getCss().getCascadedStyle((Element) cell.node).hasProperty("width")) {
+            if (c.getCss().getCascadedStyle((Element) cell.node, false).hasProperty("width")) {
                 // fixed bug that made cell sizing fail w/ %s
                 int width = (int) c.getCurrentStyle().getFloatPropertyRelative("width", avail_width);
                 //Uu.p("got width: " + width);
@@ -377,6 +378,9 @@ public class Table {
 /*
    $Id$
    $Log$
+   Revision 1.13  2005/01/16 18:50:06  tobega
+   Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
+
    Revision 1.12  2004/12/29 10:39:36  tobega
    Separated current state Context into ContextImpl and the rest into SharedContext.
 

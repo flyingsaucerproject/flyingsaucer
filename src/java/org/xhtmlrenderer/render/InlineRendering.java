@@ -54,7 +54,7 @@ public class InlineRendering {
      * each line, and then each inline in each line, and paints them
      * individually.
      */
-    static void paintInlineContext(Context c, Box box) {
+    static void paintInlineContext(Context c, Box box, boolean restyle) {
         //BlockBox block = (BlockBox)box;
         // translate into local coords
         // account for the origin of the containing box
@@ -72,7 +72,7 @@ public class InlineRendering {
         for (int i = 0; i < box.getChildCount(); i++) {
             if (i == 0 && block != null && block.firstLineStyle != null) c.pushStyle(block.firstLineStyle);
             // get the line box
-            paintLine(c, (LineBox) box.getChild(i), blockLineHeight, blockLineMetrics);
+            paintLine(c, (LineBox) box.getChild(i), blockLineHeight, blockLineMetrics, restyle);
             if (i == 0 && block != null && block.firstLineStyle != null) c.popStyle();
         }
 
@@ -83,7 +83,7 @@ public class InlineRendering {
     /**
      * paint all of the inlines on the specified line
      */
-    static void paintLine(Context c, LineBox line, int blockLineHeight, LineMetrics blockLineMetrics) {
+    static void paintLine(Context c, LineBox line, int blockLineHeight, LineMetrics blockLineMetrics, boolean restyle) {
         // get Xx and y
         int lx = line.x;
         int ly = line.y + line.getBaseline();
@@ -92,13 +92,13 @@ public class InlineRendering {
         for (int j = 0; j < line.getChildCount(); j++) {
             Box child = line.getChild(j);
             if (child.absolute) {
-                paintAbsolute(c, child);
+                paintAbsolute(c, child, restyle);
                 //debugInlines(c, child, lx, ly);
                 continue;
             }
 
             InlineBox box = (InlineBox) child;
-            paintInline(c, box, lx, ly, line, blockLineHeight, blockLineMetrics);
+            paintInline(c, box, lx, ly, line, blockLineHeight, blockLineMetrics, restyle);
         }
         if (c.debugDrawLineBoxes()) {
             GraphicsUtil.drawBox(c.getGraphics(), line, Color.blue);
@@ -111,12 +111,13 @@ public class InlineRendering {
     // They *are* drawn horizontally (Xx) relative to the origin of the
     // containing line box though
 
-    static void paintInline(Context c, InlineBox ib, int lx, int ly, LineBox line, int blockLineHeight, LineMetrics blockLineMetrics) {
-
+    static void paintInline(Context c, InlineBox ib, int lx, int ly, LineBox line, int blockLineHeight, LineMetrics blockLineMetrics, boolean restyle) {
+        restyle = restyle || ib.restyle;//cascade it down
+        ib.restyle = false;//reset
         if (ib.pushstyles != null) {
             for (Iterator i = ib.pushstyles.iterator(); i.hasNext();) {
                 StylePush sp = (StylePush) i.next();
-                c.pushStyle(c.getCss().getCascadedStyle(sp.getElement()));
+                c.pushStyle(c.getCss().getCascadedStyle(sp.getElement(), restyle));
                 /*if (inline.hover) {
                     CascadedStyle hs = c.getCss().getPseudoElementStyle(sp.getElement(), "hover");
                     if (hs != null) c.pushStyle(hs);
@@ -130,18 +131,18 @@ public class InlineRendering {
         }
 
         if (ib.floated) {
-            paintFloat(c, ib);
+            paintFloat(c, ib, restyle);
             debugInlines(c, ib, lx, ly);
         }
         // Uu.p("paintInline: " + inline);
         else if (ib instanceof InlineBlockBox) {
-            c.pushStyle(c.getCss().getCascadedStyle(ib.element));
+            c.pushStyle(c.getCss().getCascadedStyle(ib.element, restyle));
             c.translate(line.x,
                     line.y +
                     (line.getBaseline() -
                     VerticalAlign.getBaselineOffset(c, line, ib, blockLineHeight, blockLineMetrics) -
                     ib.height));
-            BoxRendering.paint(c, ib, true);
+            BoxRendering.paint(c, ib, true, restyle);
             c.translate(-line.x,
                     -(line.y +
                     (line.getBaseline() -
@@ -192,17 +193,21 @@ public class InlineRendering {
     }
 
 
-    static void paintAbsolute(Context c, Box inline) {
+    static void paintAbsolute(Context c, Box inline, boolean restyle) {
+        restyle = restyle || inline.restyle;
+        inline.restyle = false;//reset
         // Uu.p("paint absolute: " + inline);
         //c.translate(line.x, line.y + (line.baseline - inline.height));
         /*Renderer rend = c.getRenderer(inline.content.getElement());
         rend.paint(c, inline);*/
-        BoxRendering.paint(c, inline, false);
+        BoxRendering.paint(c, inline, false, restyle);
         //c.translate(-line.x, -(line.y + (line.baseline - inline.height)));
     }
 
 
-    static void paintFloat(Context c, InlineBox inline) {
+    static void paintFloat(Context c, InlineBox inline, boolean restyle) {
+        restyle = restyle || inline.restyle;//should already have been done, but it can't hurt
+        inline.restyle = false;//reset
         // Uu.p("painting a float: " + inline);
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe.x, 0, oe.width, oe.height));
@@ -213,7 +218,7 @@ public class InlineRendering {
         c.translate(xoff, yoff);
         /*Renderer rend = c.getRenderer(inline.content.getElement());
         rend.paint(c, inline);//.sub_block ); */
-        BoxRendering.paint(c, inline, false);
+        BoxRendering.paint(c, inline, false, restyle);
         c.translate(-xoff, -yoff);
         c.setExtents(oe);
     }

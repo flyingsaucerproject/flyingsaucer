@@ -111,7 +111,7 @@ public class InlineBoxing {
                 if (sp.getPseudoElement() != null) {
                     style = c.getCss().getPseudoElementStyle(sp.getElement(), sp.getPseudoElement());
                 } else {
-                    style = c.getCss().getCascadedStyle(sp.getElement());
+                    style = c.getCss().getCascadedStyle(sp.getElement(), false);//already restyled by ContentUtil
                 }
                 c.pushStyle(style);
                 if (pendingPushStyles == null) pendingPushStyles = new LinkedList();
@@ -486,6 +486,9 @@ public class InlineBoxing {
 * $Id$
 *
 * $Log$
+* Revision 1.11  2005/01/16 18:50:05  tobega
+* Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
+*
 * Revision 1.10  2005/01/10 01:58:36  tobega
 * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
 *

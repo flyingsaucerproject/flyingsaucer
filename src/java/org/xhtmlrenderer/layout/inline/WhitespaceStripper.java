@@ -77,7 +77,7 @@ public class WhitespaceStripper {
                 if (sp.getPseudoElement() != null) {
                     style = c.getCss().getPseudoElementStyle(sp.getElement(), sp.getPseudoElement());
                 } else {
-                    style = c.getCss().getCascadedStyle(sp.getElement());
+                    style = c.getCss().getCascadedStyle(sp.getElement(), false);//already done in ContentUtil
                 }
                 c.pushStyle(style);
                 continue;

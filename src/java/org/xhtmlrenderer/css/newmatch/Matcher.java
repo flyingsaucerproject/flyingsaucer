@@ -60,7 +60,7 @@ public class Matcher {
          * @param e
          * @return The selectors that matched, sorted according to specificity (more correct: preserves the sort order from Matcher creation)
          */
-        List mapChild(org.w3c.dom.Element e) {
+        Mapper mapChild(org.w3c.dom.Element e) {
             Mapper childMapper = new Mapper();
             java.util.HashMap pseudoSelectors = new java.util.HashMap();
             java.util.List mappedSelectors = new java.util.LinkedList();
@@ -101,11 +101,13 @@ public class Matcher {
                 }
             }
             resolvePseudoElements(e, pseudoSelectors);
+            childMapper.style = createCascadedStyle(e, mappedSelectors);
             link(e, childMapper);
-            return mappedSelectors;
+            return childMapper;
         }
 
         java.util.List axes = new java.util.ArrayList();
+        CascadedStyle style;
 
     }
 
@@ -131,9 +133,9 @@ public class Matcher {
         SoftReference ref = (SoftReference) _map.get(e);
         if (ref != null) m = (Mapper) ref.get();
         if (m != null) return m;
-        matchElement(e);
-        ref = (SoftReference) _map.get(e);
-        if (ref != null) m = (Mapper) ref.get();
+        m = matchElement(e);
+        //ref = (SoftReference) _map.get(e);
+        //if (ref != null) m = (Mapper) ref.get();
         return m;
     }
 
@@ -411,16 +413,16 @@ public class Matcher {
         }
     }
 
-    public CascadedStyle matchElement(org.w3c.dom.Element e) {
+    protected Mapper matchElement(org.w3c.dom.Element e) {
         org.w3c.dom.Node parent = e.getParentNode();
-        List matchedSelectors;
+        Mapper child;
         if (parent.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
             Mapper m = getMapper((org.w3c.dom.Element) parent);
-            matchedSelectors = m.mapChild(e);
+            child = m.mapChild(e);
         } else {//has to be document or fragment node
-            matchedSelectors = docMapper.mapChild(e);
+            child = docMapper.mapChild(e);
         }
-        return createCascadedStyle(e, matchedSelectors);
+        return child;
     }
 
     CascadedStyle createCascadedStyle(org.w3c.dom.Element e, List matchedSelectors) {
@@ -460,8 +462,14 @@ public class Matcher {
         return cs;
     }
 
-    public CascadedStyle getCascadedStyle(org.w3c.dom.Element e) {
-        return matchElement(e);
+    public CascadedStyle getCascadedStyle(org.w3c.dom.Element e, boolean restyle) {
+        Mapper em;
+        if (!restyle) {
+            em = getMapper(e);
+        } else {
+            em = matchElement(e);
+        }
+        return em.style;
     }
 
     /**

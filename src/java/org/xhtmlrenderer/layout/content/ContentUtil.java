@@ -106,7 +106,7 @@ public class ContentUtil {
             }
 
             Element elem = (Element) curr;
-            CascadedStyle style = c.getCss().getCascadedStyle(elem);
+            CascadedStyle style = c.getCss().getCascadedStyle(elem, true);//this is the place where restyle is done for layout (boxing)
             c.pushStyle(style);//just remember to pop it before continue
 
             if (isHidden(style)) {
@@ -402,6 +402,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/01/16 18:50:04  tobega
+ * Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
+ *
  * Revision 1.29  2005/01/09 00:29:27  tobega
  * Removed XPath usages from core classes. Also happened to find and fix a layout-bug that I introduced a while ago.
  *

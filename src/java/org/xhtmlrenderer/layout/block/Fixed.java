@@ -6,11 +6,12 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.render.Box;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 public class Fixed {
     public static void positionFixedChild(Context c, Box box) {
-        if (LayoutUtil.isFixed(c.getCss().getCascadedStyle(box.element))) {
+        if (LayoutUtil.isFixed(c.getCss().getCascadedStyle(box.element, false))) {//already restyled by ContentUtil
             Point origin = c.getOriginOffset();
             box.x = 0;
             box.y = 0;

@@ -30,11 +30,13 @@ public class TableRendering {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param table PARAM
+     * @param c       PARAM
+     * @param table   PARAM
+     * @param restyle
      */
-    public static void paintTable(Context c, TableBox table) {
-
+    public static void paintTable(Context c, TableBox table, boolean restyle) {
+        restyle = restyle || table.restyle;
+        table.restyle = false;
         c.getGraphics().translate(table.x, table.y);
 
         Border border = c.getCurrentStyle().getBorderWidth();
@@ -63,7 +65,7 @@ public class TableRendering {
 
             // paint the row
 
-            paintRow(c, row);
+            paintRow(c, row, restyle);
 
             // restore the old extents and translate
 
@@ -86,11 +88,13 @@ public class TableRendering {
     /**
      * Description of the Method
      *
-     * @param c   PARAM
-     * @param row PARAM
+     * @param c       PARAM
+     * @param row     PARAM
+     * @param restyle
      */
-    protected static void paintRow(Context c, RowBox row) {
-
+    protected static void paintRow(Context c, RowBox row, boolean restyle) {
+        restyle = restyle || row.restyle;
+        row.restyle = false;
         //Uu.p("Paint Row c = " + c);
 
         //Uu.p("paint row = " + row);
@@ -105,7 +109,7 @@ public class TableRendering {
 
             c.setExtents(new Rectangle(cell.x, cell.y, oe.width, oe.height));
 
-            paintCell(c, cell);
+            paintCell(c, cell, restyle);
 
             c.setExtents(oe);
 
@@ -117,11 +121,14 @@ public class TableRendering {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param cell PARAM
+     * @param c       PARAM
+     * @param cell    PARAM
+     * @param restyle
      */
-    protected static void paintCell(Context c, CellBox cell) {
-
+    protected static void paintCell(Context c, CellBox cell, boolean restyle) {
+        //ASSERT: BoxRendering.paint will take care of dynamic restyle
+        restyle = restyle || cell.restyle;//can't hurt
+        cell.restyle = false;
         if (cell.isReal()) {
 
             Rectangle oe = c.getExtents();
@@ -132,7 +139,7 @@ public class TableRendering {
 
             //Uu.p("doing cell: " + cell);
 
-            BoxRendering.paint(c, cell.sub_box, false);
+            BoxRendering.paint(c, cell.sub_box, false, restyle);
 
             c.getGraphics().translate(-oe.x, -oe.y);
 

@@ -45,16 +45,19 @@ public class BoxRendering {
      * @param c           PARAM
      * @param box         PARAM
      * @param stylePushed
+     * @param restyle
      */
     //HACK: the stylePushed is because we need to set style for inline blocks earlier
-    public static void paint(Context c, Box box, boolean stylePushed) {
+    public static void paint(Context c, Box box, boolean stylePushed, boolean restyle) {
         // Uu.p("BoxRenderer.paint " + box);
         Box block = (Box) box;
+        restyle = restyle || box.restyle;//cascade it down
+        box.restyle = false;//reset
 
         //set the current style
         //CascadedStyle hoverStyle = null;
         CascadedStyle style = null;
-        if (!stylePushed && block.element != null) style = c.getCss().getCascadedStyle(block.element);
+        if (!stylePushed && block.element != null) style = c.getCss().getCascadedStyle(block.element, restyle);
         if (style != null) {
             c.pushStyle(style);
             /*if (block.hover) {
@@ -67,13 +70,13 @@ public class BoxRendering {
         Rectangle oldBounds = new Rectangle(c.getExtents());
 
         if (Relative.isRelative(c)) {
-            paintRelative(c, block);
+            paintRelative(c, block, restyle);
         } else if (block.fixed) {
-            paintFixed(c, block);
+            paintFixed(c, block, restyle);
         } else if (block.absolute) {
-            paintAbsoluteBox(c, block);
+            paintAbsoluteBox(c, block, restyle);
         } else {
-            paintNormal(c, block);
+            paintNormal(c, block, restyle);
         }
 
         //Uu.p("here it's : " + c.getListCounter());
@@ -102,21 +105,22 @@ public class BoxRendering {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param block PARAM
+     * @param c       PARAM
+     * @param block   PARAM
+     * @param restyle
      */
-    public static void paintNormal(Context c, Box block) {
+    public static void paintNormal(Context c, Box block, boolean restyle) {
         paintBackground(c, block);
 
         if (!(block instanceof AnonymousBlockBox)) c.translateInsets(block);
         //paintComponent(c, block);
         //paintChildren(c, block);
         if (block instanceof TableBox) {
-            TableRendering.paintTable(c, (TableBox) block);
+            TableRendering.paintTable(c, (TableBox) block, restyle);
         } else if (isInlineLayedOut(block)) {
-            InlineRendering.paintInlineContext(c, block);
+            InlineRendering.paintInlineContext(c, block, restyle);
         } else {
-            BlockRendering.paintBlockContext(c, block);
+            BlockRendering.paintBlockContext(c, block, restyle);
         }
         if (!(block instanceof AnonymousBlockBox)) c.untranslateInsets(block);
 
@@ -135,13 +139,14 @@ public class BoxRendering {
     /**
      * Description of the Method
      *
-     * @param ctx   PARAM
-     * @param block PARAM
+     * @param ctx     PARAM
+     * @param block   PARAM
+     * @param restyle
      */
-    public static void paintRelative(Context ctx, Box block) {
+    public static void paintRelative(Context ctx, Box block, boolean restyle) {
         //ctx.translate(block.left, block.top);
         Relative.translateRelative(ctx);
-        paintNormal(ctx, block);
+        paintNormal(ctx, block, restyle);
         //ctx.translate(-block.left, -block.top);
         Relative.untranslateRelative(ctx);
     }
@@ -150,10 +155,11 @@ public class BoxRendering {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param block PARAM
+     * @param c       PARAM
+     * @param block   PARAM
+     * @param restyle
      */
-    public static void paintFixed(Context c, Box block) {
+    public static void paintFixed(Context c, Box block, boolean restyle) {
         Rectangle rect = c.getFixedRectangle();
         //Uu.p("rect = " + rect);
         //Graphics g = c.getGraphics();
@@ -173,18 +179,19 @@ public class BoxRendering {
             yoff = -rect.y + rect.height - block.height - block.bottom;
         }
         c.translate(xoff, yoff);
-        paintNormal(c, block);
+        paintNormal(c, block, restyle);
         c.translate(-xoff, -yoff);
     }
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param block PARAM
+     * @param c       PARAM
+     * @param block   PARAM
+     * @param restyle
      */
     //HACK: more or less copied paintFixed - tobe
-    public static void paintAbsoluteBox(Context c, Box block) {
+    public static void paintAbsoluteBox(Context c, Box block, boolean restyle) {
         Rectangle rect = c.getExtents();
         //why this?
         int xoff = -rect.x;
@@ -203,7 +210,7 @@ public class BoxRendering {
             yoff = -rect.y + rect.height - block.height - block.bottom;
         }
         c.translate(xoff, yoff);
-        paintNormal(c, block);
+        paintNormal(c, block, restyle);
         c.translate(-xoff, -yoff);
     }
 

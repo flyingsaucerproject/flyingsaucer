@@ -86,6 +86,8 @@ public class Box {
 
     public JComponent component = null;
 
+    public boolean restyle = false;
+
     //public boolean restyle;//used during render if things have changed because of e.g. hover
     //public boolean hover;//dynamic attribute set
 
@@ -648,6 +650,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2005/01/16 18:50:05  tobega
+ * Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
+ *
  * Revision 1.39  2005/01/09 15:22:50  tobega
  * Prepared improved handling of margins, borders and padding.
  *

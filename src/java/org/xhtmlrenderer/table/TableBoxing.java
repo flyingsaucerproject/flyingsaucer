@@ -44,7 +44,8 @@ import org.xhtmlrenderer.layout.content.BlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 
 /**
@@ -174,8 +175,8 @@ public class TableBoxing {
                     //Uu.p("doing child layout on: " + layout + " for " + cell_box.node);
                     //Uu.p("cell_box properly = " + cell_box);
                     c.setSubBlock(true);
-                    //TODO: temporary hack
-                    Box cell_contents = Boxing.layout(c, new BlockContent((Element) cell.node, c.getCss().getCascadedStyle((Element) cell.node)));
+                    //TODO: temporary hack. Use ContentUtil for table cells.
+                    Box cell_contents = Boxing.layout(c, new BlockContent((Element) cell.node, c.getCss().getCascadedStyle((Element) cell.node, false)));
                     c.setSubBlock(false);
                     cell_box.sub_box = cell_contents;
                     cell_box.height = cell_box.sub_box.height;
@@ -284,6 +285,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.4  2005/01/16 18:50:07  tobega
+   Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
+
    Revision 1.3  2005/01/07 00:29:31  tobega
    Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
 

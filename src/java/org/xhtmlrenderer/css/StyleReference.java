@@ -124,7 +124,7 @@ public class StyleReference {
      * @return The derivedPropertiesMap value
      */
     public java.util.Map getCascadedPropertiesMap(Element e) {
-        CascadedStyle cs = _matcher.getCascadedStyle(e);
+        CascadedStyle cs = _matcher.getCascadedStyle(e, false);//this is only for debug, I think
         java.util.LinkedHashMap props = new java.util.LinkedHashMap();
         for (java.util.Iterator i = cs.getMatchedPropertyDeclarations(); i.hasNext();) {
             String propName = (String) i.next();
@@ -154,11 +154,12 @@ public class StyleReference {
      * Gets the CascadedStyle for an element.
      * This must then be converted in the current context to a CalculatedStyle (use getDerivedStyle)
      *
-     * @param e The element
+     * @param e       The element
+     * @param restyle
      * @return The style value
      */
-    public CascadedStyle getCascadedStyle(Element e) {
-        return _matcher.getCascadedStyle(e);
+    public CascadedStyle getCascadedStyle(Element e, boolean restyle) {
+        return _matcher.getCascadedStyle(e, restyle);
     }
 
     public CalculatedStyle getDerivedStyle(CalculatedStyle parent, CascadedStyle matched) {
@@ -236,6 +237,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/01/16 18:50:03  tobega
+ * Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
+ *
  * Revision 1.19  2005/01/08 15:56:54  tobega
  * Further work on extensibility interfaces. Documented it - see website.
  *

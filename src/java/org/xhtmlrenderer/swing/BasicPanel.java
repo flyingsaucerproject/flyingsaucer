@@ -381,7 +381,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         return null;
     }
 
-    public Box findElementBox(Box box, int x, int y) {//TODO: why is this used? A better way?
+    public Box findElementBox(Box box, int x, int y) {//TODO: why is this used? A better way? should be in a render util?
 
         if (box == null) {
             return null;
@@ -430,6 +430,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             // Uu.p("bx = " + bx);
             // Uu.p("tx = " + tx + " ty = " + ty);
             if (bx.contains(x - bx.x, tty - bx.y)) {
+                //TODO: if this is InlineBox, we need to find the first previous sibling with a pushStyle
                 // Uu.p("matches box: " + bx);
                 return bx;
             }
@@ -709,7 +710,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         // start painting the box tree
         //(new BodyRenderer()).paint(c,
         //        body_box);
-        BoxRendering.paint(c, body_box, false);
+        BoxRendering.paint(c, body_box, false, false);//no restyle demanded on top level
     }
 
     /**
@@ -886,6 +887,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/01/16 18:50:06  tobega
+ * Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
+ *
  * Revision 1.33  2005/01/10 01:58:37  tobega
  * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
  *

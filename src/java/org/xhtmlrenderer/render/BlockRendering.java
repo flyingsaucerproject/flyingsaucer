@@ -31,10 +31,11 @@ public class BlockRendering {
     /**
      * Description of the Method
      *
-     * @param c   PARAM
-     * @param box PARAM
+     * @param c       PARAM
+     * @param box     PARAM
+     * @param restyle
      */
-    public static void paintBlockContext(Context c, Box box) {
+    public static void paintBlockContext(Context c, Box box, boolean restyle) {
         //if (box.getBlockFormattingContext() != null) c.pushBFC(box.getBlockFormattingContext());
         c.translate(box.x, box.y);
         if (box.getBlockFormattingContext() != null) c.pushBFC(box.getBlockFormattingContext());
@@ -61,16 +62,16 @@ public class BlockRendering {
         } else
             for (int i = 0; i < box.getChildCount(); i++) {
                 Box child = (Box) box.getChild(i);
-                paintChild(c, child);
+                paintChild(c, child, restyle);
             }
         if (box.getBlockFormattingContext() != null) c.popBFC();
         c.translate(-box.x, -box.y);
         //if (box.getBlockFormattingContext() != null) c.popBFC();
     }
 
-    public static void paintChild(Context c, Box box) {
+    public static void paintChild(Context c, Box box, boolean restyle) {
         if (box.isChildrenExceedBounds()) {
-            BoxRendering.paint(c, box, false);
+            BoxRendering.paint(c, box, false, restyle);
             return;
         }
 
@@ -80,14 +81,14 @@ public class BlockRendering {
                 Rectangle2D box_rect = new Rectangle(box.x, box.y, box.width, box.height);
                 //TODO: handle floated content. HACK: descend into anonymous boxes, won't work for deeper nesting
                 if (oldclip.intersects(box_rect) || (box instanceof AnonymousBlockBox)) {
-                    BoxRendering.paint(c, box, false);
+                    BoxRendering.paint(c, box, false, restyle);
                 }
                 return;
             }
         }
 
 
-        BoxRendering.paint(c, box, false);
+        BoxRendering.paint(c, box, false, restyle);
     }
 
 }
