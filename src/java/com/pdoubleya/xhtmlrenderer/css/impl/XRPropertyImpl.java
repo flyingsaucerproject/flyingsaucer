@@ -126,6 +126,8 @@ public class XRPropertyImpl implements XRProperty {
         _propName = propName;
         _sequence = sequence;
         _specifiedValue = value;
+        _isResolved = !_specifiedValue.forcedInherit() && 
+                       ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()); 
     }
 
     /**
@@ -142,11 +144,13 @@ public class XRPropertyImpl implements XRProperty {
     public static Iterator fromCSSPropertyDecl( CSSRule cssRule, CSSStyleDeclaration style, String propName, int sequence ) {
         // HACK: special cases for RuleNormalizer...need to work this out cleanly
         PropertyFactory factory = (PropertyFactory)PRP_FACTORIES.get( propName );
+        
         if ( ( factory == null && cssRule.getType() == CSSRule.STYLE_RULE ) ||
-                propName.indexOf( "color" ) >= 0 ) {
+                propName.indexOf( "color" ) >= 0 && !propName.equals("border")) {
             RULE_NORMALIZER.normalize( (CSSStyleRule)cssRule );
             style = ( (CSSStyleRule)cssRule ).getStyle();
         }
+        
         List list = new ArrayList();
         switch ( style.getPropertyCSSValue( propName ).getCssValueType() ) {
             case CSSValue.CSS_PRIMITIVE_VALUE:
@@ -228,7 +232,7 @@ public class XRPropertyImpl implements XRProperty {
      * @return   Returns
      */
     public XRValue computedValue() {
-        return ( ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()) ? _specifiedValue : _computedValue );
+        return ( _computedValue == null ? _specifiedValue : _computedValue ); 
     }
 
     /**
@@ -238,7 +242,7 @@ public class XRPropertyImpl implements XRProperty {
      * @return   Returns
      */
     public XRValue actualValue() {
-        return ( ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()) ? _specifiedValue : _actualValue );
+        return ( _actualValue == null ? _specifiedValue : _actualValue ); 
     }
 
 
@@ -271,11 +275,12 @@ public class XRPropertyImpl implements XRProperty {
      * @param context      PARAM
      */
     public void resolveValue( Context context, XRElement elemContext ) {
-        if ( isResolved() ) {
+        // CLN System.out.println("resolveValue(" + propertyName() + ") _isResolved " + _isResolved);
+        if ( _isResolved ) {
             return;
         } else {
             if ( isResolvable() ) {
-                // CLEAN System.out.println("resolving " + propertyName() + " " + _specifiedValue);
+                // CLN System.out.println("resolving " + propertyName() + " " + _specifiedValue);
                 
                 // NOTE: the side effect of what follows is that _computedValue
                 // and _actualValue are assigned
@@ -312,7 +317,7 @@ public class XRPropertyImpl implements XRProperty {
                 // limited amount of colors--deferred for now
                 _actualValue = computed;
                 
-                // CLEAN System.out.println("resolved value for " + propertyName() + " " + computed);
+                // CLN System.out.println("resolved value for " + propertyName() + " " + computed + " hc: " + computed.hashCode());
             } else {
                 _computedValue = _specifiedValue;
                 _actualValue = _specifiedValue;
@@ -339,7 +344,9 @@ public class XRPropertyImpl implements XRProperty {
      * @return   The resolvable value
      */
     public boolean isResolvable() {
-        return _specifiedValue.isPrimitiveType() && !ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue());
+        return _specifiedValue.forcedInherit() ||    
+              (_specifiedValue.isPrimitiveType() && 
+               !ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()));
     }
 
     static {
