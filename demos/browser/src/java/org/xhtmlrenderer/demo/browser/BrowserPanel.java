@@ -22,7 +22,6 @@ package org.xhtmlrenderer.demo.browser;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.RenderingContext;
-import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Uu;
 
@@ -34,14 +33,10 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 
@@ -381,7 +376,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      */
     public void documentLoaded() {
         //Uu.p("got a document loaded event");
-        setupSubmitActions();
+        //setupSubmitActions();
     }
 
 
@@ -397,7 +392,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     /**
      * Description of the Method
      */
-    public void setupSubmitActions() {
+    /*public void setupSubmitActions() {
         //Uu.p("setup submit actions");
         SharedContext cx = view.getContext();
         Map forms = cx.getForms();
@@ -478,7 +473,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                 }
             }
         }
-    }
+    }*/
 
 
     /**
@@ -502,6 +497,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/01/13 00:48:47  tobega
+ * Added preparation of values for a form submission
+ *
  * Revision 1.16  2004/12/29 10:39:38  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

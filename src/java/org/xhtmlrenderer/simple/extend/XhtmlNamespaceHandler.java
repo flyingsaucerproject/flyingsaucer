@@ -1,6 +1,5 @@
 /*
  *
- * XhtmlDocument.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -265,7 +264,7 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
         //parentForm may be null! No problem! Assume action is this document and method is get.
         XhtmlForm form = getForm(parentForm);
         if (form == null) {
-            form = new XhtmlForm();
+            form = new XhtmlForm(c, parentForm);
             addForm(parentForm, form);
         }
         cc = form.addComponent(c, e);

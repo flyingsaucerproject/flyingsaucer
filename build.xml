@@ -787,6 +787,9 @@
 $Id$
 
 $Log$
+Revision 1.82  2005/01/13 00:47:48  tobega
+Added preparation of values for a form submission
+
 Revision 1.81  2004/12/14 01:50:13  tobega
 Why is there always one more bug ;-) Now line-breaking should be cast-iron (I hope)
 

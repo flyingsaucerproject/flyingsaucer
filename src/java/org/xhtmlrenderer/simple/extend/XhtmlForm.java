@@ -1,7 +1,27 @@
+/*
+ *
+ * Copyright (c) 2004 Torbjörn Gannholm
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ */
 package org.xhtmlrenderer.simple.extend;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
@@ -11,17 +31,28 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Represents a form object
  */
 class XhtmlForm {
     protected LinkedHashMap components = new LinkedHashMap();
+    protected UserAgentCallback uac;
+    protected Element formElement;
 
-    public JComponent addComponent(Context c, Element e) {
+    XhtmlForm(Context c, Element e) {
+        uac = c.getRenderingContext().getUac();
+        formElement = e;
+    }
+
+    JComponent addComponent(Context c, Element e) {
         JComponent cc = (JComponent) components.get(e);
         if (cc != null) return cc;
         if (e.getNodeName().equals("input")) {
@@ -129,9 +160,23 @@ class XhtmlForm {
                     text.setEditable(false);
                 }
                 cc = text;
-            }//hidden?
-            //HACK:
-            if (cc == null) XRLog.layout("unknown input type " + type);
+            } else if (type.equals("text")) {
+                JTextField text = new JTextField();
+                if (e.hasAttribute("value")) {
+                    text.setText(e.getAttribute("value"));
+                }
+                cc = null;//don't return it
+                components.put(e, text);
+            } else
+                XRLog.layout("unknown input type " + type);
+            if (type.equals("submit") || type.equals("image")) {
+                ((JButton) cc).addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        submit((JComponent) evt.getSource());
+                    }
+                });
+
+            }
         } else if (e.getNodeName().equals("textarea")) {
             int rows = 4;
             int cols = 10;
@@ -154,7 +199,7 @@ class XhtmlForm {
 
         } else if (e.getNodeName().equals("select")) {
             JComboBox select = new JComboBox();
-
+            select.setEditable(false);//cannot edit it in HTML
             NodeList options = e.getElementsByTagName("option");
             int selected = -1;
             for (int i = 0; i < options.getLength(); i++) {
@@ -180,5 +225,86 @@ class XhtmlForm {
             components.put(e, cc);
         }
         return cc;
+    }
+
+    void submit(JComponent source) {
+        StringBuffer data = new StringBuffer();
+        Iterator fields = components.entrySet().iterator();
+        while (fields.hasNext()) {
+            Map.Entry field = (Map.Entry) fields.next();
+            Element e = (Element) field.getKey();
+            JComponent cc = (JComponent) field.getValue();
+            if (e.hasAttribute("disabled") &&
+                    e.getAttribute("disabled").equals("disabled")) {
+                continue;
+            }
+            if (e.getNodeName().equals("input")) {
+                String type = e.getAttribute("type");
+                if (type == null || type.equals("")) {
+                    type = "button";
+                }
+                if (type.equals("submit") && cc == source) {
+                    String value = e.getAttribute("value");
+                    if (value.equals("")) value = "submit";
+                    data.append('&');
+                    data.append(URLUTF8Encoder.encode(e.getAttribute("name")));
+                    data.append("=");
+                    data.append(URLUTF8Encoder.encode(value));
+                } else if (type.equals("image")) {
+                    data.append('&');
+                    data.append(URLUTF8Encoder.encode(e.getAttribute("name")));
+                    data.append("=");
+                    data.append(URLUTF8Encoder.encode(e.getAttribute("value")));
+                } else if (type.equals("checkbox")) {
+                    JCheckBox checkbox = (JCheckBox) cc;
+                    if (!checkbox.isSelected()) continue;
+                    data.append('&');
+                    data.append(URLUTF8Encoder.encode(e.getAttribute("name")));
+                    data.append("=");
+                    data.append(URLUTF8Encoder.encode(e.getAttribute("value")));
+                } else if (type.equals("password")) {
+                    JPasswordField pw = new JPasswordField();
+                    data.append('&');
+                    data.append(URLUTF8Encoder.encode(e.getAttribute("name")));
+                    data.append("=");
+                    data.append(URLUTF8Encoder.encode(pw.getPassword()));
+                } else if (type.equals("radio")) {
+                    JRadioButton radio = (JRadioButton) cc;
+                    if (!radio.isSelected()) continue;
+                    data.append('&');
+                    data.append(URLUTF8Encoder.encode(e.getAttribute("name")));
+                    data.append("=");
+                    data.append(URLUTF8Encoder.encode(e.getAttribute("value")));
+                } else if (type.equals("text") || type.equals("hidden")) {
+                    JTextField text = (JTextField) cc;
+                    data.append('&');
+                    data.append(URLUTF8Encoder.encode(e.getAttribute("name")));
+                    data.append("=");
+                    data.append(URLUTF8Encoder.encode(text.getText()));
+                }
+            } else if (e.getNodeName().equals("textarea")) {
+                JTextArea ta = (JTextArea) cc;
+                data.append('&');
+                data.append(URLUTF8Encoder.encode(e.getAttribute("name")));
+                data.append("=");
+                data.append(URLUTF8Encoder.encode(ta.getText()));//TODO:check if we have to make linefeeds into CR-LF
+            } else if (e.getNodeName().equals("select")) {
+                JComboBox select = new JComboBox();
+                data.append('&');
+                data.append(URLUTF8Encoder.encode(e.getAttribute("name")));
+                data.append("=");
+                data.append(URLUTF8Encoder.encode(select.getSelectedItem().toString()));
+            }
+        }
+        data.deleteCharAt(0);//remove the first &
+        String action = formElement.getAttribute("action");
+        String method = formElement.getAttribute("method");
+        if (method.equals("")) method = "get";
+        String formData = data.toString();
+        //TODO: make a real submission via uac
+        System.out.println("Submitting form");
+        System.out.println("action: " + action);
+        System.out.println("method: " + method);
+        System.out.println("form data: " + formData);
     }
 }

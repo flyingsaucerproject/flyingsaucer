@@ -31,9 +31,9 @@ import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -44,6 +44,12 @@ import java.util.Map;
 //TODO: clarify this class, is it just a pile of different functionality at the moment?
 public class SharedContext {
 
+    /**
+     * Constructor for the Context object
+     */
+    public SharedContext() {
+        font_resolver = new FontResolver();
+    }
 
     public Context newContextInstance(Rectangle extents) {
         Context c = new ContextImpl(this, extents);
@@ -180,13 +186,6 @@ public class SharedContext {
     }
 
     /**
-     * Constructor for the Context object
-     */
-    public SharedContext() {
-        font_resolver = new FontResolver();
-    }
-
-    /**
      * Description of the Method
      *
      * @return Returns
@@ -304,13 +303,13 @@ public class SharedContext {
      * @param form_name The new form value
      * @param action    The new form value
      */
-    public void setForm(String form_name, String action) {
+    /*public void setForm(String form_name, String action) {
         this.setForm_name(form_name);
         if (form_name != null) {
             getForms().put(form_name, new HashMap());
             getActions().put(form_name, action);
         }
-    }
+    } */
 
 
     /**
@@ -432,9 +431,9 @@ public class SharedContext {
      *
      * @return The form value
      */
-    public String getForm() {
+    /*public String getForm() {
         return this.getForm_name();
-    }
+    } */
 
     /**
      * Gets the inputFieldComponents attribute of the Context object
@@ -442,10 +441,10 @@ public class SharedContext {
      * @param form_name PARAM
      * @return The inputFieldComponents value
      */
-    public Iterator getInputFieldComponents(String form_name) {
+    /*public Iterator getInputFieldComponents(String form_name) {
         Map fields = (Map) getForms().get(form_name);
         return fields.values().iterator();
-    }
+    }*/
 
     /**
      * Gets the formAction attribute of the Context object
@@ -453,18 +452,18 @@ public class SharedContext {
      * @param form_name PARAM
      * @return The formAction value
      */
-    public String getFormAction(String form_name) {
-        return (String) getActions().get(form_name);
-    }
+    /* public String getFormAction(String form_name) {
+         return (String) getActions().get(form_name);
+     } */
 
     /**
      * Gets the forms attribute of the Context object
      *
      * @return The forms value
      */
-    public Map getForms() {
+    /*public Map getForms() {
         return forms;
-    }
+    } */
 
     public StyleReference getCss() {
         return css;
@@ -483,25 +482,25 @@ public class SharedContext {
     }
 
 
-    public String getForm_name() {
+    /*public String getForm_name() {
         return form_name;
-    }
+    } */
 
-    public void setForm_name(String form_name) {
+    /*public void setForm_name(String form_name) {
         this.form_name = form_name;
-    }
+    } */
 
-    public void setForms(Map forms) {
+    /*public void setForms(Map forms) {
         this.forms = forms;
-    }
+    } */
 
-    public Map getActions() {
+    /*public Map getActions() {
         return actions;
-    }
+    } */
 
-    public void setActions(Map actions) {
+    /*public void setActions(Map actions) {
         this.actions = actions;
-    }
+    } */
 
     public RenderingContext getCtx() {
         return ctx;
@@ -567,6 +566,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/01/13 00:48:46  tobega
+ * Added preparation of values for a form submission
+ *
  * Revision 1.7  2005/01/08 11:55:17  tobega
  * Started massaging the extension interfaces
  *
