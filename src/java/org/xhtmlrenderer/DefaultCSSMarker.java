@@ -19,7 +19,7 @@
  * }}} 
  */
 
-package org.xhtmlrenderer.css;
+package org.xhtmlrenderer;
 
 public class DefaultCSSMarker {
 
