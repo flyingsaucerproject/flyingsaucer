@@ -74,12 +74,14 @@ public class InlineLayout extends BoxLayout {
         
         // account for text-indent
         LineBox curr_line = new LineBox();
+        curr_line.setParent(box);
         curr_line.x = bounds.x;
         //curr_line.width = remaining_width;
         curr_line.width = 0;
         Element elem = block.getElement();
         remaining_width = InlineUtil.doTextIndent( c, elem, remaining_width, curr_line );
         LineBox prev_line = new LineBox();
+        prev_line.setParent(box);
         prev_line.y = bounds.y;
         prev_line.height = 0;
         InlineBox prev_inline = null;
@@ -411,6 +413,16 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.10  2004/11/05 16:39:34  joshy
+* more float support
+* added border bug test
+* -j
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.9  2004/11/04 15:35:45  joshy
 * initial float support
 * includes right and left float

@@ -387,7 +387,7 @@
             classpath="${dest.java.dir};${dest.dir}"
             fork="${java-exec.fork.tests}"
             >
-            <arg value="tests/diff/box/float/02.xhtml"/>
+            <arg value="tests/diff/box/float/04.xhtml"/>
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
@@ -608,6 +608,16 @@
 $Id$
 
 $Log$
+Revision 1.59  2004/11/05 16:39:34  joshy
+more float support
+added border bug test
+-j
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.58  2004/11/04 15:35:44  joshy
 initial float support
 includes right and left float

@@ -3,16 +3,19 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.*;
 import java.util.*;
+import java.awt.Point;
 
 public class BlockFormattingContext {
     private Box master = null;
     private int x, y = 0;
     private int width;
     private List left_floats, right_floats;
+    private Map offset_map;
     public BlockFormattingContext(Box master) {
         this.master = master;
         left_floats = new ArrayList();
         right_floats = new ArrayList();
+        offset_map = new HashMap();
     }
     public Box getMaster() {
         return master;
@@ -25,6 +28,9 @@ public class BlockFormattingContext {
     }
     public int getY() {
         return master.y + y;
+    }
+    public Point getOffset() {
+        return new Point(x,y);
     }
     public void setWidth(int width) {
         this.width = width;
@@ -51,7 +57,9 @@ public class BlockFormattingContext {
     /* ====== float stuff ========= */
 
     public void addLeftFloat(Box block) {
+        u.p("current offset at time of add: " + getOffset());
         left_floats.add(block);
+        offset_map.put(block,getOffset());
     }
     
     public void addRightFloat(Box block) {
@@ -85,7 +93,23 @@ public class BlockFormattingContext {
         //u.p("last float parent = " + last_float.getParent());
         //u.p("line parent = " + line.getParent());
         if(line.getParent() != last_float.getParent().getParent()) {
-            return 0;
+            //u.p("last float = " + last_float);
+            Point fpt = (Point)offset_map.get(last_float);
+            u.p("float origin = " + fpt);
+            //u.p("current offset = " + this.x + " " + this.y);
+            Point lpt = new Point(this.x,this.y);
+            //Point lpt = getAbsoluteCoords(line);
+            u.p("line origin = " + lpt);
+            u.p("line = " + line);
+            lpt.y-=line.y;
+            u.p("line origin = " + lpt);
+            u.p("float bottom = " + (fpt.y-last_float.height));
+            if(lpt.y > fpt.y-last_float.height) {
+                u.p("returning; " + last_float.width);
+                return last_float.width;
+            } else {
+                return 0;
+            }
         }
         for(int i=0; i<left_floats.size(); i++) {
             Box floater = (Box)left_floats.get(i);
@@ -125,6 +149,7 @@ public class BlockFormattingContext {
         if(line.y > yoff) {
             return 0;
         }
+        u.p("returning: " + xoff);
         return xoff;
     }
     
@@ -132,7 +157,24 @@ public class BlockFormattingContext {
         return 0;
     }
     
+    
+    private Point getAbsoluteCoords(Box box) {
+        //u.p("get abs : " + box);
+        Point pt = new Point(box.x,box.y);
+        if(box.getParent() != null) {
+            if(box.getParent().getElement() != null) {
+                if(box.getParent().getElement().getNodeName().equals("body")) {
+                    return pt;
+                }
+            }
+        }
+        Point ptp = getAbsoluteCoords(box.getParent());
+        return new Point(pt.x+ptp.x,pt.y+ptp.y);
+    }
+    
     public String toString() {
         return "BFC: ("+x+","+y+") - "+master+"";
     }
+    
+    
 }

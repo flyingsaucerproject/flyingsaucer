@@ -120,7 +120,12 @@ public class DefaultLayout implements Layout {
                 // execute the layout and get the return bounds
                 c.parent_box = box;
                 c.placement_point = new Point( 0, box.height );
+                c.getBlockFormattingContext().translate(0,box.height);
+                //u.p("default doing layout on" + child_elem);
+                //u.p("with layout: " + layout);
+                //u.p("yoff = " + c.getBlockFormattingContext().getY());
                 child_box = layout.layout( c, child_elem );
+                c.getBlockFormattingContext().translate(0,-box.height);
                 child_box.list_count = c.getListCounter();
             } else {
                 // create anonymous block box
@@ -405,6 +410,16 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/11/05 16:39:34  joshy
+ * more float support
+ * added border bug test
+ * -j
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.10  2004/11/04 15:35:45  joshy
  * initial float support
  * includes right and left float

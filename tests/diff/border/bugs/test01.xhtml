@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html>
+    <head>
+        <title>Test : Borders : none</title>
+        <style type="text/css">
+            h1.bad { 
+                text-align: left;
+                border: 0px solid #339;
+                border-bottom-width: 2px;
+             }
+            h1.good { 
+                border: 0px solid #339;
+                border-bottom-width: 2px;
+             }
+        </style>
+    </head>
+    
+    <body>
+        <p>both headers should have a solid 2 pixel border at the bottom</p>
+        <h1 class="bad"> text text text
+        text text text</h1>
+        <h1 class="good"> text text text
+        text text text</h1>
+    </body>
+
+</html>
