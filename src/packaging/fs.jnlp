@@ -10,8 +10,8 @@
         renderer. This demo is a simple webbrowser that can load xhtml from the
         web or it's internal demo files.</description>
         <description kind="tooltip">FS Demo</description>
-        <icon kind="splash" href="flyingsaucer.jpg"/>
-        <icon href="flyingsaucer.jpg"/>
+        <icon kind="splash" href="flyingsaucer.png"/>
+        <icon href="flyingsaucer.png"/>
     </information>
     <resources>
         <j2se version="1.4+"/>
