@@ -29,7 +29,21 @@
         }
     
     p.test8 span.test8 { font-weight: bold; }
+
+    .testbox p { padding: 1em 1em; }
+
+    .testbox2 p { padding: 10px 10px; }
+
+    .testbold p { padding: 1em 1em; font-weight: bold; color: blue; }
+
+    .test9 span { padding: 1em 1em; color: blue; }
     
+    .test9a span { padding: 10px 10px; color: blue; }
+    
+    .test10 span { display: block; padding: 1em 1em; font-weight: normal; background-color: white }
+
+    .test11 span { display: block; padding: 10px 10px; font-weight: normal; background-color: white }
+
 </style>
 </head>
 <body>
@@ -55,7 +69,7 @@ They should all be blue instead of red, except where marked.</p>
 
 <p class="test2">nested selector = "p span" <span>span</span> (span should be bold and
 background red)</p>
-<p>normal <b>bold <i>bold italic (should be white) </i> bold</b> normal</p>
+<p>normal <b>bold <i>bold italic (should be white) </i> bold <i>also white</i></b> normal</p>
 
 
 <h3>wild card selectors</h3>
@@ -72,6 +86,20 @@ background red)</p>
 <p class="test7">test7 of multi select selector = "p.test6, p.test7"</p>
 
 <p class="test8">A chained ConditionalSelector <span class="test8">Should be bold</span></p>
+
+<div class="testbox"><p>indented</p><p>also indented</p><p>also indented</p></div>
+
+<div class="testbox2"><p>indented</p><p>also indented</p><p>also indented</p></div>
+
+<div class="testbold"><p>bold indented</p><p>also bold indented</p><p>also bold indented</p></div>
+
+<p class="test9">normal <span>blue bold padded</span> normal <span>blue bold padded</span> normal</p>
+
+<p class="test9a">normal <span>blue bold padded</span> normal <span>blue bold padded</span> normal</p>
+
+<p class="test10">normal <span>indented</span><span>also indented</span><span>also indented</span></p>
+
+<p class="test11">normal <span>indented</span><span>also indented</span><span>also indented</span></p>
 
 </body>
 </html>
