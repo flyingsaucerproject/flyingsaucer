@@ -10,6 +10,8 @@ import java.awt.Color;
 import java.awt.*;
 import java.util.regex.*;
 import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 
 public class WhitespaceStripper {
     final String space = " ";
@@ -335,6 +337,8 @@ public class WhitespaceStripper {
         
         
         //box.break_after = true;
+
+
         // =========== setup text decorations
         if(TextDecoration.isDecoratable(c,box.node)) {
             TextDecoration.setupTextDecoration( c, box.node, box );
@@ -342,24 +346,25 @@ public class WhitespaceStripper {
         
         
         // =========== setup vertical alignment
-        // do vertical alignment
         VerticalAlign.setupVerticalAlign( c, box.node, box );
+        
+        // =========== setup relative
         //Relative.setupRelative( c, box );
 
         
         // ============= do special setup for first line
-        /*
+        
         // if first line then do extra setup        
         if(c.isFirstLine()) {
             // if there is a first line pseudo class
-            CascadedStyle pseudo = c.css.getPseudoElementStyle(getNearestBlockElement(node,c),"first-line");
+            CascadedStyle pseudo = c.css.getPseudoElementStyle(LineBreaker.getNearestBlockElement(box.node,c),"first-line");
             if(pseudo != null) {
                 CalculatedStyle normal = c.css.getStyle(box.getRealElement());
                 CalculatedStyle merged = new CalculatedStyle(normal,pseudo);
-                styleInlineBox(c,merged,box);
+                LineBreaker.styleInlineBox(c,merged,box);
             }
         }
-        */
+        
         
         
         // adjust width based on borders and padding

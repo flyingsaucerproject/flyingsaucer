@@ -1,24 +1,28 @@
 package org.xhtmlrenderer.layout.inline;
 
-import org.xhtmlrenderer.layout.*;
-import org.xhtmlrenderer.render.*;
-import org.w3c.dom.*;
 import java.awt.*;
 import java.awt.font.*;
+import org.w3c.dom.*;
+
+import org.xhtmlrenderer.layout.*;
+import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.css.style.*;
 import org.xhtmlrenderer.util.u;
 
 public class VerticalAlign {
+
+
     public static void setupVerticalAlign( Context c, Node node, InlineBox box ) {
         //u.p("setup vertical align: node = " + node + " box = " + box);
         // get the parent node for styling
-        Node parent = node.getParentNode();
+        Node parent = box.node.getParentNode();
         //u.p("parent = " + parent);
         Element elem = null;
-        if ( node.getNodeType() == node.TEXT_NODE ) {
+        if ( box.node.getNodeType() == box.node.TEXT_NODE ) {
             parent = parent.getParentNode();
-            elem = (Element)node.getParentNode();
+            elem = (Element)box.node.getParentNode();
         } else {
-            elem = (Element)node;
+            elem = (Element)box.node;
         }
         //u.p("parent = " + parent + " elem = " + elem);
         //int parent_height = FontUtil.lineHeight(c,parent);
@@ -96,6 +100,96 @@ public class VerticalAlign {
             box.y = box.y - box.baseline;//(int) (parent_metrics.getStrikethroughOffset()*2.0);
             box.bottom_align = true;
             //u.p("after y = " + box.y);
+            box.vset = false;
+        }
+        
+        //u.p("box.y = " + box.y);
+        //u.p("returning box: " + box);
+    }
+    
+    public static void setupVerticalAlign( Context c, CalculatedStyle style, InlineBox box) {
+        Node node = box.node;
+        //u.p("setup vertical align: node = " + node + " box = " + box);
+        // get the parent node for styling
+        Node parent = box.node.getParentNode();
+        //u.p("parent = " + parent);
+        Element elem = null;
+        if ( box.node.getNodeType() == box.node.TEXT_NODE ) {
+            parent = parent.getParentNode();
+            elem = (Element)box.node.getParentNode();
+        } else {
+            elem = (Element)box.node;
+        }
+        //u.p("parent = " + parent + " elem = " + elem);
+        //int parent_height = FontUtil.lineHeight(c,parent);
+        Font parent_font = FontUtil.getFont( c, parent );
+        //u.p("parent font = " + parent_font);
+        LineMetrics parent_metrics = null;
+        if ( !LayoutUtil.isReplaced(c, node ) ) {
+            if ( !LayoutUtil.isFloatedBlock( node, c ) ) {
+                parent_metrics = parent_font.getLineMetrics( box.getSubstring(), ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
+            } else {
+                parent_metrics = parent_font.getLineMetrics( "Test", ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
+            }
+        } else {
+            parent_metrics = parent_font.getLineMetrics( "Test", ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
+        }
+        // the height of the font
+        float parent_height = parent_metrics.getHeight();
+        //u.p("parent strikethrough height = " + parent_metrics.getStrikethroughOffset());
+        String vertical_align = style.propertyByName("vertical-align").computedValue().asString();
+        //c.css.getStringProperty( elem, "vertical-align" );
+
+            // set the height of the box to the height of the font
+        if ( !LayoutUtil.isReplaced(c, node ) ) {
+            box.height = FontUtil.lineHeight( c, style, box );
+            //u.p("set height of box: " + box.height + " == " + box);
+        }
+        //u.p("vertical align = " + vertical_align);
+        if ( vertical_align == null ) {
+            vertical_align = "baseline";
+        }
+        box.baseline = 0;
+        // box.y is relative to the parent's baseline
+        box.y = 0;
+        
+        // do nothing for 'baseline'
+        box.vset = true;
+        if ( vertical_align.equals( "baseline" ) ) {
+            Font font = FontUtil.getFont( c, style, node );
+            FontMetrics fm = c.getGraphics().getFontMetrics( font );
+            box.y += fm.getDescent();
+        }
+        // works okay i think
+        if ( vertical_align.equals( "super" ) ) {
+            box.y = box.y + (int)( parent_metrics.getStrikethroughOffset() * 2.0 );
+        }
+        // works okay, i think
+        if ( vertical_align.equals( "sub" ) ) {
+            box.y = box.y - (int)parent_metrics.getStrikethroughOffset();
+        }
+
+        // joshy: this is using the current baseline instead of the parent's baseline
+        // must fix
+        if ( vertical_align.equals( "text-top" ) ) {
+            // the top of this text is equal to the top of the parent's text
+            // so we take the parent's height above the baseline and subtract our
+            // height above the baseline
+            box.y = -( (int)parent_height - box.height );
+        }
+        // not implemented correctly yet
+        if ( vertical_align.equals( "text-bottom" ) ) {
+            box.y = 0;
+        }
+        // not implemented correctly yet.
+        if ( vertical_align.equals( "top" ) ) {
+            box.y = box.y - box.baseline;
+            box.top_align = true;
+            box.vset = false;
+        }
+        if ( vertical_align.equals( "bottom" ) ) {
+            box.y = box.y - box.baseline;
+            box.bottom_align = true;
             box.vset = false;
         }
         

@@ -30,7 +30,6 @@ import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
-//import org.xhtmlrenderer.render.InlinePainter;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.InlineRenderer;
 import org.xhtmlrenderer.render.Renderer;
@@ -176,6 +175,9 @@ public class InlineLayout extends BoxLayout {
                 // break off the longest section that will fit
                 InlineBox new_inline = calculateInline( c, current_node, remaining_width, bounds.width,
                     curr_line, prev_inline, elem, prev_align_inline );
+                //u.p("got back inline: " + new_inline);
+
+
                 // if this inline needs to be on a new line
                 if ( new_inline.break_before && !new_inline.floated ) {
                     // u.p("breaking before");
@@ -317,7 +319,7 @@ public class InlineLayout extends BoxLayout {
             return FloatUtil.generateFloatedBlockInlineBox( c, node, avail, prev, text, prev_align, font );
         }
         if ( LineBreaker.isFirstLetter( c, node, start ) ) {
-            // u.p("is first letter");
+            //u.p("is first letter");
             return LineBreaker.generateFirstLetterInlineBox( c, node, start, text, prev, prev_align, avail);
         }
         if ( c.getRenderingContext().getLayoutFactory().isBreak( node ) ) {
@@ -403,6 +405,15 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.31  2004/11/23 02:41:59  joshy
+* fixed vertical-align support for first-letter pseudos
+* tested first-line w/ new breaking routines
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.30  2004/11/23 02:11:24  joshy
 * re-enabled text-decoration
 * moved it to it's own class

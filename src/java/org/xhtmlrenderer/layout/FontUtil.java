@@ -184,7 +184,7 @@ public class FontUtil {
         return f;
     }
     public static Font getFont( Context c, CalculatedStyle style, Node e ) {
-        u.p("testing node: " + e);
+        //u.p("testing node: " + e);
         // if plain text then get the styling from the parent node
         if ( e.getNodeType() == e.TEXT_NODE ) {
             //u.p("it's a node");
@@ -288,6 +288,15 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/11/23 02:41:59  joshy
+ * fixed vertical-align support for first-letter pseudos
+ * tested first-line w/ new breaking routines
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.15  2004/11/23 02:11:24  joshy
  * re-enabled text-decoration
  * moved it to it's own class

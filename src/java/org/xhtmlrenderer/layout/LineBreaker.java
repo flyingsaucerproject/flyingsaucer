@@ -408,6 +408,7 @@ public class LineBreaker {
         box.break_after = true;
 
         box.setText(text);
+        box.setMasterText(text);
         
         if ( !LayoutUtil.isReplaced(c, node ) ) {
             if ( !LayoutUtil.isFloatedBlock( node, c ) ) {
@@ -470,14 +471,15 @@ public class LineBreaker {
         if(node == null) {
             return false;
         }
+        //u.p("parent's first child = " + node.getParentNode().getFirstChild());
         if(node.getParentNode().getFirstChild() != node) {
             return false;
         }
         //u.p("it's the first child");
         CascadedStyle cs = c.css.getPseudoElementStyle(getElement(node),"first-letter");
         if(cs != null) {
-          //  return true;
-          return false;
+          return true;
+          //return false;
         }
         return false;
     }
@@ -515,20 +517,21 @@ public class LineBreaker {
         } else {
             cs = parent;
         }
-        //u.p("style = " + cs);
+        // u.p("style = " + cs);
         styleInlineBox(c, cs, box);
         box.break_after = false;
+        //u.p("generated a first letter inline: " + box);
         return box;
     }
     
-    private static void styleInlineBox(Context c, CalculatedStyle style, InlineBox box) {
+    public static void styleInlineBox(Context c, CalculatedStyle style, InlineBox box) {
         box.color = style.getColor();
         TextDecoration.setupTextDecoration( style, box.node, box );
         Font font = FontUtil.getFont( c, style, box.node);
         box.setFont( font );
         box.width = FontUtil.len( c, box.getSubstring(), font );
         box.height = FontUtil.lineHeight( c, style, box );
-        //FontUtil.setupVerticalAlign( c, box );
+        VerticalAlign.setupVerticalAlign( c, style, box );
     }
 }
 
@@ -536,6 +539,15 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2004/11/23 02:41:59  joshy
+ * fixed vertical-align support for first-letter pseudos
+ * tested first-line w/ new breaking routines
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.23  2004/11/23 02:11:25  joshy
  * re-enabled text-decoration
  * moved it to it's own class
