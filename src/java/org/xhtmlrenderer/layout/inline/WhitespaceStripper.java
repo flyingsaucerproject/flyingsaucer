@@ -7,7 +7,6 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.StylePop;
 import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.content.TextContent;
-import org.xhtmlrenderer.render.InlineBox;
 
 import java.awt.Font;
 import java.util.ArrayList;
@@ -26,9 +25,9 @@ public class WhitespaceStripper {
     public static final Pattern space_collapse = Pattern.compile("( )+");
 
     /**
-     * @deprecated whitespace should be stripped as early as possible
+     * whitespace should be stripped as early as possible
      */
-    public static InlineBox createInline(Context c, TextContent content, InlineBox prev, InlineBox prev_align, int avail, int max, Font font) {
+    /* not used public static InlineBox createInline(Context c, TextContent content, InlineBox prev, InlineBox prev_align, int avail, int max, Font font) {
         InlineBox inline = new InlineBox();
         inline.content = content;
         CalculatedStyle style = c.getCurrentStyle();
@@ -39,19 +38,19 @@ public class WhitespaceStripper {
         // end of the master string
         if (prev == null || prev.content != content) {
             String text = content.getText();//whitespace is already stripped earlier
-            inline.setMasterText(text);
+            //already set through content: inline.setMasterText(text);
             inline.setSubstring(0, text.length());
         } else {
             //grab text from the previous inline
             String text = prev.getMasterText();
-            inline.setMasterText(text);
+            //already set through content: inline.setMasterText(text);
             inline.setSubstring(prev.end_index, text.length());
         }
 
         Breaker.breakText(c, inline, prev_align, avail, max, font);
         BoxBuilder.prepBox(c, inline, prev_align, font);
         return inline;
-    }
+    } */
 
 
     /**
@@ -203,13 +202,13 @@ public class WhitespaceStripper {
     }
 
 
-    public static void unbreakable(InlineBox box, int n) {
+    /* not used public static void unbreakable(InlineBox box, int n) {
         if (box.start_index == -1) {
             box.start_index = 0;
         }
         box.setSubstring(box.start_index, box.start_index + n);
         return;
-    }
+    }*/
 
     public static String getWhitespace(CalculatedStyle style) {
         String whitespace = style.getStringProperty("white-space");

@@ -1,12 +1,9 @@
 package org.xhtmlrenderer.layout.inline;
 
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BoxLayout;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
-import org.xhtmlrenderer.layout.LineBreaker;
 import org.xhtmlrenderer.render.InlineBox;
 
 import java.awt.Font;
@@ -56,9 +53,14 @@ public class BoxBuilder {
             box.x = 0;
 
             // trim off leading space only if at start of new line
-            if (box.getSubstring().startsWith(WhitespaceStripper.SPACE)) {
+            //this should be done in the line-box rather - tobe 2004-12-14
+            /*if (box.getSubstring().startsWith(WhitespaceStripper.SPACE)) {
+                String whitespace = c.getCurrentStyle().getStringProperty(CSSName.WHITE_SPACE);
+                if(whitespace.equals("normal") ||
+                        whitespace.equals("nowrap") ||
+                        whitespace.equals("pre-line"))
                 box.setSubstring(box.start_index + 1, box.end_index);
-            }
+            }*/
         }
         
         

@@ -34,7 +34,7 @@ public class Breaker {
             int n = inline.getSubstring().indexOf(WhitespaceStripper.EOL);
             // Uu.p("got eol at: " + n);
             if (n > -1) {
-                inline.setSubstringLength(n + 1);
+                inline.end_index = inline.start_index + n + 1;
                 inline.break_after = true;
             }
         }
@@ -65,11 +65,13 @@ public class Breaker {
             inline.setSubstring(inline.start_index, inline.start_index + possibleWrap);//the best we can do
             if (prev_align != null && !prev_align.break_after) {
                 inline.break_before = true;
-            }
+            } //else {//I think this else should be here?
+            inline.break_after = true;
+            //}
         } else {//found a place to wrap
             inline.setSubstring(inline.start_index, inline.start_index + n);
+            inline.break_after = true;
         }
-        inline.break_after = true;
         return;
 
     }

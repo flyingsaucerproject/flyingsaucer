@@ -21,16 +21,14 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
-import java.util.logging.Level;
 
 
 /**
@@ -54,9 +52,9 @@ public class InlineBox extends Box {
         padding = box.padding;
         color = box.color;
         content = box.content;
+        master = box.master;
         sub_block = box.sub_block;
         font = box.font;
-        //TODO: do we need to set the master text here? text = box.text;
         underline = box.underline;
         overline = box.overline;
         strikethrough = box.strikethrough;
@@ -199,33 +197,55 @@ public class InlineBox extends Box {
      */
     public String getSubstring() {
         // new code for whitepsace handling
-        if (master != null) {
+        if (getMasterText() != null) {
             if (start_index == -1 || end_index == -1) {
-                return master;
+                throw new RuntimeException("negative index in InlineBox");
+                //return getMasterText();
             }
             if (end_index < start_index) {
-                Uu.p("warning: end is less than start: " + end_index + " < " + start_index);
-                Uu.p("master = " + master);
-                return master;
+                throw new RuntimeException("end is less than start");
+                //Uu.p("warning: end is less than start: " + end_index + " < " + start_index);
+                //Uu.p("master = " + getMasterText());
+                //return getMasterText();
             }
-            return master.substring(start_index, end_index);
+            return getMasterText().substring(start_index, end_index);
         } else {
-            XRLog.render(Level.WARNING, "No master text set!");
+            if (content instanceof TextContent) {
+                throw new RuntimeException("No master text set!");
+                //XRLog.render(Level.WARNING, "No master text set!");
+            }
             return "";
         }
 
     }
 
-    public void setSubstring(String text) {
+    /* not used: public void setSubstring(String text) {
         this.master = text;
         start_index = 0;
         end_index = text.length();
+    }*/
+    public int getStart_index() {
+        return start_index;
+    }
+
+    public void setStart_index(int start_index) {
+        this.start_index = start_index;
+    }
+
+    public int getEnd_index() {
+        return end_index;
+    }
+
+    public void setEnd_index(int end_index) {
+        this.end_index = end_index;
     }
 
     public void setSubstring(int start, int end) {
         if (end < start) {
             Uu.p("setting substring to: " + start + " " + end);
-            throw new XRRuntimeException("set substring length too long: " + this);
+            throw new RuntimeException("set substring length too long: " + this);
+        } else if (end < 0 || start < 0) {
+            throw new RuntimeException("Trying to set negative index to inline box");
         }
         start_index = start;
         end_index = end;
@@ -233,11 +253,11 @@ public class InlineBox extends Box {
 
     public void setSubstringLength(int len) {
         end_index = start_index + len;
-        if (end_index > master.length()) {
+        if (end_index > getMasterText().length()) {
             Uu.p("just set substring length to : " + len);
             Uu.p("so indexes = " + start_index + " -> " + end_index);
-            Uu.p("longer than master: " + master);
-            throw new XRRuntimeException("set substring length too long: " + this);
+            Uu.p("longer than master: " + getMasterText());
+            throw new RuntimeException("set substring length too long: " + this);
         }
     }
 
@@ -319,6 +339,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2004/12/15 00:53:40  tobega
+ * Started playing a bit with inline box, provoked a few nasties, probably created some, seems to work now
+ *
  * Revision 1.21  2004/12/13 02:12:53  tobega
  * Borders are working again
  *

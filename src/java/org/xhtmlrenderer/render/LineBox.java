@@ -19,6 +19,11 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.content.TextContent;
+import org.xhtmlrenderer.layout.inline.WhitespaceStripper;
+
 
 /**
  * Description of the Class
@@ -43,6 +48,30 @@ public class LineBox extends Box {
     public int baseline;// relative to Xx,y
 
     /**
+     * Adds a feature to the Child attribute of the Box object
+     *
+     * @param child The feature to be added to the Child attribute
+     */
+    public void addInlineChild(Context c, InlineBox child) {
+        if (child == null) throw new NullPointerException("trying to add null child");
+        if (getChildCount() == 0 && child.content instanceof TextContent) {//first box on line
+            if (child.getSubstring().startsWith(WhitespaceStripper.SPACE)) {
+                String whitespace = c.getCurrentStyle().getStringProperty(CSSName.WHITE_SPACE);
+                if (whitespace.equals("normal") ||
+                        whitespace.equals("nowrap") ||
+                        whitespace.equals("pre-line"))
+                    child.setSubstring(child.start_index + 1, child.end_index);
+            }
+            if (child.getSubstring().equals("")) return;
+        }
+        child.setParent(this);
+        addChild(child);
+        if (child.isChildrenExceedBounds()) {
+            setChildrenExceedBounds(true);
+        }
+    }
+
+    /**
      * Converts to a String representation of the object.
      *
      * @return A string representation of the object.
@@ -58,6 +87,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/15 00:53:40  tobega
+ * Started playing a bit with inline box, provoked a few nasties, probably created some, seems to work now
+ *
  * Revision 1.4  2004/12/12 03:33:01  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

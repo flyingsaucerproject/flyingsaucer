@@ -58,9 +58,11 @@ public class TextAlignJustify {
             temp_list.add(box);
             return;
         }
+        int currentWordPosition = box.start_index + box.getSubstring().indexOf(words[0]);
         for (int i = 0; i < words.length; i++) {
             InlineBox copy = new InlineBox(box);
-            copy.setSubstring(words[i]);
+            copy.setSubstring(currentWordPosition, currentWordPosition + words[i].length());//was: (words[i]);
+            currentWordPosition = currentWordPosition + words[i].length() + 1;//skip the space too
             copy.width = FontUtil.len(c, copy);
             temp_list.add(copy);
         }

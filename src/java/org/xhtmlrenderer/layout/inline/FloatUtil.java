@@ -145,7 +145,7 @@ public class FloatUtil {
         CascadedStyle firstLineStyle = c.css.getPseudoElementStyle(content.getElement(), "first-line");
         //TODO: refactor styleBox
         //for now, null is safe
-        LineBreaker.styleBox(c, content.getElement(), 0, 0, null, bounds, prev_align, font, inline_block);
+        LineBreaker.styleBox(c, content.getElement(), 0, 0, bounds, prev_align, font, inline_block);
         inline_block.x = x;
         inline_block.y = y;
         // Uu.p("after newbox = " + inline_block);

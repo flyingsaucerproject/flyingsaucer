@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Node;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.Content;
@@ -253,7 +252,7 @@ public class LineBreaker {
          */
         // create new inline (null text is safe!)
         //TODO: refactor styleBox, it is too overloaded, we know which type we want, right?
-        InlineBox box = newBox(c, content, 0, 0, null, bounds, prev_align, font);
+        InlineBox box = newBox(c, content, 0, 0, bounds, prev_align, font);
         //joshy: activate this: box.block = block
         //Uu.p("created a new inline box");
         box.replaced = true;
@@ -330,14 +329,13 @@ public class LineBreaker {
      * @param content
      * @param start      PARAM
      * @param end        PARAM
-     * @param text       PARAM
      * @param prev_align PARAM
      * @param font       PARAM
      * @return Returns
      */
-    public static InlineBox newBox(Context c, Content content, int start, int end, String text, InlineBox prev_align, Font font) {
-        return newBox(c, content, start, end, text, null, prev_align, font);
-    }
+    /* not used public static InlineBox newBox(Context c, Content content, int start, int end, InlineBox prev_align, Font font) {
+        return newBox(c, content, start, end, null, prev_align, font);
+    }*/
 
 // this function by itself takes up fully 29% of the complete program's
 // rendering time.
@@ -348,20 +346,19 @@ public class LineBreaker {
      * @param content
      * @param start      PARAM
      * @param end        PARAM
-     * @param text       PARAM
      * @param bounds     PARAM
      * @param prev_align PARAM
      * @param font       PARAM
      * @return Returns
      */
-    public static InlineBox newBox(Context c, Content content, int start, int end, String text, Rectangle bounds, InlineBox prev_align, Font font) {
+    public static InlineBox newBox(Context c, Content content, int start, int end, Rectangle bounds, InlineBox prev_align, Font font) {
         InlineBox box = new InlineBox();
         box.content = content;
-        return styleBox(c, content.getElement(), start, end, text, bounds, prev_align, font, box);
+        return styleBox(c, content.getElement(), start, end, bounds, prev_align, font, box);
     }
 
     //TODO: refactor styleBox.
-    public static InlineBox styleBox(Context c, Node node, int start, int end, String text, Rectangle bounds, InlineBox prev_align, Font font, InlineBox box) {
+    public static InlineBox styleBox(Context c, Node node, int start, int end, Rectangle bounds, InlineBox prev_align, Font font, InlineBox box) {
         //Uu.p("styleBox node = " + node.getNodeName() + " start = " + start + " end = " + end +
         //" prev = " + prev + " text = " + text + " bounds = " + bounds + " prev_align = " + prev_align);
         //Uu.p("Making box for: "  + node);
@@ -372,9 +369,11 @@ public class LineBreaker {
         // }
         Content content = box.content;
         CalculatedStyle style = c.getCurrentStyle();
-        box.start_index = start;
-        box.end_index = end;
-
+        //box.start_index = start;
+        //box.end_index = end;
+        if (content instanceof TextContent) {
+            box.setSubstring(start, end);
+        }
         BoxLayout.getBackgroundColor(c, box);
         BoxLayout.getBorder(c, box);
         BoxLayout.getMargin(c, box);
@@ -391,7 +390,7 @@ public class LineBreaker {
         try {
             if (!(content instanceof InlineBlockContent)) {
                 if (!(content instanceof FloatedBlockContent)) {
-                    box.width = FontUtil.len(c, text.substring(start, end), font);
+                    box.width = FontUtil.len(c, box.getSubstring(), font);
                 } else {
                     box.width = bounds.width;
                 }
@@ -416,7 +415,7 @@ public class LineBreaker {
 
         box.break_after = true;
 
-        box.setMasterText(text);
+        //already set: box.setMasterText(text);
 
         if (!(content instanceof InlineBlockContent)) {
             if (!(content instanceof FloatedBlockContent)) {
@@ -479,7 +478,7 @@ public class LineBreaker {
     }*/
 
 
-    public static InlineBox generateFirstLetterInlineBox(Context c, int start, String text,
+    /*not used public static InlineBox generateFirstLetterInlineBox(Context c, int start,
                                                          InlineBox prev_align, TextContent content, CascadedStyle firstLetterStyle) {
         // Uu.p("gen first letter box");
         // Uu.p("node = " + node);
@@ -493,16 +492,16 @@ public class LineBreaker {
 
         CalculatedStyle style = c.getCurrentStyle();
         Font font = FontUtil.getFont(c, style);
-        InlineBox box = newBox(c, content, start, end, text, prev_align, font);
+        InlineBox box = newBox(c, content, start, end, prev_align, font);
         // Uu.p("style = " + cs);
         styleInlineBox(c, style, box);
         box.break_after = false;
         //Uu.p("generated a first letter inline: " + box);
         c.popStyle();
         return box;
-    }
+    } */
 
-    public static void styleInlineBox(Context c, CalculatedStyle style, InlineBox box) {
+    /* not used public static void styleInlineBox(Context c, CalculatedStyle style, InlineBox box) {
         box.color = style.getColor();
         TextDecoration.setupTextDecoration(style, box);
         Font font = FontUtil.getFont(c, style);
@@ -510,13 +509,16 @@ public class LineBreaker {
         box.width = FontUtil.len(c, box.getSubstring(), font);
         box.height = FontUtil.lineHeight(c, style, box);
         VerticalAlign.setupVerticalAlign(c, style, box);
-    }
+    } */
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2004/12/15 00:53:40  tobega
+ * Started playing a bit with inline box, provoked a few nasties, probably created some, seems to work now
+ *
  * Revision 1.37  2004/12/12 21:02:37  tobega
  * Images working again
  *

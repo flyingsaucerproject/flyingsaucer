@@ -192,7 +192,7 @@ public class InlineLayout extends BoxLayout {
                 pendingPushStyles = null;
 
                 // save the new inline to the list
-                curr_line.addChild(new_inline);
+                curr_line.addInlineChild(c, new_inline);
 
 
                 // calc new height of the line
@@ -346,27 +346,56 @@ public class InlineLayout extends BoxLayout {
             // if this is another box from the same node as the previous one
             if (prev != null && prev.content == textContent) {
                 start = prev.end_index;
-            } else {//strip it
-
             }
+
+            //might need to transform it
             // get the text of the node
-            String text = textContent.getText().substring(start);
+            String text = textContent.getText();
 
             // transform the text if required (like converting to caps)
             // this must be done before any measuring since it might change the
             // size of the text
             //Uu.p("text from the node = \"" + text + "\"");
             text = TextUtil.transformText(text, style);
+            int end = text.length();
+
+            InlineBox inline = new InlineBox();
+            inline.content = textContent;
+
+            //Here we must set MasterText, it might have been restyled
+            inline.setMasterText(text);
 
             // Uu.p("calculating inline: text = " + text);
             // Uu.p("avail space = " + avail + " max = " + max_width + "   start index = " + start);
 
+            //CHECK:what's so very differnt between a first-letter box and another box? Can't we create them equal?
             if (isFirstLetter && firstLetterStyle != null) {
-                //Uu.p("is first letter");
-                result = LineBreaker.generateFirstLetterInlineBox(c, start, text, prev_align, textContent, firstLetterStyle);
-            } else {
+                //TODO: what if first letter is whitespace?
+                end = start + 1;
+                inline.setSubstring(start, end);
+                c.pushStyle(firstLetterStyle);
 
-                result = WhitespaceStripper.createInline(c, textContent, prev, prev_align, avail, max_width, font);
+                CalculatedStyle style1 = c.getCurrentStyle();
+                Font font1 = FontUtil.getFont(c, style1);
+                inline.whitespace = WhitespaceStripper.getWhitespace(style1);
+                BoxBuilder.prepBox(c, inline, prev_align, font1);
+                c.popStyle();
+                result = inline;
+
+                /*InlineBox box = LineBreaker.newBox(c, textContent, start, end, prev_align, font1);
+                LineBreaker.styleInlineBox(c, style1, box);
+                box.break_after = false;
+                c.popStyle();
+                result = box;*/
+            } else {
+                inline.setSubstring(start, end);
+                /*InlineBox inline = new InlineBox();
+                inline.content = textContent; */
+                CalculatedStyle style1 = c.getCurrentStyle();
+                inline.whitespace = WhitespaceStripper.getWhitespace(style1);
+                Breaker.breakText(c, inline, prev_align, avail, max_width, font);
+                BoxBuilder.prepBox(c, inline, prev_align, font);
+                result = inline;
             }
         }
         if (c.isFirstLine() && firstLineStyle != null) c.popStyle();
@@ -415,6 +444,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.61  2004/12/15 00:53:40  tobega
+* Started playing a bit with inline box, provoked a few nasties, probably created some, seems to work now
+*
 * Revision 1.60  2004/12/14 02:28:48  joshy
 * removed some comments
 * some bugs with the backgrounds still
