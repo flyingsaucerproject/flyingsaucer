@@ -149,7 +149,7 @@ ins { text-decoration: underline; }
 del { text-decoration: line-through; }
 
 ul, ol {
-    padding-left: 20px;
+    padding-left: 3em;
 }
 li {
     display: list-item;
@@ -160,6 +160,7 @@ ol li { list-style-type: decimal; }
 
 h1, h2, h3, h4, h5, h6 {
     display: block;
+    margin: 1em;
 }
 
 div, p, table {

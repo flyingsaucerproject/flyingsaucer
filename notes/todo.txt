@@ -12,8 +12,9 @@
 //match up baselines of text w/ baseline vertical alignment
 //justified text
 //build calendar demo
+//boolean to turn off layout threading
 
-boolean to turn off layout threading
+fix list items
 easier headless interface
 fix fixed background clipping error
 fix list item vertical positioning

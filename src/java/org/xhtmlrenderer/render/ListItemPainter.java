@@ -20,7 +20,11 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.Image;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.font.LineMetrics;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.u;
 
@@ -42,6 +46,12 @@ public class ListItemPainter {
         if ( type.equals( "none" ) ) {
             return;
         }
+        if ( type.equals( "lower-greek" ) ) {
+            type = "decimal";
+        }
+        if ( type.equals( "decimal-leading-zero" ) ) {
+            type = "decimal";
+        }
 
         String image = c.css.getStringProperty( box.node, "list-style-image" );
         Image img = null;
@@ -61,55 +71,93 @@ public class ListItemPainter {
             }
         }
 
+        // prep the color
+        box.color = c.css.getColor(box.getRealElement());
+        c.getGraphics().setColor(box.color);
+        
+        
+        // calculations for bullets
+        int rad = 8;// change this to use the glyph height
+        int baseline = box.height;// change this to use the real baseline
+        Font font = FontUtil.getFont(c, box.getRealElement());
+        int h = FontUtil.lineHeight(c, box.getRealElement());
+        rad = h/3;
+        int x = box.x - rad - rad/2;
+        int y = box.y + (h-rad/2)/2;
         if ( type.equals( "disc" ) ) {
-            int rad = 8;// change this to use the glyph height
-            int baseline = box.height;// change this to use the real baseline
-            c.getGraphics().fillOval( box.x - rad - 2, box.y + baseline / 2 - rad / 2 + 2, rad, rad );
+            c.getGraphics().fillOval( x, y, rad, rad );
             return;
         }
         if ( type.equals( "square" ) ) {
-            int rad = 8;// change this to use the glyph height
-            int baseline = box.height;// change this to use the real baseline
-            c.getGraphics().fillRect( box.x - rad - 2, box.y + baseline / 2 - rad / 2 + 2, rad, rad );
+            c.getGraphics().fillRect( x, y, rad, rad );
             return;
         }
         if ( type.equals( "circle" ) ) {
-            int rad = 8;// change this to use the glyph height
-            int baseline = box.height;// change this to use the real baseline
-            c.getGraphics().drawOval( box.x - rad - 2, box.y + baseline / 2 - rad / 2 + 2, rad, rad );
+            c.getGraphics().drawOval( x, y, rad, rad );
             return;
         }
 
-        if ( type.equals( "lower-greek" ) ) {
-            type = "decimal";
-        }
-        if ( type.equals( "decimal-leading-zero" ) ) {
-            type = "decimal";
-        }
+
+
+
+        // calculations for text
         if ( type.equals( "decimal" ) ) {
-            c.getGraphics().drawString( "" + box.list_count, box.x - 15, box.y + box.height / 2 + 8 );
+            drawText(c,box,type);
             return;
         }
 
         if ( type.equals( "lower-latin" ) ) {
-            c.getGraphics().drawString( "" + toLatin( box.list_count ).toLowerCase(), box.x - 15, box.y + box.height / 2 + 8 );
+            drawText(c,box,type);
             return;
         }
 
         if ( type.equals( "upper-latin" ) ) {
-            c.getGraphics().drawString( "" + toLatin( box.list_count ).toUpperCase(), box.x - 15, box.y + box.height / 2 + 8 );
+            drawText(c,box,type);
             return;
         }
 
         if ( type.equals( "lower-roman" ) ) {
-            c.getGraphics().drawString( "" + toRoman( box.list_count ).toLowerCase(), box.x - 15, box.y + box.height / 2 + 8 );
+            drawText(c,box,type);
             return;
         }
 
         if ( type.equals( "upper-roman" ) ) {
-            c.getGraphics().drawString( "" + toRoman( box.list_count ).toUpperCase(), box.x - 15, box.y + box.height / 2 + 8 );
+            drawText(c,box,type);
             return;
         }
+    }
+    
+    private static void drawText(Context c, Box box, String type) {
+        String text = "";
+        if ( type.equals( "decimal" ) ) {
+            text = box.list_count + ".";
+        }
+        if ( type.equals( "lower-latin" ) ) {
+            text = toLatin( box.list_count ).toLowerCase() + ".";
+        }
+
+        if ( type.equals( "upper-latin" ) ) {
+            text = toLatin( box.list_count ).toUpperCase() + ".";
+        }
+
+        if ( type.equals( "lower-roman" ) ) {
+            text = toRoman( box.list_count ).toLowerCase() +".";
+        }
+
+        if ( type.equals( "upper-roman" ) ) {
+            text = toRoman( box.list_count ).toUpperCase() + ".";
+        }
+
+
+        Font font = FontUtil.getFont(c, box.getRealElement());
+        LineMetrics lm = font.getLineMetrics( text, ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
+        int w = FontUtil.len(c,text,font);
+        int h = FontUtil.lineHeight(c, box.getRealElement());
+        int x = box.x - w - 2;
+        int y = box.y + h;
+        y -= (int)lm.getDescent();
+        c.getGraphics().setFont(font);
+        c.getGraphics().drawString(text , x, y);
     }
 
     /**
@@ -152,6 +200,19 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/10 16:28:53  joshy
+ * fixes for list items
+ *  bullets and numbers are sized correctly now
+ *  numbers have periods after them
+ *  adjusted ul/ol margins to use ems
+ *  positioned bullets and numbers on the top line
+ * adjusted splash page
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:50:27  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
