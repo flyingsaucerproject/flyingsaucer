@@ -206,6 +206,9 @@ public class DefaultLayout implements Layout {
         if(box.absolute) {
             return true;
         }
+        if(box.floated) {
+            return true;
+        }
         return false;
     }
     
@@ -410,6 +413,14 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/11/05 18:45:14  joshy
+ * support for floated blocks (not just inline blocks)
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.11  2004/11/05 16:39:34  joshy
  * more float support
  * added border bug test

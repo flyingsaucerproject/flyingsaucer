@@ -150,6 +150,7 @@ public class BoxLayout extends DefaultLayout {
         setupRelative( c, block );
         setupAbsolute( c, block );
         setupFixed( c, block );
+        setupFloat( c, block );
 
         this.contents_height = block.height;
         if(LayoutFactory.isForm(elem)) {
@@ -250,6 +251,13 @@ public class BoxLayout extends DefaultLayout {
                 box.bottom = (int)c.css.getFloatProperty( box.node, "bottom", 0, false );
                 box.bottom_set = true;
             }
+        }
+    }
+    
+    public void setupFloat( Context c, Box box ) {
+        if( isFloated(box.node, c)) {
+            box.floated = true;
+            c.getBlockFormattingContext().addLeftFloat(box);
         }
     }
 
@@ -396,6 +404,14 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/11/05 18:45:14  joshy
+ * support for floated blocks (not just inline blocks)
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.10  2004/11/04 15:35:44  joshy
  * initial float support
  * includes right and left float
