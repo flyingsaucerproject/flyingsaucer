@@ -252,7 +252,7 @@ public class TBStyleReference implements StyleReference {
         _styler = new net.homelinux.tobe.xhtmlrenderer.stylerImpl.Styler();
         _styler.setMatcher(_tbStyleMap);
         _styler.restyleTree( root );
-        _styler.setViewportRectangle(_context.getViewport().getBounds());
+        //_styler.setViewportRectangle(_context.getViewport().getBounds());
         _matchedSinceLastParse = true;
         }
         catch(RuntimeException re) {

@@ -152,9 +152,9 @@ public class CalculatedStyle {
             
             // if it is inheritable (like color) and we are not root, ask our parent
             // for the value
-            if ( CSSName.propertyInherits(propName) && _parent != null ) {
-                // get a copy, which is always a calculated value!
-                prop = _parent.propertyByName(propName).copyForInherit();
+            if ( CSSName.propertyInherits(propName) && _parent != null && (prop = _parent.propertyByName(propName)) != null) {
+            // get a copy, which is always a calculated value!
+                prop = prop.copyForInherit();
             } else {
                 // otherwise, use the initial value (defined by the CSS2 Spec)
                 String initialValue = CSSName.initialValue(propName);
