@@ -109,8 +109,6 @@ public class HTMLTest extends JFrame {
         JMenu file = new JMenu( "File" );
         mb.add( file );
         file.setMnemonic( 'F' );
-        file.add( new PrintAction("Print") );
-        file.add( new JSeparator());
         file.add( new QuitAction() );
 
         JMenu view = new JMenu("View");
@@ -483,35 +481,6 @@ public class HTMLTest extends JFrame {
         }
     }
 
-    
-    class PrintAction extends AbstractAction {
-        public PrintAction(String text) {
-            super(text);
-        }
-        public void actionPerformed(ActionEvent evt) {
-            try {
-                u.p("printing");
-                PrinterJob printJob = PrinterJob.getPrinterJob();
-                printJob.setPrintable(new Printable() {
-                    public int print(Graphics g, PageFormat pf, int page) {
-                        u.p("printing page: " + page);
-                        if(page > 0) {
-                            return Printable.NO_SUCH_PAGE;
-                        }
-                        panel.paintComponent(g);
-                        return Printable.PAGE_EXISTS;
-                    }
-                });
-                
-                if(printJob.printDialog()) {
-                    printJob.print();
-                }
-            
-            } catch (PrinterException ex) {
-                u.p(ex);
-            }
-        }
-    }
 }
 
 
@@ -527,6 +496,13 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2004/11/16 03:44:15  joshy
+ * removed printing from html test
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.21  2004/11/16 03:43:27  joshy
  * first pass at printing support
  * Issue number:
