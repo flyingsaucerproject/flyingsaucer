@@ -427,7 +427,9 @@ public class FontUtil {
         String[] families = c.css.getStringArrayProperty( el, "font-family" );
 
         String style = c.css.getStringProperty( el, "font-style" );
-        f = c.getFontResolver().resolveFont( c, families, size, weight, style );
+        String variant = c.css.getStringProperty( el, "font-variant" );
+        //u.p("variant = " + variant);
+        f = c.getFontResolver().resolveFont( c, families, size, weight, style, variant );
 
         // calculate the font color
         c.getGraphics().setColor( c.css.getColor( el ) );
@@ -464,7 +466,8 @@ public class FontUtil {
         
         //String fstyle = c.css.getStringProperty( el, "font-style" );
         String fstyle = style.propertyByName("font-style").computedValue().asString();
-        f = c.getFontResolver().resolveFont( c, families, size, weight, fstyle );
+        String variant = style.propertyByName("font-variant").computedValue().asString();
+        f = c.getFontResolver().resolveFont( c, families, size, weight, fstyle, variant);
 
         // calculate the font color
         //joshy: this shouldn't matter. c.getGraphics().setColor( c.css.getColor( el ) );
@@ -476,6 +479,14 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/08 21:18:21  joshy
+ * preliminary small-caps implementation
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.7  2004/11/08 15:10:10  joshy
  * added support for styling :first-letter inline boxes
  * updated the absolute positioning tests

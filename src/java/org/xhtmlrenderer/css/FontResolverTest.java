@@ -23,7 +23,7 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 import org.xhtmlrenderer.layout.Context;
-
+import org.xhtmlrenderer.util.u;
 
 /**
  * Description of the Class
@@ -72,13 +72,13 @@ public class FontResolverTest extends FontResolver {
      * @param style     PARAM
      * @return          Returns
      */
-    public Font resolveFont( Context c, String[] families, float size, String weight, String style ) {
+    public Font resolveFont( Context c, String[] families, float size, String weight, String style, String variant ) {
         //u.p("familes = ");
         //u.p(families);
         // for each font family
         if ( families != null ) {
             for ( int i = 0; i < families.length; i++ ) {
-                Font font = resolveFont( c, families[i], size, weight, style );
+                Font font = resolveFont( c, families[i], size, weight, style, variant );
                 if ( font != null ) {
                     return font;
                 }
@@ -88,12 +88,12 @@ public class FontResolverTest extends FontResolver {
         // if we get here then no font worked, so just return default sans
         //u.p("pulling out: -" + available_fonts_hash.get("SansSerif") + "-");
         try {
-            Font fnt = createFont( (Font)available_fonts_hash.get( "SansSerif" ), size, weight, style );
-            instance_hash.put( getFontInstanceHashName( "SansSerif", size, weight, style ), fnt );
+            Font fnt = createFont( (Font)available_fonts_hash.get( "SansSerif" ), size, weight, style, variant );
+            instance_hash.put( getFontInstanceHashName( "SansSerif", size, weight, style, variant ), fnt );
             //u.p("subbing in base sans : " + fnt);
             return fnt;
         } catch ( Exception ex ) {
-            org.xhtmlrenderer.util.u.p( "exception: " + ex );
+            u.p( "exception: " + ex );
             return c.getGraphics().getFont();
         }
 
@@ -108,7 +108,7 @@ public class FontResolverTest extends FontResolver {
      * @param style      PARAM
      * @return           Returns
      */
-    protected Font createFont( Font root_font, float size, String weight, String style ) {
+    protected Font createFont( Font root_font, float size, String weight, String style, String variant ) {
         int font_const = Font.PLAIN;
         if ( weight != null && weight.equals( "bold" ) ) {
             font_const = font_const | Font.BOLD;
@@ -118,6 +118,12 @@ public class FontResolverTest extends FontResolver {
         }
 
         Font fnt = root_font.deriveFont( font_const, size );
+        if ( variant != null) {
+            if( variant.equals("small-caps")) {
+                fnt = fnt.deriveFont((float)( ((float) fnt.getSize())*0.6));
+            }
+        }
+
         return fnt;
     }
 
@@ -131,7 +137,8 @@ public class FontResolverTest extends FontResolver {
      * @param style   PARAM
      * @return        Returns
      */
-    protected Font resolveFont( Context c, String font, float size, String weight, String style ) {
+    protected Font resolveFont( Context c, String font, float size, String weight, String style, String variant ) {
+        //u.p("here");
         // strip off the "s if they are there
         if ( font.startsWith( "\"" ) ) {
             font = font.substring( 1 );
@@ -153,7 +160,7 @@ public class FontResolverTest extends FontResolver {
         }
 
         // assemble a font instance hash name
-        String font_instance_name = getFontInstanceHashName( font, size, weight, style );
+        String font_instance_name = getFontInstanceHashName( font, size, weight, style, variant );
         //u.p("looking for font: " + font_instance_name);
         // check if the font instance exists in the hash table
         if ( instance_hash.containsKey( font_instance_name ) ) {
@@ -162,7 +169,7 @@ public class FontResolverTest extends FontResolver {
         }
 
         //u.p("font lookup failed for: " + font_instance_name);
-        //u.p("searching for : " + font + " " + size + " " + weight + " " + style);
+        //u.p("searching for : " + font + " " + size + " " + weight + " " + style + " " + variant);
 
 
         // if not then
@@ -180,7 +187,7 @@ public class FontResolverTest extends FontResolver {
             }
 
             // now that we have a root font, we need to create the correct version of it
-            Font fnt = createFont( root_font, size, weight, style );
+            Font fnt = createFont( root_font, size, weight, style, variant );
 
             // add the font to the hash so we don't have to do this again
             instance_hash.put( font_instance_name, fnt );
@@ -200,8 +207,8 @@ public class FontResolverTest extends FontResolver {
      * @param style   PARAM
      * @return        The fontInstanceHashName value
      */
-    protected String getFontInstanceHashName( String name, float size, String weight, String style ) {
-        return name + "-" + size + "-" + weight + "-" + style;
+    protected String getFontInstanceHashName( String name, float size, String weight, String style, String variant ) {
+        return name + "-" + size + "-" + weight + "-" + style + "-" + variant;
     }
 }
 
@@ -209,6 +216,14 @@ public class FontResolverTest extends FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/08 21:18:20  joshy
+ * preliminary small-caps implementation
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:03:45  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

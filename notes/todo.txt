@@ -3,12 +3,13 @@
 //first-line pseudo
 //email guy about calendar text
 
+//right floats
+//paragraph extending floats
 boolean to turn off layout threading
 easier headless interface
 fix gap in splash page
 fix fixed background clipping error
 fix list item vertical positioning
-right floats
 small caps
 justified text
 resize inlines with padding and borders

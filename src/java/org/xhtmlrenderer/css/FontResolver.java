@@ -41,8 +41,9 @@ public class FontResolver {
      * @param style     PARAM
      * @return          Returns
      */
-    public Font resolveFont( Context c, String[] families, float size, String weight, String style ) {
-        return this.resolveFont( c.getGraphics().getFont(), families, size, weight, style );
+    public Font resolveFont( Context c, String[] families, float size, String weight, String style, String variant ) {
+        u.p("resolving");
+        return this.resolveFont( c.getGraphics().getFont(), families, size, weight, style, variant );
     }
 
     /**
@@ -55,9 +56,10 @@ public class FontResolver {
      * @param style     PARAM
      * @return          Returns
      */
-    public Font resolveFont( Font baseFont, String[] families, float size, String weight, String style ) {
-        u.on();
-        u.p( "resolving font from families: " + families );
+    public Font resolveFont( Font baseFont, String[] families, float size, String weight, String style, String variant ) {
+        u.p("resolve font");
+        //u.on();
+        //u.p( "resolving font from families: " + families );
         Font f = baseFont;
 
         f = f.deriveFont( (float)size );
@@ -81,12 +83,17 @@ public class FontResolver {
         }
 
         f = new Font( fontname, f.getStyle(), f.getSize() );
-
+        
         if ( style != null ) {
             if ( style.equals( "italic" ) ) {
-                f = f.deriveFont( Font.ITALIC | f.getStyle() );//.deriveFont(Font.BOLD);
-                //c.getGraphics().setFont(c.getGraphics().getFont().deriveFont(Font.ITALIC));
+                f = f.deriveFont( Font.ITALIC | f.getStyle() );
+            }
+        }
 
+        if ( variant != null) {
+            if( variant.equals("small-caps")) {
+                u.p("returnning small caps");
+                f = f.deriveFont((float)( ((float) f.getSize())*0.8));
             }
         }
         return f;
@@ -97,6 +104,14 @@ public class FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/08 21:18:20  joshy
+ * preliminary small-caps implementation
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:03:45  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

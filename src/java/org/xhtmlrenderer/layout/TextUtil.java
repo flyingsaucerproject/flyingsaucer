@@ -40,39 +40,31 @@ public class TextUtil {
      * @return      Returns
      */
     public static String transformText( Context c, Node node, String text ) {
-
         Element el = null;
-
         if ( node instanceof Element ) {
-
             el = (Element)node;
-
         } else {
-
             el = (Element)node.getParentNode();
-
         }
 
         String text_transform = c.css.getStringProperty( el, "text-transform" );
-
         if ( text_transform != null ) {
-
             if ( text_transform.equals( "lowercase" ) ) {
-
-                return text.toLowerCase();
+                text = text.toLowerCase();
             }
-
             if ( text_transform.equals( "uppercase" ) ) {
-
-                return text.toUpperCase();
+                text = text.toUpperCase();
             }
-
             if ( text_transform.equals( "capitalize" ) ) {
-
-                return capitalizeWords( text );
+                text = capitalizeWords( text );
             }
         }
-
+        String variant = c.css.getStringProperty( el, "font-variant" );
+        if ( variant != null) {
+            if( variant.equals("small-caps")) {
+                text = text.toUpperCase();
+            }
+        }
         return text;
     }
 
@@ -236,6 +228,14 @@ public class TextUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/08 21:18:21  joshy
+ * preliminary small-caps implementation
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:46:48  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
