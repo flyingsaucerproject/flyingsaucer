@@ -62,12 +62,18 @@ public class RulesetSelectorTest extends TestCase {
         sel.addIDCondition("eid");
         AttributeResolver eid = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return "eid";}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
         AttributeResolver fid = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return "fid";}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
         AttributeResolver noid = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
         Element e = doc.createElement("e");
         assertTrue("selector for 'e#eid' should match e#eid",  sel.matches(e, eid));
@@ -91,15 +97,21 @@ public class RulesetSelectorTest extends TestCase {
         sel.addClassCondition("a");
         AttributeResolver a = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return "a";}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
         AttributeResolver b = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return "b";}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
         Element e = doc.createElement("e");
         assertTrue("selector for 'e.a' should match class=a",  sel.matches(e, a));
         assertFalse("selector for 'e.a' should not match class=b",  sel.matches(e, b));
         AttributeResolver abc = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return "a b c";}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
         assertTrue("selector for 'e.a' should match class='a b c'",  sel.matches(e, abc));
         sel.addClassCondition("b");
@@ -119,6 +131,8 @@ public class RulesetSelectorTest extends TestCase {
         assertFalse("selector for 'e.d' should not match class='a b c'",  sel.matches(e, abc));
         AttributeResolver none = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
         assertFalse("selector for 'e.d' should not match null class",  sel.matches(e, none));
         assertFalse("selector for 'e.d' should not match no Resolver",  sel.matches(e, null));
@@ -131,15 +145,21 @@ public class RulesetSelectorTest extends TestCase {
         sel.addAttributeExistsCondition("a");
         AttributeResolver none = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
         AttributeResolver empty = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return "";}};
         Element e = doc.createElement("e");
         assertTrue("selector for 'e[a]' should match a=''",  sel.matches(e, empty));
         assertFalse("selector for 'e[a]' should not match null attribute",  sel.matches(e, none));
         AttributeResolver v = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return "v";}};
         assertTrue("selector for 'e[a]' should match a='v'",  sel.matches(e, v));
         assertFalse("selector for 'e[a]' should not match no Resolver",  sel.matches(e, null));
@@ -152,15 +172,21 @@ public class RulesetSelectorTest extends TestCase {
         sel.addAttributeEqualsCondition("a", "v");
         AttributeResolver none = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
         AttributeResolver empty = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return "";}};
         Element e = doc.createElement("e");
         assertFalse("selector for 'e[a=v]' should not match a=''",  sel.matches(e, empty));
         assertFalse("selector for 'e[a=v]' should not match null attribute",  sel.matches(e, none));
         AttributeResolver v = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return "v";}};
         assertTrue("selector for 'e[a=v]' should match a='v'",  sel.matches(e, v));
         assertFalse("selector for 'e[a=v]' should not match no Resolver",  sel.matches(e, null));
@@ -178,18 +204,26 @@ public class RulesetSelectorTest extends TestCase {
         assertFalse("selector for 'e[a~=v]' should not match no Resolver",  sel.matches(e, null));
         AttributeResolver none = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
         AttributeResolver empty = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return "";}};
         assertFalse("selector for 'e[a~=v]' should not match a=''",  sel.matches(e, empty));
         assertFalse("selector for 'e[a~=v]' should not match null attribute",  sel.matches(e, none));
         AttributeResolver v = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return "v";}};
         assertTrue("selector for 'e[a~=v]' should match a='v'",  sel.matches(e, v));
         AttributeResolver vwx = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return "v w x";}};
         assertTrue("selector for 'e[a~=v]' should match a='v w x'",  sel.matches(e, vwx));
         sel = rules.createSelector(Selector.DESCENDANT_AXIS, "e");
@@ -210,28 +244,159 @@ public class RulesetSelectorTest extends TestCase {
         assertFalse("selector for 'e[a|=v]' should not match no Resolver",  sel.matches(e, null));
         AttributeResolver none = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
         AttributeResolver empty = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return "";}};
         assertFalse("selector for 'e[a|=v]' should not match a=''",  sel.matches(e, empty));
         assertFalse("selector for 'e[a|=v]' should not match null attribute",  sel.matches(e, none));
         AttributeResolver v = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return "v";}};
         assertTrue("selector for 'e[a|=v]' should match a='v'",  sel.matches(e, v));
         AttributeResolver vwx = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
             public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
             public String getAttributeValue(org.w3c.dom.Element e, String a){ return "v-w-x";}};
         assertTrue("selector for 'e[a|=v]' should match a='v-w-x'",  sel.matches(e, vwx));
         sel = rules.createSelector(Selector.DESCENDANT_AXIS, "e");
         sel.addAttributeMatchesFirstPartCondition("a", "w");
         assertFalse("selector for 'e[a|=w]' should not match a='v'",  sel.matches(e, v));
-        assertFalse("selector for 'e[a|=w]' should match a='v-w-x'",  sel.matches(e, vwx));
+        assertFalse("selector for 'e[a|=w]' should not match a='v-w-x'",  sel.matches(e, vwx));
         sel = rules.createSelector(Selector.DESCENDANT_AXIS, "e");
         sel.addAttributeMatchesFirstPartCondition("a", "x");
-        assertFalse("selector for 'e[a|=x]' should match a='v-w-x'",  sel.matches(e, vwx));
+        assertFalse("selector for 'e[a|=x]' should not match a='v-w-x'",  sel.matches(e, vwx));
    }
+    
+    public void testLanguage() {
+        System.out.println("testLanguage");
+        Ruleset rules = new Ruleset();
+        Selector sel = rules.createSelector(Selector.DESCENDANT_AXIS, "e");
+        sel.addLangCondition("v");
+        Element e = doc.createElement("e");
+        assertFalse("selector for ':lang(v)' should not match no Resolver",  sel.matches(e, null));
+        AttributeResolver none = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
+            public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
+            public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
+        AttributeResolver empty = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
+            public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return "";}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
+            public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
+        assertFalse("selector for 'lang(v)' should not match ''",  sel.matches(e, empty));
+        assertFalse("selector for 'lang(v)' should not match null attribute",  sel.matches(e, none));
+        AttributeResolver v = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
+            public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return "v";}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
+            public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
+        assertTrue("selector for 'lang(v)' should match 'v'",  sel.matches(e, v));
+        AttributeResolver vwx = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
+            public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return "v-w-x";}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
+            public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
+        assertTrue("selector for 'lang(v)' should match 'v-w-x'",  sel.matches(e, vwx));
+        sel = rules.createSelector(Selector.DESCENDANT_AXIS, "e");
+        sel.addLangCondition("w");
+        assertFalse("selector for 'lang(w)' should not match a='v'",  sel.matches(e, v));
+        assertFalse("selector for 'lang(w)' should not match a='v-w-x'",  sel.matches(e, vwx));
+        sel = rules.createSelector(Selector.DESCENDANT_AXIS, "e");
+        sel.addLangCondition("x");
+        assertFalse("selector for 'lang(x)' should not match a='v-w-x'",  sel.matches(e, vwx));
+   }
+    
+    public void testPseudoClass() {
+        System.out.println("testPseudoClass");
+        Ruleset rules = new Ruleset();
+        Selector sel = rules.createSelector(Selector.DESCENDANT_AXIS, "e");
+        assertFalse(sel.isPseudoClass(AttributeResolver.LINK_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.VISITED_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.HOVER_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.ACTIVE_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.FOCUS_PSEUDOCLASS));
+        sel = rules.createSelector(Selector.DESCENDANT_AXIS, "e");
+        sel.setPseudoClass(AttributeResolver.LINK_PSEUDOCLASS);
+        assertTrue(sel.isPseudoClass(AttributeResolver.LINK_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.VISITED_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.HOVER_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.ACTIVE_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.FOCUS_PSEUDOCLASS));
+        sel = rules.createSelector(Selector.DESCENDANT_AXIS, "e");
+        sel.setPseudoClass(AttributeResolver.VISITED_PSEUDOCLASS);
+        assertFalse(sel.isPseudoClass(AttributeResolver.LINK_PSEUDOCLASS));
+        assertTrue(sel.isPseudoClass(AttributeResolver.VISITED_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.HOVER_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.ACTIVE_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.FOCUS_PSEUDOCLASS));
+        sel = rules.createSelector(Selector.DESCENDANT_AXIS, "e");
+        sel.setPseudoClass(AttributeResolver.HOVER_PSEUDOCLASS);
+        assertFalse(sel.isPseudoClass(AttributeResolver.LINK_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.VISITED_PSEUDOCLASS));
+        assertTrue(sel.isPseudoClass(AttributeResolver.HOVER_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.ACTIVE_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.FOCUS_PSEUDOCLASS));
+        sel = rules.createSelector(Selector.DESCENDANT_AXIS, "e");
+        sel.setPseudoClass(AttributeResolver.ACTIVE_PSEUDOCLASS);
+        assertFalse(sel.isPseudoClass(AttributeResolver.LINK_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.VISITED_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.HOVER_PSEUDOCLASS));
+        assertTrue(sel.isPseudoClass(AttributeResolver.ACTIVE_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.FOCUS_PSEUDOCLASS));
+        sel = rules.createSelector(Selector.DESCENDANT_AXIS, "e");
+        sel.setPseudoClass(AttributeResolver.FOCUS_PSEUDOCLASS);
+        assertFalse(sel.isPseudoClass(AttributeResolver.LINK_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.VISITED_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.HOVER_PSEUDOCLASS));
+        assertFalse(sel.isPseudoClass(AttributeResolver.ACTIVE_PSEUDOCLASS));
+        assertTrue(sel.isPseudoClass(AttributeResolver.FOCUS_PSEUDOCLASS));
+   }
+    
+    public void testPseudoClassMatch() {
+        System.out.println("testPseudoClassMatch");
+        AttributeResolver no = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
+            public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
+            public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
+        AttributeResolver yes = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
+            public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return true;}
+            public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
+        Element e = doc.createElement("e");
+        Ruleset rules = new Ruleset();
+        Selector sel = rules.createSelector(Selector.DESCENDANT_AXIS, "e");
+        assertTrue(sel.matchesDynamic(e, no));
+        assertTrue(sel.matchesDynamic(e, yes));
+        sel.setPseudoClass(AttributeResolver.LINK_PSEUDOCLASS);
+        assertFalse(sel.matchesDynamic(e, no));
+        assertTrue(sel.matchesDynamic(e, yes));
+        sel.setPseudoClass(AttributeResolver.VISITED_PSEUDOCLASS);
+        assertFalse(sel.matchesDynamic(e, no));
+        assertTrue(sel.matchesDynamic(e, yes));
+        sel.setPseudoClass(AttributeResolver.HOVER_PSEUDOCLASS);
+        assertFalse(sel.matchesDynamic(e, no));
+        assertTrue(sel.matchesDynamic(e, yes));
+        sel.setPseudoClass(AttributeResolver.ACTIVE_PSEUDOCLASS);
+        assertFalse(sel.matchesDynamic(e, no));
+        assertTrue(sel.matchesDynamic(e, yes));
+        sel.setPseudoClass(AttributeResolver.FOCUS_PSEUDOCLASS);
+        assertFalse(sel.matchesDynamic(e, no));
+        assertTrue(sel.matchesDynamic(e, yes));
+        //just check that the element matches non-dynamic
+        assertTrue(sel.matches(e, no));
+        assertTrue(sel.matches(e, yes));
+    }
     
     private Document doc;
     

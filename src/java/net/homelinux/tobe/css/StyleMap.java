@@ -74,6 +74,8 @@ public class StyleMap {
         
         private void match(Selector sel, org.w3c.dom.Element e, Mapper child) {
             if(!sel.matches(e, _attRes)) return;
+            //TODO: if this selector has dynamic properties, we could note it in the child mapper, for easier handling
+            if(!sel.matchesDynamic(e, _attRes)) return;
             Selector chain = sel.getChainedSelector();
             if(chain == null) {
                 child.propertyDeclarations.addAll(sel.getRuleset().getPropertyDeclarations());

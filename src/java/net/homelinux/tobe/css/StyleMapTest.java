@@ -196,6 +196,50 @@ public class StyleMapTest extends TestCase {
         assertEquals("Should be no properties for secondsecond", 0, pl.size());
     }
    
+    public void testDynamic() {
+        System.out.println("testDynamic");
+        AttributeResolver no = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
+            public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return false;}
+            public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
+        AttributeResolver yes = new AttributeResolver() { public String getID(org.w3c.dom.Element e){ return null;}
+            public String getClass(org.w3c.dom.Element e){ return null;}
+            public String getLang(org.w3c.dom.Element e){ return null;}
+            public boolean isPseudoClass(org.w3c.dom.Element e, int pc) { return true;}
+            public String getAttributeValue(org.w3c.dom.Element e, String a){ return null;}};
+        
+        java.util.List l = new java.util.LinkedList();
+        
+        Ruleset r = new Ruleset();
+        Selector s = r.createSelector(Selector.DESCENDANT_AXIS, "root");
+        s = s.appendChainedSelector(Selector.DESCENDANT_AXIS, "first");
+        s.setPseudoClass(AttributeResolver.HOVER_PSEUDOCLASS);
+        s = s.appendChainedSelector(Selector.DESCENDANT_AXIS, "first");
+        r.addPropertyDeclaration("firstfirstProperty");
+        l.add(r);
+        
+        StyleMap myStyles = StyleMap.createMap(doc, l, no);
+        
+        Element root = doc.getDocumentElement();
+        NodeList n = root.getElementsByTagName("first");
+        Element first = (Element) n.item(0);
+        n = first.getElementsByTagName("first");
+        Element firstfirst = (Element) n.item(0);
+        java.util.List pl = myStyles.getMappedProperties(firstfirst);
+        assertEquals("Should be no properties for firstfirst", 0, pl.size());
+        
+        myStyles = StyleMap.createMap(doc, l, yes);
+        
+        root = doc.getDocumentElement();
+        n = root.getElementsByTagName("first");
+        first = (Element) n.item(0);
+        n = first.getElementsByTagName("first");
+        firstfirst = (Element) n.item(0);
+        pl = myStyles.getMappedProperties(firstfirst);
+        assertEquals("Should be one property for firstfirst", 1, pl.size());
+    }
+   
     // TODO add test methods here, they have to start with 'test' name.
     // for example:
     // public void testHello() {}

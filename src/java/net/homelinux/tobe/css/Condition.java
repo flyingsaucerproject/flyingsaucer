@@ -128,6 +128,25 @@ abstract class Condition {
         
     }
     
+    private static class LangCondition extends Condition {
+        
+        LangCondition(String lang) {
+            _lang = lang;
+        }
+        
+        boolean matches(org.w3c.dom.Element e, net.homelinux.tobe.css.AttributeResolver attRes) {
+                if(attRes == null) return false;
+                String lang = attRes.getLang(e);
+                if(lang == null) return false;
+                String[] ca = lang.split("-");
+                if(_lang.equals(ca[0])) return true;
+                return false;
+        }
+        
+        private String _lang;
+        
+    }
+    
     abstract boolean matches(org.w3c.dom.Element e, AttributeResolver attRes);
     
     /** the CSS condition [attribute] */
@@ -158,6 +177,11 @@ abstract class Condition {
     /** the CSS condition #ID */
     static Condition createIDCondition(String id) {
         return new IDCondition(id);
+    }
+    
+    /** the CSS condition lang(x) */
+    static Condition createLangCondition(String lang) {
+        return new LangCondition(lang);
     }
     
 }

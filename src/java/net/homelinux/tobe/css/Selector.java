@@ -46,10 +46,32 @@ public class Selector {
         return false;
     }
 
+    /** Check if the given Element matches this selector's dynamic properties.
+     * Note: the parser should give all class
+     */
+    public boolean matchesDynamic(org.w3c.dom.Element e, AttributeResolver attRes) {
+            if(isPseudoClass(AttributeResolver.LINK_PSEUDOCLASS))
+            	if( attRes == null || !attRes.isPseudoClass(e, AttributeResolver.LINK_PSEUDOCLASS)) return false;
+            if(isPseudoClass(AttributeResolver.VISITED_PSEUDOCLASS))
+            	if( attRes == null || !attRes.isPseudoClass(e, AttributeResolver.VISITED_PSEUDOCLASS)) return false;
+            if(isPseudoClass(AttributeResolver.ACTIVE_PSEUDOCLASS))
+            	if( attRes == null || !attRes.isPseudoClass(e, AttributeResolver.ACTIVE_PSEUDOCLASS)) return false;
+            if(isPseudoClass(AttributeResolver.HOVER_PSEUDOCLASS))
+            	if( attRes == null || !attRes.isPseudoClass(e, AttributeResolver.HOVER_PSEUDOCLASS)) return false;
+            if(isPseudoClass(AttributeResolver.FOCUS_PSEUDOCLASS))
+            	if( attRes == null || !attRes.isPseudoClass(e, AttributeResolver.FOCUS_PSEUDOCLASS)) return false;
+            return true;
+    }
+
     /** append a selector to this chain, specifying which axis it should be evaluated on */
-    public void appendChainedSelector(int axis, String elementName) {
-        if(chainedSelector == null) chainedSelector = new Selector(_parent, axis, elementName);
-        else chainedSelector.appendChainedSelector(axis, elementName);
+    public Selector appendChainedSelector(int axis, String elementName) {
+        if(chainedSelector == null) return (chainedSelector = new Selector(_parent, axis, elementName));
+        else return chainedSelector.appendChainedSelector(axis, elementName);
+    }
+
+    /** the CSS condition :lang(x) */
+    public void addLangCondition(String lang) {
+        addCondition(Condition.createLangCondition(lang));
     }
 
     /** the CSS condition #ID */
@@ -82,6 +104,25 @@ public class Selector {
         addCondition(Condition.createAttributeMatchesFirstPartCondition(name, value));
     }
     
+    /** set which pseudoclasses must apply for this selector
+     *  @param pc the values from AttributeResolver should be used. Once set they cannot be unset.
+     */
+    public void setPseudoClass(int pc) {
+        _pc |= pc;
+    }
+    
+     /** query if a pseudoclass must apply for this selector
+      *  @param pc the values from AttributeResolver should be used.
+     */
+    public boolean isPseudoClass(int pc) {
+        return ((_pc & pc) != 0);
+    }
+    
+    /** check if selector queries for dynamic properties */
+    public boolean isDynamic() {
+        return (_pc != 0);
+    }
+    
     private void addCondition(Condition c) {
         if(conditions == null) conditions = new java.util.ArrayList();
         conditions.add(c);
@@ -107,6 +148,7 @@ public class Selector {
 
     private int _axis;
     private String _name;
+    private int _pc = 0;
     
     private java.util.List conditions;
 
