@@ -1,8 +1,39 @@
+multiple levels
+    component level (little to no configuration)
+    rendering context level (getters and setters for each feature)
+    hacking level (subclass stuff, build your own settings, custom component)
+    
+    
+component level is super easy. the (2) standard components should be in
+org.xhtmlrenderer.*   and should require no configuration. HTMLPanel and ImageRenderer.  Bare minimum interface. Should focus on good defaults and doing it's job (being a JComponent, for example) well.
+
+XHTMLPanel
+    XHTMLPanel(URL)
+    setDocument(URL)
+    setDocument(Document,URL)
+    
+    that's it. uses default.css with sensible settings for attribute resolver and logging. does threaded layout by default
+    
+Graphics2DRenderer
+    Graphics2DRenderer()
+    render(url,graphics2d)
+    render(document,url,graphics2d)
+    
+    sensible defaults. same as xhtmlpanel. respects hints set on the Graphics2D object passed in.  doesn't do threaded layout by default
+    
+both have get/setRenderingContext() methods to customize
+
+
+RenderingContext
+    contains all of the hooks for configuring everything. css module. fonts. logging. attribute resolver. layouts. everything. this doesn't need to be completely defined yet.  parts of Context will move into here.  has default implementation or can be subclassed (no interface?)
+    event listeners are added here.  resource providers are added here. set the dom implementation.
+
+
+---------
 //build hack for first-letter
 //right: for absolute layout
 //first-line pseudo
 //email guy about calendar text
-
 //right floats
 //paragraph extending floats
 //resize inlines with padding and borders
@@ -13,14 +44,16 @@
 //justified text
 //build calendar demo
 //boolean to turn off layout threading
+//integrate minium
+//fix list items
+//fix list item vertical positioning
+//build table demo
 
-fix list items
+--finish up hover support
 easier headless interface
 fix fixed background clipping error
-fix list item vertical positioning
-floated divs work, but not floated spans. span should turn into a block when floated.
+floated divs work, but not floated spans. span should turn into a block when floated
 make layoutfactory use display for generating layouts
-build table demo
 left-right-top w/ static pos
 fixed pos
 fix crash on width = 0
@@ -42,27 +75,13 @@ remove whitespace regex
 fix line breaking bugs
 --------------------
 
-table demo
-    look at eric myer's example
-    search for reports on the web
-    should be long
-    should have a header at the top in bigger letters
-    use alternating colors
-    have totals
-    have th column headers
-    
-build a calendar demo
-    month, days, selected day, events, years, days of the week,
-    should resize w/ the window
 ====================
 thoughts on hover
 hover requires some sort of dynamic reflow
 also needs a way of indentifying which areas of the screen can be hovered
-could do a search for the box under the mouse cursor and then see if it has hover
-could track a list of hovered blocks relative to the canvas
+could do a search for the box under the mouse cursor and then see if it has hover could track a list of hovered blocks relative to the canvas
 
-for non-layout reflow we can just change colors and fonts, maybe borders as well.
-identify the hovered block, look up the hover styles. call restyle() on the block with the hovered
+for non-layout reflow we can just change colors and fonts, maybe borders as well. identify the hovered block, look up the hover styles. call restyle() on the block with the hovered
 style. x,y,w,h won't change. then repaint the screen()
 
 --------------------

@@ -148,6 +148,7 @@
             source="${compiler.source}"
             target="${compiler.target}"
             verbose="${compiler.verbose}"
+            encoding="iso-8859-1"
             >
             <classpath refid="libraries.all" />
       </javac>
@@ -611,6 +612,14 @@
 $Id$
 
 $Log$
+Revision 1.67  2004/11/11 15:25:32  joshy
+changed the encoding
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.66  2004/11/07 23:24:18  joshy
 added menu item to generate diffs
 added diffs for multi-colored borders and inline borders
