@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -187,8 +186,6 @@ public interface Context {
     void setFirstLine(boolean first_line);
 
     Rectangle getFixedRectangle();
-
-    Layout getLayout(Node node);
 
     public void setNamespaceHandler(NamespaceHandler nh);
 

@@ -2,7 +2,7 @@ package org.xhtmlrenderer.layout.inline;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
-import org.xhtmlrenderer.layout.BoxLayout;
+import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LineBreaker;
 import org.xhtmlrenderer.layout.content.Content;
@@ -10,8 +10,7 @@ import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 
-import java.awt.Font;
-import java.awt.Rectangle;
+import java.awt.*;
 
 public class FloatUtil {
     /* the new way of doing floats */
@@ -121,9 +120,6 @@ public class FloatUtil {
           a  new one. is that possible?
         */
         //Uu.p("generate floated block inline box");
-        //TODO: this might be dangerous
-        BoxLayout layout = (BoxLayout) c.getLayout(content.getElement()); //
-        //InlineLayout layout = new InlineLayout(); //
         Rectangle oe = c.getExtents(); // copy the extents for safety
         c.setExtents(new Rectangle(oe));
         
@@ -131,7 +127,7 @@ public class FloatUtil {
         //BlockBox block = (BlockBox)layout.layout( c, (Element)node );
         InlineBlockBox inline_block = new InlineBlockBox();
         inline_block.content = content;
-        layout.layout(c, inline_block);
+        Boxing.layout(c, inline_block);
 
         //HACK: tobe 2004-12-22 - guessing here
         // calculate the float property

@@ -246,8 +246,8 @@ public class LineBreaker {
         } else {
             // get the layout for the replaced element
             //Layout layout = c.getLayout(content.getElement());
-            Layout layout = new InlineLayout();
-            block = (BlockBox) layout.layout(c, content);
+            //Layout layout = new InlineLayout();
+            block = (BlockBox) Boxing.layout(c, content);
             //Uu.p("got a block box from the sub layout: " + block);
             bounds = new Rectangle(block.x, block.y, block.width, block.height);
             //Uu.p("bounds = " + bounds);
@@ -381,10 +381,10 @@ public class LineBreaker {
         if (content instanceof TextContent) {
             box.setSubstring(start, end);
         }
-        BoxLayout.getBackgroundColor(c, box);
+        /*Boxing.getBackgroundColor(c, box);
         //BoxLayout.getBorder(c, box);
-        BoxLayout.getMargin(c, box);
-        BoxLayout.getPadding(c, box);
+        Boxing.getMargin(c, box);
+        Boxing.getPadding(c, box);*/
 
         // use the prev_align to calculate the Xx
         if (prev_align != null && !prev_align.break_after) {
@@ -523,6 +523,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2005/01/02 12:22:19  tobega
+ * Cleaned out old layout code
+ *
  * Revision 1.43  2005/01/02 02:12:48  tobega
  * img tags now handled as custom components.
  *

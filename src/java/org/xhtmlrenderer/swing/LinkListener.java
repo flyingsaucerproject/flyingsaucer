@@ -5,7 +5,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.event.MouseInputAdapter;
-import java.awt.Cursor;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class LinkListener extends MouseInputAdapter {
@@ -44,7 +44,7 @@ public class LinkListener extends MouseInputAdapter {
         Element elem = box.content.getElement();
         if (elem == null) return;
 
-        if (panel.getContext().getRenderingContext().getLayoutFactory().isLink(elem)) {
+        if (panel.getContext().getAttributeResolver().isLink(elem)) {
             linkClicked(box, evt);
         }
 

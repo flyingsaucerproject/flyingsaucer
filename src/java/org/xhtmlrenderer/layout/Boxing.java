@@ -125,9 +125,6 @@ public class Boxing {
         block.x = c.getExtents().x;
         block.y = c.getExtents().y;
 
-        // prepare the box w/ styles
-        (new DefaultLayout()).prepareBox(c, block);
-
         // set up a float bfc
         FloatUtil.preChildrenLayout(c, block);
         
@@ -241,9 +238,9 @@ public class Boxing {
         if (contentList.size() == 0) return box;//we can do this if there is no content, right?
 
         if (ContentUtil.hasBlockContent(contentList)) {//this should be block layed out
-            BoxLayout.layoutContent(c, box, contentList, box);
+            BlockBoxing.layoutContent(c, box, contentList, box);
         } else {
-            InlineLayout.layoutContent(c, box, contentList);
+            InlineBoxing.layoutContent(c, box, contentList);
         }
         return box;
     }
@@ -303,6 +300,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/02 12:22:16  tobega
+ * Cleaned out old layout code
+ *
  * Revision 1.1  2005/01/02 09:32:41  tobega
  * Now using mostly static methods for layout
  *

@@ -37,8 +37,9 @@
 package org.xhtmlrenderer.table;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.Layout;
 import org.xhtmlrenderer.layout.content.BlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
@@ -80,13 +81,13 @@ public class TableBoxing {
 
         c.pushStyle(content.getStyle());
         // set up the border spacing
-        float border_spacing = c.getCurrentStyle().getFloatProperty("border-spacing");
+        float border_spacing = c.getCurrentStyle().getFloatProperty(CSSName.BORDER_SPACING);
         table_box.spacing = new Point((int) border_spacing,
                 (int) border_spacing);
 
         // set up the width
         int fixed_width = c.getExtents().width;
-        if (content.getStyle().hasProperty("width")) {
+        if (content.getStyle().hasProperty(CSSName.WIDTH)) {
             fixed_width = (int) c.getCurrentStyle().getFloatPropertyRelative("width", c.getExtents().width);
         }
         //not used: int orig_fixed_width = fixed_width;
@@ -168,13 +169,13 @@ public class TableBoxing {
                     c.setExtents(new Rectangle(c.getExtents().x, c.getExtents().y,
                             cell_box.width, 100));
                     // do child layout
-                    Layout layout = c.getLayout(cell.node);
+                    //Layout layout = c.getLayout(cell.node);
                     //Uu.p("cell box = " + cell_box);
                     //Uu.p("doing child layout on: " + layout + " for " + cell_box.node);
                     //Uu.p("cell_box properly = " + cell_box);
                     c.setSubBlock(true);
                     //TODO: temporary hack
-                    Box cell_contents = layout.layout(c, new BlockContent((Element) cell.node, c.getCss().getCascadedStyle((Element) cell.node)));
+                    Box cell_contents = Boxing.layout(c, new BlockContent((Element) cell.node, c.getCss().getCascadedStyle((Element) cell.node)));
                     c.setSubBlock(false);
                     cell_box.sub_box = cell_contents;
                     cell_box.height = cell_box.sub_box.height;
@@ -283,6 +284,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.2  2005/01/02 12:22:21  tobega
+   Cleaned out old layout code
+
    Revision 1.1  2005/01/02 09:32:41  tobega
    Now using mostly static methods for layout
 

@@ -255,7 +255,7 @@ public class ContentUtil {
         List block = new LinkedList();
         for (Iterator i = pendingInlines.iterator(); i.hasNext();) {
             Object o = i.next();
-            if (o instanceof BlockContent || o instanceof RunInContent) {
+            if (o instanceof BlockContent || o instanceof RunInContent || o instanceof TableContent) {
                 inline = WhitespaceStripper.stripInlineContent(c, inline);
                 if (inline.size() != 0) {
                     //Uu.p("resove runin : new anony");
@@ -402,6 +402,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/01/02 12:22:15  tobega
+ * Cleaned out old layout code
+ *
  * Revision 1.26  2005/01/02 01:00:08  tobega
  * Started sketching in code for handling replaced elements in the NamespaceHandler
  *

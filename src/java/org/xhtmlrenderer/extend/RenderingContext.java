@@ -1,15 +1,13 @@
 package org.xhtmlrenderer.extend;
 
 import org.xhtmlrenderer.css.StyleReference;
-import org.xhtmlrenderer.layout.LayoutFactory;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Font;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.net.URL;
 
 /**
@@ -28,7 +26,6 @@ public class RenderingContext {
         getContext().setCtx(this);
         getContext().setCss(new StyleReference(new NaiveUserAgent()));
         XRLog.render("Using CSS implementation from: " + getContext().getCss().getClass().getName());
-        layout_factory = new LayoutFactory();
         setTextRenderer(new Java2DTextRenderer());
     }
 
@@ -171,32 +168,6 @@ public class RenderingContext {
      */
     public void setBaseURL(URL url) {
         base_url = url;
-    }
-
-
-    /**
-     * Description of the Field
-     */
-    protected LayoutFactory layout_factory;
-
-
-    /**
-     * Gets the layoutFactory attribute of the RenderingContext object
-     *
-     * @return The layoutFactory value
-     */
-    public LayoutFactory getLayoutFactory() {
-        return layout_factory;
-    }
-
-
-    /**
-     * Sets the layoutFactory attribute of the RenderingContext object
-     *
-     * @param layout_factory The new layoutFactory value
-     */
-    public void setLayoutFactory(LayoutFactory layout_factory) {
-        this.layout_factory = layout_factory;
     }
 
 

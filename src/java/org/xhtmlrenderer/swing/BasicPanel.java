@@ -26,7 +26,6 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
-import org.xhtmlrenderer.layout.BodyLayout;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -87,11 +86,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Description of the Field
      */
-    protected BodyLayout layout;
-
-    /**
-     * Description of the Field
-     */
     protected RenderingContext ctx;
 
     /**
@@ -134,7 +128,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
      */
     public BasicPanel() {
 
-        layout = new BodyLayout();
         layout_thread = new LayoutThread(this);
         setLayout(new AbsoluteLayoutManager());
         documentListeners = new HashMap();
@@ -236,9 +229,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         Context c = newContext((Graphics2D) g);
         //getContext().setMaxWidth(0);
         
-        // DEBUG
-        XRLog.layout(Level.FINEST, "layout = " + layout);
-
         getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
         //TODO: maybe temporary hack
         //Context c = getContext();
@@ -557,6 +547,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
                         return false;
                     }
                 };
+        getContext().setAttributeResolver(ar);
         getContext().setNamespaceHandler(new XhtmlNamespaceHandler());
         getRenderingContext().getStyleReference().setDocumentContext(getContext(), getContext().getNamespaceHandler(), ar, doc);
 
@@ -877,6 +868,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/01/02 12:22:20  tobega
+ * Cleaned out old layout code
+ *
  * Revision 1.25  2005/01/02 09:32:41  tobega
  * Now using mostly static methods for layout
  *

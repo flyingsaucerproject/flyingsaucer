@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
@@ -431,10 +430,6 @@ public class ContextImpl implements Context {
 
     public void setFirstLine(boolean first_line) {
         this.first_line = first_line;
-    }
-
-    public Layout getLayout(Node node) {
-        return getCtx().getLayoutFactory().getLayout(this, node);
     }
 
     /**

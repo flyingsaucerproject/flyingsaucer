@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.style.EmptyStyle;
+import org.xhtmlrenderer.extend.AttributeResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
@@ -611,12 +612,26 @@ public class SharedContext {
         return namespaceHandler;
     }
 
+    public AttributeResolver getAttributeResolver() {
+        return attributeResolver;
+    }
+
+    public void setAttributeResolver(AttributeResolver attributeResolver) {
+        this.attributeResolver = attributeResolver;
+    }
+
+    private AttributeResolver attributeResolver;
+
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/02 12:22:19  tobega
+ * Cleaned out old layout code
+ *
  * Revision 1.3  2005/01/02 01:00:09  tobega
  * Started sketching in code for handling replaced elements in the NamespaceHandler
  *

@@ -22,7 +22,7 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.BoxLayout;
+import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.ContentUtil;
@@ -299,19 +299,19 @@ public class BoxRendering {
     }
 
     public static Border getBorder(Context c, Box box) {
-        return BoxLayout.getBorder(c, box);
+        return Boxing.getBorder(c, box);
     }
 
     public static Border getPadding(Context c, Box box) {
-        return BoxLayout.getPadding(c, box);
+        return Boxing.getPadding(c, box);
     }
 
     public static Color getBackgroundColor(Context c, Box box) {
-        return BoxLayout.getBackgroundColor(c, box);
+        return Boxing.getBackgroundColor(c, box);
     }
 
     public static Border getMargin(Context c, Box box) {
-        return BoxLayout.getMargin(c, box);
+        return Boxing.getMargin(c, box);
     }
 
 

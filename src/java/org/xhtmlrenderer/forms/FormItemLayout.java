@@ -22,7 +22,6 @@ package org.xhtmlrenderer.forms;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.CustomBlockLayout;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
@@ -38,7 +37,7 @@ import java.awt.*;
  *
  * @author empty
  */
-public abstract class FormItemLayout extends CustomBlockLayout {
+public abstract class FormItemLayout/* extends CustomBlockLayout*/ {
 
     /**
      * Description of the Field
@@ -173,6 +172,9 @@ public abstract class FormItemLayout extends CustomBlockLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/01/02 12:22:14  tobega
+ * Cleaned out old layout code
+ *
  * Revision 1.16  2005/01/01 23:38:37  tobega
  * Cleaned out old rendering code
  *

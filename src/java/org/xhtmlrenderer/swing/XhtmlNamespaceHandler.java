@@ -225,9 +225,31 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
                 cc = new JButton(ii);
                 cc.setSize(ii.getIconWidth(), ii.getIconHeight());
                 //cc.setBounds(0,0,ii.getIconWidth(),ii.getIconHeight());
+            } else if (e.getNodeName().equals("input")) {
+                String type = e.getAttribute("type");
+                if (type == null || type.equals("")) {
+                    type = "button";
+                }
+                String label = e.getAttribute("value");
+                if (label == null || label.equals("")) {
+                    if (type.equals("reset")) {
+                        label = "Reset";
+                    }
+                    if (type.equals("submit")) {
+                        label = "Submit";
+                    }
+                }
+                JButton comp = new JButton();
+                comp.setText(label);
+                //HACK:
+                cc.setSize(200, 50);
             }
         } catch (MalformedURLException ex) {
 
+        }
+        if (e.hasAttribute("disabled") &&
+                e.getAttribute("disabled").equals("disabled")) {
+            cc.setEnabled(false);
         }
         return cc;
     }

@@ -1,12 +1,11 @@
 package org.xhtmlrenderer.layout.inline;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.BoxLayout;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.render.InlineBox;
 
-import java.awt.Font;
+import java.awt.*;
 
 public class BoxBuilder {
 
@@ -20,11 +19,11 @@ public class BoxBuilder {
 
         // prepare the font, colors, border, etc
         box.setFont(font);
-        BoxLayout.getBackgroundColor(c, box);
+        /*BoxLayout.getBackgroundColor(c, box);
         //BoxLayout.getBorder(c, box);
         //Uu.p("set border on inline box: " + box);
         BoxLayout.getMargin(c, box);
-        BoxLayout.getPadding(c, box);
+        BoxLayout.getPadding(c, box);  */
 
 
         // =========== setup the color

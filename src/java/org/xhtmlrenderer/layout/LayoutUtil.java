@@ -1,6 +1,5 @@
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -187,16 +186,6 @@ public class LayoutUtil {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Gets the replaced attribute of the DefaultLayout class
-     *
-     * @param node PARAM
-     * @return The replaced value
-     */
-    public static boolean isReplaced(Context c, Node node) {
-        return c.getRenderingContext().getLayoutFactory().isReplaced(node);
     }
 
 

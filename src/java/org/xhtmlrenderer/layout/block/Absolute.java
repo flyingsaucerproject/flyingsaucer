@@ -4,12 +4,12 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
-import org.xhtmlrenderer.layout.BoxLayout;
+import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 
-import java.awt.Rectangle;
+import java.awt.*;
 
 public class Absolute {
 
@@ -123,14 +123,14 @@ public class Absolute {
     public static Box generateAbsoluteBox(Context c, Content content) {
         // Uu.p("generate absolute block inline box: avail = " + avail);
         //BoxLayout layout = (BoxLayout) c.getLayout(content.getElement()); //
-        BoxLayout layout = new BoxLayout();
+        //BoxLayout layout = new BoxLayout();
         Rectangle oe = c.getExtents(); // copy the extents for safety
         c.setExtents(new Rectangle(oe));
         
 
         //InlineBlockBox inline_block = new InlineBlockBox();
         //inline_block.content = content;
-        Box box = layout.layout(c, content);
+        Box box = Boxing.layout(c, content);
 
         
         //Uu.p("got a block box from the sub layout: " + block);

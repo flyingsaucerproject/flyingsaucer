@@ -21,14 +21,10 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.DefaultLayout;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.util.Configuration;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -62,7 +58,7 @@ public class BackgroundPainter {
                 block.height - margin.top - border.top - border.bottom - margin.bottom);
                  
         // paint the background
-        Color background_color = DefaultLayout.getBackgroundColor(c, block);
+        Color background_color = BoxRendering.getBackgroundColor(c, block);
         if (background_color != null) {
             // skip transparent background
             if (!background_color.equals(transparent)) {
@@ -215,6 +211,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/01/02 12:22:19  tobega
+ * Cleaned out old layout code
+ *
  * Revision 1.13  2004/12/29 10:39:34  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

@@ -255,3 +255,7 @@ input {
     padding: 0px;
     vertical-align: baseline;
 }
+
+input {
+    display: inline-block;
+}

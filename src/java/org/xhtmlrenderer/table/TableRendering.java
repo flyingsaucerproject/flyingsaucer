@@ -20,76 +20,13 @@
 package org.xhtmlrenderer.table;
 
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.render.BoxRendering;
 
 import java.awt.*;
 
 public class TableRendering {
-
-    /*
-       =========== painting code =============
-      */
-    /**
-     * The entry point to the painting routines. It takes the table box to be
-     * painted and the current context. It will call paintBackground(),
-     * paintComponent(), and paintBorder() on it's own.
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
-
-    /*public static void paint(Context c, Box box) {
-
-        //Uu.p("TableLayout.paint( " + c);
-
-        // copy the bounds to we don't mess it up
-
-        Rectangle oldBounds = new Rectangle(c.getExtents());
-
-        //Rectangle contents = layout(c,elem);
-
-        //adjustWidth(c,elem);
-
-        BoxRendering.paintBackground(c, box);
-
-        paintComponent(c, box);
-
-        //paintChildren(c,elem);
-
-        BoxRendering.paintBorder(c, box);
-
-        // move the origin down to account for the contents plus the margin, borders, and padding
-
-        oldBounds.y = oldBounds.y + box.height;
-
-        c.setExtents(oldBounds);
-
-    }*/
-
-
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
-    /*public static void paintComponent(Context c, Box box) {
-
-        paintTable(c, (TableBox) box);
-
-    }  */
-
-
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
-    //public void paintChildren(Context c, Box box) {
-    //}
 
     /**
      * Description of the Method
@@ -101,7 +38,7 @@ public class TableRendering {
 
         c.getGraphics().translate(table.x, table.y);
 
-        Border border = LayoutUtil.getBorder(table, c.getCurrentStyle());
+        Border border = Boxing.getBorder(c, table);
         Border margin = c.getCurrentStyle().getMarginWidth();
         Border padding = c.getCurrentStyle().getPaddingWidth();
 

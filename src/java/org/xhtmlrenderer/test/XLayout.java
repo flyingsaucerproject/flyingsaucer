@@ -21,11 +21,10 @@ package org.xhtmlrenderer.test;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.CustomBlockLayout;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Dimension;
+import java.awt.*;
 
 
 /**
@@ -33,7 +32,7 @@ import java.awt.Dimension;
  *
  * @author empty
  */
-public class XLayout extends CustomBlockLayout {
+public class XLayout /*extends CustomBlockLayout*/ {
 
     /**
      * Description of the Method
@@ -73,6 +72,9 @@ public class XLayout extends CustomBlockLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/01/02 12:22:23  tobega
+ * Cleaned out old layout code
+ *
  * Revision 1.6  2004/12/29 10:39:37  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *
