@@ -59,7 +59,11 @@ public class LineBox extends Box {
                         whitespace.equals("pre-line"))
                     child.setSubstring(child.start_index + 1, child.end_index);
             }
-            //dangerous: we lose pushStyles! if (child.getSubstring().equals("")) return;
+            if (child.getSubstring().equals("")) {
+                child.width = 0;
+                child.height = 0;
+                child.baseline = 0;
+            }
         }
         ib.setParent(this);
         addChild(ib);
@@ -84,6 +88,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/01/09 13:32:35  tobega
+ * Caching image components. Also fixed two bugs that were introduced fixing the last one. Code still too brittle...
+ *
  * Revision 1.9  2005/01/09 00:29:28  tobega
  * Removed XPath usages from core classes. Also happened to find and fix a layout-bug that I introduced a while ago.
  *

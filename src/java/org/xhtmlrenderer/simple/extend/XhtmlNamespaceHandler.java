@@ -37,6 +37,7 @@ import java.awt.Image;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -223,10 +224,24 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
 
     }
 
+    protected HashMap imageComponents;
+
+    protected JComponent getImageComponent(Element e) {
+        if (imageComponents == null) return null;
+        return (JComponent) imageComponents.get(e);
+    }
+
+    protected void addImageComponent(Element e, JComponent cc) {
+        if (imageComponents == null) imageComponents = new HashMap();
+        imageComponents.put(e, cc);
+    }
+
     public JComponent getCustomComponent(Element e, Context c) {
         JComponent cc = null;
         if (e == null) return null;
         if (e.getNodeName().equals("img")) {
+            cc = getImageComponent(e);
+            if (cc != null) return cc;
             JButton jb = null;
             Image im = null;
             try {
@@ -242,6 +257,7 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
             }
             jb.setBorder(BorderFactory.createEmptyBorder());
             jb.setSize(jb.getPreferredSize());
+            addImageComponent(e, jb);
             return jb;
         }
         //form components

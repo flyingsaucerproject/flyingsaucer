@@ -195,9 +195,14 @@ public class InlineBoxing {
 
                 // save the new inline to the list
                 // Uu.p("adding inline child: " + new_inline);
-                //the inline might be discarded after this, if it is first whitespace on line.
+                //the inline might be set to size 0,0 after this, if it is first whitespace on line.
+                // Cannot discard because it may contain style-pushes
                 curr_line.addInlineChild(c, new_inline);
                 // Uu.p("current line = " + curr_line);
+                if (new_inline instanceof InlineTextBox) {
+                    start = ((InlineTextBox) new_inline).end_index;
+                }
+
 
                 isFirstLetter = false;
                 new_inline.pushstyles = pendingPushStyles;
@@ -472,6 +477,9 @@ public class InlineBoxing {
 * $Id$
 *
 * $Log$
+* Revision 1.8  2005/01/09 13:32:35  tobega
+* Caching image components. Also fixed two bugs that were introduced fixing the last one. Code still too brittle...
+*
 * Revision 1.7  2005/01/09 00:29:28  tobega
 * Removed XPath usages from core classes. Also happened to find and fix a layout-bug that I introduced a while ago.
 *
