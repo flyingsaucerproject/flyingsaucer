@@ -69,7 +69,7 @@ public class FloatUtil {
         if ( ContentUtil.isFloated( style ) ) {
             // Uu.p("==== setup float ====");
             IdentValue floatVal = style.getIdent( CSSName.FLOAT );
-            if ( floatVal == null || floatVal == IdentValue.NONE ) {
+            if ( floatVal == IdentValue.NONE ) {
                 return;
             }
             box.floated = true;

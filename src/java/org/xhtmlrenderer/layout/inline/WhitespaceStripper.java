@@ -138,7 +138,7 @@ public class WhitespaceStripper {
      */
     public static IdentValue getWhitespace( CalculatedStyle style ) {
         IdentValue whitespace = style.getIdent( CSSName.WHITE_SPACE );
-        return ( whitespace == null ? IdentValue.NORMAL : whitespace );
+        return whitespace;
     }
 
     /**

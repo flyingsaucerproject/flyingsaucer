@@ -88,7 +88,7 @@ public class LayoutUtil {
             return null;
         }//TODO: this should not be necessary?
         IdentValue position = style.getIdent( CSSName.POSITION );
-        return ( position == null ? IdentValue.STATIC : position );
+        return position;
     }
 
 
@@ -103,7 +103,7 @@ public class LayoutUtil {
             return false;
         }//TODO: this should be unnecessary?
         IdentValue floatVal = style.getIdent( CSSName.FLOAT );
-        return floatVal != null && ( floatVal == IdentValue.LEFT || floatVal == IdentValue.RIGHT );
+        return ( floatVal == IdentValue.LEFT || floatVal == IdentValue.RIGHT );
     }
 }
 
