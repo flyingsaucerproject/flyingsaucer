@@ -51,7 +51,7 @@
         <copy todir="build/classes/resources/css/" file="src/css/default.css"/>
         <mkdir dir="build/classes/resources/conf"/>
         <copy todir="build/classes/resources/conf/" file="src/conf/xhtmlrenderer.conf"/>
-        <copy todir="build/classes/resources/conf/" file="src/conf/xr-logging.properties"/>
+<!--        <copy todir="build/classes/resources/conf/" file="src/conf/xr-logging.properties"/> -->
     </target>
     
     <target name="compile.browser" depends="compile">
@@ -283,6 +283,14 @@
 $Id$
 
 $Log$
+Revision 1.41  2004/10/18 14:19:34  joshy
+removed build file reference to the logging properties file
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.40  2004/10/18 10:08:19  pdoubleya
 Moved default property settings into build file itself. Now looks for build.properties as override, and a local properties file in userhome/.flyingsaucer/flyingsaucer.build.properties.
 
