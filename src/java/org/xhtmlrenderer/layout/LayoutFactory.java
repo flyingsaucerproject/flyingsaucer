@@ -181,7 +181,7 @@ public class LayoutFactory {
      */
 
     private static void initializeLayouts() {
-        System.out.println( "initalizing layouts" );
+        //System.out.println( "initalizing layouts" );
         InlineLayout inline = new InlineLayout();
         addCustomLayout( "div", inline );
         addCustomLayout( "p", inline );
@@ -250,6 +250,26 @@ public class LayoutFactory {
     static {
         initializeLayouts();
     }
+    
+    
+    public static boolean isBreak( Node node ) {
+
+        if ( node instanceof Element ) {
+
+            if ( ( (Element)node ).getNodeName().equals( "br" ) ) {
+
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+    
+    public static boolean isLink( Node node ) {
+         return node.getNodeName().equals( "a" );
+    }
+
 
 }
 
@@ -257,6 +277,16 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.9  2004/10/28 13:46:32  joshy
+* removed dead code
+* moved code about specific elements to the layout factory (link and br)
+* fixed form rendering bug
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.8  2004/10/28 01:34:24  joshy
 * moved more painting code into the renderers
 *

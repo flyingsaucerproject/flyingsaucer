@@ -14,8 +14,8 @@ public class BoxRenderer extends DefaultRenderer {
      * @param box  PARAM
      */
     public void paint( Context c, Box box ) {
-        //u.p("BoxLayout.paint " + box);//+box.getElement().getNodeName()+") " + block);
-        BlockBox block = (BlockBox)box;
+        //u.p("BoxLayout.paint " + box);
+        Box block = (Box)box;
 
         // copy the bounds to we don't mess it up
         Rectangle oldBounds = new Rectangle( c.getExtents() );
@@ -50,7 +50,7 @@ public class BoxRenderer extends DefaultRenderer {
      * @param c      PARAM
      * @param block  PARAM
      */
-    public void paintNormal( Context c, BlockBox block ) {
+    public void paintNormal( Context c, Box block ) {
         paintBackground( c, block );
 
         c.translateInsets( block );
@@ -68,7 +68,7 @@ public class BoxRenderer extends DefaultRenderer {
      * @param ctx    PARAM
      * @param block  PARAM
      */
-    public void paintRelative( Context ctx, BlockBox block ) {
+    public void paintRelative( Context ctx, Box block ) {
         ctx.getGraphics().translate( block.left, block.top );
         paintNormal( ctx, block );
         ctx.getGraphics().translate( -block.left, -block.top );
@@ -81,7 +81,7 @@ public class BoxRenderer extends DefaultRenderer {
      * @param c      PARAM
      * @param block  PARAM
      */
-    public void paintFixed( Context c, BlockBox block ) {
+    public void paintFixed( Context c, Box block ) {
         int xoff = 0;
         int yoff = 0;
 

@@ -7,6 +7,7 @@ import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.util.*;
 import java.awt.Point;
 
 public class FormItemRenderer extends CustomBlockRenderer {

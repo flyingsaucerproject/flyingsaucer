@@ -660,10 +660,6 @@ class DOMTreeModel implements TreeModel {
 
         Node node = (Node)nd;
 
-        //u.p("checking leaf: "  + node.getNodeName());
-
-        //u.p("is: " + node.hasChildNodes());
-
         return !node.hasChildNodes();
     }
 
@@ -756,6 +752,16 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/10/28 13:46:33  joshy
+ * removed dead code
+ * moved code about specific elements to the layout factory (link and br)
+ * fixed form rendering bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/10/23 13:51:54  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

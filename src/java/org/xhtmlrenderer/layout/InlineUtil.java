@@ -253,7 +253,7 @@ public class InlineUtil {
 
                 }
 
-                if ( isBreak( curr ) ) {
+                if ( LayoutFactory.isBreak( curr ) ) {
 
                     //u.p("adding: " + curr);
 
@@ -351,33 +351,14 @@ public class InlineUtil {
                     //u.p("going to next sibling: " + curr);
 
                     break;
+
                 }
+
             }
 
         }
 
     }
-
-
-    /**
-     * Gets the break attribute of the InlineUtil class
-     *
-     * @param node  PARAM
-     * @return      The break value
-     */
-    public static boolean isBreak( Node node ) {
-
-        if ( node instanceof Element ) {
-
-            if ( ( (Element)node ).getNodeName().equals( "br" ) ) {
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 
 }
 
@@ -385,6 +366,16 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/10/28 13:46:32  joshy
+ * removed dead code
+ * moved code about specific elements to the layout factory (link and br)
+ * fixed form rendering bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/10/23 13:46:47  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

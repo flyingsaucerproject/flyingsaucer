@@ -30,6 +30,7 @@ import org.xhtmlrenderer.layout.CustomBlockLayout;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.render.Renderer;
 
 
 /**
@@ -161,12 +162,26 @@ public abstract class FormItemLayout extends CustomBlockLayout {
             comp.setEnabled( false );
         }
     }
+    
+    public Renderer getRenderer() {
+        return new FormItemRenderer();
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/10/28 13:46:31  joshy
+ * removed dead code
+ * moved code about specific elements to the layout factory (link and br)
+ * fixed form rendering bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/10/28 02:13:38  joshy
  * finished moving the painting code into the renderers
  *

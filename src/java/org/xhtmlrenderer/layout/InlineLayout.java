@@ -132,7 +132,7 @@ public class InlineLayout extends BoxLayout {
                     if ( isFloatedBlock( current_node, c ) ) {
                         break;
                     }
-                    if ( InlineUtil.isBreak( current_node ) ) {
+                    if ( LayoutFactory.isBreak( current_node ) ) {
                         break;
                     }
                     // if no more unused text in this node
@@ -323,15 +323,12 @@ public class InlineLayout extends BoxLayout {
         //u.p("text = " + text);
         Font font = FontUtil.getFont( c, node );
         if ( isReplaced( node ) ) {
-            //u.p("is replaced");
             return LineBreaker.generateReplacedInlineBox( c, node, avail, prev, text, prev_align, font );
         }
         if ( isFloatedBlock( node, c ) ) {
-            //u.p("is floated");
             return LineBreaker.generateFloatedBlockInlineBox( c, node, avail, prev, text, prev_align, font );
         }
-        if ( InlineUtil.isBreak( node ) ) {
-            //u.p("is break");
+        if ( LayoutFactory.isBreak( node ) ) {
             return LineBreaker.generateBreakInlineBox( node );
         }
         if ( LineBreaker.isWhitespace( c, containing_block ) ) {
@@ -425,6 +422,16 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.6  2004/10/28 13:46:32  joshy
+* removed dead code
+* moved code about specific elements to the layout factory (link and br)
+* fixed form rendering bug
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.5  2004/10/27 13:39:56  joshy
 * moved more rendering code out of the layouts
 *

@@ -807,7 +807,7 @@ class LayoutThread implements Runnable {
     
     // skip for now
     private synchronized void completeLayout() {
-        u.p("layout thread ending");
+        //u.p("layout thread ending");
         done = true;
         graphics = null;
         panel.repaint();
@@ -846,6 +846,16 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/10/28 13:46:33  joshy
+ * removed dead code
+ * moved code about specific elements to the layout factory (link and br)
+ * fixed form rendering bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.14  2004/10/27 13:39:57  joshy
  * moved more rendering code out of the layouts
  *

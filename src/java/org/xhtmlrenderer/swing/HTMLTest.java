@@ -38,6 +38,7 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.CSSBank;
 import org.xhtmlrenderer.css.bridge.XRStyleReference;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.layout.LayoutFactory;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.u;
 
@@ -451,7 +452,7 @@ class ClickMouseListener extends MouseAdapter {
                 node = node.getParentNode();
             }
 
-            if ( node.getNodeName().equals( "a" ) ) {
+            if ( LayoutFactory.isLink(node)) {
                 u.p( "clicked on a link" );
                 box.clicked = true;
                 box.color = new Color( 255, 255, 0 );
@@ -477,7 +478,7 @@ class ClickMouseListener extends MouseAdapter {
                 node = node.getParentNode();
             }
 
-            if ( node.getNodeName().equals( "a" ) ) {
+            if ( LayoutFactory.isLink(node) ) {
                 u.p( "clicked on a link" );
                 box.clicked = true;
                 box.color = new Color( 255, 0, 0 );
@@ -508,6 +509,16 @@ class ClickMouseListener extends MouseAdapter {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/10/28 13:46:33  joshy
+ * removed dead code
+ * moved code about specific elements to the layout factory (link and br)
+ * fixed form rendering bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.7  2004/10/23 13:51:54  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
