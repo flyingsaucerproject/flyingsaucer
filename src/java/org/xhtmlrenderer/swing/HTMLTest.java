@@ -1,21 +1,21 @@
-/* 
- * {{{ header & license 
- * Copyright (c) 2004 Joshua Marinacci 
- * 
- * This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU Lesser General Public License 
- * as published by the Free Software Foundation; either version 2.1 
- * of the License, or (at your option) any later version. 
- * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the 
- * GNU Lesser General Public License for more details. 
- * 
- * You should have received a copy of the GNU Lesser General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
- * }}} 
+/*
+ * {{{ header & license
+ * Copyright (c) 2004 Joshua Marinacci
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
  */
 
 package org.xhtmlrenderer.swing;
@@ -46,8 +46,6 @@ public class HTMLTest extends JFrame {
         scroll.setVerticalScrollBarPolicy(scroll.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(scroll.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setPreferredSize(new Dimension(text_width,text_width));
-        panel.setViewportComponent(scroll);
-        panel.setJScrollPane(scroll);
         panel.addMouseListener(new ClickMouseListener(panel));
 
         if(args.length > 0) {
@@ -71,41 +69,42 @@ public class HTMLTest extends JFrame {
         view.setMnemonic('V');
         view.add(new RefreshPageAction());
         view.add(new ReloadPageAction());
-        
+
         JMenu test = new JMenu("Test");
         mb.add(test);
         test.setMnemonic('T');
 
-        addFileLoadAction(test, "One Liner", "demos/one-line.xhtml");
-        addFileLoadAction(test, "Background Colors/Images", "demos/background.xhtml");
-        addFileLoadAction(test, "Borders", "demos/border.xhtml");
-        addFileLoadAction(test, "Box Sizing", "demos/box-sizing.xhtml");
-        addFileLoadAction(test, "Mixed Test (1)", "demos/content.xhtml");
-        addFileLoadAction(test, "Line Breaking", "demos/breaking.xhtml");
-        addFileLoadAction(test, "Headers", "demos/header.xhtml");
-        addFileLoadAction(test, "Inline Image", "demos/image.xhtml");
-        addFileLoadAction(test, "List ", "demos/list.xhtml");
-        addFileLoadAction(test, "Nesting", "demos/nested.xhtml");
-        addFileLoadAction(test, "General Styled Text", "demos/paragraph.xhtml");
-        addFileLoadAction(test, "CSS Selectors", "demos/selectors.xhtml");
-        addFileLoadAction(test, "Table", "demos/table.xhtml");
-        addFileLoadAction(test, "Text Alignment", "demos/text-alignment.xhtml");
-        addFileLoadAction(test, "Whitespace Handling", "demos/whitespace.xhtml");
-        addFileLoadAction(test, "iTunes Email", "demos/itunes/itunes1.xhtml");
-        addFileLoadAction(test, "Follow Links", "demos/link.xhtml");
-        addFileLoadAction(test, "Hamlet (slow!)", "demos/hamlet.xhtml");
-        addFileLoadAction(test, "extended", "demos/extended.xhtml");
-        addFileLoadAction(test, "XML-like", "demos/xml.xhtml");
-        addFileLoadAction(test, "XML", "demos/xml.xml");
+        String demoRootDir = "demos/browser/xhtml";
+        addFileLoadAction(test, "One Liner", demoRootDir + "/one-line.xhtml");
+        addFileLoadAction(test, "Background Colors/Images", demoRootDir + "/background.xhtml");
+        addFileLoadAction(test, "Borders", demoRootDir + "/border.xhtml");
+        addFileLoadAction(test, "Box Sizing", demoRootDir + "/box-sizing.xhtml");
+        addFileLoadAction(test, "Mixed Test (1)", demoRootDir + "/content.xhtml");
+        addFileLoadAction(test, "Line Breaking", demoRootDir + "/breaking.xhtml");
+        addFileLoadAction(test, "Headers", demoRootDir + "/header.xhtml");
+        addFileLoadAction(test, "Inline Image", demoRootDir + "/image.xhtml");
+        addFileLoadAction(test, "List ", demoRootDir + "/list.xhtml");
+        addFileLoadAction(test, "Nesting", demoRootDir + "/nested.xhtml");
+        addFileLoadAction(test, "General Styled Text", demoRootDir + "/paragraph.xhtml");
+        addFileLoadAction(test, "CSS Selectors", demoRootDir + "/selectors.xhtml");
+        addFileLoadAction(test, "Table", demoRootDir + "/table.xhtml");
+        addFileLoadAction(test, "Text Alignment", demoRootDir + "/text-alignment.xhtml");
+        addFileLoadAction(test, "Whitespace Handling", demoRootDir + "/whitespace.xhtml");
+        addFileLoadAction(test, "iTunes Email", demoRootDir + "/itunes/itunes1.xhtml");
+        addFileLoadAction(test, "Follow Links", demoRootDir + "/link.xhtml");
+        addFileLoadAction(test, "Hamlet (slow!)", demoRootDir + "/hamlet.xhtml");
+        addFileLoadAction(test, "extended", demoRootDir + "/extended.xhtml");
+        addFileLoadAction(test, "XML-like", demoRootDir + "/xml.xhtml");
+        addFileLoadAction(test, "XML", demoRootDir + "/xml.xml");
 
         JMenu debug = new JMenu("Debug");
         mb.add(debug);
         debug.setMnemonic('D');
-        
+
         JMenu debugShow = new JMenu("Show");
         debug.add(debugShow);
         debugShow.setMnemonic('S');
-        
+
         debugShow.add(new JCheckBoxMenuItem(new BoxOutlinesAction()));
         debugShow.add(new JCheckBoxMenuItem(new LineBoxOutlinesAction()));
         debugShow.add(new JCheckBoxMenuItem(new InlineBoxesAction()));
@@ -128,7 +127,7 @@ public class HTMLTest extends JFrame {
             }
         });
     }
-    
+
     class QuitAction extends AbstractAction {
         QuitAction() {
             super("Quit");
@@ -136,7 +135,7 @@ public class HTMLTest extends JFrame {
         }
         public void actionPerformed(ActionEvent evt) { System.exit(0); }
     }
-    
+
     class BoxOutlinesAction extends AbstractAction {
         BoxOutlinesAction() {
             super("Show Box Outlines");
@@ -177,61 +176,61 @@ public class HTMLTest extends JFrame {
             super("DOM Tree Inspector");
             putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_D));
         }
-        
+
         public void actionPerformed(ActionEvent evt) {
             if ( inspectorFrame == null ) {
                 inspectorFrame = new JFrame("DOM Tree Inspector");
             }
             if ( inspector == null ) {
                 // inspectorFrame = new JFrame("DOM Tree Inspector");
-                
+
                 // CLEAN: this is more complicated than it needs to be
                 // DOM Tree Inspector needs to work with either CSSBank
                 // or XRStyleReference--implementations are not perfectly
                 // so we have different constructors
                 if ( panel.c.css instanceof CSSBank )
-                    inspector = new DOMInspector(panel.doc);     
-                else 
+                    inspector = new DOMInspector(panel.doc);
+                else
                     inspector = new DOMInspector(panel.doc, panel.c, (XRStyleReference)panel.c.css);
-                    
+
                 inspectorFrame.getContentPane().add(inspector);
-                    
+
                 inspectorFrame.pack();
                 inspectorFrame.setSize(text_width,600);
                 inspectorFrame.show();
             } else {
                 if ( panel.c.css instanceof CSSBank )
-                    inspector.setForDocument(panel.doc);     
-                else 
+                    inspector.setForDocument(panel.doc);
+                else
                     inspector.setForDocument(panel.doc, panel.c, (XRStyleReference)panel.c.css);
             }
             inspectorFrame.show();
         }
     }
-    
+
     class RefreshPageAction extends AbstractAction {
         RefreshPageAction() {
             super("Refresh Page");
             putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_R));
-            putValue(ACCELERATOR_KEY, 
+            putValue(ACCELERATOR_KEY,
                      KeyStroke.getKeyStroke("F5"));
         }
-        
+
         public void actionPerformed(ActionEvent evt) {
             // TODO
             System.out.println("Refresh Page triggered");
         }
     }
-    
+
     class ReloadPageAction extends AbstractAction {
         ReloadPageAction() {
             super("Reload Page");
             putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_P));
-            putValue(ACCELERATOR_KEY, 
-                     KeyStroke.getKeyStroke(KeyEvent.VK_F5,              
+            putValue(ACCELERATOR_KEY,
+                     KeyStroke.getKeyStroke(KeyEvent.VK_F5,
                                             ActionEvent.CTRL_MASK));
         }
-        
+
         public void actionPerformed(ActionEvent evt) {
             // TODO
             System.out.println("Reload Page triggered");
@@ -243,13 +242,13 @@ public class HTMLTest extends JFrame {
             public void run() {
                 try {
                     long st = System.currentTimeMillis();
-                    
+
                     panel.setDocument(file);
-                    
+
                     long el = System.currentTimeMillis() - st;
                     System.out.println("TIME: loadDocument(" + file + ")  " + el + "ms, render may take longer");
-                    HTMLTest.this.setTitle(BASE_TITLE + "-  " + 
-                                  panel.getDocumentTitle() + "  " + 
+                    HTMLTest.this.setTitle(BASE_TITLE + "-  " +
+                                  panel.getDocumentTitle() + "  " +
                                   "(" + file + ")");
                 } catch (Exception ex) {
                     u.p(ex);
