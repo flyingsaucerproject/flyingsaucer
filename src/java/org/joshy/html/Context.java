@@ -28,8 +28,10 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Iterator;
 import org.joshy.u;
 import org.w3c.dom.Element;
+import javax.swing.JTextField;
 import javax.swing.ButtonGroup;
 
 
@@ -535,6 +537,11 @@ public class Context {
         return fc;
     }
     
+    public Iterator getInputFieldComponents(String form_name) {
+        Map fields = (Map)forms.get(form_name);
+        return fields.values().iterator();
+    }
+
     public List getInputFieldComponents(String form_name, String field_name) {
         Map fields = (Map)forms.get(form_name);
         List field_list = (List)fields.get(field_name);
@@ -553,6 +560,18 @@ public class Context {
         public JComponent component;
         public Element element;
         public ButtonGroup group;
+        public void reset() {
+            u.p("resetting");
+            if(component instanceof JTextField) {
+                u.p("it's a text field");
+                if(element.hasAttribute("value")) {
+                    u.p("setting to : " + element.getAttribute("value"));
+                    ((JTextField)component).setText(element.getAttribute("value"));
+                } else {
+                    ((JTextField)component).setText("");
+                }
+            }
+        }
     }
 }
 

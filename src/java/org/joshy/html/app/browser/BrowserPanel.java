@@ -265,7 +265,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         //u.p("forms = " + forms);
         Iterator form_it = forms.keySet().iterator();
         while(form_it.hasNext()) {
-            String form_name = (String)form_it.next();
+            final String form_name = (String)form_it.next();
             Map form = (Map)forms.get(form_name);
             //u.p("got form: " + form_name);
             Iterator fields = form.keySet().iterator();
@@ -291,6 +291,17 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                             ((JButton)comp.component).addActionListener(new ActionListener() {
                                 public void actionPerformed(ActionEvent evt) {
                                     u.p("reset button hit");
+                                    
+                                    Context ctx = view.getContext();
+                                    Iterator fields = ctx.getInputFieldComponents(form_name);
+                                    while(fields.hasNext()) {
+                                        List field_list = (List)fields.next();
+                                        for(int i=0; i<field_list.size(); i++) {
+                                            Context.FormComponent comp = (Context.FormComponent)field_list.get(i);
+                                            comp.reset();
+                                        }
+                                    }
+                                    
                                 }
                             });
                         }
