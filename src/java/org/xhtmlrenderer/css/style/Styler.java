@@ -128,7 +128,7 @@ public class Styler {
         for ( int i = 0, len = nl.getLength(); i < len; i++ ) {
             org.w3c.dom.Node n = nl.item( i );
             if ( n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE ) {
-                restyleTree( (org.w3c.dom.Element)n );
+                styleTree( (org.w3c.dom.Element)n );
             }
         }
     }
