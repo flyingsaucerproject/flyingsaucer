@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <project name="Flying Saucer Build File" default="help" basedir=".">
-    <description>Checkout, build, test, and package the Flying Saucer project. 
-    Requires build.properties in current directory.</description>
+    <description>Checkout, build, test, and package the Flying Saucer project.</description>
 
     <target name="build" depends="compile" />
     <target name="build-clean" depends="clean-compile" />
@@ -15,50 +14,74 @@
         <echo message=" ant about:          build run the about box demo"/>
     </target>
 
+    <property name="app.name" value="flyingsaucer" />
+
+    <property name="user.overrides"
+        location="${user.home}/.${app.name}/${app.name}.build.properties"/>
+
+    <property name="project.overrides" location="build.properties"/>
+
+    <property file="${user.overrides}"/>
+
+    <property file="${project.overrides}"/>
+    
+    <target name="properties">
+      <tstamp />
+
+      <available file="${user.overrides}" 
+             property="user.overrides.available"/>
+      <available file="${project.overrides}" 
+             property="project.overrides.available"/>
+
+      <echo message=
+              "Loading any properties found in '${user.overrides}'"/>
+      <echo message=
+              "Loading any properties found in '${project.overrides}'"/> 
+    </target>
+
     <!-- 
-    Properties: The following tasks load properties for this build file.
+    PROJECT PROPERTIES
     
-    build.properties is required, and is centrally maintained (used by
-    all developers. The properties listed in build.properties define
-    the complete property-set (e.g. new properties in local.properties
-    are not referenced in this build file).
+    These are safe defaults. For sharing new settings with the team, modify
+    build.properties.
     
-    local.properties is optional; should be in basedir. If found, properties
-    in local.properties take precedence over those in build.properties. 
-    Properties not re-defined in local.properties get their values from
-    build.properties, so you can re-define as many or as few as you like.
-    
-    To load properties when using this file, define a depends on the
-    "properties" task, as
-    
-    <target name="a_target" depends="properties"...
-    
-    NOTE: All the "compile*" targets are set to call init, which in turn
-    loads properties.
+    For making changes only visible to your machine, modify
+      ${user.home}/.flyingsaucer/flyingsaucer.build.properties    
     -->
+    <!-- Directories -->
+    <property name="libraries.dir" location="lib" />
+    <property name="src.dir" location="src" />
+    <property name="src.browser.java.dir" location="demos/browser/src/java" />
+    <property name="src.about.java.dir" location="demos/about/src/java" />
+    <property name="dest.dir" location="build" />
+    <property name="src.java.dir" location="${src.dir}/java" />
+    <property name="dest.java.dir" location="${dest.dir}/classes" />
+    <property name="src.resources.css.dir" location="${src.dir}/css" />
+    <property name="dest.resources.css.dir" location="${dest.dir}/resources/css" />
+    <property name="src.resources.conf.dir" location="${src.dir}/conf" />
+    <property name="dest.resources.conf.dir" location="${dest.dir}/resources/conf" />
+    <property name="src.packaging.dir" location="${src.dir}/packaging" />
+    <property name="src.demo.xhtml.dir" location="demos/browser/xhtml" />
+    <property name="src.demo.splash.dir" location="demos/splash" />
+    <property name="src.about.xhtml.dir" location="demos/about/xhtml" />
     
-    <!-- Call this target to check for local properties. -->
-    <target name="start">
-      <tstamp/>
-      <available file="${basedir}/local.properties" 
-             property="local.properties.available"/>
-    </target>
+    <!-- Compiler flags -->
+    <!-- For details on each flag, see http://ant.apache.org/manual/CoreTasks/javac.html -->
+    <property name="build.compiler" value="modern" />
+    <property name="compiler.debug" value="on" />
+    <property name="compiler.deprecation" value="off" />
+    <property name="compiler.failonerror" value="true" />
+    <property name="compiler.fork" value="no" />
+    <property name="compiler.listfiles" value="no" />
+    <property name="compiler.nowarn" value="off" />
+    <property name="compiler.optimize" value="off" />
+    <property name="compiler.source" value="1.4" />
+    <property name="compiler.target" value="1.4" />
+    <property name="compiler.verbose" value="no" />
     
-    <!-- Loads local properties if available. -->
-    <target name="properties-local" 
-            if="local.properties.available" 
-            depends="start">
-      <echo message="Loading local properties file"/>
-      <property file="${basedir}/local.properties"/>
-    </target>
-                                                                                             
-    <!-- Loads local properties, then master properties. Local take precedence.  -->
-    <target name="properties" 
-            depends="properties-local">
-      <echo message="Loading build properties file"/>
-      <property file="build.properties"/>
-    </target>
-      
+    <!-- Java.exe flags -->
+    <property name="java-exec.fork.tests" value="true" />    
+
     <!-- General initialization, including properties. -->
     <target name="init" depends="properties" >
         <mkdir dir="${dest.dir}"/>
@@ -196,7 +219,7 @@
     </target>
     
     <!-- Builds core, browser and about box jars. -->
-    <target name="jars" depends="core-jar, browser-jar, about-jar">
+    <target name="jars" description="build all jars" depends="core-jar, browser-jar, about-jar">
     </target>
     
     <!-- Compiles main codebase, and builds jar for it -->
@@ -468,14 +491,13 @@
     <echo message="java-exec.fork.tests                    ${java-exec.fork.tests}" />
     <echo message=""/>
     
+    <!--
     <echo message=""/>
     <echo message="******************************************"/>
     <echo message="Other Settings"/>
     <echo message="******************************************"/>
     <echo message=""/>
-    <echo message="java.util.logging.config.class          ${java.util.logging.config.class}" />
-    <echo message=""/>
-
+    -->
   </target>    
 </project>
 
@@ -487,6 +509,9 @@
 $Id$
 
 $Log$
+Revision 1.2  2004/10/18 10:11:04  pdoubleya
+Moved properties from build.properties into build file as defaults. Now reads overrides from build.properties and local properties file, see comments in file.
+
 Revision 1.1  2004/10/15 13:07:24  pdoubleya
 Added to CVS.
 
