@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<!--
+
+ @(#)package.html	1.60 98/01/27
+
+ Copyright (c) 2004, 2005 The Flying Saucer Team
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public License
+ as published by the Free Software Foundation; either version 2.1
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+-->
+</head>
+<body bgcolor="white">
+<p>Includes those classes you need to render XHTML documents
+quickly, right out of the box, and with no special setup needed; start here! All the classes
+in this package are oriented towards ease-of-use. You should be able to render documents on screen,
+convert them to image files and print them with almost no work at all. We'll document the most
+important classes here; see the individual class documents for details on how to use them in
+your programs.</p>
+
+<p>All classes in this package are intended for ease-of-use, with no customization
+required. To render a document quickly, use {@link org.xhtmlrenderer.simple.XHTMLPanel}--just instantiate
+the panel, add it to a scroll pane or {@link org.xhtmlrenderer.simple.FSScrollPane}, and call 
+{@link org.xhtmlrenderer.simple.XHTMLPanel#setDocument(Document)}. You can render from a {@link org.w3c.dom.Document},
+from a {@link java.net.URL}, from a file, and from an {@link java.io.InputStream}.</p>
+
+<p>The {@link org.xhtmlrenderer.simple.Graphics2DRenderer} allows you to render XHTML right to image files--
+without displaying them onscreen at all. You can use any XHTML/XML/CSS combination and
+dump it straight to a JPEG, GIF, or other file format supported by the Java image APIs.</p>
+
+<p>{@link org.xhtmlrenderer.simple.FSScrollPane} is a JScrollPane with key bindings for scrolling through a document--
+just as you would expect from a browsable XHTML document. Drop your {@link org.xhtmlrenderer.simple.XHTMLPanel}
+in a {@link org.xhtmlrenderer.simple.FSScrollPane} and your users can move up or down by line or page, and jump to
+the start or end of the document, just as they are used to.</p>
+
+<p>{@link org.xhtmlrenderer.simple.XHTMLPrintable} supports the AWT {@link java.awt.print.Printable} interface,
+allowing you to print a document without rendering it onscreen first.</p>
+
+
+<h2>Related Documentation</h2>
+
+For overviews, tutorials, examples, guides, and tool documentation, please see:
+<ul>
+  <li><a href="http://xhtmlrenderer.dev.java.net">The Flying Saucer Project Home Page</a>
+</ul>
+
+<!-- Put @see and @since tags down here. -->
+
+</body>
+</html>
