@@ -395,11 +395,11 @@ public class XRValueImpl implements XRValue {
         assert( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
         
         switch ( getPrimitiveType()) {
-            case CSSPrimitiveValue.CSS_IDENT: // fall-thru
-            case CSSPrimitiveValue.CSS_URI:
+            case CSSPrimitiveValue.CSS_IDENT: 
             return _domCSSValue.getCssText();
         
-            case CSSPrimitiveValue.CSS_STRING:
+            case CSSPrimitiveValue.CSS_STRING: // fall-thru
+            case CSSPrimitiveValue.CSS_URI:
             return ( (CSSPrimitiveValue)_domCSSValue ).getStringValue();
         
             default:
