@@ -819,6 +819,9 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2004/12/11 18:18:10  tobega
+ * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
+ *
  * Revision 1.28  2004/12/10 06:51:02  tobega
  * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
  *
@@ -856,7 +859,7 @@ public class Context {
  * Reviewed by:
  *
  * Revision 1.23  2004/11/28 23:29:02  tobega
- * Now handles media on Stylesheets, still need to handle at-media-rules. The media-type should be set in Context.media (set by default to "screen") before calling setContext on TBStyleReference.
+ * Now handles media on Stylesheets, still need to handle at-media-rules. The media-type should be set in Context.media (set by default to "screen") before calling setContext on StyleReference.
  *
  * Revision 1.22  2004/11/18 14:12:44  joshy
  * added whitespace test

@@ -29,7 +29,6 @@ import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.u;
 
 import java.awt.*;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -51,9 +50,10 @@ public class InlineLayout extends BoxLayout {
             return box;
         }*/
 
-        List contentList = box.getContent().getContent(c);
+        List contentList = box.getContent().getChildContent(c);
         if (contentList.size() == 0) return box;//we can do this if there is no content, right?
 
+        //TODO: unravel the mysteries of the layout hierarchy. Perhaps the Context should know if we are block-laying out or inline laying-out?
         if (!box.isAnonymous()) {//this check should really be unnecessary when content layout is completed. tobe 2004-12-09
             //This where the magic decision of creating AnonymousBlockBox is
             //if (LayoutUtil.isBlockLayout(box.getElement(), c)) {
@@ -93,8 +93,6 @@ public class InlineLayout extends BoxLayout {
         InlineBox prev_inline = null;
         InlineBox prev_align_inline = null;
 
-        Iterator contentIterator = contentList.iterator();
-
         // adjust the first line for float tabs
         remaining_width = FloatUtil.adjustForTab(c, prev_line, remaining_width);
 
@@ -103,8 +101,9 @@ public class InlineLayout extends BoxLayout {
         CascadedStyle firstLetterStyle = null;
         boolean isFirstLetter = true;
         // loop until no more nodes
-        while (contentIterator.hasNext()) {
-            Object o = contentIterator.next();
+        while (contentList.size() > 0) {
+            Object o = contentList.get(0);
+            contentList.remove(0);
             //TODO: can we do this? contentIterator.remove();//chop it off, no need to keep it?
             if (o instanceof FirstLineStyle) {//can actually only be the first object in list
                 firstLineStyle = ((FirstLineStyle) o).getStyle();
@@ -391,6 +390,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.44  2004/12/11 18:18:11  tobega
+* Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
+*
 * Revision 1.43  2004/12/10 06:51:02  tobega
 * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
 *

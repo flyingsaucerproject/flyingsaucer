@@ -1,5 +1,5 @@
 /*
- * BlockContent.java
+ * BodyContent.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -20,29 +20,34 @@
 package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 
 import java.util.List;
 
 /**
- * Represents the content of a "block"-display element
+ * Represents the document (or perhaps a DocumentFragment).
+ * This is the starting point, the content object that should be created by anyone using the content model.
+ * Don't forget to set the CurrentBoxStyle to the Context.
  */
-public class BlockContent implements Content {
-    private Element _elem;
-    private CascadedStyle _style;
+public class BodyContent implements Content {
+    private Node _node;
 
-    BlockContent(Element e, CascadedStyle style) {
-        _elem = e;
-        _style = style;
+    public BodyContent(Node node) {
+        _node = node;
     }
 
     public Element getElement() {
-        return _elem;
+        return null;
+    }
+
+    Node getNode() {
+        return _node;
     }
 
     public CascadedStyle getStyle() {
-        return _style;
+        return null;
     }
 
     public List getChildContent(Context c) {
@@ -50,7 +55,7 @@ public class BlockContent implements Content {
     }
 
     public String toString() {
-        return "Block: " + _elem.getNodeName();
+        return "Body: " + _node.getNodeName();
     }
 
 }

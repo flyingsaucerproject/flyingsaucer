@@ -87,8 +87,8 @@ public class DefaultLayout implements Layout {
     private void restyleChildren(Context ctx, Box box) {
         for (int i = 0; i < box.getChildCount(); i++) {
             Box child = box.getChild(i);
-            if (child.hasNode()) {
-                Layout lt = ctx.getLayout(child.getRealElement());
+            if (child.hasContent()) {
+                Layout lt = ctx.getLayout(child.getContent().getElement());
                 if (lt instanceof InlineLayout) {
                     //u.p("restyling: " + child);
                     ((InlineLayout) lt).restyle(ctx, child);
@@ -202,6 +202,9 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2004/12/11 18:18:11  tobega
+ * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
+ *
  * Revision 1.30  2004/12/10 06:51:02  tobega
  * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
  *

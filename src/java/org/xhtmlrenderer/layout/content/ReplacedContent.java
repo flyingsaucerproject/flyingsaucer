@@ -20,23 +20,19 @@
 package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tobe
- * Date: 2004-dec-05
- * Time: 17:07:42
- * To change this template use File | Settings | File Templates.
+ * Represents the content of a replaced element (namespace-dependent)
  */
 public class ReplacedContent implements Content {
     private Element _elem;
-    private CalculatedStyle _style;
+    private CascadedStyle _style;
 
-    public ReplacedContent(Element e, CalculatedStyle style) {
+    ReplacedContent(Element e, CascadedStyle style) {
         _elem = e;
         _style = style;
     }
@@ -45,12 +41,12 @@ public class ReplacedContent implements Content {
         return _elem;
     }
 
-    public CalculatedStyle getStyle() {
+    public CascadedStyle getStyle() {
         return _style;
     }
 
-    public List getContent(Context c) {
-        return ContentUtil.getInlineContentList(_elem, c);
+    public List getChildContent(Context c) {
+        return ContentUtil.getChildContentList(c, this);
     }
 
     public String toString() {

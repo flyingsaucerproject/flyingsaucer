@@ -33,8 +33,6 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.x;
-import org.xhtmlrenderer.util.u;
 import org.xml.sax.ErrorHandler;
 
 import javax.swing.*;
@@ -302,8 +300,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         return findBox(this.body_box, x, y);
     }
 
-    public Box findElementBox( int x, int y ) {
-        return findElementBox( this.body_box, x, y );
+    public Box findElementBox(int x, int y) {
+        return findElementBox(this.body_box, x, y);
     }
 
     /**
@@ -353,15 +351,15 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         return null;
     }
 
-    public Box findElementBox( Box box, int x, int y ) {
+    public Box findElementBox(Box box, int x, int y) {//TODO: why is this used? A better way?
 
-        if ( box == null ) {
+        if (box == null) {
             return null;
         }
-        
+
         Iterator it = box.getChildIterator();
-        while ( it.hasNext() ) {
-            Box bx = (Box)it.next();
+        while (it.hasNext()) {
+            Box bx = (Box) it.next();
             int tx = x;
             int ty = y;
             tx -= bx.x;
@@ -371,8 +369,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
 
             // test the contents
             Box retbox = null;
-            retbox = findElementBox( bx, tx, ty );
-            if ( retbox != null ) {
+            retbox = findElementBox(bx, tx, ty);
+            if (retbox != null) {
                 return retbox;
             }
 
@@ -380,32 +378,32 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
             
             // skip if it's text only so that we can
             // hit the parent instead
-            if(bx instanceof InlineBox) {
-                if(!bx.isInlineElement()) {
+            if (bx instanceof InlineBox) {
+                if (!bx.isInlineElement()) {
                     continue;
                 }
             }
             
             // skip line boxes
-            if(bx instanceof LineBox) {
+            if (bx instanceof LineBox) {
                 continue;
             }
-            
+
             int tty = y;
-            if ( bx instanceof InlineBox ) {
-                InlineBox ibx = (InlineBox)bx;
-                LineBox lbx = (LineBox)box;
+            if (bx instanceof InlineBox) {
+                InlineBox ibx = (InlineBox) bx;
+                LineBox lbx = (LineBox) box;
                 int off = lbx.baseline + ibx.y - ibx.height;
                 tty -= off;
             }
 
             // u.p("bx = " + bx);
             // u.p("tx = " + tx + " ty = " + ty);
-            if ( bx.contains( x - bx.x, tty - bx.y ) ) {
+            if (bx.contains(x - bx.x, tty - bx.y)) {
                 // u.p("matches box: " + bx);
                 return bx;
             }
-            
+
         }
 
         return null;
@@ -874,6 +872,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/12/11 18:18:11  tobega
+ * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
+ *
  * Revision 1.13  2004/12/09 18:00:06  joshy
  * fixed hover bugs
  * fixed li's not being blocks bug

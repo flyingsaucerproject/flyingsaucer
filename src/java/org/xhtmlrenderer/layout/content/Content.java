@@ -20,17 +20,13 @@
 package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tobe
- * Date: 2004-dec-06
- * Time: 02:20:48
- * To change this template use File | Settings | File Templates.
+ * Represents content in the visual model. This is the link between element, style and renderable content.
  */
 public interface Content {
     public Element getElement();
@@ -40,7 +36,7 @@ public interface Content {
      * @return either a String (for TextContent) or a List of Content objects.
      *         The List may be headed by FirstLineStyle and/or FirstLetterStyle if these are applicable
      */
-    public List getContent(Context c);
+    public List getChildContent(Context c);
 
-    public CalculatedStyle getStyle();
+    public CascadedStyle getStyle();
 }

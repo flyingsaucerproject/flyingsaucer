@@ -1,5 +1,5 @@
 /*
- * BlockContent.java
+ * StylePop.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -19,38 +19,11 @@
  */
 package org.xhtmlrenderer.layout.content;
 
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.Context;
-
-import java.util.List;
 
 /**
- * Represents the content of a "block"-display element
+ * A marker for returning to the previous style
  */
-public class BlockContent implements Content {
-    private Element _elem;
-    private CascadedStyle _style;
-
-    BlockContent(Element e, CascadedStyle style) {
-        _elem = e;
-        _style = style;
+public class StylePop {
+    StylePop() {
     }
-
-    public Element getElement() {
-        return _elem;
-    }
-
-    public CascadedStyle getStyle() {
-        return _style;
-    }
-
-    public List getChildContent(Context c) {
-        return ContentUtil.getChildContentList(c, this);
-    }
-
-    public String toString() {
-        return "Block: " + _elem.getNodeName();
-    }
-
 }

@@ -22,16 +22,12 @@ package org.xhtmlrenderer.layout.content;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tobe
- * Date: 2004-dec-06
- * Time: 03:21:52
- * To change this template use File | Settings | File Templates.
+ * A marker for changing the style of the first line
  */
 public class FirstLineStyle {
     private CascadedStyle _style;
 
-    public FirstLineStyle(CascadedStyle style) {
+    FirstLineStyle(CascadedStyle style) {
         _style = style;
     }
 

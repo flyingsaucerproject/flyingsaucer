@@ -1,5 +1,5 @@
 /*
- * BlockContent.java
+ * StylePush.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -19,38 +19,19 @@
  */
 package org.xhtmlrenderer.layout.content;
 
-import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.Context;
-
-import java.util.List;
 
 /**
- * Represents the content of a "block"-display element
+ * A marker for changing the style of the first letter
  */
-public class BlockContent implements Content {
-    private Element _elem;
+public class StylePush {
     private CascadedStyle _style;
 
-    BlockContent(Element e, CascadedStyle style) {
-        _elem = e;
+    StylePush(CascadedStyle style) {
         _style = style;
-    }
-
-    public Element getElement() {
-        return _elem;
     }
 
     public CascadedStyle getStyle() {
         return _style;
     }
-
-    public List getChildContent(Context c) {
-        return ContentUtil.getChildContentList(c, this);
-    }
-
-    public String toString() {
-        return "Block: " + _elem.getNodeName();
-    }
-
 }

@@ -22,31 +22,34 @@
 package org.xhtmlrenderer.css.style;
 
 /**
+ * Represents the outer box to be used for evaluating positioning of internal boxes
  *
- * @author  Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class CurrentBoxStyle extends CalculatedStyle {
-    
+
     java.awt.Rectangle _rect;
-    
-    /** Creates a new instance of CurrentBoxStyle */
+
+    /**
+     * Creates a new instance of CurrentBoxStyle
+     */
     public CurrentBoxStyle(java.awt.Rectangle rect) {
         _rect = rect;
     }
-    
+
     /**
      * Returns true if property has been defined in this style.
      *
-     * @param propName  PARAM
-     * @return          Returns
+     * @param propName PARAM
+     * @return Returns
      */
-    public boolean hasProperty( String propName ) {
-        if(propName.equals("width")) return true;
-        if(propName.equals("height")) return true;
-        if(propName.equals("top")) return true;
-        if(propName.equals("left")) return true;
-        if(propName.equals("bottom")) return true;
-        if(propName.equals("right")) return true;
+    public boolean hasProperty(String propName) {
+        if (propName.equals("width")) return true;
+        if (propName.equals("height")) return true;
+        if (propName.equals("top")) return true;
+        if (propName.equals("left")) return true;
+        if (propName.equals("bottom")) return true;
+        if (propName.equals("right")) return true;
         return false;
     }
 
@@ -57,10 +60,10 @@ public class CurrentBoxStyle extends CalculatedStyle {
      * synchronized in order to allow this resolution to happen safely. Thus, on
      * this XRProperty you can call actualValue() to get something meaningful.
      *
-     * @param propName  PARAM
-     * @return          Returns
+     * @param propName PARAM
+     * @return Returns
      */
-    public DerivedProperty propertyByName( String propName ) {
+    public DerivedProperty propertyByName(String propName) {
         //TODO: return these values when DerivedProperty and DerivedValue are disconnected from CSS
         return null;
     }

@@ -20,26 +20,23 @@
 package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tobe
- * Date: 2004-dec-05
- * Time: 16:23:09
- * To change this template use File | Settings | File Templates.
+ * Represents the content of text nodes and :before and :after content.
+ * The associated element is the parent element.
+ * The style is null, should be resolved from the context.
+ * ChildContent is null, use getText
  */
 public class TextContent implements Content {
     private Element _elem;//will need this for handling dynamic content!
-    private CalculatedStyle _style;
     private StringBuffer _sb;
 
-    public TextContent(Element e, CalculatedStyle style) {
+    TextContent(Element e) {
         _elem = e;
-        _style = style;
         _sb = new StringBuffer();
     }
 
@@ -47,11 +44,11 @@ public class TextContent implements Content {
         return _elem;
     }
 
-    public CalculatedStyle getStyle() {
-        return _style;
+    public CascadedStyle getStyle() {
+        return null;
     }
 
-    public List getContent(Context c) {
+    public List getChildContent(Context c) {
         return null;
     }
 
@@ -64,7 +61,7 @@ public class TextContent implements Content {
     }
 
     public String toString() {
-        return "TextContent:\nStyle: " + _style + "\nText: " + _sb.toString();
+        return "TextContent: " + _sb.toString();
     }
 
 }

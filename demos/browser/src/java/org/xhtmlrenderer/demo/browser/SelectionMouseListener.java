@@ -1,6 +1,6 @@
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.swing.BasicPanel;
@@ -92,9 +92,8 @@ public class SelectionMouseListener implements MouseListener, MouseMotionListene
                 return;
             }
             // if box is text node then start selection
-            if ((box.hasNode() &&
-                    box.getNode().getNodeName() != "body") &&
-                    !(box instanceof BlockBox)) {
+            if ((box.hasContent() &&
+                    box.getContent() instanceof TextContent)) {
                 int x = panel.findBoxX(e.getX(), e.getY());
                 panel.getContext().setSelectionEnd(box, x);
                 panel.repaint();

@@ -425,10 +425,10 @@ public class Box {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Box: ");
-        if (getNode() == null) {
-            sb.append(" null node, ");
+        if (getContent() == null) {
+            sb.append(" null content, ");
         } else {
-            sb.append(getNode().getNodeName() + " (" + getNode().hashCode() + ")");
+            sb.append(getContent().getClass().getName() + " (" + getContent().hashCode() + ")");
         }
         sb.append(" (" + x + "," + y + ")->(" + width + " x " + height + ")");
         // CLN: (PWW 13/08/04)
@@ -510,6 +510,7 @@ public class Box {
      * Gets the element attribute of the Box object
      *
      * @return The element value
+     * @deprecated
      */
     public Element getElement() {
         if (this.node == null) {
@@ -518,7 +519,10 @@ public class Box {
         return getContent().getElement();
     }
 
-    //TODO: the node is ALWAYS an element
+    /**
+     * @return
+     * @deprecated
+     */
     public Element getRealElement() {
         /*if (isElement()) {
             return getElement();
@@ -534,6 +538,7 @@ public class Box {
      * Gets the closestNode attribute of the Box object
      *
      * @return The closestNode value
+     * @deprecated
      */
     public Node getClosestNode() {
         if (getNode() != null) {
@@ -546,6 +551,7 @@ public class Box {
      * Gets the element attribute of the Box object
      *
      * @return The element value
+     * @deprecated
      */
     //TODO: this ALWAYS returns true now
     public boolean isElement() {
@@ -565,7 +571,7 @@ public class Box {
      * @return The anonymous value
      */
     public boolean isAnonymous() {
-        return false;
+        return false;//TODO: could be achieved by checking content
     }
 
     /**
@@ -633,7 +639,7 @@ public class Box {
         }
 
         // element
-        sb.append("-element:" + this.getClosestNode().getNodeName());
+        sb.append("-content:" + this.getContent());
 
         // dimensions and location
         sb.append("-box(" + x + "," + y + ")-(" + width + "x" + height + ")");
@@ -696,18 +702,24 @@ public class Box {
         return "(" + b.top + "," + b.right + "," + b.bottom + "," + b.left + ")";
     }
 
+    /**
+     * @deprecated
+     */
     public Node getNode() {
         if (node == null) throw new NullPointerException("Node has not been set in box");
         return node;
     }
 
+    /**
+     * @deprecated
+     */
     public void setNode(Node node) {
         if (node == null) throw new NullPointerException("Trying to set a null node to box");
         this.node = node;
     }
 
-    public boolean hasNode() {
-        if (this.node == null) {
+    public boolean hasContent() {
+        if (getContent() == null) {
             return false;
         } else {
             return true;
@@ -727,6 +739,8 @@ public class Box {
      * &lt;p&gt; some text &lt;/p&gt;
      * </pre>
      * </p>
+     *
+     * @deprecated maybe, have to analyse
      */
     public boolean isInlineElement() {
         return false;
@@ -737,6 +751,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2004/12/11 18:18:11  tobega
+ * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
+ *
  * Revision 1.23  2004/12/10 06:51:04  tobega
  * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
  *

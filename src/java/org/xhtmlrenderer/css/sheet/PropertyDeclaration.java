@@ -158,8 +158,11 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/11 18:18:07  tobega
+ * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
+ *
  * Revision 1.4  2004/11/28 23:29:01  tobega
- * Now handles media on Stylesheets, still need to handle at-media-rules. The media-type should be set in Context.media (set by default to "screen") before calling setContext on TBStyleReference.
+ * Now handles media on Stylesheets, still need to handle at-media-rules. The media-type should be set in Context.media (set by default to "screen") before calling setContext on StyleReference.
  *
  * Revision 1.3  2004/11/16 10:39:34  pdoubleya
  * Made members all private where appropriate.

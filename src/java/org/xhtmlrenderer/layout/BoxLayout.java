@@ -238,7 +238,7 @@ public class BoxLayout extends DefaultLayout {
         int old_counter = c.getListCounter();
         c.setListCounter(0);
 
-        java.util.List contentList = box.getContent().getContent(c);
+        java.util.List contentList = box.getContent().getChildContent(c);
         if (contentList.size() == 0) return box;//we can do this if there is no content, right?
         Iterator contentIterator = contentList.iterator();
 
@@ -347,6 +347,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2004/12/11 18:18:10  tobega
+ * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
+ *
  * Revision 1.37  2004/12/10 06:51:02  tobega
  * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
  *

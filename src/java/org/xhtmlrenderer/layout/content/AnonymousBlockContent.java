@@ -1,24 +1,40 @@
+/*
+ * AnonymousBlockContent.java
+ * Copyright (c) 2004 Torbjörn Gannholm
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ */
 package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tobe
- * Date: 2004-dec-09
- * Time: 00:10:54
- * To change this template use File | Settings | File Templates.
+ * Represents content that should be layed out as an anonymous block.
+ * The associated element is the parent element.
  */
 public class AnonymousBlockContent implements Content {
     private Element _elem;
-    private CalculatedStyle _style;
+    private CascadedStyle _style;
     private List _inline;
 
-    public AnonymousBlockContent(Element parent, CalculatedStyle style, List inlineList) {
+    AnonymousBlockContent(Element parent, CascadedStyle style, List inlineList) {
         _elem = parent;
         _style = style;
         _inline = inlineList;
@@ -28,11 +44,11 @@ public class AnonymousBlockContent implements Content {
         return _elem;
     }
 
-    public List getContent(Context c) {
+    public List getChildContent(Context c) {
         return _inline;
     }
 
-    public CalculatedStyle getStyle() {
+    public CascadedStyle getStyle() {
         return _style;
     }
 }
