@@ -460,6 +460,22 @@
         </java>
     </target>
 
+    <!-- Compiles, then runs HTML test -->
+    <target name="test-headless" depends="compile" description="Test">
+        <java
+            classname="org.xhtmlrenderer.test.Graphics2DRendererTest"
+            classpath="${dest.java.dir};${dest.dir}"
+            fork="${java-exec.fork.tests}"
+            >
+            <sysproperty key="show-config" value="${show-config}" />
+            <syspropertyset>
+              <propertyref prefix="xr." />
+            </syspropertyset> 
+            <classpath refid="libraries.all" />
+        </java>
+    </target>
+
+
     <!-- Builds the core jar and runs unit tests -->
     <target name="unit-tests" depends="diff-tests">
     </target>
@@ -613,6 +629,16 @@
 $Id$
 
 $Log$
+Revision 1.69  2004/11/12 18:51:00  joshy
+fixed repainting issue for background-attachment: fixed
+added static util methods and get minimum size to graphics 2d renderer
+added test for graphics 2d renderer
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.68  2004/11/11 15:27:12  joshy
 added encoding
 Issue number:

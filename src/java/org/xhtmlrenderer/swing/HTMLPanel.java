@@ -206,7 +206,7 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
 
 
     protected LayoutThread layout_thread;
-    protected void startLayout(Graphics g) {
+    public void startLayout(Graphics g) {
         this.removeAll();
         if ( g == null ) {
             return;
@@ -264,10 +264,14 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
 
         this.fireDocumentLoaded();
     }
+    
+    public Dimension getIntrinsicSize() {
+        return intrinsic_size;
+    }
 
 
     boolean inside = false;
-    public void doRender() {
+    protected void doRender() {
         layout.getRenderer().paint(
             getRenderingContext().getContext(),
             body_box );
@@ -436,7 +440,7 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
      * @param filename       The new documentRelative value
      * @exception Exception  Throws
      */
-    public void setDocumentRelative( String filename )
+    protected void setDocumentRelative( String filename )
         throws Exception {
         if ( getContext() != null && ( !filename.startsWith( "http" ) ) ) {
             URL base = new URL( getRenderingContext().getBaseURL(), filename );
@@ -605,7 +609,7 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
             Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
             getContext().setExtents( new Rectangle( 0,0, bnds.width, bnds.height) );
         } else {
-            getContext().setExtents( new Rectangle( 200, 200 ) );
+            getContext().setExtents( new Rectangle( getWidth(), getHeight() ) );//200, 200 ) );
         }
 
         //getContext().setExtents(new Rectangle(0,0,viewport.getWidth(),viewport.getHeight()));
@@ -669,6 +673,16 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2004/11/12 18:51:01  joshy
+ * fixed repainting issue for background-attachment: fixed
+ * added static util methods and get minimum size to graphics 2d renderer
+ * added test for graphics 2d renderer
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.30  2004/11/12 17:05:25  joshy
  * support for fixed positioning
  * Issue number:

@@ -3,23 +3,25 @@
     <head>
         <title>Test : Borders : none</title>
         <style type="text/css">
-            h1.bad { 
-                text-align: left;
-                border: 0px solid #339;
-                border-bottom-width: 2px;
-             }
-            h1.good { 
+            p.p1 {
+                border-width: 1px;
+                border-style: solid;
+                border-color: #000000;
+                border-bottom-color: #ff0000;
+                }
+            p.p2 {
                 border: 1px solid black;
-             }
+                border-bottom-color: #ff0000;
+                }
         </style>
     </head>
     
     <body>
-        <p>both headers should have a solid 2 pixel border at the bottom</p>
-        <h1 class="bad"> text text text
-        text text text</h1>
-        <h1 class="good"> text text text
-        text text text</h1>
+        <p>both headers should have a red border at the bottom</p>
+        <p class="p1"> text text text
+        text text text</p>
+        <p class="p2"> text text text
+        text text text</p>
     </body>
 
 </html>

@@ -61,6 +61,10 @@ public class BoxLayout extends DefaultLayout {
     public Box createBox( Context c, Node node ) {
         BlockBox block = new BlockBox();
         block.node = node;
+        String attachment = c.css.getStringProperty( block.getRealElement(), "background-attachment", false );
+        if(attachment != null && attachment.equals("fixed")) {
+            block.setChildrenExceedBounds(true);
+        }
         return block;
     }
 
@@ -462,6 +466,16 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/11/12 18:51:00  joshy
+ * fixed repainting issue for background-attachment: fixed
+ * added static util methods and get minimum size to graphics 2d renderer
+ * added test for graphics 2d renderer
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.17  2004/11/12 17:05:24  joshy
  * support for fixed positioning
  * Issue number:

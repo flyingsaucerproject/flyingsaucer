@@ -217,19 +217,11 @@ public class DefaultLayout implements Layout {
     }
     
     public void positionAbsoluteChild(Context c, Box child_box) {
-        //u.p("modifying it");
         BlockFormattingContext bfc = c.getBlockFormattingContext();
-        // u.p("bfc = " + bfc);
-        // u.p("child = " + child_box);
-        // u.p("parent = " + child_box.getParent());
-        // u.p("width = " + bfc.getWidth());
         // handle the left and right
         if(child_box.right_set) {
-            // joshy: this doesn't seem right. shouldn't there be a call
-            // to bfc.getX() when doing the right positioning?
             child_box.x = -bfc.getX() + bfc.getWidth() - child_box.right - child_box.width
-             - bfc.getMaster().totalRightPadding();
-            ;
+                          - bfc.getMaster().totalRightPadding();
         } else {
             child_box.x = bfc.getX() + child_box.left;
         }
@@ -506,6 +498,16 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2004/11/12 18:51:00  joshy
+ * fixed repainting issue for background-attachment: fixed
+ * added static util methods and get minimum size to graphics 2d renderer
+ * added test for graphics 2d renderer
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.18  2004/11/12 17:05:24  joshy
  * support for fixed positioning
  * Issue number:
