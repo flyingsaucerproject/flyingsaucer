@@ -9,6 +9,7 @@
 
 <body>
 <div id="fs">
+
 <ul id="menu">
   <li><a href="http://wiki.java.net/bin/view/Javadesktop/XHTMLRenderer">The Wiki</a></li>
   <li><a href="roadmap.html">Roadmap</a></li>
@@ -18,7 +19,11 @@
   <li><a href="gettingstarted.html">Getting Started</a></li>
   <li><a href="references.html">References</a></li>
 </ul>
+
+
 <h1>The Flying Saucer FAQ </h1>
+
+
 <h2>What is Flying Saucer?</h2>
 <p>Flying Saucer is an XHTML renderer written in Java. It's 100% Java, not a
   native wrapper, and it only handles valid XHTML + CSS. It is intended for
@@ -27,7 +32,8 @@
   does not support the malformed legacy HTML found on the web, though recent
   work on compatibility libraries may be enough to do what you need. See JTidy
   integration</p>
-<p>&nbsp;</p>
+
+
 <h2>Does Flying Saucer support legacy HTML?</h2>
 <p>Flying Saucer is not an HTML component. It is a rendering component for XHTML
   content, but it cannot handle the malformed HTML 4.0 of general webpages,
@@ -37,17 +43,24 @@
   If you really need full IE/Mozilla/Safari like fidelity for general purpose
   webpages you should look into a webbrowser wrapper like JRex or JDIC's Browser
   component.</p>
+  
+<!--
 <h2>What about the JavaDoc browser?</h2>
 <p>Okay, you got me. The JavaDoc browser reads the older, non-compliant html
   output of the javadoc program. This was accomplished using the JTidy parser
   and a newly developed compatibility library. Join the mailing list if you want
   more information. </p>
+-->
+  
 <h2>Is Flying Saucer a web browser?</h2>
 <p>  The core renderer just handles XHTML and CSS. It doesn't know anything about
     form submission, managing cookies, or tracking the browsing history. It
     just renders XHTML/CSS to the screen. However, Flying Saucer does include
     a Browser application which provides these features an more. You can use
   this as a good starting point for your own applications.</p>
+  
+  
+  
 <h2>What kind of applications
 can I use Flying Saucer for?</h2>
 <p>Flying Saucer can be used for any Java application
@@ -56,7 +69,8 @@ can I use Flying Saucer for?</h2>
     Saucer is very forward thinking and is designed to be a part of the next
   generation of applications that combine rich desktop clients with web content.
   Some examples of application types are:</p>
-<ul>
+
+  <ul>
   <li>chat programs</li>
   <li>online music stores</li>
   <li>a gutenberg ebook reader</li>
@@ -75,18 +89,23 @@ can I use Flying Saucer for?</h2>
   <li>a stock ticker / weather reporter<br>
     </li>
 </ul>
+
+
+
 <h2>What XHTML/CSS features does Flying Saucer currently support?</h2>
-<p>  With our third release on August 31st it supports most of
+<p>  With our third release it supports most of
   the common XHTML and CSS features. This includes:</p>
 <ul>
-  <li>    text and images (paragraphs, bold, italics, fonts, alignment, etc)</li>
-  <li> the box model (borders, backgrounds, padding, margins)</li>
+  <li>text and images (paragraphs, bold, italics, fonts, alignment, etc)</li>
+  <li>the box model (borders, backgrounds, padding, margins)</li>
   <li>forms</li>
   <li>tables</li>
   <li>list items</li>
   <li>most CSS properties and shorthands</li>
   <li>some float and absolute positioning support</li>
 </ul>
+
+
 <h2>What XHTML/CSS features is Flying Saucer missing?</h2>
 <p> The main things that are missing as of R3 is the automatic table model (the
   old Netscape style of tables where the size of the content determined the size
@@ -94,17 +113,25 @@ can I use Flying Saucer for?</h2>
   relative, fixed) are there but buggy. There is also no support for things outside
   the scope of XHTML/CSS such as Javascript, printing, Flash, SVG, or legacy
 HTML (though there is interest in all of those).</p>
+
+
+
 <h2>How do I make my program follow
 hyperlinks?</h2>
+
 <p>You'll need to create a mouse listener that detects link clicks
     and does the HTTP request. See <a href="gettingstarted.html#hyperlinks">Creating a HyperLink Listener</a> in
     the <a href="gettingstarted.html">Getting
 Started Guide</a>.</p>
+
 <h2>How do I get access to the Swing components that make up
 my form fields?</h2>
+
 <p> You can use the form accessor methods on the context. See <a href="gettingstarted.html#formaccess">Form
     Field Access</a>  in the <a href="gettingstarted.html#hyperlinks">Getting Started Guide</a>.<br>
 </p>
+
+
 </div>
 </body>
 </html>
