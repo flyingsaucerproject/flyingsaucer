@@ -19,10 +19,12 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.sheet.factory.*;
+import org.xhtmlrenderer.util.XRLog;
+
+
 
 
 /**
@@ -45,7 +47,7 @@ public class PropertyDeclaration {
     /** Description of the Field */
     private org.w3c.dom.css.CSSPrimitiveValue cssPrimitiveValue;
 
-    /** Whether the property was declared as important! by the user.  */
+    /** Whether the property was declared as important! by the user. */
     private boolean important;
 
     /**
@@ -60,27 +62,28 @@ public class PropertyDeclaration {
     /** Description of the Field */
     private boolean identIsSet;
 
-    /** ImportanceAndOrigin of stylesheet - how many different  */
+    /** ImportanceAndOrigin of stylesheet - how many different */
     public final static int IMPORTANCE_AND_ORIGIN_COUNT = 6;
 
     /** Description of the Field */
     private final static PropertyDeclarationFactory[] PROPERTY_FACTORIES;
+
     /** Description of the Field */
     private final static PropertyDeclarationFactory DEFAULT_PD_FACTORY;
 
-    /** ImportanceAndOrigin of stylesheet - user agent  */
+    /** ImportanceAndOrigin of stylesheet - user agent */
     private final static int USER_AGENT = 1;
 
-    /** ImportanceAndOrigin of stylesheet - user normal  */
+    /** ImportanceAndOrigin of stylesheet - user normal */
     private final static int USER_NORMAL = 2;
 
-    /** ImportanceAndOrigin of stylesheet - author normal  */
+    /** ImportanceAndOrigin of stylesheet - author normal */
     private final static int AUTHOR_NORMAL = 3;
 
-    /** ImportanceAndOrigin of stylesheet - author important  */
+    /** ImportanceAndOrigin of stylesheet - author important */
     private final static int AUTHOR_IMPORTANT = 4;
 
-    /** ImportanceAndOrigin of stylesheet - user important  */
+    /** ImportanceAndOrigin of stylesheet - user important */
     private final static int USER_IMPORTANT = 5;
 
     /**
@@ -197,17 +200,22 @@ public class PropertyDeclaration {
      * @return         Returns
      */
     public static PropertyDeclarationFactory newFactory( CSSName cssName ) {
-        PropertyDeclarationFactory pdf = PROPERTY_FACTORIES[cssName.getAssignedID()];
-        if ( pdf == null ) {
+        PropertyDeclarationFactory pdf = null;
+        if ( cssName == null ) {
+            XRLog.cssParse("PropertyDeclarationFactory requested for NULL CSSName; returning default.");
             pdf = DEFAULT_PD_FACTORY;
+        } else {
+            pdf = PROPERTY_FACTORIES[cssName.getAssignedID()];
+            if ( pdf == null ) {
+                pdf = DEFAULT_PD_FACTORY;
+            }
         }
         return pdf;
     }
 
     static {
-        DEFAULT_PD_FACTORY = DefaultPropertyDeclarationFactory.instance();
-
         PROPERTY_FACTORIES = new PropertyDeclarationFactory[CSSName.countCSSNames()];
+        DEFAULT_PD_FACTORY = DefaultPropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.BACKGROUND_SHORTHAND.getAssignedID()] = BackgroundPropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.BACKGROUND_POSITION.getAssignedID()] = BackgroundPositionPropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.BORDER_SHORTHAND.getAssignedID()] = BorderPropertyDeclarationFactory.instance();
@@ -231,6 +239,9 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/01/29 16:02:30  pdoubleya
+ * Fixed case where null CSS name is passed for a PD factory; this is valid on testing (use default factory).
+ *
  * Revision 1.10  2005/01/29 12:07:37  pdoubleya
  * Changed to use array for PD factories.
  *
