@@ -30,8 +30,8 @@ import org.xhtmlrenderer.layout.BodyLayout;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
-import org.xhtmlrenderer.render.BodyRenderer;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.BoxRendering;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRLog;
@@ -723,8 +723,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
             g.fillRect(0, 0, getWidth(), getHeight());
         }
         // start painting the box tree
-        (new BodyRenderer()).paint(c,
-                body_box);
+        //(new BodyRenderer()).paint(c,
+        //        body_box);
+        BoxRendering.paint(c, body_box);
     }
 
     /**
@@ -873,6 +874,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/01/01 08:09:21  tobega
+ * Now using entirely static methods for render. Need to implement table. Need to clean.
+ *
  * Revision 1.22  2004/12/29 10:39:35  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

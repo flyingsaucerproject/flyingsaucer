@@ -25,13 +25,14 @@ public class BlockRendering extends DefaultRenderer {
         //Uu.p("child count = " + box.getChildCount());
         //XRLog.render(Level.WARNING, "using default renderer paintChildren for " + box.getClass().getName());
         //TODO: work out how images and other replaced content really should be handled
-        if (box instanceof InlineBox) {
+        if (box instanceof InlineBox && box.getChildCount() == 0) {
             InlineBox inline = (InlineBox) box;
             if (inline.sub_block != null) {
                 ImageBox imgbox = (ImageBox) inline.sub_block;
                 ImageRendering.paintComponent(c, imgbox);
             } else {
-                throw new RuntimeException("Unhandled sub_block");
+                //do nothing??
+                XRLog.render("Got childless inline box with no sub_block in block rendering context");
             }
         } else
             for (int i = 0; i < box.getChildCount(); i++) {

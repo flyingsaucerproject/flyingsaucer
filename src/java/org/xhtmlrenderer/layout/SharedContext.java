@@ -22,6 +22,7 @@ package org.xhtmlrenderer.layout;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
+import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
@@ -30,9 +31,9 @@ import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Description of the Class
@@ -44,7 +45,9 @@ public class SharedContext {
 
 
     public Context newContextInstance(Rectangle extents) {
-        return new ContextImpl(this, extents);
+        Context c = new ContextImpl(this, extents);
+        c.initializeStyles(new EmptyStyle());
+        return c;
     }
 
     /* =========== Font stuff ============== */
@@ -603,6 +606,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/01 08:09:20  tobega
+ * Now using entirely static methods for render. Need to implement table. Need to clean.
+ *
  * Revision 1.1  2004/12/29 10:39:33  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *
