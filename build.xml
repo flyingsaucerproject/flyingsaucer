@@ -49,6 +49,8 @@
     <property name="src.junit-test.java.dir" location="${src.dir}/junit" />
     <property name="src.browser.java.dir" location="demos/browser/src/java" />
     <property name="src.about.java.dir" location="demos/about/src/java" />
+    <property name="src.photogallery.java.dir" location="demos/photogallery/src/java" />
+    <property name="src.filebrowser.java.dir" location="demos/filebrowser/src/java" />
     <property name="dest.dir" location="build" />
     <property name="dest.javadoc.full.dir" location="${doc.dir}/full/api" />
     <property name="dest.javadoc.user.dir" location="${doc.dir}/user/api" />
@@ -194,7 +196,7 @@
     <target name="clean-compile" description="clean compile" depends="clean,compile" />
 
     <!-- Cleans all build files, then recompiles. -->
-    <target name="demo-compile" description="clean compile" depends="clean-compile,compile.browser,compile.about" />
+    <target name="demo-compile" description="clean compile" depends="clean-compile,compile.browser,compile.about,compile.photogallery" />
 
     <!-- Compiles application and copies resources to destination directory. -->
     <target name="compile" description="compile" depends="init">
@@ -219,6 +221,29 @@
             </fileset>
         </copy>
     </target>
+
+    <target name="compile.photogallery" depends="compile">
+        <javac-full srcdir="${src.photogallery.java.dir}" />
+        <mkdir dir="build/classes/demos"/>
+        <copy todir="build/classes/demos">
+            <fileset dir="demos/photogallery/xhtml">
+                <include name="*.xhtml"/>
+                <include name="*.png"/>
+                <include name="*.jpg"/>
+            </fileset>
+        </copy>
+    </target>
+    
+    <target name="compile.filebrowser" depends="compile">
+        <javac-full srcdir="${src.filebrowser.java.dir}" />
+        <copy todir="build/classes/">
+            <fileset dir="${src.filebrowser.java.dir}">
+                <include name="**/*.xhtml"/>
+                <include name="*.png"/>
+                <include name="*.jpg"/>
+            </fileset>
+        </copy>
+    </target>
     
     <!-- Compiles the Help/About Box demo along with the main codebase -->
     <target name="compile.about" depends="compile">
@@ -231,7 +256,7 @@
     </target>
 
     <!-- Compiles main codebase, browser and about box -->
-    <target name="compile.all" depends="compile, compile.browser, compile.about">
+    <target name="compile.all" depends="compile, compile.browser, compile.about, compile.photogallery">
     </target>
     
     <!--
@@ -270,7 +295,7 @@
     </target>
     
     <!-- Builds core, browser and about box jars. -->
-    <target name="jars" description="build all jars" depends="core-jar, browser-jar, about-jar">
+    <target name="jars" description="build all jars" depends="core-jar, browser-jar, about-jar, photogallery-jar, filebrowser-jar">
     </target>
     
     <!-- Compiles main codebase, and builds jar for it -->
@@ -315,6 +340,30 @@
             </fileset>
             <zipfileset refid="xhtml.about.demos" />
             <zipfileset refid="xhtml.splash" />
+        </jar>
+    </target>
+
+    <!-- Compiles photogallery and main codebase, and builds jar for photogallery -->
+    <target name="photogallery-jar" depends="compile.photogallery" description="build photogallery jar">
+        <jar jarfile="${dest.dir}/photogallery.jar" compress="true" 
+            manifest="${src.packaging.dir}/manifest"
+            duplicate="preserve"
+            >
+            <fileset dir="${dest.java.dir}">
+                <include name="org/xhtmlrenderer/demo/photogallery/**"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <!-- Compiles photogallery and main codebase, and builds jar for photogallery -->
+    <target name="filebrowser-jar" depends="compile.filebrowser" description="build filebrowser jar">
+        <jar jarfile="${dest.dir}/filebrowser.jar" compress="true" 
+            manifest="${src.packaging.dir}/manifest"
+            duplicate="preserve"
+            >
+            <fileset dir="${dest.java.dir}">
+                <include name="org/xhtmlrenderer/demo/filebrowser/**"/>
+            </fileset>
         </jar>
     </target>
 
@@ -527,6 +576,29 @@
         </java>
     </target>
 
+    <!-- Builds and jars the about box demo, and runs it -->
+    <target name="photogallery" depends="jars">
+        <java classname="org.xhtmlrenderer.demo.photogallery.PhotoGallery" 
+              fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all" />
+            <sysproperty key="show-config" value="${show-config}" />
+            <syspropertyset>
+              <propertyref prefix="xr." />
+            </syspropertyset> 
+        </java>
+    </target>
+
+    <target name="filebrowser" depends="core-jar, filebrowser-jar">
+        <java classname="org.xhtmlrenderer.demo.filebrowser.FileBrowser" 
+              fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all" />
+            <sysproperty key="show-config" value="${show-config}" />
+            <syspropertyset>
+              <propertyref prefix="xr." />
+            </syspropertyset> 
+        </java>
+    </target>
+
     <!-- Compiles, then runs HTML test -->
     <target name="test.headless" depends="compile" description="Test">
         <java
@@ -698,6 +770,13 @@
 $Id$
 
 $Log$
+Revision 1.78  2004/12/01 13:59:40  joshy
+added new demos
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.77  2004/11/30 21:24:39  joshy
 turned off diffs again
 Issue number:
