@@ -81,7 +81,8 @@ public class BoxLayout extends Layout {
         if(elem.getNodeName().equals("form")) {
             if(elem.hasAttribute("name")) {
                 String name = elem.getAttribute("name");
-                c.setForm(name);
+                String action = elem.getAttribute("action");
+                c.setForm(name,action);
             }
         }
 
@@ -185,7 +186,7 @@ public class BoxLayout extends Layout {
 
         if(elem.getNodeName().equals("form")) {
             if(elem.hasAttribute("name")) {
-                c.setForm(null);
+                c.setForm(null,null);
             }
         }
 

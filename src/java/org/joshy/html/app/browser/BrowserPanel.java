@@ -309,6 +309,29 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                             ((JButton)comp.component).addActionListener(new ActionListener() {
                                 public void actionPerformed(ActionEvent evt) {
                                     u.p("submit button hit");
+                                    StringBuffer query = new StringBuffer();
+                                    query.append("?");
+                                    Context ctx = view.getContext();
+                                    Iterator fields = ctx.getInputFieldComponents(form_name);
+                                    while(fields.hasNext()) {
+                                        List field = (List)fields.next();
+                                        for(int i=0; i<field.size(); i++) {
+                                            Context.FormComponent comp = (Context.FormComponent)field.get(i);
+                                            if(comp.element.hasAttribute("value")) {
+                                                query.append(comp.element.getAttribute("name"));
+                                                query.append("=");
+                                                query.append(comp.element.getAttribute("value"));
+                                                query.append("&");
+                                            }
+                                        }
+                                    }
+                                    String url = ctx.getFormAction(form_name) + query.toString();
+                                    u.p("going to load: " + url);
+                                    try {
+                                        loadPage(url);
+                                    } catch (Exception ex) {
+                                        u.p(ex);
+                                    }
                                 }
                             });
                         }

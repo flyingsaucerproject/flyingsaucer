@@ -508,13 +508,17 @@ public class Context {
     /* =========== form access code ============= */
     protected String form_name = null;
     protected Map forms = new HashMap();
-    public void setForm(String form_name) {
+    protected Map actions = new HashMap();
+    
+    public void setForm(String form_name, String action) {
         //u.p("set form to: " + form_name);
         this.form_name = form_name;
         if(form_name != null) {
             forms.put(form_name,new HashMap());
+            actions.put(form_name,action);
         }
     }
+    
     public String getForm() {
         return this.form_name;
     }
@@ -549,6 +553,10 @@ public class Context {
             return new ArrayList();
         }
         return field_list;
+    }
+    
+    public String getFormAction(String form_name) {
+        return (String)actions.get(form_name);
     }
     
     public Map getForms() {
