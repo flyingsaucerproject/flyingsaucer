@@ -369,7 +369,7 @@
             classpath="${dest.java.dir};${dest.dir}"
             fork="${java-exec.fork.tests}"
             >
-            <arg value="${src.demo.xhtml.dir}/paragraph.xhtml"/>
+            <arg value="${src.demo.xhtml.dir}/hamlet.xhtml"/>
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
@@ -590,6 +590,15 @@
 $Id$
 
 $Log$
+Revision 1.51  2004/10/26 00:13:13  joshy
+added threaded layout support to the HTMLPanel
+
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.50  2004/10/22 14:07:10  joshy
 added homepage link
 Issue number:

@@ -1,3 +1,26 @@
+plans for threading
+
+need to move layout to it's own thread
+
+paint on htmlpanel will trigger the layout thread
+set document will also trigger the layout thread
+if layout thread already running on same document then don't do anything
+if layout thread already running on older document, then stop it and start the new one
+
+on paint()
+    if layout thread done laying out then render it
+    if layout thread not done then print a layout in progress message
+initially put this code into the htmlpanel. move it out later
+
+plan:
+    startLayout() sync
+    layoutDone() sync
+    isLayoutDone() sync
+    render() 
+
+
+---------------
+
 last bit for R4
 
 //add javadocs online

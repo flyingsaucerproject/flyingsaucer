@@ -79,6 +79,12 @@ public class BoxLayout extends DefaultLayout {
      * @return      Returns
      */
     public Box layout( Context c, Element elem ) {
+        /*
+        Thread.currentThread().yield();
+        try {
+        Thread.currentThread().sleep(1);
+        } catch (Exception ex) {}
+        */
         // this is to keep track of when we are inside of a form
         if ( elem.getNodeName().equals( "form" ) ) {
             if ( elem.hasAttribute( "name" ) ) {
@@ -561,6 +567,15 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/10/26 00:13:14  joshy
+ * added threaded layout support to the HTMLPanel
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/10/23 13:46:46  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
