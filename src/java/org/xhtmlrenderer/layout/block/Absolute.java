@@ -31,11 +31,8 @@ public class Absolute {
 
     public static boolean isAbsolute(CascadedStyle style) {
         if (style == null) return false;
-        if (!style.hasProperty(CSSName.POSITION)) return false;//default is inline
-        String position = style.propertyByName(CSSName.POSITION).getValue().getCssText();
-        // Uu.p("pos = " + position);
-        if (position.equals("absolute")) return true;
-        return false;
+        IdentValue position = style.getIdent(CSSName.POSITION);
+        return position != null && position == IdentValue.ABSOLUTE;
     }
 
     public static void setupAbsolute(Box box, Context c) {

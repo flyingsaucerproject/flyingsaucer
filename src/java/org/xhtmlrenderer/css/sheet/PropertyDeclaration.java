@@ -22,6 +22,7 @@ package org.xhtmlrenderer.css.sheet;
 import java.util.*;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.sheet.factory.*;
 
 /**
@@ -83,6 +84,7 @@ public class PropertyDeclaration {
      * ImportanceAndOrigin of stylesheet - user important
      */
     private final static int USER_IMPORTANT = 5;
+    private IdentValue _identVal;
 
     /**
      * Creates a new instance of PropertyDeclaration from an {@link
@@ -208,12 +210,25 @@ public class PropertyDeclaration {
         PD_FACTORIES.put( CSSName.PADDING_SHORTHAND,       
                           PaddingPropertyDeclarationFactory.instance() );
     }
+
+    private boolean identIsSet;
+    public IdentValue asIdentValue() {
+        if ( !identIsSet ) {
+            _identVal = IdentValue.getByIdentString(cssPrimitiveValue.getCssText());
+            identIsSet = true;
+        }
+        return _identVal;
+
+    }
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/01/25 14:45:56  pdoubleya
+ * Added support for IdentValue mapping on property declarations. On both CascadedStyle and PropertyDeclaration you can now request the value as an IdentValue, for object-object comparisons. Updated 99% of references that used to get the string value of PD to return the IdentValue instead; remaining cases are for pseudo-elements where the PD content needs to be manipulated as a String.
+ *
  * Revision 1.8  2005/01/24 19:01:08  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *

@@ -282,99 +282,70 @@ public class ContentUtil {
     public static boolean mayHaveFirstLetter(CascadedStyle style) {
         // ASK: why use CascadedStyle here, instead of Calculated? (PWW 25-01-05)
         if (style == null) return false;//for DomToplevelNode
-        if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
-        String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
-        if (display.equals("block")) return true;
-        if (display.equals("list-item")) return true;
-        if (display.equals("table-cell")) return true;
-        if (display.equals("table-caption")) return true;
-        if (display.equals("inline-block")) return true;
-        return false;
+        IdentValue display = style.getIdent(CSSName.DISPLAY);
+        return display != null &&
+                (display == IdentValue.BLOCK ||
+                 display == IdentValue.LIST_ITEM ||
+                 display == IdentValue.TABLE_CELL ||
+                 display == IdentValue.TABLE_CAPTION ||
+                 display == IdentValue.INLINE_BLOCK );
     }
 
     public static boolean mayHaveFirstLine(CascadedStyle style) {
         // ASK: why use CascadedStyle here, instead of Calculated? (PWW 25-01-05)
-        //if(style == null) return false;//for DomToplevelNode
-        if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
-        String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
-        if (display.equals("block")) return true;
-        if (display.equals("list-item")) return true;
-        if (display.equals("run-in")) return true;
-        if (display.equals("table")) return true;
-        if (display.equals("table-cell")) return true;
-        if (display.equals("table-caption")) return true;
-        if (display.equals("inline-block")) return true;
-        return false;
+        if(style == null) return false;//for DomToplevelNode
+        IdentValue display = style.getIdent(CSSName.DISPLAY);
+        return display != null &&
+                (display == IdentValue.BLOCK ||
+                 display == IdentValue.LIST_ITEM ||
+                 display == IdentValue.RUN_IN ||
+                 display == IdentValue.TABLE ||
+                 display == IdentValue.TABLE_CELL ||
+                 display == IdentValue.TABLE_CAPTION ||
+                 display == IdentValue.INLINE_BLOCK );
     }
 
     public static boolean isBlockLevel(CascadedStyle style) {
         if (style == null) return false;
-        if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
-        String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
-        if (display.equals("block")) return true;
-        if (display.equals("list-item")) return true;
-        if (display.equals("table")) return true;
-        return false;
+        IdentValue display = style.getIdent(CSSName.DISPLAY);
+        return display != null && (display == IdentValue.BLOCK || display == IdentValue.LIST_ITEM || display == IdentValue.TABLE);
     }
 
     public static boolean isHidden(CascadedStyle style) {
-        if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
-        String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
-        if (display.equals("none")) return true;
-        return false;
+        IdentValue display = style.getIdent(CSSName.DISPLAY);
+        return display != null && display == IdentValue.NONE;
     }
 
     public static boolean isRunIn(CascadedStyle style) {
-        if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
-        String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
-        if (display.equals("run-in")) return true;
-        return false;
+        IdentValue display = style.getIdent(CSSName.DISPLAY);
+        return display != null && display == IdentValue.RUN_IN;
     }
 
     public static boolean isTable(CascadedStyle style) {
-        if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
-        String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
-        if (display.equals("table")) return true;
-        return false;
+        IdentValue display = style.getIdent(CSSName.DISPLAY);
+        return display != null && display == IdentValue.TABLE;
     }
 
     public static boolean isListItem(CascadedStyle style) {
         if (style == null) return false;
-        if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
-        String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
-        if (display.equals("list-item")) return true;
-        return false;
+        IdentValue display = style.getIdent(CSSName.DISPLAY);
+        return display != null && display == IdentValue.LIST_ITEM;
     }
 
     public static boolean isAbsoluteOrFixed(CascadedStyle style) {
-        if (!style.hasProperty(CSSName.POSITION)) return false;//default is inline
-        String position = style.propertyByName(CSSName.POSITION).getValue().getCssText();
-        if (position.equals("absolute")) return true;
-        if (position.equals("fixed")) return true;
-        return false;
+        IdentValue position = style.getIdent(CSSName.POSITION);
+        return position != null && ( position == IdentValue.ABSOLUTE || position == IdentValue.FIXED );
     }
 
     public static boolean isInlineBlock(CascadedStyle style) {
-        if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
-        String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
-        if (display.equals("inline-block")) return true;
-        return false;
+        IdentValue display = style.getIdent(CSSName.DISPLAY);
+        return display != null && display == IdentValue.INLINE_BLOCK;
     }
 
     public static boolean isFloated(CascadedStyle style) {
         if (style == null) return false;
-        if (!style.hasProperty(CSSName.FLOAT)) return false;//default is inline
-        String float_val = style.propertyByName(CSSName.FLOAT).getValue().getCssText();
-        if (float_val == null) {
-            return false;
-        }
-        if (float_val.equals("left")) {
-            return true;
-        }
-        if (float_val.equals("right")) {
-            return true;
-        }
-        return false;
+        IdentValue floatVal = style.getIdent(CSSName.FLOAT);
+        return floatVal != null && ( floatVal == IdentValue.LEFT || floatVal == IdentValue.RIGHT );
     }
 
     public static boolean isBlockContent(List childContent) {
@@ -405,6 +376,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2005/01/25 14:45:55  pdoubleya
+ * Added support for IdentValue mapping on property declarations. On both CascadedStyle and PropertyDeclaration you can now request the value as an IdentValue, for object-object comparisons. Updated 99% of references that used to get the string value of PD to return the IdentValue instead; remaining cases are for pseudo-elements where the PD content needs to be manipulated as a String.
+ *
  * Revision 1.31  2005/01/25 12:38:11  pdoubleya
  * ASK comment.
  *

@@ -617,7 +617,6 @@ class DOMTreeModel implements TreeModel {
             children = addDisplayable(node);
         }
 
-        // CLEAN return node.getChildNodes().item(index);
         return (Node) children.get(index);
     }
 
@@ -638,7 +637,6 @@ class DOMTreeModel implements TreeModel {
             children = addDisplayable(node);
         }
 
-        // CLEAN return node.getChildNodes().getLength();
         return children.size();
     }
 
@@ -664,16 +662,6 @@ class DOMTreeModel implements TreeModel {
         } else {
             return -1;
         }
-
-        /*
-         * CLEAN
-         * for(int i=0; i<node.getChildNodes().getLength(); i++) {
-         * if(child == node.getChildNodes().item(i)) {
-         * return i;
-         * }
-         * }
-         * return -1;
-         */
     }
 
 
@@ -799,6 +787,9 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/01/25 14:45:54  pdoubleya
+ * Added support for IdentValue mapping on property declarations. On both CascadedStyle and PropertyDeclaration you can now request the value as an IdentValue, for object-object comparisons. Updated 99% of references that used to get the string value of PD to return the IdentValue instead; remaining cases are for pseudo-elements where the PD content needs to be manipulated as a String.
+ *
  * Revision 1.11  2005/01/24 14:36:35  pdoubleya
  * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
  *

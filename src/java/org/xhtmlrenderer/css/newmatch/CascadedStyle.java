@@ -22,6 +22,7 @@ package org.xhtmlrenderer.css.newmatch;
 import java.util.*;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
 
@@ -127,6 +128,12 @@ public class CascadedStyle {
         return prop;
     }
 
+    public IdentValue getIdent(CSSName cssName) {
+        PropertyDeclaration pd = propertyByName(cssName);
+        return ( pd == null ? null : pd.asIdentValue());
+    }
+
+
     /**
      * Returns an {@link java.util.Iterator} over the set of {@link
      * org.xhtmlrenderer.css.sheet.PropertyDeclaration}s already matched in this
@@ -151,6 +158,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/01/25 14:45:55  pdoubleya
+ * Added support for IdentValue mapping on property declarations. On both CascadedStyle and PropertyDeclaration you can now request the value as an IdentValue, for object-object comparisons. Updated 99% of references that used to get the string value of PD to return the IdentValue instead; remaining cases are for pseudo-elements where the PD content needs to be manipulated as a String.
+ *
  * Revision 1.4  2005/01/24 19:01:06  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *

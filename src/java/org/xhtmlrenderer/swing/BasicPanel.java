@@ -255,12 +255,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             return;
         }
 
-        //Element html = (Element) doc.getDocumentElement();
-        
-        // CLEAN
-        //Element body = Xx.child( html, "body" );
-        //body = html;
-
         // set up CSS
         Context c = newContext((Graphics2D) g);
         //getContext().setMaxWidth(0);
@@ -677,10 +671,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     protected void calcLayout() {
         // set body box to null to trigger new layout
         body_box = null;
-        /* CLEAN
-         * calcLayout( this.getGraphics() );
-         * this.setOpaque( false );
-         */
     }
 
 
@@ -763,11 +753,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      */
     protected Document loadDocument(final URL url)
             throws Exception {
-        /* CLEAN
-         * XRDocument xrDoc = XRDocumentFactory.loadDocument(null, url);
-         * return xrDoc.getDOMDocument();
-         */
-        //Document dom = Xx.loadDocument( url );
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = fact.newDocumentBuilder();
         builder.setErrorHandler(error_handler);
@@ -786,9 +771,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             XRLog.load("Loading URL " + base);
             Document dom = Xx.loadDocument(base);
             
-            // CLEAN
-            // URL base = new File(filename).toURL();
-            
             setDocument(dom, base);
             return;
         }
@@ -804,19 +786,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     private Context newContext(Graphics2D g) {
         XRLog.layout(Level.FINEST, "new context begin");
         
-        // CLEAN
-        //Point origin = new Point( 0, 0 );
-        //Point last = new Point( 0, 0 );
-        
         getContext().setCanvas(this);
         getContext().setGraphics(g);
         
-        // CLEAN
-        // set up the dimensions of the html canvas
-        //Rectangle dimensions = new Rectangle(this.getWidth(),this.getHeight());//layout.bwidth, layout.bheight);
-        //c.canvas_graphics = g.create();
-        //c.setExtents(new Rectangle(0,0,this.getWidth(),this.getHeight()));
-        //XRLog.layout( Level.FINEST, "viewport size = " + viewport.getSize());
         Rectangle extents;
         if (enclosingScrollPane != null) {
             Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
@@ -826,14 +798,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             extents = new Rectangle(getWidth(), getHeight());//200, 200 ) );
         }
 
-        // CLEAN
-        //getContext().setExtents(new Rectangle(0,0,viewport.getWidth(),viewport.getHeight()));
-        
-        //getContext().viewport = this.enclosingScrollPane;
-        
-        // CLEAN
-        //getContext().cursor = last;
-        
         getContext().setMaxWidth(0);
         XRLog.layout(Level.FINEST, "new context end");
         return getContext().newContextInstance(extents);
@@ -887,6 +851,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/01/25 14:45:54  pdoubleya
+ * Added support for IdentValue mapping on property declarations. On both CascadedStyle and PropertyDeclaration you can now request the value as an IdentValue, for object-object comparisons. Updated 99% of references that used to get the string value of PD to return the IdentValue instead; remaining cases are for pseudo-elements where the PD content needs to be manipulated as a String.
+ *
  * Revision 1.34  2005/01/16 18:50:06  tobega
  * Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
  *

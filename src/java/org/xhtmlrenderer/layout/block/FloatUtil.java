@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.layout.block;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
@@ -32,21 +33,18 @@ public class FloatUtil {
         //CascadedStyle style = c.getCss().getCascadedStyle(box.element);
         if (ContentUtil.isFloated(style)) {
             // Uu.p("==== setup float ====");
-            String float_val = style.propertyByName(CSSName.FLOAT).getValue().getCssText();
-            if (float_val == null) {
-                float_val = "none";
-            }
-            if (float_val.equals("none")) {
+            IdentValue floatVal = style.getIdent(CSSName.FLOAT);
+            if ( floatVal == null || floatVal == IdentValue.NONE ) {
                 return;
             }
             box.floated = true;
-            if (float_val.equals("left")) {
+            if ( floatVal == IdentValue.LEFT ) {
                 positionBoxLeft(c, box);
                 c.getBlockFormattingContext().pushDownLeft(box);
                 // Uu.p("final box = " + box);
                 c.getBlockFormattingContext().addLeftFloat(box);
             }
-            if (float_val.equals("right")) {
+            if ( floatVal == IdentValue.RIGHT ) {
                 positionBoxRight(c, box);
                 c.getBlockFormattingContext().pushDownRight(box);
                 // Uu.p("final box = " + box);

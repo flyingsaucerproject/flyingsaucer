@@ -2,21 +2,15 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.render.Box;
 
 public class LayoutUtil {
 
-    public static String getDisplay(CascadedStyle style) {
+    public static IdentValue getDisplay(CascadedStyle style) {
         // Uu.p("checking: " + child);
-        String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
-        // Uu.p("display = " + display);
-        
-        // override for floated
-        if (isFloated(style)) {
-            return "block";
-        }
-
-        return display;
+        IdentValue display = style.getIdent(CSSName.DISPLAY);
+        return ( isFloated(style) ? IdentValue.BLOCK : display );
     }
 
 
@@ -51,10 +45,12 @@ public class LayoutUtil {
      * @return The fixed value
      */
     public static boolean isFixed(CascadedStyle style) {
-        if (getPosition(style).equals("fixed")) {
+        /*if (getPosition(style).equals("fixed")) {
             return true;
         }
-        return false;
+        return false;*/
+        IdentValue position = getPosition(style);
+        return position != null && position == IdentValue.FIXED;
     }
 
     /**
@@ -92,15 +88,10 @@ public class LayoutUtil {
      * @param style
      * @return The position value
      */
-    public static String getPosition(CascadedStyle style) {
-        if (style == null) return "";//TODO: this should not be necessary?
-        if (!style.hasProperty(CSSName.POSITION)) return "";
-        String position = style.propertyByName(CSSName.POSITION).getValue().getCssText();
-        if (position == null) {
-            //TODO: check if we ever can get here. CSS-code should have taken care of this, surely?
-            position = "static";
-        }
-        return position;
+    public static IdentValue getPosition(CascadedStyle style) {
+        if (style == null) return null;//TODO: this should not be necessary?
+        IdentValue position = style.getIdent(CSSName.POSITION);
+        return ( position == null ? IdentValue.STATIC : position );
     }
 
 
@@ -112,19 +103,7 @@ public class LayoutUtil {
      */
     public static boolean isFloated(CascadedStyle style) {
         if (style == null) return false;//TODO: this should be unnecessary?
-        if (!style.hasProperty(CSSName.FLOAT)) return false;
-        String float_val = style.propertyByName(CSSName.FLOAT).getValue().getCssText();
-        if (float_val == null) {
-            return false;
-        }
-        if (float_val.equals("left")) {
-            return true;
-        }
-        if (float_val.equals("right")) {
-            return true;
-        }
-        return false;
+        IdentValue floatVal = style.getIdent(CSSName.FLOAT);
+        return floatVal != null && ( floatVal == IdentValue.LEFT || floatVal == IdentValue.RIGHT );
     }
-
-
 }

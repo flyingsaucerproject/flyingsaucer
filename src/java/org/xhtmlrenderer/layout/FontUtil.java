@@ -109,13 +109,10 @@ public class FontUtil {
 
         float size = style.getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, c.getBlockFormattingContext().getHeight());
 
-        //CLEANString weight = style.propertyByName(CSSName.FONT_WEIGHT).computedValue().asString();
         IdentValue fontWeight = style.getIdent(CSSName.FONT_WEIGHT);
         String[] families = style.propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
 
-        //CLEAN String fstyle = style.propertyByName(CSSName.FONT_STYLE).computedValue().asString();
         IdentValue fontStyle = style.getIdent(CSSName.FONT_STYLE);
-        //CLEAN String variant = style.propertyByName(CSSName.FONT_VARIANT).computedValue().asString();
         IdentValue variant = style.getIdent(CSSName.FONT_VARIANT);
         f = c.getFontResolver().resolveFont(c, families, size, fontWeight, fontStyle, variant);
 
@@ -149,6 +146,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/01/25 14:45:56  pdoubleya
+ * Added support for IdentValue mapping on property declarations. On both CascadedStyle and PropertyDeclaration you can now request the value as an IdentValue, for object-object comparisons. Updated 99% of references that used to get the string value of PD to return the IdentValue instead; remaining cases are for pseudo-elements where the PD content needs to be manipulated as a String.
+ *
  * Revision 1.29  2005/01/24 22:46:43  pdoubleya
  * Added support for ident-checks using IdentValue instead of string comparisons.
  *

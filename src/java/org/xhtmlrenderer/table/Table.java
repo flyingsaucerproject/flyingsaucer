@@ -24,6 +24,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
 
@@ -107,10 +108,11 @@ public class Table {
         }
         // check the display value
         CascadedStyle style = c.getCss().getCascadedStyle((Element) node, false);
-        if (LayoutUtil.getDisplay(style).equals("table-row-group")) {
+        /*if (LayoutUtil.getDisplay(style).equals("table-row-group")) {
             return true;
         }
-        return false;
+        return false;*/
+        return LayoutUtil.getDisplay(style) == IdentValue.TABLE_ROW_GROUP;
     }
 
     private boolean isRow(Context c, Node node) {
@@ -120,10 +122,7 @@ public class Table {
         }
         // check the display value
         CascadedStyle style = c.getCss().getCascadedStyle((Element) node, false);
-        if (LayoutUtil.getDisplay(style).equals("table-row")) {
-            return true;
-        }
-        return false;
+        return LayoutUtil.getDisplay(style) == IdentValue.TABLE_ROW;
     }
 
     /**
@@ -185,10 +184,7 @@ public class Table {
         }
         // check the display value
         CascadedStyle style = c.getCss().getCascadedStyle((Element) node, false);
-        if (LayoutUtil.getDisplay(style).equals("table-cell")) {
-            return true;
-        }
-        return false;
+        return LayoutUtil.getDisplay(style) == IdentValue.TABLE_CELL;
     }
 
 
@@ -379,6 +375,9 @@ public class Table {
 /*
    $Id$
    $Log$
+   Revision 1.16  2005/01/25 14:45:56  pdoubleya
+   Added support for IdentValue mapping on property declarations. On both CascadedStyle and PropertyDeclaration you can now request the value as an IdentValue, for object-object comparisons. Updated 99% of references that used to get the string value of PD to return the IdentValue instead; remaining cases are for pseudo-elements where the PD content needs to be manipulated as a String.
+
    Revision 1.15  2005/01/24 19:01:09  pdoubleya
    Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
 
