@@ -218,6 +218,8 @@ public class InlineLayout extends BoxLayout {
                     //HACK: tobe 2004-12-21, floats need to affext size of containing block, though
                     //TODO: rethink float handling
                     bounds.height += new_inline.height;
+                    //HACK: only handle "clear: both"
+                    curr_line.y += new_inline.height;
                 }
 
                 // calc new width of the line
@@ -487,6 +489,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.67  2004/12/21 20:20:28  tobega
+* More hack to make Alice look ok at least
+*
 * Revision 1.66  2004/12/21 06:58:40  tobega
 * Fixed bug in WhitespaceStripper. Started a hack to handle floats better, but it didn't solve everything, we need to think more about handling floats.
 *
