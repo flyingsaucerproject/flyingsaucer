@@ -65,7 +65,7 @@ public class Configuration {
         // because the regular one is initialized using the Configuration
         // class--unfortunately, this means we can't control the output
         // without recompiling.
-        logger = Logger.getLogger( "plumbing.config" );
+        logger = Logger.getLogger( "plumbing.init" );
         Handler handler = new ConsoleHandler();
 
         // Change this value if you want more detail about the
@@ -159,7 +159,7 @@ public class Configuration {
         logger.finer( "Configuration: " + cnt + " properties overridden from System properties." );
     }
 
-    /** Writes a log of loaded properties to the plumbing.config Logger. */
+    /** Writes a log of loaded properties to the plumbing.init Logger. */
     private void logAfterLoad() {
         Enumeration elem = properties.keys();
         logger.finer( "Configuration contains " + properties.size() + " keys." );
@@ -237,6 +237,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/10/14 12:55:28  pdoubleya
+ * Use plumbing.init logging hierarchy instead of plumbing.config.
+ *
  * Revision 1.2  2004/10/14 11:12:05  pdoubleya
  * Value for is now static, going against Singleton instance. Created separate logger/handler for Configuration use only, and there is a single Logger. Loggers now use INFO, FINER, FINEST for logging progess in loading configuration. Updated comments.
  *
