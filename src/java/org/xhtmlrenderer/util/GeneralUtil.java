@@ -22,47 +22,165 @@ package org.xhtmlrenderer.util;
 
 import java.io.*;
 import java.net.URL;
+import java.util.*;
 
 
 /**
  * Description of the Class
  *
- * @author Patrick Wright
+ * @author   Patrick Wright
  */
 public class GeneralUtil {
+
+    /**
+     * Used to format an Object's hashcode into a 0-padded 10 char String, e.g.
+     * for 24993066 returns "0024993066"
+     */
+    public final static java.text.DecimalFormat PADDED_HASH_FORMAT = new java.text.DecimalFormat( "0000000000" );
+
     /**
      * Description of the Method
      *
-     * @param obj      PARAM
-     * @param resource PARAM
-     * @return Returns
+     * @param obj       PARAM
+     * @param resource  PARAM
+     * @return          Returns
      */
-    public static InputStream openStreamFromClasspath(Object obj, String resource) {
+    public static InputStream openStreamFromClasspath( Object obj, String resource ) {
         InputStream readStream = null;
         try {
             ClassLoader loader = obj.getClass().getClassLoader();
-            if (loader == null) {
-                readStream = ClassLoader.getSystemResourceAsStream(resource);
+            if ( loader == null ) {
+                readStream = ClassLoader.getSystemResourceAsStream( resource );
             } else {
-                readStream = loader.getResourceAsStream(resource);
+                readStream = loader.getResourceAsStream( resource );
             }
-            if (readStream == null) {
-                URL stream = resource.getClass().getResource(resource);
+            if ( readStream == null ) {
+                URL stream = resource.getClass().getResource( resource );
                 readStream = stream.openStream();
             }
-        } catch (Exception ex) {
-            XRLog.exception("Could not open stream from CLASSPATH: " + resource, ex);
+        } catch ( Exception ex ) {
+            XRLog.exception( "Could not open stream from CLASSPATH: " + resource, ex );
         }
         return readStream;
     }
 
-    public static void dumpShortException(Exception ex) {
-        System.out.println(ex.getMessage() + ", " + ex.getClass());
-        StackTraceElement[] stes = ex.getStackTrace();
-        for (int i = 0; i < stes.length && i < 5; i++) {
-            StackTraceElement ste = stes[i];
-            System.out.println("  " + ste.getClassName() + "." + ste.getMethodName() + "(ln " + ste.getLineNumber() + ")");
+    /**
+     * Dumps an exception to the console, only the last 5 lines of the stack
+     * trace.
+     *
+     * @param ex  PARAM
+     */
+    public static void dumpShortException( Exception ex ) {
+        String s = ex.getMessage();
+        if ( s == null || s.trim().equals( "null" ) ) {
+            s = "{no ex. message}";
         }
+        System.out.println( s + ", " + ex.getClass() );
+        StackTraceElement[] stes = ex.getStackTrace();
+        for ( int i = 0; i < stes.length && i < 5; i++ ) {
+            StackTraceElement ste = stes[i];
+            System.out.println( "  " + ste.getClassName() + "." + ste.getMethodName() + "(ln " + ste.getLineNumber() + ")" );
+        }
+    }
+
+    /**
+     * Returns a String tracking the last n method calls, from oldest to most
+     * recent. You can use this as a simple tracing mechanism to find out the
+     * calls that got to where you execute the <code>trackBack()</code> call 
+     * from. Example:</p>
+     * <pre>
+     * // called from Box.calcBorders(), line 639
+     * String tback = GeneralUtil.trackBack(6);
+     * System.out.println(tback);
+     * </pre> produces 
+     * <pre>
+     * Boxing.layoutChildren(ln 204)
+     * BlockBoxing.layoutContent(ln 81)
+     * Boxing.layout(ln 72)
+     * Boxing.layout(ln 133)
+     * Box.totalLeftPadding(ln 306)
+     * Box.calcBorders(ln 639)
+     * </pre> 
+     * The <code>trackBack()</code> method itself is always excluded from the dump.
+     *  Note the output may not be useful if HotSpot has been optimizing the
+     *  code.
+     *
+     * @param cnt  How far back in the call tree to go; if call tree is smaller, will
+     * be limited to call tree.
+     * @return     see desc
+     */
+    public static String trackBack( int cnt ) {
+        Exception ex = new Exception();
+        StringBuffer sb = new StringBuffer();
+        List list = new ArrayList( cnt );
+        StackTraceElement[] stes = ex.getStackTrace();
+        if ( cnt >= stes.length ) {
+            cnt = stes.length - 1;
+        }
+
+        // >= 1 to not include this method
+        for ( int i = cnt; i >= 1; i-- ) {
+            StackTraceElement ste = stes[i];
+            sb.append( GeneralUtil.classNameOnly( ste.getClassName() ) );
+            sb.append( "." );
+            sb.append( ste.getMethodName() );
+            sb.append( "(ln " + ste.getLineNumber() + ")" );
+            list.add( sb.toString() );
+            sb = new StringBuffer();
+        }
+
+        Iterator iter = list.iterator();
+        StringBuffer padding = new StringBuffer( "" );
+        StringBuffer trackback = new StringBuffer();
+        while ( iter.hasNext() ) {
+            String s = (String)iter.next();
+            trackback.append( padding + s + "\n" );
+            padding.append( "   " );
+        }
+        return trackback.toString();
+    }
+
+
+    /**
+     * Given an Object instance, returns just the classname with no package
+     *
+     * @param o  PARAM
+     * @return   Returns
+     */
+    public static String classNameOnly( Object o ) {
+        String s = "[null object ref]";
+        if ( o != null ) {
+            s = classNameOnly( o.getClass().getName() );
+        }
+        return s;
+    }
+
+    /**
+     * Given a String classname, returns just the classname with no package
+     *
+     * @param cname  PARAM
+     * @return       Returns
+     */
+    public static String classNameOnly( String cname ) {
+        String s = "[null object ref]";
+        if ( cname != null ) {
+            s = cname.substring( cname.lastIndexOf( '.' ) + 1 );
+        }
+        return s;
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param o  PARAM
+     * @return   Returns
+     */
+    public static String paddedHashCode( Object o ) {
+        String s = "0000000000";
+        if ( o != null ) {
+            s = PADDED_HASH_FORMAT.format( o.hashCode() );
+        }
+        return s;
     }
 }
 
@@ -70,6 +188,9 @@ public class GeneralUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/02/02 11:17:18  pdoubleya
+ * Added trackBack() method.
+ *
  * Revision 1.7  2005/01/29 20:21:08  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
