@@ -396,6 +396,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.48  2004/12/12 03:29:41  tobega
+* Oops, this is a real mess. CVS got into a twist on this one.
+*
 * Revision 1.47  2004/12/12 03:17:19  tobega
 * Making progress
 *
@@ -494,7 +497,7 @@ public class InlineLayout extends BoxLayout {
 *
 * turned off fractional font metrics
 *
-* fixed some bugs in U and X
+* fixed some bugs in U and Z
 *
 * - j
 *
