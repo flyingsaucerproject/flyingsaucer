@@ -33,7 +33,7 @@ import javax.swing.JScrollPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
-import org.xhtmlrenderer.swing.HTMLPanel;
+import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.u;
 
 
@@ -63,7 +63,7 @@ public class AboutBox extends JDialog implements Runnable {
         super();
         u.p( "starting the about box" );
         setTitle( text );
-        HTMLPanel panel = new HTMLPanel();
+        XHTMLPanel panel = new XHTMLPanel();
         int w = 400;
         int h = 500;
         panel.setPreferredSize( new Dimension( w, h ) );
@@ -103,7 +103,7 @@ public class AboutBox extends JDialog implements Runnable {
      * @param panel          PARAM
      * @exception Exception  Throws
      */
-    public void loadPage( String url_text, HTMLPanel panel )
+    public void loadPage( String url_text, XHTMLPanel panel )
         throws Exception {
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
         fact.setValidating( true );
@@ -196,6 +196,16 @@ public class AboutBox extends JDialog implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/12 02:23:55  joshy
+ * added new APIs for rendering context, xhtmlpanel, and graphics2drenderer.
+ * initial support for font mapping additions
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 14:38:57  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

@@ -1,7 +1,7 @@
 /*
  *
  * TBStyleReference.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License

@@ -39,11 +39,14 @@ import java.util.Map;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.simple.*;
+import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.layout.LayoutFactory;
 import org.xhtmlrenderer.layout.Layout;
 import org.xhtmlrenderer.layout.InlineLayout;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.u;
+import java.io.*;
 import org.sektor37.minium.*;
 
 
@@ -54,7 +57,7 @@ import org.sektor37.minium.*;
  */
 public class HTMLTest extends JFrame {
     /** Description of the Field */
-    private final HTMLPanel panel = new HTMLPanel();
+    private final XHTMLPanel panel;
     /** Description of the Field */
     public final static int text_width = 600;
     /** Description of the Field */
@@ -69,6 +72,7 @@ public class HTMLTest extends JFrame {
     public HTMLTest( String[] args )
         throws Exception {
         super( BASE_TITLE );
+        panel = new XHTMLPanel();
         panel.setPreferredSize( new Dimension( text_width, text_width ) );
         JScrollPane scroll = new JScrollPane( panel );
         scroll.setVerticalScrollBarPolicy( scroll.VERTICAL_SCROLLBAR_ALWAYS );
@@ -80,9 +84,6 @@ public class HTMLTest extends JFrame {
         panel.addMouseMotionListener(hov);
 
         if ( args.length > 0 ) {
-            // CLEAN
-            // File file = new File(args[0]);
-            // panel.setDocument(x.loadDocument(args[0]),file.toURL());
             loadDocument( args[0] );
         }
 
@@ -151,14 +152,14 @@ public class HTMLTest extends JFrame {
         debug.add(anti);
 
         debug.add( new ShowDOMInspectorAction() );
-
+/*
         debug.add(
                     new AbstractAction( "Print Box Tree" ) {
                         public void actionPerformed( ActionEvent evt ) {
                             panel.printTree();
                         }
                     } );
-
+*/
         setJMenuBar( mb );
     }
 
@@ -190,7 +191,7 @@ public class HTMLTest extends JFrame {
                             try {
                                 long st = System.currentTimeMillis();
 
-                                panel.setDocument( file );
+                                panel.setDocument( new File(file).toURL() );
 
                                 long el = System.currentTimeMillis() - st;
                                 XRLog.general( "loadDocument(" + file + ") in " + el + "ms, render may take longer" );
@@ -219,20 +220,6 @@ public class HTMLTest extends JFrame {
         frame.pack();
         frame.setSize( text_width, 300 );
         frame.show();
-        /*
-         * new Thread(new Runnable() {
-         * public void run() {
-         * for(int i=0; i<100; i=i+1) {
-         * u.sleep(100);
-         * frame.resize(131-i,200);
-         * System.out.println("blah = " + (131-i));
-         * frame.validate();
-         * frame.invalidate();
-         * frame.repaint();
-         * }
-         * }
-         * }).start();
-         */
     }
 
     /**
@@ -275,7 +262,7 @@ public class HTMLTest extends JFrame {
          * @param evt  PARAM
          */
         public void actionPerformed( ActionEvent evt ) {
-            panel.c.debug_draw_boxes = !panel.c.debug_draw_boxes;
+            panel.getRenderingContext().getContext().debug_draw_boxes = !panel.getRenderingContext().getContext().debug_draw_boxes;
             panel.repaint();
         }
     }
@@ -298,7 +285,7 @@ public class HTMLTest extends JFrame {
          * @param evt  PARAM
          */
         public void actionPerformed( ActionEvent evt ) {
-            panel.c.debug_draw_line_boxes = !panel.c.debug_draw_line_boxes;
+            panel.getRenderingContext().getContext().debug_draw_line_boxes = !panel.getRenderingContext().getContext().debug_draw_line_boxes;
             panel.repaint();
         }
     }
@@ -321,7 +308,7 @@ public class HTMLTest extends JFrame {
          * @param evt  PARAM
          */
         public void actionPerformed( ActionEvent evt ) {
-            panel.c.debug_draw_inline_boxes = !panel.c.debug_draw_inline_boxes;
+            panel.getRenderingContext().getContext().debug_draw_inline_boxes = !panel.getRenderingContext().getContext().debug_draw_inline_boxes;
             panel.repaint();
         }
     }
@@ -339,7 +326,7 @@ public class HTMLTest extends JFrame {
          * @param evt  PARAM
          */
         public void actionPerformed( ActionEvent evt ) {
-            panel.c.debug_draw_font_metrics = !panel.c.debug_draw_font_metrics;
+            panel.getRenderingContext().getContext().debug_draw_font_metrics = !panel.getRenderingContext().getContext().debug_draw_font_metrics;
             panel.repaint();
         }
     }
@@ -361,7 +348,7 @@ public class HTMLTest extends JFrame {
             } else {
                 hints = TextRenderingHints.DEFAULT_HINTS_FASTEST;
             }
-            panel.c.getTextRenderer().setTextRenderingHints(hints);
+            panel.getRenderingContext().getContext().getTextRenderer().setTextRenderingHints(hints);
             panel.repaint();
         }
     }
@@ -395,7 +382,7 @@ public class HTMLTest extends JFrame {
             if ( inspector == null ) {
                 // inspectorFrame = new JFrame("DOM Tree Inspector");
 
-                inspector = new DOMInspector( panel.doc, panel.c, panel.c.css );
+                inspector = new DOMInspector( panel.doc, panel.getRenderingContext().getContext(), panel.getRenderingContext().getContext().css );
 
                 inspectorFrame.getContentPane().add( inspector );
 
@@ -403,7 +390,7 @@ public class HTMLTest extends JFrame {
                 inspectorFrame.setSize( text_width, 600 );
                 inspectorFrame.show();
             } else {
-                inspector.setForDocument( panel.doc, panel.c, panel.c.css );
+                inspector.setForDocument( panel.doc, panel.getRenderingContext().getContext(), panel.getRenderingContext().getContext().css );
             }
             inspectorFrame.show();
         }
@@ -472,6 +459,16 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/11/12 02:23:59  joshy
+ * added new APIs for rendering context, xhtmlpanel, and graphics2drenderer.
+ * initial support for font mapping additions
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.16  2004/11/10 17:28:55  joshy
  * initial support for anti-aliased text w/ minium
  *

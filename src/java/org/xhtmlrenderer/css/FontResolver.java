@@ -98,12 +98,25 @@ public class FontResolver {
         }
         return f;
     }
+    
+    public void setFontMapping(String name, Font font) {
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/12 02:23:56  joshy
+ * added new APIs for rendering context, xhtmlpanel, and graphics2drenderer.
+ * initial support for font mapping additions
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/11/08 21:18:20  joshy
  * preliminary small-caps implementation
  *

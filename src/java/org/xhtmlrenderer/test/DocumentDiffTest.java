@@ -24,10 +24,12 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.swing.HTMLPanel;
+import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.simple.Graphics2DRenderer;
 import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.util.x;
-
+import java.awt.Graphics2D;
+import java.awt.Dimension;
 
 /**
  * Description of the Class
@@ -120,15 +122,24 @@ public class DocumentDiffTest {
     public static String xhtmlToDiff( String xhtml, int width, int height )
         throws Exception {
         Document doc = x.loadDocument( xhtml );
-        HTMLPanel panel = new HTMLPanel();
-        panel.setDocument( doc , new File(xhtml).toURL());
-        panel.setSize( width, height );
+        Graphics2DRenderer renderer = new Graphics2DRenderer();
+        renderer.setDocument( doc , new File(xhtml).toURL());
+        
         BufferedImage buff = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
-        Graphics g = buff.getGraphics();
-        panel.setThreadedLayout(false);
-        panel.paintComponent( g );
+        Graphics2D g = (Graphics2D)buff.getGraphics();
+
+        //panel.setSize( width, height );
+
+        //panel.setThreadedLayout(false);
+        
+        renderer.layout(g, new Dimension(width,height));
+        renderer.render(g);
+        
+        //panel.paintComponent( g );
+        
+        
         StringBuffer sb = new StringBuffer();
-        getDiff( sb, panel.getRootBox(), "" );
+        getDiff( sb, renderer.getRenderingContext().getRootBox(), "" );
         return sb.toString();
     }
 
@@ -203,6 +214,16 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/12 02:23:59  joshy
+ * added new APIs for rendering context, xhtmlpanel, and graphics2drenderer.
+ * initial support for font mapping additions
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/11/07 23:24:19  joshy
  * added menu item to generate diffs
  * added diffs for multi-colored borders and inline borders

@@ -49,6 +49,7 @@ import org.w3c.dom.Document;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.swing.HTMLPanel;
+import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.u;
 
 
@@ -72,7 +73,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     /** Description of the Field */
     JLabel status;
     /** Description of the Field */
-    HTMLPanel view;
+    XHTMLPanel view;
     /** Description of the Field */
     JScrollPane scroll;
     /** Description of the Field */
@@ -104,7 +105,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         stop = new JButton( "Stop" );
         reload = new JButton( "Reload" );
         url = new JTextField();
-        view = new HTMLPanel();
+        view = new XHTMLPanel();
         view.setErrorHandler( root.error_handler );
         status = new JLabel( "Status" );
 
@@ -439,6 +440,16 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/12 02:23:56  joshy
+ * added new APIs for rendering context, xhtmlpanel, and graphics2drenderer.
+ * initial support for font mapping additions
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/10/23 14:38:58  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

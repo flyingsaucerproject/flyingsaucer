@@ -87,6 +87,7 @@ public class DefaultRenderer implements Renderer {
      * @param layout  PARAM
      */
     public void paintChild( Context c, Box box, Renderer layout ) {
+        
         if(Configuration.isTrue("xr.renderer.viewport-repaint",false)) {
             if(c.getGraphics().getClip() != null) {
                 Rectangle2D oldclip = (Rectangle2D)c.getGraphics().getClip();
@@ -97,6 +98,7 @@ public class DefaultRenderer implements Renderer {
                 return;
             }
         }
+        
         layout.paint( c, box );
     }
 }

@@ -21,7 +21,6 @@ public class HoverListener extends MouseInputAdapter {
     }
     public void mouseEntered( MouseEvent evt ) {
         InlineBox ib = findInlineBox(evt);
-        XRLog.general("Element "+panel.hovered_element+" entered");
         restyle(ib);
     }
     public void mouseExited( MouseEvent evt ) {
@@ -39,11 +38,11 @@ public class HoverListener extends MouseInputAdapter {
         // if moved out of the old block then unstyle it
         if(prev != null) {
             boolean restyled = panel.getContext().css.wasHoverRestyled(prev.getRealElement());
-            u.p("previous was styled = " + restyled);
-            u.p("prev = " + prev);
+            //u.p("previous was styled = " + restyled);
+            //u.p("prev = " + prev);
             CalculatedStyle style = panel.getContext().css.getStyle(prev.getRealElement());
-            u.p("prev calc style = " + style);
-            u.p("prev color = " + style.getColor());
+            //u.p("prev calc style = " + style);
+            //u.p("prev color = " + style.getColor());
             if(restyled) {
                 Layout lt = LayoutFactory.getLayout(prev.getRealElement());
                 if(lt instanceof InlineLayout) {
@@ -58,10 +57,10 @@ public class HoverListener extends MouseInputAdapter {
         if(ib == null) { return; }
         
         boolean restyled = panel.getContext().css.wasHoverRestyled(ib.getRealElement());
-        u.p("was styled = " + restyled);
+        //u.p("was styled = " + restyled);
         
         CalculatedStyle style = panel.getContext().css.getStyle(ib.getRealElement());
-        u.p("color = " + style.getColor());
+        //u.p("color = " + style.getColor());
 
         // if the block has a hover style then restyle it
         if(restyled) {

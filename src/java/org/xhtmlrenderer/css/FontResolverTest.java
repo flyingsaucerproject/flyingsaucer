@@ -61,6 +61,9 @@ public class FontResolverTest extends FontResolver {
         //u.p("put in sans serif");
         available_fonts_hash.put( "Monospaced", new Font( "Monospaced", Font.PLAIN, 1 ) );
     }
+    public void setFontMapping(String name, Font font) {
+        available_fonts_hash.put(name, font.deriveFont(1f));
+    }
 
     /**
      * Description of the Method
@@ -216,6 +219,16 @@ public class FontResolverTest extends FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/12 02:23:56  joshy
+ * added new APIs for rendering context, xhtmlpanel, and graphics2drenderer.
+ * initial support for font mapping additions
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/11/08 21:18:20  joshy
  * preliminary small-caps implementation
  *

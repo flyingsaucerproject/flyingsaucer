@@ -45,6 +45,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.apache.xpath.XPathAPI;
 import org.xhtmlrenderer.css.bridge.TBStyleReference;
+import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
 import org.xhtmlrenderer.layout.BodyLayout;
@@ -57,22 +58,20 @@ import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.util.x;
 import org.xml.sax.ErrorHandler;
-
+import java.awt.Shape;
 
 /**
  * Description of the Class
  *
  * @author   Patrick Wright
  */
-public class HTMLPanel extends JPanel implements ComponentListener {
+public abstract class HTMLPanel extends JPanel implements ComponentListener {
 
     //private int html_height = -1;
     //private int max_width = -1;
 
     /** Description of the Field */
     protected Document doc = null;
-    /** Description of the Field */
-    protected Context c;
     /** Description of the Field */
     protected Box body_box = null;
 
@@ -93,15 +92,6 @@ public class HTMLPanel extends JPanel implements ComponentListener {
 
     /** Constructor for the HTMLPanel object */
     public HTMLPanel() {
-        c = new Context();
-        if ( true ) {
-            // NOTE: currently context is externalized from StyleReference even
-            // though it original design they had an ownership relationship (PWW 14/08/04)
-            //c.css = new XRStyleReference( c );
-        //} else {
-            c.css = new TBStyleReference(new NaiveUserAgent());
-        }
-        XRLog.render( "Using CSS implementation from: " + c.css.getClass().getName() );
 
         layout = new BodyLayout();
         layout_thread = new LayoutThread(this);
@@ -111,6 +101,14 @@ public class HTMLPanel extends JPanel implements ComponentListener {
     
     public void setThreadedLayout(boolean threaded) {
         layout_thread.setThreadedLayout(threaded);
+    }
+
+    protected RenderingContext ctx;
+    public RenderingContext getRenderingContext() {
+        return ctx;
+    }
+    public void setRenderingContext(RenderingContext ctx) {
+        this.ctx = ctx;
     }
 
     /**
@@ -223,10 +221,11 @@ public class HTMLPanel extends JPanel implements ComponentListener {
 
         // set up CSS
         newContext( g );
-        c.setMaxWidth( 0 );
+        getContext().setMaxWidth( 0 );
         //long start_time = new java.util.Date().getTime();
         //u.p("layout = " + layout);
-        body_box = layout.layout( c, html );
+        body_box = layout.layout( getContext(), html );
+        getRenderingContext().root_box = body_box;
         //u.p("after layout: " + body_box);
         //long end_time = new java.util.Date().getTime();
 
@@ -236,7 +235,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
             }
         }
 
-        intrinsic_size = new Dimension( c.getMaxWidth(), layout.contents_height );
+        intrinsic_size = new Dimension( getContext().getMaxWidth(), layout.contents_height );
         if(enclosingScrollPane != null) {
             //u.p("enclosing scroll pane = " + this.enclosingScrollPane);
             int view_height = this.enclosingScrollPane.getViewport().getHeight();
@@ -259,6 +258,29 @@ public class HTMLPanel extends JPanel implements ComponentListener {
     }
 
 
+    public void doRender() {
+        /*
+        //u.p("graphics clip = " + g.getClip());
+        if(enclosingScrollPane != null) {
+            //u.p("this = " + this);
+            //u.p("viewport = " + enclosingScrollPane.getViewportBorderBounds());
+            Graphics g = getRenderingContext().getContext().getGraphics();
+            Shape old_clip = g.getClip();
+            Rectangle new_clip = new Rectangle(enclosingScrollPane.getViewportBorderBounds());
+            new_clip = new Rectangle(-this.getX(),-this.getY(), 
+                (int)new_clip.getWidth(),(int)new_clip.getHeight());
+            g.setClip(new_clip);
+            layout.getRenderer().paint(
+                getRenderingContext().getContext(),
+                body_box );
+            g.setClip(old_clip);
+        } else {
+            */
+            layout.getRenderer().paint(
+                getRenderingContext().getContext(),
+                body_box );
+        //}
+    }
     /* ========= The box finding routines. Should probably move out to another
      class */
 
@@ -425,8 +447,8 @@ public class HTMLPanel extends JPanel implements ComponentListener {
      */
     public void setDocumentRelative( String filename )
         throws Exception {
-        if ( c != null && ( !filename.startsWith( "http" ) ) ) {
-            URL base = new URL( c.getBaseURL(), filename );
+        if ( getContext() != null && ( !filename.startsWith( "http" ) ) ) {
+            URL base = new URL( getContext().getBaseURL(), filename );
             XRLog.load( "Loading URL " + base );
             Document dom = x.loadDocument( base );
             //URL base = new File(filename).toURL();
@@ -434,6 +456,28 @@ public class HTMLPanel extends JPanel implements ComponentListener {
             return;
         }
         setDocument( x.loadDocument( filename ), new File( filename ).toURL() );
+    }
+    
+    public void setDocument(Document doc, URL url) {
+        resetScrollPosition();
+        this.doc = doc;
+        this.url = url;
+
+        //have to do this first
+        getContext().setBaseURL( url );
+        StaticXhtmlAttributeResolver ar = new StaticXhtmlAttributeResolver() {
+            public boolean isHover(org.w3c.dom.Element e) {
+                if(e == hovered_element) {
+                    return true;
+                }
+                return false;
+            }
+        };
+        getRenderingContext().getStyleReference().setDocumentContext(
+                getContext(), new XhtmlNamespaceHandler(), ar, doc);
+
+        calcLayout();
+        repaint();
     }
 
     /**
@@ -446,73 +490,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
     }
 
 
-    /**
-     * Sets the document attribute of the HTMLPanel object
-     *
-     * @param filename       The new document value
-     * @exception Exception  Throws
-     */
-    public void setDocument( String filename )
-        throws Exception {
-        URL url = new File( filename ).toURL();
-        setDocument( loadDocument( url ), url );
-    }
-
-
-    /**
-     * Sets the document attribute of the HTMLPanel object
-     *
-     * @param url            The new document value
-     * @exception Exception  Throws
-     */
-    public void setDocument( URL url )
-        throws Exception {
-        setDocument( loadDocument( url ), url );
-    }
-
-
-    /**
-     * Sets the document attribute of the HTMLPanel object
-     *
-     * @param doc  The new document value
-     */
-    public void setDocument( Document doc ) {
-        setDocument( doc, null );
-    }
-
-    /**
-     * Sets the document attribute of the HTMLPanel object
-     *
-     * @param doc  The new document value
-     * @param url  The new document value
-     */
-    public void setDocument( Document doc, URL url) {
-        resetScrollPosition();
-        this.doc = doc;
-        this.url = url;
-
-        //have to do this first
-        c.setBaseURL( url );
-        u.p("doc = " + doc);
-        u.p("Url = " + url);
-        StaticXhtmlAttributeResolver ar = new StaticXhtmlAttributeResolver() {
-            public boolean isHover(org.w3c.dom.Element e) {
-                //u.p("checking e");
-                if(e == hovered_element) {
-                    u.p("e = hovered");
-                    return true;
-                }
-                return false;
-            }
-        };
-        c.css.setDocumentContext(c, new XhtmlNamespaceHandler(), ar, doc);
-        //c.css.setDocumentContext(c, null, null, doc);
-
-        calcLayout();
-        repaint();
-    }
-    
-    URL url;
+    protected URL url;
     public URL getURL() {
         return this.url;
     }
@@ -555,7 +533,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
      * @return   The context value
      */
     public Context getContext() {
-        return c;
+        return getRenderingContext().getContext();
     }
     
     public Document getDocument() {
@@ -603,7 +581,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
      * @return               Returns
      * @exception Exception  Throws
      */
-    private Document loadDocument( final URL url )
+    protected Document loadDocument( final URL url )
         throws Exception {
         /*
          * XRDocument xrDoc = XRDocumentFactory.loadDocument(null, url);
@@ -625,8 +603,8 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         //u.p("new context begin");
         Point origin = new Point( 0, 0 );
         Point last = new Point( 0, 0 );
-        c.canvas = this;
-        c.graphics = g;
+        getContext().canvas = this;
+        getContext().graphics = g;
         // set up the dimensions of the html canvas
         //Rectangle dimensions = new Rectangle(this.getWidth(),this.getHeight());//layout.bwidth, layout.bheight);
         //c.canvas_graphics = g.create();
@@ -634,15 +612,15 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         //u.p("viewport size = " + viewport.getSize());
         if ( enclosingScrollPane != null ) {
             Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
-            c.setExtents( new Rectangle( 0,0, bnds.width, bnds.height) );
+            getContext().setExtents( new Rectangle( 0,0, bnds.width, bnds.height) );
         } else {
-            c.setExtents( new Rectangle( 200, 200 ) );
+            getContext().setExtents( new Rectangle( 200, 200 ) );
         }
 
-        //c.setExtents(new Rectangle(0,0,viewport.getWidth(),viewport.getHeight()));
-        c.viewport = this.enclosingScrollPane;
-        c.cursor = last;
-        c.setMaxWidth( 0 );
+        //getContext().setExtents(new Rectangle(0,0,viewport.getWidth(),viewport.getHeight()));
+        getContext().viewport = this.enclosingScrollPane;
+        getContext().cursor = last;
+        getContext().setMaxWidth( 0 );
         //u.p("new context end");
         //u.p("c = " + c);
     }
@@ -692,87 +670,21 @@ public class HTMLPanel extends JPanel implements ComponentListener {
     
     public Element hovered_element = null;
 }
-class LayoutThread implements Runnable {
-    private boolean done;
-    private Graphics graphics;
-    private HTMLPanel panel;
-    private boolean threaded;
-    public LayoutThread(HTMLPanel panel) {
-        this.panel = panel;
-        done = true;
-        graphics = null;
-        threaded = true;
-    }
-    
-    public void setThreadedLayout(boolean threaded) {
-        this.threaded = threaded;
-    }
-    
-    public synchronized void startLayout(Graphics g) {
-        if(isLayoutDone()) {
-            //u.p("really starting new thread");
-            done = false;
-            graphics = g;
-            if(threaded) {
-                new Thread(this).start();
-            } else {
-                run();
-            }
-        } else {
-            //u.p("layout already in progress. skipping layout");
-        }
-    }
-    
-    public void run() {
-        // u.p("layout thread starting");
-        // u.p("graphics = " + graphics);
-        panel.startLayout(graphics);
-        this.completeLayout();
-    }
-    
-    // skip for now
-    private synchronized void completeLayout() {
-        // u.p("layout thread ending");
-        done = true;
-        graphics = null;
-        panel.repaint();
-        // u.p("body box = " + panel.body_box );
-    }
-    
-    // always done because not really threaded yet
-    public synchronized boolean isLayoutDone() {
-        return done;
-    }
-    
-    public synchronized void startRender(Graphics g) {
-        g.setColor(Color.black);
-        if(this.isLayoutDone()) {
-            if(panel.body_box != null) {
-                //u.p("really painting: " + panel.body_box);
-                try {
-                    // u.p("context = " + panel.c);
-                    panel.layout.getRenderer().paint( panel.c, panel.body_box );
-                } catch (Throwable thr) {
-                    u.p("current thread = " + Thread.currentThread());
-                    u.p(thr);
-                    thr.printStackTrace();
-                }
-            } else {
-                g.drawString("body box is null", 50,50);
-                u.p("body box is null");
-            }
-        } else {
-            g.drawString("still doing layout", 50,50);
-            //u.p("still doing layout");
-        }
-    }
-
-}
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2004/11/12 02:23:59  joshy
+ * added new APIs for rendering context, xhtmlpanel, and graphics2drenderer.
+ * initial support for font mapping additions
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.26  2004/11/12 01:42:26  tobega
  * oops
  *
