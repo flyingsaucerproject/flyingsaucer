@@ -402,10 +402,11 @@ public class Matcher {
      */
     public CascadedStyle getPECascadedStyle(org.w3c.dom.Element e, String pseudoElement) {
         java.util.Map elm = (java.util.Map) _peMap.get(e);
-        if (elm == null) {
+        if (elm == null && e != null) {
             elm = resolvePseudoElements(e);
             _peMap.put(e, elm);
         }
+        if (elm == null) return null;
         return (CascadedStyle) elm.get(pseudoElement);
 
     }

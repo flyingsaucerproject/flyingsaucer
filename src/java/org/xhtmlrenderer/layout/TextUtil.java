@@ -27,41 +27,41 @@ import org.xhtmlrenderer.util.u;
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class TextUtil {
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param node  PARAM
-     * @param text  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param node PARAM
+     * @param text PARAM
+     * @return Returns
      */
-    public static String transformText( Context c, Node node, String text ) {
+    public static String transformText(Context c, Node node, String text) {
         Element el = null;
-        if ( node instanceof Element ) {
-            el = (Element)node;
+        if (node instanceof Element) {
+            el = (Element) node;
         } else {
-            el = (Element)node.getParentNode();
+            el = (Element) node.getParentNode();
         }
 
-        String text_transform = c.css.getStringProperty( el, "text-transform" );
-        if ( text_transform != null ) {
-            if ( text_transform.equals( "lowercase" ) ) {
+        String text_transform = c.css.getStyle(el).getStringProperty("text-transform");
+        if (text_transform != null) {
+            if (text_transform.equals("lowercase")) {
                 text = text.toLowerCase();
             }
-            if ( text_transform.equals( "uppercase" ) ) {
+            if (text_transform.equals("uppercase")) {
                 text = text.toUpperCase();
             }
-            if ( text_transform.equals( "capitalize" ) ) {
-                text = capitalizeWords( text );
+            if (text_transform.equals("capitalize")) {
+                text = capitalizeWords(text);
             }
         }
-        String variant = c.css.getStringProperty( el, "font-variant" );
-        if ( variant != null) {
-            if( variant.equals("small-caps")) {
+        String variant = c.css.getStyle(el).getStringProperty("font-variant");
+        if (variant != null) {
+            if (variant.equals("small-caps")) {
                 text = text.toUpperCase();
             }
         }
@@ -72,12 +72,12 @@ public class TextUtil {
     /**
      * Description of the Method
      *
-     * @param text  PARAM
-     * @return      Returns
+     * @param text PARAM
+     * @return Returns
      */
-    public static String capitalizeWords( String text ) {
+    public static String capitalizeWords(String text) {
         //u.p("start = -"+text+"-");
-        if ( text.length() == 0 ) {
+        if (text.length() == 0) {
             return text;
         }
 
@@ -92,25 +92,25 @@ public class TextUtil {
          * }
          */
         boolean cap = true;
-        for ( int i = 0; i < text.length(); i++ ) {
-            String ch = text.substring( i, i + 1 );
+        for (int i = 0; i < text.length(); i++) {
+            String ch = text.substring(i, i + 1);
             //u.p("ch = " + ch + " cap = " + cap);
 
 
-            if ( cap ) {
-                sb.append( ch.toUpperCase() );
+            if (cap) {
+                sb.append(ch.toUpperCase());
             } else {
-                sb.append( ch );
+                sb.append(ch);
             }
             cap = false;
-            if ( ch.equals( " " ) ) {
+            if (ch.equals(" ")) {
                 cap = true;
             }
         }
 
         //u.p("final = -"+sb.toString()+"-");
-        if ( sb.toString().length() != text.length() ) {
-            u.p( "error! to strings arent the same length = -" + sb.toString() + "-" + text + "-" );
+        if (sb.toString().length() != text.length()) {
+            u.p("error! to strings arent the same length = -" + sb.toString() + "-" + text + "-");
         }
         return sb.toString();
     }
@@ -119,26 +119,25 @@ public class TextUtil {
     /**
      * Description of the Method
      *
-     * @param c                 PARAM
-     * @param node              PARAM
-     * @param containing_block  PARAM
+     * @param c                PARAM
+     * @param node             PARAM
+     * @param containing_block PARAM
      */
-    public static void stripWhitespace( Context c, Node node, Element containing_block ) {
+    public static void stripWhitespace(Context c, Node node, Element containing_block) {
 
 
-        String white_space = c.css.getStringProperty( containing_block, "white-space" );
+        String white_space = c.css.getStyle(containing_block).getStringProperty("white-space");
         // if doing preformatted whitespace
-        if ( white_space != null && white_space.equals( "pre" ) ) {
+        if (white_space != null && white_space.equals("pre")) {
             return;
         }
 
 
-
-        if ( node == null ) {
+        if (node == null) {
             return;
         }
 
-        if ( node.getNodeType() != node.TEXT_NODE ) {
+        if (node.getNodeType() != node.TEXT_NODE) {
             return;
         }
 
@@ -166,17 +165,17 @@ public class TextUtil {
          */
         // spaces at the start of the string -> nothing
 
-        text = text.replaceAll( "^\\s+", "" );
+        text = text.replaceAll("^\\s+", "");
         // spaces at the start of lines -> ""
         //text = text.replaceAll("\n(\\s*)","");
         // all \n -> a single space
-        text = text.replaceAll( "\n", " " );
+        text = text.replaceAll("\n", " ");
         // all extra spaces -> single space
-        text = text.replaceAll( "\\s+", " " );
+        text = text.replaceAll("\\s+", " ");
         // add one space to the end
         //text = text+" ";
         //u.p(text);
-        node.setNodeValue( text );
+        node.setNodeValue(text);
     }
 
 
@@ -186,6 +185,9 @@ public class TextUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/05 00:48:58  tobega
+ * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
+ *
  * Revision 1.5  2004/11/22 21:34:03  joshy
  * created new whitespace handler.
  * new whitespace routines only work if you set a special property. it's

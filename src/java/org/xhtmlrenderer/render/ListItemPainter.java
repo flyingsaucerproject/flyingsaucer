@@ -19,61 +19,60 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Image;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.font.LineMetrics;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.u;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+
+import java.awt.*;
+import java.awt.font.LineMetrics;
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class ListItemPainter {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public static void paint( Context c, Box box ) {
-        String type = c.css.getStringProperty( box.node, "list-style-type" );
+    public static void paint(Context c, Box box) {
+        String type = c.css.getStyle(box.getNode()).getStringProperty("list-style-type");
 
-        if ( type.equals( "none" ) ) {
+        if (type.equals("none")) {
             return;
         }
-        if ( type.equals( "lower-greek" ) ) {
+        if (type.equals("lower-greek")) {
             type = "decimal";
         }
-        if ( type.equals( "decimal-leading-zero" ) ) {
+        if (type.equals("decimal-leading-zero")) {
             type = "decimal";
         }
 
-        String image = c.css.getStringProperty( box.node, "list-style-image" );
+        String image = c.css.getStyle(box.getNode()).getStringProperty("list-style-image");
         Image img = null;
-        if ( !image.equals( "none" ) ) {
+        if (!image.equals("none")) {
             try {
                 //u.p("loading: " + image);
-                img = ImageUtil.loadImage( c, image );
-            } catch ( Exception ex ) {
-                u.p( ex );
+                img = ImageUtil.loadImage(c, image);
+            } catch (Exception ex) {
+                u.p(ex);
             }
             //u.p("image = " + img);
-            if ( img != null ) {
+            if (img != null) {
                 int rad = 8;
                 int baseline = box.height;
-                c.getGraphics().drawImage( img, box.x - img.getWidth( null ) - 2, box.y + baseline / 2 - img.getHeight( null ) / 2 + 2, null );
+                c.getGraphics().drawImage(img, box.x - img.getWidth(null) - 2, box.y + baseline / 2 - img.getHeight(null) / 2 + 2, null);
                 return;
             }
         }
 
         // prep the color
-        box.color = c.css.getColor(box.getRealElement());
+        box.color = c.css.getStyle(box.getRealElement()).getColor();
         c.getGraphics().setColor(box.color);
         
         
@@ -81,22 +80,22 @@ public class ListItemPainter {
         int rad = 8;// change this to use the glyph height
         int baseline = box.height;// change this to use the real baseline
         CalculatedStyle style = c.css.getStyle(box.getRealElement());
-        Font font = FontUtil.getFont(c, style, box.node);
+        Font font = FontUtil.getFont(c, style, box.getNode());
         //Font font = FontUtil.getFont(c, box.getRealElement());
         int h = FontUtil.lineHeight(c, box.getRealElement());
-        rad = h/3;
-        int x = box.x - rad - rad/2;
-        int y = box.y + (h-rad/2)/2;
-        if ( type.equals( "disc" ) ) {
-            c.getGraphics().fillOval( x, y, rad, rad );
+        rad = h / 3;
+        int x = box.x - rad - rad / 2;
+        int y = box.y + (h - rad / 2) / 2;
+        if (type.equals("disc")) {
+            c.getGraphics().fillOval(x, y, rad, rad);
             return;
         }
-        if ( type.equals( "square" ) ) {
-            c.getGraphics().fillRect( x, y, rad, rad );
+        if (type.equals("square")) {
+            c.getGraphics().fillRect(x, y, rad, rad);
             return;
         }
-        if ( type.equals( "circle" ) ) {
-            c.getGraphics().drawOval( x, y, rad, rad );
+        if (type.equals("circle")) {
+            c.getGraphics().drawOval(x, y, rad, rad);
             return;
         }
 
@@ -104,94 +103,94 @@ public class ListItemPainter {
 
 
         // calculations for text
-        if ( type.equals( "decimal" ) ) {
-            drawText(c,box,type);
+        if (type.equals("decimal")) {
+            drawText(c, box, type);
             return;
         }
 
-        if ( type.equals( "lower-latin" ) ) {
-            drawText(c,box,type);
+        if (type.equals("lower-latin")) {
+            drawText(c, box, type);
             return;
         }
 
-        if ( type.equals( "upper-latin" ) ) {
-            drawText(c,box,type);
+        if (type.equals("upper-latin")) {
+            drawText(c, box, type);
             return;
         }
 
-        if ( type.equals( "lower-roman" ) ) {
-            drawText(c,box,type);
+        if (type.equals("lower-roman")) {
+            drawText(c, box, type);
             return;
         }
 
-        if ( type.equals( "upper-roman" ) ) {
-            drawText(c,box,type);
+        if (type.equals("upper-roman")) {
+            drawText(c, box, type);
             return;
         }
     }
-    
+
     private static void drawText(Context c, Box box, String type) {
         String text = "";
-        if ( type.equals( "decimal" ) ) {
+        if (type.equals("decimal")) {
             text = box.list_count + ".";
         }
-        if ( type.equals( "lower-latin" ) ) {
-            text = toLatin( box.list_count ).toLowerCase() + ".";
+        if (type.equals("lower-latin")) {
+            text = toLatin(box.list_count).toLowerCase() + ".";
         }
 
-        if ( type.equals( "upper-latin" ) ) {
-            text = toLatin( box.list_count ).toUpperCase() + ".";
+        if (type.equals("upper-latin")) {
+            text = toLatin(box.list_count).toUpperCase() + ".";
         }
 
-        if ( type.equals( "lower-roman" ) ) {
-            text = toRoman( box.list_count ).toLowerCase() +".";
+        if (type.equals("lower-roman")) {
+            text = toRoman(box.list_count).toLowerCase() + ".";
         }
 
-        if ( type.equals( "upper-roman" ) ) {
-            text = toRoman( box.list_count ).toUpperCase() + ".";
+        if (type.equals("upper-roman")) {
+            text = toRoman(box.list_count).toUpperCase() + ".";
         }
 
         CalculatedStyle style = c.css.getStyle(box.getRealElement());
-        Font font = FontUtil.getFont(c, style, box.node);
-        LineMetrics lm = font.getLineMetrics( text, ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
-        int w = FontUtil.len(c,text,font);
+        Font font = FontUtil.getFont(c, style, box.getNode());
+        LineMetrics lm = font.getLineMetrics(text, ((Graphics2D) c.getGraphics()).getFontRenderContext());
+        int w = FontUtil.len(c, text, font);
         int h = FontUtil.lineHeight(c, box.getRealElement());
         int x = box.x - w - 2;
         int y = box.y + h;
-        y -= (int)lm.getDescent();
+        y -= (int) lm.getDescent();
         c.getGraphics().setFont(font);
-        c.getGraphics().drawString(text , x, y);
+        c.getGraphics().drawString(text, x, y);
     }
 
     /**
      * Description of the Method
      *
-     * @param val  PARAM
-     * @return     Returns
+     * @param val PARAM
+     * @return Returns
      */
-    protected static String toLatin( int val ) {
-        if ( val > 26 ) {
+    protected static String toLatin(int val) {
+        if (val > 26) {
             int val1 = val % 26;
             int val2 = val / 26;
-            return toLatin( val2 ) + toLatin( val1 );
+            return toLatin(val2) + toLatin(val1);
         }
-        return ( (char)( val + 64 ) ) + "";
+        return ((char) (val + 64)) + "";
     }
 
     /**
      * Description of the Method
      *
-     * @param val  PARAM
-     * @return     Returns
+     * @param val PARAM
+     * @return Returns
      */
-    protected static String toRoman( int val ) {
+    protected static String toRoman(int val) {
         int[] ints = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
         String[] nums = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
         StringBuffer sb = new StringBuffer();
-        for ( int i = 0; i < ints.length; i++ ) {
-            int count = (int)( val / ints[i] );
-            for ( int j = 0; j < count; j++ ) {
-                sb.append( nums[i] );
+        for (int i = 0; i < ints.length; i++) {
+            int count = (int) (val / ints[i]);
+            for (int j = 0; j < count; j++) {
+                sb.append(nums[i]);
             }
             val -= ints[i] * count;
         }
@@ -203,6 +202,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/05 00:48:59  tobega
+ * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
+ *
  * Revision 1.5  2004/11/27 15:46:40  joshy
  * lots of cleanup to make the code clearer
  *

@@ -36,40 +36,37 @@
   */
 package org.xhtmlrenderer.table;
 
-import java.awt.Point;
-import java.awt.Rectangle;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.Layout;
-import org.xhtmlrenderer.layout.LayoutUtil;
-import org.xhtmlrenderer.layout.LayoutFactory;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.*;
-import org.xhtmlrenderer.util.*;
+import org.xhtmlrenderer.render.Renderer;
+
+import java.awt.*;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class TableLayout2 extends TableLayout {
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param node  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param node PARAM
+     * @return Returns
      */
-    public Box createBox( Context c, Node node ) {
+    public Box createBox(Context c, Node node) {
         TableBox table = new TableBox();
-        table.node = node;
+        table.setNode(node);
         // set up the box properties
-        getMargin( c, table );
-        getPadding( c, table );
-        getBorder( c, table );
+        getMargin(c, table);
+        getPadding(c, table);
+        getBorder(c, table);
         return table;
     }
 
@@ -77,24 +74,23 @@ public class TableLayout2 extends TableLayout {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return Returns
      */
-    public Box layout( Context c, Element elem ) {
+    public Box layout(Context c, Element elem) {
         // create the table box
-        TableBox table_box = (TableBox)createBox( c, elem );
+        TableBox table_box = (TableBox) createBox(c, elem);
 
         // set up the border spacing
-        float border_spacing = c.css.getFloatProperty( elem,
-                "border-spacing" );
-        table_box.spacing = new Point( (int)border_spacing,
-                (int)border_spacing );
+        float border_spacing = c.css.getStyle(elem).getFloatProperty("border-spacing");
+        table_box.spacing = new Point((int) border_spacing,
+                (int) border_spacing);
 
         // set up the width
         int fixed_width = c.getExtents().width;
-        if ( c.css.hasProperty( elem, "width", false ) ) {
-            fixed_width = (int)c.css.getFloatProperty( elem, "width", c.getExtents().width, false );
+        if (c.css.getStyle(elem).hasProperty("width")) {
+            fixed_width = (int) c.css.getStyle(elem).getFloatPropertyRelative("width", c.getExtents().width);
         }
         int orig_fixed_width = fixed_width;
 
@@ -104,13 +100,13 @@ public class TableLayout2 extends TableLayout {
         // create the table
         // table is just for calculations. it's not a real box
         Table table = new Table();
-        table.addTable(c, elem );
+        table.addTable(c, elem);
 
         //calculate the widths
-        table.calculateWidths( fixed_width, c );
+        table.calculateWidths(fixed_width, c);
         
         //pull out the boxes
-        calculateBoxes( fixed_width, table_box, c, table );
+        calculateBoxes(fixed_width, table_box, c, table);
         table_box.width += table_box.totalHorizontalPadding();
         table_box.height += table_box.totalVerticalPadding();
         return table_box;
@@ -120,13 +116,13 @@ public class TableLayout2 extends TableLayout {
     /**
      * Runs through all of the boxes and calculates their sizes
      *
-     * @param avail_width  PARAM
-     * @param box          PARAM
-     * @param c            PARAM
-     * @param table        PARAM
-     * @return             Returns
+     * @param avail_width PARAM
+     * @param box         PARAM
+     * @param c           PARAM
+     * @param table       PARAM
+     * @return Returns
      */
-    public void calculateBoxes( int avail_width, TableBox box, Context c, Table table ) {
+    public void calculateBoxes(int avail_width, TableBox box, Context c, Table table) {
         //u.p("TableLayout2.calculateBoxes(" + avail_width  +
         //    " , " + box + " , " + c + " , " + table);
         box.width = avail_width;
@@ -134,80 +130,80 @@ public class TableLayout2 extends TableLayout {
         box.x = 5;
         box.y = 5;
         // create a dummy prev row
-        RowBox prev_row = new RowBox( 0, 0, 0, 0 );
+        RowBox prev_row = new RowBox(0, 0, 0, 0);
         int max_width = 0;
         // loop throw the rows
         CellGrid grid = table.getCellGrid();
-        for ( int y = 0; y < grid.getHeight(); y++ ) {
+        for (int y = 0; y < grid.getHeight(); y++) {
             // create a new row box for this row
-            RowBox row_box = new RowBox( 0, 0, 0, 0 );
+            RowBox row_box = new RowBox(0, 0, 0, 0);
             //row_box.node = row.node;
-            box.rows.add( row_box );
+            box.rows.add(row_box);
             int row_height = 0;
             int column_count = 0;
             // loop through the cells
-            for ( int x = 0; x < grid.getWidth(); x++ ) {
+            for (int x = 0; x < grid.getWidth(); x++) {
                 //u.p("x = " + x);
                 //u.p("grid width = " + grid.getWidth());
-                if ( grid.isReal( x, y ) ) {
+                if (grid.isReal(x, y)) {
                     //u.p("it's real");
                     //u.p("getting real cell: " + x + " , " + y);
-                    Cell cell = grid.getCell( x, y );
-                    if ( cell == null ) {
-                        System.err.println( "Hit the null cell error in " + this.getClass().getName() );
+                    Cell cell = grid.getCell(x, y);
+                    if (cell == null) {
+                        System.err.println("Hit the null cell error in " + this.getClass().getName());
                         continue;
                     }
 
                     // create a new cell box for this cell
-                    CellBox cell_box = new CellBox( 0, 0, 10, 10 );
+                    CellBox cell_box = new CellBox(0, 0, 10, 10);
                     cell.cb = cell_box;
                     cell_box.rb = row_box;
                     // set the x coord based on the current column
-                    cell_box.x = table.calcColumnX( column_count );
+                    cell_box.x = table.calcColumnX(column_count);
                     // set the width
                     //u.p("column count = " + column_count + " col span = " + cell.col_span);
-                    cell_box.width = table.calcColumnWidth( column_count, cell.col_span );
-                    cell_box.node = cell.node;
+                    cell_box.width = table.calcColumnWidth(column_count, cell.col_span);
+                    cell_box.setNode(cell.node);
                     // do the internal layout
                     // save the old extents and create new with smaller width
                     Rectangle oe = c.getExtents();
-                    c.setExtents( new Rectangle( c.getExtents().x, c.getExtents().y,
-                            cell_box.width, 100 ) );
+                    c.setExtents(new Rectangle(c.getExtents().x, c.getExtents().y,
+                            cell_box.width, 100));
                     // do child layout
-                    Layout layout = c.getLayout( cell.node );
+                    Layout layout = c.getLayout(cell.node);
                     //u.p("cell box = " + cell_box);
                     //u.p("doing child layout on: " + layout + " for " + cell_box.node);
                     //u.p("cell_box properly = " + cell_box);
-                    c.setSubBlock( true );
-                    Box cell_contents = layout.layout( c, (Element)cell_box.node );
-                    c.setSubBlock( false );
+                    c.setSubBlock(true);
+                    Box cell_contents = layout.layout(c, (Element) cell_box.getNode());
+                    c.setSubBlock(false);
                     cell_box.sub_box = cell_contents;
                     cell_box.height = cell_box.sub_box.height;
                     column_count += cell.col_span;
                     //u.p("cellbox = " + cell_box);
                     //u.p("sub box = " + cell_box.sub_box);
                     // restore old extents
-                    c.setExtents( oe );
+                    c.setExtents(oe);
                     // y is relative to the rowbox so it's just 0
                     cell_box.y = 0;
                     // add the cell to the row
-                    row_box.cells.add( cell_box );
+                    row_box.cells.add(cell_box);
                     //u.p("cell box width = " + cell_box.width);
                     // if this is a non row spanning cell then
                     // adjust the row height to fit this cell
-                    if ( cell.row_span == 1 ) {
-                        if ( cell_box.height > row_box.height ) {
+                    if (cell.row_span == 1) {
+                        if (cell_box.height > row_box.height) {
                             row_box.height = cell_box.height;
                         }
                     }
                     row_box.width += cell_box.width;
                 } else {
                     //u.p("it's virtual");
-                    Cell cell = grid.getCell( x, y );
+                    Cell cell = grid.getCell(x, y);
                     // create a virtual cell box for this cell
-                    CellBox cell_box = CellBox.createVirtual( cell.cb );
+                    CellBox cell_box = CellBox.createVirtual(cell.cb);
                     // skip doing layout
-                    row_box.cells.add( cell_box );
+                    row_box.cells.add(cell_box);
                     // skip adjusting the row height for now
                     // set row height based on real cell contents
                     // set row width based on real cell contents
@@ -222,16 +218,16 @@ public class TableLayout2 extends TableLayout {
             prev_row = row_box;
             // adjust the max width
 
-            if ( row_box.width > max_width ) {
+            if (row_box.width > max_width) {
                 max_width = row_box.width;
             }
 
             // adjust the height of each cell in this row to be the height of
             // the row
 
-            for ( int k = 0; k < row_box.cells.size(); k++ ) {
-                CellBox cb = (CellBox)row_box.cells.get( k );
-                if ( cb.isReal() ) {
+            for (int k = 0; k < row_box.cells.size(); k++) {
+                CellBox cb = (CellBox) row_box.cells.get(k);
+                if (cb.isReal()) {
                     cb.height = row_box.height;
                     cb.sub_box.height = row_box.height;
                 } else {
@@ -254,7 +250,7 @@ public class TableLayout2 extends TableLayout {
         box.width = max_width;
         //return box;
     }
-    
+
     public Renderer getRenderer() {
         return new TableRenderer();
     }
@@ -292,6 +288,9 @@ public class TableLayout2 extends TableLayout {
 /*
    $Id$
    $Log$
+   Revision 1.8  2004/12/05 00:49:00  tobega
+   Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
+
    Revision 1.7  2004/11/19 14:39:08  joshy
    fixed crash when a tr is empty
 

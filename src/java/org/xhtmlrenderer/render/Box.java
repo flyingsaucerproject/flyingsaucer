@@ -19,22 +19,22 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.util.u;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class Box {
     public Box(Box box) {
@@ -43,33 +43,47 @@ public class Box {
         y = box.y;
         width = box.width;
         height = box.height;
-        node = box.node;
+        setNode(box.getNode());
         border = box.border;
         margin = box.margin;
         padding = box.padding;
         color = box.color;
     }
     // dimensions stuff
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int x;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int y;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int width;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int height;
 
     // element stuff
-    /** Description of the Field */
-    public Node node;
+    /**
+     * Description of the Field
+     */
+    private Node node;
 
     // display stuff
-    /** Description of the Field */
-    private boolean display_none = false;
-    private String display = "none";
+    /**
+     * Description of the Field
+     */
+    //TODO: why is display not used anywhere (getDisplay() and setDisplay() are never called!)
+    private String display = CSSName.initialValue(CSSName.DISPLAY);//have to get the correct CSS default
+
     public String getDisplay() {
         return display;
     }
+
     public void setDisplay(String display) {
         u.p("display set to: " + display);
         u.dump_stack();
@@ -77,120 +91,180 @@ public class Box {
     }
 
     // position stuff
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean relative = false;
     public boolean fixed = false;
     private boolean absolute = false;
+
     public void setAbsolute(boolean abs) {
         this.absolute = abs;
     }
+
     public boolean isAbsolute() {
         return absolute;
     }
+
     public boolean floated = false;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     public int top = 0;
     public boolean top_set = false;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int right = 0;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean right_set = false;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int bottom = 0;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean bottom_set = false;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int left = 0;
     public boolean left_set = false;
     
 
     // margins, borders, and padding stuff
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public Color border_color;
     private BorderColor bd_color;
+
     public void setBorderColor(BorderColor bd_color) {
         this.bd_color = bd_color;
     }
+
     public BorderColor getBorderColor() {
         return bd_color;
     }
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     public Border padding;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public Border border;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public Border margin;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public String border_style;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public Box click_styles;
 
     // foreground stuff
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public Color color;
 
     // background stuff
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public Color background_color;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public Image background_image;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public String repeat;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public String attachment;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int background_position_vertical = 0;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int background_position_horizontal = 0;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean clicked = false;
 
     // list stuff
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int list_count = -1;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Box parent;
 
     // children stuff
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private List boxes;
 
     // printing stuff and constructor
-    /** Constructor for the Box object */
+    /**
+     * Constructor for the Box object
+     */
     public Box() {
-        this( true );
+        this(true);
     }
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean auto_width = true;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean auto_height = true;
 
 
     /**
      * Constructor for the Box object
      *
-     * @param create_substyles  PARAM
+     * @param create_substyles PARAM
      */
-    public Box( boolean create_substyles ) {
+    public Box(boolean create_substyles) {
         boxes = new ArrayList();
-        if ( create_substyles ) {
-            this.click_styles = new Box( false );
+        if (create_substyles) {
+            this.click_styles = new Box(false);
         }
     }
 
     /**
      * Constructor for the Box object
      *
-     * @param x       PARAM
-     * @param y       PARAM
-     * @param width   PARAM
-     * @param height  PARAM
+     * @param x      PARAM
+     * @param y      PARAM
+     * @param width  PARAM
+     * @param height PARAM
      */
-    public Box( int x, int y, int width, int height ) {
+    public Box(int x, int y, int width, int height) {
         this();
         this.x = x;
         this.y = y;
@@ -205,14 +279,14 @@ public class Box {
      * x 90x90 would have the target coordinates passed in as 80,80 and the
      * function would return true.
      *
-     * @param x  PARAM
-     * @param y  PARAM
-     * @return   Returns
+     * @param x PARAM
+     * @param y PARAM
+     * @return Returns
      */
 
-    public boolean contains( int x, int y ) {
-        if ( ( x >= 0 ) && ( x <= 0 + this.width ) ) {
-            if ( ( y >= 0 ) && ( y <= 0 + this.height ) ) {
+    public boolean contains(int x, int y) {
+        if ((x >= 0) && (x <= 0 + this.width)) {
+            if ((y >= 0) && (y <= 0 + this.height)) {
                 return true;
             }
         }
@@ -229,12 +303,13 @@ public class Box {
     /**
      * Adds a feature to the Child attribute of the Box object
      *
-     * @param child  The feature to be added to the Child attribute
+     * @param child The feature to be added to the Child attribute
      */
-    public void addChild( Box child ) {
-        child.setParent( this );
-        boxes.add( child );
-        if(child.isChildrenExceedBounds()) {
+    public void addChild(Box child) {
+        if (child == null) throw new NullPointerException("trying to add null child");
+        child.setParent(this);
+        boxes.add(child);
+        if (child.isChildrenExceedBounds()) {
             setChildrenExceedBounds(true);
         }
     }
@@ -242,17 +317,17 @@ public class Box {
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public int totalHorizontalPadding() {
         int pd = 0;
-        if ( this.margin != null ) {
+        if (this.margin != null) {
             pd += this.margin.left + this.margin.right;
         }
-        if ( this.padding != null ) {
+        if (this.padding != null) {
             pd += this.padding.left + this.padding.right;
         }
-        if ( this.border != null ) {
+        if (this.border != null) {
             pd += this.border.left + this.border.right;
         }
         return pd;
@@ -261,17 +336,17 @@ public class Box {
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public int totalVerticalPadding() {
         int pd = 0;
-        if ( this.margin != null ) {
+        if (this.margin != null) {
             pd += this.margin.top + this.margin.bottom;
         }
-        if ( this.padding != null ) {
+        if (this.padding != null) {
             pd += this.padding.top + this.padding.bottom;
         }
-        if ( this.border != null ) {
+        if (this.border != null) {
             pd += this.border.top + this.border.bottom;
         }
         return pd;
@@ -280,17 +355,17 @@ public class Box {
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public int totalTopPadding() {
         int pd = 0;
-        if ( this.margin != null ) {
+        if (this.margin != null) {
             pd += this.margin.top;
         }
-        if ( this.padding != null ) {
+        if (this.padding != null) {
             pd += this.padding.top;
         }
-        if ( this.border != null ) {
+        if (this.border != null) {
             pd += this.border.top;
         }
         return pd;
@@ -299,30 +374,31 @@ public class Box {
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public int totalLeftPadding() {
         int pd = 0;
-        if ( this.margin != null ) {
+        if (this.margin != null) {
             pd += this.margin.left;
         }
-        if ( this.padding != null ) {
+        if (this.padding != null) {
             pd += this.padding.left;
         }
-        if ( this.border != null ) {
+        if (this.border != null) {
             pd += this.border.left;
         }
         return pd;
     }
+
     public int totalRightPadding() {
         int pd = 0;
-        if ( this.margin != null ) {
+        if (this.margin != null) {
             pd += this.margin.right;
         }
-        if ( this.padding != null ) {
+        if (this.padding != null) {
             pd += this.padding.right;
         }
-        if ( this.border != null ) {
+        if (this.border != null) {
             pd += this.border.right;
         }
         return pd;
@@ -332,35 +408,35 @@ public class Box {
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append( "Box: " );
-        if ( node == null ) {
-            sb.append( " null node, " );
+        sb.append("Box: ");
+        if (getNode() == null) {
+            sb.append(" null node, ");
         } else {
-            sb.append( node.getNodeName() + " (" + node.hashCode() + ")" );
+            sb.append(getNode().getNodeName() + " (" + getNode().hashCode() + ")");
         }
-        sb.append( " (" + x + "," + y + ")->(" + width + " x " + height + ")" );
+        sb.append(" (" + x + "," + y + ")->(" + width + " x " + height + ")");
         // CLN: (PWW 13/08/04)
-        sb.append( " color: " + color + " background-color: " + background_color + " " );
+        sb.append(" color: " + color + " background-color: " + background_color + " ");
         return sb.toString();
     }
 
     /**
      * Sets the parent attribute of the Box object
      *
-     * @param box  The new parent value
+     * @param box The new parent value
      */
-    public void setParent( Box box ) {
+    public void setParent(Box box) {
         this.parent = box;
     }
 
     /**
      * Gets the height attribute of the Box object
      *
-     * @return   The height value
+     * @return The height value
      */
     public int getHeight() {
         return height;
@@ -369,7 +445,7 @@ public class Box {
     /**
      * Gets the width attribute of the Box object
      *
-     * @return   The width value
+     * @return The width value
      */
     public int getWidth() {
         return width;
@@ -378,7 +454,7 @@ public class Box {
     /**
      * Gets the parent attribute of the Box object
      *
-     * @return   The parent value
+     * @return The parent value
      */
     public Box getParent() {
         return parent;
@@ -387,7 +463,7 @@ public class Box {
     /**
      * Gets the childCount attribute of the Box object
      *
-     * @return   The childCount value
+     * @return The childCount value
      */
     public int getChildCount() {
         return boxes.size();
@@ -396,22 +472,22 @@ public class Box {
     /**
      * Gets the child attribute of the Box object
      *
-     * @param i  PARAM
-     * @return   The child value
+     * @param i PARAM
+     * @return The child value
      */
-    public Box getChild( int i ) {
-        return (Box)boxes.get( i );
+    public Box getChild(int i) {
+        return (Box) boxes.get(i);
     }
 
     /**
      * Gets the childIterator attribute of the Box object
      *
-     * @return   The childIterator value
+     * @return The childIterator value
      */
     public Iterator getChildIterator() {
         return boxes.iterator();
     }
-    
+
     public void removeAllChildren() {
         boxes.clear();
     }
@@ -421,28 +497,30 @@ public class Box {
     /**
      * Gets the element attribute of the Box object
      *
-     * @return   The element value
+     * @return The element value
      */
     public Element getElement() {
-        return (Element)node;
+        return (Element) getNode();
     }
-    
+
     public Element getRealElement() {
-        if(isElement()) {
+        if (isElement()) {
             return getElement();
         }
-        if(node == null) { return null; }
-        return (Element)node.getParentNode();
+        if (getNode() == null) {
+            return null;
+        }
+        return (Element) getNode().getParentNode();
     }
 
     /**
      * Gets the closestNode attribute of the Box object
      *
-     * @return   The closestNode value
+     * @return The closestNode value
      */
     public Node getClosestNode() {
-        if ( node != null ) {
-            return node;
+        if (getNode() != null) {
+            return getNode();
         }
         return getParent().getClosestNode();
     }
@@ -450,13 +528,13 @@ public class Box {
     /**
      * Gets the element attribute of the Box object
      *
-     * @return   The element value
+     * @return The element value
      */
     public boolean isElement() {
-        if(node == null) {
+        if (getNode() == null) {
             return false;
         }
-        if ( node.getNodeType() == node.ELEMENT_NODE ) {
+        if (getNode().getNodeType() == getNode().ELEMENT_NODE) {
             return true;
         }
         return false;
@@ -465,7 +543,7 @@ public class Box {
     /**
      * Gets the anonymous attribute of the Box object
      *
-     * @return   The anonymous value
+     * @return The anonymous value
      */
     public boolean isAnonymous() {
         return false;
@@ -474,18 +552,20 @@ public class Box {
     /**
      * Gets the internalDimension attribute of the Box object
      *
-     * @return   The internalDimension value
+     * @return The internalDimension value
      */
     public Dimension getInternalDimension() {
         int w = this.getWidth() - totalHorizontalPadding();
         int h = this.getHeight() - totalVerticalPadding();
-        return new Dimension( w, h );
+        return new Dimension(w, h);
     }
-    
+
     private boolean children_exceeds;
+
     public boolean isChildrenExceedBounds() {
         return children_exceeds;
     }
+
     public void setChildrenExceedBounds(boolean children_exceeds) {
         this.children_exceeds = children_exceeds;
     }
@@ -498,7 +578,7 @@ public class Box {
      * text, and pretty much everything else. The test string is used by the
      * regression tests.
      *
-     * @return   The testString value
+     * @return The testString value
      */
     /*
      * display_none
@@ -525,84 +605,96 @@ public class Box {
     public String getTestString() {
         StringBuffer sb = new StringBuffer();
         // type
-        if ( this instanceof LineBox ) {
-            sb.append( "line:" );
-        } else if ( this instanceof InlineBox ) {
-            sb.append( "inline:" );
+        if (this instanceof LineBox) {
+            sb.append("line:");
+        } else if (this instanceof InlineBox) {
+            sb.append("inline:");
         } else {
-            sb.append( "box:" );
+            sb.append("box:");
         }
 
         // element
-        sb.append( "-element:" + this.getClosestNode().getNodeName() );
+        sb.append("-element:" + this.getClosestNode().getNodeName());
 
         // dimensions and location
-        sb.append( "-box(" + x + "," + y + ")-(" + width + "x" + height + ")" );
+        sb.append("-box(" + x + "," + y + ")-(" + width + "x" + height + ")");
 
         // positioning info
-        if ( relative ) {
-            sb.append( "-relative" );
+        if (relative) {
+            sb.append("-relative");
         }
-        if ( fixed ) {
-            sb.append( "-fixed" );
+        if (fixed) {
+            sb.append("-fixed");
         }
-        sb.append( "-pos(" + top + "," + right + "," + bottom + "," + left + ")" );
-        if ( floated ) {
-            sb.append( "-floated" );
+        sb.append("-pos(" + top + "," + right + "," + bottom + "," + left + ")");
+        if (floated) {
+            sb.append("-floated");
         }
 
         // colors and insets
-        sb.append( "-colors(for" + getColorTestString( color ) );
-        sb.append( "-bor" + getColorTestString( border_color ) );
-        sb.append( "-bak" + getColorTestString( background_color ) + ")" );
-        sb.append( "-style(" + border_style + ")" );
-        sb.append( "-insets(mar" + getBorderTestString( margin ) );
-        sb.append( "-bor" + getBorderTestString( border ) );
-        sb.append( "-pad" + getBorderTestString( padding ) + ")" );
+        sb.append("-colors(for" + getColorTestString(color));
+        sb.append("-bor" + getColorTestString(border_color));
+        sb.append("-bak" + getColorTestString(background_color) + ")");
+        sb.append("-style(" + border_style + ")");
+        sb.append("-insets(mar" + getBorderTestString(margin));
+        sb.append("-bor" + getBorderTestString(border));
+        sb.append("-pad" + getBorderTestString(padding) + ")");
 
         // background images
-        sb.append( "-backimg(" + background_image );
-        sb.append( "-" + repeat );
-        sb.append( "-" + attachment );
-        sb.append( "-" + background_position_vertical );
-        sb.append( "-" + background_position_horizontal + ")" );
+        sb.append("-backimg(" + background_image);
+        sb.append("-" + repeat);
+        sb.append("-" + attachment);
+        sb.append("-" + background_position_vertical);
+        sb.append("-" + background_position_horizontal + ")");
 
-        sb.append( "-value:" + this.getClosestNode().getNodeValue() );
+        sb.append("-value:" + this.getClosestNode().getNodeValue());
         return sb.toString();
     }
 
     /**
      * Gets the colorTestString attribute of the Box object
      *
-     * @param c  PARAM
-     * @return   The colorTestString value
+     * @param c PARAM
+     * @return The colorTestString value
      */
-    public String getColorTestString( Color c ) {
-        if ( c == null ) {
+    public String getColorTestString(Color c) {
+        if (c == null) {
             return "[null]";
         }
-        return "#" + Integer.toHexString( c.getRGB() );
+        return "#" + Integer.toHexString(c.getRGB());
     }
 
     /**
      * Gets the borderTestString attribute of the Box object
      *
-     * @param b  PARAM
-     * @return   The borderTestString value
+     * @param b PARAM
+     * @return The borderTestString value
      */
-    public String getBorderTestString( Border b ) {
-        if ( b == null ) {
+    public String getBorderTestString(Border b) {
+        if (b == null) {
             return "[null]";
         }
         return "(" + b.top + "," + b.right + "," + b.bottom + "," + b.left + ")";
     }
 
+    public Node getNode() {
+        if (node == null) throw new NullPointerException("Node has not been set in box");
+        return node;
+    }
+
+    public void setNode(Node node) {
+        if (node == null) throw new NullPointerException("Trying to set a null node to box");
+        this.node = node;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/12/05 00:48:59  tobega
+ * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
+ *
  * Revision 1.17  2004/12/01 01:57:02  joshy
  * more updates for float support.
  *

@@ -19,105 +19,104 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.font.LineMetrics;
-import java.awt.geom.*;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.css.style.*;
-import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.u;
-import org.xhtmlrenderer.util.x;
+
+import java.awt.*;
+import java.awt.font.LineMetrics;
+import java.awt.geom.Rectangle2D;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class FontUtil {
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     static boolean quick = false;
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param node  PARAM
-     * @param str   PARAM
-     * @param font  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param node PARAM
+     * @param str  PARAM
+     * @param font PARAM
+     * @return Returns
      */
-    public static int len( Context c, Node node, String str, Font font ) {
+    public static int len(Context c, Node node, String str, Font font) {
         //return c.getGraphics().getFontMetrics( font ).stringWidth( str );
-        return (int)Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), font, str).getWidth());
+        return (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), font, str).getWidth());
     }
-    public static int len( Context c, String str, Font font ) {
+
+    public static int len(Context c, String str, Font font) {
         //return c.getGraphics().getFontMetrics( font ).stringWidth( str );
-        return (int)Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), font, str).getWidth());
+        return (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), font, str).getWidth());
     }
+
     public static int len(Context c, InlineBox box) {
         //return c.getGraphics().getFontMetrics(box.getFont()).stringWidth(box.getSubstring());
-        return (int)Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), box.getFont(), box.getSubstring()).getWidth());
+        return (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), box.getFont(), box.getSubstring()).getWidth());
     }
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param node  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param node PARAM
+     * @return Returns
      */
-    public static int lineHeight( Context c, Node node ) {
+    public static int lineHeight(Context c, Node node) {
         //int val = c.getGraphics().getFontMetrics( getFont( c, node ) ).getHeight();
         CalculatedStyle style = c.css.getStyle(LineBreaker.getElement(node));
-        int val = (int)Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont( c, style, node ), "Test" ).getHeight());
+        int val = (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont(c, style, node), "Test").getHeight());
         Element elem = null;
-        if(node instanceof Element) {
-            elem = (Element)node;
+        if (node instanceof Element) {
+            elem = (Element) node;
         } else {
-            elem = (Element)node.getParentNode();
+            elem = (Element) node.getParentNode();
         }
-        if(c.css.hasProperty(elem,"line-height",true)) {
+        if (c.css.getStyle(elem).hasProperty("line-height")) {
             //u.p("elem = " + node);
-            val = (int)c.css.getFloatProperty(elem, "line-height", val, true);
+            val = (int) c.css.getStyle(elem).getFloatPropertyRelative("line-height", val);
             //u.p("val = " + val);
         }
         return val;
     }
-    
+
     public static int lineHeight(Context c, CalculatedStyle style, InlineBox box) {
-        if(style.hasProperty("line-height")) {
-            return (int)style.propertyByName("line-height").computedValue().asFloat();
+        if (style.hasProperty("line-height")) {
+            return (int) style.propertyByName("line-height").computedValue().asFloat();
         } else {
             //return c.getGraphics().getFontMetrics( box.getFont() ).getHeight();
-            return (int)Math.ceil(c.getTextRenderer().getLineMetrics(c.getGraphics(), box.getFont(), "Test").getHeight());
+            return (int) Math.ceil(c.getTextRenderer().getLineMetrics(c.getGraphics(), box.getFont(), "Test").getHeight());
         }
     }
 
     public static int lineHeight(Context c, InlineBox box) {
-        if(box.line_metrics != null) {
-            return (int)box.line_metrics.getHeight();
+        if (box.line_metrics != null) {
+            return (int) box.line_metrics.getHeight();
         } else {
-            return lineHeight(c,box.node);
+            return lineHeight(c, box.getNode());
         }
     }
 
     /**
      * PWW ADDED 14/08/04
      *
-     * @param context  PARAM
-     * @param elem     PARAM
-     * @return         Returns
+     * @param context PARAM
+     * @param elem    PARAM
+     * @return Returns
      */
-    public static int fontXHeightForElement( Context context, Element elem ) {
-        return lineHeight( context, elem );
+    public static int fontXHeightForElement(Context context, Element elem) {
+        return lineHeight(context, elem);
     }
 
     /**
@@ -126,101 +125,143 @@ public class FontUtil {
      * @param font  PARAM
      * @param g     PARAM
      */
-     /*
-    public static void dumpFontMetrics( Font font, Graphics g ) {
-        FontMetrics fm = g.getFontMetrics( font );
-        XRLog.layout( "Font: " + font.toString() );
-        XRLog.layout( "FontMetrics: " + fm.toString() );
-        XRLog.layout( "Ascent: " + fm.getAscent() );
-        XRLog.layout( "Descent: " + fm.getDescent() );
-        XRLog.layout( "Height: " + fm.getHeight() );
-        XRLog.layout( "Leading: " + fm.getLeading() );
-        XRLog.layout( "Max Advance: " + fm.getMaxAdvance() );
-        XRLog.layout( "Max Ascent: " + fm.getMaxAscent() );
-        XRLog.layout( "Max Char Bounds: " + fm.getMaxCharBounds( g ) );
-        XRLog.layout( "Max Descent: " + fm.getMaxDescent() );
-        XRLog.layout( "hasUniformLineMetrics: " + fm.hasUniformLineMetrics() );
-    }
-    */
+    /*
+   public static void dumpFontMetrics( Font font, Graphics g ) {
+       FontMetrics fm = g.getFontMetrics( font );
+       XRLog.layout( "Font: " + font.toString() );
+       XRLog.layout( "FontMetrics: " + fm.toString() );
+       XRLog.layout( "Ascent: " + fm.getAscent() );
+       XRLog.layout( "Descent: " + fm.getDescent() );
+       XRLog.layout( "Height: " + fm.getHeight() );
+       XRLog.layout( "Leading: " + fm.getLeading() );
+       XRLog.layout( "Max Advance: " + fm.getMaxAdvance() );
+       XRLog.layout( "Max Ascent: " + fm.getMaxAscent() );
+       XRLog.layout( "Max Char Bounds: " + fm.getMaxCharBounds( g ) );
+       XRLog.layout( "Max Descent: " + fm.getMaxDescent() );
+       XRLog.layout( "hasUniformLineMetrics: " + fm.hasUniformLineMetrics() );
+   }
+   */
 
 
     /**
      * Gets the font attribute of the FontUtil class
      *
-     * @param c  PARAM
-     * @param e  PARAM
-     * @return   The font value
+     * @param c PARAM
+     * @param e PARAM
+     * @return The font value
      */
-     /*
-    public static Font getFont( Context c, Node e ) {
-        //Font f = c.getGraphics().getFont();
+    /*
+   public static Font getFont( Context c, Node e ) {
+       //Font f = c.getGraphics().getFont();
 
-        // if plain text then get the styling from the parent node
-        if ( e instanceof Element) {
-            return getElementFont( c, (Element) e);
-        }
-        if ( e.getNodeType() == e.TEXT_NODE ) {
-            //u.p("it's a node");
-            Element el = (Element)e.getParentNode();
-            return getElementFont( c, el );
-        }
-        u.p("here");
-        u.p("big error in getFont(). Got a node that is neither txt nor element" );
-        u.p("probably returning a bad font!");
-        //x.p(e);
-        Font f = c.getGraphics().getFont();
-        //u.dump_stack();
-        return f;
-    }
-    */
-    
-    public static Font getFont( Context c, InlineBox box) {
-        if(box.getFont() != null) {
+       // if plain text then get the styling from the parent node
+       if ( e instanceof Element) {
+           return getElementFont( c, (Element) e);
+       }
+       if ( e.getNodeType() == e.TEXT_NODE ) {
+           //u.p("it's a node");
+           Element el = (Element)e.getParentNode();
+           return getElementFont( c, el );
+       }
+       u.p("here");
+       u.p("big error in getFont(). Got a node that is neither txt nor element" );
+       u.p("probably returning a bad font!");
+       //x.p(e);
+       Font f = c.getGraphics().getFont();
+       //u.dump_stack();
+       return f;
+   }
+   */
+
+    public static Font getFont(Context c, InlineBox box) {
+        if (box.getFont() != null) {
             return box.getFont();
         }
-        CalculatedStyle style = c.css.getStyle(LineBreaker.getElement(box.node));
-        return getFont(c, style, box.node);
+        CalculatedStyle style = c.css.getStyle(LineBreaker.getElement(box.getNode()));
+        return getFont(c, style, box.getNode());
     }
-    
-    public static Font getFont( Context c, CalculatedStyle style, Node e ) {
+
+    public static Font getFont(Context c, CalculatedStyle style, Node e) {
         //u.p("testing node: " + e);
         // if plain text then get the styling from the parent node
-        if ( e.getNodeType() == e.TEXT_NODE ) {
+        if (e.getNodeType() == e.TEXT_NODE) {
             //u.p("it's a node");
-            Element el = (Element)e.getParentNode();
-            return getElementFont( c, style, el );
+            Element el = (Element) e.getParentNode();
+            return getElementFont(c, style, el);
         }
 
-        if ( e.getNodeType() == e.ELEMENT_NODE ) {
-            Element el = (Element)e;
-            return getElementFont( c, style, el );
+        if (e.getNodeType() == e.ELEMENT_NODE) {
+            Element el = (Element) e;
+            return getElementFont(c, style, el);
         }
 
-        u.p( "big error in getFont(). Got a node that is neither txt nor element" );
+        if (e.getNodeType() == e.DOCUMENT_NODE || e.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE) {
+            //u.p("ended up at the top somehow!: ");
+            return c.getGraphics().getFont().deriveFont((float) 10);
+        }
+
+        u.p("big error in getFont(). Got a node that is neither txt nor element");
         return null;
     }
 
     /**
      * Gets the elementFont attribute of the FontUtil class
      *
-     * @param c   PARAM
-     * @param el  PARAM
-     * @return    The elementFont value
+     * @param c  PARAM
+     * @param el PARAM
+     * @return The elementFont value
      */
-     /*
-    public static Font getElementFont( Context c, Element el ) {
+    /*
+   public static Font getElementFont( Context c, Element el ) {
+       // TODO: need to discuss what sort of caching should be going on here, because relative
+       // datatypes like EM and EX depend in part on the 'current' font for an element (PWW 14/08/04)
+       //u.p("testing node: " + e);
+       Font f = c.getGraphics().getFont();
+       if ( quick ) {
+           //f = f.deriveFont((float)((int)(Math.random()*10)));
+           return f;
+       }
+
+       if ( el.getParentNode().getNodeType() == el.DOCUMENT_NODE ) {
+           //u.p("ended up at the top somehow!: ");
+           return c.getGraphics().getFont().deriveFont( (float)10 );
+       }
+
+       // calculate the font size
+       // look up the parent and use it's font size to scale against
+       // joshy: this will fail if the parent also has a relative size
+       //  need to fix this by passing down the enclosing block's font size
+       //  in the context
+       Element par = (Element)el.getParentNode();
+       float parent_size = c.css.getFloatProperty( par, "font-size", true );
+       float size = c.css.getFloatProperty( el, "font-size", parent_size, true );
+
+       String weight = c.css.getStringProperty( el, "font-weight" );
+       String[] families = c.css.getStringArrayProperty( el, "font-family" );
+
+       String style = c.css.getStringProperty( el, "font-style" );
+       String variant = c.css.getStringProperty( el, "font-variant" );
+       //u.p("variant = " + variant);
+       f = c.getFontResolver().resolveFont( c, families, size, weight, style, variant );
+
+       // calculate the font color
+       c.getGraphics().setColor( c.css.getColor( el ) );
+       return f;
+   }
+   */
+
+    public static Font getElementFont(Context c, CalculatedStyle style, Element el) {
         // TODO: need to discuss what sort of caching should be going on here, because relative
         // datatypes like EM and EX depend in part on the 'current' font for an element (PWW 14/08/04)
         //u.p("testing node: " + e);
         Font f = c.getGraphics().getFont();
-        if ( quick ) {
-            //f = f.deriveFont((float)((int)(Math.random()*10)));
+        if (quick) {
             return f;
         }
 
-        if ( el.getParentNode().getNodeType() == el.DOCUMENT_NODE ) {
+        if (el.getParentNode().getNodeType() == el.DOCUMENT_NODE || el.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE) {
             //u.p("ended up at the top somehow!: ");
-            return c.getGraphics().getFont().deriveFont( (float)10 );
+            return c.getGraphics().getFont().deriveFont((float) 10);
         }
 
         // calculate the font size
@@ -228,79 +269,42 @@ public class FontUtil {
         // joshy: this will fail if the parent also has a relative size
         //  need to fix this by passing down the enclosing block's font size
         //  in the context
-        Element par = (Element)el.getParentNode();
-        float parent_size = c.css.getFloatProperty( par, "font-size", true );
-        float size = c.css.getFloatProperty( el, "font-size", parent_size, true );
-
-        String weight = c.css.getStringProperty( el, "font-weight" );
-        String[] families = c.css.getStringArrayProperty( el, "font-family" );
-
-        String style = c.css.getStringProperty( el, "font-style" );
-        String variant = c.css.getStringProperty( el, "font-variant" );
-        //u.p("variant = " + variant);
-        f = c.getFontResolver().resolveFont( c, families, size, weight, style, variant );
-
-        // calculate the font color
-        c.getGraphics().setColor( c.css.getColor( el ) );
-        return f;
-    }
-    */
-
-    public static Font getElementFont( Context c, CalculatedStyle style, Element el ) {
-        // TODO: need to discuss what sort of caching should be going on here, because relative
-        // datatypes like EM and EX depend in part on the 'current' font for an element (PWW 14/08/04)
-        //u.p("testing node: " + e);
-        Font f = c.getGraphics().getFont();
-        if ( quick ) {
-            return f;
-        }
-
-        if ( el.getParentNode().getNodeType() == el.DOCUMENT_NODE ) {
-            //u.p("ended up at the top somehow!: ");
-            return c.getGraphics().getFont().deriveFont( (float)10 );
-        }
-
-        // calculate the font size
-        // look up the parent and use it's font size to scale against
-        // joshy: this will fail if the parent also has a relative size
-        //  need to fix this by passing down the enclosing block's font size
-        //  in the context
-        Element par = (Element)el.getParentNode();
+        Element par = (Element) el.getParentNode();
         //float parent_size = c.css.getFloatProperty( par, "font-size", true );
         //float size = c.css.getFloatProperty( el, "font-size", parent_size, true );
         float size = style.propertyByName("font-size").computedValue().asFloat();
 
         //String weight = c.css.getStringProperty( el, "font-weight" );
         String weight = style.propertyByName("font-weight").computedValue().asString();
-        String[] families = c.css.getStringArrayProperty( el, "font-family" );
+        String[] families = c.css.getStyle(el).propertyByName("font-family").computedValue().asStringArray();
         
         //String fstyle = c.css.getStringProperty( el, "font-style" );
         String fstyle = style.propertyByName("font-style").computedValue().asString();
         String variant = style.propertyByName("font-variant").computedValue().asString();
-        f = c.getFontResolver().resolveFont( c, families, size, weight, fstyle, variant);
+        f = c.getFontResolver().resolveFont(c, families, size, weight, fstyle, variant);
 
         // calculate the font color
         //joshy: this shouldn't matter. c.getGraphics().setColor( c.css.getColor( el ) );
         return f;
     }
-    
-    
+
+
     public static LineMetrics getLineMetrics(Context c, InlineBox box) {
-        return c.getTextRenderer().getLineMetrics(c.getGraphics(), 
-            box.getFont(), box.getSubstring());
+        return c.getTextRenderer().getLineMetrics(c.getGraphics(),
+                box.getFont(), box.getSubstring());
     }
-    
+
     public static Rectangle2D getTextBounds(Context c, InlineBox box) {
-        CalculatedStyle style = c.css.getStyle(LineBreaker.getElement(box.node));
-        return c.getTextRenderer().getLogicalBounds(c.getGraphics(), 
-            getFont( c, style, box.node ), box.getSubstring() );
+        CalculatedStyle style = c.css.getStyle(LineBreaker.getElement(box.getNode()));
+        return c.getTextRenderer().getLogicalBounds(c.getGraphics(),
+                getFont(c, style, box.getNode()), box.getSubstring());
     }
-    
+
     public static float getDescent(Context c, InlineBox box, Font font) {
-        if(box.line_metrics != null) {
+        if (box.line_metrics != null) {
             return box.line_metrics.getDescent();
         } else {
-            FontMetrics fm = c.getGraphics().getFontMetrics( font );
+            FontMetrics fm = c.getGraphics().getFontMetrics(font);
             return fm.getDescent();
         }
     }
@@ -310,6 +314,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/12/05 00:48:57  tobega
+ * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
+ *
  * Revision 1.17  2004/11/27 15:46:38  joshy
  * lots of cleanup to make the code clearer
  *

@@ -19,12 +19,8 @@
  */
 package org.xhtmlrenderer.forms;
 
-import java.awt.Dimension;
-import java.awt.Point;
-import javax.swing.JComponent;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.CustomBlockLayout;
 import org.xhtmlrenderer.render.Box;
@@ -32,48 +28,53 @@ import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.Renderer;
 
+import javax.swing.*;
+import java.awt.*;
+
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public abstract class FormItemLayout extends CustomBlockLayout {
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private JComponent comp;
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return Returns
      */
-    public abstract JComponent createComponent( Context c, Element elem );
+    public abstract JComponent createComponent(Context c, Element elem);
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param node  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param node PARAM
+     * @return Returns
      */
-    public Box createBox( Context c, Node node ) {
-        Element elem = (Element)node;
-        comp = createComponent( c, elem );
-        c.canvas.add( comp );
-        comp.setLocation( 100, 100 );
+    public Box createBox(Context c, Node node) {
+        Element elem = (Element) node;
+        comp = createComponent(c, elem);
+        c.canvas.add(comp);
+        comp.setLocation(100, 100);
         //u.p("added a component to the viewport: " + comp);
         //u.p("pref size = " + comp.getPreferredSize());
         InputBox box = new InputBox();
-        box.node = node;
+        box.setNode(node);
         box.component = comp;
 
         // this is so the context has a reference to all forms, fields,
         // and components of those fields
-        if ( elem.hasAttribute( "name" ) ) {
-            c.addInputField( elem.getAttribute( "name" ), elem, comp );
+        if (elem.hasAttribute("name")) {
+            c.addInputField(elem.getAttribute("name"), elem, comp);
         }
         return box;
     }
@@ -82,13 +83,13 @@ public abstract class FormItemLayout extends CustomBlockLayout {
     /**
      * Description of the Method
      *
-     * @param coords  PARAM
-     * @param box     PARAM
+     * @param coords PARAM
+     * @param box    PARAM
      */
-    public static void adjustVerticalAlign( Point coords, Box box ) {
-        if ( box.getParent() instanceof InlineBox ) {
-            InlineBox ib = (InlineBox)box.getParent();
-            LineBox lb = (LineBox)ib.getParent();
+    public static void adjustVerticalAlign(Point coords, Box box) {
+        if (box.getParent() instanceof InlineBox) {
+            InlineBox ib = (InlineBox) box.getParent();
+            LineBox lb = (LineBox) ib.getParent();
             //u.p("box = " + box);
             //u.p("margin = " + box.margin);
             //u.p("border = " + box.border);
@@ -98,7 +99,7 @@ public abstract class FormItemLayout extends CustomBlockLayout {
             //u.p("border = " + ib.border);
             //u.p("padding = " + ib.padding);
             //u.p("lb = " + lb);
-            int off = lb.baseline - ( ib.height ) + 5;
+            int off = lb.baseline - (ib.height) + 5;
             coords.x += 5;
             coords.y += off;
 
@@ -115,19 +116,19 @@ public abstract class FormItemLayout extends CustomBlockLayout {
     /**
      * Description of the Method
      *
-     * @param box  PARAM
-     * @return     Returns
+     * @param box PARAM
+     * @return Returns
      */
-    public static Point absCoords( Box box ) {
+    public static Point absCoords(Box box) {
         //u.p("box = " + box);
         //u.p("x = " + box.x + " y = " + box.y);
         //u.p("Parent = " + box.getParent());
-        Point pt = new Point( 0, 0 );
+        Point pt = new Point(0, 0);
         pt.x += box.x;
         pt.y += box.y;
 
-        if ( box.getParent() != null ) {
-            Point pt_parent = absCoords( box.getParent() );
+        if (box.getParent() != null) {
+            Point pt_parent = absCoords(box.getParent());
             pt.x += pt_parent.x;
             pt.y += pt_parent.y;
             //return box.x + absX(box.getParent());
@@ -138,11 +139,11 @@ public abstract class FormItemLayout extends CustomBlockLayout {
     /**
      * Gets the intrinsicDimensions attribute of the FormItemLayout object
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      The intrinsicDimensions value
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return The intrinsicDimensions value
      */
-    public Dimension getIntrinsicDimensions( Context c, Element elem ) {
+    public Dimension getIntrinsicDimensions(Context c, Element elem) {
         //comp.setLocation(50,50);
         Dimension dim = comp.getPreferredSize();
         //return new Dimension(10,10);
@@ -153,16 +154,16 @@ public abstract class FormItemLayout extends CustomBlockLayout {
     /**
      * Description of the Method
      *
-     * @param comp  PARAM
-     * @param elem  PARAM
+     * @param comp PARAM
+     * @param elem PARAM
      */
-    protected void commonPrep( JComponent comp, Element elem ) {
-        if ( elem.hasAttribute( "disabled" ) &&
-                elem.getAttribute( "disabled" ).equals( "disabled" ) ) {
-            comp.setEnabled( false );
+    protected void commonPrep(JComponent comp, Element elem) {
+        if (elem.hasAttribute("disabled") &&
+                elem.getAttribute("disabled").equals("disabled")) {
+            comp.setEnabled(false);
         }
     }
-    
+
     public Renderer getRenderer() {
         return new FormItemRenderer();
     }
@@ -172,6 +173,9 @@ public abstract class FormItemLayout extends CustomBlockLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/05 00:48:55  tobega
+ * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
+ *
  * Revision 1.5  2004/10/28 13:46:31  joshy
  * removed dead code
  * moved code about specific elements to the layout factory (link and br)

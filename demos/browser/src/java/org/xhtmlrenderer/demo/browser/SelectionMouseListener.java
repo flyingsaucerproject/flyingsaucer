@@ -92,8 +92,8 @@ public class SelectionMouseListener implements MouseListener, MouseMotionListene
                 return;
             }
             // if box is text node then start selection
-            if ((box.node != null &&
-                    box.node.getNodeName() != "body") &&
+            if ((box.getNode() != null &&
+                    box.getNode().getNodeName() != "body") &&
                     !(box instanceof BlockBox)) {
                 int x = panel.findBoxX(e.getX(), e.getY());
                 panel.getContext().setSelectionEnd(box, x);

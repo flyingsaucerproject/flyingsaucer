@@ -143,6 +143,11 @@ public class DerivedValue {
         return nv;
     }
 
+    public boolean isIdentifier() {
+        if (!isPrimitiveType()) return false;
+        return (getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT);
+    }
+
 
     /**
      * The value as a float; returns Float.MIN_VALUE (as float) if there is an
@@ -324,6 +329,38 @@ public class DerivedValue {
         // point parse the text looking for the type code--so need the suffix
         setCssText("" + _asFloat + newTypeSuffix);
         _requiresComputation = false;
+    }
+
+    /**
+     * Computes a relative unit (e.g. percentage) as an absolute value, using
+     * the input value.
+     * Used for such properties whose parent value cannot be known before layout/render
+     *
+     * @param base The value that this should be relative to.
+     * @return the absolute value or computed absolute value
+     */
+    public float getFloatValueRelative(float base) {
+        float relVal = new Float(getCssTextClean(_domCSSValue)).floatValue();
+        if (ValueConstants.isAbsoluteUnit(cssValue())) {
+            return relVal;
+        }
+
+        float absVal = 0F;
+
+        switch (cssSACPrimitiveValueType()) {
+            case CSSPrimitiveValue.CSS_PERCENTAGE:
+                // percentage depends on the property this value belongs to
+                absVal = (relVal / 100F) * base;
+                break;
+            default:
+                // nothing to do, we only convert those listed above
+                System.err.println("Asked to convert value from relative to absolute, don't recognize the datatype " + toString());
+        }
+        assert(new Float(absVal).intValue() > 0);
+
+        // round down
+        double d = Math.floor((double) absVal);
+        return new Float(d).floatValue();
     }
 
 

@@ -1,7 +1,10 @@
 package org.xhtmlrenderer.table;
 
-import org.xhtmlrenderer.layout.*;
-import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.BoxRenderer;
+import org.xhtmlrenderer.render.Renderer;
+
 import java.awt.*;
 
 public class TableRenderer extends BoxRenderer {
@@ -14,35 +17,35 @@ public class TableRenderer extends BoxRenderer {
      * painted and the current context. It will call paintBackground(),
      * paintComponent(), and paintBorder() on it's own.
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
 
-    public void paint( Context c, Box box ) {
+    public void paint(Context c, Box box) {
 
         //u.p("TableLayout.paint( " + c);
 
         // copy the bounds to we don't mess it up
 
-        Rectangle oldBounds = new Rectangle( c.getExtents() );
+        Rectangle oldBounds = new Rectangle(c.getExtents());
 
         //Rectangle contents = layout(c,elem);
 
         //adjustWidth(c,elem);
 
-        paintBackground( c, box );
+        paintBackground(c, box);
 
-        paintComponent( c, box );
+        paintComponent(c, box);
 
         //paintChildren(c,elem);
 
-        paintBorder( c, box );
+        paintBorder(c, box);
 
         // move the origin down to account for the contents plus the margin, borders, and padding
 
         oldBounds.y = oldBounds.y + box.height;
 
-        c.setExtents( oldBounds );
+        c.setExtents(oldBounds);
 
     }
 
@@ -50,12 +53,12 @@ public class TableRenderer extends BoxRenderer {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public void paintComponent( Context c, Box box ) {
+    public void paintComponent(Context c, Box box) {
 
-        paintTable( c, (TableBox)box );
+        paintTable(c, (TableBox) box);
 
     }
 
@@ -63,29 +66,30 @@ public class TableRenderer extends BoxRenderer {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public void paintChildren( Context c, Box box ) { }
+    public void paintChildren(Context c, Box box) {
+    }
+
     /**
      * Description of the Method
      *
-     * @param c      PARAM
-     * @param table  PARAM
+     * @param c     PARAM
+     * @param table PARAM
      */
-    protected void paintTable( Context c, TableBox table ) {
+    protected void paintTable(Context c, TableBox table) {
 
-        c.getGraphics().translate( table.x, table.y );
+        c.getGraphics().translate(table.x, table.y);
 
-        c.getGraphics().translate(
-                table.margin.left + table.border.left + table.padding.left,
-                table.margin.top + table.border.top + table.padding.top );
+        c.getGraphics().translate(table.margin.left + table.border.left + table.padding.left,
+                table.margin.top + table.border.top + table.padding.top);
 
         // loop over the rows
 
-        for ( int i = 0; i < table.rows.size(); i++ ) {
+        for (int i = 0; i < table.rows.size(); i++) {
 
-            RowBox row = (RowBox)table.rows.get( i );
+            RowBox row = (RowBox) table.rows.get(i);
 
             // save the old extents
 
@@ -93,28 +97,27 @@ public class TableRenderer extends BoxRenderer {
 
             // move origin by row.x and row.y
 
-            c.setExtents( new Rectangle( oe.x + row.x, oe.y + row.y, oe.width,
-                    oe.height ) );
+            c.setExtents(new Rectangle(oe.x + row.x, oe.y + row.y, oe.width,
+                    oe.height));
 
-            c.getGraphics().translate( row.x, row.y );
+            c.getGraphics().translate(row.x, row.y);
 
             // paint the row
 
-            paintRow( c, row );
+            paintRow(c, row);
 
             // restore the old extents and translate
 
-            c.getGraphics().translate( -row.x, -row.y );
+            c.getGraphics().translate(-row.x, -row.y);
 
-            c.setExtents( oe );
+            c.setExtents(oe);
 
         }
 
-        c.getGraphics().translate(
-                -table.margin.left - table.border.left - table.padding.left,
-                -table.margin.top - table.border.top - table.padding.top );
+        c.getGraphics().translate(-table.margin.left - table.border.left - table.padding.left,
+                -table.margin.top - table.border.top - table.padding.top);
 
-        c.getGraphics().translate( -table.x, -table.y );
+        c.getGraphics().translate(-table.x, -table.y);
 
         //c.getGraphics().translate(-c.getExtents().x, -c.getExtents().y);
 
@@ -124,10 +127,10 @@ public class TableRenderer extends BoxRenderer {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param row  PARAM
+     * @param c   PARAM
+     * @param row PARAM
      */
-    protected void paintRow( Context c, RowBox row ) {
+    protected void paintRow(Context c, RowBox row) {
 
         //u.p("Paint Row c = " + c);
 
@@ -135,17 +138,17 @@ public class TableRenderer extends BoxRenderer {
 
         // debug
 
-        for ( int i = 0; i < row.cells.size(); i++ ) {
+        for (int i = 0; i < row.cells.size(); i++) {
 
-            CellBox cell = (CellBox)row.cells.get( i );
+            CellBox cell = (CellBox) row.cells.get(i);
 
             Rectangle oe = c.getExtents();
 
-            c.setExtents( new Rectangle( cell.x, cell.y, oe.width, oe.height ) );
+            c.setExtents(new Rectangle(cell.x, cell.y, oe.width, oe.height));
 
-            paintCell( c, cell );
+            paintCell(c, cell);
 
-            c.setExtents( oe );
+            c.setExtents(oe);
 
         }
 
@@ -155,28 +158,28 @@ public class TableRenderer extends BoxRenderer {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param cell  PARAM
+     * @param c    PARAM
+     * @param cell PARAM
      */
-    protected void paintCell( Context c, CellBox cell ) {
+    protected void paintCell(Context c, CellBox cell) {
 
-        if ( cell.isReal() ) {
+        if (cell.isReal()) {
 
             Rectangle oe = c.getExtents();
 
-            c.getGraphics().translate( oe.x, oe.y );
+            c.getGraphics().translate(oe.x, oe.y);
 
-            c.setExtents( new Rectangle( 0, 0, cell.width, cell.height ) );
+            c.setExtents(new Rectangle(0, 0, cell.width, cell.height));
 
-            Renderer rend = c.getRenderer( cell.node );
+            Renderer rend = c.getRenderer(cell.getNode());
 
             //u.p("doing cell: " + cell);
 
-            rend.paint( c, cell.sub_box );
+            rend.paint(c, cell.sub_box);
 
-            c.getGraphics().translate( -oe.x, -oe.y );
+            c.getGraphics().translate(-oe.x, -oe.y);
 
-            c.setExtents( oe );
+            c.setExtents(oe);
 
         }
     }

@@ -19,20 +19,22 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Image;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.ImageRenderer;
+import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.u;
-import org.xhtmlrenderer.render.*;
+
+import java.awt.*;
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class ImageLayout extends BoxLayout {
 
@@ -41,15 +43,15 @@ public class ImageLayout extends BoxLayout {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param node  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param node PARAM
+     * @return Returns
      */
-    public Box createBox( Context c, Node node ) {
+    public Box createBox(Context c, Node node) {
 
         BlockBox box = new BlockBox();
 
-        box.node = node;
+        box.setNode(node);
 
         return box;
     }
@@ -57,32 +59,32 @@ public class ImageLayout extends BoxLayout {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return Returns
      */
-    public Box layout( Context c, Element elem ) {
+    public Box layout(Context c, Element elem) {
 
-        BlockBox block = (BlockBox)createBox( c, elem );
+        BlockBox block = (BlockBox) createBox(c, elem);
 
         // load the image
 
-        Border border = getBorder( c, block );
+        Border border = getBorder(c, block);
 
-        Border padding = getPadding( c, block );
+        Border padding = getPadding(c, block);
 
-        Border margin = getMargin( c, block );
+        Border margin = getMargin(c, block);
 
 
-        Image img = getImage( c, elem );
+        Image img = getImage(c, elem);
 
         // calculate new contents
 
-        if ( img != null ) {
+        if (img != null) {
 
-            block.width = img.getWidth( null );
+            block.width = img.getWidth(null);
 
-            block.height = img.getHeight( null );
+            block.height = img.getHeight(null);
 
         } else {
 
@@ -161,34 +163,34 @@ public class ImageLayout extends BoxLayout {
     /**
      * Gets the image attribute of the ImageLayout object
      *
-     * @param c     PARAM
-     * @param node  PARAM
-     * @return      The image value
+     * @param c    PARAM
+     * @param node PARAM
+     * @return The image value
      */
-    public static Image getImage( Context c, Node node ) {
+    public static Image getImage(Context c, Node node) {
 
-        if ( node.getNodeType() != node.ELEMENT_NODE ) {
+        if (node.getNodeType() != node.ELEMENT_NODE) {
 
             return null;
         }
 
-        String src = ( (Element)node ).getAttribute( "src" );
+        String src = ((Element) node).getAttribute("src");
 
         Image img = null;
 
         try {
 
-            img = ImageUtil.loadImage( c, src );
+            img = ImageUtil.loadImage(c, src);
 
-        } catch ( Exception ex ) {
+        } catch (Exception ex) {
 
-            u.p( ex );
+            u.p(ex);
 
         }
 
         return img;
     }
-    
+
     public Renderer getRenderer() {
         return new ImageRenderer();
     }
@@ -205,6 +207,9 @@ public class ImageLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/05 00:48:57  tobega
+ * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
+ *
  * Revision 1.5  2004/10/28 01:34:23  joshy
  * moved more painting code into the renderers
  *

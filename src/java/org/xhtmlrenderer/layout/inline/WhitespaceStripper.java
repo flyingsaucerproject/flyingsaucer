@@ -1,17 +1,13 @@
 package org.xhtmlrenderer.layout.inline;
 
 
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.layout.*;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Color;
+
 import java.awt.*;
-import java.util.regex.*;
-import org.xhtmlrenderer.util.u;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import java.util.regex.Pattern;
 
 public class WhitespaceStripper {
     public static final String SPACE = " ";
@@ -21,48 +17,47 @@ public class WhitespaceStripper {
     final Pattern linefeed_to_space = Pattern.compile("\\n");
     final Pattern tab_to_space = Pattern.compile("\\t");
     final Pattern space_collapse = Pattern.compile("( )+");
-    
+
 
     public InlineBox createInline(Context c, Node node, String text, InlineBox prev, InlineBox prev_align, int avail, int max, Font font) {
         InlineBox inline = new InlineBox();
-        inline.node = node;
-        inline.whitespace = getWhitespace(c,node);
+        inline.setNode(node);
+        inline.whitespace = getWhitespace(c, node);
         
         // prepare a new inline with a substring that goes
         // from the end of the previous (if applicable) to the
         // end of the master string
-        if(prev == null  || prev.node != node) {
-            text = stripWhitespace(c,node,prev,text);
+        if (prev == null || prev.getNode() != node) {
+            text = stripWhitespace(c, node, prev, text);
             inline.setMasterText(text);
-            inline.setSubstring(0,text.length());
+            inline.setSubstring(0, text.length());
         } else {
             //grab text from the previous inline
             text = prev.getMasterText();
             inline.setMasterText(text);
-            inline.setSubstring(prev.end_index,text.length());
+            inline.setSubstring(prev.end_index, text.length());
         }
 
-        Breaker.breakText( c, inline, prev, prev_align, avail, max, font );
-        BoxBuilder.prepBox( c, inline, prev_align, font );
+        Breaker.breakText(c, inline, prev, prev_align, avail, max, font);
+        BoxBuilder.prepBox(c, inline, prev_align, font);
         return inline;
     }
-    
 
 
     // this function strips all whitespace from the text according to the
     // CSS 2.1 spec on whitespace handling. It accounts for the different
     // whitespace settings like normal, nowrap, pre, etc
     public String stripWhitespace(Context c, Node node, InlineBox prev, String text) {
-        
-        String whitespace = getWhitespace(c,node);
+
+        String whitespace = getWhitespace(c, node);
         //u.p("stripWhitespace: text = -" + text + "-");
         //u.p("whitespace = " + whitespace);
         
 
         // do step 1
-        if(whitespace.equals("normal") ||
-           whitespace.equals("nowrap") ||
-           whitespace.equals("pre-line")) {
+        if (whitespace.equals("normal") ||
+                whitespace.equals("nowrap") ||
+                whitespace.equals("pre-line")) {
             text = linefeed_space_collapse.matcher(text).replaceAll(SPACE);
         }
         //u.p("step 1 = \"" + text + "\"");
@@ -75,18 +70,18 @@ public class WhitespaceStripper {
 
         // do step 3
         // convert line feeds to spaces
-        if(whitespace.equals("normal") ||
-           whitespace.equals("nowrap")) {
-           text = linefeed_to_space.matcher(text).replaceAll(SPACE);
+        if (whitespace.equals("normal") ||
+                whitespace.equals("nowrap")) {
+            text = linefeed_to_space.matcher(text).replaceAll(SPACE);
         }
         //u.p("step 3 = \"" + text +"\"");
         
 
         // do step 4
-        if(whitespace.equals("normal") ||
-           whitespace.equals("nowrap") ||
-           whitespace.equals("pre-line") ) {
-               
+        if (whitespace.equals("normal") ||
+                whitespace.equals("nowrap") ||
+                whitespace.equals("pre-line")) {
+
             text = tab_to_space.matcher(text).replaceAll(SPACE);
             //u.p("step 4.1 = \"" + text + "\"");
 
@@ -94,13 +89,13 @@ public class WhitespaceStripper {
             //u.p("step 4.2 = \"" + text + "\"");
 
             // collapse first space against prev inline
-            if(text.startsWith(SPACE) &&
-                           (prev != null) &&
-                           (prev.whitespace.equals("normal") ||
-                            prev.whitespace.equals("nowrap") ||
-                            prev.whitespace.equals("pre-line")) &&
-                           (prev.getSubstring().endsWith(SPACE))){
-                text = text.substring(1,text.length());
+            if (text.startsWith(SPACE) &&
+                    (prev != null) &&
+                    (prev.whitespace.equals("normal") ||
+                    prev.whitespace.equals("nowrap") ||
+                    prev.whitespace.equals("pre-line")) &&
+                    (prev.getSubstring().endsWith(SPACE))) {
+                text = text.substring(1, text.length());
             }
             //u.p("step 4.3 = \"" + text + "\"");
 
@@ -109,33 +104,30 @@ public class WhitespaceStripper {
         //u.p("final text = \"" + text + "\"");
         return text;
     }
-    
-    
 
-    
 
     public void unbreakable(InlineBox box, int n) {
-        if(box.start_index == -1) {
+        if (box.start_index == -1) {
             box.start_index = 0;
         }
-        box.setSubstring( box.start_index, box.start_index + n);
+        box.setSubstring(box.start_index, box.start_index + n);
         return;
     }
 
     public String getWhitespace(Context c, Node node) {
         Element e = null;
-        if(node instanceof Element) {
-            e = (Element)node;
+        if (node instanceof Element) {
+            e = (Element) node;
         } else {
-            e = (Element)node.getParentNode();
+            e = (Element) node.getParentNode();
         }
-        String whitespace = c.css.getStringProperty(e, "white-space" );
-        if(whitespace == null) {
+        String whitespace = c.css.getStyle(e).getStringProperty("white-space");
+        if (whitespace == null) {
             whitespace = "normal";
         }
         return whitespace;
     }
-    
+
     public static void df(Context c, String text, Font f) {
         /*
         u.p("-------------------------");
@@ -153,6 +145,6 @@ public class WhitespaceStripper {
         u.p("-------------------------");
         */
     }
-    
+
 }
 

@@ -19,54 +19,54 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Dimension;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.util.u;
+
+import java.awt.*;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class CustomBlockLayout extends BoxLayout {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param node  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param node PARAM
+     * @return Returns
      */
-    public Box createBox( Context c, Node node ) {
+    public Box createBox(Context c, Node node) {
         BlockBox box = new BlockBox();
-        box.node = node;
+        box.setNode(node);
         return box;
     }
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return Returns
      */
-    public Box layout( Context c, Element elem ) {
-        BlockBox block = (BlockBox)createBox( c, elem );
+    public Box layout(Context c, Element elem) {
+        BlockBox block = (BlockBox) createBox(c, elem);
         // load the image
 
-        Border border = getBorder( c, block );
-        Border padding = getPadding( c, block );
-        Border margin = getMargin( c, block );
+        Border border = getBorder(c, block);
+        Border padding = getPadding(c, block);
+        Border margin = getMargin(c, block);
 
-        Dimension dim = this.getIntrinsicDimensions( c, elem );
+        Dimension dim = this.getIntrinsicDimensions(c, elem);
 
         // calculate new contents
-        block.width = (int)dim.getWidth();
-        block.height = (int)dim.getHeight();
+        block.width = (int) dim.getWidth();
+        block.height = (int) dim.getHeight();
 
         // calculate the inner width
         block.width = margin.left + border.left + padding.left + block.width +
@@ -84,12 +84,12 @@ public class CustomBlockLayout extends BoxLayout {
      * override this method to return the proper dimensions of your custom page
      * element.
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      The intrinsicDimensions value
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return The intrinsicDimensions value
      */
-    public Dimension getIntrinsicDimensions( Context c, Element elem ) {
-        return new Dimension( 50, 50 );
+    public Dimension getIntrinsicDimensions(Context c, Element elem) {
+        return new Dimension(50, 50);
     }
 
 }
@@ -98,6 +98,9 @@ public class CustomBlockLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/05 00:48:57  tobega
+ * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
+ *
  * Revision 1.4  2004/10/28 02:13:40  joshy
  * finished moving the painting code into the renderers
  *

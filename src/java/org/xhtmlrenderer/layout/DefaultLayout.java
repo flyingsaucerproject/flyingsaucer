@@ -20,25 +20,21 @@
 package org.xhtmlrenderer.layout;
 
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-//import org.xhtmlrenderer.render.AnonymousBlockBox;
-import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.css.Border;
-import org.xhtmlrenderer.css.value.BorderColor;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.DefaultRenderer;
 import org.xhtmlrenderer.render.Renderer;
-import org.xhtmlrenderer.render.*;
-import org.xhtmlrenderer.util.*;
+
+import java.awt.*;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class DefaultLayout implements Layout {
 
@@ -48,42 +44,42 @@ public class DefaultLayout implements Layout {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return Returns
      */
-     
-    public Box layout( Context c, Element elem ) {
-        Box box = createBox( c, elem );
+
+    public Box layout(Context c, Element elem) {
+        Box box = createBox(c, elem);
         return box;//layoutChildren( c, box );
     }
-    
+
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param node  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param node PARAM
+     * @return Returns
      */
-     
-    public Box createBox( Context c, Node node ) {
+
+    public Box createBox(Context c, Node node) {
         Box box = new Box();
-        box.node = node;
+        box.setNode(node);
         return box;
     }
-    
+
 
     public Renderer getRenderer() {
         return new DefaultRenderer();
     }
-    
-    
+
+
     public void restyle(Context ctx, Box box) {
-        box.color = ctx.css.getColor(box.getRealElement());
-        box.setBorderColor(ctx.css.getBorderColor( box.getRealElement() ));
-        box.border_style = ctx.css.getStringProperty( box.getRealElement(), "border-top-style" );
-        box.background_color = ctx.css.getBackgroundColor( box.getRealElement() );
+        box.color = ctx.css.getStyle(box.getRealElement()).getColor();
+        box.setBorderColor(ctx.css.getStyle(box.getRealElement()).getBorderColor());
+        box.border_style = ctx.css.getStyle(box.getRealElement()).getStringProperty("border-top-style");
+        box.background_color = ctx.css.getStyle(box.getRealElement()).getBackgroundColor();
     }
     
     
@@ -104,14 +100,14 @@ public class DefaultLayout implements Layout {
      * @param box PARAM
      * @param c   PARAM
      */
-    public void prepareBox(Context c, Box box ) {
+    public void prepareBox(Context c, Box box) {
         getBorder(c, box);
         getPadding(c, box);
         getMargin(c, box);
         getBackgroundColor(c, box);
     }
-    
-        /**
+
+    /**
      * Gets the listItem attribute of the BoxLayout object
      *
      * @param c   PARAM
@@ -130,7 +126,7 @@ public class DefaultLayout implements Layout {
     public static Border getPadding(Context c, Box box) {
         if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
             if (box.padding == null) {
-                box.padding = c.css.getPaddingWidth(box.getRealElement());
+                box.padding = c.css.getStyle(box.getRealElement()).getPaddingWidth();
             }
         }
         return box.padding;
@@ -147,7 +143,7 @@ public class DefaultLayout implements Layout {
     public static Border getMargin(Context c, Box box) {
         if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
             if (box.margin == null) {
-                box.margin = c.css.getMarginWidth(box.getRealElement());
+                box.margin = c.css.getStyle(box.getRealElement()).getMarginWidth();
             }
         }
         return box.margin;
@@ -157,6 +153,7 @@ public class DefaultLayout implements Layout {
         Border border = LayoutUtil.getBorder(c, block);
         return border;
     }
+
     /**
      * Gets the backgroundColor attribute of the BoxLayout object
      *
@@ -167,13 +164,15 @@ public class DefaultLayout implements Layout {
     public static Color getBackgroundColor(Context c, Box box) {
         if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
             if (box.background_color == null) {
-                Object obj = c.css.getProperty(box.getRealElement(), "background-color", false);
-                //u.p("got : " + obj);
-                if (obj.toString().equals("transparent")) {
-                    box.background_color = new Color(0, 0, 0, 0);
-                    return box.background_color;
+                if (c.css.getStyle(box.getRealElement()).isIdentifier(CSSName.BACKGROUND_COLOR)) {
+                    String value = c.css.getStyle(box.getRealElement()).getStringProperty("background-color");
+                    //u.p("got : " + obj);
+                    if (value.equals("transparent")) {
+                        box.background_color = new Color(0, 0, 0, 0);
+                        return box.background_color;
+                    }
                 }
-                box.background_color = c.css.getBackgroundColor(box.getRealElement());
+                box.background_color = c.css.getStyle(box.getRealElement()).getBackgroundColor();
             }
         }
         return box.background_color;
@@ -186,6 +185,9 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2004/12/05 00:48:57  tobega
+ * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
+ *
  * Revision 1.25  2004/11/18 18:49:49  joshy
  * fixed the float issue.
  * commented out more dead code

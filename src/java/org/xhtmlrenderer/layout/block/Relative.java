@@ -1,26 +1,27 @@
 package org.xhtmlrenderer.layout.block;
 
-import org.xhtmlrenderer.layout.*;
-import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutUtil;
+import org.xhtmlrenderer.render.Box;
 
 public class Relative {
     public static void setupRelative(Context c, Box box) {
         String position = LayoutUtil.getPosition(c, box);
         if (position.equals("relative")) {
-            if (c.css.hasProperty(box.node, "right", false)) {
-                box.left = -(int) c.css.getFloatProperty(box.node, "right", 0, false);
+            if (c.css.getStyle(box.getNode()).hasProperty("right")) {
+                box.left = -(int) c.css.getStyle(box.getNode()).getFloatPropertyRelative("right", 0);
             }
-            if (c.css.hasProperty(box.node, "bottom", false)) {
-                box.top = -(int) c.css.getFloatProperty(box.node, "bottom", 0, false);
+            if (c.css.getStyle(box.getNode()).hasProperty("bottom")) {
+                box.top = -(int) c.css.getStyle(box.getNode()).getFloatPropertyRelative("bottom", 0);
             }
-            if (c.css.hasProperty(box.node, "top", false)) {
-                box.top = (int) c.css.getFloatProperty(box.node, "top", 0, false);
+            if (c.css.getStyle(box.getNode()).hasProperty("top")) {
+                box.top = (int) c.css.getStyle(box.getNode()).getFloatPropertyRelative("top", 0);
             }
-            if (c.css.hasProperty(box.node, "left", false)) {
-                box.left = (int) c.css.getFloatProperty(box.node, "left", 0, false);
+            if (c.css.getStyle(box.getNode()).hasProperty("left")) {
+                box.left = (int) c.css.getStyle(box.getNode()).getFloatPropertyRelative("left", 0);
             }
             box.relative = true;
         }
     }
-    
+
 }

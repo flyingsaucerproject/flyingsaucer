@@ -19,41 +19,46 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.InlineUtil;
 
+import java.util.List;
+
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class AnonymousBlockBox extends BlockBox {
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public List node_list;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public Node last_node;
 
 
     /**
      * Constructor for the AnonymousBlockBox object
      *
-     * @param startNode  PARAM
-     * @param c          PARAM
+     * @param startNode PARAM
+     * @param c         PARAM
      */
-    public AnonymousBlockBox( Node startNode, Context c ) {
+    public AnonymousBlockBox(Node startNode, Context c) {
 
-        this.node = startNode.getParentNode();
+        this.setNode(startNode.getParentNode());
 
-        node_list = InlineUtil.getInlineNodeList( startNode, (Element)this.node, c, true );
+        node_list = InlineUtil.getInlineNodeList(startNode, (Element) this.getNode(), c, true);
 
-        node_list.add( 0, startNode );
+        node_list.add(0, startNode);
 
-        last_node = (Node)node_list.get( node_list.size() - 1 );
+        last_node = (Node) node_list.get(node_list.size() - 1);
 
         /*
          * while(true) {
@@ -69,19 +74,18 @@ public class AnonymousBlockBox extends BlockBox {
     }
 
 
-
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
 
         StringBuffer sb = new StringBuffer();
 
-        sb.append( "AnonymousBlockBox:" );
+        sb.append("AnonymousBlockBox:");
 
-        sb.append( super.toString() );
+        sb.append(super.toString());
 
         return sb.toString();
     }
@@ -90,7 +94,7 @@ public class AnonymousBlockBox extends BlockBox {
     /**
      * Gets the anonymous attribute of the AnonymousBlockBox object
      *
-     * @return   The anonymous value
+     * @return The anonymous value
      */
     public boolean isAnonymous() {
 
@@ -104,6 +108,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/12/05 00:48:58  tobega
+ * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
+ *
  * Revision 1.3  2004/10/23 13:50:26  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

@@ -1,12 +1,15 @@
 package org.xhtmlrenderer.layout.block;
 
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutUtil;
+import org.xhtmlrenderer.render.Box;
+
 import java.awt.*;
-import org.xhtmlrenderer.layout.*;
-import org.xhtmlrenderer.render.*;
 
 public class Fixed {
     public static void positionFixedChild(Context c, Box box) {
-        if ( LayoutUtil.isFixed( c, box ) ) {
+        if (LayoutUtil.isFixed(c, box)) {
             Point origin = c.getOriginOffset();
             box.x = 0;
             box.y = 0;
@@ -15,28 +18,29 @@ public class Fixed {
         }
     }
 
-    public static void setupFixed( Context c, Box box ) {
-        if ( LayoutUtil.isFixed( c, box ) ) {
+    public static void setupFixed(Context c, Box box) {
+        if (LayoutUtil.isFixed(c, box)) {
             box.fixed = true;
             box.setChildrenExceedBounds(true);
-            
-            if ( c.css.hasProperty( box.node, "top", false ) ) {
-                box.top = (int)c.css.getFloatProperty( box.node, "top", 0, false );
+
+            CalculatedStyle style = c.css.getStyle(box.getNode());
+            if (style.hasProperty("top")) {
+                box.top = (int) style.getFloatPropertyRelative("top", 0);
                 box.top_set = true;
             }
-            if ( c.css.hasProperty( box.node, "right", false ) ) {
-                box.right = (int)c.css.getFloatProperty( box.node, "right", 0, false );
+            if (style.hasProperty("right")) {
+                box.right = (int) style.getFloatPropertyRelative("right", 0);
                 box.right_set = true;
             }
-            if ( c.css.hasProperty( box.node, "bottom", false ) ) {
-                box.bottom = (int)c.css.getFloatProperty( box.node, "bottom", 0, false );
+            if (style.hasProperty("bottom")) {
+                box.bottom = (int) style.getFloatPropertyRelative("bottom", 0);
                 box.bottom_set = true;
             }
-            if ( c.css.hasProperty( box.node, "left", false ) ) {
-                box.left = (int)c.css.getFloatProperty( box.node, "left", 0, false );
+            if (style.hasProperty("left")) {
+                box.left = (int) style.getFloatPropertyRelative("left", 0);
                 box.left_set = true;
             }
-            
+
         }
     }
 }

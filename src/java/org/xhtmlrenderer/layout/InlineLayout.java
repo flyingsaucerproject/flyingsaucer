@@ -17,63 +17,52 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
- 
+
 package org.xhtmlrenderer.layout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Rectangle;
-import java.util.List;
-import java.util.ArrayList;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.inline.*;
-import org.xhtmlrenderer.render.AnonymousBlockBox;
-import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.render.InlineRenderer;
-import org.xhtmlrenderer.render.Renderer;
-import org.xhtmlrenderer.css.value.*;
-import org.xhtmlrenderer.css.*;
-import org.xhtmlrenderer.util.InfiniteLoopError;
-import org.xhtmlrenderer.util.u;
-import org.xhtmlrenderer.util.x;
-import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.css.style.*;
+import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.u;
+
+import java.awt.*;
+import java.util.List;
 
 /**
-* Description of the Class
-*
-* @author   empty
-*/
+ * Description of the Class
+ *
+ * @author empty
+ */
 public class InlineLayout extends BoxLayout {
     /**
-    * Description of the Method
-    *
-    * @param c    PARAM
-    * @param box  PARAM
-    * @return     Returns
-    */
-    public Box layoutChildren( Context c, Box box ) {
+     * Description of the Method
+     *
+     * @param c   PARAM
+     * @param box PARAM
+     * @return Returns
+     */
+    public Box layoutChildren(Context c, Box box) {
         //u.p("starting to lay out the children");
-        if ( LayoutUtil.isHiddenNode( box.getElement(), c ) ) {
+        if (LayoutUtil.isHiddenNode(box.getElement(), c)) {
             return box;
         }
-        if ( !box.isAnonymous() ) {
-            if ( LayoutUtil.isBlockLayout( box.getElement(), c ) ) {
+        if (!box.isAnonymous()) {
+            if (LayoutUtil.isBlockLayout(box.getElement(), c)) {
                 // u.p("doing up block for: " + box);
-                return super.layoutChildren( c, box );
+                return super.layoutChildren(c, box);
             }
         }
         
         // calculate the initial position and dimensions
-        Box block = (Box)box;
+        Box block = (Box) box;
         Rectangle bounds = new Rectangle();
         bounds.width = c.getExtents().width;
         bounds.width -= box.margin.left + box.border.left + box.padding.left +
-            box.padding.right + box.border.right + box.margin.right;
+                box.padding.right + box.border.right + box.margin.right;
         validateBounds(bounds);
         bounds.x = 0;
         bounds.y = 0;
@@ -81,90 +70,90 @@ public class InlineLayout extends BoxLayout {
 
         // prepare remaining width and first linebox
         int remaining_width = bounds.width;
-        LineBox curr_line = newLine(box,bounds,null);
+        LineBox curr_line = newLine(box, bounds, null);
         c.setFirstLine(true);
 
 
         // account for text-indent
         Element elem = block.getElement();
-        remaining_width = TextIndent.doTextIndent( c, elem, remaining_width, curr_line );
+        remaining_width = TextIndent.doTextIndent(c, elem, remaining_width, curr_line);
         
         // more setup
         LineBox prev_line = new LineBox();
         prev_line.setParent(box);
         prev_line.y = bounds.y;
         prev_line.height = 0;
-        InlineBox prev_inline = null;        
+        InlineBox prev_inline = null;
         InlineBox prev_align_inline = null;
         
         // get the list of inlines for this run
         List inline_node_list = null;
-        if ( box.isAnonymous() ) {
-            inline_node_list = ( (AnonymousBlockBox)box ).node_list;
+        if (box.isAnonymous()) {
+            inline_node_list = ((AnonymousBlockBox) box).node_list;
         } else {
-            inline_node_list = InlineUtil.getInlineNodeList( elem, elem, c );
+            inline_node_list = InlineUtil.getInlineNodeList(elem, elem, c);
         }
-        
-        Node current_node = InlineUtil.nextTextNode( inline_node_list );
-        if(!Configuration.isTrue("xr.layout.whitespace.experimental",false)) {
-            TextUtil.stripWhitespace( c, current_node, elem );
+
+        Node current_node = InlineUtil.nextTextNode(inline_node_list);
+        if (!Configuration.isTrue("xr.layout.whitespace.experimental", false)) {
+            TextUtil.stripWhitespace(c, current_node, elem);
         }
         
         // adjust the first line for float tabs
-        remaining_width = FloatUtil.adjustForTab( c, prev_line, remaining_width );
+        remaining_width = FloatUtil.adjustForTab(c, prev_line, remaining_width);
 
         // loop until no more nodes
-        while ( current_node != null ) {
+        while (current_node != null) {
             // loop until no more text in this node
-            while ( true ) {
-                
+            while (true) {
+
                 // debugging check
-                if ( bounds.width < 0 ) {
-                    u.p( "bounds width = " + bounds.width );
+                if (bounds.width < 0) {
+                    u.p("bounds width = " + bounds.width);
                     u.dump_stack();
-                    System.exit( -1 );
+                    System.exit(-1);
                 }
                 
                 // the crash warning code
-                if ( bounds.width < 1 ) {
-                    u.p( "warning. width < 1 " + bounds.width );
+                if (bounds.width < 1) {
+                    u.p("warning. width < 1 " + bounds.width);
                 }
                 
                 // test if there is no more text in the current text node
                 // if there is a prev, and if the prev was part of this current node
-                if ( prev_inline != null && prev_inline.node == current_node ) {
-                    if(isEndOfBlock(c, current_node, prev_inline)) {
+                if (prev_inline != null && prev_inline.getNode() == current_node) {
+                    if (isEndOfBlock(c, current_node, prev_inline)) {
                         break;
                     }
                 }
                 
                 // look at current inline
                 // break off the longest section that will fit
-                InlineBox new_inline = calculateInline( c, current_node, remaining_width, bounds.width,
-                    curr_line, prev_inline, elem, prev_align_inline );
+                InlineBox new_inline = calculateInline(c, current_node, remaining_width, bounds.width,
+                        curr_line, prev_inline, elem, prev_align_inline);
                 // u.p("got back inline: " + new_inline);
 
 
                 // if this inline needs to be on a new line
-                if ( new_inline.break_before && !new_inline.floated ) {
+                if (new_inline.break_before && !new_inline.floated) {
                     remaining_width = bounds.width;
-                    saveLine( curr_line, prev_line, elem, bounds.width, bounds.x, c, block , false);
+                    saveLine(curr_line, prev_line, elem, bounds.width, bounds.x, c, block, false);
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
-                    curr_line = newLine(box,bounds,prev_line);
-                    remaining_width = FloatUtil.adjustForTab( c, curr_line, remaining_width );
+                    curr_line = newLine(box, bounds, prev_line);
+                    remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
                 }
                 
                 
                 // save the new inline to the list
-                curr_line.addChild( new_inline );
+                curr_line.addChild(new_inline);
                 
                 
                 // calc new height of the line
                 // don't count the inline towards the line height and
                 // line baseline if it's a floating inline.
-                if ( !LayoutUtil.isFloated( new_inline, c ) ) {
-                    if ( !LayoutUtil.isFloatedBlock( new_inline.node, c ) ) {
+                if (!LayoutUtil.isFloated(new_inline, c)) {
+                    if (!LayoutUtil.isFloatedBlock(new_inline.getNode(), c)) {
                         adjustLineHeight(curr_line, new_inline);
                     }
                 }
@@ -178,50 +167,50 @@ public class InlineLayout extends BoxLayout {
                 remaining_width = remaining_width - new_inline.width;
                 
                 // if the last inline was at the end of a line, then go to next line
-                if ( new_inline.break_after ) {
+                if (new_inline.break_after) {
                     // then remaining_width = max_width
                     remaining_width = bounds.width;
                     // save the line
-                    saveLine( curr_line, prev_line, elem, bounds.width, bounds.x, c, block , false);
+                    saveLine(curr_line, prev_line, elem, bounds.width, bounds.x, c, block, false);
                     // increase bounds height to account for the new line
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
-                    curr_line = newLine(box,bounds,prev_line);
-                    remaining_width = FloatUtil.adjustForTab( c, curr_line, remaining_width );
+                    curr_line = newLine(box, bounds, prev_line);
+                    remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
                 }
                 
                 
                 // set the inline to use for left alignment
-                if ( !LayoutUtil.isFloated( new_inline, c ) ) {
+                if (!LayoutUtil.isFloated(new_inline, c)) {
                     prev_align_inline = new_inline;
                 }
-                
+
                 prev_inline = new_inline;
             }
-            
-            
-            current_node = InlineUtil.nextTextNode( inline_node_list );
-            if(!Configuration.isTrue("xr.layout.whitespace.experimental",false)) {
-                TextUtil.stripWhitespace( c, current_node, elem );
+
+
+            current_node = InlineUtil.nextTextNode(inline_node_list);
+            if (!Configuration.isTrue("xr.layout.whitespace.experimental", false)) {
+                TextUtil.stripWhitespace(c, current_node, elem);
             }
         }
         
         // save the final line
-        saveLine( curr_line, prev_line, elem, bounds.width, bounds.x, c, block , true);
-        finishBlock(block,curr_line,bounds);
+        saveLine(curr_line, prev_line, elem, bounds.width, bounds.x, c, block, true);
+        finishBlock(block, curr_line, bounds);
         return block;
     }
-    
+
     private LineBox newLine(Box box, Rectangle bounds, LineBox prev_line) {
         LineBox curr_line = new LineBox();
-        if(prev_line != null) {
+        if (prev_line != null) {
             curr_line.setParent(prev_line.getParent());
         } else {
             curr_line.setParent(box);
         }
         curr_line.x = bounds.x;
         curr_line.width = 0;
-        if(prev_line != null) {
+        if (prev_line != null) {
             curr_line.y = prev_line.y + prev_line.height;
         }
         return curr_line;
@@ -229,50 +218,50 @@ public class InlineLayout extends BoxLayout {
 
 
     private void validateBounds(Rectangle bounds) {
-        if(bounds.width <= 0) {
+        if (bounds.width <= 0) {
             bounds.width = 1;
             XRLog.exception("width < 1");
         }
     }
 
-    
+
     public void adjustLineHeight(LineBox curr_line, InlineBox new_inline) {
         // u.p("calcing new height of line");
-        if ( new_inline.height + new_inline.y > curr_line.height ) {
+        if (new_inline.height + new_inline.y > curr_line.height) {
             curr_line.height = new_inline.height + new_inline.y;
         }
-        if ( new_inline.baseline > curr_line.baseline ) {
+        if (new_inline.baseline > curr_line.baseline) {
             curr_line.baseline = new_inline.baseline;
         }
     }
-     
-    
+
+
     public boolean isEndOfBlock(Context c, Node current_node, InlineBox prev_inline) {
         // replaced elements aren't split, so done with this one
-        if ( LayoutUtil.isReplaced(c, current_node ) ) {
+        if (LayoutUtil.isReplaced(c, current_node)) {
             return true;
         }
-        if ( LayoutUtil.isFloatedBlock( current_node, c ) ) {
+        if (LayoutUtil.isFloatedBlock(current_node, c)) {
             return true;
         }
-        if ( c.getRenderingContext().getLayoutFactory().isBreak( current_node ) ) {
+        if (c.getRenderingContext().getLayoutFactory().isBreak(current_node)) {
             return true;
         }
         // if no more unused text in this node
         // u.p("looking for skip to next node");
-        if(Configuration.isTrue("xr.layout.whitespace.experimental",false)) {
-            if ( prev_inline.end_index >= prev_inline.getMasterText().length()) {
+        if (Configuration.isTrue("xr.layout.whitespace.experimental", false)) {
+            if (prev_inline.end_index >= prev_inline.getMasterText().length()) {
                 return true;
             }
         } else {
-            if ( prev_inline.end_index >= current_node.getNodeValue().length() ) {
+            if (prev_inline.end_index >= current_node.getNodeValue().length()) {
                 // then break
                 return true;
             }
         }
         return false;
     }
-    
+
     public void finishBlock(Box block, LineBox curr_line, Rectangle bounds) {
         bounds.height += curr_line.height;
         block.width = bounds.width;
@@ -282,26 +271,26 @@ public class InlineLayout extends BoxLayout {
     }
 
     /**
-    * Get the longest inline possible.
-    *
-    * @param c                 PARAM
-    * @param node              PARAM
-    * @param avail             PARAM
-    * @param max_width         PARAM
-    * @param line              PARAM
-    * @param prev              PARAM
-    * @param containing_block  PARAM
-    * @param prev_align        PARAM
-    * @return                  Returns
-    */
-    private InlineBox calculateInline( Context c, Node node, int avail, int max_width,
-            LineBox line, InlineBox prev, Element containing_block, InlineBox prev_align ) {
-                
-        
+     * Get the longest inline possible.
+     *
+     * @param c                PARAM
+     * @param node             PARAM
+     * @param avail            PARAM
+     * @param max_width        PARAM
+     * @param line             PARAM
+     * @param prev             PARAM
+     * @param containing_block PARAM
+     * @param prev_align       PARAM
+     * @return Returns
+     */
+    private InlineBox calculateInline(Context c, Node node, int avail, int max_width,
+                                      LineBox line, InlineBox prev, Element containing_block, InlineBox prev_align) {
+
+
         // calculate the starting index
         int start = 0;
         // if this is another box from the same node as the previous one
-        if ( prev != null && prev.node == node ) {
+        if (prev != null && prev.getNode() == node) {
             start = prev.end_index;
         }
         // get the text of the node
@@ -311,119 +300,121 @@ public class InlineLayout extends BoxLayout {
         // this must be done before any measuring since it might change the
         // size of the text
         //u.p("text from the node = \"" + text + "\"");
-        text = TextUtil.transformText( c, node, text );
+        text = TextUtil.transformText(c, node, text);
 
         // u.p("calculating inline: text = " + text);
         // u.p("avail space = " + avail + " max = " + max_width + "   start index = " + start);
 
         // get the current font. required for sizing
         CalculatedStyle style = c.css.getStyle(LineBreaker.getElement(node));
-        Font font = FontUtil.getFont( c, style, node );
+        Font font = FontUtil.getFont(c, style, node);
         
         // handle each case
-        if ( LayoutUtil.isReplaced(c, node ) ) {
+        if (LayoutUtil.isReplaced(c, node)) {
             //u.p("is replaced");
-            return LineBreaker.generateReplacedInlineBox( c, node, avail, prev, text, prev_align, font );
+            return LineBreaker.generateReplacedInlineBox(c, node, avail, prev, text, prev_align, font);
         }
         
         //u.p("calc inline on node : " + node);
-        if ( LayoutUtil.isFloatedBlock( node, c ) ) {
+        if (LayoutUtil.isFloatedBlock(node, c)) {
             //u.p("calcinline: is floated block");
-            return FloatUtil.generateFloatedBlockInlineBox( c, node, avail, prev, text, prev_align, font );
+            return FloatUtil.generateFloatedBlockInlineBox(c, node, avail, prev, text, prev_align, font);
         }
-        
-        if ( LineBreaker.isFirstLetter( c, node, start ) ) {
+
+        if (LineBreaker.isFirstLetter(c, node, start)) {
             //u.p("is first letter");
-            return LineBreaker.generateFirstLetterInlineBox( c, node, start, text, prev, prev_align, avail);
+            return LineBreaker.generateFirstLetterInlineBox(c, node, start, text, prev, prev_align, avail);
         }
-        
-        if ( c.getRenderingContext().getLayoutFactory().isBreak( node ) ) {
+
+        if (c.getRenderingContext().getLayoutFactory().isBreak(node)) {
             // u.p("is break");
-            return LineBreaker.generateBreakInlineBox( node );
+            return LineBreaker.generateBreakInlineBox(node);
         }        
         
         // new whitespace code
-        if(Configuration.isTrue("xr.layout.whitespace.experimental",false)) {
+        if (Configuration.isTrue("xr.layout.whitespace.experimental", false)) {
             WhitespaceStripper whitespace = new WhitespaceStripper();
             // u.p("calling whitespace stripper on node: " + node);
             // u.p(" prev = " + prev);
             return whitespace.createInline(c, node, text, prev, prev_align, avail, max_width, font);
-            
+
         } else {
-        
-            if ( LineBreaker.isWhitespace( c, containing_block ) ) {
+
+            if (LineBreaker.isWhitespace(c, containing_block)) {
                 // u.p("is whitespace");
-                return LineBreaker.generateWhitespaceInlineBox( c, node, start, prev, text, prev_align, font );
+                return LineBreaker.generateWhitespaceInlineBox(c, node, start, prev, text, prev_align, font);
             }
             
             // ==== unbreakable long word =====
-            if ( LineBreaker.isUnbreakableLine( c, node, start, text, avail, font ) ) {
+            if (LineBreaker.isUnbreakableLine(c, node, start, text, avail, font)) {
                 // u.p("is unbreakable");
-                return LineBreaker.generateUnbreakableInlineBox( c, node, start, text, prev, prev_align, font );
+                return LineBreaker.generateUnbreakableInlineBox(c, node, start, text, prev, prev_align, font);
             }
             
             // rest of this string can fit on the line
-            if ( LineBreaker.canFitOnLine( c, node, start, text, avail, font ) ) {
+            if (LineBreaker.canFitOnLine(c, node, start, text, avail, font)) {
                 // u.p("can fit on line");
-                return LineBreaker.generateRestOfTextNodeInlineBox( c, node, start, text, prev, prev_align, font );
+                return LineBreaker.generateRestOfTextNodeInlineBox(c, node, start, text, prev, prev_align, font);
             }
             
             // normal multiline break
             // u.p("normal multi line break");
-            return LineBreaker.generateMultilineBreak( c, node, start, text, prev, prev_align, avail );
-        
+            return LineBreaker.generateMultilineBreak(c, node, start, text, prev, prev_align, avail);
+
         }
-        
+
     }
-    
-    
-    
+
+
     /**
-    * Description of the Method
-    *
-    * @param line_to_save      PARAM
-    * @param prev_line         PARAM
-    * @param containing_block  PARAM
-    * @param width             PARAM
-    * @param x                 PARAM
-    * @param c                 PARAM
-    * @param block             PARAM
-    */
-    private void saveLine( LineBox line_to_save, LineBox prev_line, Element containing_block, int width, int x,
-            Context c, Box block, boolean last ) {
+     * Description of the Method
+     *
+     * @param line_to_save     PARAM
+     * @param prev_line        PARAM
+     * @param containing_block PARAM
+     * @param width            PARAM
+     * @param x                PARAM
+     * @param c                PARAM
+     * @param block            PARAM
+     */
+    private void saveLine(LineBox line_to_save, LineBox prev_line, Element containing_block, int width, int x,
+                          Context c, Box block, boolean last) {
         c.setFirstLine(false);
         // account for text-align
-        TextAlign.adjustTextAlignment(c,line_to_save, containing_block, width, x, last);
+        TextAlign.adjustTextAlignment(c, line_to_save, containing_block, width, x, last);
         // set the y
         line_to_save.y = prev_line.y + prev_line.height;
         
         // new float code
         line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(line_to_save);
-        
-        
-        VerticalAlign.setupVerticalAlign( c, containing_block, line_to_save );
-        block.addChild( line_to_save );
+
+
+        VerticalAlign.setupVerticalAlign(c, containing_block, line_to_save);
+        block.addChild(line_to_save);
     }
-    
-    
+
+
     public Renderer getRenderer() {
         return new InlineRenderer();
     }
-    
+
     public void restyle(Context ctx, Box box) {
-        super.restyle(ctx,box);
-        if(box instanceof InlineBox) {
-            TextDecoration.setupTextDecoration(ctx, box.node, (InlineBox)box );
+        super.restyle(ctx, box);
+        if (box instanceof InlineBox) {
+            TextDecoration.setupTextDecoration(ctx, box.getNode(), (InlineBox) box);
         }
     }
 
 
-    
 }
+
 /*
 * $Id$
 *
 * $Log$
+* Revision 1.35  2004/12/05 00:48:57  tobega
+* Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
+*
 * Revision 1.34  2004/12/01 01:57:00  joshy
 * more updates for float support.
 *
