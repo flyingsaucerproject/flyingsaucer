@@ -20,120 +20,84 @@
  */
 package com.pdoubleya.xhtmlrenderer.css;
 
-import java.util.*;
-import org.w3c.dom.css.CSSStyleDeclaration;
+import org.joshy.html.Context;
+
 
 /**
  * A property read from a CSS2 style declaration. The property gives you access
- * to the value (initial, specified, computed, actual).
+ * to the value (initial, specified, computed, actual). An <code>XRProperty</code>
+ * should be considered immutable, even though it is possible to find the <code>CSSValue</code>
+ * instance associated with the property and manipulate it. When you have an
+ * <code>XRProperty</code> instance, you can either retrieve the value as
+ * specified by the user in the CSS using {@link #specifiedValue()}, or the
+ * value as resolved for the current environment using {@link #actualValue()}.
+ * If the specified value uses relative units (like a percentage), {@link
+ * #resolveValue(Context, XRElement)} must be called before attempting to lookup
+ * the {@link #actualValue()}.
  *
- * @author    Patrick Wright
- * @created   July 30, 2004 
+ * @author   Patrick Wright
  */
 // ASK: should Properties have a reference back to their rules?
-// ASK: should Properties have a reference back to their stylesheets? 
+// ASK: should Properties have a reference back to their stylesheets?
 public interface XRProperty {
-
-  /**
-   * The name of this property--as supplied in stylesheet, should also be a
-   * valid property name in CSSName
-   *
-   * @return   Returns
-   */
-  String propertyName();
-
-
-  /**
-   * Returns true if this property type ("font-family", "margin-top") inherits
-   * its value from the parent element of the element to which it applies. Thus,
-   * if this were an instance of a "margin-top" property, would return false; if
-   * it were a "font-family", would return true.
-   *
-   * @return   Returns
-   */
-  boolean propertyValueInherits();
+    /**
+     * The name of this property--as supplied in stylesheet, should also be a
+     * valid property name in CSSName
+     *
+     * @return   See desc.
+     */
+    String propertyName();
 
 
-  /**
-   * Returns true if this specific property has had its value inherited. To
-   * check if the value for this property was set to "inherit", you have to
-   * check the XRValue itself.
-   *
-   * @return   The inherited value
-   */
-  boolean isInherited();
+    /**
+     * The value as specified by stylesheet (CSS2 6.1.1)--if the value for the
+     * property is relative (e.g. ems or ex values), returns an <code>XRValue</code>
+     * with the relative, not computed, value. Generally this is only useful for
+     * debugging.
+     *
+     * @return   See desc.
+     */
+    XRValue specifiedValue();
+
+    // TODO: think we still need the computed value--
+    // according to the spec, that is used for relative values
+    // that depend on parent element values--can't use actual value (PWW 15/08/04)
+
+    /**
+     * The actual value--the computed value when limited by the current
+     * presentation environment. (CSS2 6.1.3) If the value in the stylesheet was
+     * relative, you must call {@link #resolveValue(Context, XRElement)} before
+     * calling this, otherwise the actual value returned here is just the
+     * specified value. Although this separation is inconvenient, it saves
+     * having to pass a <code>Context</code> and <code>XRElement</code> on each
+     * call to this method.
+     *
+     * @return   See desc.
+     */
+    XRValue actualValue();
 
 
-  /**
-   * The initial value of this property--this is the same regardless of
-   * sheets--it is part of specification.
-   *
-   * @return   Returns
-   */
-  XRValue initialValue();
+    /**
+     * If the property has a relative value that has not been computed, computes
+     * it. After the property value is resolved, {@link #actualValue()} will
+     * return meaningful results. Values are resolved relative to the current
+     * {@link XRElement} context (to which this property belongs), or to the
+     * parent {@link XRElement} context.
+     *
+     * @param context      The <code>Context</code> in which properties are
+     *      resolved.
+     * @param elemContext  The <code>XRElement</code> to which this property is
+     *      associated.
+     */
+    void resolveValue( Context context, XRElement elemContext );
 
-
-  /**
-   * The value as specified by stylesheet (CSS2 6.1.1)
-   *
-   * @return   Returns
-   */
-  XRValue specifiedValue();
-
-
-  /**
-   * The value as computed--if specified was relative, this value will be
-   * absolute; otherwise, the same as the specified value (CSS2 6.1.2)
-   *
-   * @return   Returns
-   */
-  XRValue computedValue();
-
-
-  /**
-   * The actual value--the computed value when limited by the current
-   * presentation environment. (CSS2 6.1.3)
-   *
-   * @return   Returns
-   */
-  XRValue actualValue();
-
-
-  /**
-   * Returns the text for the property.
-   *
-   * @return   Returns
-   */
-  String cssText();
-
-
-  /**
-   * The numeric sequence in which this property was found in the
-   * declaration/rule
-   *
-   * @return   Returns
-   */
-  int sequenceInRule();
-
-
-  /**
-   * Returns true if the property has an absolute value, or a relative value
-   * that has been correctly computed.
-   *
-   * @return   The resolved value
-   */
-  boolean isResolved();
-
-
-  /**
-   * If the property has a relative value that has not been computed, computes it.
-   * After the property value is resolved, computedValue() and actualValue() will
-   * return meaningful results. Values are resolved relative to the current XRElement
-   * context (to which this property belongs), or to the parent XRElement context.
-   *
-   * @return   Returns
-   */
-  void resolveValue(XRElement elemContext);
+    /**
+     * Deep copy operation. However, any contained SAC instances are not
+     * deep-copied.
+     *
+     * @return   A copy of this <code>XRProperty</code>.
+     */
+    XRProperty copyOf();
 }// end interface
 
 

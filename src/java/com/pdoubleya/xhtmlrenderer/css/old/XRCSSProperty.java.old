@@ -1,9 +1,0 @@
-package org.pdoubleya.xhtmlrenderer.css;
-
-
-
-public interface XRCSSProperty {
-  /** The value for this property */
-  XRCSSValue getValue();  
-  
-}

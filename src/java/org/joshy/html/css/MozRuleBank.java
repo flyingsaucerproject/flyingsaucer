@@ -25,15 +25,33 @@ public class MozRuleBank implements RuleBank {
 
     private Map id_map, class_map, element_map, all_map;
     private RuleFinder rb = new RuleFinder();
+    
+    private List parsedElements;
+    
     public MozRuleBank() {
         id_map = new HashMap();
         class_map = new HashMap();
         element_map = new HashMap();
         all_map = new HashMap();
+        parsedElements = new ArrayList();
     }
     
-    /* =========================== add rule implementation =========================== */
-    public void addRule(JStyle rule) {
+    /** CLN: added (PWW 13/08/04)
+     * replaces style_nodes.contains(elem);
+    */
+    public boolean wasElementParsed(Element elem) {
+      return this.parsedElements.contains(elem);
+    } 
+
+    /** CLN: added (PWW 13/08/04) 
+     * replaces style_nodes.add(elem);
+    */
+    public void elementWasParsed(Element elem) {
+      this.parsedElements.add(elem);
+    }     
+
+    /* =========================== add style rule implementation =========================== */
+    public void addStyleRule(JStyle rule) {
         String key = null;
         for(int i=0; i<rule.selector_list.getLength(); i++) {
             key = null;

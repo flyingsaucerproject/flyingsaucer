@@ -20,9 +20,8 @@
  */
 package com.pdoubleya.xhtmlrenderer.css;
 
-import java.util.*;
 import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSStyleSheet;
+
 
 /**
  * Interface for CSS rules (@ rules, style rules). An XRRule is also a DOM
@@ -31,39 +30,37 @@ import org.w3c.dom.css.CSSStyleSheet;
  * iff it contains only properties marked !important
  *
  * @author    Patrick Wright
- * @created   August 1, 2004
+ *
  */
-public interface XRSheetRule extends XRRuleSet, CSSRule {
+public interface XRSheetRule extends XRRule, CSSRule {
 
-  /**
-   * Returns the stylesheet for this rule...rules always exist in the context of
-   * a sheet.
-   *
-   * @return   The styleSheet value
-   */
-  XRStyleSheet getStyleSheet();
-
-
-  /**
-   * Returns true if this rule is restricted to properties marked "!important".
-   * Normally "!important" properties may be mixed freely with non-important
-   * ones; however, in XR we separate these out to facilitate the cascade logic,
-   * effectively making two rules with the same selector, one important (higher
-   * priority) and one not.
-   *
-   * @return   The important value
-   */
-  boolean isImportant();
-
-  
-  /**
-   * The numeric sequence in which this rule was found in the stylesheet.
-   *
-   * @return   Returns
-   */
-  int sequenceInStyleSheet();
-
-}// end interface
+    /**
+     * Returns the stylesheet for this rule...rules always exist in the context
+     * of a sheet.
+     *
+     * @return   The styleSheet value
+     */
+    XRStyleSheet getStyleSheet();
 
 
-// :folding=indent:collapseFolds=2:
+    /**
+     * Returns true if this rule is restricted to properties marked
+     * "!important". Normally "!important" properties may be mixed freely with
+     * non-important ones; however, in XR we separate these out to facilitate
+     * the cascade logic, effectively making two rules with the same selector,
+     * one important (higher priority) and one not.
+     *
+     * @return   The important value
+     */
+    boolean isImportant();
+
+
+    /**
+     * The numeric sequence in which this rule was found in the stylesheet.
+     *
+     * @return   Returns
+     */
+    int sequenceInStyleSheet();
+
+}
+

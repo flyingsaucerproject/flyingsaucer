@@ -20,447 +20,571 @@
  */
 package com.pdoubleya.xhtmlrenderer.css.impl;
 
-import java.lang.reflect.*;
+import com.pdoubleya.xhtmlrenderer.css.constants.ValueConstants;
+import java.awt.Color;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.logging.*;
 import org.w3c.dom.DOMException;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.RGBColor;
-import org.w3c.dom.css.Rect;
 import org.w3c.dom.css.Counter;
-import org.w3c.dom.css.CSSValueList;
+import org.w3c.dom.css.Rect;
 
-import org.joshy.html.box.Box;
+import com.pdoubleya.xhtmlrenderer.css.XRElement;
+import com.pdoubleya.xhtmlrenderer.css.XRValue;
+import com.pdoubleya.xhtmlrenderer.css.constants.CSSName;
+import com.pdoubleya.xhtmlrenderer.css.util.ConversionUtil;
+import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
 
-import com.pdoubleya.xhtmlrenderer.css.*;
+import org.joshy.html.Context;
+import org.joshy.html.util.FontUtil;
+
 
 /**
- * A primitive value assigned to an XRProperty. XRValue allows for easy type conversions, relative
- * value derivation, etc. The class is intended to "wrap" a CSSValue from a SAC CSS parser.
- *
- * Note that not all type conversions make sense, and that some won't make sense until 
- * relative values are resolved. You should check with the cssSACPrimitiveValueType() to see
- * if the value conversion you are requesting is rational.
- *
- * STATUS: this class is currently mostly unfinished--there is lots to be done for type
- * conversion, computed value derivation, etc. Currently proof of concept for the class design.
+ * A primitive value assigned to an XRProperty. XRValue allows for easy type
+ * conversions, relative value derivation, etc. The class is intended to "wrap"
+ * a CSSValue from a SAC CSS parser. Note that not all type conversions make
+ * sense, and that some won't make sense until relative values are resolved. You
+ * should check with the cssSACPrimitiveValueType() to see if the value
+ * conversion you are requesting is rational. STATUS: this class is currently
+ * mostly unfinished--there is lots to be done for type conversion, computed
+ * value derivation, etc. Currently proof of concept for the class design.
  *
  * @author    Patrick Wright
- * @created   August 1, 2004
+ *
  */
 public class XRValueImpl implements XRValue {
-  // ASK: need to clarify if this class is for both List and Primitives, or just primitives...
+    /** Logger instance used for debug messages from this class. */
+    private final static Logger sDbgLogger = LoggerUtil.getDebugLogger( XRValueImpl.class );
 
-  /** The DOM CSSPrimitiveValue we are given from the Parse */
-  private CSSPrimitiveValue _domCSSPrimitiveValue;
+    // ASK: need to clarify if this class is for both List and Primitives, or just primitives...
 
-  /** The value as text */
-  private String _domValueText;
+    /** The DOM CSSValue we are given from the Parse */
+    private CSSValue _domCSSValue;
 
-  /** The priority, either "" or "important" */
-  private String _domPriority;
-  
-  /** Type descriptions--a crude approximation taken by scanning CSSPrimitiveValue statics */
-  private static final List TYPE_DESCRIPTIONS;  
+    /** The value as text */
+    private String _domValueTextClean;
 
+    /** The priority, either "" or "important" */
+    private String _domPriority;
 
-  /**
-   * Constructor for the XRValueImpl object
-   *
-   * @param domCSSValue  PARAM
-   * @param domPriority  PARAM
-   */
-  public XRValueImpl( CSSPrimitiveValue domCSSValue, String domPriority ) {
-    _domCSSPrimitiveValue = domCSSValue;
-    _domValueText = domCSSValue.getCssText();
-    _domPriority = domPriority;
-  }
+    /** CLEANUP: is this needed (PWW 13/08/04) */
+    private float _asFloat;
+
+    /** CLEANUP: is this needed (PWW 13/08/04) */
+    private boolean _requiresComputation;
 
 
-  /**
-   * The value as a double; returns Double.MIN_VALUE (as double) if there is an error.
-   *
-   * @return   Returns
-   */
-  public double asDouble() {
-    double d = new Double(Double.MIN_VALUE).doubleValue();
-    try {
-      d = Double.valueOf(_domValueText).doubleValue();    
-     } catch (Exception ex) {
-       System.err.println("Value '" + _domValueText + "' is not a valid double." );
-     } 
-    return d;
-  }
-
-
-  /**
-   * The value as a float; returns Float.MIN_VALUE (as float) if there is an error.
-   *
-   * @return   Returns
-   */
-  public float asFloat() {
-    float f = new Float(Float.MIN_VALUE).floatValue();
-    try {
-      f = Float.valueOf(_domValueText).floatValue();    
-     } catch (Exception ex) {
-       System.err.println("Value '" + _domValueText + "' is not a valid float." );
-     } 
-    return f;
-  }
-
-
-  /**
-   * The value as a double; returns Integer.MIN_VALUE (as int) if there is an error.
-   *
-   * @return   Returns
-   */
-  public int asInteger() {
-    int i = new Integer(Integer.MIN_VALUE).intValue();
-    try {
-      i = Integer.valueOf(_domValueText).intValue();    
-     } catch (Exception ex) {
-       System.err.println("Value '" + _domValueText + "' is not a valid integer." );
-     } 
-    return i;
-  }
-
-  /**
-   * value as a string...same as cssText() but kept for parallel with other as<type>... methods
-   *
-   * @return   Returns
-   */
-  public String asString() {
-    return cssText();
-  }
-
-  /**
-   * value as a string...same as cssText() but kept for parallel with other as<type>... methods
-   *
-   * @return   Returns
-   */
-  public String[] asStringArray() {
-    return cssText().split(",");
-  }
-
-/* CLEAN
-   public Iterator cssValues() {
-    List list = new ArrayList();
-    CSSValueList vlist = (CSSValueList)_domCSSPrimitiveValue;
-    for ( int i = 0, len = vlist.getLength(); i < len; i++ ) {
-      list.add( vlist.item( i ) );
+    /**
+     * Constructor for the XRValueImpl object
+     *
+     * @param domCSSValue  PARAM
+     * @param domPriority  PARAM
+     */
+    public XRValueImpl( CSSValue domCSSValue, String domPriority ) {
+        _domCSSValue = domCSSValue;
+        _domValueTextClean = getCssTextClean();
+        _domPriority = domPriority;
+        if ( ValueConstants.isNumber(cssSACPrimitiveValueType()) ) {
+            if ( shouldConvertToPixels() ) {
+                _asFloat = convertValueToPixels();
+            } else {
+                _asFloat = new Float( _domValueTextClean ).floatValue();
+            }
+        }
     }
-    return list.iterator();
-  } */
 
 
-  // the CSSPrimitiveValue type if we are wrapping a CSSPrimitiveValue, type
-  // CSSPrimitiveValue.CSS_UNKNOWN if we are not wrapping a primitive; best to
-  // check if we are wrapping a primitive first
-  /**
-   * Description of the Method
-   *
-   * @return   Returns
-   */
-  public short cssSACPrimitiveValueType() {
-    return _domCSSPrimitiveValue.getPrimitiveType();
-  }
-
-  /**
-   * Description of the Method
-   *
-   * @return   Returns
-   */
-  public short getPrimitiveType() {
-    return _domCSSPrimitiveValue.getPrimitiveType();
-  }  
-
-  /**
-   * Description of the Method
-   *
-   * @return   Returns
-   */
-  public String cssText() {
-    return _domCSSPrimitiveValue.getCssText();
-  }
-  
-  /**
-   * Description of the Method
-   *
-   * @return   Returns
-   */
-  public String getStringValue() {
-    return _domCSSPrimitiveValue.getStringValue();
-  }
-
-  /**
-   * Description of the Method
-   *
-   * @return   Returns
-   */
-  public void setStringValue(short index, String s) {
-    _domCSSPrimitiveValue.setStringValue(index, s);
-  }
-
-  /**
-   * Description of the Method
-   *
-   * @return   Returns
-   */
-  public float getFloatValue(short unitType) {
-    return _domCSSPrimitiveValue.getFloatValue(unitType);
-  }
-
-  /**
-   * Description of the Method
-   *
-   * @return   Returns
-   */
-  public void setFloatValue(short unitType, float val) {
-    _domCSSPrimitiveValue.setFloatValue(unitType, val);
-  }
-
-  /**
-   * Description of the Method
-   *
-   * @return   Returns
-   */
-  public Counter getCounterValue() {
-    return _domCSSPrimitiveValue.getCounterValue();
-  }
-
-  /**
-   * Description of the Method
-   *
-   * @return   Returns
-   */
-  public RGBColor getRGBColorValue() {
-    return _domCSSPrimitiveValue.getRGBColorValue();
-  }
-
-  /**
-   * Description of the Method
-   *
-   * @return   Returns
-   */
-  public Rect getRectValue() {
-    return _domCSSPrimitiveValue.getRectValue();
-  }
-
-  /**
-   * Description of the Method
-   *
-   * @return   Returns
-   */
-  public boolean forcedInherit() {
-    return _domCSSPrimitiveValue.getCssText().indexOf( "inherit" ) >=0;
-  }
-
-
-  /**
-   * A text representation of the value, for dumping
-   *
-   * @return   Returns
-   */
-  public String toString() {
-    return getCssText() + " (" + cssType() + "--" + getCssValueTypeDesc() + ")\n" +
-        "   " + ( isImportant() ? "" : "not " ) + "important" + "\n" +
-        "   " + ( forcedInherit() ? "" : "not " ) + "inherited";
-  }
-
-
-  /**
-   * Sets the cssText attribute of the XRValueImpl object
-   *
-   * @param str               The new cssText value
-   * @exception DOMException  Throws
-   */
-  public void setCssText( String str )
-    throws DOMException {
-    _domCSSPrimitiveValue.setCssText( str );
-  }
-
-
-  /**
-   * Returns true if the specified value was absolute (even if we have a computed
-   * value for it)
-   *
-   * @return   The absoluteUnit value
-   */
-  public boolean isAbsoluteUnit() {
-    // TODO: check this list...
-    // WARN: this will fail if not a primitive value
-    switch ( ( (CSSPrimitiveValue)_domCSSPrimitiveValue ).getPrimitiveType() ) {
-        // relative length or size
-        case CSSPrimitiveValue.CSS_EMS:
-        case CSSPrimitiveValue.CSS_EXS:
-        case CSSPrimitiveValue.CSS_PX:
-        case CSSPrimitiveValue.CSS_PERCENTAGE:
-          return false;
-          
-        // length
-        case CSSPrimitiveValue.CSS_IN:
-        case CSSPrimitiveValue.CSS_CM:
-        case CSSPrimitiveValue.CSS_MM:
-        case CSSPrimitiveValue.CSS_PT:
-        case CSSPrimitiveValue.CSS_PC:
-
-        // color
-        case CSSPrimitiveValue.CSS_RGBCOLOR:
-
-        // ?
-        case CSSPrimitiveValue.CSS_ATTR:
-        case CSSPrimitiveValue.CSS_DIMENSION:
-        case CSSPrimitiveValue.CSS_IDENT:
-        case CSSPrimitiveValue.CSS_NUMBER:
-        case CSSPrimitiveValue.CSS_RECT:
-
-        // counters
-        case CSSPrimitiveValue.CSS_COUNTER:
-
-        // angles
-        case CSSPrimitiveValue.CSS_DEG:
-        case CSSPrimitiveValue.CSS_GRAD:
-        case CSSPrimitiveValue.CSS_RAD:
-
-        // aural - freq
-        case CSSPrimitiveValue.CSS_HZ:
-        case CSSPrimitiveValue.CSS_KHZ:
-
-        // time
-        case CSSPrimitiveValue.CSS_S:
-        case CSSPrimitiveValue.CSS_MS:
-
-        // URI
-        case CSSPrimitiveValue.CSS_URI:
-
-        case CSSPrimitiveValue.CSS_STRING:
-          return true;
-          
-        case CSSPrimitiveValue.CSS_UNKNOWN:
-        default:
-          return false;
+    /**
+     * Deep copy operation. However, any contained SAC instances are not
+     * deep-copied.
+     *
+     * @return   Returns
+     */
+    public XRValue copyOf() {
+        return new XRValueImpl( _domCSSValue, _domPriority );
     }
-  }
 
 
-  /**
-   * Gets the primitiveType attribute of the XRValueImpl object
-   *
-   * @return   The primitiveType value
-   */
-  public boolean isPrimitiveType() {
-    return getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE;
-  }
-
-
-  /**
-   * Gets the valueList attribute of the XRValueImpl object
-   *
-   * @return   The valueList value
-   */
-  public boolean isValueList() {
-    return getCssValueType() == CSSValue.CSS_VALUE_LIST;
-  }
-
-
-  /**
-   * Gets the cssText attribute of the XRValueImpl object
-   *
-   * @return   The cssText value
-   */
-  public String getCssText() {
-    return _domCSSPrimitiveValue.getCssText();
-  }
-
-
-  /**
-   * Gets the cssValueType attribute of the XRValueImpl object
-   *
-   * @return   The cssValueType value
-   */
-  public short getCssValueType() {
-    return _domCSSPrimitiveValue.getCssValueType();
-  }
-
-
-  /**
-   * Gets the cssValueTypeDesc attribute of the XRValueImpl object
-   *
-   * @return   The cssValueTypeDesc value
-   */
-  public String getCssValueTypeDesc() {
-    switch ( getCssValueType() ) {
-        case CSS_CUSTOM:
-          return "CSS_CUSTOM";
-        case CSS_INHERIT:
-          return "CSS_INHERIT";
-        case CSS_PRIMITIVE_VALUE:
-          return "CSS_PRIMITIVE_VALUE";
-        case CSS_VALUE_LIST:
-          return "CSS_VALUE_LIST";
-        default:
-          return "UNKNOWN";
+    /**
+     * The value as a float; returns Float.MIN_VALUE (as float) if there is an
+     * error.
+     *
+     * @return   Returns
+     */
+    public float asFloat() {
+        float f = new Float( Float.MIN_VALUE ).floatValue();
+        try {
+            f = _asFloat;
+        } catch ( Exception ex ) {
+            System.err.println( "Value '" + _domValueTextClean + "' is not a valid float." );
+        }
+        return f;
     }
-  }
 
 
-  /**
-   * Gets the important attribute of the XRValueImpl object
-   *
-   * @return   The important value
-   */
-  public boolean isImportant() {
-    return _domPriority != null && _domPriority.equals( IMPORTANT );
-  }
+    /**
+     * value as a string...same as getStringValue() but kept for parallel with
+     * other as <type>... methods
+     *
+     * @return   Returns
+     */
+    public String asString() {
+        return getStringValue();
+    }
 
-  /**
-   * A text representation of the CSS type for this value.
-   *
-   * @return   Returns
-   */
-  public String cssType() {
-    String desc = (String)TYPE_DESCRIPTIONS.get(( (CSSPrimitiveValue)_domCSSPrimitiveValue ).getPrimitiveType());
-    if ( desc == null ) desc = "{UNKNOWN VALUE TYPE}";
-    return desc;
-  }
-  
-  public static void strings() {
-    
-  }
 
-  static {
-    SortedMap map = new TreeMap();
-    TYPE_DESCRIPTIONS = new ArrayList();
-    try {
-      Field fields[] = CSSPrimitiveValue.class.getFields();
-      for ( int i=0; i < fields.length; i++ ) {
-        Field f = fields[i];
-        int mod = f.getModifiers();
-        if ( Modifier.isFinal(mod) && 
-             Modifier.isStatic(mod) && 
-             Modifier.isPublic(mod) ) {
-               
-          Short val = (Short)f.get(null);
-          String name = f.getName();
-          if ( name.startsWith("CSS_"))
-            if ( !name.equals("CSS_INHERIT") &&
-                 !name.equals("CSS_PRIMITIVE_VALUE") &&
-                 !name.equals("CSS_VALUE_LIST") &&
-                 !name.equals("CSS_CUSTOM")) 
-                 
-                 map.put(val, name.substring("CSS_".length())); 
-        }        
-      }
-      Iterator iter = map.values().iterator();
-      while ( iter.hasNext()) {
-        TYPE_DESCRIPTIONS.add(iter.next()); 
-      }
-    } catch ( Exception ex ) {
-      ex.printStackTrace();
-    }    
-  }
-} // end class
+    /**
+     * value as a string...same as cssText() but kept for parallel with other as
+     * <type>... methods
+     *
+     * @return   Returns
+     */
+    public String[] asStringArray() {
+        return _domCSSValue.getCssText().split( "," );
+    }
+
+
+    /**
+     * The value as a CSSValue; changes to the CSSValue are not tracked. Any
+     * changes to the properties should be made through the XRProperty and
+     * XRValue classes.
+     *
+     * @return   Returns
+     */
+    public CSSValue cssValue() {
+        return _domCSSValue;
+    }
+
+
+    /**
+     * See interface.
+     *
+     * @return   See desc.
+     */
+    public boolean forcedInherit() {
+        return _domCSSValue.getCssText().indexOf( INHERIT ) >= 0;
+    }
+
+
+    /**
+     * A text representation of the value, for dumping
+     *
+     * @return   Returns
+     */
+    public String toString() {
+        return getCssText() + " (" + ValueConstants.cssType(_domCSSValue.getCssValueType(), cssSACPrimitiveValueType()) + "--" + ValueConstants.getCssValueTypeDesc(cssValue()) + ")\n" +
+                "   " + ( isImportant() ? "" : "not " ) + "important" + "\n" +
+                "   " + ( forcedInherit() ? "" : "not " ) + "inherited";
+    }
+
+
+    /**
+     * Computes a relative unit (e.g. percentage) as an absolute value, using
+     * the property's XRElement context.
+     *
+     * @param ownerElement  The XRElement that has a property with this value
+     *      instance
+     * @param propName      The name of the property to which this value is
+     *      assigned; given because some relative values differ for font-size,
+     *      etc.
+     * @param context       PARAM
+     */
+    public void computeRelativeUnit( Context context, XRElement ownerElement, String propName ) {
+        if ( ValueConstants.isAbsoluteUnit(cssValue()) ) {
+            sDbgLogger.info( "Was asked to convert a relative value, but value is absolute. Call isAbsolute() first." );
+            return;
+        }
+
+        float relVal = new Float( _domValueTextClean ).floatValue();
+        float absVal = 0F;
+
+        switch ( cssSACPrimitiveValueType() ) {
+            case CSSPrimitiveValue.CSS_EMS:
+                // EM is equal to font-size of element on which it is used
+                // The exception is when ’em’ occurs in the value of
+                // the ’font-size’ property itself, in which case it refers
+                // to the font size of the parent element (spec: 4.3.2)
+                absVal = relVal * deriveFontSize( context, ownerElement, propName );
+
+                break;
+            case CSSPrimitiveValue.CSS_EXS:
+                // HACK: just to convert the value to something meaningful, using the height of the 'x' character
+                // on the default system font.
+                // To convert EMS to pixels, we need the height of the lowercase 'x' character in the current
+                // element...
+                int xHeight = FontUtil.fontXHeightForElement( context, (Element)ownerElement.domNode() );
+
+                absVal = relVal * xHeight;
+                break;
+            case CSSPrimitiveValue.CSS_PX:
+                // nothing to do...why is this case here? CLEAN
+                absVal = relVal;
+                break;
+            case CSSPrimitiveValue.CSS_PERCENTAGE:
+                // percentage depends on the property this value belongs to
+                float base = 1.0F;
+                if ( propName.equals( CSSName.BOTTOM ) ) {
+                    // TODO: need height of containing block
+                    System.err.println( "Value not available: property '" + CSSName.BOTTOM + "' as % requires height of containing block." );
+                } else if ( propName.equals( CSSName.TOP ) ) {
+                    // TODO: need height of containing block
+                    System.err.println( "Value not available: property '" + CSSName.TOP + "' as % requires height of containing block." );
+                } else if ( propName.equals( CSSName.LEFT ) ) {
+                    // TODO: need height of containing block
+                    System.err.println( "Value not available: property '" + CSSName.LEFT + "' as % requires width of containing block." );
+                } else if ( propName.equals( CSSName.RIGHT ) ) {
+                    // TODO: need height of containing block
+                    System.err.println( "Value not available: property '" + CSSName.RIGHT + "' as % requires width of containing block." );
+                } else if ( propName.equals( CSSName.HEIGHT ) ) {
+                    // TODO: need height of containing block
+                    System.err.println( "Value not available: property '" + CSSName.HEIGHT + "' as % requires height of containing block." );
+                } else if ( propName.equals( CSSName.MAX_HEIGHT ) ) {
+                    // TODO: need height of containing block
+                    System.err.println( "Value not available: property '" + CSSName.MAX_HEIGHT + "' as % requires height of containing block." );
+                } else if ( propName.equals( CSSName.MIN_HEIGHT ) ) {
+                    // TODO: need height of containing block
+                    System.err.println( "Value not available: property '" + CSSName.MIN_HEIGHT + "' as % requires height of containing block." );
+                } else if ( propName.equals( CSSName.MAX_WIDTH ) ) {
+                    // TODO: need height of containing block
+                    System.err.println( "Value not available: property '" + CSSName.MAX_WIDTH + "' as % requires width of containing block." );
+                } else if ( propName.equals( CSSName.MIN_WIDTH ) ) {
+                    // TODO: need height of containing block
+                    System.err.println( "Value not available: property '" + CSSName.MIN_WIDTH + "' as % requires width of containing block." );
+                } else if ( propName.equals( CSSName.TEXT_INDENT ) ) {
+                    // TODO: need height of containing block
+                    System.err.println( "Value not available: property '" + CSSName.TEXT_INDENT + "' as % requires width of containing block." );
+                } else if ( propName.equals( CSSName.VERTICAL_ALIGN ) ) {
+                    base = ownerElement.derivedStyle().propertyByName( context, CSSName.LINE_HEIGHT ).actualValue().asFloat();
+
+                } else if ( propName.equals( CSSName.FONT_SIZE ) ) {
+                    // same as with EM
+                    base = deriveFontSize( context, ownerElement, propName );
+                }
+                absVal = ( relVal / 100 ) * base;
+                break;
+            default:
+                // nothing to do, we only convert those listed above
+                System.err.println( "Asked to convert value from relative to absolute, don't recognize the datatype " + toString() );
+        }
+        assert( new Float( absVal ).intValue() > 0 );
+        sDbgLogger.finer( "Converted '" + propName + "' relative value of " + relVal + " (" + _domCSSValue.getCssText() + ") to absolute value of " + absVal );
+        _asFloat = absVal;
+
+        _requiresComputation = true;
+    }
+
+
+    /**
+     * HACK: this only works if the value is actually a primitve
+     *
+     * @return   The rGBColorValue value
+     */
+    public Color asColor() {
+        assert( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
+        return ConversionUtil.rgbToColor( ( (CSSPrimitiveValue)_domCSSValue ).getRGBColorValue() );
+    }
+
+
+    /**
+     * Returns true if this is a relative unit (e.g. percentage) whose value has
+     * been computed as an absolute computed value, or if by chance this is an
+     * absolute unit.
+     *
+     * @return   The relativeUnitComputed value
+     */
+    public boolean requiresComputation() {
+        if ( ValueConstants.isAbsoluteUnit(cssValue()) ) {
+            sDbgLogger.info( "Was asked about converting a relative value, but value is absolute. Call isAbsolute() first." );
+            return false;
+        }
+        return _requiresComputation;
+    }
+
+
+    /**
+     * See interface.
+     *
+     * @param index  The new stringValue value
+     * @param s      The new stringValue value
+     */
+    public void setStringValue( short index, String s ) {
+        assert( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
+        ( (CSSPrimitiveValue)_domCSSValue ).setStringValue( index, s );
+    }
+
+
+    /**
+     * See interface.
+     *
+     * @param unitType  The new floatValue value
+     * @param val       The new floatValue value
+     */
+    public void setFloatValue( short unitType, float val ) {
+        assert( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
+        ( (CSSPrimitiveValue)_domCSSValue ).setFloatValue( unitType, val );
+    }
+
+
+    /**
+     * Sets the cssText attribute of the XRValueImpl object
+     *
+     * @param str               The new cssText value
+     * @exception DOMException  Throws
+     */
+    public void setCssText( String str )
+        throws DOMException {
+        _domCSSValue.setCssText( str );
+    }
+
+
+    /**
+     * See interface.
+     *
+     * @return   Returns
+     */
+    public short getPrimitiveType() {
+        assert( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
+        return ( (CSSPrimitiveValue)_domCSSValue ).getPrimitiveType();
+    }
+
+
+    /**
+     * See interface.
+     *
+     * @return   Returns
+     */
+    public String getStringValue() {
+        assert( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
+        return ( (CSSPrimitiveValue)_domCSSValue ).getStringValue();
+    }
+
+
+    /**
+     * See interface.
+     *
+     * @param unitType  PARAM
+     * @return          Returns
+     */
+    public float getFloatValue( short unitType ) {
+        assert( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
+        return ( (CSSPrimitiveValue)_domCSSValue ).getFloatValue( unitType );
+    }
+
+
+    /**
+     * See interface.
+     *
+     * @return   Returns
+     */
+    public Counter getCounterValue() {
+        assert( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
+        return ( (CSSPrimitiveValue)_domCSSValue ).getCounterValue();
+    }
+
+
+    /**
+     * See interface.
+     *
+     * @return   Returns
+     */
+    public Rect getRectValue() {
+        assert( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
+        return ( (CSSPrimitiveValue)_domCSSValue ).getRectValue();
+    }
+
+
+    /**
+     * Gets the primitiveType attribute of the XRValueImpl object
+     *
+     * @return   The primitiveType value
+     */
+    public boolean isPrimitiveType() {
+        return getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE;
+    }
+
+
+    /**
+     * Gets the valueList attribute of the XRValueImpl object
+     *
+     * @return   The valueList value
+     */
+    public boolean isValueList() {
+        return getCssValueType() == CSSValue.CSS_VALUE_LIST;
+    }
+
+
+    /**
+     * Gets the cssText attribute of the XRValueImpl object
+     *
+     * @return   The cssText value
+     */
+    public String getCssText() {
+        return _domCSSValue.getCssText();
+    }
+
+
+    /**
+     * Gets the cssValueType attribute of the XRValueImpl object
+     *
+     * @return   The cssValueType value
+     */
+    public short getCssValueType() {
+        return _domCSSValue.getCssValueType();
+    }
+
+
+    /**
+     * Gets the important attribute of the XRValueImpl object
+     *
+     * @return   The important value
+     */
+    public boolean isImportant() {
+        return _domPriority != null && _domPriority.equals( IMPORTANT );
+    }
+
+
+    // the CSSValue type if we are wrapping a CSSValue, type
+    // CSSValue.CSS_UNKNOWN if we are not wrapping a primitive; best to
+    // check if we are wrapping a primitive first
+    /**
+     * See interface.
+     *
+     * @return   Returns
+     */
+    private short cssSACPrimitiveValueType() {
+        assert( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
+        return ( (CSSPrimitiveValue)_domCSSValue ).getPrimitiveType();
+    }
+
+
+    /**
+     * See interface.
+     *
+     * @param context       PARAM
+     * @param ownerElement  PARAM
+     * @param propName      PARAM
+     * @return              Returns
+     */
+    private float deriveFontSize( Context context, XRElement ownerElement, String propName ) {
+        float fontSize = 0F;
+        XRElement parentElem = ownerElement.parentXRElement();
+        if ( propName.equals( CSSName.FONT_SIZE ) && parentElem != null ) {
+            fontSize = parentElem.derivedStyle().propertyByName( context, CSSName.FONT_SIZE ).actualValue().asFloat();
+        } else {
+            fontSize = ownerElement.derivedStyle().propertyByName( context, CSSName.FONT_SIZE ).actualValue().asFloat();
+        }
+        return fontSize;
+    }
+
+
+    /**
+     * See interface.
+     *
+     * @return   Returns
+     */
+    private float convertValueToPixels() {
+        assert( shouldConvertToPixels() );
+
+        float pixelVal = new Float( Float.MIN_VALUE ).floatValue();
+
+        float startVal = new Float( _domValueTextClean ).floatValue();
+
+        final float MM_PER_PX = 0.28F;
+        final int MM_PER_CM = 10;
+        final float CM_PER_IN = 2.54F;
+        final float PT_PER_IN = 72;
+        final float PC_PER_PT = 12;
+
+        float cm;
+
+        float mm;
+
+        float in;
+
+        float pt;
+
+        float pc = 0.0F;
+
+        switch ( cssSACPrimitiveValueType() ) {
+            case CSSPrimitiveValue.CSS_EMS:
+                // TODO
+                pixelVal = startVal;
+                break;
+            case CSSPrimitiveValue.CSS_EXS:
+                // TODO
+                pixelVal = startVal;
+                break;
+            case CSSPrimitiveValue.CSS_PX:
+                // nothing to do
+                pixelVal = startVal;
+                break;
+            case CSSPrimitiveValue.CSS_PERCENTAGE:
+                // TODO
+                break;
+            // length
+            case CSSPrimitiveValue.CSS_IN:
+                cm = startVal * CM_PER_IN;
+                mm = cm * MM_PER_CM;
+                pixelVal = mm / MM_PER_PX;
+                break;
+            case CSSPrimitiveValue.CSS_CM:
+                cm = startVal;
+                mm = cm * MM_PER_CM;
+                pixelVal = mm / MM_PER_PX;
+                break;
+            case CSSPrimitiveValue.CSS_MM:
+                mm = startVal;
+                pixelVal = mm / MM_PER_PX;
+                break;
+            case CSSPrimitiveValue.CSS_PT:
+                pt = startVal;
+                in = pt * PT_PER_IN;
+                cm = in * CM_PER_IN;
+                mm = cm * MM_PER_CM;
+                pixelVal = mm / MM_PER_PX;
+                break;
+            case CSSPrimitiveValue.CSS_PC:
+                pc = startVal;
+                pt = pc * PC_PER_PT;
+                in = pt * PT_PER_IN;
+                cm = in * CM_PER_IN;
+                mm = cm * MM_PER_CM;
+                pixelVal = mm / MM_PER_PX;
+                break;
+        }
+        return pixelVal;
+    }
+
+
+    /**
+     * Gets the length attribute of the XRValueImpl object
+     *
+     * @return   The length value
+     */
+    private boolean shouldConvertToPixels() {
+        return ValueConstants.isNumber(cssSACPrimitiveValueType()) && cssSACPrimitiveValueType() != CSSPrimitiveValue.CSS_PT;
+    }
+
+
+    /**
+     * Gets the cssText attribute of the XRValueImpl object
+     *
+     * @return   The cssText value
+     */
+    private String getCssTextClean() {
+        String text = getCssText().trim();
+        // TODO: use regex to pull out all possible endings
+        if ( text.endsWith( "px" ) || text.endsWith( "pt" ) || text.endsWith( "em" ) ) {
+            text = text.substring( 0, text.length() - 2 ).trim();
+        } else if ( text.endsWith( "%" ) ) {
+            text = text.substring( 0, text.length() - 1 ).trim();
+        }
+        return text;
+    }
+}// end class
 

@@ -18,156 +18,119 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-/*
- * :tabSize=4:indentSize=4:noTabs=true:
- * :folding=explicit:collapseFolds=1:
- */
 package com.pdoubleya.xhtmlrenderer.css.impl;
 
 import java.util.*;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
-import com.pdoubleya.xhtmlrenderer.css.*;
+import com.pdoubleya.xhtmlrenderer.css.XRDerivedStyle;
+import com.pdoubleya.xhtmlrenderer.css.XRElement;
+import com.pdoubleya.xhtmlrenderer.css.XRStyleRule;
 
-import org.joshy.html.box.Box;
 
 /**
  * Implementation of XRElement, see interface for comments.
  *
  * @author    Patrick Wright
- * @created   August 2, 2004
+ *
  */
 public class XRElementImpl implements XRElement {
-  /** Description of the Field */
-  private Document _document;
-  /** Description of the Field */
-  private Element _element;
-  /** Description of the Field */
-  private XRElement _xrParent;
-  /** Description of the Field */
-  private List _matchedStyles;
-  /** Description of the Field */
-  private XRDerivedStyle _derivedStyle;
+
+    /** The Document our Node belongs to */
+    private Document _document;
+    /** The DOM Node we are wrapping. HACK: there was some problem in an existing API that required storage of Node, not Element...? (PWW 15/08/04)*/
+    private Node _node;
+    /** The parent XRElement, null if none--this would be the XRElement that owns the parent DOM Node for our own DOM Node. */
+    private XRElement _xrParent;
+    /** List of the styles added to us by matching process. */
+    private List _matchedStyles;
+    /** Our derived style instance. */
+    private XRDerivedStyle _derivedStyle;
 
 
-  /**
-   * //JDOC
-   *
-   * @param document         PARAM
-   * @param element          PARAM
-   * @param parentXRElement  PARAM
-   */
-  public XRElementImpl( Document document,
-      Element element,
-      XRElement parentXRElement ) {
+    /**
+     * //JDOC
+     *
+     * @param parentXRElement  PARAM
+     * @param node             PARAM
+     */
+    public XRElementImpl( Node node, XRElement parentXRElement ) {
 
-    this();
-    _document = document;
-    _element = element;
-    _xrParent = parentXRElement;
-  }
-
-
-  /** Constructor for the XRElementImpl object */
-  private XRElementImpl() {
-    _matchedStyles = new ArrayList();
-  }
-
-
-  /**
-   * Returns the parent DOM Document
-   *
-   * @return   Returns
-   */
-  public Document parentDocument() {
-    return _document;
-  }
-
-
-  /**
-   * Returns the parent DOM Element for the enclosed DOM Element, null if this is the root Document Element.
-   *
-   * @return   Returns
-   */
-  public Element parentDOMElement() {
-    return (Element)_element.getParentNode();
-  }
-
-
-  /**
-   * Returns the enclosed DOM Element.
-   *
-   * @return   Returns
-   */
-  public Element domElement() {
-    return _element;
-  }
-
-
-  /**
-   * Returns the parent XRElement, will be null if this is the root.
-   *
-   * @return   Returns
-   */
-  public XRElement parentXRElement() {
-    return _xrParent;
-  }
-
-
-  /**
-   * Returns the text content of the DOM Element.
-   *
-   * @return   Returns
-   */
-   // ASK: is this useful?
-  public String content() {
-    String rtn = "";
-
-    if ( ( _element != null ) && ( _element.getChildNodes().getLength() > 0 ) ) {
-      rtn = _element.getChildNodes().item( 0 ).getNodeValue();
+        this();
+        _document = node.getOwnerDocument();
+        _node = node;
+        _xrParent = parentXRElement;
     }
 
-    return rtn;
-  }
 
-
-  /**
-   * //JDOC 
-   * 
-   *
-   * @return   Returns
-   */
-   //ASK: synchronized?
-  public synchronized XRDerivedStyle derivedStyle() {
-    if ( _derivedStyle == null ) {
-      _derivedStyle = new XRDerivedStyleImpl( this, _matchedStyles.iterator() );
+    /** Constructor for the XRElementImpl object */
+    private XRElementImpl() {
+        _matchedStyles = new ArrayList();
     }
-    return _derivedStyle;
-  }
 
 
-  /**
-   * Returns an iterator of the styles matched to this XRElement, in the order added to the XRElement.
-   *
-   * @return   Returns
-   */
-  public Iterator applicableStyles() {
-    return _matchedStyles.iterator();
-  }
+    /**
+     * Returns the enclosed DOM Node.
+     *
+     * @return   Returns
+     */
+    public Node domNode() {
+        return _node;
+    }
 
 
-  /**
-   * Associates an XRStyleRule as matched with the XRElement. 
-   *
-   * @param style  The feature to be added to the MatchedStyle attribute
-   */
-  public void addMatchedStyle( XRStyleRule style ) {
-    _matchedStyles.add( style );
-  }
-
-} // end class
+    /**
+     * Returns the parent XRElement, will be null if this is the root.
+     *
+     * @return   Returns
+     */
+    public XRElement parentXRElement() {
+        return _xrParent;
+    }
 
 
-// :folding=indent:collapseFolds=2:
+    /**
+     * //JDOC
+     *
+     * @return   Returns
+     */
+    //ASK: synchronized?
+    public synchronized XRDerivedStyle derivedStyle() {
+        if ( _derivedStyle == null ) {
+            _derivedStyle = new XRDerivedStyleImpl( this, _matchedStyles.iterator() );
+        }
+        return _derivedStyle;
+    }
+
+
+    /**
+     * Associates an XRStyleRule as matched with the XRElement.
+     *
+     * @param style  The feature to be added to the MatchedStyle attribute
+     */
+    public synchronized void addMatchedStyle( XRStyleRule style ) {
+        _derivedStyle = null;
+        _matchedStyles.add( style );
+    }
+
+
+    /**
+     * Convenience method for debugging--returns an iterator of the selector
+     * strings matched to this element
+     *
+     * @return   Returns
+     */
+    public Iterator listMatchedStyleSelectors() {
+        List sel = new ArrayList();
+        Iterator iter = _matchedStyles.iterator();
+        while ( iter.hasNext() ) {
+            sel.add( ( (XRStyleRule)iter.next() ).cssSelectorText() );
+        }
+        return sel.iterator();
+    }
+}// end class
+
+// :folding=java:collapseFolds=2:tabSize=4:indentSize=4:noTabs=true:
+

@@ -22,87 +22,79 @@ package com.pdoubleya.xhtmlrenderer.css;
 
 import java.util.*;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
-import org.joshy.html.box.Box;
 
 /**
- * A DOM element that we have wrapped for XR use. In particular, this class
- * represents the relationship between a DOM Element, it's matched styles, it's
- * derived styles (after cascade/inherit) and its visual representation (current. incomplete).
- * This association is necessary because in order to derive all styles, and to compute
- * relative values, we need to have parent/child Element associations available.
+ * A DOM {@link org.w3c.dom.Element} that we have wrapped for XR use. In
+ * particular, this class represents the relationship between a DOM <code>Element</code>
+ * , its matched styles, and its derived styles (after cascade/inherit). This
+ * association is necessary because in order to derive all styles, and to
+ * compute relative values, we need to have parent/child <code>Element</code>
+ * associations available. The intention is that <code>XRElements</code> are
+ * instantiated after processing a DOM, and a CSS selector matcher calls {@link
+ * #addMatchedStyle(XRStyleRule)} for each style that matches the element. Once
+ * all styles are matched, {@link #derivedStyle()} returns a {@link
+ * XRDerivedStyle} instance with all the applicable properties for the element.
+ * If using the {@link com.pdoubleya.xhtmlrenderer.css.bridge.XRStyleReference}
+ * for style lookup, you will not need to use this class directly, as it handles
+ * instantiation of XRElements.
  *
- * The intention is that XRElements are instantiated after processing a DOM, and
- * a CSS selector matcher calls <code>addMatchedStyle()</code> for each style that matches the 
- * element. Once all styles are matched, <code>derivedStyle()</code> returns a 
- * XRRuleSet instance with all the applicable properties for the class.
- *
- * 
- *
- * @author    Patrick Wright
- * @created   August 1, 2004
+ * @author   Patrick Wright
+ * @see      com.pdoubleya.xhtmlrenderer.css.bridge.XRStyleReference
  */
- //ASK: if we are going to use DOM anyway, should this extend Element?
+//ASK: if we are going to use DOM anyway, should this extend Element?
 public interface XRElement {
-  /**
-   * The DOM owner document for this element.
-   *
-   * @return   Returns
-   */
-  Document parentDocument();
+    /**
+     * The DOM {@link org.w3c.dom.Element} we are wrapping.
+     *
+     * @return   See desc.
+     */
+    Node domNode();
 
 
-  /**
-   * The DOM Element that owns the wrapped element here.
-   *
-   * @return   Returns
-   */
-  Element parentDOMElement();
+    /**
+     * Our parent XRElement.
+     *
+     * @return   Parent XRElement, null if called on root element.
+     */
+    XRElement parentXRElement();
 
 
-  /**
-   * The DOM Element we are wrapping.
-   *
-   * @return   Returns
-   */
-  Element domElement();
+    /**
+     * A derived set of properties for this element, taken from the matched
+     * styles added using {@link #addMatchedStyle(XRStyleRule)}. There is only
+     * one instance of XRDerivedStyle for an XRElement, however, if each call to
+     * {@link #addMatchedStyle(XRStyleRule)} can cause {@link #derivedStyle()}
+     * to return different {@link XRDerivedStyle} instances. Generally, you
+     * should complete all matching before requesting the derived style,
+     * otherwise property values may be inconsistent. See documentation for
+     * {@link XRDerivedStyle} for more details.
+     *
+     * @return   Returns a XRDerivedStyle instance with the unique CSS
+     *      properties that apply to this Element, after matching.
+     */
+    XRDerivedStyle derivedStyle();
 
 
-  /**
-   * Our parent XRElement.
-   *
-   * @return   Returns
-   */
-  XRElement parentXRElement();
+    /**
+     * Associates a style rule with this element--selector matches. Note this
+     * should be a pure-selector match, regardless of cascade or other such
+     * rules. Those are processed during derivation. The sequence in which they
+     * are added is not important, as long as the rule itself has sequencing
+     * information (see {@link XRStyleRule} for details).
+     *
+     * @param style  The XRStyleRule found to have matched this Element.
+     */
+    void addMatchedStyle( XRStyleRule style );
 
-
-  /**
-   * A derived set of properties for this element, taken from the matched styles.
-   *
-   * @return   Returns
-   */
-  XRDerivedStyle derivedStyle();
-
-
-  /**
-   * Iterator over all the styles matched to this element.
-   *
-   * @return   Returns
-   */
-  Iterator applicableStyles();
-
-
-  /**
-   * Associates a style rule with this element--selector matches. Note this should
-   * be a pure-selector match, regardless of cascade or other such rules. Those are
-   * processed during derivation. The sequence in which they are added is not important,
-   * as long as the rule itself has sequencing information (see XRStyleRule for details).
-   *
-   * @param style  
-   */
-  void addMatchedStyle( XRStyleRule style );
+    /**
+     * Convenience method for debugging--returns an Iterator of the selector
+     * strings matched to this element, as Strings.
+     *
+     * @return   Iterator of String selectors matched to this Element.
+     */
+    Iterator listMatchedStyleSelectors();
 }// end interface
 
 

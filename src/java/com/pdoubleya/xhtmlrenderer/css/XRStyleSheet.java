@@ -24,6 +24,7 @@ import java.util.*;
 
 import org.w3c.dom.css.CSSStyleSheet;
 
+
 /**
  * <p>
  *
@@ -32,6 +33,8 @@ import org.w3c.dom.css.CSSStyleSheet;
  * include:</p>
  * <ul>
  *   <li> .css text-format files included with <code>
+ *
+ *
  *
  *
  *<link> </code> tags</li>
@@ -53,79 +56,64 @@ import org.w3c.dom.css.CSSStyleSheet;
  * spec).</p>
  *
  * @author    Patrick Wright
- * @created   August 1, 2004
+ *
  */
 public interface XRStyleSheet extends CSSStyleSheet {
-  /** Origin of stylesheet - user agent */
-  public final static int USER_AGENT = 0;
+    /** Origin of stylesheet - user agent */
+    public final static int USER_AGENT = 0;
 
-  /** Origin of stylesheet - author */
-  public final static int AUTHOR = 1;
+    /** Origin of stylesheet - author */
+    public final static int AUTHOR = 1;
 
-  /** Origin of stylesheet - user */
-  public final static int USER = 2;
-
-
-  /**
-   * The sequence in which the sheet was found and loaded. Sheets get priority
-   * in terms of loading order--user agent sheets, inline styles, HTML attrs as
-   * styles would have lower sequence that user and author sheets. This number
-   * used in cascade logic.
-   *
-   * @return   Returns
-   */
-  int sequence();
+    /** Origin of stylesheet - user */
+    public final static int USER = 2;
 
 
-  /**
-   * Appends a representation of the stylesheet to the StringBuffer.
-   *
-   * @param sb  PARAM
-   */
-  void dump( StringBuffer sb );
+    /**
+     * The sequence in which the sheet was found and loaded. Sheets get priority
+     * in terms of loading order--user agent sheets, inline styles, HTML attrs
+     * as styles would have lower sequence that user and author sheets. This
+     * number used in cascade logic.
+     *
+     * @return   Returns
+     */
+    int sequence();
 
 
-  /**
-   * An Iterator of all XRSheetRules found in this sheet, including @ and style
-   * rules. Rule ordering is not guarranteed by this method, but should be the
-   * order in which rules were read from the source stylesheet.
-   *
-   * @return   Returns
-   */
-  Iterator rules();
+    /**
+     * Appends a representation of the stylesheet to the StringBuffer.
+     *
+     * @param sb  PARAM
+     */
+    void dump( StringBuffer sb );
 
 
-  /**
-   * An Iterator of all XRStyleRules found in this sheet. Rule ordering is not
-   * guarranteed by this method, but should be the order in which rules were
-   * read from the source stylesheet.
-   *
-   * @return   Returns
-   */
-  Iterator styleRules();
+    /**
+     * An Iterator of all XRStyleRules found in this sheet. Rule ordering is not
+     * guarranteed by this method, but should be the order in which rules were
+     * read from the source stylesheet.
+     *
+     * @return   Returns
+     */
+    Iterator styleRules();
 
 
-  /**
-   * Returns an XRStyleRule by its selector, null if not found, handling important and non-important
-   * rule sets with the same selector separately.
-   *
-   * @param selector  PARAM
-   * @return          Returns
-   */
-  XRStyleRule ruleBySelector( String selector, boolean important );
+    /**
+     * The origin of the stylesheet.
+     *
+     * @return   Returns
+     */
+    // ASK: this could be replaced with three isAuthor/isUserAgent/isUser methods...
+    // no reason to force API users to mess with int constants if they don't have to (PWW 15/08/04)
+    int origin();
 
-  
-  /**
-   * The origin of the stylesheet.
-   *
-   * @return   Returns
-   */
-  int origin();
-  
-  /**
-  * Simple label for stylesheet origin--USER-AGENT, AUTHOR, USER
-  */
-  String orginLabel();
+
+    /**
+     * Simple label for stylesheet origin--USER-AGENT, AUTHOR, USER
+     *
+     * @return   Returns
+     */
+    String orginLabel();
 }// end interface
 
 

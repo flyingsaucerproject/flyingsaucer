@@ -45,6 +45,7 @@ public class HTMLTest extends JFrame {
         JMenu test = new JMenu("Test");
         mb.add(test);
 
+        addFileLoadAction(test, "one liner", "demos/one-line.xhtml");
         addFileLoadAction(test, "background colors and images", "demos/background.xhtml");
         addFileLoadAction(test, "borders", "demos/border.xhtml");
         addFileLoadAction(test, "box sizing", "demos/box-sizing.xhtml");
@@ -108,7 +109,10 @@ public class HTMLTest extends JFrame {
         menu.add(new AbstractAction(display) {
             public void actionPerformed(ActionEvent evt) {
                 try {
+                    long st = System.currentTimeMillis();
                     panel.setDocument(file);
+                    long el = System.currentTimeMillis() - st;
+                    System.out.println("TIME: setDocument(" + file + ")  " + el + "ms, render may take longer");
                 } catch (Exception ex) {
                     u.p(ex);
                 }

@@ -26,9 +26,10 @@ import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
 
-import com.pdoubleya.xhtmlrenderer.css.*;
-import com.pdoubleya.xhtmlrenderer.css.constants.*;
-import com.pdoubleya.xhtmlrenderer.css.impl.*;
+import com.pdoubleya.xhtmlrenderer.css.constants.CSSName;
+import com.pdoubleya.xhtmlrenderer.css.impl.XRPropertyImpl;
+import com.pdoubleya.xhtmlrenderer.css.impl.XRValueImpl;
+
 
 /**
  * Used to pull 'padding' properties out of CSS. Explosion of shorthand is same
@@ -36,125 +37,129 @@ import com.pdoubleya.xhtmlrenderer.css.impl.*;
  * other things here, like initial values, validations, etc.
  *
  * @author    Patrick Wright
- * @created   August 2, 2004
+ *
  */
 public class PaddingPropertyFactory extends AbstractPropertyFactory {
-  /** Description of the Field */
-  private static PaddingPropertyFactory _instance;
+    /** Singleton instance. */
+    private static PaddingPropertyFactory _instance;
 
 
-  /** Constructor for the PaddingPropertyFactory object */
-  private PaddingPropertyFactory() { }
+    /** Constructor for the PaddingPropertyFactory object */
+    private PaddingPropertyFactory() { }
 
 
-  /**
-   * Description of the Method
-   *
-   * @return   Returns
-   */
-  public static synchronized PropertyFactory instance() {
-    if ( _instance == null ) {
-      _instance = new PaddingPropertyFactory();
+    /**
+     * Returns the singleton instance.
+     *
+     * @return   Returns
+     */
+    public static synchronized PropertyFactory instance() {
+        if ( _instance == null ) {
+            _instance = new PaddingPropertyFactory();
+        }
+        return _instance;
     }
-    return _instance;
-  }
 
-  // thread-safe
-  /**
-   * Description of the Method
-   *
-   * @param style     PARAM
-   * @param propName  PARAM
-   * @param sequence  PARAM
-   * @return          Returns
-   */
-  public Iterator explodeProperties( CSSStyleDeclaration style, String propName, int sequence ) {
-    List list = new ArrayList();
-    CSSValue cssValue = style.getPropertyCSSValue( propName );
-    String priority = style.getPropertyPriority( propName );
+    // thread-safe
+    /**
+     * If <code>propName</code> describes a shorthand property, explodes it into
+     * the specific properties it is a shorthand for, and returns those as an
+     * Iterator of {@link com.pdoubleya.xhtmlrenderer.css.XRProperty} instances;
+     * or just instantiates a single <code>XRProperty</code> for non-shorthand
+     * props.
+     *
+     * @param style     The CSSStyleDeclaration from the SAC parser.
+     * @param propName  The String property name for the property to explode.
+     * @param sequence  Sequence in which the declaration was found in the
+     *      containing stylesheet.
+     * @return          Iterator of one or more XRProperty instances representing the exploded values.
+     */
+    public Iterator explodeProperties( CSSStyleDeclaration style, String propName, int sequence ) {
+        List list = new ArrayList();
+        CSSValue cssValue = style.getPropertyCSSValue( propName );
+        String priority = style.getPropertyPriority( propName );
 
-    // CAREFUL: note that with steadyState parser impl, their value class impl
-    // both primitive and value list interfaces! use getCssValueType(), not instanceof!!
-    if ( cssValue.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
-      list.addAll( explodeOne( (CSSPrimitiveValue)cssValue, priority, style, sequence ) );
-    } else {
-      // is a value list
-      CSSValueList vList = (CSSValueList)cssValue;
+        // CAREFUL: note that with steadyState parser impl, their value class impl
+        // both primitive and value list interfaces! use getCssValueType(), not instanceof!!
+        if ( cssValue.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
+            list.addAll( explodeOne( (CSSPrimitiveValue)cssValue, priority, style, sequence ) );
+        } else {
+            // is a value list
+            CSSValueList vList = (CSSValueList)cssValue;
 
-      // padding explodes differently based on number of supplied values
-      CSSPrimitiveValue primitive = null;
-      XRValueImpl val = null;
-      switch ( vList.getLength() ) {
-          case 1:
-            // bug in CSSValue implementation! but who cares
-            primitive = (CSSPrimitiveValue)vList.item( 0 );
-            list.addAll( explodeOne( primitive, priority, style, sequence ) );
-            break;
-          case 2:
-            primitive = (CSSPrimitiveValue)vList.item( 0 );
-            list.add( newProperty( CSSName.PADDING_TOP, primitive, priority, style, sequence ) );
-            list.add( newProperty( CSSName.PADDING_BOTTOM, primitive, priority, style, sequence ) );
+            // padding explodes differently based on number of supplied values
+            CSSPrimitiveValue primitive = null;
+            switch ( vList.getLength() ) {
+                case 1:
+                    // bug in CSSValue implementation! but who cares
+                    primitive = (CSSPrimitiveValue)vList.item( 0 );
+                    list.addAll( explodeOne( primitive, priority, style, sequence ) );
+                    break;
+                case 2:
+                    primitive = (CSSPrimitiveValue)vList.item( 0 );
+                    list.add( newProperty( CSSName.PADDING_TOP, primitive, priority, style, sequence ) );
+                    list.add( newProperty( CSSName.PADDING_BOTTOM, primitive, priority, style, sequence ) );
 
-            primitive = (CSSPrimitiveValue)vList.item( 1 );
-            list.add( newProperty( CSSName.PADDING_RIGHT, primitive, priority, style, sequence ) );
-            list.add( newProperty( CSSName.PADDING_LEFT, primitive, priority, style, sequence ) );
-            break;
-          case 3:
-            primitive = (CSSPrimitiveValue)vList.item( 0 );
-            list.add( newProperty( CSSName.PADDING_TOP, primitive, priority, style, sequence ) );
+                    primitive = (CSSPrimitiveValue)vList.item( 1 );
+                    list.add( newProperty( CSSName.PADDING_RIGHT, primitive, priority, style, sequence ) );
+                    list.add( newProperty( CSSName.PADDING_LEFT, primitive, priority, style, sequence ) );
+                    break;
+                case 3:
+                    primitive = (CSSPrimitiveValue)vList.item( 0 );
+                    list.add( newProperty( CSSName.PADDING_TOP, primitive, priority, style, sequence ) );
 
-            primitive = (CSSPrimitiveValue)vList.item( 1 );
-            list.add( newProperty( CSSName.PADDING_RIGHT, primitive, priority, style, sequence ) );
-            list.add( newProperty( CSSName.PADDING_LEFT, primitive, priority, style, sequence ) );
+                    primitive = (CSSPrimitiveValue)vList.item( 1 );
+                    list.add( newProperty( CSSName.PADDING_RIGHT, primitive, priority, style, sequence ) );
+                    list.add( newProperty( CSSName.PADDING_LEFT, primitive, priority, style, sequence ) );
 
-            primitive = (CSSPrimitiveValue)vList.item( 2 );
-            list.add( newProperty( CSSName.PADDING_BOTTOM, primitive, priority, style, sequence ) );
-            break;
-          case 4:
-            primitive = (CSSPrimitiveValue)vList.item( 0 );
-            list.add( newProperty( CSSName.PADDING_TOP, primitive, priority, style, sequence ) );
+                    primitive = (CSSPrimitiveValue)vList.item( 2 );
+                    list.add( newProperty( CSSName.PADDING_BOTTOM, primitive, priority, style, sequence ) );
+                    break;
+                case 4:
+                    primitive = (CSSPrimitiveValue)vList.item( 0 );
+                    list.add( newProperty( CSSName.PADDING_TOP, primitive, priority, style, sequence ) );
 
-            primitive = (CSSPrimitiveValue)vList.item( 1 );
-            list.add( newProperty( CSSName.PADDING_RIGHT, primitive, priority, style, sequence ) );
+                    primitive = (CSSPrimitiveValue)vList.item( 1 );
+                    list.add( newProperty( CSSName.PADDING_RIGHT, primitive, priority, style, sequence ) );
 
-            primitive = (CSSPrimitiveValue)vList.item( 2 );
-            list.add( newProperty( CSSName.PADDING_BOTTOM, primitive, priority, style, sequence ) );
+                    primitive = (CSSPrimitiveValue)vList.item( 2 );
+                    list.add( newProperty( CSSName.PADDING_BOTTOM, primitive, priority, style, sequence ) );
 
-            primitive = (CSSPrimitiveValue)vList.item( 3 );
-            list.add( newProperty( CSSName.PADDING_LEFT, primitive, priority, style, sequence ) );
-            break;
-          default:
-            System.err.println( "Property '" + propName + "' has more than 4 values assigned." );
-            break;
-      }
-    }// is a value list
+                    primitive = (CSSPrimitiveValue)vList.item( 3 );
+                    list.add( newProperty( CSSName.PADDING_LEFT, primitive, priority, style, sequence ) );
+                    break;
+                default:
+                    System.err.println( "Property '" + propName + "' has more than 4 values assigned." );
+                    break;
+            }
+        }// is a value list
 
-    return list.iterator();
-  }
+        return list.iterator();
+    }
 
 
-  /**
-   * Description of the Method
-   *
-   * @param primitive  PARAM
-   * @param priority   PARAM
-   * @param style      PARAM
-   * @param sequence   PARAM
-   * @return           Returns
-   */
-  private List explodeOne( CSSPrimitiveValue primitive,
-      String priority,
-      CSSStyleDeclaration style,
-      int sequence ) {
+    /**
+     * Explodes a single shorthand property declaration into components (one per side).
+     *
+     * @param primitive  PARAM
+     * @param priority   PARAM
+     * @param style      PARAM
+     * @param sequence   PARAM
+     * @return           Returns
+     */
+    private List explodeOne( CSSPrimitiveValue primitive,
+            String priority,
+            CSSStyleDeclaration style,
+            int sequence ) {
 
-    List list = new ArrayList();
-    XRValueImpl val = null;
-    val = new XRValueImpl( primitive, priority );
-    list.add( new XRPropertyImpl( style, CSSName.PADDING_TOP, sequence, val ) );
-    list.add( new XRPropertyImpl( style, CSSName.PADDING_RIGHT, sequence, val ) );
-    list.add( new XRPropertyImpl( style, CSSName.PADDING_BOTTOM, sequence, val ) );
-    list.add( new XRPropertyImpl( style, CSSName.PADDING_LEFT, sequence, val ) );
-    return list;
-  }
+        List list = new ArrayList();
+        XRValueImpl val = null;
+        val = new XRValueImpl( primitive, priority );
+        list.add( new XRPropertyImpl( style, CSSName.PADDING_TOP, sequence, val ) );
+        list.add( new XRPropertyImpl( style, CSSName.PADDING_RIGHT, sequence, val ) );
+        list.add( new XRPropertyImpl( style, CSSName.PADDING_BOTTOM, sequence, val ) );
+        list.add( new XRPropertyImpl( style, CSSName.PADDING_LEFT, sequence, val ) );
+        return list;
+    }
 }
 

@@ -20,126 +20,131 @@
  */
 package com.pdoubleya.xhtmlrenderer.css;
 
-import java.util.*;
+import java.awt.Color;
+
 import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSValueList;
+
+import org.joshy.html.Context;
+
 
 /**
  * A CSSValue as parsed from a stylesheet.
  *
  * @author    Patrick Wright
- * @created   August 1, 2004
+ *
  */
-public interface XRValue extends CSSPrimitiveValue {
-  /** Constant for CSS2 value of "important" */
-  String IMPORTANT = "important";
+// HACK: need to sort out conceptual confusion betw. CSSValue and CSSPrimitive value. Many of these methods
+// are single-value specific but for just a couple of cases it is nice to store the value list as we read it...
+// for now, am punting.
+public interface XRValue extends CSSValue {
+    /** Constant for CSS2 value of "important" */
+    String IMPORTANT = "important";
 
-  /** Constant for CSS2 value of "inherit" */
-  String INHERIT = "inherit";
-
-
-  /**
-   * True if this value specifically marked as inherited. 
-   *
-   * @return   Returns
-   */
-  boolean forcedInherit();
+    /** Constant for CSS2 value of "inherit" */
+    String INHERIT = "inherit";
 
 
-  /**
-   * True if the value declaration marked as important.
-   *
-   * @return   The important value
-   */
-  boolean isImportant();
+    /**
+     * True if this value specifically marked as inherited.
+     *
+     * @return   Returns
+     */
+    boolean forcedInherit();
 
 
-  /**
-   * The value as specified in text.
-   *
-   * @return   Returns
-   */
-  String cssText();
+    /**
+     * True if the value declaration marked as important.
+     *
+     * @return   The important value
+     */
+    boolean isImportant();
 
 
-  /**
-   * A description of the type.
-   *
-   * @return   Returns
-   */
-  String cssType();
+    /**
+     * The value as a CSSValue; changes to the CSSValue are not tracked. Any
+     * changes to the properties should be made through the XRProperty and
+     * XRValue classes.
+     *
+     * @return   Returns
+     */
+    CSSValue cssValue();
 
 
-  /**
-   * The short constant ID from dom.css.CSSValue for this assigned value.
-   *
-   * @return   Returns
-   */
-  short cssSACPrimitiveValueType();
+    /**
+     * The value as a float; if conversion fails, returns .MIN_VALUE
+     *
+     * @return   Returns
+     */
+    float asFloat();
 
 
-  /**
-   * True if the unit for the specified value is absolute.
-   *
-   * @return   The absoluteUnit value
-   */
-  boolean isAbsoluteUnit();
+    /**
+     * The value as specified in the CSS
+     *
+     * @return   Returns
+     */
+    String asString();
 
 
-  /**
-   * The value as an integer; if conversion fails, returns .MIN_VALUE
-   *
-   * @return   Returns
-   */
-  int asInteger();
+    /**
+     * The value as specified in the CSS
+     *
+     * @return   Returns
+     */
+    String[] asStringArray();
 
 
-  /**
-   * The value as a float; if conversion fails, returns .MIN_VALUE
-   *
-   * @return   Returns
-   */
-  float asFloat();
+    /**
+     * Gets the primitiveType attribute of the XRValue object
+     *
+     * @return   The primitiveType value
+     */
+    boolean isPrimitiveType();
 
 
-  /**
-   * The value as a double; if conversion fails, returns .MIN_VALUE
-   *
-   * @return   Returns
-   */
-  double asDouble();
+    /**
+     * Gets the valueList attribute of the XRValue object
+     *
+     * @return   The valueList value
+     */
+    boolean isValueList();
 
 
-  /**
-   * The value as specified in the CSS
-   *
-   * @return   Returns
-   */
-  String asString();
-
-  /**
-   * The value as specified in the CSS
-   *
-   * @return   Returns
-   */
-  String[] asStringArray();
-  
-  /**
-   * Gets the primitiveType attribute of the XRValue object
-   *
-   * @return   The primitiveType value
-   */
-  boolean isPrimitiveType();
+    /**
+     * HACK: this only works if the value is actually a primitve
+     *
+     * @return   The rGBColorValue value
+     */
+    Color asColor();
 
 
-  /**
-   * Gets the valueList attribute of the XRValue object
-   *
-   * @return   The valueList value
-   */
-  boolean isValueList();
+    /**
+     * Returns true if this is a relative unit (e.g. percentage) whose value has
+     * been computed as an absolute computed value.
+     *
+     * @return   The relativeUnitComputed value
+     */
+    boolean requiresComputation();
 
+
+    /**
+     * Computes a relative unit (e.g. percentage) as an absolute value, using
+     * the property's XRElement context.
+     *
+     * @param ownerElement  PARAM
+     * @param propName      PARAM
+     * @param context       PARAM
+     */
+    // TODO: clean all PARAM
+    void computeRelativeUnit( Context context, XRElement ownerElement, String propName );
+
+    /**
+     * Deep copy operation. However, any contained SAC instances are not
+     * deep-copied.
+     *
+     * @return   Returns
+     */
+    XRValue copyOf();
 }// end interface
 
 

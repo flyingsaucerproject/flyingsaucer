@@ -20,91 +20,106 @@
  */
 package com.pdoubleya.xhtmlrenderer.css;
 
-
-import java.util.*;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
 
 import org.joshy.html.Border;
+import org.joshy.html.Context;
 
 import com.pdoubleya.xhtmlrenderer.css.value.BorderColor;
 
 
 /**
- * A set of properties that apply to a single Element. A derived style is just
- * like a style but (presumably) has additional information that allows relative
- * properties to be assigned values, e.g. font attributes. Property values are
- * fully resolved when this style is created, so values should be usable on any
- * instance of XRDerivedStyle.
+ * A set of properties that apply to a single Element, derived from all matched
+ * properties following the rules for CSS cascade, inheritance, importance,
+ * specificity and sequence. A derived style is just like a style but
+ * (presumably) has additional information that allows relative properties to be
+ * assigned values, e.g. font attributes. Property values are fully resolved
+ * when this style is created. A property retrieved by name should always have
+ * only one value in this class (e.g. one-one map). An <code>XRDerivedStyle</code>
+ * is retrieved from an {@link XRElement} using the {@link
+ * XRElement#derivedStyle()} method. Any methods to retrieve property values
+ * from an instance of this class require a valid {@link org.joshy.html.Context} be given to
+ * it, for some cases of property resolution. Generally, a programmer will not
+ * use this class directly, but will retrieve properties using a {@link
+ * org.joshy.html.css.StyleReference} implementation.
  *
- * @author    Patrick Wright
- * @created   August 1, 2004
+ * @author   Patrick Wright
+ * @see      XRElement
+ * @see      org.joshy.html.Context
+ * @see      org.joshy.html.css.StyleReference
  */
- // ASK: marker interface?
-public interface XRDerivedStyle extends XRRuleSet {
-  /**
-   * Convenience property accessor; returns a Border initialized with the
-   * four-sided border width. Uses the actual value (computed actual value) for
-   * this element.
-   *
-   * @return   The borderWidth value
-   */
-  Border getBorderWidth();
+// ASK: marker interface?
+public interface XRDerivedStyle extends XRRule {
+    /**
+     * Convenience property accessor; returns a {@link Border} initialized with
+     * the four-sided border width. Uses the actual value (computed actual
+     * value) for this element.
+     *
+     * @param context  A {@link org.joshy.html.Context} instance used in resolving relative
+     *      property values.
+     * @return         The borderWidth value
+     */
+    Border getBorderWidth( Context context );
 
-  /**
-   * Convenience property accessor; returns a Border initialized with the
-   * four-sided margin width. Uses the actual value (computed actual value) for
-   * this element.
-   *
-   * @return   The marginWidth value
-   */
-  Border getMarginWidth();
-  
-  /**
-   * Convenience property accessor; returns a Border initialized with the
-   * four-sided padding width. Uses the actual value (computed actual value) for
-   * this element.
-   *
-   * @return   The paddingWidth value
-   */
-  Border getPaddingWidth();
-  
-  /**
-   * Convenience property accessor; returns a Color initialized with the
-   * background color value; Uses the actual value (computed actual value) for
-   * this element.
-   *
-   * @return   The backgroundColor value
-   */
-  Color getBackgroundColor();
 
-  /**
-   * Convenience property accessor; returns a BorderColor initialized with the
-   * four-sided border color. Uses the actual value (computed actual value) for
-   * this element.
-   *
-   * @return   The borderColor value
-   */
-  BorderColor getBorderColor();
-  
-  /**
-   * Convenience property accessor; returns a Color initialized with the
-   * foreground color Uses the actual value (computed actual value) for this
-   * element.
-   *
-   * @return   The color value
-   */
-  Color getColor();
+    /**
+     * Convenience property accessor; returns a {@link Border} initialized with
+     * the four-sided margin width. Uses the actual value (computed actual
+     * value) for this element.
+     *
+     * @param context  A {@link org.joshy.html.Context} instance used in resolving relative
+     *      property values.
+     * @return         The marginWidth value
+     */
+    Border getMarginWidth( Context context );
 
-  /**
-   * Convenience property accessor; returns the Font to use for text on this
-   * element. Uses the actual value (computed actual value) for this element.
-   *
-   * @return   The font value
-   */
-  Font getFont(Graphics g);
-  
+
+    /**
+     * Convenience property accessor; returns a {@link Border} initialized with
+     * the four-sided padding width. Uses the actual value (computed actual
+     * value) for this element.
+     *
+     * @param context  A {@link org.joshy.html.Context} instance used in resolving relative
+     *      property values.
+     * @return         The paddingWidth value
+     */
+    Border getPaddingWidth( Context context );
+
+
+    /**
+     * Convenience property accessor; returns a {@link Border} initialized with
+     * the background color value; Uses the actual value (computed actual value)
+     * for this element.
+     *
+     * @param context  A {@link org.joshy.html.Context} instance used in resolving relative
+     *      property values.
+     * @return         The backgroundColor value
+     */
+    Color getBackgroundColor( Context context );
+
+
+    /**
+     * Convenience property accessor; returns a {@link BorderColor} initialized
+     * with the four-sided border color. Uses the actual value (computed actual
+     * value) for this element.
+     *
+     * @param context  A {@link org.joshy.html.Context} instance used in resolving relative
+     *      property values.
+     * @return         The borderColor value
+     */
+    BorderColor getBorderColor( Context context );
+
+
+    /**
+     * Convenience property accessor; returns a {@link Color} initialized with
+     * the foreground color Uses the actual value (computed actual value) for
+     * this element.
+     *
+     * @param context  A {@link org.joshy.html.Context} instance used in resolving relative
+     *      property values.
+     * @return         The color value
+     */
+    Color getColor( Context context );
 }// end interface
 
 

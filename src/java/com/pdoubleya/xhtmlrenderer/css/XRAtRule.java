@@ -20,15 +20,11 @@
  */
 package com.pdoubleya.xhtmlrenderer.css;
 
-import org.w3c.dom.css.CSSRule;
 
 /**
- * An @ rule,
+ * An @ rule, such as (at)page, (at)import, etc. Currently a marker interface.
  *
  * @author    Patrick Wright
- * @created   August 2, 2004
- * @page,
- * @import,   etc. Currently a marker interface.
  */
 public interface XRAtRule extends XRSheetRule {
 }// end interface

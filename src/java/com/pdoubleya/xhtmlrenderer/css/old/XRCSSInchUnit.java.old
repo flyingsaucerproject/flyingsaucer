@@ -1,6 +1,0 @@
-package org.pdoubleya.xhtmlrenderer.css;
-
-
-
-interface XRCSSInchUnit extends XRCSSUnit {
-}

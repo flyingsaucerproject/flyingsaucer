@@ -20,32 +20,43 @@
  */
 package com.pdoubleya.xhtmlrenderer.css;
 
+import org.joshy.html.css.JStyle;
 
-import java.util.*;
 
 /**
  * A rule defining a styling for elements--has a String selector used for
  * matching to elements.
  *
  * @author    Patrick Wright
- * @created   August 1, 2004
+ *
  */
 public interface XRStyleRule extends XRSheetRule {
-  /**
-   * The selector text as a String, as supplied in construction. Normally
-   * multi-value selectors (comma-sep) would be broken into more than one style.
-   *
-   * @return   Returns
-   */
-  String cssSelectorText();
+    /**
+     * The selector text as a String, as supplied in construction. Normally
+     * multi-value selectors (comma-sep) would be broken into more than one
+     * style.
+     *
+     * @return   Returns
+     */
+    String cssSelectorText();
 
 
-  /**
-   * The specificity of this selector. See CSS2 spec section 6.4.3
-   *
-   * @return   Returns
-   */
-  int selectorSpecificity();  
+    /**
+     * The specificity of this selector. See CSS2 spec section 6.4.3
+     *
+     * @return   Returns
+     */
+    int selectorSpecificity();
+
+
+    /**
+     * Generates a unique JStyle that shadows this XRStyleRule, e.g. contains
+     * the same information. Multiple calls to this will return the same JStyle
+     * instance.
+     *
+     * @return   Returns
+     */
+    JStyle asJStyle();
 }// end interface
 
 

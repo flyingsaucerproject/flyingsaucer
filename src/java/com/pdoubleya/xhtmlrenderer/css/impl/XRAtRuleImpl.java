@@ -23,44 +23,42 @@ package com.pdoubleya.xhtmlrenderer.css.impl;
 import java.util.*;
 
 import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSRuleList;
-import org.w3c.dom.css.CSSStyleSheet;
 
-
-import com.pdoubleya.xhtmlrenderer.css.XRAtRule;
 import com.pdoubleya.xhtmlrenderer.css.XRStyleSheet;
 
 
 /**
- * An @ rule in CSS,
+ * An @ rule in CSS, such as (at)page, (at)import
  *
  * @author    Patrick Wright
- * @created   August 2, 2004
- * @page,
- * @import
+ *
  */
 public class XRAtRuleImpl extends XRSheetRuleImpl {
-  /**
-   * seq of 0
-   *
-   * @param sheet    PARAM
-   * @param cssRule  PARAM
-   */
-  public XRAtRuleImpl( XRStyleSheet sheet, CSSRule cssRule, List propertyNames, boolean isImportant ) {
-    this( sheet, cssRule, propertyNames, 0, isImportant );
-  }
+    /**
+     * seq of 0
+     *
+     * @param sheet          PARAM
+     * @param cssRule        PARAM
+     * @param propertyNames  PARAM
+     * @param isImportant    PARAM
+     */
+    public XRAtRuleImpl( XRStyleSheet sheet, CSSRule cssRule, List propertyNames, boolean isImportant ) {
+        this( sheet, cssRule, propertyNames, 0, isImportant );
+    }
 
 
-  /**
-   * Constructor for the XRAtRuleImpl object
-   *
-   * @param sheet     PARAM
-   * @param cssRule   PARAM
-   * @param sequence  PARAM
-   */
-  public XRAtRuleImpl( XRStyleSheet sheet, CSSRule cssRule, List propertyNames, int sequence, boolean isImportant ) {
-    super( sheet, cssRule, propertyNames, sequence, isImportant );
-  }
+    /**
+     * Constructor for the XRAtRuleImpl object
+     *
+     * @param sheet          PARAM
+     * @param cssRule        PARAM
+     * @param sequence       PARAM
+     * @param propertyNames  PARAM
+     * @param isImportant    PARAM
+     */
+    public XRAtRuleImpl( XRStyleSheet sheet, CSSRule cssRule, List propertyNames, int sequence, boolean isImportant ) {
+        super( sheet, cssRule, propertyNames, sequence, isImportant );
+    }
 }// end interface
 
 

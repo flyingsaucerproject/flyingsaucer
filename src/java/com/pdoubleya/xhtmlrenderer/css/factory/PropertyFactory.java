@@ -22,24 +22,27 @@ package com.pdoubleya.xhtmlrenderer.css.factory;
 
 import java.util.*;
 import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.CSSValueList;
+
 
 /**
- * Description of the Interface
+ * A PropertyFactory takes CSS style declarations as SAC interface instances,
+ * and generates XRProperties from them, to help with processing shorthand
+ * properties.
  *
- * @author    Patrick Wright
- * @created   August 2, 2004
+ * @author   Patrick Wright
  */
 public interface PropertyFactory {
-  /**
-   * Description of the Method
-   *
-   * @param style     PARAM
-   * @param propName  PARAM
-   * @param sequence  PARAM
-   * @return          Returns
-   */
-  Iterator explodeProperties( CSSStyleDeclaration style, String propName, int sequence );
+    /**
+     * Explodes a single property declaration into one or more XRProperty
+     * instances. The exact form of the explosion is left to the implementing
+     * class.
+     *
+     * @param style     The CSSStyleDeclaration from the SAC parser.
+     * @param propName  The String property name for the property to explode.
+     * @param sequence  Sequence in which the declaration was found in the
+     *      containing stylesheet.
+     * @return          Iterator of one or more XRProperty instances representing the exploded values.
+     */
+    Iterator explodeProperties( CSSStyleDeclaration style, String propName, int sequence );
 }
 

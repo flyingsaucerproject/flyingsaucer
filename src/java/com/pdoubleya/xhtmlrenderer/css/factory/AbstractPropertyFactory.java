@@ -19,43 +19,42 @@
  * }}}
  */
 package com.pdoubleya.xhtmlrenderer.css.factory;
+
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
 
-import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.CSSValueList;
+import com.pdoubleya.xhtmlrenderer.css.XRProperty;
+import com.pdoubleya.xhtmlrenderer.css.XRValue;
+import com.pdoubleya.xhtmlrenderer.css.impl.XRPropertyImpl;
+import com.pdoubleya.xhtmlrenderer.css.impl.XRValueImpl;
 
-import com.pdoubleya.xhtmlrenderer.css.*;
-import com.pdoubleya.xhtmlrenderer.css.impl.*;
-
-// package PACKAGE;
 
 /**
- * New class
+ * Base class for <code>PropertyFactories</code>.
  *
  * @author    Patrick Wright
- * @created   August 2, 2004
+ *
  */
 public abstract class AbstractPropertyFactory implements PropertyFactory {
-  /**
-   * Description of the Method
-   *
-   * @param newPropertyName  PARAM
-   * @param primitive        PARAM
-   * @param priority         PARAM
-   * @param style            PARAM
-   * @param sequence         PARAM
-   * @return                 Returns
-   */
-  protected XRPropertyImpl newProperty(
-      String newPropertyName,
-      CSSPrimitiveValue primitive,
-      String priority,
-      CSSStyleDeclaration style,
-      int sequence ) {
+    /**
+     * Creates a new XRProperty instance.
+     *
+     * @param newPropertyName  PARAM
+     * @param primitive        PARAM
+     * @param priority         PARAM
+     * @param style            PARAM
+     * @param sequence         PARAM
+     * @return                 Returns
+     */
+    protected XRProperty newProperty(
+            String newPropertyName,
+            CSSPrimitiveValue primitive,
+            String priority,
+            CSSStyleDeclaration style,
+            int sequence ) {
 
-    XRValue val = new XRValueImpl( primitive, priority );
-    return new XRPropertyImpl( style, newPropertyName, sequence, val );
-  }
+        XRValue val = new XRValueImpl( primitive, priority );
+        return new XRPropertyImpl( style, newPropertyName, sequence, val );
+    }
 }
 
