@@ -74,7 +74,7 @@ public interface Renderer {
      * @param c
      * @param box
      */
-    public void restyle(Context c, Box box);
+    //staticpublic void restyle(Context c, Box box);
 
 }
 
@@ -82,6 +82,9 @@ public interface Renderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/31 11:14:11  tobega
+ * Rendering now mainly through a few static methods. Need to clean up still
+ *
  * Revision 1.4  2004/12/29 10:39:35  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

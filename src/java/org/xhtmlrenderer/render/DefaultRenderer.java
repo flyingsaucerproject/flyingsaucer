@@ -5,7 +5,7 @@ import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.logging.Level;
 
@@ -109,7 +109,7 @@ public class DefaultRenderer implements Renderer {
      * @param box    PARAM
      * @param layout PARAM
      */
-    public void paintChild(Context c, Box box, Renderer layout) {
+    public static void paintChild(Context c, Box box, Renderer layout) {
         if (box.isChildrenExceedBounds()) {
             layout.paint(c, box);
             return;
@@ -121,7 +121,8 @@ public class DefaultRenderer implements Renderer {
                 Rectangle2D box_rect = new Rectangle(box.x, box.y, box.width, box.height);
                 //TODO: handle floated content. HACK: descend into anonymous boxes, won't work for deeper nesting
                 if (oldclip.intersects(box_rect) || (box instanceof AnonymousBlockBox)) {
-                    layout.paint(c, box);
+                    BoxRendering.paint(c, box);
+                    //layout.paint(c, box);
                 }
                 return;
             }
@@ -140,7 +141,7 @@ public class DefaultRenderer implements Renderer {
         restyleChildren(box);
     }
 
-    private void restyleChildren(Box box) {
+    private static void restyleChildren(Box box) {
         for (int i = 0; i < box.getChildCount(); i++) {
             Box child = box.getChild(i);
             //child.restyle = true;

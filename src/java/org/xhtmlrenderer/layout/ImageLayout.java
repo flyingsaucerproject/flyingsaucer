@@ -23,14 +23,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.ImageRenderer;
-import org.xhtmlrenderer.render.Renderer;
+import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Image;
+import java.awt.*;
 
 /**
  * Description of the Class
@@ -50,7 +47,7 @@ public class ImageLayout extends BoxLayout {
      */
     public Box createBox(Context c, Content content) {
 
-        BlockBox box = new BlockBox();
+        BlockBox box = new ImageBox();
 
         box.content = content;
 
@@ -65,7 +62,7 @@ public class ImageLayout extends BoxLayout {
      * @return Returns
      */
     public Box layout(Context c, Content content) {
-        BlockBox block = (BlockBox) createBox(c, content);
+        ImageBox block = (ImageBox) createBox(c, content);
 
         // load the image
 
@@ -93,6 +90,8 @@ public class ImageLayout extends BoxLayout {
             block.height = 50;
 
         }
+
+        block.img = img;
 
         //Rectangle contents = new Rectangle(0,0,img.getWidth(null),img.getHeight(null));
 
@@ -207,6 +206,9 @@ public class ImageLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/12/31 11:14:09  tobega
+ * Rendering now mainly through a few static methods. Need to clean up still
+ *
  * Revision 1.12  2004/12/29 15:06:41  tobega
  * Referencing Context instead of SharedContext where it was wrongly set before.
  *
