@@ -15,6 +15,7 @@ import java.awt.Font;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 public class WhitespaceStripper {
@@ -176,7 +177,7 @@ public class WhitespaceStripper {
         
         //Uu.p("final stripped = " + stripped);
         if(isAllWhitespace(stripped)) {
-            stripped.clear();
+            stripWhitespaceContent(stripped);
         }
         return stripped;
     }
@@ -202,6 +203,18 @@ public class WhitespaceStripper {
         return true;
     }
     
+    private static void stripWhitespaceContent(List list) {
+        List remove_list = new ArrayList();
+        for(int i=0; i<list.size(); i++) {
+            if(list.get(i) instanceof TextContent) {
+                remove_list.add(list.get(i));
+            }
+        }
+        
+        for(int i=0; i<remove_list.size(); i++) {
+            list.remove(remove_list.get(i));
+        }
+    }
 
     /**
      * this function strips all whitespace from the text according to the

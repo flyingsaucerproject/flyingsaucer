@@ -136,11 +136,17 @@ line-height isn't working for Alice dropcap
 ============
 notes of the changes that tobe has made
 
-Whitespace only inlines are not being dropped. they produce anonymous inlines that take up some screen space.
+fixed:Whitespace only inlines are not being dropped. they produce anonymous inlines that take up some screen space.
 
 fixed: Anonymous Inlines are picking up border, padding, and margins from their parent. Only element inlines should inherit those.
 
-the document box width is too big, making everything on screen too wide.
+fixed: the document box width is too big, making everything on screen too wide.
+
+floats are broken
+the extra space at the top of the splash page collapses
+tables are broken
+hovers are broken
+abs pos list items on game screen are missing
 
 ============
 thoughts on an fs game
