@@ -37,6 +37,12 @@ class Selector {
     final public static int CHILD_AXIS = 1;
     final public static int IMMEDIATE_SIBLING_AXIS = 2;
 
+
+    final static int VISITED_PSEUDOCLASS = 2;
+    final static int HOVER_PSEUDOCLASS = 4;
+    final static int ACTIVE_PSEUDOCLASS = 8;
+    final static int FOCUS_PSEUDOCLASS = 16;
+
     /** Creates a new instance of Selector. Only called in the context of adding a Selector to a Ruleset
      * or adding a chained Selector to another Selector.
      * @param axis see values above.
@@ -96,16 +102,14 @@ class Selector {
      * Note: the parser should give all class
      */
     public boolean matchesDynamic(org.w3c.dom.Element e, AttributeResolver attRes) {
-            if(isPseudoClass(AttributeResolver.LINK_PSEUDOCLASS))
-            	if( attRes == null || !attRes.isPseudoClass(e, AttributeResolver.LINK_PSEUDOCLASS)) return false;
-            if(isPseudoClass(AttributeResolver.VISITED_PSEUDOCLASS))
-            	if( attRes == null || !attRes.isPseudoClass(e, AttributeResolver.VISITED_PSEUDOCLASS)) return false;
-            if(isPseudoClass(AttributeResolver.ACTIVE_PSEUDOCLASS))
-            	if( attRes == null || !attRes.isPseudoClass(e, AttributeResolver.ACTIVE_PSEUDOCLASS)) return false;
-            if(isPseudoClass(AttributeResolver.HOVER_PSEUDOCLASS))
-            	if( attRes == null || !attRes.isPseudoClass(e, AttributeResolver.HOVER_PSEUDOCLASS)) return false;
-            if(isPseudoClass(AttributeResolver.FOCUS_PSEUDOCLASS))
-            	if( attRes == null || !attRes.isPseudoClass(e, AttributeResolver.FOCUS_PSEUDOCLASS)) return false;
+            if(isPseudoClass(VISITED_PSEUDOCLASS))
+            	if( attRes == null || !attRes.isVisited(e)) return false;
+            if(isPseudoClass(ACTIVE_PSEUDOCLASS))
+            	if( attRes == null || !attRes.isActive(e)) return false;
+            if(isPseudoClass(HOVER_PSEUDOCLASS))
+            	if( attRes == null || !attRes.isHover(e)) return false;
+            if(isPseudoClass(FOCUS_PSEUDOCLASS))
+            	if( attRes == null || !attRes.isFocus(e)) return false;
             return true;
     }
 
@@ -116,6 +120,17 @@ class Selector {
         }
         if(chainedSelector == null) return (chainedSelector = new Selector(_pos, _specificityB, _specificityC, _specificityD, _parent, axis, elementName));
         else return chainedSelector.appendChainedSelector(axis, elementName);
+    }
+
+    /** for unsupported or invalid CSS */
+    public void addUnsupportedCondition() {
+        addCondition(Condition.createUnsupportedCondition());
+    }
+
+    /** the CSS condition that element has pseudo-class :link */
+    public void addLinkCondition() {
+        _specificityC++;
+        addCondition(Condition.createLinkCondition());
     }
 
     /** the CSS condition that element has pseudo-class :first-child */
@@ -189,8 +204,12 @@ class Selector {
     
     public void setPseudoElement(String pseudoElement) {
         if(_pe != null) {
+            addUnsupportedCondition();
             XRLog.exception("Trying to set more than one pseudo-element");
-        } else _pe = pseudoElement;
+        } else {
+            _specificityD++;
+            _pe = pseudoElement;
+        }
     }
     
     public String getPseudoElement() {

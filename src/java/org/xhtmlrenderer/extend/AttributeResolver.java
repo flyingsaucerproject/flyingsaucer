@@ -48,12 +48,14 @@ public interface AttributeResolver {
     /** may return null */
     public String getLang(org.w3c.dom.Element e);
     
-    public boolean isPseudoClass(org.w3c.dom.Element e, int pc);
+    public boolean isLink(org.w3c.dom.Element e);
     
-    static public final int LINK_PSEUDOCLASS = 1;
-    static public final int VISITED_PSEUDOCLASS = 2;
-    static public final int HOVER_PSEUDOCLASS = 4;
-    static public final int ACTIVE_PSEUDOCLASS = 8;
-    static public final int FOCUS_PSEUDOCLASS = 16;
+    public boolean isVisited(org.w3c.dom.Element e);
     
+    public boolean isHover(org.w3c.dom.Element e);
+    
+    public boolean isActive(org.w3c.dom.Element e);
+    
+    public boolean isFocus(org.w3c.dom.Element e);
+        
 }

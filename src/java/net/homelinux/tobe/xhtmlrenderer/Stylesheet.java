@@ -1,6 +1,6 @@
 /*
  *
- * AttributeResolver.java
+ * Stylesheet.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or

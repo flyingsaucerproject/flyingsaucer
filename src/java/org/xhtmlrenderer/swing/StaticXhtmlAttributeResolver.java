@@ -47,13 +47,29 @@ public class StaticXhtmlAttributeResolver implements org.xhtmlrenderer.extend.At
         return e.getAttribute("lang");
     }
     
-    public boolean isPseudoClass(org.w3c.dom.Element e, int pc) {
-        if(pc == LINK_PSEUDOCLASS && e.getNodeName().equalsIgnoreCase("a") && !e.getAttribute("href").equals("")) return true;
+    public String getElementStyling(org.w3c.dom.Element e) {
+        return e.getAttribute("style");
+    }
+    
+    public boolean isActive(org.w3c.dom.Element e) {
         return false;
     }
     
-    public String getElementStyling(org.w3c.dom.Element e) {
-        return e.getAttribute("style");
+    public boolean isFocus(org.w3c.dom.Element e) {
+        return false;
+    }
+    
+    public boolean isHover(org.w3c.dom.Element e) {
+        return false;
+    }
+    
+    public boolean isLink(org.w3c.dom.Element e) {
+        if(e.getNodeName().equalsIgnoreCase("a") && !e.getAttribute("href").equals("")) return true;
+        return false;
+   }
+    
+    public boolean isVisited(org.w3c.dom.Element e) {
+        return false;
     }
     
 }

@@ -179,6 +179,29 @@ abstract class Condition {
         
     }
     
+    private static class LinkCondition extends Condition {
+        
+        LinkCondition() {
+        }
+        
+        boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
+                return attRes.isLink(e);
+        }
+        
+    }
+    
+    /** represents unsupported (or invalid) css, never matches */
+    private static class UnsupportedCondition extends Condition {
+        
+        UnsupportedCondition() {
+        }
+        
+        boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
+                return false;
+        }
+        
+    }
+    
     abstract boolean matches(org.w3c.dom.Element e, AttributeResolver attRes);
     
     /** the CSS condition [attribute] */
@@ -219,6 +242,16 @@ abstract class Condition {
     /** the CSS condition that element has pseudo-class :first-child */
     static Condition createFirstChildCondition() {
         return new FirstChildCondition();
+    }
+    
+    /** the CSS condition that element has pseudo-class :link */
+    static Condition createLinkCondition() {
+        return new LinkCondition();
+    }
+    
+    /** for unsupported or invalid CSS */
+    static Condition createUnsupportedCondition() {
+        return new UnsupportedCondition();
     }
     
 }

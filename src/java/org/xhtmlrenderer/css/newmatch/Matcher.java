@@ -22,6 +22,7 @@
 package org.xhtmlrenderer.css.newmatch;
 
 import org.xhtmlrenderer.util.XRLog;
+import java.util.Set;
 
 /**
  *
@@ -91,7 +92,10 @@ public class Matcher {
                     l.add(sel);
                     continue;
                 }
-                if(sel.isDynamic()) isDynamic = true;
+                if(sel.isPseudoClass(Selector.VISITED_PSEUDOCLASS)) _visitElements.add(e);
+                if(sel.isPseudoClass(Selector.ACTIVE_PSEUDOCLASS)) _activeElements.add(e);
+                if(sel.isPseudoClass(Selector.HOVER_PSEUDOCLASS)) _hoverElements.add(e);
+                if(sel.isPseudoClass(Selector.FOCUS_PSEUDOCLASS)) _focusElements.add(e);
                 if(!sel.matchesDynamic(e, _attRes)) continue;
                 Selector chain = sel.getChainedSelector();
                 if(chain == null) {
@@ -113,8 +117,7 @@ public class Matcher {
         java.util.List mappedSelectors = new java.util.LinkedList();
         
         java.util.HashMap pseudoSelectors = new java.util.HashMap();
-        
-        boolean isDynamic = false;
+
     }
     
     Matcher() {
@@ -282,24 +285,25 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
                 break;
             case org.w3c.css.sac.Condition.SAC_POSITIONAL_CONDITION:
                 org.w3c.css.sac.PositionalCondition pos = (org.w3c.css.sac.PositionalCondition)cond;
-                s.addFirstChildCondition();
+                if(pos.getPosition() == 0) s.addFirstChildCondition();
+                else s.addUnsupportedCondition();
                 break;
             case org.w3c.css.sac.Condition.SAC_PSEUDO_CLASS_CONDITION:
                 attr = (org.w3c.css.sac.AttributeCondition)cond;
                 if ( attr.getValue().equals( "link" ) ) {
-                    s.setPseudoClass( org.xhtmlrenderer.extend.AttributeResolver.LINK_PSEUDOCLASS );
+                    s.addLinkCondition();
                 }
                 else if ( attr.getValue().equals( "visited" ) ) {
-                    s.setPseudoClass( org.xhtmlrenderer.extend.AttributeResolver.VISITED_PSEUDOCLASS );
+                    s.setPseudoClass( Selector.VISITED_PSEUDOCLASS );
                 }
                 else if ( attr.getValue().equals( "hover" ) ) {
-                    s.setPseudoClass( org.xhtmlrenderer.extend.AttributeResolver.HOVER_PSEUDOCLASS );
+                    s.setPseudoClass( Selector.HOVER_PSEUDOCLASS );
                 }
                 else if ( attr.getValue().equals( "active" ) ) {
-                    s.setPseudoClass( org.xhtmlrenderer.extend.AttributeResolver.ACTIVE_PSEUDOCLASS );
+                    s.setPseudoClass( Selector.ACTIVE_PSEUDOCLASS );
                 }
                 else if ( attr.getValue().equals( "focus" ) ) {
-                    s.setPseudoClass( org.xhtmlrenderer.extend.AttributeResolver.FOCUS_PSEUDOCLASS );
+                    s.setPseudoClass( Selector.FOCUS_PSEUDOCLASS );
                 }
                 else {//it must be a pseudo-element
                     s.setPseudoElement(attr.getValue());
@@ -398,9 +402,20 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
         return pelm;
 }
     
-    public boolean isDynamic(org.w3c.dom.Element e) {
-        Mapper m = getMapper(e);
-        return m.isDynamic;
+    public boolean isVisitedStyled(org.w3c.dom.Element e) {
+        return _visitElements.contains(e);
+    }
+    
+    public boolean isHoverStyled(org.w3c.dom.Element e) {
+        return _hoverElements.contains(e);
+    }
+    
+    public boolean isActiveStyled(org.w3c.dom.Element e) {
+        return _activeElements.contains(e);
+    }
+    
+    public boolean isFocusStyled(org.w3c.dom.Element e) {
+        return _focusElements.contains(e);
     }
     
     private Mapper getMapper(org.w3c.dom.Element e) {
@@ -475,5 +490,11 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
     private java.util.HashMap _csCache;
     private java.util.HashMap _elStyle;
     private org.xhtmlrenderer.css.sheet.StylesheetFactory _styleFactory;
+    
+    //handle dynamic
+    private Set _hoverElements = new java.util.HashSet();
+    private Set _activeElements = new java.util.HashSet();
+    private Set _focusElements = new java.util.HashSet();
+    private Set _visitElements = new java.util.HashSet();
 
 }
