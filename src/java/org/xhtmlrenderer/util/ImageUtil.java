@@ -115,6 +115,9 @@ public class ImageUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/01/08 22:05:16  tobega
+ * Now saves form components.
+ *
  * Revision 1.7  2005/01/08 15:56:56  tobega
  * Further work on extensibility interfaces. Documented it - see website.
  *

@@ -23,22 +23,21 @@ package org.xhtmlrenderer.simple.extend;
 
 import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.swing.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -247,181 +246,55 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
     public JComponent getCustomComponent(Element e, Context c) {
         JComponent cc = null;
         if (e == null) return null;
-        try {
-            if (e.getNodeName().equals("img")) {
-                //TODO: this is a hack. Go via ua to get url content
-                ImageIcon ii = new ImageIcon(new URL(c.getRenderingContext().getBaseURL(), e.getAttribute("src")));
-                cc = new JButton(ii);
-                //cc.setSize(ii.getIconWidth(), ii.getIconHeight());
-                //cc.setBounds(0,0,ii.getIconWidth(),ii.getIconHeight());
-            } else if (e.getNodeName().equals("input")) {
-                String type = e.getAttribute("type");
-                if (type == null || type.equals("")) {
-                    type = "button";
-                }
-                String label = e.getAttribute("value");
-                if (label == null || label.equals("")) {
-                    if (type.equals("reset")) {
-                        label = "Reset";
-                    }
-                    if (type.equals("submit")) {
-                        label = "Submit";
-                    }
-                }
-                if (type.equals("button") || type.equals("reset") || type.equals("submit")) {
-                    JButton button = new JButton();
-                    button.setText(label);
-                    cc = button;
-                } else if (type.equals("image")) {
-                    JButton button = new JButton();
-                    if (e.hasAttribute("src")) {
-                        //HACK: should get image from ua
-                        ImageIcon ii = new ImageIcon(new URL(c.getRenderingContext().getBaseURL(), e.getAttribute("src")));
-                        button.setIcon(ii);
-                        button.setText(null);
-                        button.setBorderPainted(false);
-                        button.setMargin(new Insets(0, 0, 0, 0));
-                        button.setPreferredSize(new Dimension(button.getIcon().getIconHeight(),
-                                button.getIcon().getIconHeight()));
+        if (e.getNodeName().equals("img")) {
+            JButton jb = null;
+            Image im = null;
+            try {
+                im = ImageUtil.loadImage(c, new URL(c.getRenderingContext().getBaseURL(), e.getAttribute("src")).toString());
+            } catch (MalformedURLException ex) {
 
-                    }
-                    cc = button;
-                } else if (type.equals("checkbox")) {
-                    JCheckBox checkbox = new JCheckBox();
-                    checkbox.setText("");
-                    checkbox.setOpaque(false);
-                    if (e.hasAttribute("checked") &&
-                            e.getAttribute("checked").equals("checked")) {
-                        checkbox.setSelected(true);
-                    }
-                    cc = checkbox;
-                } else if (type.equals("password")) {
-                    JPasswordField pw = new JPasswordField();
-                    if (e.hasAttribute("size")) {
-                        pw.setColumns(Integer.parseInt(e.getAttribute("size")));
-                    } else {
-                        pw.setColumns(15);
-                    }
-                    if (e.hasAttribute("maxlength")) {
-                        final int maxlength = Integer.parseInt(e.getAttribute("maxlength"));
-                        pw.setDocument(new PlainDocument() {
-                            public void insertString(int offset, String str, AttributeSet attr)
-                                    throws BadLocationException {
-                                if (str == null) {
-                                    return;
-                                }
-                                if ((getLength() + str.length()) <= maxlength) {
-                                    super.insertString(offset, str, attr);
-                                }
-                            }
-                        });
-                    }
-                    cc = pw;
-                } else if (type.equals("radio")) {
-                    JRadioButton radio = new JRadioButton();
-                    radio.setText("");
-                    radio.setOpaque(false);
-                    if (e.hasAttribute("checked") &&
-                            e.getAttribute("checked").equals("checked")) {
-                        radio.setSelected(true);
-                    }
-
-                    /*if (e.hasAttribute("name")) {
-                        String name = e.getAttribute("name");
-                        List other_comps = c.getInputFieldComponents(c.getForm(), name);
-                        if (other_comps.size() > 0) {
-                            for (int i = 0; i < other_comps.size(); i++) {
-                                SharedContext.FormComponent other_comp = (SharedContext.FormComponent) other_comps.get(i);
-                                if (other_comp.component instanceof JRadioButton) {
-                                    JRadioButton other_radio = (JRadioButton) other_comp.component;
-                                    //Uu.p("found a matching component: " + other_radio);
-                                }
-                            }
-                        }
-                    }*/
-                    cc = radio;
-                } else if (type.equals("text")) {
-                    JTextField text = new JTextField();
-                    if (e.hasAttribute("value")) {
-                        text.setText(e.getAttribute("value"));
-                    }
-                    if (e.hasAttribute("size")) {
-                        text.setColumns(Integer.parseInt(e.getAttribute("size")));
-                    } else {
-                        text.setColumns(15);
-                    }
-                    if (e.hasAttribute("maxlength")) {
-                        final int maxlength = Integer.parseInt(e.getAttribute("maxlength"));
-                        text.setDocument(new PlainDocument() {
-                            public void insertString(int offset, String str, AttributeSet attr)
-                                    throws BadLocationException {
-                                if (str == null) {
-                                    return;
-                                }
-                                if ((getLength() + str.length()) <= maxlength) {
-                                    super.insertString(offset, str, attr);
-                                }
-                            }
-                        });
-                    }
-                    if (e.hasAttribute("readonly") &&
-                            e.getAttribute("readonly").equals("readonly")) {
-                        text.setEditable(false);
-                    }
-                    cc = text;
-                }//hidden?
-                //HACK:
-                if (cc == null) XRLog.layout("unknown input type " + type);
-            } else if (e.getNodeName().equals("textarea")) {
-                int rows = 4;
-                int cols = 10;
-                if (e.hasAttribute("rows")) {
-                    rows = Integer.parseInt(e.getAttribute("rows"));
-                }
-                if (e.hasAttribute("cols")) {
-                    cols = Integer.parseInt(e.getAttribute("cols"));
-                }
-
-                JTextArea ta = new JTextArea(rows, cols);
-                JScrollPane sp = new JScrollPane(ta);
-                sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-                sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-                if (e.getFirstChild() != null) {
-                    //Uu.p("setting text to: " + elem.getFirstChild().getNodeValue());
-                    ta.setText(e.getFirstChild().getNodeValue());
-                }
-                cc = sp;
-
-            } else if (e.getNodeName().equals("select")) {
-                JComboBox select = new JComboBox();
-
-                NodeList options = e.getElementsByTagName("option");
-                int selected = -1;
-                for (int i = 0; i < options.getLength(); i++) {
-                    Element value = (Element) options.item(i);
-                    String svalue = value.getFirstChild().getNodeValue();
-                    select.addItem(svalue);
-                    if (value.hasAttribute("selected") && value.getAttribute("selected").equals("selected")) {
-                        selected = i;
-                    }
-                }
-
-                if (selected != -1) {
-                    select.setSelectedIndex(selected);
-                }
-                cc = select;
             }
-        } catch (MalformedURLException ex) {
-
-        }
-        if (cc != null) {
-            cc.setSize(cc.getPreferredSize());
-            if (e.hasAttribute("disabled") &&
-                    e.getAttribute("disabled").equals("disabled")) {
-                cc.setEnabled(false);
+            if (im == null) {
+                jb = new JButton("Image unreachable. " + e.getAttribute("alt"));
+            } else {
+                ImageIcon ii = new ImageIcon(im, e.getAttribute("alt"));
+                jb = new JButton(ii);
             }
+            jb.setBorder(BorderFactory.createEmptyBorder());
+            jb.setSize(jb.getPreferredSize());
+            return jb;
         }
+        //form components
+        Element parentForm = getParentForm(e);
+        //parentForm may be null! No problem! Assume action is this document and method is get.
+        XhtmlForm form = getForm(parentForm);
+        if (form == null) {
+            form = new XhtmlForm();
+            addForm(parentForm, form);
+        }
+        cc = form.addComponent(c, e);
         return cc;
+    }
+
+    protected LinkedHashMap forms;
+
+    protected XhtmlForm getForm(Element e) {
+        if (forms == null) return null;
+        return (XhtmlForm) forms.get(e);
+    }
+
+    protected void addForm(Element e, XhtmlForm f) {
+        if (forms == null) forms = new LinkedHashMap();
+        forms.put(e, f);
+    }
+
+    protected Element getParentForm(Element e) {
+        Node n = e;
+        do {
+            n = n.getParentNode();
+        } while (n.getNodeType() == Node.ELEMENT_NODE && !n.getNodeName().equals("form"));
+        if (n.getNodeType() != Node.ELEMENT_NODE) return null;
+        return (Element) n;
     }
 
 }
