@@ -28,8 +28,10 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.simple.Graphics2DRenderer;
 import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.util.x;
+import org.xhtmlrenderer.util.XRLog;
 import java.awt.Graphics2D;
 import java.awt.Dimension;
+import java.util.logging.*;
 
 /**
  * Description of the Class
@@ -57,7 +59,7 @@ public class DocumentDiffTest {
             if ( files[i].getName().endsWith( ".xhtml" ) ) {
                 String testfile = files[i].getAbsolutePath();
                 String difffile = testfile.substring( 0, testfile.length() - 6 ) + ".diff";
-                u.p( "test file = " + testfile );
+                XRLog.log("unittests",Level.INFO,"test file = " + testfile );
                 //u.p( "diff file = " + difffile );
                 boolean is_correct = compareTestFile( testfile, difffile, 500, 500 );
                 u.p( "is correct = " + is_correct );
@@ -214,6 +216,15 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/30 20:28:28  joshy
+ * support for multiple floats on a single line.
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.7  2004/11/12 02:23:59  joshy
  * added new APIs for rendering context, xhtmlpanel, and graphics2drenderer.
  * initial support for font mapping additions

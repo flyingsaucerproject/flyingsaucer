@@ -62,7 +62,9 @@ public class FloatUtil {
             return;
         }
         
-        //u.p("got a floated inline");
+        // u.p("got a floated inline: " + inline);
+        // u.p("sub = " + inline.sub_block);
+        // u.p("adjusting it's position");
         
         // mark as floated
         inline.floated = true;
@@ -83,7 +85,12 @@ public class FloatUtil {
             // move the inline to the right
             // don't subtract off the inline's own width, because it's
             // already included in the right float distance
+            // u.p("inline.x = " + inline.x);
             inline.x = full_width - bfc.getRightFloatDistance(line);
+            // u.p("inline.x = " + inline.x);
+            inline.x = bfc.getRightAddPoint(inline.sub_block).x;
+            // u.p("inline.x = " + inline.x);
+            //inline.sub_block.x = 0;
             //bfc.addRightFloat(inline);
         }
         

@@ -87,13 +87,14 @@ public class BoxLayout extends DefaultLayout {
         BlockBox block = (BlockBox) createBox(c, elem);
 
         // set up the bfc
-        BlockFormattingContext old_bfc = null;
+        //BlockFormattingContext old_bfc = null;
         boolean set_bfc = false;
         if (c.getBlockFormattingContext() == null) {
             BlockFormattingContext bfc = new BlockFormattingContext(block);
-            c.setBlockFormattingContext(bfc);
+            //c.setBlockFormattingContext(bfc);
+            c.pushBFC(bfc);
             set_bfc = true;
-            old_bfc = null;
+            //old_bfc = null;
             bfc.setWidth((int) c.getExtents().getWidth());
         }
 
@@ -111,6 +112,19 @@ public class BoxLayout extends DefaultLayout {
         // prepare the box w/ styles
         prepareBox(c, block);
 
+        //BlockFormattingContext old_bfc_float = null;
+        boolean set_bfc_float = false;
+        // start a new bfc if it's floated
+        if (LayoutUtil.isFloated(c, block.node)) {
+            // u.p("starting a new bfc for a float");
+            // old_bfc_float = c.getBlockFormattingContext();
+            BlockFormattingContext bfc = new BlockFormattingContext(block);
+            c.pushBFC(bfc);
+            //c.setBlockFormattingContext(bfc);
+            set_bfc_float = true;
+            bfc.setWidth(block.width);
+        }
+
         // do children's layout
         boolean old_sub = c.isSubBlock();
         c.setSubBlock(false);
@@ -120,6 +134,12 @@ public class BoxLayout extends DefaultLayout {
         layoutChildren(c, block);
         c.translate(-tx, -ty);
         c.setSubBlock(old_sub);
+
+        if (set_bfc_float) {
+            c.getBlockFormattingContext().doFinalAdjustments();
+            //c.setBlockFormattingContext(old_bfc_float);
+            c.popBFC();
+        }
 
         // calculate the total outer width
         block.width = block.totalHorizontalPadding() + block.width;
@@ -138,9 +158,11 @@ public class BoxLayout extends DefaultLayout {
         
         if (set_bfc) {
             c.getBlockFormattingContext().doFinalAdjustments();
-            c.setBlockFormattingContext(old_bfc);
+            //c.setBlockFormattingContext(old_bfc);
+            c.popBFC();
         }
         
+        // u.p("final block = " + block);
         return block;
     }
     
@@ -327,6 +349,15 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2004/11/30 20:28:27  joshy
+ * support for multiple floats on a single line.
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.27  2004/11/27 15:46:38  joshy
  * lots of cleanup to make the code clearer
  *

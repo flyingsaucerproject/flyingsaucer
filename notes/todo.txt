@@ -90,7 +90,7 @@ fix n test space collapsing w/ images
 fix n test tab alignment
 //javadoc xhtmlpanel
 //javadoc graphic2drenderer
-test docs uploaded
+//test docs uploaded
 make graphic2drenderer not use basicpanel
 fix float bugs w/ more than one float on a line
 implement media support for printing and test it
@@ -107,6 +107,16 @@ demos:
     codify the demo filebrowser
     codify the demo html editor
     make all demos webstartable
+    game screen
+        menu
+            new game
+            instructions
+            high score
+            quit
+        cool font
+        cool tiled background
+        centered background splash image (flyingsaucer?)
+        dark colors w/ highlight rollovers
 
 
 

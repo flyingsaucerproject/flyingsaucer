@@ -59,7 +59,7 @@ public class BlockFormattingContext {
     /* ====== float stuff ========= */
 
     public void addLeftFloat(Box block) {
-        //u.p("adding a left float: " + block);
+        // u.p("adding a left float: " + block);
         //u.dump_stack();
         left_floats.add(block);
         offset_map.put(block,getOffset());
@@ -68,6 +68,10 @@ public class BlockFormattingContext {
     public void addRightFloat(Box block) {
         right_floats.add(block);
         offset_map.put(block,getOffset());
+    }
+    
+    public Point getRightAddPoint(Box block) {
+        return (Point)offset_map.get(block);
     }
     
     // joshy: these line boxes may not be valid
@@ -141,6 +145,45 @@ public class BlockFormattingContext {
         // u.p("returnning : " + xoff);
         return xoff;
     }
+    
+    public Box getLeftFloatX(Box box) {
+        // count backwards through the floats
+        int x = 0;
+        for(int i=left_floats.size()-1; i>=0; i--) {
+            Box floater = (Box)left_floats.get(i);
+            // u.p("box = " + box);
+            // u.p("testing against float = " + floater);
+            x = floater.x + floater.width;
+            if(floater.y + floater.height > box.y) {
+                // u.p("float["+i+"] blocks the box vertically");
+                return floater;
+            } else {
+                // u.p("float["+i+"] doesn't block. moving to next");
+            }
+        }
+        return null;
+    }
+    public Box getRightFloatX(Box box) {
+        // count backwards through the floats
+        int x = 0;
+        for(int i=right_floats.size()-1; i>=0; i--) {
+            Box floater = (Box)right_floats.get(i);
+            // u.p("box = " + box);
+            // u.p("testing against float = " + floater);
+            x = floater.x;
+            if(floater.y + floater.height > box.y) {
+                // u.p("float["+i+"] blocks the box vertically");
+                return floater;
+            } else {
+                // u.p("float["+i+"] doesn't block. moving to next");
+            }
+        }
+        return null;
+    }
+    
+    // public Box getLastLeftFloat() {
+    //     return (Box)left_floats.get(left_floats.size()-1);
+    // }
     
     public int getRightFloatDistance(LineBox line) {
         //u.p("doing get right float dist. line = " + line);

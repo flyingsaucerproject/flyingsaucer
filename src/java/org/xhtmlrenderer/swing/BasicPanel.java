@@ -208,7 +208,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         getContext().setMaxWidth( 0 );
         
         // DEBUG
-        //long start_time = new java.util.Date().getTime();
         XRLog.layout( Level.FINEST, "layout = " + layout);
         
         getRenderingContext().getTextRenderer().setupGraphics( getContext().getGraphics() );
@@ -228,7 +227,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         getRenderingContext().setRootBox(body_box);
         
         XRLog.layout( Level.FINEST, "after layout: " + body_box);
-        //long end_time = new java.util.Date().getTime();
 
         
         /*
@@ -582,7 +580,12 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
      * @return   The fixedRectangle value
      */
     public Rectangle getFixedRectangle() {
-        return enclosingScrollPane.getViewportBorderBounds();
+        if(enclosingScrollPane != null) {
+            return enclosingScrollPane.getViewportBorderBounds();
+        } else {
+            Dimension dim = getSize();
+            return new Rectangle(0,0,dim.width,dim.height);
+        }
     }
 
 
@@ -771,6 +774,15 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/30 20:28:28  joshy
+ * support for multiple floats on a single line.
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/11/29 23:28:11  joshy
  * updated the javadocs
  * added media methods to RenderingContext

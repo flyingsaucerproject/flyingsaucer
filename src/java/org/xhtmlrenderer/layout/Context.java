@@ -133,6 +133,7 @@ public class Context {
      * the current block formatting context
      */
     protected BlockFormattingContext bfc;
+    protected Stack bfc_stack;
 
     /**
      * Description of the Field
@@ -207,6 +208,7 @@ public class Context {
         }
         text_renderer.setTextRenderingHints(defaultHints);
         */
+        bfc_stack = new Stack();
     }
 
     /**
@@ -723,6 +725,13 @@ public class Context {
         return bfc;
     }
 
+    public void pushBFC(BlockFormattingContext bfc) {
+        bfc_stack.push(this.bfc);
+        this.bfc = bfc;
+    }
+    public void popBFC() {
+        this.bfc = (BlockFormattingContext)bfc_stack.pop();
+    }
     public void setBlockFormattingContext(BlockFormattingContext bfc) {
         this.bfc = bfc;
     }
@@ -771,6 +780,15 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2004/11/30 20:28:27  joshy
+ * support for multiple floats on a single line.
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.23  2004/11/28 23:29:02  tobega
  * Now handles media on Stylesheets, still need to handle at-media-rules. The media-type should be set in Context.media (set by default to "screen") before calling setContext on TBStyleReference.
  *
