@@ -11,7 +11,6 @@ import java.awt.Rectangle;
 import org.joshy.html.box.*;
 import java.net.URL;
 
-import org.joshy.u;
 
 public class Context { 
     public Graphics graphics;

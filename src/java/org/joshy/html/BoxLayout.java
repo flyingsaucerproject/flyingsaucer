@@ -17,6 +17,7 @@ import org.joshy.html.box.Box;
 import org.joshy.html.painter.BackgroundPainter;
 import org.joshy.html.painter.BorderPainter;
 import org.joshy.html.util.GraphicsUtil;
+import org.joshy.html.util.ImageUtil;
 
 public class BoxLayout extends Layout {
 

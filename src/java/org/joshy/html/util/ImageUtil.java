@@ -1,6 +1,7 @@
-package org.joshy.html;
+package org.joshy.html.util;
 
 import org.joshy.u;
+import org.joshy.html.Context;
 import javax.swing.ImageIcon;
 import java.awt.Image;
 import java.net.URL;

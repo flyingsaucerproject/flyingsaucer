@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.*;
 import java.awt.Color;
-import org.joshy.u;
-import org.joshy.x;
 import org.joshy.html.css.*;
 
 import com.steadystate.css.*;
@@ -14,6 +12,9 @@ import com.steadystate.css.parser.*;
 import org.w3c.dom.*;
 import org.w3c.dom.css.*;
 import org.w3c.css.sac.*;
+
+import org.joshy.u;
+import org.joshy.x;
 
 public class CSSBank extends CSSAccessor {
     /* internal vars */

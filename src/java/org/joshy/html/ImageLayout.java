@@ -3,6 +3,7 @@ package org.joshy.html;
 import org.joshy.html.box.BlockBox;
 import org.joshy.html.box.Box;
 import org.joshy.html.box.InlineBox;
+import org.joshy.html.util.ImageUtil;
 import javax.swing.ImageIcon;
 import java.awt.Image;
 import java.awt.Rectangle;
