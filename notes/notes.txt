@@ -1,30 +1,4 @@
 notes
-    
-
-=====================
-post-java.net release
----------------------
-
-make a welcome post to the mailing list
-get the code into java.net's cvs
-make a mock chat app to use the renderer
-make getting started text
-make a large scale todo list broken up by topic
-
-----
-large scale todo
-    break all network/file access out into a networkloader interface, w/ a default implementation. attach to the context.
-    create unit test to simply load all test xhtmls
-    create list of missing css features
-    create list of remaining bugs
-    
-    make a plan to integrate rhino
-        how to hook in the interpreter
-        how to handle actions
-        how to parse the javascript out of the xhtml
-
-
-
 
 =====================
 
@@ -86,12 +60,10 @@ for next build 0.04
     //demo of a lot of text (shakespeare)
     //do horizontal scrolling
     //fix link bug
-    implement row spanning
+    //implement row spanning
     support columns on tables
     build new demo w/ css techniques for pretty helpfile
     support clear on inline floats
-    update supported features list
-    make webpage for it
     fix fixed positioning support (when canvas > body size)
 ====================
 
@@ -281,26 +253,6 @@ support clear on inline context
 make base url for loading images
 update supported features list
 
-
-
-
-
-
-
-
-update the supported features list
-make inline-block support
-to finish aura
-    fix extra space
-    make floated block work (not just floated image)
-    make floating carry down to next block.
-    support clear to turn off down floating
-    //fix drawing of extra line item bullets
-    stop extra refreshes
-    support horizontal scrolling
-
-inline block floating
-float blocks when in a block only context in addition to inline context
 
 ==============
 

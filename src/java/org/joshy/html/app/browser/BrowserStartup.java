@@ -1,18 +1,39 @@
 package org.joshy.html.app.browser;
 
+import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
-import java.net.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.net.URL;
+import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.joshy.html.*;
+import org.joshy.html.box.*;
 import org.joshy.html.swing.*;
 import org.joshy.u;
-import org.joshy.x;
-import java.util.logging.*;
-import org.xml.sax.*;
-import javax.xml.parsers.*;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.*;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXParseException;
 
 public class BrowserStartup {
     public static Logger logger = Logger.getLogger("app.browser");
@@ -174,19 +195,58 @@ class BrowserMenuBar extends JMenuBar {
             }
         });
         SelectionMouseListener ma = new SelectionMouseListener();
-        view.addMouseListener(ma);
-        view.addMouseMotionListener(ma);
+        root.panel.view.addMouseListener(ma);
+        root.panel.view.addMouseMotionListener(ma);
+        logger.info("added a mouse motion listener: " + ma);
     }
     
     public static Logger logger = Logger.getLogger("app.browser");
 
 class SelectionMouseListener implements MouseListener, MouseMotionListener {
+    protected HTMLPanel panel = null;    
+    
     public void mouseClicked(MouseEvent e) { }
     public void mouseEntered(MouseEvent e) { }
     public void mouseExited(MouseEvent e) { }
-    public void mousePressed(MouseEvent e) { }
-    public void mouseReleased(MouseEvent e) { }
-    public void mouseDragged(MouseEvent e) { }
+    public void mousePressed(MouseEvent e) {
+        if(e.getComponent() instanceof HTMLPanel) {
+            panel = (HTMLPanel)e.getComponent();
+            Box box = panel.findBox(e.getX(),e.getY());
+            if(box == null) return;
+            // if box is text node then start selection
+            if(box instanceof InlineBox) {
+                int x = panel.findBoxX(e.getX(),e.getY());
+                panel.getContext().setSelectionStart(box);
+                panel.getContext().setSelectionStartX(x);
+                panel.repaint();
+            }
+        }
+    }
+    
+    public void mouseReleased(MouseEvent e) {
+        if(panel != null) {
+            panel.getContext().clearSelection();
+            panel.repaint();
+        }
+    }
+    
+    public void mouseDragged(MouseEvent e) {
+        if(e.getComponent() instanceof HTMLPanel) {
+            panel = (HTMLPanel)e.getComponent();
+            Box box = panel.findBox(e.getX(),e.getY());
+            if(box == null) return;
+            //u.p("pressed " + box);
+            // if box is text node then start selection
+            if((box.node != null &&
+                box.node.getNodeName() != "body")) {
+                    
+                int x = panel.findBoxX(e.getX(),e.getY());
+                panel.getContext().setSelectionEnd(box);
+                panel.getContext().setSelectionEndX(x);
+                panel.repaint();
+            }
+        }
+    }
     public void mouseMoved(MouseEvent e) { } 
 }
 

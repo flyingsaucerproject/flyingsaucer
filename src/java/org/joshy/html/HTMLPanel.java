@@ -44,6 +44,9 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
     BodyLayout layout;
     private Dimension intrinsic_size;
 
+    public Context getContext() {
+        return c;
+    }
     public HTMLPanel() {
         c = new Context();
         layout = new BodyLayout();
@@ -342,27 +345,40 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
             }
         }
 
-        
-        /*
-        if(box instanceof LineBox) {
-            Iterator it2 = ((LineBox)box).inlines.iterator();
-            while(it2.hasNext()) {
-                Box bx = (Box)it2.next();
-                Box retbox = findBox(bx,x+bx.x,y-bx.y);
-                if(retbox != null) {
-                    return retbox;
-                }
-            }
-        }
-        
-        u.p("testing: " + box + " at ("+x+","+y+")"); 
-        if(box.contains(x,y)) {
-            return box;
-        }
-        */
         return null;
     }
     
+    public int findBoxX(int x, int y) {
+        return findBoxX(this.body_box,x, y);
+    }
+    
+    public int findBoxX(Box box, int x, int y) {
+        //u.p("findBox(" + box + " at ("+x+","+y+")");
+        Iterator it = box.getChildIterator();
+        while(it.hasNext()) {
+            Box bx = (Box)it.next();
+            int tx = x;
+            int ty = y;
+            tx -= bx.x;
+            tx -= bx.totalLeftPadding();
+            ty -= bx.y;
+            ty -= bx.totalTopPadding();
+            
+            // test the contents
+            int retbox = findBoxX(bx,tx,ty);
+            if(retbox != -1) {
+                return retbox;
+            }
+            // test the box itself
+            //u.p("bx test = " + bx + " " + x +","+y);
+            if(bx.contains(x-bx.x,y-bx.y)) {
+                return x-bx.x;
+            }
+        }
+        
+        return -1;
+    }
+
     
     public void componentHidden(ComponentEvent e) { }
     public void componentMoved(ComponentEvent e) { }

@@ -101,6 +101,8 @@ public class InlinePainter {
             g.translate(inline.left, inline.top);
         }
         
+        c.updateSelection(inline);
+        
         // calculate the x and y relative to the baseline of the line (ly) and the
         // left edge of the line (lx)
         //String text = inline.text.substring(inline.start_index,inline.end_index);
@@ -143,6 +145,20 @@ public class InlinePainter {
         if(c.debugDrawInlineBoxes()) {
             GraphicsUtil.draw(c.getGraphics(),new Rectangle(lx+inline.x+1,ly+inline.y+1-inline.height,
                     inline.width-2,inline.height-2),Color.green);
+        }
+        if(c.inSelection(inline)) {
+            int dw = inline.width -2;
+            int xoff = 0;
+            if(c.getSelectionEnd() == inline) {
+                dw = c.getSelectionEndX();
+            }
+            if(c.getSelectionStart() == inline) {
+                xoff = c.getSelectionStartX();
+            }
+            GraphicsUtil.draw(c.getGraphics(),
+                new Rectangle(lx+inline.x+xoff,ly+inline.y-inline.height,
+                                dw-xoff,inline.height),
+                Color.red);
         }
         
         // restore the old font

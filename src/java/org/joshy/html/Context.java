@@ -11,6 +11,8 @@ import java.awt.Rectangle;
 import org.joshy.html.box.*;
 import java.net.URL;
 
+import org.joshy.u;
+
 public class Context { 
     public Graphics graphics;
     public Graphics getGraphics() {
@@ -174,6 +176,62 @@ public class Context {
         //"\n color = " + color + " background color = " + background_color;
         + " offset = " + xoff + "," + yoff
         ;
+    }
+    
+    
+    
+    /* selection management code */
+    protected Box selection_start, selection_end;
+    protected int selection_end_x, selection_start_x;
+    
+    public void setSelectionStart(Box box) {
+        selection_start = box;
+    }
+    public void setSelectionEnd(Box box) {
+        selection_end = box;
+    }
+    public void setSelectionStartX(int x) {
+        selection_start_x = x;
+    }
+    public void setSelectionEndX(int x) {
+        selection_end_x = x;
+    }
+    
+    public Box getSelectionStart() {
+        return selection_start;
+    }
+    public Box getSelectionEnd() {
+        return selection_end;
+    }
+    public int getSelectionStartX() {
+        return selection_start_x;
+    }
+    public int getSelectionEndX() {
+        return selection_end_x;
+    }
+    
+    public void clearSelection() {
+        selection_end = null;
+        selection_start = null;
+        selection_start_x = -1;
+        selection_end_x = -1;
+    }
+    
+    protected boolean in_selection = false;
+    public void updateSelection(Box box) {
+        if(box == selection_end) {
+            in_selection = false;
+        }
+        if(box == selection_start) {
+            in_selection = true;
+        }
+    }
+    public boolean inSelection(Box box) {
+        if(box == selection_end ||
+            box == selection_start) {
+            return true;
+        }
+        return in_selection;
     }
     
     
