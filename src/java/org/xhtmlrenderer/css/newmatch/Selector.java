@@ -21,6 +21,8 @@
 
 package org.xhtmlrenderer.css.newmatch;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.extend.AttributeResolver;
 import org.xhtmlrenderer.util.XRLog;
@@ -72,9 +74,9 @@ class Selector {
      */
     String getOrder() {
         if (chainedSelector != null) return chainedSelector.getOrder();//only "deepest" value is correct
-        String b = "000" + _specificityB;
-        String c = "000" + _specificityC;
-        String d = "000" + _specificityD;
+        String b = "000" + getSpecificityB();
+        String c = "000" + getSpecificityC();
+        String d = "000" + getSpecificityD();
         String p = "00000" + _pos;
         return "0" + b.substring(b.length() - 3) + c.substring(c.length() - 3) + d.substring(d.length() - 3) + p.substring(p.length() - 5);
     }
@@ -88,6 +90,11 @@ class Selector {
      * Note: the parser should give all class
      */
     public boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
+        if (siblingSelector != null) {
+            Element sib = siblingSelector.getAppropriateSibling(e);
+            if (sib == null) return false;
+            if (!siblingSelector.matches(sib, attRes)) return false;
+        }
         //TODO: resolve question of how CSS should handle namespaces. Unfortunately getLocalName is null if no namespace.
         if (_name == null || _name.equals(e.getLocalName()) || (e.getLocalName() == null && _name.equals(e.getNodeName()))) {
             if (conditions != null) {
@@ -107,6 +114,11 @@ class Selector {
      * Note: the parser should give all class
      */
     public boolean matchesDynamic(org.w3c.dom.Element e, AttributeResolver attRes) {
+        if (siblingSelector != null) {
+            Element sib = siblingSelector.getAppropriateSibling(e);
+            if (sib == null) return false;
+            if (!siblingSelector.matchesDynamic(sib, attRes)) return false;
+        }
         if (isPseudoClass(VISITED_PSEUDOCLASS))
             if (attRes == null || !attRes.isVisited(e)) return false;
         if (isPseudoClass(ACTIVE_PSEUDOCLASS))
@@ -118,6 +130,19 @@ class Selector {
         return true;
     }
 
+    Element getAppropriateSibling(Element e) {
+        Node sibling = null;
+        switch (_axis) {
+            case IMMEDIATE_SIBLING_AXIS:
+                sibling = e.getPreviousSibling();
+                break;
+            default:
+                XRLog.exception("Bad selector");
+        }
+        if (!(sibling instanceof Element)) return null;
+        return (Element) sibling;
+    }
+
     /**
      * append a selector to this chain, specifying which axis it should be evaluated on
      */
@@ -126,9 +151,19 @@ class Selector {
             XRLog.exception("Trying to append child selectors to pseudoElement " + _pe);
         }
         if (chainedSelector == null)
-            return (chainedSelector = new Selector(_pos, _specificityB, _specificityC, _specificityD, _parent, axis, elementName));
+            return (chainedSelector = new Selector(_pos, getSpecificityB(), getSpecificityC(), getSpecificityD(), _parent, axis, elementName));
         else
             return chainedSelector.appendChainedSelector(axis, elementName);
+    }
+
+    /**
+     * append a selector to this chain, specifying which axis it should be evaluated on
+     */
+    public Selector setSiblingSelector(int axis, String elementName) {
+        if (siblingSelector == null)
+            return (siblingSelector = new Selector(_pos, getSpecificityB(), getSpecificityC(), getSpecificityD(), _parent, axis, elementName));
+        else
+            return siblingSelector.setSiblingSelector(axis, elementName);
     }
 
     /**
@@ -281,8 +316,39 @@ class Selector {
         return _axis;
     }
 
+    /**
+     * The correct specificity value for this selector and its sibling-axis selectors
+     *
+     * @return
+     */
+    public int getSpecificityB() {
+        if (siblingSelector != null) return siblingSelector.getSpecificityB();
+        return _specificityB;
+    }
+
+    /**
+     * The correct specificity value for this selector and its sibling-axis selectors
+     *
+     * @return
+     */
+    public int getSpecificityD() {
+        if (siblingSelector != null) return siblingSelector.getSpecificityD();
+        return _specificityD;
+    }
+
+    /**
+     * The correct specificity value for this selector and its sibling-axis selectors
+     *
+     * @return
+     */
+    public int getSpecificityC() {
+        if (siblingSelector != null) return siblingSelector.getSpecificityC();
+        return _specificityC;
+    }
+
     private Ruleset _parent;
     private Selector chainedSelector = null;
+    private Selector siblingSelector = null;
 
     private int _axis;
     private String _name;

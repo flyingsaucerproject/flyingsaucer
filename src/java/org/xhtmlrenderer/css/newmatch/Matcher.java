@@ -203,6 +203,9 @@ public class Matcher {
     }
 
     /**
+     * Turn the selection logic inside-out: we want to start as close to the root element as possible,
+     * while sac starts at the final selected element
+     *
      * @param rs       The feature to be added to the ChainedSelector attribute
      * @param selector The feature to be added to the ChainedSelector attribute
      */
@@ -261,6 +264,36 @@ public class Matcher {
         }
         if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
             s = s.appendChainedSelector(axis, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
+        }
+        if (cond != null) {
+            addConditions(s, cond);
+        }
+    }
+
+    /**
+     * @param s        The feature to be added to the ChainedSelector attribute
+     * @param selector The feature to be added to the ChainedSelector attribute
+     */
+    private void addSiblingSelector(Selector s, org.w3c.css.sac.Selector selector) {
+        int axis = 0;
+        org.w3c.css.sac.SimpleSelector simple = null;
+        switch (selector.getSelectorType()) {
+            case org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR:
+                axis = Selector.IMMEDIATE_SIBLING_AXIS;
+                simple = ((org.w3c.css.sac.SiblingSelector) selector).getSiblingSelector();
+                break;
+            default:
+                XRLog.exception("Bad selector");
+        }
+
+        org.w3c.css.sac.Condition cond = null;
+        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
+            cond = ((org.w3c.css.sac.ConditionalSelector) simple).getCondition();
+            //if ConditionalSelectors can be nested, we are in trouble here
+            simple = ((org.w3c.css.sac.ConditionalSelector) simple).getSimpleSelector();
+        }
+        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
+            s = s.setSiblingSelector(axis, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
         }
         if (cond != null) {
             addConditions(s, cond);
