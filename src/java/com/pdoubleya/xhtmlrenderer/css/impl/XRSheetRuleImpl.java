@@ -350,11 +350,9 @@ public abstract class XRSheetRuleImpl implements XRSheetRule {
         }
         Iterator names = propNames.iterator();
 
-        //for ( int seq = 0, len = decl.getLength(); seq < len; seq++ ) {
         int seq = 0;
         while ( names.hasNext() ) {
 
-            //String propName = decl.item( seq );
             String propName = (String)names.next();
             Iterator iter = XRPropertyImpl.fromCSSPropertyDecl( _domCSSRule, decl, propName, seq++ );
             while ( iter.hasNext() ) {

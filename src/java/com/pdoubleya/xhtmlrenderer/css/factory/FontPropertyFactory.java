@@ -105,7 +105,6 @@ public class FontPropertyFactory extends AbstractPropertyFactory {
                     if ( familyPrimitive == null ) familyPrimitive = primitive;
                     continue;
                 } 
-                System.out.println("  treating as " + exp_propName);
                 list.add( 
                     newProperty( 
                         exp_propName, 

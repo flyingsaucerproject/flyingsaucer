@@ -51,7 +51,6 @@ import org.w3c.dom.css.CSSValueList;
 
 import org.joshy.html.Border;
 import org.joshy.html.Context;
-import org.joshy.html.css.JStyle;
 import org.joshy.html.css.StaticHtmlAttributeResolver;
 import org.joshy.html.css.StyleReference;
 
@@ -663,7 +662,7 @@ public class XRStyleReference implements StyleReference {
         } else {
             sDbgLogger.warning( "Property : " + xrProp + " is not a value list " + xrProp.actualValue().cssValue().getClass().getName() );
         }
-        return null;// xrElement.derivedStyle().getColor();
+        return null;
     }
 
 
