@@ -10,11 +10,15 @@ import org.joshy.html.box.*;
 import org.joshy.html.*;
 import org.w3c.dom.*;
 
-public class InputPassword extends FormItemLayout {
+public class InputPassword extends InputText {
     
     public InputPassword() {
     }
     
+    protected JTextField _createComponent() {
+        return new JPasswordField();
+    }
+/*    
     public JComponent createComponent(Element elem) {
         JPasswordField comp = new JPasswordField();
         commonPrep(comp,elem);
@@ -26,7 +30,12 @@ public class InputPassword extends FormItemLayout {
         } else {
             comp.setColumns(15);
         }
+        if(elem.hasAttribute("readonly") && 
+           elem.getAttribute("readonly").equals("readonly")) {
+            comp.setEditable(false);
+        }
         return comp;
     }
+    */
     
 }

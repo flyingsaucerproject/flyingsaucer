@@ -90,7 +90,7 @@ public class LayoutFactory {
                 if(type.equals("checkbox")) { return new InputCheckbox(); }
                 //if(type.equals("file")) { return new InputCheckbox(); }
                 if(type.equals("hidden")) { return new NullLayout(); }
-                //if(type.equals("image")) { return new InputCheckbox(); }
+                if(type.equals("image")) { return new InputImage(); }
                 if(type.equals("password")) { return new InputPassword(); }
                 if(type.equals("radio")) { return new InputRadio(); }
                 if(type.equals("reset")) { return new InputButton(); }

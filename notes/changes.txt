@@ -1,3 +1,15 @@
+08/18/2004
+    added an infinite loop error and removed the extra system.exit()s
+    added support for transparent backgrounds
+    added image button
+    added maxlength support to text and password fields
+    added disabled support to text and password fields
+    added selected support to select items
+    added dashed, dotted, and groove box border drawing
+08/18/2004
+    added latin (alpha), roman, square, and circle support to list item bullets
+08/07 - 08/17 
+    i'm sure i missed a bunch of stuff here. forms crap, some refactoring maybe? look over the list
 08/06/2004
     added support to the layoutfactory for all of the input elements
     implemented radio, checkbox, password, and hidden form inputs

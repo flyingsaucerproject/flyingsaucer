@@ -29,6 +29,7 @@
             <input type="button" value="Panic!"/> normal button<br/>
             <input type="reset"/> reset button<br/>
             <input type="submit"/> submit button<br/>
+            <input type="image" src="demos/image.png"/>image button<br/>
         </form>
         
         
@@ -47,6 +48,7 @@
         <h3>Password Test</h3>
         <form>
             password <input type="password" value=""/><br/>
+            empty with maxlength = 6 <input type="password" maxlength="6"/><br/>
         </form>
         
         <h3>Radio Test</h3>
@@ -63,6 +65,11 @@
                 <option>option 2</option>
                 <option>option 3</option>
             </select>
+            <select>
+                <option>option1</option>
+                <option>option 2</option>
+                <option selected="selected">pre selected</option>
+            </select>
         </form>
         
         <h3>Text Test</h3>
@@ -70,6 +77,8 @@
             empty <input type="text" value=""/><br/>
             with value <input type="text" value="my value"/><br/>
             empty with size = 6<input type="text" size="6"/><br/>
+            empty with maxlength = 6 <input type="text" maxlength="6"/><br/>
+            readonly = readonly <input type="text" readonly="readonly" value="can't touch this"/><br/>
         </form>
         
         <h3>TextArea Test</h3>

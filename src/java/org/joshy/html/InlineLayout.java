@@ -20,6 +20,7 @@ import org.joshy.html.Context;
 import org.joshy.html.util.GraphicsUtil;
 import org.joshy.html.util.TextUtil;
 import org.joshy.html.util.FontUtil;
+import org.joshy.html.util.InfiniteLoopError;
 import org.joshy.html.util.InlineUtil;
 import org.joshy.html.util.LineBreaker;
 import org.joshy.html.painter.*;
@@ -139,7 +140,7 @@ public Box layoutChildren(Context c, Box box) {
                 u.p("lines = ");
                 //u.p(block.boxes);
                 u.p("db 1 hit");
-                System.exit(-1);
+                throw new InfiniteLoopError("Infinite loop detected in InlineLayout");
             }
             // look at current inline
             // break off the longest section that will fit

@@ -725,6 +725,12 @@ public class BoxLayout extends Layout {
     private Color getBackgroundColor(Context c, Box box) {
 
         if(box.background_color == null) {
+            Object obj = c.css.getProperty(box.getElement(),"background-color",false);
+            //u.p("got : " + obj);
+            if(obj.toString().equals("transparent")) {
+                box.background_color = new Color(0,0,0,0);
+                return box.background_color;
+            }
 
             box.background_color = c.css.getBackgroundColor(box.getElement());
 

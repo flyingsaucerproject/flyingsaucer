@@ -415,8 +415,7 @@ public abstract class CSSAccessor implements StyleReference {
             u.p("null returned on: " + elem.getNodeName());
 
             u.p("property color");
-
-            System.exit(-1);
+            return null;
 
         }
 

@@ -27,11 +27,16 @@ public class RuleNormalizer {
     }
     
     private void expandProperty(String prop, CSSStyleRule rule) {
+        if(prop.equals("background-color") &&
+            rule.getStyle().getPropertyValue(prop).equals("transparent")) {
+            return;
+        }
         if(prop.equals("color") ||
             prop.equals("background-color") ||
             prop.equals("border-color")) {
                 String value =  rule.getStyle().getPropertyValue(prop);
                 rule.getStyle().setProperty(prop,getColorHex(value),null);
+            return;
         }
         if(prop.equals("padding")) {
             expand(prop,rule);

@@ -27,19 +27,14 @@ public static InlineBox generateMultilineBreak(Context c, Node node, int start, 
             u.p("db 2 hit");
             u.p("text = " + text);
             u.p("end = " + end);
-            System.exit(-1);
+            throw new InfiniteLoopError("Caught a potential infinite loop in the LineBreaker");
         }
 
         //u.p("end = " + end);
         int next_space = text.indexOf(" ",end);
         if(next_space == -1) { next_space = text.length(); }
         //u.p("next space = " + next_space);
-        try {
-            //u.p("end = " + end + " next space = " + next_space + " text = " + text.substring(end,next_space));
-        } catch (Exception ex) {
-            u.p(ex);
-            System.exit(-1);
-        }
+
         int len2 = FontUtil.len(c,node,text.substring(start,next_space));
         //u.p("len2 = " + len2 + " avail = " + avail);
         // if this won't fit, then break and use the previous span
