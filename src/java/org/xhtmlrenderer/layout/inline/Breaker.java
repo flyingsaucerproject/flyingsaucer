@@ -5,6 +5,7 @@ import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.css.constants.IdentValue;
 
 import java.awt.*;
 
@@ -23,14 +24,14 @@ public class Breaker {
         //inline.setFont(font);
         
         // ====== handle nowrap
-        if (inline.whitespace.equals("nowrap")) {//we can't touch it
+        if ( inline.whitespace == IdentValue.NOWRAP ) {
             return;
         }
 
         //check if we should break on the next newline
-        if (inline.whitespace.equals("pre") ||
-                inline.whitespace.equals("pre-wrap") ||
-                inline.whitespace.equals("pre-line")) {
+        if ( inline.whitespace == IdentValue.PRE ||
+                inline.whitespace == IdentValue.PRE_WRAP ||
+                inline.whitespace == IdentValue.PRE_LINE ) {
             // Uu.p("doing a pre line");
             int n = inline.getSubstring().indexOf(WhitespaceStripper.EOL);
             // Uu.p("got eol at: " + n);
@@ -41,7 +42,7 @@ public class Breaker {
         }
 
         //check if we may wrap
-        if (inline.whitespace.equals("pre")) {//we can't do anymore
+        if ( inline.whitespace == IdentValue.PRE ) {
             return;
         }
 

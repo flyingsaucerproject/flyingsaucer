@@ -207,12 +207,14 @@ public class WhitespaceStripper {
         return;
     }*/
 
-    public static String getWhitespace(CalculatedStyle style) {
-        String whitespace = style.getStringProperty(CSSName.WHITE_SPACE);
+    public static IdentValue getWhitespace(CalculatedStyle style) {
+        /*String whitespace = style.getStringProperty(CSSName.WHITE_SPACE);
         if (whitespace == null) {//should never happen
             whitespace = "normal";
         }
-        return whitespace;
+        return whitespace;*/
+        IdentValue whitespace = style.getIdent(CSSName.WHITE_SPACE);
+        return ( whitespace == null ? IdentValue.NORMAL : whitespace );
     }
 
 // --Commented out by Inspection START (2005-01-05 01:05):

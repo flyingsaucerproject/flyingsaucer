@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.css.constants.IdentValue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -88,7 +89,7 @@ public class InlineTextBox extends InlineBox {
         return master;
     }
 
-    public String whitespace = "normal";
+    public IdentValue whitespace = IdentValue.NORMAL;
 
     public String pseudoElement;
 }
