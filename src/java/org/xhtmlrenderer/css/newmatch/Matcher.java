@@ -177,7 +177,7 @@ public class Matcher {
     }
 
     private int appendStylesheet(StylesheetInfo si, int count, java.util.TreeMap sorter, String media) {
-        if (!si.appliesToMedia(media)) return count;
+        boolean applies = si.appliesToMedia(media);//have to iterate even if it does not apply, may have embedded at-rules that apply
         Stylesheet ss = si.getStylesheet();
         if (ss == null) {
             ss = _styleFactory.getStylesheet(si);
@@ -188,7 +188,7 @@ public class Matcher {
             Object obj = rulesets.next();
             if (obj instanceof StylesheetInfo) {
                 count = appendStylesheet((StylesheetInfo) obj, count, sorter, media);
-            } else {
+            } else if (applies) {
                 org.xhtmlrenderer.css.sheet.Ruleset r = (org.xhtmlrenderer.css.sheet.Ruleset) obj;
                 //at this point all selectors in a ruleset must be placed on the descendant axis
                 org.w3c.css.sac.SelectorList selector_list = r.getSelectorList();
