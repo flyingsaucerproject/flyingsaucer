@@ -18,12 +18,19 @@ public class BackgroundPainter {
                 block.width - block.margin.left - block.margin.right - block.border.left - block.border.right,
                 block.height - block.margin.top - block.border.top - block.border.bottom - block.margin.bottom
                 );
-                
-        //u.p("BackgroundPainter.paint(" + block + " bounds = " + box);
-        //u.p("bg color = " + block.background_color);
-        //u.p("canvas = " + c.canvas);
+        /*
+        u.off();
+        if(block.node.getNodeName().equals("img")) {
+            u.on();
+        }
+        u.p("-------------");
+        u.p("BackgroundPainter.paint(" + block + " bounds = " + box);
+        u.p("bg color = " + block.background_color);
+        u.p("canvas = " + c.canvas);
+        */
         // paint the background
         if(block.background_color != null) {
+            u.p("filling background: " + block.background_color + " " + block);
             c.getGraphics().setColor(block.background_color);
             c.getGraphics().fillRect(box.x,box.y,box.width,box.height);
         }
@@ -33,7 +40,7 @@ public class BackgroundPainter {
         if(block.attachment != null && block.attachment.equals("fixed")) {
             //u.p("fixed: offset = " + c.canvas.getLocation());
             yoff = c.canvas.getLocation().y;
-            c.graphics.setColor(Color.GREEN);
+            //c.graphics.setColor(Color.GREEN);
             //u.p("drawing line at " + (50 - yoff));
             //c.graphics.setClip(c.canvas.getX(),c.canvas.getY(),c.canvas.getWidth(),c.canvas.getHeight());
             c.graphics.setClip(c.canvas.getVisibleRect());
@@ -57,6 +64,7 @@ public class BackgroundPainter {
         }
         
         if(block.background_image != null) {
+            //u.p("back image");
             int left_insets = box.x;
             int top_insets  = box.y;
             int back_width = box.width;
@@ -169,6 +177,8 @@ public class BackgroundPainter {
             }
             c.getGraphics().setClip(oldclip);
         }
+        
+        u.off();
 
     }
     

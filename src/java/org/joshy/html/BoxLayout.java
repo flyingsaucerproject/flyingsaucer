@@ -120,6 +120,7 @@ public class BoxLayout extends Layout {
 
     public void setupFixed(Context c, Box box) {
         if (isFixed(c, box)) {
+            //System.out.println("setting fixed for box: " + box);
             box.fixed = true;
             if (c.css.hasProperty(box.node, "right", false)) {
                 box.right = (int) c.css.getFloatProperty(box.node, "right", 0, false);
@@ -273,7 +274,8 @@ public class BoxLayout extends Layout {
         // get the css properties
         String back_image = c.css.getStringProperty(block.getElement(), "background-image", false);
         block.repeat = c.css.getStringProperty(block.getElement(), "background-repeat");
-        block.attachment = c.css.getStringProperty(block.getElement(), "background-attachment");
+        block.attachment = c.css.getStringProperty(block.getElement(), "background-attachment",false);
+        //System.out.println("block.attachment = " + block.attachment);
 
         // handle image positioning issues
         // need to update this to support vert and horz, not just vert

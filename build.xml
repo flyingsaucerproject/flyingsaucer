@@ -378,4 +378,12 @@
         </java>
     </target>
     
+    <target name="test-test" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/about/index.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+
+    
 </project>

@@ -1,8 +1,13 @@
+08/03/2004
+    fixed a few minor bugs in the sample about box html
+    background-attachment no longer inherits
+    changed default background-attachment to scroll
 08/02/2004
-    added normalization for "border: dim style color"
+    added normalization for "border: length style color"
     changed unit increment on the scroll bar to 50
 8/01/2004
     moved most event handlers into the BrowserActions class
+    modified the build.xml for tobe's code
 7/30/2004
     added key combos for the menus
 7/29/2004

@@ -6,6 +6,7 @@
     /* background-color: transparent */
     /*background-color: #cccccc; */
     background-position: 0% 0%;
+    background-attachment: scroll;
     
     font-size: 12pt;
     font-weight: normal;
@@ -179,7 +180,7 @@ div {
 }
 
 img {
-    background-color: #ffff00;
+    background-color: #ff00ff;
     border-top-width: 1px;
     border-right-width: 1px;
     border-bottom-width: 1px;
