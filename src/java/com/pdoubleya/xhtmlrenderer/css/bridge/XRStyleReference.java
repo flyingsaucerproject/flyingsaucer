@@ -1006,9 +1006,9 @@ public class XRStyleReference implements StyleReference {
 
         Condition cond = null;
         if ( simple.getSelectorType() == Selector.SAC_CONDITIONAL_SELECTOR ) {
-            cond = ( (ConditionalSelector)selector ).getCondition();
+            cond = ( (ConditionalSelector)simple ).getCondition();
             //if ConditionalSelectors can be nested, we are in trouble here
-            simple = ( (ConditionalSelector)selector ).getSimpleSelector();
+            simple = ( (ConditionalSelector)simple ).getSimpleSelector();
         }
         if ( simple.getSelectorType() == Selector.SAC_ELEMENT_NODE_SELECTOR ) {
             s = s.appendChainedSelector( axis, ( (ElementSelector)simple ).getLocalName() );
