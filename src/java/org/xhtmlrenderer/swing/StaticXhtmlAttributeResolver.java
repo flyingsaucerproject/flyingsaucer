@@ -50,10 +50,18 @@ public class StaticXhtmlAttributeResolver implements org.xhtmlrenderer.extend.At
 
     public String getElementStyling(org.w3c.dom.Element e) {
         StringBuffer style = new StringBuffer();
-        if (e.getNodeName().equals("td") && !e.getAttribute("colspan").equals("")) {
-            style.append("fs-table-cell-colspan: ");
-            style.append(e.getAttribute("colspan"));
-            style.append(";");
+        if (e.getNodeName().equals("td")) {
+            String s;
+            if (!(s = e.getAttribute("colspan")).equals("")) {
+                style.append("-fs-table-cell-colspan: ");
+                style.append(s);
+                style.append(";");
+            }
+            if (!(s = e.getAttribute("rowspan")).equals("")) {
+                style.append("-fs-table-cell-rowspan: ");
+                style.append(s);
+                style.append(";");
+            }
         }
         style.append(e.getAttribute("style"));
         return style.toString();
