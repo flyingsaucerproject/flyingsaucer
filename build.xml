@@ -25,7 +25,7 @@
     </target>
 
     <target name="zip" description="zip file" depends="jar">
-        <zip basedir="." zipfile="../htmlrender.zip">
+        <zip basedir="." zipfile="../flyingsaucer.zip">
         </zip>
     </target>
 
