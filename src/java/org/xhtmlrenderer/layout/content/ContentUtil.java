@@ -432,8 +432,8 @@ public class ContentUtil {
 
     public static boolean isFloated(CascadedStyle style) {
         if (style == null) return false;
-        if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
-        String float_val = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
+        if (!style.hasProperty(CSSName.FLOAT)) return false;//default is inline
+        String float_val = style.propertyByName(CSSName.FLOAT).getValue().getCssText();
         if (float_val == null) {
             return false;
         }
@@ -462,6 +462,15 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2004/12/16 17:41:46  joshy
+ * fixed floats.  it was looking for the display property instead of the float
+ * property
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.19  2004/12/16 17:33:15  joshy
  * moved back to abs pos content
  * Issue number:

@@ -77,6 +77,10 @@ public class LayoutUtil {
             return true;
         }
         
+        if (box.content instanceof FloatedBlockContent) {
+            return true;
+        }
+        
         // if (box.content instanceof BlockContent ||
         //     (box.isInlineElement() && !(box.content instanceof TextContent))) {
         //     Uu.p("box is a block or element");
