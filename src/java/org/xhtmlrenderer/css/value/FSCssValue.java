@@ -71,6 +71,9 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
             case org.w3c.dom.css.CSSPrimitiveValue.CSS_RECT:
                 this.rectValue = primitive.getRectValue();
                 break;
+            case org.w3c.dom.css.CSSPrimitiveValue.CSS_URI:
+                this._cssText = primitive.getStringValue();
+                break;
             case CSSPrimitiveValue.CSS_IN:
             // fall-thru
             case CSSPrimitiveValue.CSS_CM:
@@ -253,6 +256,9 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/02/02 12:13:23  pdoubleya
+ * For URIs, return string value.
+ *
  * Revision 1.4  2005/01/29 16:18:13  pdoubleya
  * Fixed error: wasn't storing RGB color value passed in.
  *
