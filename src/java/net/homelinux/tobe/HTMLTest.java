@@ -108,7 +108,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
         addFileLoadAction(test, "http://www.simpleedit.org", new java.net.URL("http://www.simpleedit.org"));
         addFileLoadAction(test, "Element styling", "demos/element-style.xhtml");
         addFileLoadAction(test, "UL bug", "demos/ulbug.xhtml");
-        addFileLoadAction(test, "descendant of class", new java.net.URL("file:///home/tobe/foo/inherit.xhtml"));
+        addFileLoadAction(test, "HTML", new java.net.URL("http://www.cwru.edu/help/introHTML/toc.html"));
 
         JMenu debug = new JMenu("Debug");
         mb.add(debug);

@@ -45,7 +45,7 @@ public class XRDocument implements net.homelinux.tobe.xhtmlrenderer.AttributeRes
     private java.net.URI _uri;
     private java.util.HashMap _nsHandlers = new java.util.HashMap();
     
-    /** Creates a new instance of XhtmlDocument */
+    /** Creates a new instance of Document */
     public XRDocument(UserAgentCallback ua, java.io.InputStream is, java.net.URI uri) {
         _ua = ua;
         _uri = uri;
@@ -55,12 +55,6 @@ public class XRDocument implements net.homelinux.tobe.xhtmlrenderer.AttributeRes
         
         try{
             DocumentBuilder builder = fact.newDocumentBuilder();
-            
-        
-
-        //builder.setErrorHandler(error_handler);
-
-            //_doc = builder.parse(is);
             _doc = builder.newDocument();
             XMLReader xmlReader = XMLReaderFactory.createXMLReader( "org.apache.crimson.parser.XMLReaderImpl" );
             xmlReader.setContentHandler(new DocumentProcessor(this));
@@ -75,6 +69,39 @@ public class XRDocument implements net.homelinux.tobe.xhtmlrenderer.AttributeRes
         catch(java.io.IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    /** Creates a new instance of XRDocument with a custom XMLReader */
+    public XRDocument(UserAgentCallback ua, XMLReader xmlReader, java.io.InputStream is, java.net.URI uri) {
+        _ua = ua;
+        _uri = uri;
+        
+        DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
+        fact.setNamespaceAware(true);
+        
+        try{
+            DocumentBuilder builder = fact.newDocumentBuilder();
+            _doc = builder.newDocument();
+            xmlReader.setContentHandler(new DocumentProcessor(this));
+            xmlReader.parse(new InputSource(is));
+        }
+        catch(javax.xml.parsers.ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+        catch(org.xml.sax.SAXException e) {
+            e.printStackTrace();
+        }
+        catch(java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    
+    /** Creates a new instance of Document, if you insist on creating DOM yourself */
+    public XRDocument(UserAgentCallback ua, org.w3c.dom.Document dom, java.net.URI uri) {
+        _ua = ua;
+        _uri = uri;
+        _doc = dom;
     }
     
     public java.net.URI getURI() {
@@ -95,8 +122,13 @@ public class XRDocument implements net.homelinux.tobe.xhtmlrenderer.AttributeRes
     /** @deprecated, work out a better plan to cache default stylesheets */
     public java.net.URI getNamespace() {
         java.net.URI nsUri = null;
+        String nss = _doc.getDocumentElement().getNamespaceURI();
+        if(nss == null) {
+            System.err.println("Null namespace uri for document");
+            return null;
+        }
         try {
-            nsUri = new java.net.URI(_doc.getDocumentElement().getNamespaceURI());
+            nsUri = new java.net.URI(nss);
         }
         catch(java.net.URISyntaxException e) {
             e.printStackTrace();
