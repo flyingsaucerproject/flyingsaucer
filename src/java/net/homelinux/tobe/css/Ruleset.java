@@ -38,13 +38,28 @@ public class Ruleset {
         /** Check if the given Element matches this selector.
          * Note: the parser should give all class
          */
-        public boolean matches(org.w3c.dom.Element e, ClassAndIDResolver idr) {
+        public boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
             //TODO: resolve question of how CSS should handle namespaces. Unfortunately getLocalName is null if no namespace.
             if(_name == null || _name.equals(e.getLocalName()) || (e.getLocalName() == null && _name.equals(e.getNodeName()))) {
                 //TODO: handle conditions
                 if(_id != null) {
-                    if(idr == null) return false;
-                    if(!_id.equals(idr.getID(e))) return false;
+                    if(attRes == null) return false;
+                    if(!_id.equals(attRes.getID(e))) return false;
+                }
+                if(_classes != null) {
+                    if(attRes == null) return false;
+                    String c = attRes.getClass(e);
+                    if(c == null) return false;
+                    String[] ca = c.split(" ");
+                    boolean matched = true;
+                    for(java.util.Iterator i = _classes.iterator(); matched && i.hasNext();) {
+                        String cc = (String) i.next();
+                        matched=false;
+                        for(int j=0; j < ca.length; j++) {
+                            if(cc.equals(ca[j])) matched=true;
+                        }
+                    }
+                    return matched;
                 }
                 return true;
             }
@@ -60,6 +75,12 @@ public class Ruleset {
         /** only one ID-condition possible per element */
         public void setIDCondition(String id) {
             _id = id;
+        }
+        
+        /** can be many class conditions */
+        public void addClassCondition(String className) {
+            if(_classes == null) _classes = new java.util.ArrayList();
+            _classes.add(className);
         }
 
         /** get the next selector in the chain, for matching against elements along the appropriate axis */
@@ -82,6 +103,7 @@ public class Ruleset {
         private int _axis;
         private String _name;
         private String _id;
+        private java.util.List _classes;
 
     }
     

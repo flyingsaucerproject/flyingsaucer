@@ -63,7 +63,7 @@ public class StyleMap {
         }
         
         private void match(Ruleset.Selector sel, org.w3c.dom.Element e, Mapper child) {
-            if(!sel.matches(e, _idr)) return;
+            if(!sel.matches(e, _attRes)) return;
             Ruleset.Selector chain = sel.getChainedSelector();
             if(chain == null) {
                 child.propertyDeclarations.addAll(sel.getRuleset().getPropertyDeclarations());
@@ -102,15 +102,15 @@ public class StyleMap {
     }
     
     /** create a StyleMap from a DOM document. If ClassAndIDResolver is null, then identity conditions cannot match */
-    public static StyleMap createMap(org.w3c.dom.Document doc, java.util.List rulesets, ClassAndIDResolver idr) {
+    public static StyleMap createMap(org.w3c.dom.Document doc, java.util.List rulesets, AttributeResolver attRes) {
         StyleMap map = new StyleMap();
-        map.mapDocument(doc, rulesets, idr);
+        map.mapDocument(doc, rulesets, attRes);
         return map;
     }
     
-    private void mapDocument(org.w3c.dom.Document doc, java.util.List rulesets, ClassAndIDResolver idr) {
+    private void mapDocument(org.w3c.dom.Document doc, java.util.List rulesets, AttributeResolver attRes) {
         _doc = doc;
-        _idr = idr;
+        _attRes = attRes;
         docMapper = new Mapper(rulesets);
         docMapper.mapChildren(_doc);
     }
@@ -121,7 +121,7 @@ public class StyleMap {
     
     private org.w3c.dom.Document _doc;
     private Mapper docMapper;
-    private ClassAndIDResolver _idr;
+    private AttributeResolver _attRes;
     private java.util.HashMap map = new java.util.HashMap();
 
 }
