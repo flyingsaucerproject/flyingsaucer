@@ -140,19 +140,17 @@
 <!--================ Character mnemonic entities =========================-->
 
 <!ENTITY % HTMLlat1 PUBLIC
-   "-//W3C//ENTITIES Latin1//EN//HTML"
-   "HTMLlat1.ent">
+	"-//W3C//ENTITIES Latin 1//EN//HTML">
 %HTMLlat1;
 
 <!ENTITY % HTMLsymbol PUBLIC
-   "-//W3C//ENTITIES Symbols//EN//HTML"
-   "HTMLsymbol.ent">
-%HTMLsymbol;
+	"-//W3C//ENTITIES Symbols//EN//HTML">
+%HTMLsymbol; -->
 
 <!ENTITY % HTMLspecial PUBLIC
-   "-//W3C//ENTITIES Special//EN//HTML"
-   "HTMLspecial.ent">
-%HTMLspecial;
+	"-//W3C//ENTITIES Special//EN//HTML">
+%HTMLspecial; -->
+
 <!--=================== Generic Attributes ===============================-->
 
 <!ENTITY % coreattrs
