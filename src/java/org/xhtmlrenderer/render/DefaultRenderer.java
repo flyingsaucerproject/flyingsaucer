@@ -117,7 +117,7 @@ public class DefaultRenderer implements Renderer {
         if (Configuration.isTrue("xr.renderer.viewport-repaint", false)) {
             if (c.getGraphics().getClip() != null) {
                 Rectangle2D oldclip = (Rectangle2D) c.getGraphics().getClip();
-                Rectangle2D box_rect = new Rectangle(box.x, box.y, box.width, box.height);
+                Rectangle2D box_rect = new Rectangle(box.x, box.y, box.width, box.height + 1);
                 if (oldclip.intersects(box_rect)) {
                     layout.paint(c, box);
                 }

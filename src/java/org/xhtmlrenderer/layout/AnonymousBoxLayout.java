@@ -38,9 +38,14 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.util.Uu;
+
+import java.awt.Color;
+import java.awt.Rectangle;
 
 
 /**
@@ -56,6 +61,106 @@ public class AnonymousBoxLayout extends InlineLayout {
     public AnonymousBoxLayout() {
     }
 
+
+    public Box layout(Context c, Box block) {
+        //OK, first set up the current style. All depends on this...
+        //CascadedStyle pushed = block.content.getStyle();
+        //if (pushed != null) c.pushStyle(pushed);
+        // this is to keep track of when we are inside of a form
+        //TODO: rethink: saveForm(c, (Element) block.getNode());
+
+        // install a block formatting context for the body,
+        // ie. if it's null.
+
+        // set up the outtermost bfc
+        /*boolean set_bfc = false;
+        if (c.getBlockFormattingContext() == null) {
+            BlockFormattingContext bfc = new BlockFormattingContext(block);
+            c.pushBFC(bfc);
+            set_bfc = true;
+            bfc.setWidth((int) c.getExtents().getWidth());
+        } */
+
+
+        // copy the extents
+        Rectangle oe = c.getExtents();
+        c.setExtents(new Rectangle(oe));
+
+        // calculate the width and height as much as possible
+        //adjustWidth(c, block);
+        //adjustHeight(c, block);
+        block.x = c.getExtents().x;
+        block.y = c.getExtents().y;
+
+        // prepare the box w/ styles
+        //CHECK: an anonymous box shouldn't have stryles?
+        //prepareBox(c, block);
+        //HACK: set empty styles here
+        block.margin = new Border();
+        block.padding = new Border();
+        block.border = new Border();
+        block.background_color = new Color(0, 0, 0, 0);//transparent
+
+        // set up a float bfc
+        //FloatUtil.preChildrenLayout(c, block);
+
+        // set up an absolute bfc
+        //Absolute.preChildrenLayout(c, block);
+
+        // save height incase fixed height
+        int original_height = block.height;
+
+        // do children's layout
+        boolean old_sub = c.isSubBlock();
+        c.setSubBlock(false);
+        //int tx = block.totalLeftPadding();
+        //int ty = block.totalTopPadding();
+        //c.translate(tx, ty);
+        layoutChildren(c, block);//when this is really an anonymous, InlineLayout.layoutChildren is called
+        //c.translate(-tx, -ty);
+        c.setSubBlock(old_sub);
+
+        // restore height incase fixed height
+        if (block.auto_height == false) {
+            Uu.p("restoring original height");
+            block.height = original_height;
+        }
+
+        // remove the float bfc
+        //FloatUtil.postChildrenLayout(c, block);
+
+        // remove the absolute bfc
+        //Absolute.postChildrenLayout(c, block);
+
+        // calculate the total outer width
+        //block.width = block.totalHorizontalPadding() + block.width;
+        //block.height = block.totalVerticalPadding() + block.height;
+
+        //restore the extents
+        c.setExtents(oe);
+
+        // account for special positioning
+        // need to add bfc/unbfc code for absolutes
+        //Relative.setupRelative(block, c);
+        // need to add bfc/unbfc code for absolutes
+        //Absolute.setupAbsolute(block, c);
+        //Fixed.setupFixed(c, block);
+        //FloatUtil.setupFloat(c, block);
+        //TODO: rethink: setupForm(c, block);
+        this.contents_height = block.height;
+
+        // remove the outtermost bfc
+        /*if (set_bfc) {
+            c.getBlockFormattingContext().doFinalAdjustments();
+            c.popBFC();
+        } */
+
+        //and now, back to previous style
+        //if (pushed != null) c.popStyle();
+
+        // Uu.p("BoxLayout: finished with block: " + block);
+        return block;
+    }
 
     // use the passed in 'text'  since that's what we are
 
@@ -134,6 +239,9 @@ public class AnonymousBoxLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/12/26 10:14:45  tobega
+ * Starting to get some semblance of order concerning floats. Still needs more work.
+ *
  * Revision 1.9  2004/12/12 03:32:57  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

@@ -74,6 +74,7 @@ public class InlineLayout extends BoxLayout {
         // Uu.p("+ InlineLayout.layoutContent(): " + box);
         Rectangle bounds = new Rectangle();
         bounds.width = c.getExtents().width;
+        //below should maybe be done somewhere else?
         bounds.width -= box.margin.left + box.border.left + box.padding.left +
                 box.padding.right + box.border.right + box.margin.right;
         validateBounds(bounds);
@@ -484,6 +485,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.70  2004/12/26 10:14:45  tobega
+* Starting to get some semblance of order concerning floats. Still needs more work.
+*
 * Revision 1.69  2004/12/24 11:59:25  tobega
 * Starting to get some semblance of order concerning floats. Still needs more work.
 *
