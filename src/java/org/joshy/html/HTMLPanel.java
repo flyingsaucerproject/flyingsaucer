@@ -47,6 +47,7 @@ import java.util.logging.*;
 import org.w3c.dom.Document;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.*;
 
 import javax.xml.parsers.*;
 
@@ -60,6 +61,7 @@ import java.net.URL;
 
 import java.io.File;
 
+import org.apache.xpath.XPathAPI;
 
 
 import org.joshy.html.forms.*;
@@ -107,7 +109,24 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
 
     }
 
-    
+    public String getDocumentTitle() {
+        String title = "";
+        try {
+            Element root = this.doc.getDocumentElement(); 
+            Node node = 
+                (Node)XPathAPI.selectSingleNode( root, "//head/title/text()" );
+            if ( node == null ) { 
+                System.err.println("Apparently no title element for this document.");
+                title = "TITLE UNKNOWN";
+            } else {
+                title = node.getNodeValue();
+            }
+        } catch ( Exception ex ) {
+            System.err.println("Error retrieving document title. " + ex.getMessage());
+            title = "";
+        }
+        return title;
+    }    
 
     public void setDocumentRelative(String filename ) throws Exception {
 
