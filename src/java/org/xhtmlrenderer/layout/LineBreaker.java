@@ -25,6 +25,7 @@ import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.LineBox;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +48,7 @@ public class LineBreaker {
      * @param prev_align PARAM
      * @return Returns
      */
-    public static InlineBox generateReplacedInlineBox(Context c, Content content, int avail, InlineBox prev_align) {
+    public static InlineBox generateReplacedInlineBox(Context c, Content content, int avail, InlineBox prev_align, LineBox curr_line) {
         //Uu.p("generating replaced Inline Box");
         Rectangle bounds = null;
         BlockBox block = null;
@@ -104,7 +105,15 @@ public class LineBreaker {
             box.break_before = true;
             box.x = 0;
         }
-
+        c.translate(box.x, box.y);
+        c.translateInsets(box);
+        if (cc != null) {
+            Point origin = c.getOriginOffset();
+            cc.setLocation((int) origin.getX(), (int) origin.getY() + curr_line.y);
+            c.getCanvas().add(cc);
+        }
+        c.untranslateInsets(box);
+        c.translate(-box.x, -box.y);
         // return
         //Uu.p("last replaced = " + box);
         return box;
@@ -116,6 +125,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.52  2005/01/07 12:42:08  tobega
+ * Hacked improved support for custom components (read forms). Creates trouble with the image demo. Anyway, components work and are usually in the right place.
+ *
  * Revision 1.51  2005/01/07 00:29:29  tobega
  * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
  *

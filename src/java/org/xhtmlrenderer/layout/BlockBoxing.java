@@ -82,9 +82,9 @@ public class BlockBoxing {
             // execute the layout and get the return bounds
             //c.parent_box = box;
             //c.placement_point = new Point(0, box.height);
-            c.getBlockFormattingContext().translate(0, box.height);
+            c.translate(0, box.height);
             child_box = Boxing.layout(c, currentContent);
-            c.getBlockFormattingContext().translate(0, -box.height);
+            c.translate(0, -box.height);
             child_box.list_count = c.getListCounter();
 
             box.addChild(child_box);
@@ -132,6 +132,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/07 12:42:07  tobega
+ * Hacked improved support for custom components (read forms). Creates trouble with the image demo. Anyway, components work and are usually in the right place.
+ *
  * Revision 1.1  2005/01/02 12:22:16  tobega
  * Cleaned out old layout code
  *

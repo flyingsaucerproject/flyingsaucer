@@ -130,6 +130,11 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         layout_thread = new LayoutThread(this);
         documentListeners = new HashMap();
         setBackground(Color.white);
+        super.setLayout(null);
+    }
+
+    public void setLayout(LayoutManager l) {
+
     }
 
     /**
@@ -866,6 +871,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/01/07 12:42:08  tobega
+ * Hacked improved support for custom components (read forms). Creates trouble with the image demo. Anyway, components work and are usually in the right place.
+ *
  * Revision 1.29  2005/01/06 21:54:33  tobega
  * Text decoration now handled in rendering only
  *

@@ -52,6 +52,9 @@ public class BlockRendering {
             }
         } else*/
         if (box.component != null) {
+            Point origin = c.getOriginOffset();
+            box.component.setLocation((int) origin.getX(), (int) origin.getY());
+            //c.getCanvas().add(cc);
             box.component.paint(c.getGraphics());
         } else
             for (int i = 0; i < box.getChildCount(); i++) {

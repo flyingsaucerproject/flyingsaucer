@@ -24,6 +24,7 @@ import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.block.Absolute;
+import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.*;
 import org.xhtmlrenderer.render.Box;
@@ -79,6 +80,7 @@ public class InlineBoxing {
 
         // adjust the first line for float tabs
         remaining_width = FloatUtil.adjustForTab(c, prev_line, remaining_width);
+        //c.translate(curr_line.x, curr_line.y);
 
         CalculatedStyle currentStyle = parentStyle;
         boolean isFirstLetter = true;
@@ -107,9 +109,11 @@ public class InlineBoxing {
                 c.pushStyle(style);
                 if (pendingPushStyles == null) pendingPushStyles = new LinkedList();
                 pendingPushStyles.add((StylePush) o);
+                Relative.translateRelative(c);
                 continue;
             }
             if (o instanceof StylePop) {
+                Relative.untranslateRelative(c);
                 c.popStyle();
                 if (pendingPushStyles != null && pendingPushStyles.size() != 0) {
                     pendingPushStyles.remove(pendingPushStyles.size() - 1);//was a redundant one
@@ -175,6 +179,7 @@ public class InlineBoxing {
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line);
                     remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
+                    //c.translate(curr_line.x-prev_line.x, curr_line.y-prev_line.y);
                     //have to discard it and recalculate, particularly if this was the first line
                     //HACK: is my thinking straight? - tobe
                     prev_align_inline.break_after = true;
@@ -223,6 +228,7 @@ public class InlineBoxing {
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line);
                     remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
+                    //c.translate(curr_line.x-prev_line.x, curr_line.y-prev_line.y);
                 }
 
 
@@ -241,6 +247,7 @@ public class InlineBoxing {
 
         // save the final line
         saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, true);
+        //c.translate(-curr_line.x, -curr_line.y);
         finishBlock(box, curr_line, bounds);
         // Uu.p("- InlineLayout.layoutContent(): " + box);
     }
@@ -357,7 +364,7 @@ public class InlineBoxing {
         // handle each case
         if (content instanceof InlineBlockContent) {
             //Uu.p("is replaced");
-            result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align);
+            result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align, curr_line);
         } else if (content instanceof FloatedBlockContent) {
             //Uu.p("calcinline: is floated block");
             result = FloatUtil.generateFloatedBlockInlineBox(c, content, avail, curr_line);
@@ -464,6 +471,9 @@ public class InlineBoxing {
 * $Id$
 *
 * $Log$
+* Revision 1.6  2005/01/07 12:42:08  tobega
+* Hacked improved support for custom components (read forms). Creates trouble with the image demo. Anyway, components work and are usually in the right place.
+*
 * Revision 1.5  2005/01/07 00:29:29  tobega
 * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
 *
