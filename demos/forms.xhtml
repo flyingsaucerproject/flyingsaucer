@@ -7,6 +7,7 @@
     <head>
         <title>Form Test</title>
         <style>
+            form { border-width: 1px; border-color: black; border-style: solid; }
         /*
             input { 
                 border-width: 1px;
@@ -18,15 +19,25 @@
     </head>
     <body>
     
-        <h3>Forms Test</h3>
+    
+        <h3>Test different input types</h3>
         
-        <div>text text <br/> and more text
-            <span>span1</span> text
-            <input type="button" value="Panic!"/>
+        <div>Button: <input type="button" value="Panic!"/><br/>
+            Text: <input type="text" value=""/><br/>
         </div>
-        <h3>Forms Test</h3>
-            <input type="text" value="Panic!"/>
-            and now we are doing the last text.
-        </body>
+        
+        <h3>Text Test</h3>
+        <form>
+            empty <input type="text" value=""/><br/>
+            with value <input type="text" value="my value"/><br/>
+            empty with size = 6<input type="text" size="6"/><br/>
+        </form>
+        
+        <h3>wrapping around a form element</h3>
+        <p>
+            before <input type="text"/> after
+        </p>
+    </body>
+        
 </html>
 

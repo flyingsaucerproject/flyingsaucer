@@ -197,3 +197,6 @@ th {
     font-weight: bold;
 }
 
+form {
+    display: block;
+}

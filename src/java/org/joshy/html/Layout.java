@@ -227,6 +227,7 @@ public class Layout {
         if(node.getNodeName().equals("input")) {
             return true;
         }
+
         return false;
     }
 

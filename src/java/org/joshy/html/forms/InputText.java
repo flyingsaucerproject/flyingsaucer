@@ -17,8 +17,14 @@ public class InputText extends FormItemLayout {
     
     public JComponent createComponent(Element elem) {
         JTextField comp = new JTextField();
-        String label = elem.getAttribute("value");
-        comp.setText(label);
+        if(elem.hasAttribute("value")) {
+            comp.setText(elem.getAttribute("value"));
+        }
+        if(elem.hasAttribute("size")) {
+            comp.setColumns(Integer.parseInt(elem.getAttribute("size")));
+        } else {
+            comp.setColumns(15);
+        }
         return comp;
     }
     

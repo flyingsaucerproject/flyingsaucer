@@ -159,7 +159,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
             //u.p("bad first graphics");
             return;
         }
-        //u.p("layout");
+        u.p("layout");
         //u.p("size = " + this.getSize());
         //u.dump_stack();
         if(doc == null) { return; }
@@ -343,19 +343,19 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
 
     
     public void printTree() {
-        printTree(this.body_box);
+        printTree(this.body_box, "");
     }
-    private void printTree(Box box) {
-        u.p("Box = " + box);
+    private void printTree(Box box, String tab) {
+        u.p(tab + "Box = " + box);
         Iterator it = box.getChildIterator();
         while(it.hasNext()) {
             Box bx = (Box)it.next();
-            printTree(bx);
+            printTree(bx,tab+ " ");
         }
         if(box instanceof InlineBox) {
             InlineBox ib = (InlineBox)box;
             if(ib.sub_block != null) {
-                printTree(ib.sub_block);
+                printTree(ib.sub_block,tab + " ");
             }
         }
     }
