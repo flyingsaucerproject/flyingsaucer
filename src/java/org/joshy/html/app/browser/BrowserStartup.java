@@ -19,14 +19,16 @@ public class BrowserStartup {
     BrowserPanel panel;
     BrowserMenuBar menu;
     JFrame frame;
+    protected HistoryManager history;
         
     public BrowserStartup() {
         logger.info("starting up");
+        history = new HistoryManager();
     }
     
     public void init() {
         logger.info("creating UI");
-        panel = new BrowserPanel();
+        panel = new BrowserPanel(this);
         panel.init();
         panel.createLayout();
         panel.createActions();
@@ -58,6 +60,7 @@ class BrowserMenuBar extends JMenuBar {
     JMenu view;
     JMenuItem view_source;
     JMenu debug;
+    JMenu demos;
     BrowserStartup root;
     
     public BrowserMenuBar(BrowserStartup root) {
@@ -69,6 +72,7 @@ class BrowserMenuBar extends JMenuBar {
         open_file = new JMenuItem("Open File...");
         quit = new JMenuItem("Quit");
         debug = new JMenu("Debug");
+        demos = new JMenu("Demos");
         view = new JMenu("View");
         view_source = new JMenuItem("Page Source");
     }
@@ -80,6 +84,16 @@ class BrowserMenuBar extends JMenuBar {
         
         view.add(view_source);
         add(view);
+        
+        demos.add(new LoadAction("Borders","demos/border.xhtml"));
+        demos.add(new LoadAction("Paragraph","demos/paragraph.xhtml"));
+        demos.add(new LoadAction("Line Breaking","demos/breaking.xhtml"));
+        demos.add(new LoadAction("Forms","demos/forms.xhtml"));
+        demos.add(new LoadAction("Headers","demos/header.xhtml"));
+        demos.add(new LoadAction("Nested Divs","demos/nested.xhtml"));
+        demos.add(new LoadAction("Selectors","demos/selectors.xhtml"));
+            
+        add(demos);
         
         debug.add(new AbstractAction("draw boxes") {
             public void actionPerformed(ActionEvent evt) {
@@ -138,6 +152,22 @@ class BrowserMenuBar extends JMenuBar {
     
     public static Logger logger = Logger.getLogger("app.browser");
 
+class LoadAction extends AbstractAction {
+    protected String url;
+    public LoadAction(String name, String url) {
+        super(name);
+        this.url = url;
+    }
+    
+    public void actionPerformed(ActionEvent evt) {
+        try {
+            root.panel.loadPage(url);
+        } catch (Exception ex) { 
+            u.p(ex); 
+        }
+    }
+    
+}
 
 }
 
@@ -152,6 +182,12 @@ class BrowserPanel extends JPanel {
     JLabel status;
     HTMLPanel view;
     JScrollPane scroll;
+    BrowserStartup root;
+    
+    public BrowserPanel(BrowserStartup root) {
+        this.root = root;
+    }
+
     
     public void init() {
         forward = new JButton("Forward");
@@ -219,6 +255,23 @@ class BrowserPanel extends JPanel {
     }
     
     String current_url = null;
+    
+
+    
+    public void goForward() {
+       root.history.goNext();
+       view.setDocument(root.history.getCurrentDocument());
+       //root.history.dumpHistory();
+       updateButtons();
+    }
+    
+    public void goBack() throws Exception {
+       root.history.goPrevious();
+       view.setDocument(root.history.getCurrentDocument());
+       //root.history.dumpHistory();
+       updateButtons();
+    }
+    
     public void reloadPage() throws Exception {
         logger.info("Reloading Page: ");
         if(current_url != null) {
@@ -226,6 +279,79 @@ class BrowserPanel extends JPanel {
         }
     }
     
+    
+    public void setStatus(String txt) {
+        status.setText(txt);
+    }
+        
+    public void createActions() {
+        backward.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    goBack();
+                    view.repaint();
+                } catch (Exception ex) {
+                    u.p(ex);
+                }
+            }
+        });
+        forward.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    goForward();
+                    view.repaint();
+                } catch (Exception ex) {
+                    u.p(ex);
+                }
+            }
+        });
+
+        
+        
+        reload.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    reloadPage();
+                    view.repaint();
+                } catch (Exception ex) {
+                    u.p(ex);
+                }
+            }
+        });
+        
+        url.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    String url_text = url.getText();
+                    loadPage(url_text);
+                    view.repaint();
+                } catch (Exception ex) {
+                    u.p(ex);
+                }
+            }
+        });
+
+        updateButtons();
+    }
+    
+    protected void updateButtons() {
+       if(root.history.hasPrevious()) {
+           backward.setEnabled(true);
+       } else {
+           backward.setEnabled(false);
+       }
+       if(root.history.hasNext()) {
+           forward.setEnabled(true);
+       } else {
+           forward.setEnabled(false);
+       }
+    }
+    
+    public void loadPage(Document doc) throws Exception {
+        view.setDocument(doc);
+        root.history.goNewDocument(doc);
+        updateButtons();
+    }
     public void loadPage(String url_text) throws Exception {
         logger.info("Loading Page: " + url_text);
         current_url = url_text;
@@ -257,42 +383,10 @@ class BrowserPanel extends JPanel {
         } else {
             doc = builder.parse(url_text);
         }
+        loadPage(doc);
         
-        view.setDocument(doc);
         setStatus("Successfully loaded: " + url_text);
     }
-    
-    public void setStatus(String txt) {
-        status.setText(txt);
-    }
-        
-    public void createActions() {
-        
-        reload.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    reloadPage();
-                    view.repaint();
-                } catch (Exception ex) {
-                    u.p(ex);
-                }
-            }
-        });
-        
-        url.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    String url_text = url.getText();
-                    loadPage(url_text);
-                    view.repaint();
-                } catch (Exception ex) {
-                    u.p(ex);
-                }
-            }
-        });
-
-    }
-    
 }
 
 

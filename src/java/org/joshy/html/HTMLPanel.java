@@ -151,7 +151,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
     }
     
     public void calcLayout(Graphics g) {
-        u.p("calcLayout()");
+        //u.p("calcLayout()");
         this.removeAll();
         //u.p("this = ");
         //u.dump_stack();

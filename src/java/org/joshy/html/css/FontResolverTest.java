@@ -12,8 +12,8 @@ public class FontResolverTest extends FontResolver {
     public FontResolverTest() {
         GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
         String[] available_fonts = gfx.getAvailableFontFamilyNames();
-        u.p("available fonts =");
-        u.p(available_fonts);
+        //u.p("available fonts =");
+        //u.p(available_fonts);
         instance_hash = new HashMap();
         
         // preload the font map with the font names as keys
