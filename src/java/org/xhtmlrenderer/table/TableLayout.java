@@ -29,6 +29,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.Layout;
 import org.xhtmlrenderer.layout.LayoutFactory;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.util.x;
 
@@ -629,11 +630,11 @@ public class TableLayout
 
             c.setExtents( new Rectangle( 0, 0, cell.width, cell.height ) );
 
-            Layout layout = LayoutFactory.getLayout( cell.node );
+            Renderer rend = LayoutFactory.getRenderer( cell.node );
 
             //u.p("doing cell: " + cell);
 
-            layout.paint( c, cell.sub_box );
+            rend.paint( c, cell.sub_box );
 
             c.getGraphics().translate( -oe.x, -oe.y );
 
@@ -695,6 +696,13 @@ public class TableLayout
 /*
    $Id$
    $Log$
+   Revision 1.4  2004/10/27 13:17:03  joshy
+   beginning to split out rendering code
+   Issue number:
+   Obtained from:
+   Submitted by:
+   Reviewed by:
+
    Revision 1.3  2004/10/23 13:59:18  pdoubleya
    Re-formatted using JavaStyle tool.
    Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

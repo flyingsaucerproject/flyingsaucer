@@ -207,13 +207,13 @@ public class InlinePainter {
 
             c.getGraphics().translate( line.x, line.y + ( line.baseline - inline.height ) );
 
-            Layout layout = (Layout)LayoutFactory.getLayout( inline.node );
+            Renderer rend = LayoutFactory.getRenderer( inline.node );
 
             //u.p("inline node = " + inline.node);
 
             //u.p("got the layout: " + layout);
 
-            layout.paint( c, inline );
+            rend.paint( c, inline );
 
             c.getGraphics().translate( -line.x, -( line.y + ( line.baseline - inline.height ) ) );
 
@@ -247,9 +247,9 @@ public class InlinePainter {
 
             c.getGraphics().translate( xoff, yoff );
 
-            Layout layout = (Layout)LayoutFactory.getLayout( inline.node );
+            Renderer rend = LayoutFactory.getRenderer( inline.node );
 
-            layout.paint( c, inline.sub_block );
+            rend.paint( c, inline.sub_block );
 
             c.getGraphics().translate( -xoff, -yoff );
 
@@ -376,6 +376,13 @@ public class InlinePainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/10/27 13:17:01  joshy
+ * beginning to split out rendering code
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:50:26  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

@@ -156,7 +156,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
     public void paintComponent( Graphics g ) {
         //g.setColor(Color.blue);
         //g.drawLine(0,0,50,50);
-        u.p("paint() size = " + this.getSize());
+        //u.p("paint() size = " + this.getSize());
         //u.p("viewport size = " + this.viewport.getSize());
         //u.p("w/o scroll = " + this.viewport.getViewportBorderBounds());
         if ( anti_aliased ) {
@@ -846,6 +846,13 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/10/27 13:17:02  joshy
+ * beginning to split out rendering code
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.12  2004/10/27 04:08:44  joshy
  * removed debugging code
  *

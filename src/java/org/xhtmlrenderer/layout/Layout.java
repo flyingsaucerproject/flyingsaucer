@@ -39,13 +39,20 @@ public interface Layout extends Renderer {
      * @return      Returns
      */
     public Box layout( Context c, Element elem );
-
+    public Renderer getRenderer();
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/10/27 13:17:01  joshy
+ * beginning to split out rendering code
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/10/23 13:46:47  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

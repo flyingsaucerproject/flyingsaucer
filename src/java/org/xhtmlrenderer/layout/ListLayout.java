@@ -20,6 +20,7 @@
 
 package org.xhtmlrenderer.layout;
 
+import org.xhtmlrenderer.render.*;
 
 /**
  * Description of the Class
@@ -43,12 +44,22 @@ public class ListLayout extends BoxLayout {
      * //    y-2,8,8);
      * }
      */
+     public Renderer getRenderer() {
+         return new ListRenderer();
+     }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/10/27 13:17:01  joshy
+ * beginning to split out rendering code
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:46:47  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

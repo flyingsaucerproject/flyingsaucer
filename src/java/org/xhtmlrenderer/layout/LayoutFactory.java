@@ -57,8 +57,8 @@ public class LayoutFactory {
      * @param node  PARAM
      * @return      The renderer value
      */
-     public Renderer getRenderer( Node node ) {
-        return getLayout( node );
+     public static Renderer getRenderer( Node node ) {
+        return getLayout( node ).getRenderer();
     }
 
     /**
@@ -172,6 +172,10 @@ public class LayoutFactory {
         return new InlineLayout();
     }
 
+    public static Renderer getAnonymousRenderer() {
+        return new InlineLayout();
+    }
+
     /**
      * Initialize the standard layouts. Called by a static initializer.
      */
@@ -253,6 +257,13 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.7  2004/10/27 13:17:01  joshy
+* beginning to split out rendering code
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.6  2004/10/27 13:00:13  joshy
 * removed double spacing
 * Issue number:

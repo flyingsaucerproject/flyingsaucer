@@ -26,6 +26,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.Renderer;
 
 
 /**
@@ -93,7 +94,7 @@ public class DefaultLayout implements Layout {
             Node child = nl.item( i );
 
             // get the layout for this child
-            Layout layout = getLayout( child );
+            Layout layout = LayoutFactory.getLayout( child );
             if ( layout == null ) {
                 continue;
             }
@@ -237,13 +238,13 @@ public class DefaultLayout implements Layout {
         for ( int i = 0; i < box.getChildCount(); i++ ) {
             Box child = (Box)box.getChild( i );
             //u.p("child = " + child);
-            Layout layout = null;
+            Renderer renderer = null;
             if ( child.isAnonymous() ) {
-                layout = new InlineLayout();
+                renderer = LayoutFactory.getAnonymousRenderer();//new InlineLayout();
             } else {
-                layout = getLayout( child.node );
+                renderer = LayoutFactory.getRenderer( child.node );
             }
-            paintChild( c, child, layout );
+            paintChild( c, child, renderer );
         }
     }
 
@@ -254,8 +255,12 @@ public class DefaultLayout implements Layout {
      * @param box     PARAM
      * @param layout  PARAM
      */
-    public void paintChild( Context c, Box box, Layout layout ) {
+    public void paintChild( Context c, Box box, Renderer layout ) {
         layout.paint( c, box );
+    }
+    
+    public Renderer getRenderer() {
+        return this;
     }
 
 
@@ -268,9 +273,11 @@ public class DefaultLayout implements Layout {
      * @param node  PARAM
      * @return      The layout value
      */
+     /*
     public Layout getLayout( Node node ) {
         return LayoutFactory.getLayout( node );
     }
+    */
 
     /**
      * Gets the fixed attribute of the DefaultLayout object
@@ -457,6 +464,13 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/10/27 13:17:00  joshy
+ * beginning to split out rendering code
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.2  2004/10/23 13:46:47  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
