@@ -1,0 +1,58 @@
+
+<project name="build.compile">
+<!-- Compiles the Flying Saucer browser along with the main codebase -->
+	<target name="compile.browser" depends="compile,resources.browser">
+		<javac-full srcdir="${src.browser.java.dir}"/>
+	</target>
+
+    <!-- Compiles the Flying Saucer browser along with the main codebase -->
+	<target name="compile.blower" depends="init">
+		<javac-full srcdir="${src.java.dir}"/>
+	</target>
+
+    <!-- Cleans all build files, then recompiles. -->
+	<target name="compile.demo" description="Rebuilds demo apps--browser, about, photogallery" depends="clean,compile,compile.browser,compile.about,compile.photogallery">
+		<antcall target="clean" />
+		<antcall target="compile" />
+		<antcall target="compile.browser" />
+		<antcall target="compile.about" />
+		<antcall target="compile.photogallery" />
+	</target>
+
+	<target name="compile.photogallery" depends="compile">
+		<javac-full srcdir="${src.photogallery.java.dir}"/>
+		<mkdir dir="build/classes/demos"/>
+		<copy todir="build/classes/demos">
+			<fileset dir="demos/photogallery/xhtml">
+				<include name="*.xhtml"/>
+				<include name="*.png"/>
+				<include name="*.jpg"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="compile.filebrowser" depends="compile">
+		<javac-full srcdir="${src.filebrowser.java.dir}"/>
+		<copy todir="build/classes/">
+			<fileset dir="${src.filebrowser.java.dir}">
+				<include name="**/*.xhtml"/>
+				<include name="*.png"/>
+				<include name="*.jpg"/>
+			</fileset>
+		</copy>
+	</target>
+    
+    <!-- Compiles the Help/About Box demo along with the main codebase -->
+	<target name="compile.about" depends="compile">
+		<javac-full srcdir="${src.about.java.dir}"/>
+	</target>
+
+    <!-- Compiles the JUnit tests along with the main codebase -->
+	<target name="compile.junit" depends="compile">
+		<javac-full srcdir="${src.junit-test.java.dir}"/>
+	</target>
+
+    <!-- Compiles main codebase, browser and about box -->
+	<target name="compile.all" depends="compile, compile.browser, compile.about, compile.photogallery"></target>
+
+</project>

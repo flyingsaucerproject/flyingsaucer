@@ -1,0 +1,22 @@
+<project name="build.upload">
+    <target name="upload.dist" description="Upload distributions" depends="properties">
+        <scp todir="${docs.upload.username}:${docs.upload.password}@${docs.upload.hostname}:mainwebsite_html/projects/xhtmlrenderer/">
+            <fileset dir="${dest.dir}">
+                <include name="*.zip"/>
+                <include name="*.jnlp"/>
+                <include name="*.jar"/>
+            </fileset>
+        </scp>
+    </target>
+
+    <target name="upload.docs" description="Uploads documents" depends="properties">
+        <scp todir="${docs.upload.username}:${docs.upload.password}@${docs.upload.hostname}:${docs.upload.path}">
+            <fileset dir="${dest.dir}">
+                <include name="docs/**"/>
+            </fileset>
+            <fileset dir=".">
+                <include name="doc/**"/>
+            </fileset>
+        </scp>
+    </target>
+</project>

@@ -1,0 +1,31 @@
+<!-- :mode=xml:folding=none: -->
+<project name="build.preset-defs">
+    <!-- 
+         definition of a javac task with all compiler parameters read from
+         properties. can be used for most uses of javac in this file.
+    -->
+    <presetdef name="javac-full">
+        <javac
+            srcdir="${src.java.dir}"
+            destdir="${dest.java.dir}"
+
+            debug="${compiler.debug}"
+            debuglevel="${compiler.debuglevel}"
+            deprecation="${compiler.deprecation}"
+            failonerror="${compiler.failonerror}"
+            fork="${compiler.fork}"
+            listfiles="${compiler.listfiles}"
+            nowarn="${compiler.nowarn}"
+            optimize="${compiler.optimize}"
+            source="${compiler.source}"
+            target="${compiler.target}"
+            verbose="${compiler.verbose}"
+            encoding="iso-8859-1"
+            >
+            <classpath refid="libraries.all"/>
+            <exclude name="**/net/**" />
+            <exclude name="**/prototype/**" />
+        </javac>
+    </presetdef>
+</project>
+

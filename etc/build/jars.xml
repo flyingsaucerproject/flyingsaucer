@@ -1,0 +1,73 @@
+<project name="build.jars">
+    <!-- Compiles main codebase, and builds jar for it -->
+    <target name="jar.core" depends="compile" description="build core jar">
+        <jar jarfile="${dest.dir}/core-renderer.jar" compress="true">
+            <fileset dir="${dest.java.dir}">
+                <include name="**/*.class"/>
+                <exclude name="org/joshy/html/app"/>
+                <exclude name="**/demo/**"/>
+            </fileset>
+            <fileset dir="${dest.dir}">
+                <include name="resources/**"/>
+            </fileset>
+            <fileset dir="${dest.java.dir}">
+                <include name="resources/**"/>
+            </fileset>
+        </jar>
+    </target>
+    
+    <!-- Compiles browser and main codebase, and builds jar for browser -->
+    <target name="jar.browser" depends="compile.browser" description="build browser jar">
+        <jar jarfile="${dest.dir}/browser.jar" compress="true"
+            manifest="${src.packaging.dir}/manifest"
+            duplicate="preserve"
+            >
+            <fileset dir="${dest.java.dir}">
+                <include name="org/xhtmlrenderer/demo/browser/**"/>
+            </fileset>
+            <zipfileset refid="xhtml.demos"/>
+            <zipfileset refid="xhtml.splash"/>
+            <fileset dir="${src.browser.icons.dir}">
+              <include name="images/**" />
+            </fileset>
+        </jar>
+    </target>
+    
+    <!-- Compiles about box and main codebase, and builds jar for about box -->
+    <target name="jar.about" depends="compile.about" description="build about jar">
+        <jar jarfile="${dest.dir}/about.jar" compress="true"
+            manifest="${src.packaging.dir}/manifest"
+            duplicate="preserve"
+            >
+            <fileset dir="${dest.java.dir}">
+                <include name="org/xhtmlrenderer/demo/aboutbox/**"/>
+            </fileset>
+            <zipfileset refid="xhtml.about.demos"/>
+            <zipfileset refid="xhtml.splash"/>
+        </jar>
+    </target>
+
+    <!-- Compiles photogallery and main codebase, and builds jar for photogallery -->
+    <target name="jar.photogallery" depends="compile.photogallery" description="build photogallery jar">
+        <jar jarfile="${dest.dir}/photogallery.jar" compress="true"
+            manifest="${src.packaging.dir}/manifest"
+            duplicate="preserve"
+            >
+            <fileset dir="${dest.java.dir}">
+                <include name="org/xhtmlrenderer/demo/photogallery/**"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <!-- Compiles photogallery and main codebase, and builds jar for photogallery -->
+    <target name="jar.filebrowser" depends="compile.filebrowser" description="build filebrowser jar">
+        <jar jarfile="${dest.dir}/filebrowser.jar" compress="true"
+            manifest="${src.packaging.dir}/manifest"
+            duplicate="preserve"
+            >
+            <fileset dir="${dest.java.dir}">
+                <include name="org/xhtmlrenderer/demo/filebrowser/**"/>
+            </fileset>
+        </jar>
+    </target>
+</project>

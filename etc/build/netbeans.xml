@@ -1,0 +1,28 @@
+
+<project name="build.netbeans">
+	<target name="profile-single" depends="compile, jar" description="Profile File">
+		<fail unless="netbeans.home">This target can only run inside the NetBeans IDE.</fail>
+		<nbprofile classname="org.xhtmlrenderer.test.SimplePageTest">
+			<classpath refid="libraries-and-dest.all"/>
+		</nbprofile>
+	</target>
+	
+	<!--
+    Optional - If source roots are properly declared in project, should
+                            work without setting source path.     
+            <sourcepath refid="debug.sourcepath"/> 
+    -->
+	<target name="debug" depends="compile" if="netbeans.home" description="Debug Project">
+		<nbjpdastart name="flying-saucer-simple" addressproperty="jpda.address" transport="dt_socket">
+			<classpath refid="run.classpath"/>
+			
+		</nbjpdastart>
+		<java fork="true" classname="org.xhtmlrenderer.test.NetBeansPageTest">
+			<jvmarg value="-Xdebug"/>
+			<jvmarg value="-Xnoagent"/>
+			<jvmarg value="-Djava.compiler=none"/>
+			<jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
+			<classpath refid="run.classpath"/>
+		</java>
+	</target>
+</project>
