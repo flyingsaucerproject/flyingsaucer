@@ -376,6 +376,13 @@ public class Box {
     public Element getElement() {
         return (Element)node;
     }
+    
+    public Element getRealElement() {
+        if(isElement()) {
+            return getElement();
+        }
+        return (Element)node.getParentNode();
+    }
 
     /**
      * Gets the closestNode attribute of the Box object
@@ -534,6 +541,18 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/06 22:49:52  joshy
+ * cleaned up alice
+ * initial support for inline borders and backgrounds
+ * moved all of inlinepainter back into inlinerenderer, where it belongs.
+ *
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.7  2004/11/03 23:54:34  joshy
  * added hamlet and tables to the browser
  * more support for absolute layout

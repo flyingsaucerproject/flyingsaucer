@@ -31,6 +31,7 @@ import java.awt.Stroke;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.x;
+import org.xhtmlrenderer.util.u;
 
 
 /**
@@ -47,16 +48,19 @@ public class BorderPainter {
      * @param box  PARAM
      */
     public void paint( Context ctx, Box box ) {
-
+        //u.p("checking: " + box);
+        //u.p("hashcode = " + box.hashCode());
+        if(box.border == null) return;
+        //u.p("doing it: " + box);
         Graphics g = ctx.getGraphics();
 
         // TODO: color is per-side ((PWW 13/08/04))
-        box.border_color = ctx.css.getBorderColor( box.getElement() ).topColor;
+        box.border_color = ctx.css.getBorderColor( box.getRealElement() ).topColor;
 
         // ASK: border-style is a shorthand property for 4 border sides
         // CSSBank/Accessor leave it as a single property, but XRStyleReference
         // explodes it to individual values. Which way to go? (PWW 13/08/04)
-        box.border_style = ctx.css.getStringProperty( box.getElement(), "border-top-style" );
+        box.border_style = ctx.css.getStringProperty( box.getRealElement(), "border-top-style" );
 
 
         Rectangle bounds = new Rectangle( box.x + box.margin.left,
@@ -255,6 +259,18 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/06 22:49:52  joshy
+ * cleaned up alice
+ * initial support for inline borders and backgrounds
+ * moved all of inlinepainter back into inlinerenderer, where it belongs.
+ *
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/11/02 17:14:00  joshy
  * implemented double borders
  *

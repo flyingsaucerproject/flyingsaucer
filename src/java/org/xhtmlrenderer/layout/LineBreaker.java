@@ -381,6 +381,13 @@ public class LineBreaker {
         box.node = node;
         box.start_index = start;
         box.end_index = end;
+        
+        BoxLayout.getBackgroundColor(c,box);
+        BoxLayout.getBorder(c,box);
+        BoxLayout.getMargin(c,box);
+        BoxLayout.getPadding(c,box);
+        //        u.p("background = " + box.background_color);
+        //        u.p("border = " + box.border);
         /*
          * if(prev!= null && !prev.break_after) {
          * box.x = prev.x + prev.width;
@@ -424,8 +431,7 @@ public class LineBreaker {
         } else {
             box.height = FontUtil.lineHeight( c, node );
         }
-        //u.p("box.x = " + box.x);
-        //box.baseline = box.height;
+
         box.break_after = true;
 
         box.setText(text);
@@ -437,10 +443,8 @@ public class LineBreaker {
                 }
             }
         }
-        //u.p("box.x = " + box.x);
 
         // do vertical alignment
-        //u.p("setting up vertical align on: " + node);
         FontUtil.setupVerticalAlign( c, node, box );
         box.setFont( font );//FontUtil.getFont(c,node));
         if ( node.getNodeType() == node.TEXT_NODE ) {
@@ -462,6 +466,18 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/06 22:49:52  joshy
+ * cleaned up alice
+ * initial support for inline borders and backgrounds
+ * moved all of inlinepainter back into inlinerenderer, where it belongs.
+ *
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/11/04 15:35:45  joshy
  * initial float support
  * includes right and left float

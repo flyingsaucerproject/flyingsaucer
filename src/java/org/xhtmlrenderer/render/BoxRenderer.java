@@ -132,13 +132,13 @@ public class BoxRenderer extends DefaultRenderer {
         getBackgroundColor( c, block );
 
         // get the css properties
-        String back_image = c.css.getStringProperty( block.getElement(), "background-image", false );
-        block.repeat = c.css.getStringProperty( block.getElement(), "background-repeat" );
-        block.attachment = c.css.getStringProperty( block.getElement(), "background-attachment", false );
+        String back_image = c.css.getStringProperty( block.getRealElement(), "background-image", false );
+        block.repeat = c.css.getStringProperty( block.getRealElement(), "background-repeat" );
+        block.attachment = c.css.getStringProperty( block.getRealElement(), "background-attachment", false );
         // handle image positioning issues
         // need to update this to support vert and horz, not just vert
-        if ( c.css.hasProperty( block.getElement(), "background-position", false ) ) {
-            Point pt = c.css.getFloatPairProperty( block.getElement(), "background-position", false );
+        if ( c.css.hasProperty( block.getRealElement(), "background-position", false ) ) {
+            Point pt = c.css.getFloatPairProperty( block.getRealElement(), "background-position", false );
             block.background_position_horizontal = (int)pt.getX();
             block.background_position_vertical = (int)pt.getY();
         }

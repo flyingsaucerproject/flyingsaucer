@@ -27,7 +27,7 @@ import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.render.InlinePainter;
+//import org.xhtmlrenderer.render.InlinePainter;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.InlineRenderer;
 import org.xhtmlrenderer.render.Renderer;
@@ -413,6 +413,18 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.11  2004/11/06 22:49:52  joshy
+* cleaned up alice
+* initial support for inline borders and backgrounds
+* moved all of inlinepainter back into inlinerenderer, where it belongs.
+*
+*
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.10  2004/11/05 16:39:34  joshy
 * more float support
 * added border bug test

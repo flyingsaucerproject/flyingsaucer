@@ -39,6 +39,7 @@ public class BackgroundPainter {
      * @param block  PARAM
      */
     public static void paint( Context c, Box block ) {
+        if(block.border == null) return;
         Rectangle box = new Rectangle(
                 block.x + block.margin.left + block.border.left,
                 block.y + block.margin.top + block.border.top,
@@ -204,6 +205,18 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/06 22:49:52  joshy
+ * cleaned up alice
+ * initial support for inline borders and backgrounds
+ * moved all of inlinepainter back into inlinerenderer, where it belongs.
+ *
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/10/27 14:03:38  joshy
  * added initial viewport repainting support
  *

@@ -287,12 +287,29 @@ public class BoxLayout extends DefaultLayout {
      * @return     The border value
      */
     public static Border getBorder( Context c, Box box ) {
-        if ( box.isElement() ) {
+        //u.p("checking box: " + box);
+        //if text but parent is not block, then do border
+        // if block then do border
+        // if text but parent is block, then no border
+        if(isBlockOrInlineElementBox(c,box)) {
+           //u.p("doing border for: " + box);
+           //u.p("hascode = " + box.hashCode());
             if ( box.border == null ) {
-                box.border = c.css.getBorderWidth( box.getElement() );
+                //if(box instanceof BlockBox) {
+                    box.border = c.css.getBorderWidth( box.getRealElement() );
+                //}
             }
         }
         return box.border;
+    }
+    
+    public static boolean isBlockOrInlineElementBox(Context c, Box box) {
+        if((box.node.getNodeType()==Node.TEXT_NODE && 
+           !InlineLayout.isBlockNode(box.getRealElement(),c)) ||
+           box.isElement()) {
+               return true;
+        }
+        return false;
     }
 
 
@@ -304,9 +321,9 @@ public class BoxLayout extends DefaultLayout {
      * @return     The padding value
      */
     public static Border getPadding( Context c, Box box ) {
-        if ( box.isElement() ) {
+        if(isBlockOrInlineElementBox(c,box)) {
             if ( box.padding == null ) {
-                box.padding = c.css.getPaddingWidth( box.getElement() );
+                box.padding = c.css.getPaddingWidth( box.getRealElement() );
             }
         }
         return box.padding;
@@ -321,9 +338,9 @@ public class BoxLayout extends DefaultLayout {
      * @return     The margin value
      */
     public static Border getMargin( Context c, Box box ) {
-        if ( box.isElement() ) {
+        if(isBlockOrInlineElementBox(c,box)) {
             if ( box.margin == null ) {
-                box.margin = c.css.getMarginWidth( box.getElement() );
+                box.margin = c.css.getMarginWidth( box.getRealElement() );
             }
         }
         return box.margin;
@@ -337,14 +354,16 @@ public class BoxLayout extends DefaultLayout {
      * @return     The backgroundColor value
      */
     public static Color getBackgroundColor( Context c, Box box ) {
-        if ( box.background_color == null ) {
-            Object obj = c.css.getProperty( box.getElement(), "background-color", false );
-            //u.p("got : " + obj);
-            if ( obj.toString().equals( "transparent" ) ) {
-                box.background_color = new Color( 0, 0, 0, 0 );
-                return box.background_color;
+        if(isBlockOrInlineElementBox(c,box)) {
+            if ( box.background_color == null ) {
+                Object obj = c.css.getProperty( box.getRealElement(), "background-color", false );
+                //u.p("got : " + obj);
+                if ( obj.toString().equals( "transparent" ) ) {
+                    box.background_color = new Color( 0, 0, 0, 0 );
+                    return box.background_color;
+                }
+                box.background_color = c.css.getBackgroundColor( box.getRealElement() );
             }
-            box.background_color = c.css.getBackgroundColor( box.getElement() );
         }
         return box.background_color;
     }
@@ -404,6 +423,18 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/11/06 22:49:51  joshy
+ * cleaned up alice
+ * initial support for inline borders and backgrounds
+ * moved all of inlinepainter back into inlinerenderer, where it belongs.
+ *
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.11  2004/11/05 18:45:14  joshy
  * support for floated blocks (not just inline blocks)
  *
