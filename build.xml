@@ -47,7 +47,7 @@
     <target name="jar" depends="compile" description="jar">
         <jar
             basedir="build/classes"
-            jarfile="build/htmlrender.jar"
+            jarfile="build/${app-name}.jar"
             compress="true"
             manifest="src/packaging/manifest"
         />
@@ -68,7 +68,7 @@
             </fileset>
         </copy>
         <zip basedir="build" zipfile="build/${app-name}.zip">
-            <include name="htmlrender.jar"/>
+            <include name="${app-name}.jar"/>
             <include name="*.jar"/>
             <include name="demos/**"/>
         </zip>
