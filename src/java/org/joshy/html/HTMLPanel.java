@@ -230,7 +230,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         this.doc = doc;
 
         Element html = (Element)doc.getDocumentElement();
-
+        
         if ( 1 == 0 ) {
           c.css = new CSSBank();
         } else {
@@ -269,6 +269,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
 
             }
 
+            c.css.parseDeclaredStylesheets(html);
             c.css.parseLinkedStyles(html);
             c.css.parseInlineStyles(html);
 
@@ -464,6 +465,8 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         Element html = (Element)doc.getDocumentElement();
 
         Element body = x.child(html,"body");
+        
+        body = html;
 
         
 

@@ -230,6 +230,18 @@ public class Layout {
         return false;
     }
 
+    public static boolean isHiddenNode(Node child, Context c) {
+        if(child instanceof Element) {
+            Element el = (Element)child;
+            String display = c.css.getStringProperty(el,"display",false);
+            //u.p("display = " + display);
+            if(display != null && display.equals("none")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean isReplaced(Node node) {
         // all images are replaced (because they have intrinsic sizes)
         if(node.getNodeName().equals("img")) {

@@ -29,6 +29,7 @@ public class InlineLayout extends BoxLayout {
 
 
 public Box layoutChildren(Context c, Box box) {
+    if(isHiddenNode(box.getElement(),c)) return box;
     //u.p("InlineLayout.layoutChildren(: " + box);
     //u.dump_stack();
     //u.p("parent box = " + c.parent_box);

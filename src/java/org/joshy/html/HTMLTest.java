@@ -71,6 +71,9 @@ public class HTMLTest extends JFrame {
         addFileLoadAction(test, "iTunes Email", "demos/itunes/itunes1.xhtml");
         addFileLoadAction(test, "Follow Links", "demos/link.xhtml");
         addFileLoadAction(test, "Hamlet (slow!)", "demos/hamlet.xhtml");
+        addFileLoadAction(test, "extended", "demos/extended.xhtml");
+        addFileLoadAction(test, "XML-like", "demos/xml.xhtml");
+        addFileLoadAction(test, "XML", "demos/xml.xml");
 
         JMenu debug = new JMenu("Debug");
         mb.add(debug);

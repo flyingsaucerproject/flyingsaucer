@@ -123,6 +123,7 @@ public class LayoutFactory {
         }
         u.p("error! returning null! type = " + elem.getNodeType());
         u.p("name = " + elem.getNodeName());
+        
         /*
         u.p("node = " + elem);
         u.p("attribute = " + elem.ATTRIBUTE_NODE);
@@ -138,7 +139,7 @@ public class LayoutFactory {
         u.p("processing inst = " + elem.PROCESSING_INSTRUCTION_NODE);
         u.p("text node = " + elem.TEXT_NODE);
         */
-        return null;
+        return new InlineLayout();
     }
     
     
