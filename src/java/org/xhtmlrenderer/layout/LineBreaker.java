@@ -31,9 +31,10 @@ import org.xhtmlrenderer.layout.inline.TextDecoration;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.U;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Rectangle;
 
 /**
  * Description of the Class
@@ -67,13 +68,13 @@ public class LineBreaker {
 
             // debugging code
             dbcount++;
-            //u.off();
-            //u.on(); if ( dbcount > 50 ) { u.on(); }
+            //U.off();
+            //U.on(); if ( dbcount > 50 ) { U.on(); }
             if (dbcount > 100) {
-                //u.on();
-                u.p("db 2 hit");
-                u.p("text = " + text);
-                u.p("end = " + end);
+                //U.on();
+                U.p("db 2 hit");
+                U.p("text = " + text);
+                U.p("end = " + end);
                 throw new InfiniteLoopError("Caught a potential infinite loop in the LineBreaker");
             }
 
@@ -96,7 +97,7 @@ public class LineBreaker {
             // if this will fit but we are at the end then break and use current span
             if (next_space == text.length()) {
                 InlineBox box = styleBox(c, node, start, next_space, prev, text, prev_align, font);
-                //u.p("normal break returning curr span: " + box);
+                //U.p("normal break returning curr span: " + box);
                 return box;
             }
             // skip over the space
@@ -118,7 +119,7 @@ public class LineBreaker {
     /*not used: tobe 2004-12-10 public static boolean canFitOnLine(Context c, int start, String text, int avail, Font font) {
         // if the rest of text can fit on the current line
         // if length of remaining text < available width
-        //u.p("avail = " + avail + " len = " + FontUtil.len(c,node,text.substring(start)));
+        //U.p("avail = " + avail + " len = " + FontUtil.len(c,node,text.substring(start)));
         if (FontUtil.len(c, text.substring(start), font) < avail) {
             return true;
         } else {
@@ -143,7 +144,7 @@ public class LineBreaker {
         InlineBox box = styleBox(c, node, start, text.length(), prev, text, prev_align, font);
         // turn off breaking since more might fit on this line
         box.break_after = false;
-        //u.p("fits on line returning : " + box);
+        //U.p("fits on line returning : " + box);
         return box;
     }*/
 
@@ -162,7 +163,7 @@ public class LineBreaker {
      */
     /*not used: tobe 2004-12-10 public static InlineBox generateUnbreakableInlineBox(Context c, Node node, int start, String text,
                                                          InlineBox prev, InlineBox prev_align, Font font) {
-        //u.p("generating unbreakable inline: start = " + start + " text = " + text);
+        //U.p("generating unbreakable inline: start = " + start + " text = " + text);
         
         //joshy: redundant code w/ isUnbreakable. clean up
         //extract first word
@@ -173,12 +174,12 @@ public class LineBreaker {
         String first_word = text.substring(start, first_word_index);
         first_word = first_word.trim();
         
-        //u.p("first word = " + first_word);
+        //U.p("first word = " + first_word);
         InlineBox box = styleBox(c, node, start, first_word_index, prev, text, prev_align, font);
         // move back to the left margin since this is on it's own line
-        box.x = 0;
+        box.X = 0;
         box.break_before = true;
-        //u.p("generate unbreakable returning: " + box);
+        //U.p("generate unbreakable returning: " + box);
         box.break_after = false;
         return box;
     }*/
@@ -197,9 +198,9 @@ public class LineBreaker {
      */
     /*not used: tobe 2004-12-10 public static InlineBox generateWhitespaceInlineBox(Context c, Node node, int start,
                                                         InlineBox prev, String text, InlineBox prev_align, Font font) {
-        //u.p("preformatted text");
+        //U.p("preformatted text");
         int cr_index = text.indexOf("\n", start + 1);
-        //u.p("cr_index = " + cr_index);
+        //U.p("cr_index = " + cr_index);
         if (cr_index == -1) {
             cr_index = text.length();
         }
@@ -219,7 +220,7 @@ public class LineBreaker {
         box.width = 0;
         box.height = 0;
         box.break_after = true;
-        box.x = 0;
+        box.X = 0;
         box.y = 0;
         box.setBreak(true);
         return box;
@@ -238,14 +239,14 @@ public class LineBreaker {
      * @return Returns
      */
     public static InlineBox generateReplacedInlineBox(Context c, Content content, int avail, InlineBox prev_align, Font font) {
-        //u.p("generating replaced Inline Box");
+        //U.p("generating replaced Inline Box");
 
         // get the layout for the replaced element
         Layout layout = c.getLayout(content.getElement());
         BlockBox block = (BlockBox) layout.layout(c, content);
-        //u.p("got a block box from the sub layout: " + block);
+        //U.p("got a block box from the sub layout: " + block);
         Rectangle bounds = new Rectangle(block.x, block.y, block.width, block.height);
-        //u.p("bounds = " + bounds);
+        //U.p("bounds = " + bounds);
         /*
          * joshy: change this to just modify the existing block instead of creating
          * a  new one
@@ -256,7 +257,7 @@ public class LineBreaker {
         //TODO: refactor styleBox, it is too overloaded, we know which type we want, right?
         InlineBox box = newBox(c, content, 0, 0, null, bounds, prev_align, font);
         //joshy: activate this: box.block = block
-        //u.p("created a new inline box");
+        //U.p("created a new inline box");
         box.replaced = true;
         box.sub_block = block;
         block.setParent(box);
@@ -273,7 +274,7 @@ public class LineBreaker {
         }
 
         // return
-        //u.p("last replaced = " + box);
+        //U.p("last replaced = " + box);
         return box;
     }
 
@@ -289,7 +290,7 @@ public class LineBreaker {
      * @return The unbreakableLine value
      */
     /*not used: tobe 2004-12-10 public static boolean isUnbreakableLine(Context c, int start, String text, int avail, Font font) {
-        //u.p("isUnbreakableLine( start = " + start + " text = " + text + " avail = " + avail + " font = " + font);
+        //U.p("isUnbreakableLine( start = " + start + " text = " + text + " avail = " + avail + " font = " + font);
 
         // extract the first real word from the text
         int first_word_index = text.indexOf(" ", start);
@@ -363,13 +364,13 @@ public class LineBreaker {
 
     //TODO: refactor styleBox.
     public static InlineBox styleBox(Context c, Node node, int start, int end, String text, Rectangle bounds, InlineBox prev_align, Font font, InlineBox box) {
-        //u.p("styleBox node = " + node.getNodeName() + " start = " + start + " end = " + end +
+        //U.p("styleBox node = " + node.getNodeName() + " start = " + start + " end = " + end +
         //" prev = " + prev + " text = " + text + " bounds = " + bounds + " prev_align = " + prev_align);
-        //u.p("Making box for: "  + node);
-        //u.p("prev = " + prev);
+        //U.p("Making box for: "  + node);
+        //U.p("prev = " + prev);
         // if ( prev_align != prev ) {
-        //u.p("prev = " + prev);
-        //u.p("prev align inline = " + prev_align);
+        //U.p("prev = " + prev);
+        //U.p("prev align inline = " + prev_align);
         // }
         Content content = box.content;
         CalculatedStyle style = c.getCurrentStyle();
@@ -381,7 +382,7 @@ public class LineBreaker {
         BoxLayout.getMargin(c, box);
         BoxLayout.getPadding(c, box);
 
-        // use the prev_align to calculate the x
+        // use the prev_align to calculate the X
         if (prev_align != null && !prev_align.break_after) {
             box.x = prev_align.x + prev_align.width;
         } else {
@@ -400,13 +401,13 @@ public class LineBreaker {
                 box.width = bounds.width;
             }
         } catch (StringIndexOutOfBoundsException ex) {
-            u.p("ex");
-            u.p("start = " + start);
-            u.p("end = " + end);
-            u.p("text = " + node.getNodeValue());
+            U.p("ex");
+            U.p("start = " + start);
+            U.p("end = " + end);
+            U.p("text = " + node.getNodeValue());
             throw ex;
         }
-        //u.p("box.x = " + box.x);
+        //U.p("box.X = " + box.X);
         if (content instanceof InlineBlockContent) {
             box.height = bounds.height;
         } else if (content instanceof FloatedBlockContent) {
@@ -421,7 +422,7 @@ public class LineBreaker {
 
         if (!(content instanceof InlineBlockContent)) {
             if (!(content instanceof FloatedBlockContent)) {
-                TextDecoration.setupTextDecoration(box);
+                TextDecoration.setupTextDecoration(style, box);
                 //TODO: don't understand the reasoning behind this:
                 //was: if (box.getText() == null) {
                 if (box.getMasterText() == null) {
@@ -449,8 +450,8 @@ public class LineBreaker {
         // if first line then do extra setup
         //this should be taken care of already - tobe 2004-12-11
         /*if (c.isFirstLine()) {
-            //u.p("node = " + node);
-            //u.p("block elem = " + getNearestBlockElement(node,c));
+            //U.p("node = " + node);
+            //U.p("block elem = " + getNearestBlockElement(node,c));
             // if there is a first line firstLineStyle class
             if (firstLineStyle != null) {
                 //CalculatedStyle normal = c.css.getStyle(box.getRealElement());
@@ -482,23 +483,23 @@ public class LineBreaker {
 
     public static InlineBox generateFirstLetterInlineBox(Context c, int start, String text,
                                                          InlineBox prev_align, TextContent content, CascadedStyle firstLetterStyle) {
-        // u.p("gen first letter box");
-        // u.p("node = " + node);
-        // u.p("start = " + start);
+        // U.p("gen first letter box");
+        // U.p("node = " + node);
+        // U.p("start = " + start);
         int end = start + 1;
-        // u.p("text = " + text);
-        // u.p("prev = " + prev);
-        // u.p("prev align = " + prev_align);
-        // u.p("avail = " + avail);
+        // U.p("text = " + text);
+        // U.p("prev = " + prev);
+        // U.p("prev align = " + prev_align);
+        // U.p("avail = " + avail);
         c.pushStyle(firstLetterStyle);
 
         CalculatedStyle style = c.getCurrentStyle();
         Font font = FontUtil.getFont(c, style);
         InlineBox box = newBox(c, content, start, end, text, prev_align, font);
-        // u.p("style = " + cs);
+        // U.p("style = " + cs);
         styleInlineBox(c, style, box);
         box.break_after = false;
-        //u.p("generated a first letter inline: " + box);
+        //U.p("generated a first letter inline: " + box);
         c.popStyle();
         return box;
     }
@@ -518,6 +519,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2004/12/12 03:18:34  tobega
+ * Making progress
+ *
  * Revision 1.33  2004/12/11 23:36:49  tobega
  * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
  *

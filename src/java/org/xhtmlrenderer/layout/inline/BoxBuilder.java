@@ -9,21 +9,15 @@ import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.LineBreaker;
 import org.xhtmlrenderer.render.InlineBox;
 
-import java.awt.*;
+import java.awt.Font;
 
 public class BoxBuilder {
 
-    public static void prepBox(Context c, InlineBox box, InlineBox prev_align, Font font, CascadedStyle firstLineStyle) {
-        //u.p("box = " + box);
-        //u.p("prev align = " + prev_align);
+    public static void prepBox(Context c, InlineBox box, InlineBox prev_align, Font font) {
+        //U.p("box = " + box);
+        //U.p("prev align = " + prev_align);
 
-        Element elem = null;
-        if (box.getNode() instanceof Element) {
-            elem = (Element) box.getNode();
-        } else {
-            elem = (Element) box.getNode().getParentNode();
-        }
-        CalculatedStyle style = c.css.getStyle(elem);
+        CalculatedStyle style = c.getCurrentStyle();
         box.setStyle(style);
 
 
@@ -31,32 +25,32 @@ public class BoxBuilder {
         box.setFont(font);
         BoxLayout.getBackgroundColor(c, box);
         BoxLayout.getBorder(c, box);
-        //u.p("set border on inline box: " + box);
+        //U.p("set border on inline box: " + box);
         BoxLayout.getMargin(c, box);
         BoxLayout.getPadding(c, box);
 
 
         // =========== setup the color
-        box.color = c.css.getStyle(box.getNode()).getColor();
+        box.color = style.getColor();
 
 
 
 
 
-        // ============ set x ===========
+        // ============ set X ===========
         // shift left if starting a new line
         if (box.break_before) {
             box.x = 0;
         }
 
-        // use the prev_align to calculate the x if not at start of
+        // use the prev_align to calculate the X if not at start of
         // new line
         if (prev_align != null &&
                 !prev_align.break_after &&
                 !box.break_before
         ) {
-            //u.p("prev align = " + prev_align);
-            //u.p("floated = " + LayoutUtil.isFloatedBlock( prev_align.node, c ) );
+            //U.p("prev align = " + prev_align);
+            //U.p("floated = " + LayoutUtil.isFloatedBlock( prev_align.node, c ) );
             box.x = prev_align.x + prev_align.width;
         } else {
             box.x = 0;
@@ -95,11 +89,11 @@ public class BoxBuilder {
                 */
         box.width = (int) box.text_bounds.getWidth();
         //box.width = FontUtil.len(c , box.node, box.getSubstring(), font);
-        // u.p("width = " + box.width + " from '"+box.getSubstring() +"'");
+        // U.p("width = " + box.width + " from '"+box.getSubstring() +"'");
         /*
             box.width = bounds.width;
         }
-        //u.p("box.x = " + box.x);
+        //U.p("box.X = " + box.X);
         */
         
         
@@ -141,14 +135,14 @@ public class BoxBuilder {
         // ============= do special setup for first line
         
         // if first line then do extra setup        
-        if (c.isFirstLine()) {
+        /* should already be handled if (c.isFirstLine()) {
             // if there is a first line firstLineStyle class
             if (firstLineStyle != null) {
                 CalculatedStyle normal = c.css.getStyle(box.getRealElement());
                 CalculatedStyle merged = c.css.getDerivedStyle(normal, firstLineStyle);
                 LineBreaker.styleInlineBox(c, merged, box);
             }
-        }
+        } */
         
         
         

@@ -25,10 +25,12 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.*;
 import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.util.U;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.u;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Rectangle;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -45,7 +47,7 @@ public class InlineLayout extends BoxLayout {
      * @return Returns
      */
     public Box layoutChildren(Context c, Box box) {
-        //u.p("starting to lay out the children");
+        //U.p("starting to lay out the children");
         /* resolved by ContentUtil if (LayoutUtil.isHiddenNode(box.getElement(), c)) {
             return box;
         }*/
@@ -99,6 +101,8 @@ public class InlineLayout extends BoxLayout {
         CalculatedStyle currentStyle = parentStyle;
         boolean isFirstLetter = true;
         boolean isFirstLine = true;
+
+        List pendingPushStyles = null;
         // loop until no more nodes
         while (contentList.size() > 0) {
             Object o = contentList.get(0);
@@ -113,10 +117,13 @@ public class InlineLayout extends BoxLayout {
             }
             if (o instanceof StylePush) {
                 c.pushStyle(((StylePush) o).getStyle());
+                if (pendingPushStyles == null) pendingPushStyles = new LinkedList();
+                pendingPushStyles.add(o);
                 continue;
             }
             if (o instanceof StylePop) {
                 c.popStyle();
+                prev_inline.popstyles++;
                 continue;
             }
             Content currentContent = (Content) o;
@@ -125,14 +132,14 @@ public class InlineLayout extends BoxLayout {
 
                 // debugging check
                 if (bounds.width < 0) {
-                    u.p("bounds width = " + bounds.width);
-                    u.dump_stack();
+                    U.p("bounds width = " + bounds.width);
+                    U.dump_stack();
                     System.exit(-1);
                 }
                 
                 // the crash warning code
                 if (bounds.width < 1) {
-                    u.p("warning. width < 1 " + bounds.width);
+                    U.p("warning. width < 1 " + bounds.width);
                 }
                 
                 // test if there is no more text in the current text node
@@ -149,8 +156,10 @@ public class InlineLayout extends BoxLayout {
                 // break off the longest section that will fit
                 InlineBox new_inline = calculateInline(c, currentContent, remaining_width, bounds.width,
                         prev_inline, prev_align_inline, isFirstLetter, block.firstLetterStyle, isFirstLine, block.firstLineStyle);
-                // u.p("got back inline: " + new_inline);
+                // U.p("got back inline: " + new_inline);
                 isFirstLetter = false;
+                new_inline.pushstyles = pendingPushStyles;
+                pendingPushStyles = null;
 
                 // if this inline needs to be on a new line
                 if (new_inline.break_before && !new_inline.floated) {
@@ -241,7 +250,7 @@ public class InlineLayout extends BoxLayout {
 
 
     public void adjustLineHeight(LineBox curr_line, InlineBox new_inline) {
-        // u.p("calcing new height of line");
+        // U.p("calcing new height of line");
         if (new_inline.height + new_inline.y > curr_line.height) {
             curr_line.height = new_inline.height + new_inline.y;
         }
@@ -263,7 +272,7 @@ public class InlineLayout extends BoxLayout {
             return true;
         }*/
         // if no more unused text in this node
-        // u.p("looking for skip to next node");
+        // U.p("looking for skip to next node");
         if (prev_inline.end_index >= prev_inline.getMasterText().length()) {
             return true;
         }
@@ -305,10 +314,10 @@ public class InlineLayout extends BoxLayout {
 
         // handle each case
         if (content instanceof InlineBlockContent) {
-            //u.p("is replaced");
+            //U.p("is replaced");
             result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align, font);
         } else if (content instanceof FloatedBlockContent) {
-            //u.p("calcinline: is floated block");
+            //U.p("calcinline: is floated block");
             result = FloatUtil.generateFloatedBlockInlineBox(c, content, avail, prev_align, font);
         } else {
 
@@ -327,18 +336,18 @@ public class InlineLayout extends BoxLayout {
             // transform the text if required (like converting to caps)
             // this must be done before any measuring since it might change the
             // size of the text
-            //u.p("text from the node = \"" + text + "\"");
+            //U.p("text from the node = \"" + text + "\"");
             text = TextUtil.transformText(text, style);
 
-            // u.p("calculating inline: text = " + text);
-            // u.p("avail space = " + avail + " max = " + max_width + "   start index = " + start);
+            // U.p("calculating inline: text = " + text);
+            // U.p("avail space = " + avail + " max = " + max_width + "   start index = " + start);
 
             if (isFirstLetter && firstLetterStyle != null) {
-                //u.p("is first letter");
+                //U.p("is first letter");
                 result = LineBreaker.generateFirstLetterInlineBox(c, start, text, prev_align, textContent, firstLetterStyle);
             } else {
 
-                result = WhitespaceStripper.createInline(c, textContent, prev, prev_align, avail, max_width, font, firstLineStyle);
+                result = WhitespaceStripper.createInline(c, textContent, prev, prev_align, avail, max_width, font);
             }
         }
         if (isFirstLine && firstLineStyle != null) c.popStyle();
@@ -373,16 +382,11 @@ public class InlineLayout extends BoxLayout {
         block.addChild(line_to_save);
     }
 
-
+    /**
+     * @deprecated use the boxes to find a renderer
+     */
     public Renderer getRenderer() {
         return new InlineRenderer();
-    }
-
-    public void restyle(Context ctx, Box box) {
-        super.restyle(ctx, box);
-        if (box instanceof InlineBox) {
-            TextDecoration.setupTextDecoration((InlineBox) box);
-        }
     }
 
 
@@ -392,6 +396,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.47  2004/12/12 03:17:19  tobega
+* Making progress
+*
 * Revision 1.46  2004/12/11 23:36:48  tobega
 * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
 *
@@ -487,7 +494,7 @@ public class InlineLayout extends BoxLayout {
 *
 * turned off fractional font metrics
 *
-* fixed some bugs in u and x
+* fixed some bugs in U and X
 *
 * - j
 *

@@ -7,7 +7,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.InlineBox;
 
-import java.awt.*;
+import java.awt.Font;
 import java.util.regex.Pattern;
 
 public class WhitespaceStripper {
@@ -20,17 +20,16 @@ public class WhitespaceStripper {
     public static final Pattern space_collapse = Pattern.compile("( )+");
 
 
-    public static InlineBox createInline(Context c, TextContent content, InlineBox prev, InlineBox prev_align, int avail, int max, Font font, CascadedStyle firstLineStyle) {
+    public static InlineBox createInline(Context c, TextContent content, InlineBox prev, InlineBox prev_align, int avail, int max, Font font) {
         InlineBox inline = new InlineBox();
-        inline.setNode(content.getElement());
-        inline.setContent(content);
-        CalculatedStyle style = content.getStyle();
+        inline.content = content;
+        CalculatedStyle style = c.getCurrentStyle();
         inline.whitespace = getWhitespace(style);
         
         // prepare a new inline with a substring that goes
         // from the end of the previous (if applicable) to the
         // end of the master string
-        if (prev == null || prev.getContent() != content) {
+        if (prev == null || prev.content != content) {
             String text = stripWhitespace(style, prev, content.getText());
             inline.setMasterText(text);
             inline.setSubstring(0, text.length());
@@ -42,7 +41,7 @@ public class WhitespaceStripper {
         }
 
         Breaker.breakText(c, inline, prev, prev_align, avail, max, font);
-        BoxBuilder.prepBox(c, inline, prev_align, font, firstLineStyle);
+        BoxBuilder.prepBox(c, inline, prev_align, font);
         return inline;
     }
 
@@ -53,8 +52,8 @@ public class WhitespaceStripper {
     public static String stripWhitespace(CalculatedStyle style, InlineBox prev, String text) {
 
         String whitespace = getWhitespace(style);
-        //u.p("stripWhitespace: text = -" + text + "-");
-        //u.p("whitespace = " + whitespace);
+        //U.p("stripWhitespace: text = -" + text + "-");
+        //U.p("whitespace = " + whitespace);
         
 
         // do step 1
@@ -63,7 +62,7 @@ public class WhitespaceStripper {
                 whitespace.equals("pre-line")) {
             text = linefeed_space_collapse.matcher(text).replaceAll(SPACE);
         }
-        //u.p("step 1 = \"" + text + "\"");
+        //U.p("step 1 = \"" + text + "\"");
         
 
         // do step 2
@@ -77,7 +76,7 @@ public class WhitespaceStripper {
                 whitespace.equals("nowrap")) {
             text = linefeed_to_space.matcher(text).replaceAll(SPACE);
         }
-        //u.p("step 3 = \"" + text +"\"");
+        //U.p("step 3 = \"" + text +"\"");
         
 
         // do step 4
@@ -86,10 +85,10 @@ public class WhitespaceStripper {
                 whitespace.equals("pre-line")) {
 
             text = tab_to_space.matcher(text).replaceAll(SPACE);
-            //u.p("step 4.1 = \"" + text + "\"");
+            //U.p("step 4.1 = \"" + text + "\"");
 
             text = space_collapse.matcher(text).replaceAll(SPACE);
-            //u.p("step 4.2 = \"" + text + "\"");
+            //U.p("step 4.2 = \"" + text + "\"");
 
             // collapse first space against prev inline
             if (text.startsWith(SPACE) &&
@@ -100,11 +99,11 @@ public class WhitespaceStripper {
                     (prev.getSubstring().endsWith(SPACE))) {
                 text = text.substring(1, text.length());
             }
-            //u.p("step 4.3 = \"" + text + "\"");
+            //U.p("step 4.3 = \"" + text + "\"");
 
         }
 
-        //u.p("final text = \"" + text + "\"");
+        //U.p("final text = \"" + text + "\"");
         return text;
     }
 
@@ -127,19 +126,19 @@ public class WhitespaceStripper {
 
     public static void df(Context c, String text, Font f) {
         /*
-        u.p("-------------------------");
+        U.p("-------------------------");
         ((Graphics2D)c.getGraphics()).setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
             RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
             
         ((Graphics2D)c.getGraphics()).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
             RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         FontMetrics fm = c.getGraphics().getFontMetrics();
-        u.p("graphics = " + c.getGraphics());
-        u.p("fm = " + fm);
-        u.p("text = -" + text + "-");
-        u.p("real len = " + fm.stringWidth(text));
-        u.p("real height = " + fm.getHeight());
-        u.p("-------------------------");
+        U.p("graphics = " + c.getGraphics());
+        U.p("fm = " + fm);
+        U.p("text = -" + text + "-");
+        U.p("real len = " + fm.stringWidth(text));
+        U.p("real height = " + fm.getHeight());
+        U.p("-------------------------");
         */
     }
 
