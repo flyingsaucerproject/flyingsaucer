@@ -164,8 +164,6 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add(new JSeparator());
         allDemos = new LinkedHashMap();
 
-        //allDemos.put("Simple Page", "demo:demos/single-line-page.xhtml");
-
         allDemos.put("Nested Float", "demo:demos/layout/multicol/glish/nested-float.xhtml");
 
         allDemos.put("Paragraph", "demo:demos/paragraph.xhtml");
@@ -181,8 +179,6 @@ public class BrowserMenuBar extends JMenuBar {
         allDemos.put("Rollovers with :hover ", "demo:demos/hover.xhtml");
         allDemos.put("Pseudo-elements ", "demo:demos/pseudo-elements.xhtml");
         allDemos.put("Forms", "demo:demos/forms.xhtml");
-        // TODO: tables broken!
-        // allDemos.put("Tables", "demo:demos/table.xhtml");
         allDemos.put("Link", "demo:demos/link.xhtml");
         allDemos.put("Game Screen", "demo:demos/game/index.xhtml");
         allDemos.put("Financial Report", "demo:demos/report.xhtml");
@@ -334,8 +330,6 @@ public class BrowserMenuBar extends JMenuBar {
                 inspectorFrame = new JFrame("DOM Tree Inspector");
             }
             if (inspector == null) {
-                // inspectorFrame = new JFrame("DOM Tree Inspector");
-
                 inspector = new DOMInspector(root.panel.view.getDocument(), root.panel.view.getContext(), root.panel.view.getContext().getCss());
 
                 inspectorFrame.getContentPane().add(inspector);
@@ -568,7 +562,6 @@ public class BrowserMenuBar extends JMenuBar {
 
         public void actionPerformed(ActionEvent evt) {
             root.panel.view.getRenderingContext().getTextRenderer().setSmoothingLevel(hint);
-            //root.panel.view.getRenderingContext().getTextRenderer().setSmoothingThreshold(20);
             root.panel.view.repaint();
         }
     }
@@ -622,6 +615,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/03/28 20:03:14  pdoubleya
+ * Icon/menu bar assignments.
+ *
  * Revision 1.29  2005/03/28 19:04:17  pdoubleya
  * Moved text size controls on menu, cleaned list of pages.
  *
