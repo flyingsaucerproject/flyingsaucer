@@ -24,7 +24,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 
-import java.awt.*;
+import java.awt.Font;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 
@@ -62,13 +62,14 @@ public class FontUtil {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param style
+     * @param c PARAM
      * @return Returns
      */
-    public static int lineHeight(Context c, CalculatedStyle style) {
-        int val = (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont(c, style), "Test").getHeight());
-        if (style.hasProperty(CSSName.LINE_HEIGHT)) {
+    public static int lineHeight(Context c) {
+        CalculatedStyle style = c.getCurrentStyle();
+        int val = (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont(c), "Test").getHeight());
+        //TODO: line-height should probably be resolved by CalculatedStyle (possibly with input of used font-size)
+        if (!style.propertyByName(CSSName.LINE_HEIGHT).computedValue().cssValue().getCssText().equals("normal")) {
             val = (int) style.getFloatPropertyRelative(CSSName.LINE_HEIGHT, val);
         }
         return val;
@@ -92,16 +93,12 @@ public class FontUtil {
      */
     //TODO: use this method!
     public static int fontXHeightForElement(Context context, CalculatedStyle style) {
-        return lineHeight(context, style);
+        return lineHeight(context);
     }
     //TODO: add method to get font-size for a specific XHeight
 
     public static Font getFont(Context c) {
         CalculatedStyle style = c.getCurrentStyle();
-        return getFont(c, style);
-    }
-
-    public static Font getFont(Context c, CalculatedStyle style) {
         // CalculatedStyle should take care of all iheritance and default values
         // if a change is made to the basic font (by user action, for example), restyle
         Font f = c.getGraphics().getFont();
@@ -121,7 +118,7 @@ public class FontUtil {
         return f;
     }
 
-
+    //TODO: this is usually not interesting unless it is an InlineTextBox!
     public static LineMetrics getLineMetrics(Context c, InlineBox box) {
         String sample = "Test";
         if ((box instanceof InlineTextBox) && !((InlineTextBox) box).getSubstring().equals("")) sample = ((InlineTextBox) box).getSubstring();
@@ -130,9 +127,8 @@ public class FontUtil {
     }
 
     public static Rectangle2D getTextBounds(Context c, InlineTextBox box) {
-        CalculatedStyle style = c.getCurrentStyle();
         return c.getTextRenderer().getLogicalBounds(c.getGraphics(),
-                getFont(c, style), box.getSubstring());
+                getFont(c), box.getSubstring());
     }
 
     /*public static float getDescent(Context c, InlineBox box, Font font) {
@@ -149,6 +145,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/01/10 01:58:36  tobega
+ * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
+ *
  * Revision 1.25  2005/01/07 00:29:29  tobega
  * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
  *

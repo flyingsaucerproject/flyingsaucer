@@ -76,7 +76,7 @@ public abstract class InlineBox extends Box {
     /**
      * Description of the Field
      */
-    public int baseline;
+    //calculated public int baseline;
 
 // --Commented out by Inspection START (2005-01-05 01:07):
 //    /**
@@ -88,17 +88,17 @@ public abstract class InlineBox extends Box {
     /**
      * Description of the Field
      */
-    public boolean vset = false;
+    //calculated public boolean vset = false;
 
     /**
      * Description of the Field
      */
-    public boolean top_align = false;
+    //calculated public boolean top_align = false;
 
     /**
      * Description of the Field
      */
-    public boolean bottom_align = false;
+    //calculated public boolean bottom_align = false;
 
     // text stuff
 
@@ -121,8 +121,8 @@ public abstract class InlineBox extends Box {
 
         return "InlineBox " +
                 "bnds = " + x + "," + y + " - " + width + "Xx" + height +
-                " start = " + this.start_index + " end = " + this.end_index +
-                " baseline = " + this.baseline + " vset = " + this.vset;// +
+                " start = " + this.start_index + " end = " + this.end_index;
+        //       " baseline = " + this.baseline + " vset = " + this.vset;// +
         // CLN: (PWW 13/08/04)
         //" color: " + color + " background-color: " + background_color +
         //" font: " + font;
@@ -217,6 +217,9 @@ public abstract class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/01/10 01:58:37  tobega
+ * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
+ *
  * Revision 1.32  2005/01/07 00:29:30  tobega
  * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
  *

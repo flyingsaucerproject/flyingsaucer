@@ -22,6 +22,9 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.inline.WhitespaceStripper;
+import org.xhtmlrenderer.util.XRLog;
+
+import java.util.logging.Level;
 
 
 /**
@@ -46,7 +49,17 @@ public class LineBox extends Box {
     /**
      * Description of the Field
      */
-    public int baseline;// relative to Xx,y
+    //public int baseline;// relative to Xx,y
+    public int ascent;
+    public int descent;
+
+    public int getBaseline() {
+        int leading = height - ascent - descent;
+        if (leading < 0) {
+            XRLog.layout(Level.SEVERE, "negative leading in line box");
+        }
+        return ascent + leading / 2;
+    }
 
     public void addInlineChild(Context c, InlineBox ib) {
         if (ib == null) throw new NullPointerException("trying to add null child");
@@ -62,7 +75,6 @@ public class LineBox extends Box {
             if (child.getSubstring().equals("")) {
                 child.width = 0;
                 child.height = 0;
-                child.baseline = 0;
             }
         }
         ib.setParent(this);
@@ -79,7 +91,7 @@ public class LineBox extends Box {
      */
     public String toString() {
 
-        return "Line: (" + x + "," + y + ")Xx(" + width + "," + height + ")" + "  baseline = " + baseline;
+        return "Line: (" + x + "," + y + ")Xx(" + width + "," + height + ")" + "  baseline = " + getBaseline();
     }
 
 }
@@ -88,6 +100,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/01/10 01:58:37  tobega
+ * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
+ *
  * Revision 1.10  2005/01/09 13:32:35  tobega
  * Caching image components. Also fixed two bugs that were introduced fixing the last one. Code still too brittle...
  *

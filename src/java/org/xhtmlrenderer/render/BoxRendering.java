@@ -42,17 +42,19 @@ public class BoxRendering {
     /**
      * Description of the Method
      *
-     * @param c   PARAM
-     * @param box PARAM
+     * @param c           PARAM
+     * @param box         PARAM
+     * @param stylePushed
      */
-    public static void paint(Context c, Box box) {
+    //HACK: the stylePushed is because we need to set style for inline blocks earlier
+    public static void paint(Context c, Box box, boolean stylePushed) {
         // Uu.p("BoxRenderer.paint " + box);
         Box block = (Box) box;
 
         //set the current style
         //CascadedStyle hoverStyle = null;
         CascadedStyle style = null;
-        if (block.element != null) style = c.getCss().getCascadedStyle(block.element);
+        if (!stylePushed && block.element != null) style = c.getCss().getCascadedStyle(block.element);
         if (style != null) {
             c.pushStyle(style);
             /*if (block.hover) {

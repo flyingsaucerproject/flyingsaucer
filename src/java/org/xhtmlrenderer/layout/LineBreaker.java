@@ -21,14 +21,14 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 /**
  * Description of the Class
@@ -61,7 +61,7 @@ public class LineBreaker {
 
         box.y = 0;// it's relative to the line
         // do vertical alignment
-        VerticalAlign.setupVerticalAlign(c, style, box);
+        //now done later VerticalAlign.setupVerticalAlign(c, style, box);
         c.translate(box.x + curr_line.x, box.y + curr_line.y);
         c.translateInsets(box);
         Rectangle bounds = null;
@@ -107,6 +107,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.54  2005/01/10 01:58:36  tobega
+ * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
+ *
  * Revision 1.53  2005/01/07 13:29:03  tobega
  * Fixed the image demo
  *

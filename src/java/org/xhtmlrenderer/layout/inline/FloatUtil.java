@@ -10,7 +10,7 @@ import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 public class FloatUtil {
     /* the new way of doing floats */
@@ -82,7 +82,8 @@ public class FloatUtil {
         CalculatedStyle style = c.getCurrentStyle();
 
         // do vertical alignment
-        VerticalAlign.setupVerticalAlign(c, style, inline_block);
+        //VerticalAlign.setupVerticalAlign(c, style, inline_block);
+        //TODO: check if floats should be affected by vertical alignment
 
         inline_block.x = x;
         inline_block.y = y;

@@ -369,7 +369,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             if (bx instanceof InlineBox) {
                 InlineBox ibx = (InlineBox) bx;
                 LineBox lbx = (LineBox) box;
-                int off = lbx.baseline + ibx.y - ibx.height;
+                int off = lbx.getBaseline() + ibx.y - ibx.height;//this is not really correct, what about vertical align?
                 tty -= off;
             }
 
@@ -423,7 +423,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             if (bx instanceof InlineBox) {
                 InlineBox ibx = (InlineBox) bx;
                 LineBox lbx = (LineBox) box;
-                int off = lbx.baseline + ibx.y - ibx.height;
+                int off = lbx.getBaseline() + ibx.y - ibx.height;//not really correct
                 tty -= off;
             }
 
@@ -486,7 +486,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
                 XRLog.layout(Level.FINEST, "inline y = " + ibx.y);
                 XRLog.layout(Level.FINEST, "inline height = " + ibx.height);
                 XRLog.layout(Level.FINEST, "line = " + lbx);
-                int off = lbx.baseline + ibx.y - ibx.height;
+                int off = lbx.getBaseline() + ibx.y - ibx.height;//not really correct
                 XRLog.layout(Level.FINEST, "off = " + off);
                 tty -= off;
             }
@@ -709,7 +709,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         // start painting the box tree
         //(new BodyRenderer()).paint(c,
         //        body_box);
-        BoxRendering.paint(c, body_box);
+        BoxRendering.paint(c, body_box, false);
     }
 
     /**
@@ -886,6 +886,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/01/10 01:58:37  tobega
+ * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
+ *
  * Revision 1.32  2005/01/08 15:56:55  tobega
  * Further work on extensibility interfaces. Documented it - see website.
  *

@@ -87,7 +87,7 @@ public class ListItemPainter {
         
         // calculations for bullets
         int rad = 8;// change this to use the glyph height
-        int h = FontUtil.lineHeight(c, style);
+        int h = FontUtil.lineHeight(c);
         rad = h / 3;
         int x = box.x - rad - rad / 2;
         int y = box.y + (h - rad / 2) / 2;
@@ -159,10 +159,10 @@ public class ListItemPainter {
         }
 
         CalculatedStyle style = c.getCurrentStyle();
-        Font font = FontUtil.getFont(c, style);
+        Font font = FontUtil.getFont(c);
         LineMetrics lm = font.getLineMetrics(text, ((Graphics2D) c.getGraphics()).getFontRenderContext());
         int w = FontUtil.len(c, text, font);
-        int h = FontUtil.lineHeight(c, style);
+        int h = FontUtil.lineHeight(c);
         int x = box.x - w - 2;
         int y = box.y + h;
         y -= (int) lm.getDescent();
@@ -210,6 +210,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/01/10 01:58:37  tobega
+ * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
+ *
  * Revision 1.12  2004/12/29 10:39:35  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

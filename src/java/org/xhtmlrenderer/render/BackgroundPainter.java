@@ -89,6 +89,7 @@ public class BackgroundPainter {
             c.getGraphics().setClip(oldclip.createIntersection(new_clip));
 
             // calculate repeat indecies
+            /* not used
             int repeatx = 1;
             int repeaty = 1;
 
@@ -103,9 +104,10 @@ public class BackgroundPainter {
                 repeatx = back_width;
                 repeaty = back_height;
             }
+            */
 
-            double iwd = block.background_image.getWidth(null);
-            double ihd = block.background_image.getHeight(null);
+            //double iwd = block.background_image.getWidth(null);
+            //double ihd = block.background_image.getHeight(null);
             int iw = block.background_image.getWidth(null);
             int ih = block.background_image.getHeight(null);
 
@@ -124,10 +126,12 @@ public class BackgroundPainter {
             yoff -= (int) ((double) (back_height - ih) * (double) ((double) block.background_position_vertical / (double) 100));
 
             // calculations for fixed tile images
+            /* not used
             int starty = (int) Math.ceil((double) (top_insets + yoff) / ih);
             int endy = (int) Math.ceil((double) (back_height + top_insets + yoff) / ih);
             int startx = (int) Math.ceil((double) (left_insets) / iw);
             int endx = (int) Math.ceil((double) (back_width + left_insets) / iw);
+            */
             // tile the image as appropriate
 
             // do fixed tile image
@@ -213,6 +217,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/01/10 01:58:37  tobega
+ * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
+ *
  * Revision 1.15  2005/01/09 15:22:49  tobega
  * Prepared improved handling of margins, borders and padding.
  *

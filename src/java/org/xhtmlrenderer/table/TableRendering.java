@@ -132,7 +132,7 @@ public class TableRendering {
 
             //Uu.p("doing cell: " + cell);
 
-            BoxRendering.paint(c, cell.sub_box);
+            BoxRendering.paint(c, cell.sub_box, false);
 
             c.getGraphics().translate(-oe.x, -oe.y);
 

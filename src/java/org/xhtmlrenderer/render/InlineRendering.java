@@ -26,6 +26,7 @@ import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.StylePop;
 import org.xhtmlrenderer.layout.content.StylePush;
+import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.util.GraphicsUtil;
 
 import java.awt.*;
@@ -60,14 +61,18 @@ public class InlineRendering {
         c.translate(box.x, box.y);
         // for each line box
         BlockBox block = null;
-        if (box instanceof BlockBox) {//Why isn't it always a BlockBox?
+        if (box instanceof BlockBox) {//Why isn't it always a BlockBox? Because of e.g. Floats!
             block = (BlockBox) box;
         }
+
+        int blockLineHeight = FontUtil.lineHeight(c);
+        LineMetrics blockLineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(),
+                FontUtil.getFont(c), "thequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG");
 
         for (int i = 0; i < box.getChildCount(); i++) {
             if (i == 0 && block != null && block.firstLineStyle != null) c.pushStyle(block.firstLineStyle);
             // get the line box
-            paintLine(c, (LineBox) box.getChild(i));
+            paintLine(c, (LineBox) box.getChild(i), blockLineHeight, blockLineMetrics);
             if (i == 0 && block != null && block.firstLineStyle != null) c.popStyle();
         }
 
@@ -78,10 +83,10 @@ public class InlineRendering {
     /**
      * paint all of the inlines on the specified line
      */
-    static void paintLine(Context c, LineBox line) {
+    static void paintLine(Context c, LineBox line, int blockLineHeight, LineMetrics blockLineMetrics) {
         // get Xx and y
         int lx = line.x;
-        int ly = line.y + line.baseline;
+        int ly = line.y + line.getBaseline();
 
         // for each inline box
         for (int j = 0; j < line.getChildCount(); j++) {
@@ -93,7 +98,7 @@ public class InlineRendering {
             }
 
             InlineBox box = (InlineBox) child;
-            paintInline(c, box, lx, ly, line);
+            paintInline(c, box, lx, ly, line, blockLineHeight, blockLineMetrics);
         }
         if (c.debugDrawLineBoxes()) {
             GraphicsUtil.drawBox(c.getGraphics(), line, Color.blue);
@@ -106,24 +111,10 @@ public class InlineRendering {
     // They *are* drawn horizontally (Xx) relative to the origin of the
     // containing line box though
 
-    static void paintInline(Context c, InlineBox ib, int lx, int ly, LineBox line) {
+    static void paintInline(Context c, InlineBox ib, int lx, int ly, LineBox line, int blockLineHeight, LineMetrics blockLineMetrics) {
 
-        if (ib.floated) {
-            paintFloat(c, ib);
-            debugInlines(c, ib, lx, ly);
-            return;
-        }
-        // Uu.p("paintInline: " + inline);
-        if (ib instanceof InlineBlockBox) {
-            paintReplaced(c, ib, line);
-            debugInlines(c, ib, lx, ly);
-            return;
-        }
-
-        InlineTextBox inline = (InlineTextBox) ib;
-
-        if (inline.pushstyles != null) {
-            for (Iterator i = inline.pushstyles.iterator(); i.hasNext();) {
+        if (ib.pushstyles != null) {
+            for (Iterator i = ib.pushstyles.iterator(); i.hasNext();) {
                 StylePush sp = (StylePush) i.next();
                 c.pushStyle(c.getCss().getCascadedStyle(sp.getElement()));
                 /*if (inline.hover) {
@@ -134,28 +125,53 @@ public class InlineRendering {
                 Relative.translateRelative(c);
                 //TODO: push to current border-list (and paint left edge)
                 //HACK: this might do for now - tobe 2004-12-27
-                paintPadding(c, line, inline);
+                paintPadding(c, line, ib);
             }
         }
 
-        c.updateSelection(inline);
-        
-        // calculate the Xx and y relative to the baseline of the line (ly) and the
-        // left edge of the line (lx)
-        int iy = ly + inline.y;
-        int ix = lx + inline.x;
-        // account for padding
-        // Uu.p("adjusted inline by: " + inline.totalLeftPadding());
-        // Uu.p("inline = " + inline);
-        // Uu.p("padding = " + inline.padding);
-        //ix += inline.totalLeftPadding(c.getCurrentStyle());
+        if (ib.floated) {
+            paintFloat(c, ib);
+            debugInlines(c, ib, lx, ly);
+        }
+        // Uu.p("paintInline: " + inline);
+        else if (ib instanceof InlineBlockBox) {
+            c.pushStyle(c.getCss().getCascadedStyle(ib.element));
+            c.translate(line.x,
+                    line.y +
+                    (line.getBaseline() -
+                    VerticalAlign.getBaselineOffset(c, line, ib, blockLineHeight, blockLineMetrics) -
+                    ib.height));
+            BoxRendering.paint(c, ib, true);
+            c.translate(-line.x,
+                    -(line.y +
+                    (line.getBaseline() -
+                    VerticalAlign.getBaselineOffset(c, line, ib, blockLineHeight, blockLineMetrics) -
+                    ib.height)));
+            debugInlines(c, ib, lx, ly);
+            c.popStyle();
+        } else {
 
-        paintSelection(c, inline, lx, ly);
-        paintText(c, lx, ly, ix, iy, inline);
-        debugInlines(c, inline, lx, ly);
+            InlineTextBox inline = (InlineTextBox) ib;
 
-        if (inline.popstyles != null) {
-            for (Iterator i = inline.popstyles.iterator(); i.hasNext();) {
+            c.updateSelection(inline);
+
+            // calculate the Xx and y relative to the baseline of the line (ly) and the
+            // left edge of the line (lx)
+            int iy = ly - VerticalAlign.getBaselineOffset(c, line, inline, blockLineHeight, blockLineMetrics);
+            int ix = lx + inline.x;//TODO: find the right way to work this out
+            // account for padding
+            // Uu.p("adjusted inline by: " + inline.totalLeftPadding());
+            // Uu.p("inline = " + inline);
+            // Uu.p("padding = " + inline.padding);
+            //ix += inline.totalLeftPadding(c.getCurrentStyle());
+
+            paintSelection(c, inline, lx, ly);
+            paintText(c, lx, ly, ix, iy, inline);
+            debugInlines(c, inline, lx, ly);
+        }
+
+        if (ib.popstyles != null) {
+            for (Iterator i = ib.popstyles.iterator(); i.hasNext();) {
                 StylePop sp = (StylePop) i.next();
                 //TODO: paint right edge and pop current border-list
                 Relative.untranslateRelative(c);
@@ -168,21 +184,6 @@ public class InlineRendering {
         }
     }
 
-
-    /*private void handleRelativePre(Context c, InlineBox inline) {
-        if (inline.relative) {
-            c.translate(inline.left, inline.top);
-        }
-    }
-
-
-    private void handleRelativePost(Context c, InlineBox inline) {
-        if (inline.relative) {
-            c.translate(-inline.left, -inline.top);
-        }
-    }*/
-
-
     static void debugInlines(Context c, InlineBox inline, int lx, int ly) {
         if (c.debugDrawInlineBoxes()) {
             GraphicsUtil.draw(c.getGraphics(), new Rectangle(lx + inline.x + 1, ly + inline.y + 1 - inline.height,
@@ -191,21 +192,12 @@ public class InlineRendering {
     }
 
 
-    static void paintReplaced(Context c, InlineBox inline, LineBox line) {
-        // Uu.p("paint replaced: " + inline);
-        c.translate(line.x, line.y + (line.baseline - inline.height));
-        /*Renderer rend = c.getRenderer(inline.content.getElement());
-        rend.paint(c, inline);  */
-        BoxRendering.paint(c, inline);
-        c.translate(-line.x, -(line.y + (line.baseline - inline.height)));
-    }
-
     static void paintAbsolute(Context c, Box inline) {
         // Uu.p("paint absolute: " + inline);
         //c.translate(line.x, line.y + (line.baseline - inline.height));
         /*Renderer rend = c.getRenderer(inline.content.getElement());
         rend.paint(c, inline);*/
-        BoxRendering.paint(c, inline);
+        BoxRendering.paint(c, inline, false);
         //c.translate(-line.x, -(line.y + (line.baseline - inline.height)));
     }
 
@@ -221,7 +213,7 @@ public class InlineRendering {
         c.translate(xoff, yoff);
         /*Renderer rend = c.getRenderer(inline.content.getElement());
         rend.paint(c, inline);//.sub_block ); */
-        BoxRendering.paint(c, inline);
+        BoxRendering.paint(c, inline, false);
         c.translate(-xoff, -yoff);
         c.setExtents(oe);
     }
@@ -263,7 +255,7 @@ public class InlineRendering {
         Font cur_font = c.getGraphics().getFont();
         LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), cur_font, text);
 
-        iy -= (int) lm.getDescent();
+        //baseline is baseline! iy -= (int) lm.getDescent();
         
         //draw the line
         if (text != null && text.length() > 0) {
@@ -308,13 +300,16 @@ public class InlineRendering {
         c.getGraphics().setFont(oldfont);
     }
 
+    /**
+     * @deprecated this should be done differently
+     */
     public static void paintPadding(Context c, LineBox line, InlineBox inline) {
         //Uu.p("painting border: " + inline.border);
         // paint the background
         int padding_xoff = 0;
         int padding_yoff = inline.totalTopPadding(c.getCurrentStyle());
 
-        int ty = line.baseline - inline.y - inline.height - padding_yoff + line.y;
+        int ty = line.getBaseline() - inline.y - inline.height - padding_yoff + line.y;
 
         LineMetrics lm = FontUtil.getLineMetrics(c, inline);
         ty += (int) lm.getDescent();

@@ -6,7 +6,7 @@ import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 
-import java.awt.*;
+import java.awt.Font;
 
 public class BoxBuilder {
 
@@ -53,7 +53,7 @@ public class BoxBuilder {
         
         
         // =========== setup vertical alignment
-        VerticalAlign.setupVerticalAlign(c, style, box);
+        //now done later VerticalAlign.setupVerticalAlign(c, style, box);
         
         // adjust width based on borders and padding
         box.width += box.totalHorizontalPadding(c.getCurrentStyle());

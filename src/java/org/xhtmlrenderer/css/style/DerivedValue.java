@@ -31,7 +31,7 @@ import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.util.ConversionUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.logging.Level;
 
 
@@ -350,6 +350,11 @@ public class DerivedValue {
         float absVal = 0F;
 
         switch (cssSACPrimitiveValueType()) {
+            case CSSPrimitiveValue.CSS_EMS:
+            case CSSPrimitiveValue.CSS_EXS:
+                //HACK: for line-height - tobe 2005-01-09
+                absVal = relVal * base;
+                break;
             case CSSPrimitiveValue.CSS_PERCENTAGE:
                 // percentage depends on the property this value belongs to
                 absVal = (relVal / 100F) * base;
