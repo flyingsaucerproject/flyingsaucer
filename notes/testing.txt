@@ -1,0 +1,74 @@
+testing notes
+
+//create headless renderer
+//make box have a getTestString()
+//print out boxes to a file
+
+//test should take dom and write box to file
+//take dom and filename and diff against file
+
+//generateTestFile(Document doc, String filename)
+//boolean compareTestFile(Document doc, String filename)
+
+//create heirarchy of tests
+//email ian hickson
+start building the tests
+    convert each of the demo files into a set of xhtml files
+add background image, color, border color, font, etc, support into the getDiffString() function and then regen the tests.
+
+
+
+Hey guys.  There are three major tasks I wanted to complete for R4: reorg the code, build testing infrastructure, and design a logging standard.  Well, we've pretty much moved all of the code and gotten it to compile and last night I took a first stab at the testing.  Here's what I've built:
+
+A new class called org.xhtmlrenderer.test.DocumentDiffTest, which can take an xhtml file, render it to a buffer, then generate a text file representing the rendered document.  To support this I've added a Box.getTestString() method which produces this. (similar to toString() but we will guarantee that it won't change.) Finally DocumentDiffTest compares the text file to another one on disk to tell if it's changed or not. A second class DocumentDiffGenerate does the same thing but saves the result, thus generating the correct answers.  Since we don't care about actual *diffs*, but simply whether the two files are equal, I simply load them up into strings and call equals(). For 99% of our tests this will work.
+
+I've also added 3 new Ant tasks:
+
+unit-tests: Will run all of the unit tests. Just calls diff-tests right now. As we build up code based unit tests they will go here too.
+
+diff-tests: runs every diff test recursively and prints whether it passed or failed
+
+generate-diff-tests: recursively regenerates each diff file from the associated .xhtml file.  Obviously we don't run this very often because it could ruin our older tests. This should only be run when the Box.getTestString() function changes.  We will need a better way of individually adding new unit tests. Thoughts? Maybe a plugin to the browser?
+
+I've also started building a set of directories for our tests. If you do a cvs update -d you'll get tests/diff/*.  Currently I've just put in 'background' but eventually we'll have directories of every facet of css.  I want to mirror the directories at: http://www.hixie.ch/tests/adhoc/css/, so if you add tests be sure to look here first.
+
+Flaws:
+
+* The height and width is fixed to 500px. For most tests this is fine but certain bugs on occur at certain dimensions, so we should be able to override that for certain tests. Perhaps some extra information (meta tags?) at the top of the actual xhtml test file.
+
+* Visual confirmation. These tests can verify parsing, cascading, and layout, but it can't verify rendering. We'll need actual visual tests (bitmap comparison) for that.  It's still a great way to have regression testing though.
+
+* We have to build all of these tests ourselves.  I've emailed Ian Hickson to see if we can use the tests he has here:
+    http://www.hixie.ch/tests/adhoc/css/
+which are quite comprehensive, however the license may be too restrictive for us. Plus I think he works at Opera so they may not be too happy about it either. I emailed him to ask about it.
+
+I want to have one test (distinct file) for each and every possible feature and combination of features.  This will obviously take *a very long time* to build but should be pretty comprehensive. As the set grows it will eventually take quite a while to render, so we'll want to have an automated build/test process that checks out the code and runs the tests once a day.
+
+
+That's it for today folks.  I'm going to try making some more tests to see if there's anything I've forgotten. Tell me what you think.
+
+- Joshua
+
+tests/
+    diff/
+        background/
+        border/              
+        box/                 
+        cascade/             
+        color/               
+        content/             
+        fonts/               
+        inheritance/         
+        media/               
+        model/               
+        mozilla/             
+        overflow/            
+        parsing/             
+        quotes/              
+        selectors/           
+        text/                
+        ui/                  
+        units/               
+        widgets/             
+
+
