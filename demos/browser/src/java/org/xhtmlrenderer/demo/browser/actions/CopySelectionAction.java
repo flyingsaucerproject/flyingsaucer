@@ -1,26 +1,23 @@
 package org.xhtmlrenderer.demo.browser.actions;
 
-import java.io.*;
-import java.net.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import org.xhtmlrenderer.extend.RenderingContext;
-import org.xhtmlrenderer.demo.browser.*;
-import org.xhtmlrenderer.layout.*;
+import org.xhtmlrenderer.demo.browser.BrowserStartup;
+import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.swing.*;
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.swing.BasicPanel;
+
+import javax.swing.*;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
 
 public class CopySelectionAction extends AbstractAction {
 
     protected BrowserStartup root;
-    
-    public CopySelectionAction( BrowserStartup root ) {
+
+    public CopySelectionAction(BrowserStartup root) {
         super("Copy");
         this.root = root;
     }

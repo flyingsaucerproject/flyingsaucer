@@ -21,12 +21,14 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRRuntimeException;
-import org.xhtmlrenderer.util.u;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
+import java.util.List;
 
 
 /**
@@ -40,7 +42,16 @@ public class InlineBox extends Box {
     }
 
     public InlineBox(InlineBox box) {
-        super(box);
+        this();
+        x = box.x;
+        y = box.y;
+        width = box.width;
+        height = box.height;
+        border = box.border;
+        margin = box.margin;
+        padding = box.padding;
+        color = box.color;
+        content = box.content;
         sub_block = box.sub_block;
         font = box.font;
         //TODO: do we need to set the master text here? text = box.text;
@@ -48,6 +59,11 @@ public class InlineBox extends Box {
         overline = box.overline;
         strikethrough = box.strikethrough;
     }
+
+    //might need to push styles before rendering this box
+    public List pushstyles;
+    //might need to pop styles after rendering this box
+    public int popstyles = 0;
 
     // if we are an inline block, then this is
 
@@ -142,7 +158,7 @@ public class InlineBox extends Box {
     public String toString() {
 
         return "InlineBox text = \"" + getSubstring() +
-                "\" bnds = " + x + "," + y + " - " + width + "x" + height +
+                "\" bnds = " + x + "," + y + " - " + width + "Xx" + height +
                 " start = " + this.start_index + " end = " + this.end_index +
                 " baseline = " + this.baseline + " vset = " + this.vset +
                 // CLN: (PWW 13/08/04)
@@ -186,8 +202,8 @@ public class InlineBox extends Box {
                 return master;
             }
             if (end_index < start_index) {
-                u.p("warning: end is less than start: " + end_index + " < " + start_index);
-                u.p("master = " + master);
+                Uu.p("warning: end is less than start: " + end_index + " < " + start_index);
+                Uu.p("master = " + master);
                 return master;
             }
             return master.substring(start_index, end_index);
@@ -205,7 +221,7 @@ public class InlineBox extends Box {
 
     public void setSubstring(int start, int end) {
         if (end < start) {
-            u.p("setting substring to: " + start + " " + end);
+            Uu.p("setting substring to: " + start + " " + end);
             throw new XRRuntimeException("set substring length too long: " + this);
         }
         start_index = start;
@@ -215,9 +231,9 @@ public class InlineBox extends Box {
     public void setSubstringLength(int len) {
         end_index = start_index + len;
         if (end_index > master.length()) {
-            u.p("just set substring length to : " + len);
-            u.p("so indexes = " + start_index + " -> " + end_index);
-            u.p("longer than master: " + master);
+            Uu.p("just set substring length to : " + len);
+            Uu.p("so indexes = " + start_index + " -> " + end_index);
+            Uu.p("longer than master: " + master);
             throw new XRRuntimeException("set substring length too long: " + this);
         }
     }
@@ -225,7 +241,7 @@ public class InlineBox extends Box {
     private String master;
 
     public void setMasterText(String master) {
-        //u.p("set master text to: \"" + master + "\"");
+        //Uu.p("set master text to: \"" + master + "\"");
         this.master = master;
     }
 
@@ -256,11 +272,11 @@ public class InlineBox extends Box {
         Font font = getFont();
         String str = getSubstring();
         str = str.substring(0, x);
-        //u.p("substring = " + str);
+        //Uu.p("substring = " + str);
         char[] chars = new char[str.length()];
         getSubstring().getChars(0, str.length(), chars, 0);
         FontMetrics fm = ctx.getGraphics().getFontMetrics(font);
-        //u.p("getting advance: " + x + " chars = " + chars);
+        //Uu.p("getting advance: " + Xx + " chars = " + chars);
         return fm.charsWidth(chars, 0, x);
     }
 
@@ -294,6 +310,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/12/12 03:33:00  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.17  2004/12/11 23:36:49  tobega
  * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
  *
@@ -340,7 +359,7 @@ public class InlineBox extends Box {
  *
  * turned off fractional font metrics
  *
- * fixed some bugs in u and x
+ * fixed some bugs in Uu and Xx
  *
  * - j
  *

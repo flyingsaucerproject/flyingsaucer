@@ -19,45 +19,17 @@
  */
 package org.xhtmlrenderer.swing;
 
+import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.u;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.AbstractAction;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.JSeparator;
-import javax.swing.event.MouseInputAdapter;
-import org.w3c.dom.Element;
-import java.util.Map;
-import org.w3c.dom.Node;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.simple.*;
-import org.xhtmlrenderer.extend.*;
-import org.xhtmlrenderer.layout.LayoutFactory;
-import org.xhtmlrenderer.layout.Layout;
-import org.xhtmlrenderer.layout.InlineLayout;
-import org.xhtmlrenderer.render.*;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.u;
-import java.io.*;
 import java.io.File;
 import java.net.URL;
-
-import java.awt.print.*;
-import java.awt.Graphics;
 
 
 /**
@@ -106,10 +78,10 @@ public class HTMLTest extends JFrame {
         getContentPane().add("Center", scroll);
 
         JMenuBar mb = new JMenuBar();
-        JMenu file = new JMenu( "File" );
-        mb.add( file );
-        file.setMnemonic( 'F' );
-        file.add( new QuitAction() );
+        JMenu file = new JMenu("File");
+        mb.add(file);
+        file.setMnemonic('F');
+        file.add(new QuitAction());
 
         JMenu view = new JMenu("View");
         mb.add(view);
@@ -159,15 +131,15 @@ public class HTMLTest extends JFrame {
         debugShow.add(new JCheckBoxMenuItem(new LineBoxOutlinesAction()));
         debugShow.add(new JCheckBoxMenuItem(new InlineBoxesAction()));
         debugShow.add(new JCheckBoxMenuItem(new FontMetricsAction()));
-        
-        
+
+
         JMenu anti = new JMenu("Anti Aliasing");
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("None", TextRenderer.NONE) ) );
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Low (Default)", TextRenderer.LOW) ) );
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Medium", TextRenderer.MEDIUM) ) );
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Highest", TextRenderer.HIGH) ) );
-        debug.add( anti );
-        
+        anti.add(new JCheckBoxMenuItem(new AntiAliasedAction("None", TextRenderer.NONE)));
+        anti.add(new JCheckBoxMenuItem(new AntiAliasedAction("Low (Default)", TextRenderer.LOW)));
+        anti.add(new JCheckBoxMenuItem(new AntiAliasedAction("Medium", TextRenderer.MEDIUM)));
+        anti.add(new JCheckBoxMenuItem(new AntiAliasedAction("Highest", TextRenderer.HIGH)));
+        debug.add(anti);
+
         debug.add(new ShowDOMInspectorAction());
 /*
         debug.add(
@@ -221,7 +193,7 @@ public class HTMLTest extends JFrame {
                             panel.getDocumentTitle() + "  " +
                             "(" + url.toString() + ")");
                 } catch (Exception ex) {
-                    u.p(ex);
+                    Uu.p(ex);
                 }
                 panel.repaint();
             }
@@ -236,7 +208,7 @@ public class HTMLTest extends JFrame {
      */
     public static void main(String[] args)
             throws Exception {
-                
+
 
         final JFrame frame = new HTMLTest(args);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -485,8 +457,6 @@ public class HTMLTest extends JFrame {
 }
 
 
-
-
 /**
  * Description of the Class
  *
@@ -497,6 +467,9 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2004/12/12 03:33:02  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.23  2004/12/01 14:02:53  joshy
  * modified media to use the value from the rendering context
  * added the inline-block box

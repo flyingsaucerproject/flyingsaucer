@@ -4,7 +4,7 @@ import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.ImageLayout;
 
-import java.awt.*;
+import java.awt.Image;
 
 
 public class ImageRenderer extends BoxRenderer {
@@ -16,7 +16,7 @@ public class ImageRenderer extends BoxRenderer {
      * @param box PARAM
      */
     public void paint(Context c, Box box) {
-        //u.p("box = " + box);
+        //Uu.p("box = " + box);
         Box block = box;
         // set the contents size
         //Rectangle contents = layout(c,elem);
@@ -31,7 +31,7 @@ public class ImageRenderer extends BoxRenderer {
         c.getExtents().width = block.width;
         // do all of the painting
         paintBackground(c, block);
-        //u.p("insets = " + left_inset  + " " + top_inset);
+        //Uu.p("insets = " + left_inset  + " " + top_inset);
         c.getGraphics().translate(left_inset, top_inset);
         //c.getExtents().translate(left_inset,top_inset);
         paintComponent(c, block);

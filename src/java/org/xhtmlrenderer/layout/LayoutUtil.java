@@ -11,9 +11,9 @@ import org.xhtmlrenderer.render.Box;
 public class LayoutUtil {
 
     public static String getDisplay(CalculatedStyle style) {
-        // U.p("checking: " + child);
+        // Uu.p("checking: " + child);
         String display = style.getStringProperty("display");
-        // U.p("display = " + display);
+        // Uu.p("display = " + display);
         
         // override for floated
         if (isFloated(style)) {
@@ -29,7 +29,7 @@ public class LayoutUtil {
             return true;
         }
         if (box.absolute) {
-            //U.p("box is abs: " + box);
+            //Uu.p("box is abs: " + box);
             return true;
         }
         if (box.floated) {
@@ -40,12 +40,12 @@ public class LayoutUtil {
 
     public static Border getBorder(Context c, Box box) {
         //TODO: can I skip this? if (isBlockOrInlineElementBox(c, box)) {
-            // U.p("setting border for: " + box);
+            // Uu.p("setting border for: " + box);
             if (box.border == null) {
                 box.border = c.getCurrentStyle().getBorderWidth();
             }
         //} else {
-            // U.p("skipping border for: " + box);
+            // Uu.p("skipping border for: " + box);
         //}
         return box.border;
     }
@@ -79,7 +79,7 @@ public class LayoutUtil {
             Node child = children.item(i);
             CalculatedStyle style = c.css.getStyle(child);
             if (isBlockNode(child, c) && !isFloated(style)) {
-                //U.p("this layout is block");
+                //Uu.p("this layout is block");
                 return true;
             }
             //grandchildren could be block! Tobe 2004-12-06

@@ -64,7 +64,7 @@ public class InputRadio extends FormItemLayout {
                     Context.FormComponent other_comp = (Context.FormComponent) other_comps.get(i);
                     if (other_comp.component instanceof JRadioButton) {
                         JRadioButton other_radio = (JRadioButton) other_comp.component;
-                        //U.p("found a matching component: " + other_radio);
+                        //Uu.p("found a matching component: " + other_radio);
                     }
                 }
             }
@@ -78,6 +78,9 @@ public class InputRadio extends FormItemLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/12 03:32:55  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.4  2004/12/12 02:58:51  tobega
  * Making progress
  *

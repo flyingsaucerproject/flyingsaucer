@@ -254,9 +254,9 @@ public class DerivedValue {
 
                 break;
             case CSSPrimitiveValue.CSS_EXS:
-                // HACK: just to convert the value to something meaningful, using the height of the 'X' character
+                // HACK: just to convert the value to something meaningful, using the height of the 'Xx' character
                 // on the default system font.
-                // To convert EMS to pixels, we need the height of the lowercase 'X' character in the current
+                // To convert EMS to pixels, we need the height of the lowercase 'Xx' character in the current
                 // element...
                 float xHeight = parentStyle.propertyByName("font-size").computedValue().asFloat();
 

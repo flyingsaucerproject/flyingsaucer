@@ -64,14 +64,14 @@ public class DirectoryLister {
         doc.appendChild(html);
 
         p.appendChild(doc.createTextNode("the file " + file.toString() + " is"));
-        //U.p("listing file: " + file);
+        //Uu.p("listing file: " + file);
 
         if (file.isDirectory()) {
-            //U.p("is dir");
+            //Uu.p("is dir");
             Element table = doc.createElement("table");
             File[] files = file.listFiles();
             for (int i = 0; i < files.length; i++) {
-                //U.p("doing: " + files[i]);
+                //Uu.p("doing: " + files[i]);
                 Element tr = doc.createElement("tr");
                 if (files[i].isDirectory()) {
                     tr.appendChild(td(files[i].getName(), "dir", doc));
@@ -106,6 +106,9 @@ public class DirectoryLister {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/12 03:33:07  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.4  2004/12/12 02:55:10  tobega
  * Making progress
  *

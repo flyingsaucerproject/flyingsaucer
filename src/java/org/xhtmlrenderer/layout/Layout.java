@@ -40,9 +40,9 @@ public interface Layout {
      */
     public Box layout(Context c, Content content);
 
-    public void restyle(Context c, Box box);
-
-    //public void restyleHover(Context c, Box box);
+    /**
+     * @deprecated find another way, box type maybe?
+     */
     public Renderer getRenderer();
 }
 
@@ -50,6 +50,9 @@ public interface Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/12/12 03:32:58  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.9  2004/12/09 00:11:51  tobega
  * Almost ready for Content-based inline generation.
  *

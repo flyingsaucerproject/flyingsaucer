@@ -33,7 +33,7 @@ public class FloatUtil {
     public static void setupFloat(Context c, Box box) {
         CascadedStyle style = box.content.getStyle();
         if (ContentUtil.isFloated(style)) {
-            // U.p("==== setup float ====");
+            // Uu.p("==== setup float ====");
             String float_val = style.propertyByName(CSSName.FLOAT).getValue().getCssText();
             if (float_val == null) {
                 float_val = "none";
@@ -45,29 +45,29 @@ public class FloatUtil {
             if (float_val.equals("left")) {
                 positionBoxLeft(c, box);
                 c.getBlockFormattingContext().pushDownLeft(box);
-                // U.p("final box = " + box);
+                // Uu.p("final box = " + box);
                 c.getBlockFormattingContext().addLeftFloat(box);
             }
             if (float_val.equals("right")) {
                 positionBoxRight(c, box);
                 c.getBlockFormattingContext().pushDownRight(box);
-                // U.p("final box = " + box);
+                // Uu.p("final box = " + box);
                 c.getBlockFormattingContext().addRightFloat(box);
             }
-            // U.p("box = " + box);
-            // U.p("==== end setup ====");
+            // Uu.p("box = " + box);
+            // Uu.p("==== end setup ====");
         }
     }
 
     private static void positionBoxLeft(Context c, Box box) {
-        // U.p("positionBoxLeft()");
-        // U.p("calling the new float routine");
+        // Uu.p("positionBoxLeft()");
+        // Uu.p("calling the new float routine");
         BlockFormattingContext bfc = c.getBlockFormattingContext();
         Box floater = bfc.getLeftFloatX(box);
-        // U.p("floater = " + floater);
-        // U.p("extents = " + c.getExtents());
+        // Uu.p("floater = " + floater);
+        // Uu.p("extents = " + c.getExtents());
         if (floater == null) {
-            // U.p("no floater blocked. returning");
+            // Uu.p("no floater blocked. returning");
             box.x = 0;
             return;
         }
@@ -77,13 +77,13 @@ public class FloatUtil {
 
         if (box.x + box.width > c.getExtents().width &&
                 box.width <= c.getExtents().width) {
-            // U.p("not enough room!!!");
+            // Uu.p("not enough room!!!");
             // move the box to be below the last float and
             // try it again
             box.y = floater.y + floater.height;
-            // U.p("trying again with box: " + box);
+            // Uu.p("trying again with box: " + box);
             positionBoxLeft(c, box);
-            // U.p("final box = " + box);
+            // Uu.p("final box = " + box);
         }
     }
 
@@ -91,8 +91,8 @@ public class FloatUtil {
         BlockFormattingContext bfc = c.getBlockFormattingContext();
         Box floater = bfc.getRightFloatX(box);
         if (floater == null) {
-            // U.p("floaters are null");
-            // U.p("extents = " + c.getExtents().width);
+            // Uu.p("floaters are null");
+            // Uu.p("extents = " + c.getExtents().width);
             box.x = c.getExtents().width - box.width;
             return;
         }
@@ -101,13 +101,13 @@ public class FloatUtil {
 
         if (box.x < 0 &&
                 box.width <= c.getExtents().width) {
-            // U.p("not enough room!!!");
+            // Uu.p("not enough room!!!");
             // move the box to be below the last float and
             // try it again
             box.y = floater.y + floater.height;
             positionBoxRight(c, box);
         }
-        // U.p("final box = " + box);
+        // Uu.p("final box = " + box);
     }
 
 }

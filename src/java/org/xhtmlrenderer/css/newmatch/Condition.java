@@ -25,233 +25,256 @@ import org.xhtmlrenderer.extend.AttributeResolver;
 
 /**
  * Part of a Selector
- * @author  tstgm
+ *
+ * @author tstgm
  */
 abstract class Condition {
-    
+
     private static class AttributeExistsCondition extends Condition {
-        
+
         AttributeExistsCondition(String name) {
             _name = name;
         }
-        
+
         boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
-                if(attRes == null) return false;
-                if(attRes.getAttributeValue(e, _name) != null) return true;
-                return false;
+            if (attRes == null) return false;
+            if (attRes.getAttributeValue(e, _name) != null) return true;
+            return false;
         }
-        
+
         private String _name;
-        
+
     }
-    
+
     private static class AttributeEqualsCondition extends Condition {
-        
+
         AttributeEqualsCondition(String name, String value) {
             _name = name;
             _value = value;
         }
-        
+
         boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
-                if(attRes == null) return false;
-                String val = attRes.getAttributeValue(e, _name);
-                if(val == null) return false;
-                if(val.equals(_value)) return true;
-                return false;
+            if (attRes == null) return false;
+            String val = attRes.getAttributeValue(e, _name);
+            if (val == null) return false;
+            if (val.equals(_value)) return true;
+            return false;
         }
-        
+
         private String _name;
         private String _value;
     }
-    
+
     private static class AttributeMatchesListCondition extends Condition {
-        
+
         AttributeMatchesListCondition(String name, String value) {
             _name = name;
             _value = value;
         }
-        
+
         boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
-                if(attRes == null) return false;
-                String val = attRes.getAttributeValue(e, _name);
-                if(val == null) return false;
-                String[] ca = val.split(" ");
-                boolean matched=false;
-                for(int j=0; j < ca.length; j++) {
-                    if(_value.equals(ca[j])) matched=true;
-                }
-                return matched;
+            if (attRes == null) return false;
+            String val = attRes.getAttributeValue(e, _name);
+            if (val == null) return false;
+            String[] ca = val.split(" ");
+            boolean matched = false;
+            for (int j = 0; j < ca.length; j++) {
+                if (_value.equals(ca[j])) matched = true;
+            }
+            return matched;
         }
-        
+
         private String _name;
         private String _value;
     }
-    
+
     private static class AttributeMatchesFirstPartCondition extends Condition {
-        
+
         AttributeMatchesFirstPartCondition(String name, String value) {
             _name = name;
             _value = value;
         }
-        
+
         boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
-                if(attRes == null) return false;
-                String val = attRes.getAttributeValue(e, _name);
-                if(val == null) return false;
-                String[] ca = val.split("-");
-                if(_value.equals(ca[0])) return true;
-                return false;
+            if (attRes == null) return false;
+            String val = attRes.getAttributeValue(e, _name);
+            if (val == null) return false;
+            String[] ca = val.split("-");
+            if (_value.equals(ca[0])) return true;
+            return false;
         }
-        
+
         private String _name;
         private String _value;
     }
-    
+
     private static class ClassCondition extends Condition {
-        
+
         ClassCondition(String className) {
             _className = className;
         }
-        
+
         boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
-                if(attRes == null) return false;
-                String c = attRes.getClass(e);
-                if(c == null) return false;
-                String[] ca = c.split(" ");
-                boolean matched=false;
-                for(int j=0; j < ca.length; j++) {
-                    if(_className.equals(ca[j])) matched=true;
-                }
-                return matched;
+            if (attRes == null) return false;
+            String c = attRes.getClass(e);
+            if (c == null) return false;
+            String[] ca = c.split(" ");
+            boolean matched = false;
+            for (int j = 0; j < ca.length; j++) {
+                if (_className.equals(ca[j])) matched = true;
+            }
+            return matched;
         }
-        
+
         private String _className;
-        
+
     }
-    
+
     private static class IDCondition extends Condition {
-        
+
         IDCondition(String id) {
             _id = id;
         }
-        
+
         boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
-                if(attRes == null) return false;
-                if(!_id.equals(attRes.getID(e))) return false;
-                return true;
+            if (attRes == null) return false;
+            if (!_id.equals(attRes.getID(e))) return false;
+            return true;
         }
-        
+
         private String _id;
-        
+
     }
-    
+
     private static class LangCondition extends Condition {
-        
+
         LangCondition(String lang) {
             _lang = lang;
         }
-        
+
         boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
-                if(attRes == null) return false;
-                String lang = attRes.getLang(e);
-                if(lang == null) return false;
-                String[] ca = lang.split("-");
-                if(_lang.equals(ca[0])) return true;
-                return false;
+            if (attRes == null) return false;
+            String lang = attRes.getLang(e);
+            if (lang == null) return false;
+            String[] ca = lang.split("-");
+            if (_lang.equals(ca[0])) return true;
+            return false;
         }
-        
+
         private String _lang;
-        
+
     }
-    
+
     private static class FirstChildCondition extends Condition {
-        
+
         FirstChildCondition() {
         }
-        
+
         boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
-                org.w3c.dom.Node parent = e.getParentNode();
-                org.w3c.dom.NodeList nl = parent.getChildNodes();
-                int i = 0;
-                while(i<nl.getLength() && nl.item(i).getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) i++;
-                return(nl.item(i) == e);
+            org.w3c.dom.Node parent = e.getParentNode();
+            org.w3c.dom.NodeList nl = parent.getChildNodes();
+            int i = 0;
+            while (i < nl.getLength() && nl.item(i).getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) i++;
+            return (nl.item(i) == e);
         }
-        
+
     }
-    
+
     private static class LinkCondition extends Condition {
-        
+
         LinkCondition() {
         }
-        
+
         boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
-                return attRes.isLink(e);
+            return attRes.isLink(e);
         }
-        
+
     }
-    
-    /** represents unsupported (or invalid) css, never matches */
+
+    /**
+     * represents unsupported (or invalid) css, never matches
+     */
     private static class UnsupportedCondition extends Condition {
-        
+
         UnsupportedCondition() {
         }
-        
+
         boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
-                return false;
+            return false;
         }
-        
+
     }
-    
+
     abstract boolean matches(org.w3c.dom.Element e, AttributeResolver attRes);
-    
-    /** the CSS condition [attribute] */
+
+    /**
+     * the CSS condition [attribute]
+     */
     static Condition createAttributeExistsCondition(String name) {
         return new AttributeExistsCondition(name);
     }
-    
-   /** the CSS condition [attribute=value] */
-   static Condition createAttributeEqualsCondition(String name, String value) {
+
+    /**
+     * the CSS condition [attribute=value]
+     */
+    static Condition createAttributeEqualsCondition(String name, String value) {
         return new AttributeEqualsCondition(name, value);
     }
-    
-    /** the CSS condition [attribute~=value] */
+
+    /**
+     * the CSS condition [attribute~=value]
+     */
     static Condition createAttributeMatchesListCondition(String name, String value) {
         return new AttributeMatchesListCondition(name, value);
     }
-    
-    /** the CSS condition [attribute|=value] */
+
+    /**
+     * the CSS condition [attribute|=value]
+     */
     static Condition createAttributeMatchesFirstPartCondition(String name, String value) {
         return new AttributeMatchesFirstPartCondition(name, value);
     }
-    
-    /** the CSS condition .class */
+
+    /**
+     * the CSS condition .class
+     */
     static Condition createClassCondition(String className) {
         return new ClassCondition(className);
     }
-    
-    /** the CSS condition #ID */
+
+    /**
+     * the CSS condition #ID
+     */
     static Condition createIDCondition(String id) {
         return new IDCondition(id);
     }
-    
-    /** the CSS condition lang(x) */
+
+    /**
+     * the CSS condition lang(Xx)
+     */
     static Condition createLangCondition(String lang) {
         return new LangCondition(lang);
     }
-    
-    /** the CSS condition that element has pseudo-class :first-child */
+
+    /**
+     * the CSS condition that element has pseudo-class :first-child
+     */
     static Condition createFirstChildCondition() {
         return new FirstChildCondition();
     }
-    
-    /** the CSS condition that element has pseudo-class :link */
+
+    /**
+     * the CSS condition that element has pseudo-class :link
+     */
     static Condition createLinkCondition() {
         return new LinkCondition();
     }
-    
-    /** for unsupported or invalid CSS */
+
+    /**
+     * for unsupported or invalid CSS
+     */
     static Condition createUnsupportedCondition() {
         return new UnsupportedCondition();
     }
-    
+
 }

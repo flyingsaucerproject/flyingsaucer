@@ -28,10 +28,12 @@ import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
 import org.xhtmlrenderer.layout.BodyLayout;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.content.BlockContent;
+import org.xhtmlrenderer.layout.content.BodyContent;
+import org.xhtmlrenderer.render.BodyRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.util.Xx;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.ErrorHandler;
 
@@ -50,7 +52,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
-//hmm, IntelliJ sees references to x below as being x in Component!
+//hmm, IntelliJ sees references to Xx below as being Xx in Component!
 
 
 /**
@@ -225,7 +227,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         Element html = (Element) doc.getDocumentElement();
         
         // CLEAN
-        //Element body = x.child( html, "body" );
+        //Element body = Xx.child( html, "body" );
         //body = html;
 
         // set up CSS
@@ -238,7 +240,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         getRenderingContext().getTextRenderer().setupGraphics(getContext().getGraphics());
         //TODO: maybe temporary hack
         Context c = getContext();
-        body_box = layout.layout(getContext(), new BlockContent(html, c.css.getStyle(html)));
+        body_box = layout.layout(getContext(), new BodyContent(doc));
 
         XRLog.layout(Level.FINEST, "is a fixed child: " + body_box.isChildrenExceedBounds());
         
@@ -397,10 +399,10 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
                 tty -= off;
             }
 
-            // u.p("bx = " + bx);
-            // u.p("tx = " + tx + " ty = " + ty);
+            // Uu.p("bx = " + bx);
+            // Uu.p("tx = " + tx + " ty = " + ty);
             if (bx.contains(x - bx.x, tty - bx.y)) {
-                // u.p("matches box: " + bx);
+                // Uu.p("matches box: " + bx);
                 return bx;
             }
 
@@ -718,7 +720,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
             g.fillRect(0, 0, getWidth(), getHeight());
         }
         // start painting the box tree
-        layout.getRenderer().paint(getRenderingContext().getContext(),
+        (new BodyRenderer()).paint(getRenderingContext().getContext(),
                 body_box);
     }
 
@@ -747,7 +749,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
          * XRDocument xrDoc = XRDocumentFactory.loadDocument(null, url);
          * return xrDoc.getDOMDocument();
          */
-        //Document dom = x.loadDocument( url );
+        //Document dom = Xx.loadDocument( url );
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = fact.newDocumentBuilder();
         builder.setErrorHandler(error_handler);
@@ -755,14 +757,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         return doc;
     }
 
-    /**
-     * Sets the documentRelative attribute of the BasicPanel object
-     *
-     * @param filename The new documentRelative value
-     * @throws Exception Throws
-     */
     protected void setDocument(InputStream stream, URL url) throws Exception {
-        Document dom = x.loadDocument(stream);
+        Document dom = Xx.loadDocument(stream);
         setDocument(dom, url);
     }
 
@@ -771,7 +767,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         if (getContext() != null && (!filename.startsWith("http"))) {
             URL base = new URL(getRenderingContext().getBaseURL(), filename);
             XRLog.load("Loading URL " + base);
-            Document dom = x.loadDocument(base);
+            Document dom = Xx.loadDocument(base);
             
             // CLEAN
             // URL base = new File(filename).toURL();
@@ -779,7 +775,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
             setDocument(dom, base);
             return;
         }
-        setDocument(x.loadDocument(filename), new File(filename).toURL());
+        setDocument(Xx.loadDocument(filename), new File(filename).toURL());
     }
 
 
@@ -872,6 +868,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/12/12 03:33:02  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.14  2004/12/11 18:18:11  tobega
  * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
  *
@@ -888,7 +887,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * Almost ready for Content-based inline generation.
  *
  * Revision 1.11  2004/12/06 02:52:22  tobega
- * re-inserted reference to Class x, which IntelliJ thought was unused
+ * re-inserted reference to Class Xx, which IntelliJ thought was unused
  *
  * Revision 1.10  2004/12/06 00:19:15  tobega
  * Worked on handling :before and :after. Got sidetracked by BasicPanel causing layout to be done twice: solved. If solution causes problems, check BasicPanel.setSize
@@ -941,7 +940,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  *
  * turned off fractional font metrics
  *
- * fixed some bugs in u and x
+ * fixed some bugs in Uu and Xx
  *
  * - j
  *
@@ -965,7 +964,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * Marked blocks needed to CLEAN.
  *
  * Revision 1.2  2004/11/16 10:14:11  pdoubleya
- * Was not importing util.x, so was assuming that x was a member variable in the superclass. Added import.
+ * Was not importing util.Xx, so was assuming that Xx was a member variable in the superclass. Added import.
  *
  * Revision 1.1  2004/11/16 07:25:13  tobega
  * Renamed HTMLPanel to BasicPanel

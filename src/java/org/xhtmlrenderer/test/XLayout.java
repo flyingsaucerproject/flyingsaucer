@@ -19,51 +19,50 @@
  */
 package org.xhtmlrenderer.test;
 
-import java.awt.Dimension;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.CustomBlockLayout;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.Uu;
+
+import java.awt.Dimension;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class XLayout extends CustomBlockLayout {
 
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public void paintComponent( Context c, Box box ) {
+    public void paintComponent(Context c, Box box) {
         Dimension dim = box.getInternalDimension();
-        u.p( "dim = " + dim );
-        c.getGraphics().drawLine(
-                box.x,
+        Uu.p("dim = " + dim);
+        c.getGraphics().drawLine(box.x,
                 box.y,
-                box.x + (int)dim.getWidth(),
-                box.y + (int)dim.getHeight() );
-        c.getGraphics().drawLine(
-                box.x,
-                box.y + (int)dim.getHeight(),
-                box.x + (int)dim.getWidth(),
-                box.y );
+                box.x + (int) dim.getWidth(),
+                box.y + (int) dim.getHeight());
+        c.getGraphics().drawLine(box.x,
+                box.y + (int) dim.getHeight(),
+                box.x + (int) dim.getWidth(),
+                box.y);
     }
 
     /**
      * Gets the intrinsicDimensions attribute of the XLayout object
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      The intrinsicDimensions value
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return The intrinsicDimensions value
      */
-    public Dimension getIntrinsicDimensions( Context c, Element elem ) {
-        return new Dimension( 50, 50 );
+    public Dimension getIntrinsicDimensions(Context c, Element elem) {
+        return new Dimension(50, 50);
     }
 
 }
@@ -72,6 +71,9 @@ public class XLayout extends CustomBlockLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/12/12 03:33:04  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.3  2004/10/23 14:01:42  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

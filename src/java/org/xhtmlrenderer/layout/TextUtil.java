@@ -22,7 +22,7 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.Uu;
 
 /**
  * Description of the Class
@@ -68,16 +68,16 @@ public class TextUtil {
      * @return Returns
      */
     public static String capitalizeWords(String text) {
-        //u.p("start = -"+text+"-");
+        //Uu.p("start = -"+text+"-");
         if (text.length() == 0) {
             return text;
         }
 
         StringBuffer sb = new StringBuffer();
-        //u.p("text = -" + text + "-");
+        //Uu.p("text = -" + text + "-");
 
         // do first letter
-        //u.p("first = " + text.substring(0,1));
+        //Uu.p("first = " + text.substring(0,1));
         /*
          * if(!text.substring(0,1).equals(" ")) {
          * sb.append(text.substring(0,1).toUpperCase());
@@ -86,7 +86,7 @@ public class TextUtil {
         boolean cap = true;
         for (int i = 0; i < text.length(); i++) {
             String ch = text.substring(i, i + 1);
-            //u.p("ch = " + ch + " cap = " + cap);
+            //Uu.p("ch = " + ch + " cap = " + cap);
 
 
             if (cap) {
@@ -100,9 +100,9 @@ public class TextUtil {
             }
         }
 
-        //u.p("final = -"+sb.toString()+"-");
+        //Uu.p("final = -"+sb.toString()+"-");
         if (sb.toString().length() != text.length()) {
-            u.p("error! to strings arent the same length = -" + sb.toString() + "-" + text + "-");
+            Uu.p("error! to strings arent the same length = -" + sb.toString() + "-" + text + "-");
         }
         return sb.toString();
     }
@@ -113,6 +113,9 @@ public class TextUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/12/12 03:32:59  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.7  2004/12/06 02:55:43  tobega
  * More cleaning of use of Node, more preparation for Content-based inline generation.
  *
@@ -126,7 +129,7 @@ public class TextUtil {
  *
  * turned off fractional font metrics
  *
- * fixed some bugs in u and x
+ * fixed some bugs in Uu and Xx
  *
  * - j
  *

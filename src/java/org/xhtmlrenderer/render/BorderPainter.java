@@ -41,18 +41,18 @@ public class BorderPainter {
      * @param box PARAM
      */
     public void paint(Context ctx, Box box) {
-        //u.p("checking: " + box);
-        //u.p("hashcode = " + box.hashCode());
+        //Uu.p("checking: " + box);
+        //Uu.p("hashcode = " + box.hashCode());
         if (box.border == null) return;
         Graphics g = ctx.getGraphics();
 
         // TODO: color is per-side ((PWW 13/08/04))
-        //u.p("border = " + ctx.css.getBorderColor(box.getRealElement()).bottomColor);
+        //Uu.p("border = " + ctx.css.getBorderColor(box.getRealElement()).bottomColor);
         box.border_color = ctx.css.getStyle(box.getRealElement()).getBorderColor().topColor;
         if (box.getBorderColor() == null) {//TODO: why do we need this? Shouldn't t be set already?
             box.border_color = ctx.css.getStyle(box.getRealElement()).getBorderColor();
         }
-        //u.p("set the border colors to: " + box.getBorderColor());
+        //Uu.p("set the border colors to: " + box.getBorderColor());
 
         // ASK: border-style is a shorthand property for 4 border sides
         // CSSBank/Accessor leave it as a single property, but XRStyleReference
@@ -66,10 +66,10 @@ public class BorderPainter {
                 box.y + box.margin.top,
                 box.width - box.margin.left - box.margin.right,
                 box.height - box.margin.top - box.margin.bottom);
-        //u.p("box border style = " + box.border_style);
+        //Uu.p("box border style = " + box.border_style);
 
 
-        //u.p("border style = " + border_style);
+        //Uu.p("border style = " + border_style);
 
         if (box.border_style == null) {
             box.border_style = "none";
@@ -204,58 +204,58 @@ public class BorderPainter {
 public void paintSimpleBorder( Graphics2D g, Rectangle bounds, Border border, BorderColor color) {
     g2.setColor(color.topColor);
     Polygon poly = new Polygon();
-    poly.addPoint( bounds.x, bounds.y );
-    poly.addPoint( bounds.x + bounds.width, bounds.y );
-    poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
-    poly.addPoint( bounds.x + border.left, bounds.y + border.top );
-    poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
-    poly.addPoint( bounds.x, bounds.y + bounds.height );
+    poly.addPoint( bounds.Xx, bounds.y );
+    poly.addPoint( bounds.Xx + bounds.width, bounds.y );
+    poly.addPoint( bounds.Xx + bounds.width - border.right, bounds.y + border.top );
+    poly.addPoint( bounds.Xx + border.left, bounds.y + border.top );
+    poly.addPoint( bounds.Xx + border.left, bounds.y + bounds.height - border.bottom );
+    poly.addPoint( bounds.Xx, bounds.y + bounds.height );
     g2.fillPolygon( poly );
     poly = new Polygon();
-    poly.addPoint( bounds.x + bounds.width, bounds.y );
-    poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
-    poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
-    poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
-    poly.addPoint( bounds.x, bounds.y + bounds.height );
-    poly.addPoint( bounds.x + bounds.width, bounds.y + bounds.height );
+    poly.addPoint( bounds.Xx + bounds.width, bounds.y );
+    poly.addPoint( bounds.Xx + bounds.width - border.right, bounds.y + border.top );
+    poly.addPoint( bounds.Xx + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
+    poly.addPoint( bounds.Xx + border.left, bounds.y + bounds.height - border.bottom );
+    poly.addPoint( bounds.Xx, bounds.y + bounds.height );
+    poly.addPoint( bounds.Xx + bounds.width, bounds.y + bounds.height );
     g2.fillPolygon( poly );
 
 
     Polygon poly;
     // draw top
     poly = new Polygon();
-    poly.addPoint( bounds.x, bounds.y );
-    poly.addPoint( bounds.x + bounds.width, bounds.y );
-    poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
-    poly.addPoint( bounds.x + border.left, bounds.y + border.top );
+    poly.addPoint( bounds.Xx, bounds.y );
+    poly.addPoint( bounds.Xx + bounds.width, bounds.y );
+    poly.addPoint( bounds.Xx + bounds.width - border.right, bounds.y + border.top );
+    poly.addPoint( bounds.Xx + border.left, bounds.y + border.top );
     g.setColor(color.topColor);
     g.fillPolygon( poly );
 
     // draw bottom
     poly = new Polygon();
-    poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
-    poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
-    poly.addPoint( bounds.x, bounds.y + bounds.height );
-    poly.addPoint( bounds.x + bounds.width, bounds.y + bounds.height );
+    poly.addPoint( bounds.Xx + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
+    poly.addPoint( bounds.Xx + border.left, bounds.y + bounds.height - border.bottom );
+    poly.addPoint( bounds.Xx, bounds.y + bounds.height );
+    poly.addPoint( bounds.Xx + bounds.width, bounds.y + bounds.height );
     g.setColor( color.bottomColor );
     g.fillPolygon( poly );
 
     // draw right
     poly = new Polygon();
-    poly.addPoint( bounds.x + bounds.width, bounds.y );
-    poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
-    poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
-    poly.addPoint( bounds.x + bounds.width, bounds.y + bounds.height );
+    poly.addPoint( bounds.Xx + bounds.width, bounds.y );
+    poly.addPoint( bounds.Xx + bounds.width - border.right, bounds.y + border.top );
+    poly.addPoint( bounds.Xx + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
+    poly.addPoint( bounds.Xx + bounds.width, bounds.y + bounds.height );
     g.setColor( color.rightColor );
     g.fillPolygon( poly );
 
 
     // draw left
     poly = new Polygon();
-    poly.addPoint( bounds.x, bounds.y );
-    poly.addPoint( bounds.x + border.left, bounds.y + border.top );
-    poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
-    poly.addPoint( bounds.x, bounds.y + bounds.height );
+    poly.addPoint( bounds.Xx, bounds.y );
+    poly.addPoint( bounds.Xx + border.left, bounds.y + border.top );
+    poly.addPoint( bounds.Xx + border.left, bounds.y + bounds.height - border.bottom );
+    poly.addPoint( bounds.Xx, bounds.y + bounds.height );
     g.setColor( color.leftColor );
     g.fillPolygon( poly );
 }
@@ -307,22 +307,22 @@ public void paintSimpleBorder( Graphics2D g, Rectangle bounds, Border border, Bo
    public void paintBevel( Graphics g, Rectangle bounds, Border border, Color high, Color low ) {
        g.setColor( high );
        Polygon poly = new Polygon();
-       poly.addPoint( bounds.x, bounds.y );
-       poly.addPoint( bounds.x + bounds.width, bounds.y );
-       poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
-       poly.addPoint( bounds.x + border.left, bounds.y + border.top );
-       poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
-       poly.addPoint( bounds.x, bounds.y + bounds.height );
+       poly.addPoint( bounds.Xx, bounds.y );
+       poly.addPoint( bounds.Xx + bounds.width, bounds.y );
+       poly.addPoint( bounds.Xx + bounds.width - border.right, bounds.y + border.top );
+       poly.addPoint( bounds.Xx + border.left, bounds.y + border.top );
+       poly.addPoint( bounds.Xx + border.left, bounds.y + bounds.height - border.bottom );
+       poly.addPoint( bounds.Xx, bounds.y + bounds.height );
        g.fillPolygon( poly );
 
        g.setColor( low );
        poly = new Polygon();
-       poly.addPoint( bounds.x + bounds.width, bounds.y );
-       poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
-       poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
-       poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
-       poly.addPoint( bounds.x, bounds.y + bounds.height );
-       poly.addPoint( bounds.x + bounds.width, bounds.y + bounds.height );
+       poly.addPoint( bounds.Xx + bounds.width, bounds.y );
+       poly.addPoint( bounds.Xx + bounds.width - border.right, bounds.y + border.top );
+       poly.addPoint( bounds.Xx + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
+       poly.addPoint( bounds.Xx + border.left, bounds.y + bounds.height - border.bottom );
+       poly.addPoint( bounds.Xx, bounds.y + bounds.height );
+       poly.addPoint( bounds.Xx + bounds.width, bounds.y + bounds.height );
        g.fillPolygon( poly );
    }
    */
@@ -413,6 +413,9 @@ public void paintSimpleBorder( Graphics2D g, Rectangle bounds, Border border, Bo
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/12/12 03:33:00  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.9  2004/12/11 23:36:49  tobega
  * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
  *

@@ -1,6 +1,6 @@
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.util.U;
+import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -46,7 +46,7 @@ public class BrowserStatus extends JPanel {
                         });
                         Thread.currentThread().sleep(5000);
                     } catch (Exception ex) {
-                        U.p(ex);
+                        Uu.p(ex);
                     }
                 }
             }

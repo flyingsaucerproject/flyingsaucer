@@ -46,7 +46,7 @@ public class InputButton extends FormItemLayout {
      * @return Returns
      */
     public JComponent createComponent(Context c, Element elem) {
-        //U.p("created a button");
+        //Uu.p("created a button");
         JButton comp = new JButton();
         String type = elem.getAttribute("type");
         if (type == null || type.equals("")) {
@@ -72,6 +72,9 @@ public class InputButton extends FormItemLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/12 03:32:55  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.4  2004/12/12 02:58:33  tobega
  * Making progress
  *

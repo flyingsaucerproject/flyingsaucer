@@ -23,7 +23,9 @@ import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.layout.content.Content;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,19 +41,6 @@ public class Box {
      */
     public Box() {
         this(true);
-    }
-
-    public Box(Box box) {
-        this();
-        x = box.x;
-        y = box.y;
-        width = box.width;
-        height = box.height;
-        border = box.border;
-        margin = box.margin;
-        padding = box.padding;
-        color = box.color;
-        content = box.content;
     }
 
     /**
@@ -83,6 +72,8 @@ public class Box {
     }
 
     public Content content;
+
+    public boolean restyle;//used during render if things have changed because of e.g. hover
 
     // dimensions stuff
     /**
@@ -240,8 +231,8 @@ public class Box {
     /**
      * Return true if the target coordinates are inside of this box. The target
      * coordinates are already translated to be relative to the origin of this
-     * box. ie x=0 & y=0. Thus the point 100,100 in a box with coordinates 20,20
-     * x 90x90 would have the target coordinates passed in as 80,80 and the
+     * box. ie Xx=0 & y=0. Thus the point 100,100 in a box with coordinates 20,20
+     * Xx 90x90 would have the target coordinates passed in as 80,80 and the
      * function would return true.
      *
      * @param x PARAM
@@ -256,27 +247,13 @@ public class Box {
             }
         }
         /*
-         * if((x >= this.x) && (x<= this.x + this.width)) {
+         * if((Xx >= this.Xx) && (Xx<= this.Xx + this.width)) {
          * if((y>=this.y) && (y<=this.y + this.height)) {
          * return true;
          * }
          * }
          */
         return false;
-    }
-
-    /**
-     * Adds a feature to the Child attribute of the Box object
-     *
-     * @param child The feature to be added to the Child attribute
-     */
-    public void addChild(Box child) {
-        if (child == null) throw new NullPointerException("trying to add null child");
-        child.setParent(this);
-        boxes.add(child);
-        if (child.isChildrenExceedBounds()) {
-            setChildrenExceedBounds(true);
-        }
     }
 
     /**
@@ -383,7 +360,7 @@ public class Box {
         } else {
             sb.append(getContent().getClass().getName() + " (" + getContent().hashCode() + ")");
         }*/
-        sb.append(" (" + x + "," + y + ")->(" + width + " x " + height + ")");
+        sb.append(" (" + x + "," + y + ")->(" + width + " Xx " + height + ")");
         // CLN: (PWW 13/08/04)
         sb.append(" color: " + color + " background-color: " + background_color + " ");
         return sb.toString();
@@ -442,6 +419,20 @@ public class Box {
      */
     public Box getChild(int i) {
         return (Box) boxes.get(i);
+    }
+
+    /**
+     * Adds a feature to the Child attribute of the Box object
+     *
+     * @param child The feature to be added to the Child attribute
+     */
+    public void addChild(Box child) {
+        if (child == null) throw new NullPointerException("trying to add null child");
+        child.setParent(this);
+        boxes.add(child);
+        if (child.isChildrenExceedBounds()) {
+            setChildrenExceedBounds(true);
+        }
     }
 
     /**
@@ -534,7 +525,7 @@ public class Box {
         //sb.append("-content:" + this.getContent());
 
         // dimensions and location
-        sb.append("-box(" + x + "," + y + ")-(" + width + "x" + height + ")");
+        sb.append("-box(" + x + "," + y + ")-(" + width + "Xx" + height + ")");
 
         // positioning info
         if (relative) {
@@ -619,6 +610,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2004/12/12 03:33:00  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.25  2004/12/11 23:36:49  tobega
  * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
  *

@@ -28,10 +28,11 @@ import org.xhtmlrenderer.layout.Layout;
 import org.xhtmlrenderer.layout.content.BlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.util.u;
-import org.xhtmlrenderer.util.x;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.Xx;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 
 /*
@@ -116,18 +117,18 @@ public class TableLayout
 
         int fixed_width = c.getExtents().width;
 
-        //u.p("initial fixed width = " + fixed_width);
+        //Uu.p("initial fixed width = " + fixed_width);
 
         int orig_fixed_width = fixed_width;
 
         fixed_width -= table.margin.left + table.border.left + table.padding.left +
                 table.spacing.x + table.padding.right + table.border.right + table.margin.right;
 
-        //u.p("fixed width = " + fixed_width);
+        //Uu.p("fixed width = " + fixed_width);
 
         int col_count = getColumnCount(content.getElement());
 
-        //u.p("col count = " + col_count);
+        //Uu.p("col count = " + col_count);
 
         int[] col_widths = new int[col_count];
 
@@ -245,23 +246,23 @@ public class TableLayout
 
                 if (col_counter >= col_widths.length) {
 
-                    u.p("WARNING: too many cells on this row");
+                    Uu.p("WARNING: too many cells on this row");
 
                     continue;
                 }
 
                 prev_cell = layoutCell(c, cell, prev_cell, rowbox, table, col_widths[col_counter]);
 
-                //u.p("col counter = " + col_counter);
+                //Uu.p("col counter = " + col_counter);
 
                 col_counter++;
 
-                //u.p("now its: " + col_counter);
+                //Uu.p("now its: " + col_counter);
 
             }
         }
 
-        // x is always 0 (rel to the parent table)
+        // Xx is always 0 (rel to the parent table)
 
         rowbox.x = +table.margin.left + table.border.left +
                 table.padding.left;
@@ -285,7 +286,7 @@ public class TableLayout
 
         table.rows.add(rowbox);
 
-        //u.p("row = " + rowbox);
+        //Uu.p("row = " + rowbox);
 
         return rowbox;
     }
@@ -380,11 +381,11 @@ public class TableLayout
 
         int total_width = 0;
 
-        Element tr = x.child(elem, "tr");
+        Element tr = Xx.child(elem, "tr");
 
         NodeList nl = elem.getChildNodes();
 
-        //NodeList nl = x.children(tr,"td");
+        //NodeList nl = Xx.children(tr,"td");
 
         int count = 0;
 
@@ -395,7 +396,7 @@ public class TableLayout
 
                 Element td = (Element) nl.item(i);
 
-                u.p("got td: " + td + " " + i + " count = " + count);
+                Uu.p("got td: " + td + " " + i + " count = " + count);
 
                 //if(cell.width)
 
@@ -405,9 +406,9 @@ public class TableLayout
 
                     if (count > col_widths.length) {
 
-                        u.p("elem = ");
+                        Uu.p("elem = ");
 
-                        //x.p(elem);
+                        //Xx.p(elem);
 
                     }
 
@@ -523,6 +524,9 @@ public class TableLayout
 /*
    $Id$
    $Log$
+   Revision 1.11  2004/12/12 03:33:03  tobega
+   Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+
    Revision 1.10  2004/12/10 06:51:05  tobega
    Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
 

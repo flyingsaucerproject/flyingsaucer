@@ -52,8 +52,8 @@ public class WhitespaceStripper {
     public static String stripWhitespace(CalculatedStyle style, InlineBox prev, String text) {
 
         String whitespace = getWhitespace(style);
-        //U.p("stripWhitespace: text = -" + text + "-");
-        //U.p("whitespace = " + whitespace);
+        //Uu.p("stripWhitespace: text = -" + text + "-");
+        //Uu.p("whitespace = " + whitespace);
         
 
         // do step 1
@@ -62,7 +62,7 @@ public class WhitespaceStripper {
                 whitespace.equals("pre-line")) {
             text = linefeed_space_collapse.matcher(text).replaceAll(SPACE);
         }
-        //U.p("step 1 = \"" + text + "\"");
+        //Uu.p("step 1 = \"" + text + "\"");
         
 
         // do step 2
@@ -76,7 +76,7 @@ public class WhitespaceStripper {
                 whitespace.equals("nowrap")) {
             text = linefeed_to_space.matcher(text).replaceAll(SPACE);
         }
-        //U.p("step 3 = \"" + text +"\"");
+        //Uu.p("step 3 = \"" + text +"\"");
         
 
         // do step 4
@@ -85,10 +85,10 @@ public class WhitespaceStripper {
                 whitespace.equals("pre-line")) {
 
             text = tab_to_space.matcher(text).replaceAll(SPACE);
-            //U.p("step 4.1 = \"" + text + "\"");
+            //Uu.p("step 4.1 = \"" + text + "\"");
 
             text = space_collapse.matcher(text).replaceAll(SPACE);
-            //U.p("step 4.2 = \"" + text + "\"");
+            //Uu.p("step 4.2 = \"" + text + "\"");
 
             // collapse first space against prev inline
             if (text.startsWith(SPACE) &&
@@ -99,11 +99,11 @@ public class WhitespaceStripper {
                     (prev.getSubstring().endsWith(SPACE))) {
                 text = text.substring(1, text.length());
             }
-            //U.p("step 4.3 = \"" + text + "\"");
+            //Uu.p("step 4.3 = \"" + text + "\"");
 
         }
 
-        //U.p("final text = \"" + text + "\"");
+        //Uu.p("final text = \"" + text + "\"");
         return text;
     }
 
@@ -126,19 +126,19 @@ public class WhitespaceStripper {
 
     public static void df(Context c, String text, Font f) {
         /*
-        U.p("-------------------------");
+        Uu.p("-------------------------");
         ((Graphics2D)c.getGraphics()).setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
             RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
             
         ((Graphics2D)c.getGraphics()).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
             RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         FontMetrics fm = c.getGraphics().getFontMetrics();
-        U.p("graphics = " + c.getGraphics());
-        U.p("fm = " + fm);
-        U.p("text = -" + text + "-");
-        U.p("real len = " + fm.stringWidth(text));
-        U.p("real height = " + fm.getHeight());
-        U.p("-------------------------");
+        Uu.p("graphics = " + c.getGraphics());
+        Uu.p("fm = " + fm);
+        Uu.p("text = -" + text + "-");
+        Uu.p("real len = " + fm.stringWidth(text));
+        Uu.p("real height = " + fm.getHeight());
+        Uu.p("-------------------------");
         */
     }
 

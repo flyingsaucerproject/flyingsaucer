@@ -1,12 +1,15 @@
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.LayoutUtil;
-import org.xhtmlrenderer.layout.content.TextContent;
+import org.xhtmlrenderer.layout.content.FloatedBlockContent;
+import org.xhtmlrenderer.layout.content.InlineBlockContent;
+import org.xhtmlrenderer.layout.inline.TextDecoration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 
 import java.awt.*;
 import java.awt.font.LineMetrics;
+import java.util.Iterator;
 
 public class InlineRenderer extends BoxRenderer {
 
@@ -17,11 +20,7 @@ public class InlineRenderer extends BoxRenderer {
      * @param box PARAM
      */
     public void paintComponent(Context c, Box box) {
-        if (box.isAnonymous()) {
-            paintInlineContext(c, box);
-            return;
-        }
-        if (box.getContent() != null && !(box.getContent() instanceof TextContent)) {
+        if (isBlockLayedOut(box)) {
             super.paintComponent(c, box);
             return;
         }
@@ -35,10 +34,11 @@ public class InlineRenderer extends BoxRenderer {
      * @param box PARAM
      */
     public void paintChildren(Context c, Box box) {
-        if (box.isAnonymous()) {
+        //TODO: unravel the mysterious inheritance spaghetti
+        if (box instanceof AnonymousBlockBox) {
             return;
         }
-        if (box instanceof BlockBox) {
+        if (isBlockLayedOut(box)) {
             super.paintChildren(c, box);
         }
     }
@@ -54,10 +54,14 @@ public class InlineRenderer extends BoxRenderer {
         // account for the origin of the containing box
         c.translate(box.x, box.y);
         // for each line box
+        BlockBox block = (BlockBox) box;
+        if (block.firstLineStyle != null) c.pushStyle(block.firstLineStyle);
+        //TODO: should we do something with firstLetterStyle here?
 
         for (int i = 0; i < box.getChildCount(); i++) {
             // get the line box
             paintLine(c, (LineBox) box.getChild(i));
+            if (i == 0 && block.firstLineStyle != null) c.popStyle();
         }
 
         // translate back to parent coords
@@ -68,7 +72,7 @@ public class InlineRenderer extends BoxRenderer {
      * paint all of the inlines on the specified line
      */
     private void paintLine(Context c, LineBox line) {
-        // get x and y
+        // get Xx and y
         int lx = line.x;
         int ly = line.y + line.baseline;
 
@@ -84,31 +88,34 @@ public class InlineRenderer extends BoxRenderer {
 
     // Inlines are drawn vertically relative to the baseline of the containing
     // line box, not relative to the origin of the line.
-    // They *are* drawn horizontally (x) relative to the origin of the 
+    // They *are* drawn horizontally (Xx) relative to the origin of the
     // containing line box though
 
     private void paintInline(Context c, InlineBox inline, int lx, int ly, LineBox line) {
-        if (LayoutUtil.isReplaced(c, inline.getNode())) {
+        if (inline.content instanceof InlineBlockContent) {
             paintReplaced(c, inline, line);
             debugInlines(c, inline, lx, ly);
             return;
         }
 
-        if (LayoutUtil.isFloatedBlock(inline.getNode(), c)) {
+        if (inline.content instanceof FloatedBlockContent) {
             paintFloat(c, inline, line);
             debugInlines(c, inline, lx, ly);
             return;
         }
 
-        if (inline.isBreak()) {
-            return;
+        if (inline.pushstyles != null) {
+            for (Iterator i = inline.pushstyles.iterator(); i.hasNext();) {
+                CascadedStyle cs = (CascadedStyle) i.next();
+                c.pushStyle(cs);
+            }
         }
 
         handleRelativePre(c, inline);
         paintPadding(c, line, inline);
         c.updateSelection(inline);
         
-        // calculate the x and y relative to the baseline of the line (ly) and the
+        // calculate the Xx and y relative to the baseline of the line (ly) and the
         // left edge of the line (lx)
         int iy = ly + inline.y;
         int ix = lx + inline.x;
@@ -119,6 +126,8 @@ public class InlineRenderer extends BoxRenderer {
         paintText(c, lx, ly, ix, iy, inline);
         debugInlines(c, inline, lx, ly);
         handleRelativePost(c, inline);
+
+        for (int i = 0; i < inline.popstyles; i++) c.popStyle();
     }
 
 
@@ -146,22 +155,22 @@ public class InlineRenderer extends BoxRenderer {
 
     private void paintReplaced(Context c, InlineBox inline, LineBox line) {
         c.translate(line.x, line.y + (line.baseline - inline.height));
-        Renderer rend = c.getRenderer(inline.getNode());
+        Renderer rend = new InlineRenderer();
         rend.paint(c, inline);
         c.translate(-line.x, -(line.y + (line.baseline - inline.height)));
     }
 
 
     private void paintFloat(Context c, InlineBox inline, LineBox line) {
-        // u.p("painting a float: " + inline);
+        // Uu.p("painting a float: " + inline);
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe.x, 0, oe.width, oe.height));
-        //int xoff = line.x + inline.x;
+        //int xoff = line.Xx + inline.Xx;
         int xoff = 0;
         int yoff = 0;//line.y + ( line.baseline - inline.height );// + inline.y;
-        // u.p("translating  by: " + xoff + " " + yoff);
+        // Uu.p("translating  by: " + xoff + " " + yoff);
         c.translate(xoff, yoff);
-        Renderer rend = c.getRenderer(inline.getNode());
+        Renderer rend = new InlineRenderer();
         rend.paint(c, inline);//.sub_block );
         c.translate(-xoff, -yoff);
         c.setExtents(oe);
@@ -251,7 +260,7 @@ public class InlineRenderer extends BoxRenderer {
     }
 
     public void paintPadding(Context c, LineBox line, InlineBox inline) {
-        //u.p("painting border: " + inline.border);
+        //Uu.p("painting border: " + inline.border);
         // paint the background
         int padding_xoff = 0;
         int padding_yoff = inline.totalTopPadding();
@@ -269,6 +278,13 @@ public class InlineRenderer extends BoxRenderer {
         inline.width = old_width;
         inline.height = old_height;
         c.translate(+padding_xoff, -ty);
+    }
+
+    public void restyle(Context ctx, Box box) {
+        super.restyle(ctx, box);
+        if (box instanceof InlineBox) {//should this always be true?
+            TextDecoration.setupTextDecoration(ctx, (InlineBox) box);
+        }
     }
 }
 

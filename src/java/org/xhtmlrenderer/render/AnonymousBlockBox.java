@@ -37,7 +37,7 @@ public class AnonymousBlockBox extends BlockBox {
     public AnonymousBlockBox(Content content) {
 
         super();
-        //will need this, I think: setContent(content);
+        this.content = content;
 
     }
 
@@ -76,6 +76,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/12/12 03:32:59  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.8  2004/12/11 23:36:49  tobega
  * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
  *

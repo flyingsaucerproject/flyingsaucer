@@ -23,9 +23,9 @@ public class InlineBlockBox extends InlineBox {
     public InlineBlockBox() {
         super();
     }
-    
+
     public String toString() {
-        return "Inline-Block: (" + x + "," + y + ") -> (" + width + "x" + height + ")";
+        return "Inline-Block: (" + x + "," + y + ") -> (" + width + "Xx" + height + ")";
     }
 
 }

@@ -1,34 +1,34 @@
 package org.xhtmlrenderer.demo.browser.actions;
 
-import java.io.*;
-import java.net.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import org.xhtmlrenderer.demo.browser.*;
-import org.xhtmlrenderer.extend.RenderingContext;
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.demo.browser.BrowserStartup;
 import org.xhtmlrenderer.test.DocumentDiffTest;
+import org.xhtmlrenderer.util.Uu;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.net.URL;
 
 /**
- *  Action to generate a unit test diff file of the current document
- *  in the browser
+ * Action to generate a unit test diff file of the current document
+ * in the browser
  *
- * @author     jmarinacci
- * @created    November 17, 2004
+ * @author jmarinacci
+ * @created November 17, 2004
  */
 public class GenerateDiffAction extends AbstractAction {
 
     protected BrowserStartup root;
+
     public GenerateDiffAction(BrowserStartup root) {
         super("Generate Diff");
         this.root = root;
     }
 
     /**
-     *  Description of the Method
+     * Description of the Method
      *
-     * @param  evt  Description of the Parameter
+     * @param evt Description of the Parameter
      */
     public void actionPerformed(ActionEvent evt) {
         try {
@@ -50,11 +50,11 @@ public class GenerateDiffAction extends AbstractAction {
                     DocumentDiffTest.generateTestFile(str + ".xhtml",
                             str + ".diff",
                             500, 500);
-                    u.p("wrote out: " + str + ".diff");
+                    Uu.p("wrote out: " + str + ".diff");
                 }
             }
         } catch (Exception ex) {
-            u.p(ex);
+            Uu.p(ex);
         }
     }
 }

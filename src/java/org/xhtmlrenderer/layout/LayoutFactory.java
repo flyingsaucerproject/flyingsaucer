@@ -95,7 +95,7 @@ public class LayoutFactory {
     /** @deprecated get layout based on content instead */
     public Layout getLayout(Context c, Node elem) {
         if (elem == null) return new NullLayout();//TODO: why?
-        //U.p("getting layout for node: " + elem);
+        //Uu.p("getting layout for node: " + elem);
         // we have to do the inputs manually since they don't depend on
         // the element name
         //TODO: redo this to use NamespaceHandler
@@ -142,7 +142,7 @@ public class LayoutFactory {
             // check for floats
             CalculatedStyle style = c.getCurrentStyle();
             if (LayoutUtil.isFloated(style)) {
-                //U.p("in layout factory, found a floated element. forcing display: block");
+                //Uu.p("in layout factory, found a floated element. forcing display: block");
                 return getCustomLayout("block");
             }
 
@@ -167,7 +167,7 @@ public class LayoutFactory {
         } else /*if (elem.getNodeType() == elem.COMMENT_NODE) */ {
             return new NullLayout();
         }
-        /*U.p("yo! got here w/ " + elem);
+        /*Uu.p("yo! got here w/ " + elem);
         XRLog.layout(Level.WARNING, "error! returning null! type = " + elem.getNodeType());
         XRLog.layout(Level.INFO, "error! returning null! type = " + elem.getNodeType());
         XRLog.layout(Level.INFO, "name = " + elem.getNodeName());
@@ -331,6 +331,9 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.25  2004/12/12 03:32:59  tobega
+* Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+*
 * Revision 1.24  2004/12/12 02:41:51  tobega
 * Making progress
 *

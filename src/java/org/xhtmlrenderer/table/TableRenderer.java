@@ -5,7 +5,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BoxRenderer;
 import org.xhtmlrenderer.render.Renderer;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 public class TableRenderer extends BoxRenderer {
 
@@ -23,7 +23,7 @@ public class TableRenderer extends BoxRenderer {
 
     public void paint(Context c, Box box) {
 
-        //u.p("TableLayout.paint( " + c);
+        //Uu.p("TableLayout.paint( " + c);
 
         // copy the bounds to we don't mess it up
 
@@ -95,7 +95,7 @@ public class TableRenderer extends BoxRenderer {
 
             Rectangle oe = c.getExtents();
 
-            // move origin by row.x and row.y
+            // move origin by row.Xx and row.y
 
             c.setExtents(new Rectangle(oe.x + row.x, oe.y + row.y, oe.width,
                     oe.height));
@@ -119,7 +119,7 @@ public class TableRenderer extends BoxRenderer {
 
         c.getGraphics().translate(-table.x, -table.y);
 
-        //c.getGraphics().translate(-c.getExtents().x, -c.getExtents().y);
+        //c.getGraphics().translate(-c.getExtents().Xx, -c.getExtents().y);
 
     }
 
@@ -132,9 +132,9 @@ public class TableRenderer extends BoxRenderer {
      */
     protected void paintRow(Context c, RowBox row) {
 
-        //u.p("Paint Row c = " + c);
+        //Uu.p("Paint Row c = " + c);
 
-        //u.p("paint row = " + row);
+        //Uu.p("paint row = " + row);
 
         // debug
 
@@ -173,7 +173,7 @@ public class TableRenderer extends BoxRenderer {
 
             Renderer rend = c.getRenderer(cell.getNode());
 
-            //u.p("doing cell: " + cell);
+            //Uu.p("doing cell: " + cell);
 
             rend.paint(c, cell.sub_box);
 

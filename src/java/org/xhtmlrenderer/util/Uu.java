@@ -19,106 +19,121 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.io.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
-public class u extends Util {
-    /** Description of the Field */
+public class Uu extends Util {
+    /**
+     * Description of the Field
+     */
     private static Util util;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private static Util utilAsString;
 
-    /** Constructor for the u object */
-    private u() {
-        super( System.out );
+    /**
+     * Constructor for the Uu object
+     */
+    private Uu() {
+        super(System.out);
     }
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     public static void on() {
         init();
-        util.setOn( true );
+        util.setOn(true);
     }
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     public static void off() {
         init();
-        util.setOn( false );
+        util.setOn(false);
     }
 
     /**
      * Description of the Method
      *
-     * @param object  PARAM
+     * @param object PARAM
      */
-    public static void p( Object object ) {
+    public static void p(Object object) {
         init();
         StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter( sw );
-        utilAsString.setPrintWriter( pw );
-        utilAsString.print( object );// our log adds a newline
+        PrintWriter pw = new PrintWriter(sw);
+        utilAsString.setPrintWriter(pw);
+        utilAsString.print(object);// our log adds a newline
         pw.flush();
-        XRLog.general( sw.getBuffer().toString() );
+        XRLog.general(sw.getBuffer().toString());
     }
 
     /**
      * Description of the Method
      *
-     * @param object  PARAM
+     * @param object PARAM
      */
-    public static void pr( Object object ) {
+    public static void pr(Object object) {
         init();
         StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter( sw );
-        utilAsString.setPrintWriter( pw );
-        utilAsString.print( object );// our log adds a newline
+        PrintWriter pw = new PrintWriter(sw);
+        utilAsString.setPrintWriter(pw);
+        utilAsString.print(object);// our log adds a newline
         pw.flush();
-        XRLog.general( sw.getBuffer().toString() );
+        XRLog.general(sw.getBuffer().toString());
         //util.print( object );
     }
 
     /**
      * Description of the Method
      *
-     * @param msec  PARAM
+     * @param msec PARAM
      */
-    public static void sleep( int msec ) {
+    public static void sleep(int msec) {
         try {
-            Thread.currentThread().sleep( msec );
-        } catch ( InterruptedException ex ) {
-            p( ex );
+            Thread.currentThread().sleep(msec);
+        } catch (InterruptedException ex) {
+            p(ex);
         }
     }
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     public static void dump_stack() {
-        p( stack_to_string( new Exception() ) );
+        p(stack_to_string(new Exception()));
     }
 
     /**
      * Description of the Method
      *
-     * @param args  PARAM
+     * @param args PARAM
      */
-    public static void main( String args[] ) {
+    public static void main(String args[]) {
         try {
-            u.p( new Object() );
-        } catch ( Exception ex ) {
+            Uu.p(new Object());
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     private static void init() {
-        if ( util == null ) {
-            util = new Util( System.out );
+        if (util == null) {
+            util = new Util(System.out);
         }
-        if ( utilAsString == null ) {
-            utilAsString = new Util( System.out );
+        if (utilAsString == null) {
+            utilAsString = new Util(System.out);
         }
     }// end main()
 }
@@ -127,6 +142,9 @@ public class u extends Util {
  * $Id$
  *
  * $Log$
+ * Revision 1.1  2004/12/12 03:33:05  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.4  2004/11/22 21:34:05  joshy
  * created new whitespace handler.
  * new whitespace routines only work if you set a special property. it's
@@ -134,7 +152,7 @@ public class u extends Util {
  *
  * turned off fractional font metrics
  *
- * fixed some bugs in u and x
+ * fixed some bugs in Uu and Xx
  *
  * - j
  *

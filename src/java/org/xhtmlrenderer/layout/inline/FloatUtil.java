@@ -10,7 +10,8 @@ import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Rectangle;
 
 public class FloatUtil {
     /* the new way of doing floats */
@@ -18,7 +19,7 @@ public class FloatUtil {
         BlockFormattingContext bfc = c.getBlockFormattingContext();
         remaining_width -= bfc.getLeftFloatDistance(prev_line);
         remaining_width -= bfc.getRightFloatDistance(prev_line);
-        // u.p("adjusting the line by: " + remaining_width);
+        // Uu.p("adjusting the line by: " + remaining_width);
         return remaining_width;
     }
 
@@ -36,7 +37,7 @@ public class FloatUtil {
                                      int full_width, Element enclosing_block) {
 
         BlockFormattingContext bfc = c.getBlockFormattingContext();
-        //u.p("testing inline box: " + inline);
+        //Uu.p("testing inline box: " + inline);
         // joshy: ??? i don't know what this is for. nesting?
         if (inline.getNode() == enclosing_block) {
             return;
@@ -45,9 +46,9 @@ public class FloatUtil {
         // we must make sure not to grab the float from the containing
         // block incase it is floated.
         if (inline.getNode().getNodeType() == inline.getNode().TEXT_NODE) {
-            //u.p("is text node");
+            //Uu.p("is text node");
             if (inline.getNode().getParentNode() == enclosing_block) {
-                //u.p("parent match: " + inline);
+                //Uu.p("parent match: " + inline);
                 return;
             }
         }
@@ -62,19 +63,19 @@ public class FloatUtil {
             return;
         }
         
-        // u.p("got a floated inline: " + inline);
-        // u.p("sub = " + inline.sub_block);
-        // u.p("adjusting it's position");
+        // Uu.p("got a floated inline: " + inline);
+        // Uu.p("sub = " + inline.sub_block);
+        // Uu.p("adjusting it's position");
         
         // mark as floated
         inline.floated = true;
 
         if (float_val.equals("left")) {
             // move the inline to the left
-            //inline.x = 0 - inline.width;
+            //inline.Xx = 0 - inline.width;
             // the inline's own width is already included in the left float distance
             // so you must subtract off the width twice
-            inline.x = bfc.getLeftFloatDistance(line) - inline.width - inline.width;
+            inline.Xx = bfc.getLeftFloatDistance(line) - inline.width - inline.width;
             // add the float to the containing block
             //bfc.addLeftFloat(inline);
         }
@@ -84,19 +85,19 @@ public class FloatUtil {
             // move the inline to the right
             // don't subtract off the inline's own width, because it's
             // already included in the right float distance
-            // u.p("inline.x = " + inline.x);
-            inline.x = full_width - bfc.getRightFloatDistance(line);
-            // u.p("inline.x = " + inline.x);
-            inline.x = bfc.getRightAddPoint(inline.sub_block).x;
-            // u.p("inline.x = " + inline.x);
-            //inline.sub_block.x = 0;
+            // Uu.p("inline.Xx = " + inline.Xx);
+            inline.Xx = full_width - bfc.getRightFloatDistance(line);
+            // Uu.p("inline.Xx = " + inline.Xx);
+            inline.Xx = bfc.getRightAddPoint(inline.sub_block).Xx;
+            // Uu.p("inline.Xx = " + inline.Xx);
+            //inline.sub_block.Xx = 0;
             //bfc.addRightFloat(inline);
         }
         
         // shrink the line width to account for the possible floats
-        //u.p("accounting for the left float");
+        //Uu.p("accounting for the left float");
         line.width -= bfc.getLeftFloatDistance(line);
-        //u.p("accounting for right float");
+        //Uu.p("accounting for right float");
         line.width -= bfc.getRightFloatDistance(line);
         //line.width = line.width - inline.width;
     }*/
@@ -114,12 +115,12 @@ public class FloatUtil {
      * @return Returns
      */
     public static InlineBox generateFloatedBlockInlineBox(Context c, Content content, int avail, InlineBox prev_align, Font font) {
-        // u.p("generate floated block inline box: avail = " + avail);
+        // Uu.p("generate floated block inline box: avail = " + avail);
         /*
           joshy: change this to just modify the existing block instead of creating
           a  new one. is that possible?
         */
-        //u.p("generate floated block inline box");
+        //Uu.p("generate floated block inline box");
         //TODO: this might be dangerous
         BoxLayout layout = (BoxLayout) c.getLayout(content.getElement()); //
         Rectangle oe = c.getExtents(); // copy the extents for safety
@@ -131,13 +132,13 @@ public class FloatUtil {
         inline_block.content = content;
         layout.layout(c, inline_block);
 
-        //u.p("got a block box from the sub layout: " + block);
+        //Uu.p("got a block box from the sub layout: " + block);
         Rectangle bounds = new Rectangle(inline_block.x, inline_block.y,
                 inline_block.width, inline_block.height);
         c.setExtents(oe);
         
         //InlineBox box = 
-        // u.p("before newbox block = " + inline_block);
+        // Uu.p("before newbox block = " + inline_block);
         int x = inline_block.x;
         int y = inline_block.y;
         //TODO: is firstLineStyle needed? To my mind it could have already been handled in layout.layout above...
@@ -147,26 +148,26 @@ public class FloatUtil {
         LineBreaker.styleBox(c, content.getElement(), 0, 0, null, bounds, prev_align, font, inline_block);
         inline_block.x = x;
         inline_block.y = y;
-        // u.p("after newbox = " + inline_block);
+        // Uu.p("after newbox = " + inline_block);
         //box.sub_block = block;
         //block.setParent( box );
         inline_block.width = bounds.width;
         inline_block.height = bounds.height;
         inline_block.break_after = false;
         inline_block.floated = true;
-        // u.p("width = " + inline_block.width);
-        // u.p("avail = " + avail);
+        // Uu.p("width = " + inline_block.width);
+        // Uu.p("avail = " + avail);
         if (inline_block.width > avail) {
             inline_block.break_before = true;
-            //inline_block.x = 0;
+            //inline_block.Xx = 0;
         }
         
         //inline_block.floated = true;
-        //inline_block.x = bfc.getLeftFloatDistance(line) - inline.width - inline.width;
-        //inline_block.x = 0;
+        //inline_block.Xx = bfc.getLeftFloatDistance(line) - inline.width - inline.width;
+        //inline_block.Xx = 0;
         //inline_block.y = 0;
 
-        // u.p("final inline block = " + inline_block);
+        // Uu.p("final inline block = " + inline_block);
         return inline_block;
     }
 

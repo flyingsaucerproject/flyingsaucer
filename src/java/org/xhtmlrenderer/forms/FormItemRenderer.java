@@ -17,8 +17,8 @@ public class FormItemRenderer extends CustomBlockRenderer {
      * @param block PARAM
      */
     public void doInlinePaint(Context c, InlineBox block) {
-        //U.p("FormItemLayout.doInlinePaint() : " + block);
-        //U.p("sub = " + block.sub_block);
+        //Uu.p("FormItemLayout.doInlinePaint() : " + block);
+        //Uu.p("sub = " + block.sub_block);
 
         // get the border and padding
         Border border = getBorder(c, block);
@@ -34,7 +34,7 @@ public class FormItemRenderer extends CustomBlockRenderer {
 
         // do all of the painting
         paintBackground(c, block);
-        //U.p("insets = " + left_inset  + " " + top_inset);
+        //Uu.p("insets = " + left_inset  + " " + top_inset);
         c.getGraphics().translate(left_inset, top_inset);
         paintComponent(c, block.sub_block);
         c.getGraphics().translate(-left_inset, -top_inset);
@@ -58,8 +58,8 @@ public class FormItemRenderer extends CustomBlockRenderer {
     public void paint(Context c, Box box) {
         if (box instanceof InlineBox) {
             InlineBox block = (InlineBox) box;
-            //U.p("FormItemLayout.paint() box = " + block);
-            //U.p("FormItemLayout.paint() sub = " + block.sub_block);
+            //Uu.p("FormItemLayout.paint() box = " + block);
+            //Uu.p("FormItemLayout.paint() sub = " + block.sub_block);
             doInlinePaint(c, block);
         } else {
             super.paint(c, box);
@@ -78,7 +78,7 @@ public class FormItemRenderer extends CustomBlockRenderer {
          * c.getExtents().width = block.width;
          * // do all of the painting
          * //paintBackground(c,block);
-         * //U.p("insets = " + left_inset  + " " + top_inset);
+         * //Uu.p("insets = " + left_inset  + " " + top_inset);
          * c.getGraphics().translate(left_inset,top_inset);
          * //c.getExtents().translate(left_inset,top_inset);
          * paintComponent(c,block.sub_block);
@@ -97,16 +97,16 @@ public class FormItemRenderer extends CustomBlockRenderer {
      * @param box PARAM
      */
     public void paintComponent(Context c, Box box) {
-        //U.p("FormItemLayout.paintComponent() = " + box);
+        //Uu.p("FormItemLayout.paintComponent() = " + box);
         InputBox ib = (InputBox) box;
-        //U.p("left inset = " + box.totalLeftPadding());
-        //U.p("comp dim = " + ib.component.getSize());
-        //c.getGraphics().fillRect(box.X,box.y,box.width,box.height);
+        //Uu.p("left inset = " + box.totalLeftPadding());
+        //Uu.p("comp dim = " + ib.component.getSize());
+        //c.getGraphics().fillRect(box.Xx,box.y,box.width,box.height);
 
         //int yoff = c.canvas.getLocation().y;
-        //U.p("yoff = " + yoff);
+        //Uu.p("yoff = " + yoff);
 
-        //U.p("current X = " + box.X + " y " + box.y);
+        //Uu.p("current Xx = " + box.Xx + " y " + box.y);
         Point coords = FormItemLayout.absCoords(box);
 
         // joshy: i don't know why we have to add the extra +5
@@ -117,25 +117,25 @@ public class FormItemRenderer extends CustomBlockRenderer {
         coords.x += box.totalLeftPadding() + box.getParent().totalLeftPadding();
         coords.y += box.totalTopPadding() + box.getParent().totalTopPadding();
         FormItemLayout.adjustVerticalAlign(coords, box);
-        //U.p("abs coords = " + coords);
-        //U.p("comp coords = " + ib.component.getLocation());
+        //Uu.p("abs coords = " + coords);
+        //Uu.p("comp coords = " + ib.component.getLocation());
 
         Point loc = ib.component.getLocation();
         if (loc.y != coords.y ||
                 loc.x != coords.x) {
-            //U.p("coords = " + coords);
-            //U.p("loc = " + loc);
+            //Uu.p("coords = " + coords);
+            //Uu.p("loc = " + loc);
             loc.y = coords.y;
             loc.x = coords.x;
             ib.component.setLocation(coords);
             ib.component.invalidate();
-            //U.p("moved : " + ib.component + " to " + coords);
+            //Uu.p("moved : " + ib.component + " to " + coords);
         }
         //Point pt = new Point(0,0);
         //comp.setLocation(pt);
         //comp.setSize(50,50);
         //comp.setLocation(50,50);
-        //U.p("painting");
+        //Uu.p("painting");
         //comp.paint(c.getGraphics());
 
 

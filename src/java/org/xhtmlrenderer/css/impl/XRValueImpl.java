@@ -232,9 +232,9 @@ public class XRValueImpl implements XRValue {
 
                 break;
             case CSSPrimitiveValue.CSS_EXS:
-                // HACK: just to convert the value to something meaningful, using the height of the 'X' character
+                // HACK: just to convert the value to something meaningful, using the height of the 'Xx' character
                 // on the default system font.
-                // To convert EMS to pixels, we need the height of the lowercase 'X' character in the current
+                // To convert EMS to pixels, we need the height of the lowercase 'Xx' character in the current
                 // element...
                 int xHeight = FontUtil.fontXHeightForElement( context, (Element)ownerElement.domNode() );
 
@@ -638,6 +638,9 @@ public class XRValueImpl implements XRValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/12/12 03:32:53  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.6  2004/12/12 03:06:11  tobega
  * Making progress
  *

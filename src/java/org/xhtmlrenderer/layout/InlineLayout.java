@@ -25,7 +25,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.*;
 import org.xhtmlrenderer.render.*;
-import org.xhtmlrenderer.util.U;
+import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Font;
@@ -47,7 +47,7 @@ public class InlineLayout extends BoxLayout {
      * @return Returns
      */
     public Box layoutChildren(Context c, Box box) {
-        //U.p("starting to lay out the children");
+        //Uu.p("starting to lay out the children");
         /* resolved by ContentUtil if (LayoutUtil.isHiddenNode(box.getElement(), c)) {
             return box;
         }*/
@@ -132,14 +132,14 @@ public class InlineLayout extends BoxLayout {
 
                 // debugging check
                 if (bounds.width < 0) {
-                    U.p("bounds width = " + bounds.width);
-                    U.dump_stack();
+                    Uu.p("bounds width = " + bounds.width);
+                    Uu.dump_stack();
                     System.exit(-1);
                 }
                 
                 // the crash warning code
                 if (bounds.width < 1) {
-                    U.p("warning. width < 1 " + bounds.width);
+                    Uu.p("warning. width < 1 " + bounds.width);
                 }
                 
                 // test if there is no more text in the current text node
@@ -156,7 +156,7 @@ public class InlineLayout extends BoxLayout {
                 // break off the longest section that will fit
                 InlineBox new_inline = calculateInline(c, currentContent, remaining_width, bounds.width,
                         prev_inline, prev_align_inline, isFirstLetter, block.firstLetterStyle, isFirstLine, block.firstLineStyle);
-                // U.p("got back inline: " + new_inline);
+                // Uu.p("got back inline: " + new_inline);
                 isFirstLetter = false;
                 new_inline.pushstyles = pendingPushStyles;
                 pendingPushStyles = null;
@@ -250,7 +250,7 @@ public class InlineLayout extends BoxLayout {
 
 
     public void adjustLineHeight(LineBox curr_line, InlineBox new_inline) {
-        // U.p("calcing new height of line");
+        // Uu.p("calcing new height of line");
         if (new_inline.height + new_inline.y > curr_line.height) {
             curr_line.height = new_inline.height + new_inline.y;
         }
@@ -272,7 +272,7 @@ public class InlineLayout extends BoxLayout {
             return true;
         }*/
         // if no more unused text in this node
-        // U.p("looking for skip to next node");
+        // Uu.p("looking for skip to next node");
         if (prev_inline.end_index >= prev_inline.getMasterText().length()) {
             return true;
         }
@@ -314,10 +314,10 @@ public class InlineLayout extends BoxLayout {
 
         // handle each case
         if (content instanceof InlineBlockContent) {
-            //U.p("is replaced");
+            //Uu.p("is replaced");
             result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align, font);
         } else if (content instanceof FloatedBlockContent) {
-            //U.p("calcinline: is floated block");
+            //Uu.p("calcinline: is floated block");
             result = FloatUtil.generateFloatedBlockInlineBox(c, content, avail, prev_align, font);
         } else {
 
@@ -336,14 +336,14 @@ public class InlineLayout extends BoxLayout {
             // transform the text if required (like converting to caps)
             // this must be done before any measuring since it might change the
             // size of the text
-            //U.p("text from the node = \"" + text + "\"");
+            //Uu.p("text from the node = \"" + text + "\"");
             text = TextUtil.transformText(text, style);
 
-            // U.p("calculating inline: text = " + text);
-            // U.p("avail space = " + avail + " max = " + max_width + "   start index = " + start);
+            // Uu.p("calculating inline: text = " + text);
+            // Uu.p("avail space = " + avail + " max = " + max_width + "   start index = " + start);
 
             if (isFirstLetter && firstLetterStyle != null) {
-                //U.p("is first letter");
+                //Uu.p("is first letter");
                 result = LineBreaker.generateFirstLetterInlineBox(c, start, text, prev_align, textContent, firstLetterStyle);
             } else {
 
@@ -396,6 +396,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.49  2004/12/12 03:32:58  tobega
+* Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+*
 * Revision 1.48  2004/12/12 03:29:41  tobega
 * Oops, this is a real mess. CVS got into a twist on this one.
 *
@@ -497,7 +500,7 @@ public class InlineLayout extends BoxLayout {
 *
 * turned off fractional font metrics
 *
-* fixed some bugs in U and Z
+* fixed some bugs in Uu and Xx
 *
 * - j
 *

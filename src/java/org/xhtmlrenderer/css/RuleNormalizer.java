@@ -124,12 +124,12 @@ public class RuleNormalizer {
      * @param after  PARAM
      */
     public void expand(String prop, CSSStyleRule rule, String before, String after) {
-        //U.p("rule = " + rule);
-        //U.p("prop = " + prop);
+        //Uu.p("rule = " + rule);
+        //Uu.p("prop = " + prop);
         CSSStyleDeclaration dec = rule.getStyle();
         CSSValue val = dec.getPropertyCSSValue(prop);
         String prio = dec.getPropertyPriority(prop);
-        //U.p("value = " + val);
+        //Uu.p("value = " + val);
         CSSValueList list = (CSSValueList) val;
         CSSValue top;
         CSSValue bottom;
@@ -139,28 +139,28 @@ public class RuleNormalizer {
 
         if (val.getCssValueType() == val.CSS_VALUE_LIST) {
             if (list.getLength() == 2) {
-                //U.p("turning two into four");
+                //Uu.p("turning two into four");
                 top = list.item(0);
                 bottom = list.item(0);
                 left = list.item(1);
                 right = list.item(1);
             }
             if (list.getLength() == 3) {
-                //U.p("turning three into four");
+                //Uu.p("turning three into four");
                 top = list.item(0);
                 left = list.item(1);
                 right = list.item(1);
                 bottom = list.item(2);
             }
             if (list.getLength() == 4) {
-                //U.p("turning three into four");
+                //Uu.p("turning three into four");
                 top = list.item(0);
                 right = list.item(1);
                 bottom = list.item(2);
                 left = list.item(3);
             }
         } else {
-            //U.p("only one to transform");
+            //Uu.p("only one to transform");
             top = list;
             bottom = list;//.item(0);
             left = list;//.item(0);
@@ -194,7 +194,7 @@ public class RuleNormalizer {
         } else if (prop.equals("background-position")) {
             expandBackgroundPosition(rule);
         } else if (prop.equals("border")) {
-            //U.p("normalizing: " + prop);
+            //Uu.p("normalizing: " + prop);
             expandBorder(rule);
         }
         /*
@@ -258,11 +258,11 @@ public class RuleNormalizer {
         CSSValue val = dec.getPropertyCSSValue("background-position");
         String prio = dec.getPropertyPriority("background-position");
         if (val.getCssValueType() == val.CSS_VALUE_LIST) {
-            //U.p("val = " + val);
+            //Uu.p("val = " + val);
             rule.getStyle().setProperty("background-position", rule.getStyle().getPropertyValue("background-position"), prio);
             return;
         } else if (val.getCssValueType() == val.CSS_PRIMITIVE_VALUE) {
-            //U.p("val = " + val);
+            //Uu.p("val = " + val);
             String str = val.getCssText();
             if (str.startsWith("top")) {
                 dec.setProperty("background-position", "50% 0%", prio);
@@ -310,7 +310,7 @@ public class RuleNormalizer {
         if (COLOR_MAP.containsKey(test)) {
             return true;
         }
-        //U.p("test = " + test);
+        //Uu.p("test = " + test);
         if (test.indexOf("rgb") >= 0) {
             return true;
         }
@@ -608,11 +608,11 @@ public class RuleNormalizer {
 
         FONT_SIZES = new HashMap();
         FONT_SIZES.put("xx-small", "6.9pt");
-        FONT_SIZES.put("X-small", "8.3pt");
+        FONT_SIZES.put("Xx-small", "8.3pt");
         FONT_SIZES.put("small", "10pt");
         FONT_SIZES.put("medium", "12pt");
         FONT_SIZES.put("large", "14.4pt");
-        FONT_SIZES.put("X-large", "17.3pt");
+        FONT_SIZES.put("Xx-large", "17.3pt");
         FONT_SIZES.put("xx-large", "20.7pt");
 
         FONT_WEIGHTS = new HashMap();
@@ -671,7 +671,7 @@ public class RuleNormalizer {
 
         BACKGROUND_REPEATS = new ArrayList();
         BACKGROUND_REPEATS.add("repeat");
-        BACKGROUND_REPEATS.add("repeat-X");
+        BACKGROUND_REPEATS.add("repeat-Xx");
         BACKGROUND_REPEATS.add("repeat-y");
         BACKGROUND_REPEATS.add("no-repeat");
 
@@ -723,6 +723,9 @@ public class RuleNormalizer {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/12 03:32:55  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.5  2004/12/12 02:57:24  tobega
  * Making progress
  *

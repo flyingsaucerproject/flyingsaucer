@@ -26,20 +26,21 @@ import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.css.style.CurrentBoxStyle;
+import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.swing.BasicPanel;
+import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.u;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.*;
-import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -196,7 +197,7 @@ public class Context {
     //Style-handling stuff
     private Stack styleStack;
 
-    public void initializeStyles(CurrentBoxStyle c) {
+    public void initializeStyles(EmptyStyle c) {
         styleStack = new Stack();
         styleStack.push(c);
     }
@@ -322,17 +323,17 @@ public class Context {
         }
         if (box.margin == null) {
             XRLog.render(Level.WARNING, "translate insets: null margin on box of type " + box.getClass().getName() +
-                    " content " + (box.getContent() == null ? "null" : box.getContent().getClass().getName()));
+                    " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
         if (box.border == null) {
             XRLog.render(Level.WARNING, "translate insets: null border on box of type " + box.getClass().getName() +
-                    " content " + (box.getContent() == null ? "null" : box.getContent().getClass().getName()));
+                    " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
         if (box.padding == null) {
             XRLog.render(Level.WARNING, "translate insets: null padding on box of type " + box.getClass().getName() +
-                    " content " + (box.getContent() == null ? "null" : box.getContent().getClass().getName()));
+                    " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
         translate(box.margin.left + box.border.left + box.padding.left,
@@ -347,17 +348,17 @@ public class Context {
     public void untranslateInsets(Box box) {
         if (box.margin == null) {
             XRLog.render(Level.WARNING, "translate insets: null margin on box of type " + box.getClass().getName() +
-                    " content " + (box.getContent() == null ? "null" : box.getContent().getClass().getName()));
+                    " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
         if (box.border == null) {
             XRLog.render(Level.WARNING, "translate insets: null border on box of type " + box.getClass().getName() +
-                    " content " + (box.getContent() == null ? "null" : box.getContent().getClass().getName()));
+                    " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
         if (box.padding == null) {
             XRLog.render(Level.WARNING, "translate insets: null padding on box of type " + box.getClass().getName() +
-                    " content " + (box.getContent() == null ? "null" : box.getContent().getClass().getName()));
+                    " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
         translate(-(box.margin.left + box.border.left + box.padding.left),
@@ -429,7 +430,7 @@ public class Context {
      */
     public FormComponent addInputField(String name, Element element, JComponent comp) {
         if (getForm() == null) {
-            u.p("warning! attempted to add input field: '" + name + "' to a form without a 'name' attribute");
+            Uu.p("warning! attempted to add input field: '" + name + "' to a form without a 'name' attribute");
             return null;
         }
         Map fields = (Map) forms.get(getForm());
@@ -745,11 +746,11 @@ public class Context {
          * Description of the Method
          */
         public void reset() {
-            u.p("resetting");
+            Uu.p("resetting");
             if (component instanceof JTextField) {
-                u.p("it's a text field");
+                Uu.p("it's a text field");
                 if (element.hasAttribute("value")) {
-                    u.p("setting to : " + element.getAttribute("value"));
+                    Uu.p("setting to : " + element.getAttribute("value"));
                     ((JTextField) component).setText(element.getAttribute("value"));
                 } else {
                     ((JTextField) component).setText("");
@@ -800,7 +801,7 @@ public class Context {
 
 
     public Rectangle getFixedRectangle() {
-        //u.p("this = " + canvas);
+        //Uu.p("this = " + canvas);
         Rectangle rect = canvas.getFixedRectangle();
         rect.translate(canvas.getX(), canvas.getY());
         return rect;
@@ -820,6 +821,9 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2004/12/12 03:32:58  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.30  2004/12/11 23:36:48  tobega
  * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
  *

@@ -2,7 +2,7 @@ package org.xhtmlrenderer.render;
 
 
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.util.U;
+import org.xhtmlrenderer.util.Uu;
 
 public class CustomBlockRenderer extends BoxRenderer {
     /**
@@ -12,7 +12,7 @@ public class CustomBlockRenderer extends BoxRenderer {
      * @param box PARAM
      */
     public void paintComponent(Context c, Box box) {
-        U.p("Custom components must override paintComponent");
+        Uu.p("Custom components must override paintComponent");
     }
 
 

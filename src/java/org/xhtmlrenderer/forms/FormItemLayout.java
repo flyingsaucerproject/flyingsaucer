@@ -66,8 +66,8 @@ public abstract class FormItemLayout extends CustomBlockLayout {
         comp = createComponent(c, elem);
         c.canvas.add(comp);
         comp.setLocation(100, 100);
-        //U.p("added a component to the viewport: " + comp);
-        //U.p("pref size = " + comp.getPreferredSize());
+        //Uu.p("added a component to the viewport: " + comp);
+        //Uu.p("pref size = " + comp.getPreferredSize());
         InputBox box = new InputBox();
         box.content=content;
         box.component = comp;
@@ -91,15 +91,15 @@ public abstract class FormItemLayout extends CustomBlockLayout {
         if (box.getParent() instanceof InlineBox) {
             InlineBox ib = (InlineBox) box.getParent();
             LineBox lb = (LineBox) ib.getParent();
-            //U.p("box = " + box);
-            //U.p("margin = " + box.margin);
-            //U.p("border = " + box.border);
-            //U.p("padding = " + box.padding);
-            //U.p("ib = " + ib);
-            //U.p("margin = " + ib.margin);
-            //U.p("border = " + ib.border);
-            //U.p("padding = " + ib.padding);
-            //U.p("lb = " + lb);
+            //Uu.p("box = " + box);
+            //Uu.p("margin = " + box.margin);
+            //Uu.p("border = " + box.border);
+            //Uu.p("padding = " + box.padding);
+            //Uu.p("ib = " + ib);
+            //Uu.p("margin = " + ib.margin);
+            //Uu.p("border = " + ib.border);
+            //Uu.p("padding = " + ib.padding);
+            //Uu.p("lb = " + lb);
             int off = lb.baseline - (ib.height) + 5;
             coords.x += 5;
             coords.y += off;
@@ -121,9 +121,9 @@ public abstract class FormItemLayout extends CustomBlockLayout {
      * @return Returns
      */
     public static Point absCoords(Box box) {
-        //U.p("box = " + box);
-        //U.p("X = " + box.X + " y = " + box.y);
-        //U.p("Parent = " + box.getParent());
+        //Uu.p("box = " + box);
+        //Uu.p("Xx = " + box.Xx + " y = " + box.y);
+        //Uu.p("Parent = " + box.getParent());
         Point pt = new Point(0, 0);
         pt.x += box.x;
         pt.y += box.y;
@@ -132,7 +132,7 @@ public abstract class FormItemLayout extends CustomBlockLayout {
             Point pt_parent = absCoords(box.getParent());
             pt.x += pt_parent.x;
             pt.y += pt_parent.y;
-            //return box.X + absX(box.getParent());
+            //return box.Xx + absX(box.getParent());
         }
         return pt;
     }
@@ -148,7 +148,7 @@ public abstract class FormItemLayout extends CustomBlockLayout {
         //comp.setLocation(50,50);
         Dimension dim = comp.getPreferredSize();
         //return new Dimension(10,10);
-        //U.p("get intrinsic = " + dim);
+        //Uu.p("get intrinsic = " + dim);
         return dim;
     }
 
@@ -174,6 +174,9 @@ public abstract class FormItemLayout extends CustomBlockLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/12/12 03:32:55  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.8  2004/12/12 02:57:51  tobega
  * Making progress
  *

@@ -151,7 +151,7 @@ public class Table {
      * @param y         The feature to be added to the Row attribute
      */
     public boolean addRow(Context c, Node row, boolean first_row, int y) {
-        //u.p("Table.addRow("+row+","+first_row+","+y+")");
+        //Uu.p("Table.addRow("+row+","+first_row+","+y+")");
         NodeList cells = row.getChildNodes();
         int col_counter = 0;
         // for each td
@@ -159,7 +159,7 @@ public class Table {
         for (int j = 0; j < cells.getLength(); j++) {
             Node cell = cells.item(j);
             if (isTableCell(c, cell)) {
-                //u.p("adding: " + col_counter + " " + y);
+                //Uu.p("adding: " + col_counter + " " + y);
                 // add the cell
                 Cell cl = null;
                 if (first_row) {
@@ -222,7 +222,7 @@ public class Table {
      * @return Returns
      */
     public Cell addCell(Context c, Node node, int x, int y) {
-        //u.p("addCell("+node+","+x+","+y+")");
+        //Uu.p("addCell("+node+","+Xx+","+y+")");
         if (node.getNodeType() != node.ELEMENT_NODE) {
             throw new Error("this isn't an element" + node);
         }
@@ -230,9 +230,9 @@ public class Table {
         Cell cl = new Cell();
         cl.node = node;
         /*
-        u.p("style = " + c.css.getStyle(cell));
+        Uu.p("style = " + c.css.getStyle(cell));
         if(c.css.hasProperty(cell,"-fs-table-cell-colspan")) {
-            u.p("has colspan");
+            Uu.p("has colspan");
             cl.col_span = (int)c.css.getFloatProperty(cell,"-fs-table-cell-colspan");
         }
         */
@@ -256,8 +256,8 @@ public class Table {
      * @param c           PARAM
      */
     public void calculateWidths(int avail_width, Context c) {
-        //u.p("calculating columns from total space of: " + avail_width);
-        //u.p("total column width = " + total_cols);
+        //Uu.p("calculating columns from total space of: " + avail_width);
+        //Uu.p("total column width = " + total_cols);
 
         // get number of columns and init array
         int total_cols = getTotalColumnCount();
@@ -270,7 +270,7 @@ public class Table {
             if (c.css.getStyle(cell.node).hasProperty("width")) {
                 // fixed bug that made cell sizing fail w/ %s
                 int width = (int) c.css.getStyle(cell.node).getFloatPropertyRelative("width", avail_width);
-                //u.p("got width: " + width);
+                //Uu.p("got width: " + width);
                 for (int j = col_count; j < col_count + cell.col_span; j++) {
                     widths[j] = width / cell.col_span;
                     avail_width -= width / cell.col_span;
@@ -278,8 +278,8 @@ public class Table {
             }
             col_count += cell.col_span;
         }
-        //u.p("widths");
-        //u.p(widths);
+        //Uu.p("widths");
+        //Uu.p(widths);
 
         // get number of unset columns
         int unset_cols = 0;
@@ -288,7 +288,7 @@ public class Table {
                 unset_cols++;
             }
         }
-        //u.p("unset cols count = " + unset_cols);
+        //Uu.p("unset cols count = " + unset_cols);
 
 
         for (int i = 0; i < total_cols; i++) {
@@ -296,12 +296,12 @@ public class Table {
             if (widths[i] == 0) {
                 widths[i] = avail_width / unset_cols;
             }
-            //u.p("looking at: " + cell);
-            //u.p("set width to: " + widths[i]);
+            //Uu.p("looking at: " + cell);
+            //Uu.p("set width to: " + widths[i]);
         }
         column_widths = widths;
-        //u.p("final widths");
-        //u.p(column_widths);
+        //Uu.p("final widths");
+        //Uu.p(column_widths);
     }
 
     /**
@@ -326,7 +326,7 @@ public class Table {
      * @return Returns
      */
     public int calcColumnWidth(int col, int span) {
-        //u.p("calc column width: " + col + " " + span);
+        //Uu.p("calc column width: " + col + " " + span);
         int x = 0;
         for (int i = col; i < col + span; i++) {
             x += column_widths[i];
@@ -376,6 +376,9 @@ public class Table {
 /*
    $Id$
    $Log$
+   Revision 1.9  2004/12/12 03:33:03  tobega
+   Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+
    Revision 1.8  2004/12/06 02:55:44  tobega
    More cleaning of use of Node, more preparation for Content-based inline generation.
 

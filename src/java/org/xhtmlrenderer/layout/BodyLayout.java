@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.BodyRenderer;
 import org.xhtmlrenderer.render.Box;
@@ -41,9 +42,12 @@ public class BodyLayout extends InlineLayout {
      */
 
     public Box layout(Context c, Content content) {
+        //set the current style
+        c.initializeStyles(new EmptyStyle());
+
         Box box = super.layout(c, content);
-        // u.p("done laying it all out");
-        // u.p("\n=====================\n\n\n");
+        // Uu.p("done laying it all out");
+        // Uu.p("\n=====================\n\n\n");
         return box;
     }
 
@@ -58,6 +62,9 @@ public class BodyLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/12/12 03:32:57  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.11  2004/12/09 00:11:51  tobega
  * Almost ready for Content-based inline generation.
  *

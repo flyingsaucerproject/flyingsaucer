@@ -1,10 +1,11 @@
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.util.logging.Level;
 
@@ -22,10 +23,15 @@ public class DefaultRenderer implements Renderer {
      * @param box PARAM
      */
     public void paint(Context c, Box box) {
-        //u.p("Layout.paint() " + box);
+        //Uu.p("Layout.paint() " + box);
         //Point old_cursor = new Point(c.getCursor());
         //Rectangle contents = layoutChildren(c,elem);
         //c.cursor = old_cursor;
+        XRLog.render(Level.WARNING, "Using default renderer for " + box.getClass().getName());
+        if (box.restyle) {
+            restyle(c, box);
+            box.restyle = false;
+        }
         paintBackground(c, box);
         paintComponent(c, box);
         paintChildren(c, box);
@@ -67,11 +73,11 @@ public class DefaultRenderer implements Renderer {
      * @param box PARAM
      */
     public void paintChildren(Context c, Box box) {
-        //u.p("Layout.paintChildren(): " + box);
-        //u.p("child count = " + box.getChildCount());
+        //Uu.p("Layout.paintChildren(): " + box);
+        //Uu.p("child count = " + box.getChildCount());
         for (int i = 0; i < box.getChildCount(); i++) {
             Box child = (Box) box.getChild(i);
-            //u.p("child = " + child);
+            //Uu.p("child = " + child);
             Renderer renderer = null;
             if (child.isAnonymous()) {
                 renderer = c.getRenderingContext().getLayoutFactory().getAnonymousRenderer();
@@ -114,6 +120,34 @@ public class DefaultRenderer implements Renderer {
 
 
         layout.paint(c, box);
+    }
+
+    public void restyle(Context ctx, Box box) {
+        CalculatedStyle style = ctx.getCurrentStyle();
+        box.color = style.getColor();
+        box.border_color = style.getBorderColor();
+        box.border_style = style.getStringProperty("border-top-style");
+        box.background_color = style.getBackgroundColor();
+        restyleChildren(ctx, box);
+    }
+
+    private void restyleChildren(Context ctx, Box box) {
+        for (int i = 0; i < box.getChildCount(); i++) {
+            Box child = box.getChild(i);
+            child.restyle = true;
+        }
+    }
+
+    //TODO: check the logic here
+    public static boolean isBlockLayedOut(Box box) {
+        if (box.getChildCount() == 0) return false;//have to return something, it shouldn't matter
+        for (int i = 0; i < box.getChildCount(); i++) {
+            Box child = box.getChild(i);
+            if (child instanceof LineBox) return false;
+            if (child instanceof InlineBox) return false;
+            if (child instanceof InlineBlockBox) return false;
+        }
+        return true;
     }
 }
 

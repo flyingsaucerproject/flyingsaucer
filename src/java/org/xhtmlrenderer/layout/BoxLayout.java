@@ -32,7 +32,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BoxRenderer;
 import org.xhtmlrenderer.render.Renderer;
-import org.xhtmlrenderer.util.U;
+import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -106,7 +106,7 @@ public class BoxLayout extends DefaultLayout {
             bfc.setWidth((int) c.getExtents().getWidth());
         }
 
-        //U.p("elem = " + block.node);
+        //Uu.p("elem = " + block.node);
 
         // copy the extents
         Rectangle oe = c.getExtents();
@@ -142,7 +142,7 @@ public class BoxLayout extends DefaultLayout {
 
         // restore height incase fixed height
         if (block.auto_height == false) {
-            U.p("restoring original height");
+            Uu.p("restoring original height");
             block.height = original_height;
         }
 
@@ -194,7 +194,7 @@ public class BoxLayout extends DefaultLayout {
             // if it is a sub block then don't mess with the width
             if (c.isSubBlock()) {
                 /*if (!elem.getNodeName().equals("td")) {
-                    U.p("ERRRRRRRRRRORRRR!!! in a sub block that's not a TD!!!!");
+                    Uu.p("ERRRRRRRRRRORRRR!!! in a sub block that's not a TD!!!!");
                 }*/
                 return;
             }
@@ -218,7 +218,7 @@ public class BoxLayout extends DefaultLayout {
             c.getExtents().height = (int) new_height;
             block.height = (int) new_height;
             block.auto_height = false;
-            U.p("set height to: " + block.height);
+            Uu.p("set height to: " + block.height);
         }
     }
 
@@ -347,6 +347,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2004/12/12 03:32:58  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.41  2004/12/12 03:04:31  tobega
  * Making progress
  *

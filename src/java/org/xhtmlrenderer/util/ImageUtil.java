@@ -19,58 +19,59 @@
  */
 package org.xhtmlrenderer.util;
 
+import org.xhtmlrenderer.layout.Context;
+
+import javax.swing.*;
 import java.awt.Image;
 import java.net.MalformedURLException;
 import java.net.URL;
-import javax.swing.ImageIcon;
-import org.xhtmlrenderer.layout.Context;
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class ImageUtil {
 
     /**
      * Description of the Method
      *
-     * @param c                          PARAM
-     * @param src                        PARAM
-     * @return                           Returns
-     * @exception MalformedURLException  Throws
+     * @param c   PARAM
+     * @param src PARAM
+     * @return Returns
+     * @throws MalformedURLException Throws
      */
-    public static Image loadImage( Context c, String src )
-        throws MalformedURLException {
+    public static Image loadImage(Context c, String src)
+            throws MalformedURLException {
 
         Image img = null;
 
-        if ( src.startsWith( "http" ) ) {
+        if (src.startsWith("http")) {
 
-            img = new ImageIcon( new URL( src ) ).getImage();
+            img = new ImageIcon(new URL(src)).getImage();
 
         } else {
 
-            //u.p("src = " + src);
+            //Uu.p("src = " + src);
 
             URL base = c.getRenderingContext().getBaseURL();
 
-            if ( base != null ) {
+            if (base != null) {
 
-                URL image_url = new URL( base, src );
+                URL image_url = new URL(base, src);
 
-                //u.p("image url = " + image_url);
+                //Uu.p("image url = " + image_url);
 
-                img = new ImageIcon( image_url ).getImage();
+                img = new ImageIcon(image_url).getImage();
 
             } else {
 
-                img = new ImageIcon( src ).getImage();
+                img = new ImageIcon(src).getImage();
 
             }
 
         }
-        if ( img != null && img.getWidth( null ) == -1 ) {
+        if (img != null && img.getWidth(null) == -1) {
 
             return null;
         }
@@ -84,6 +85,9 @@ public class ImageUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/12 03:33:04  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.4  2004/11/12 02:50:59  joshy
  * finished moving base url
  * Issue number:

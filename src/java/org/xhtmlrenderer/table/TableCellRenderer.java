@@ -1,24 +1,24 @@
 package org.xhtmlrenderer.table;
 
-import org.xhtmlrenderer.layout.*;
-import org.xhtmlrenderer.render.*;
-import java.awt.*;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.InlineRenderer;
 
 
 public class TableCellRenderer extends InlineRenderer {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public void paintBackground( Context c, Box box ) {
+    public void paintBackground(Context c, Box box) {
 
         //contents.height = c.getExtents().height;
 
-        //u.p("painting a cell background: " + box);
+        //Uu.p("painting a cell background: " + box);
 
-        super.paintBackground( c, box );
+        super.paintBackground(c, box);
 
     }
 }

@@ -28,7 +28,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.DefaultRenderer;
 import org.xhtmlrenderer.render.Renderer;
 
-import java.awt.*;
+import java.awt.Color;
 
 
 /**
@@ -65,8 +65,7 @@ public class DefaultLayout implements Layout {
 
     public Box createBox(Context c, Content content) {
         Box box = new Box();
-        box.setNode(content.getElement());
-        box.setContent(content);
+        box.content = content;
         return box;
     }
 
@@ -75,29 +74,6 @@ public class DefaultLayout implements Layout {
         return new DefaultRenderer();
     }
 
-
-    public void restyle(Context ctx, Box box) {
-        box.color = ctx.css.getStyle(box.getRealElement()).getColor();
-        box.border_color = ctx.css.getStyle(box.getRealElement()).getBorderColor();
-        box.border_style = ctx.css.getStyle(box.getRealElement()).getStringProperty("border-top-style");
-        box.background_color = ctx.css.getStyle(box.getRealElement()).getBackgroundColor();
-        restyleChildren(ctx, box);
-    }
-
-    private void restyleChildren(Context ctx, Box box) {
-        for (int i = 0; i < box.getChildCount(); i++) {
-            Box child = box.getChild(i);
-            if (child.hasContent()) {
-                Layout lt = ctx.getLayout(child.getContent().getElement());
-                if (lt instanceof InlineLayout) {
-                    //u.p("restyling: " + child);
-                    ((InlineLayout) lt).restyle(ctx, child);
-                }
-            }
-            restyleChildren(ctx, child);
-        }
-    }
-    
     
     /* prepare box and it's support code. 
     
@@ -183,7 +159,7 @@ public class DefaultLayout implements Layout {
             CalculatedStyle style = c.getCurrentStyle();
             if (style.isIdentifier(CSSName.BACKGROUND_COLOR)) {
                 String value = style.getStringProperty("background-color");
-                //u.p("got : " + obj);
+                //Uu.p("got : " + obj);
                 if (value.equals("transparent")) {
                     box.background_color = new Color(0, 0, 0, 0);
                     return box.background_color;
@@ -202,6 +178,9 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2004/12/12 03:32:58  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.32  2004/12/11 23:36:48  tobega
  * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
  *

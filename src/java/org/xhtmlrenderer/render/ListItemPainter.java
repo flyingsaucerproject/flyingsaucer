@@ -23,9 +23,12 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.util.ImageUtil;
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.font.LineMetrics;
 
 /**
@@ -57,12 +60,12 @@ public class ListItemPainter {
         Image img = null;
         if (!image.equals("none")) {
             try {
-                //u.p("loading: " + image);
+                //Uu.p("loading: " + image);
                 img = ImageUtil.loadImage(c, image);
             } catch (Exception ex) {
-                u.p(ex);
+                Uu.p(ex);
             }
-            //u.p("image = " + img);
+            //Uu.p("image = " + img);
             if (img != null) {
                 int rad = 8;
                 int baseline = box.height;
@@ -193,7 +196,7 @@ public class ListItemPainter {
      */
     protected static String toRoman(int val) {
         int[] ints = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
-        String[] nums = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        String[] nums = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "Xx", "IX", "V", "IV", "I"};
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < ints.length; i++) {
             int count = (int) (val / ints[i]);
@@ -210,6 +213,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/12/12 03:33:01  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.8  2004/12/05 14:35:40  tobega
  * Cleaned up some usages of Node (and removed unused stuff) in layout code. The goal is to pass "better" objects than Node wherever possible in an attempt to shake out the bugs in tree-traversal (probably often unnecessary tree-traversal)
  *

@@ -111,7 +111,7 @@ public class ContentUtil {
             }
 
             if (isAbsoluteOrFixed(style)) {
-                // U.p("adding replaced: " + curr);
+                // Uu.p("adding replaced: " + curr);
                 if (textContent != null) {
                     inlineList.add(textContent);
                     textContent = null;
@@ -122,7 +122,7 @@ public class ContentUtil {
 
             //have to check for float here already. The element may still be replaced, though
             if (isFloated(style)) {
-                // U.p("adding floated block: " + curr);
+                // Uu.p("adding floated block: " + curr);
                 if (textContent != null) {
                     inlineList.add(textContent);
                     textContent = null;
@@ -181,7 +181,7 @@ public class ContentUtil {
 
             //TODO: this replaced thing is Namespace-dependent
             if (LayoutUtil.isReplaced(c, curr)) {
-                // U.p("adding replaced: " + curr);
+                // Uu.p("adding replaced: " + curr);
                 if (textContent != null) {
                     inlineList.add(textContent);
                     textContent = null;
@@ -413,6 +413,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/12/12 03:32:56  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.7  2004/12/12 03:05:12  tobega
  * Making progress
  *

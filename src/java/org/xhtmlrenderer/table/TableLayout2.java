@@ -44,7 +44,8 @@ import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Renderer;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 
 /**
@@ -125,7 +126,7 @@ public class TableLayout2 extends TableLayout {
      * @return Returns
      */
     public void calculateBoxes(int avail_width, TableBox box, Context c, Table table) {
-        //u.p("TableLayout2.calculateBoxes(" + avail_width  +
+        //Uu.p("TableLayout2.calculateBoxes(" + avail_width  +
         //    " , " + box + " , " + c + " , " + table);
         box.width = avail_width;
         box.height = 100;
@@ -145,11 +146,11 @@ public class TableLayout2 extends TableLayout {
             int column_count = 0;
             // loop through the cells
             for (int x = 0; x < grid.getWidth(); x++) {
-                //u.p("x = " + x);
-                //u.p("grid width = " + grid.getWidth());
+                //Uu.p("Xx = " + Xx);
+                //Uu.p("grid width = " + grid.getWidth());
                 if (grid.isReal(x, y)) {
-                    //u.p("it's real");
-                    //u.p("getting real cell: " + x + " , " + y);
+                    //Uu.p("it's real");
+                    //Uu.p("getting real cell: " + Xx + " , " + y);
                     Cell cell = grid.getCell(x, y);
                     if (cell == null) {
                         System.err.println("Hit the null cell error in " + this.getClass().getName());
@@ -160,10 +161,10 @@ public class TableLayout2 extends TableLayout {
                     CellBox cell_box = new CellBox(0, 0, 10, 10);
                     cell.cb = cell_box;
                     cell_box.rb = row_box;
-                    // set the x coord based on the current column
+                    // set the Xx coord based on the current column
                     cell_box.x = table.calcColumnX(column_count);
                     // set the width
-                    //u.p("column count = " + column_count + " col span = " + cell.col_span);
+                    //Uu.p("column count = " + column_count + " col span = " + cell.col_span);
                     cell_box.width = table.calcColumnWidth(column_count, cell.col_span);
                     cell_box.setNode(cell.node);
                     // do the internal layout
@@ -173,9 +174,9 @@ public class TableLayout2 extends TableLayout {
                             cell_box.width, 100));
                     // do child layout
                     Layout layout = c.getLayout(cell.node);
-                    //u.p("cell box = " + cell_box);
-                    //u.p("doing child layout on: " + layout + " for " + cell_box.node);
-                    //u.p("cell_box properly = " + cell_box);
+                    //Uu.p("cell box = " + cell_box);
+                    //Uu.p("doing child layout on: " + layout + " for " + cell_box.node);
+                    //Uu.p("cell_box properly = " + cell_box);
                     c.setSubBlock(true);
                     //TODO: temporary hack
                     Box cell_contents = layout.layout(c, new BlockContent((Element) cell_box.getNode(), c.css.getStyle(cell_box.getNode())));
@@ -183,15 +184,15 @@ public class TableLayout2 extends TableLayout {
                     cell_box.sub_box = cell_contents;
                     cell_box.height = cell_box.sub_box.height;
                     column_count += cell.col_span;
-                    //u.p("cellbox = " + cell_box);
-                    //u.p("sub box = " + cell_box.sub_box);
+                    //Uu.p("cellbox = " + cell_box);
+                    //Uu.p("sub box = " + cell_box.sub_box);
                     // restore old extents
                     c.setExtents(oe);
                     // y is relative to the rowbox so it's just 0
                     cell_box.y = 0;
                     // add the cell to the row
                     row_box.cells.add(cell_box);
-                    //u.p("cell box width = " + cell_box.width);
+                    //Uu.p("cell box width = " + cell_box.width);
                     // if this is a non row spanning cell then
                     // adjust the row height to fit this cell
                     if (cell.row_span == 1) {
@@ -201,7 +202,7 @@ public class TableLayout2 extends TableLayout {
                     }
                     row_box.width += cell_box.width;
                 } else {
-                    //u.p("it's virtual");
+                    //Uu.p("it's virtual");
                     Cell cell = grid.getCell(x, y);
                     // create a virtual cell box for this cell
                     CellBox cell_box = CellBox.createVirtual(cell.cb);
@@ -211,10 +212,10 @@ public class TableLayout2 extends TableLayout {
                     // set row height based on real cell contents
                     // set row width based on real cell contents
                 }
-                //u.p("looping");
+                //Uu.p("looping");
             }
 
-            //u.p("loop done");
+            //Uu.p("loop done");
             // move the row to the right y position
             row_height = 0;
             row_box.y = prev_row.y + prev_row.height;
@@ -235,18 +236,18 @@ public class TableLayout2 extends TableLayout {
                     cb.sub_box.height = row_box.height;
                 } else {
                     // adjusting height based on virtual
-                    //u.p("adjusting height based on virtual");
+                    //Uu.p("adjusting height based on virtual");
                     CellBox real = cb.getReal();
-                    //u.p("the real cb = " + real);
+                    //Uu.p("the real cb = " + real);
                     RowBox orig_row = real.rb;
-                    //u.p("orig row = " + orig_row);
+                    //Uu.p("orig row = " + orig_row);
                     RowBox cur_row = row_box;
-                    //u.p("cur row = " + cur_row);
+                    //Uu.p("cur row = " + cur_row);
                     real.height = cur_row.y - orig_row.y + cur_row.height;
                     real.sub_box.height = real.height;
-                    //u.p("now real = " + real);
+                    //Uu.p("now real = " + real);
                 }
-                //u.p("cell = " + cb);
+                //Uu.p("cell = " + cb);
             }
         }
         box.height = prev_row.y + prev_row.height;
@@ -265,14 +266,14 @@ public class TableLayout2 extends TableLayout {
    as we go across each row we have to figure out if the current cell
    is spanned to the one above or not.  first we need a growable grid
    object to manage the cells.
-   addCell(x,y,col_span,row_span)
+   addCell(Xx,y,col_span,row_span)
    getWidth()
    getHeight()
-   isReal(x,y)
-   //isVirtual(x,y)
-   //getColSpan(x,y)
-   //getRowSpan(x,y)
-   //getRealCell(x,y)
+   isReal(Xx,y)
+   //isVirtual(Xx,y)
+   //getColSpan(Xx,y)
+   //getRowSpan(Xx,y)
+   //getRealCell(Xx,y)
    loop through all cells and add them
    calc the column widths
    for each row
@@ -280,7 +281,7 @@ public class TableLayout2 extends TableLayout {
    if isReal()
    add to row_box
    do internal layout
-   set x based on column widths
+   set Xx based on column widths
    set y based on row
    set w based on contents and column widths
    set h based on row height
@@ -291,6 +292,9 @@ public class TableLayout2 extends TableLayout {
 /*
    $Id$
    $Log$
+   Revision 1.11  2004/12/12 03:33:03  tobega
+   Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+
    Revision 1.10  2004/12/09 21:18:53  tobega
    precaution: code still works
 

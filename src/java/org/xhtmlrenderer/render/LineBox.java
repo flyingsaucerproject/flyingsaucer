@@ -35,12 +35,12 @@ public class LineBox extends Box {
     /**
      * Description of the Field
      */
-    public int lineheight;// relative to x,y
+    public int lineheight;// relative to Xx,y
 
     /**
      * Description of the Field
      */
-    public int baseline;// relative to x,y
+    public int baseline;// relative to Xx,y
 
     /**
      * Converts to a String representation of the object.
@@ -49,7 +49,7 @@ public class LineBox extends Box {
      */
     public String toString() {
 
-        return "Line: (" + x + "," + y + ")x(" + width + "," + height + ")" + "  baseline = " + baseline;
+        return "Line: (" + x + "," + y + ")Xx(" + width + "," + height + ")" + "  baseline = " + baseline;
     }
 
 }
@@ -58,6 +58,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/12/12 03:33:01  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.3  2004/12/10 06:51:05  tobega
  * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
  *

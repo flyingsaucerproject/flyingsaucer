@@ -26,7 +26,7 @@ import org.xhtmlrenderer.render.MiniumTextRenderer;
 import org.xhtmlrenderer.swing.DOMInspector;
 import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
-import org.xhtmlrenderer.util.U;
+import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -167,7 +167,7 @@ public class BrowserMenuBar extends JMenuBar {
             //demos.add(new LoadAction("File Listing (Win)","file:///c:"));
             //demos.add(new LoadAction("File Listing (Unix)","file:///"));
         } catch (Exception ex) {
-            U.p(ex);
+            Uu.p(ex);
         }
 
         add(demos);
@@ -452,7 +452,7 @@ public class BrowserMenuBar extends JMenuBar {
             try {
                 root.panel.loadPage(url);
             } catch (Exception ex) {
-                U.p(ex);
+                Uu.p(ex);
             }
         }
 
@@ -519,6 +519,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2004/12/12 03:33:06  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.22  2004/12/12 02:53:49  tobega
  * Making progress
  *

@@ -19,51 +19,52 @@
  */
 package org.xhtmlrenderer.test;
 
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.*;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.simple.Graphics2DRenderer;
-import org.xhtmlrenderer.util.u;
-import org.xhtmlrenderer.util.x;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.Xx;
 import org.xhtmlrenderer.util.XRLog;
-import java.awt.Graphics2D;
+
 import java.awt.Dimension;
-import java.util.logging.*;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class DocumentDiffTest {
     public static final int width = 500;
     public static final int height = 500;
+
     /**
      * Description of the Method
      *
-     * @param dir            PARAM
-     * @param width          PARAM
-     * @param height         PARAM
-     * @exception Exception  Throws
+     * @param dir    PARAM
+     * @param width  PARAM
+     * @param height PARAM
+     * @throws Exception Throws
      */
-    public void runTests( File dir, int width, int height )
-        throws Exception {
+    public void runTests(File dir, int width, int height)
+            throws Exception {
         File[] files = dir.listFiles();
-        for ( int i = 0; i < files.length; i++ ) {
-            if ( files[i].isDirectory() ) {
-                runTests( files[i], width, height );
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].isDirectory()) {
+                runTests(files[i], width, height);
                 continue;
             }
-            if ( files[i].getName().endsWith( ".xhtml" ) ) {
+            if (files[i].getName().endsWith(".xhtml")) {
                 String testfile = files[i].getAbsolutePath();
-                String difffile = testfile.substring( 0, testfile.length() - 6 ) + ".diff";
-                XRLog.log("unittests",Level.WARNING,"test file = " + testfile );
-                //u.p( "diff file = " + difffile );
-                boolean is_correct = compareTestFile( testfile, difffile, width, height );
-                XRLog.log("unittests",Level.WARNING,"is correct = " + is_correct );
+                String difffile = testfile.substring(0, testfile.length() - 6) + ".diff";
+                XRLog.log("unittests", Level.WARNING, "test file = " + testfile);
+                //Uu.p( "diff file = " + difffile );
+                boolean is_correct = compareTestFile(testfile, difffile, width, height);
+                XRLog.log("unittests", Level.WARNING, "is correct = " + is_correct);
             }
         }
 
@@ -72,25 +73,25 @@ public class DocumentDiffTest {
     /**
      * Description of the Method
      *
-     * @param dir            PARAM
-     * @param width          PARAM
-     * @param height         PARAM
-     * @exception Exception  Throws
+     * @param dir    PARAM
+     * @param width  PARAM
+     * @param height PARAM
+     * @throws Exception Throws
      */
-    public void generateDiffs( File dir, int width, int height )
-        throws Exception {
+    public void generateDiffs(File dir, int width, int height)
+            throws Exception {
         File[] files = dir.listFiles();
-        for ( int i = 0; i < files.length; i++ ) {
-            if ( files[i].isDirectory() ) {
-                generateDiffs( files[i], width, height );
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].isDirectory()) {
+                generateDiffs(files[i], width, height);
                 continue;
             }
-            if ( files[i].getName().endsWith( ".xhtml" ) ) {
+            if (files[i].getName().endsWith(".xhtml")) {
                 String testfile = files[i].getAbsolutePath();
-                String difffile = testfile.substring( 0, testfile.length() - 6 ) + ".diff";
-                //u.p("test file = " + testfile);
-                generateTestFile( testfile, difffile, width, height );
-                u.p( "generated = " + difffile );
+                String difffile = testfile.substring(0, testfile.length() - 6) + ".diff";
+                //Uu.p("test file = " + testfile);
+                generateTestFile(testfile, difffile, width, height);
+                Uu.p("generated = " + difffile);
             }
         }
 
@@ -99,43 +100,43 @@ public class DocumentDiffTest {
     /**
      * Description of the Method
      *
-     * @param test           PARAM
-     * @param diff           PARAM
-     * @param width          PARAM
-     * @param height         PARAM
-     * @exception Exception  Throws
+     * @param test   PARAM
+     * @param diff   PARAM
+     * @param width  PARAM
+     * @param height PARAM
+     * @throws Exception Throws
      */
-    public static void generateTestFile( String test, String diff, int width, int height )
-        throws Exception {
-            u.p("test = " + test);
-        String out = xhtmlToDiff( test, width, height );
-        //u.p("diff = \n" + out);
-        u.string_to_file( out, new File( diff ) );
+    public static void generateTestFile(String test, String diff, int width, int height)
+            throws Exception {
+        Uu.p("test = " + test);
+        String out = xhtmlToDiff(test, width, height);
+        //Uu.p("diff = \n" + out);
+        Uu.string_to_file(out, new File(diff));
     }
 
     /**
      * Description of the Method
      *
-     * @param xhtml          PARAM
-     * @param width          PARAM
-     * @param height         PARAM
-     * @return               Returns
-     * @exception Exception  Throws
+     * @param xhtml  PARAM
+     * @param width  PARAM
+     * @param height PARAM
+     * @return Returns
+     * @throws Exception Throws
      */
-    public static String xhtmlToDiff( String xhtml, int width, int height )
-        throws Exception {
-        Document doc = x.loadDocument( xhtml );
+    public static String xhtmlToDiff(String xhtml, int width, int height)
+            throws Exception {
+        Document doc = Xx.loadDocument(xhtml);
         Graphics2DRenderer renderer = new Graphics2DRenderer();
-        renderer.setDocument( doc , new File(xhtml).toURL());
-        
-        BufferedImage buff = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
-        Graphics2D g = (Graphics2D)buff.getGraphics();
+        renderer.setDocument(doc, new File(xhtml).toURL());
+
+        BufferedImage buff = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+        Graphics2D g = (Graphics2D) buff.getGraphics();
 
         //panel.setSize( width, height );
 
         //panel.setThreadedLayout(false);
         
-        Dimension dim = new Dimension(width,height);
+        Dimension dim = new Dimension(width, height);
         System.out.println("dim = " + dim);
         renderer.layout(g, dim);
         renderer.render(g);
@@ -144,41 +145,41 @@ public class DocumentDiffTest {
         
         
         StringBuffer sb = new StringBuffer();
-        getDiff( sb, renderer.getRenderingContext().getRootBox(), "" );
+        getDiff(sb, renderer.getRenderingContext().getRootBox(), "");
         return sb.toString();
     }
 
     /**
      * Description of the Method
      *
-     * @param test           PARAM
-     * @param diff           PARAM
-     * @param width          PARAM
-     * @param height         PARAM
-     * @return               Returns
-     * @exception Exception  Throws
+     * @param test   PARAM
+     * @param diff   PARAM
+     * @param width  PARAM
+     * @param height PARAM
+     * @return Returns
+     * @throws Exception Throws
      */
-    public boolean compareTestFile( String test, String diff, int width, int height )
-        throws Exception {
-        String tin = xhtmlToDiff( test, width, height );
+    public boolean compareTestFile(String test, String diff, int width, int height)
+            throws Exception {
+        String tin = xhtmlToDiff(test, width, height);
         String din = null;
         try {
-            din = u.file_to_string( diff );
+            din = Uu.file_to_string(diff);
         } catch (FileNotFoundException ex) {
-            XRLog.log("unittests",Level.WARNING,"diff file missing");
+            XRLog.log("unittests", Level.WARNING, "diff file missing");
             return false;
         }
         //XRLog.log("unittests",Level.WARNING,"tin = " + tin);
         //XRLog.log("unittests",Level.WARNING,"din = " + din);
-        if ( tin.equals( din ) ) {
+        if (tin.equals(din)) {
             return true;
         }
-        XRLog.log("unittests",Level.WARNING,"warning not equals");
+        XRLog.log("unittests", Level.WARNING, "warning not equals");
         File dfile = new File("correct.diff");
         File tfile = new File("test.diff");
-        XRLog.log("unittests",Level.WARNING,"writing to " + dfile + " and " + tfile);
-        u.string_to_file(tin,tfile);
-        u.string_to_file(din,dfile);
+        XRLog.log("unittests", Level.WARNING, "writing to " + dfile + " and " + tfile);
+        Uu.string_to_file(tin, tfile);
+        Uu.string_to_file(din, dfile);
         System.exit(-1);
         return false;
     }
@@ -186,14 +187,14 @@ public class DocumentDiffTest {
     /**
      * Gets the diff attribute of the DocumentDiffTest object
      *
-     * @param sb   PARAM
-     * @param box  PARAM
-     * @param tab  PARAM
+     * @param sb  PARAM
+     * @param box PARAM
+     * @param tab PARAM
      */
-    public static void getDiff( StringBuffer sb, Box box, String tab ) {
-        sb.append( tab + box.getTestString() + "\n" );
-        for ( int i = 0; i < box.getChildCount(); i++ ) {
-            getDiff( sb, (Box)box.getChild( i ), tab + " " );
+    public static void getDiff(StringBuffer sb, Box box, String tab) {
+        sb.append(tab + box.getTestString() + "\n");
+        for (int i = 0; i < box.getChildCount(); i++) {
+            getDiff(sb, (Box) box.getChild(i), tab + " ");
         }
 
     }
@@ -201,16 +202,16 @@ public class DocumentDiffTest {
     /**
      * The main program for the DocumentDiffTest class
      *
-     * @param args           The command line arguments
-     * @exception Exception  Throws
+     * @param args The command line arguments
+     * @throws Exception Throws
      */
-    public static void main( String[] args )
-        throws Exception {
+    public static void main(String[] args)
+            throws Exception {
         //String testfile = "tests/diff/background/01.xhtml";
         //String difffile = "tests/diff/background/01.diff";
 
         DocumentDiffTest ddt = new DocumentDiffTest();
-        ddt.runTests( new File( "tests/diff" ), width, height );
+        ddt.runTests(new File("tests/diff"), width, height);
     }
 
 }
@@ -219,6 +220,9 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/12/12 03:33:04  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.10  2004/12/01 01:57:02  joshy
  * more updates for float support.
  *

@@ -5,12 +5,16 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BoxLayout;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
+import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
+import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.u;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.logging.Level;
 
 public class BoxRenderer extends DefaultRenderer {
@@ -22,8 +26,12 @@ public class BoxRenderer extends DefaultRenderer {
      * @param box PARAM
      */
     public void paint(Context c, Box box) {
-        //u.p("BoxRenderer.paint " + box);
+        //Uu.p("BoxRenderer.paint " + box);
         Box block = (Box) box;
+
+        //set the current style
+        if (!(box instanceof AnonymousBlockBox))
+            c.pushStyle(block.content.getStyle());
 
         // copy the bounds to we don't mess it up
         Rectangle oldBounds = new Rectangle(c.getExtents());
@@ -37,14 +45,18 @@ public class BoxRenderer extends DefaultRenderer {
             paintNormal(c, block);
         }
 
-        //u.p("here it's : " + c.getListCounter());
-        if (LayoutUtil.isListItem(box)) {
+        //Uu.p("here it's : " + c.getListCounter());
+        if (ContentUtil.isListItem(box.content.getStyle())) {
             paintListItem(c, box);
         }
 
         // move the origin down to account for the contents plus the margin, borders, and padding
         oldBounds.y = oldBounds.y + block.height;
         c.setExtents(oldBounds);
+
+        //reset style
+        if (!(box instanceof AnonymousBlockBox))
+            c.popStyle();
 
         if (c.debugDrawBoxes()) {
             GraphicsUtil.drawBox(c.getGraphics(), block, Color.red);
@@ -91,7 +103,7 @@ public class BoxRenderer extends DefaultRenderer {
      */
     public void paintFixed(Context c, Box block) {
         Rectangle rect = c.getFixedRectangle();
-        //u.p("rect = " + rect);
+        //Uu.p("rect = " + rect);
         Graphics g = c.getGraphics();
         int xoff = -rect.x;
         int yoff = -rect.y;
@@ -151,7 +163,7 @@ public class BoxRenderer extends DefaultRenderer {
                 block.background_image = ImageUtil.loadImage(c, back_image);
             } catch (Exception ex) {
                 ex.printStackTrace();
-                u.p(ex);
+                Uu.p(ex);
             }
             /*
              * ImageIcon icon = new ImageIcon(back_image);

@@ -23,7 +23,7 @@ import org.xhtmlrenderer.demo.browser.actions.CopySelectionAction;
 import org.xhtmlrenderer.demo.browser.actions.FontSizeAction;
 import org.xhtmlrenderer.demo.browser.actions.GenerateDiffAction;
 import org.xhtmlrenderer.demo.browser.actions.PrintAction;
-import org.xhtmlrenderer.util.U;
+import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
 import java.awt.FileDialog;
@@ -133,7 +133,7 @@ public class BrowserActions {
                     root.panel.goBack();
                     root.panel.view.repaint();
                 } catch (Exception ex) {
-                    U.p(ex);
+                    Uu.p(ex);
                 }
             }
         };
@@ -150,7 +150,7 @@ public class BrowserActions {
                     root.panel.goForward();
                     root.panel.view.repaint();
                 } catch (Exception ex) {
-                    U.p(ex);
+                    Uu.p(ex);
                 }
             }
         };
@@ -166,7 +166,7 @@ public class BrowserActions {
                     root.panel.view.invalidate();
                     root.panel.view.repaint();
                 } catch (Exception ex) {
-                    U.p(ex);
+                    Uu.p(ex);
                 }
             }
         };
@@ -179,7 +179,7 @@ public class BrowserActions {
                     root.panel.reloadPage();
                     root.panel.view.repaint();
                 } catch (Exception ex) {
-                    U.p(ex);
+                    Uu.p(ex);
                 }
             }
         };
@@ -194,7 +194,7 @@ public class BrowserActions {
                     root.panel.loadPage(url_text);
                     root.panel.view.repaint();
                 } catch (Exception ex) {
-                    U.p(ex);
+                    Uu.p(ex);
                 }
             }
         };
@@ -244,6 +244,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/12/12 03:33:06  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.11  2004/12/12 02:52:20  tobega
  * I didn't change this, strange...
  *

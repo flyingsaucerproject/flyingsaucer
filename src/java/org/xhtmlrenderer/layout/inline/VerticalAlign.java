@@ -9,7 +9,8 @@ import org.xhtmlrenderer.layout.content.InlineBlockContent;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.font.LineMetrics;
 
 public class VerticalAlign {
@@ -102,7 +103,7 @@ public class VerticalAlign {
      * @param box PARAM
      */
     public static void setupVerticalAlign(LineBox box) {
-        // u.p("setting up vertical align for a line: " + box);
+        // Uu.p("setting up vertical align for a line: " + box);
 
         // top and bottom are max dist from baseline
         int top = 0;
@@ -144,10 +145,10 @@ public class VerticalAlign {
         for (int i = 0; i < box.getChildCount(); i++) {
             InlineBox inline = (InlineBox) box.getChild(i);
             if (inline.floated) {
-                // u.p("adjusting floated inline:");
-                // u.p("inline = " + inline);
+                // Uu.p("adjusting floated inline:");
+                // Uu.p("inline = " + inline);
                 //inline.y = inline.y;// - box.baseline + inline.height;
-                // u.p("inline = " + inline);
+                // Uu.p("inline = " + inline);
             } else {
                 if (!inline.vset) {
                     inline.vset = true;

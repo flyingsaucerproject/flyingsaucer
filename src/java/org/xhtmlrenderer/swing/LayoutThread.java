@@ -1,8 +1,9 @@
 package org.xhtmlrenderer.swing;
 
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 
 public class LayoutThread implements Runnable {
     private boolean done;
@@ -23,8 +24,8 @@ public class LayoutThread implements Runnable {
 
     public void startLayout(Graphics g) {
         if (shouldLayout()) {
-            //u.p("really starting new thread");
-            //u.p("threaded = " + threaded);
+            //Uu.p("really starting new thread");
+            //Uu.p("threaded = " + threaded);
             //done = false;
             graphics = g;
             if (threaded) {
@@ -33,24 +34,24 @@ public class LayoutThread implements Runnable {
                 run();
             }
         } else {
-            //u.p("layout already in progress. skipping layout");
+            //Uu.p("layout already in progress. skipping layout");
         }
     }
 
     public void run() {
-        // u.p("layout thread starting");
-        // u.p("graphics = " + graphics);
+        // Uu.p("layout thread starting");
+        // Uu.p("graphics = " + graphics);
         panel.startLayout(graphics);
         this.completeLayout();
     }
 
     // skip for now
     private synchronized void completeLayout() {
-        // u.p("layout thread ending");
+        // Uu.p("layout thread ending");
         done = true;
         graphics = null;
         panel.repaint();
-        // u.p("body box = " + panel.body_box );
+        // Uu.p("body box = " + panel.body_box );
     }
 
     // always done because not really threaded yet
@@ -74,17 +75,17 @@ public class LayoutThread implements Runnable {
                 try {
                     panel.doRender();
                 } catch (Throwable thr) {
-                    u.p("current thread = " + Thread.currentThread());
-                    u.p(thr);
+                    Uu.p("current thread = " + Thread.currentThread());
+                    Uu.p(thr);
                     thr.printStackTrace();
                 }
             } else {
                 g.drawString("body box is null", 50, 50);
-                u.p("body box is null");
+                Uu.p("body box is null");
             }
         } else {
             g.drawString("still doing layout", 50, 50);
-            //u.p("still doing layout");
+            //Uu.p("still doing layout");
         }
     }
 }

@@ -14,8 +14,8 @@ import java.awt.Font;
 public class BoxBuilder {
 
     public static void prepBox(Context c, InlineBox box, InlineBox prev_align, Font font) {
-        //U.p("box = " + box);
-        //U.p("prev align = " + prev_align);
+        //Uu.p("box = " + box);
+        //Uu.p("prev align = " + prev_align);
 
         CalculatedStyle style = c.getCurrentStyle();
         box.setStyle(style);
@@ -25,7 +25,7 @@ public class BoxBuilder {
         box.setFont(font);
         BoxLayout.getBackgroundColor(c, box);
         BoxLayout.getBorder(c, box);
-        //U.p("set border on inline box: " + box);
+        //Uu.p("set border on inline box: " + box);
         BoxLayout.getMargin(c, box);
         BoxLayout.getPadding(c, box);
 
@@ -37,20 +37,20 @@ public class BoxBuilder {
 
 
 
-        // ============ set X ===========
+        // ============ set Xx ===========
         // shift left if starting a new line
         if (box.break_before) {
             box.x = 0;
         }
 
-        // use the prev_align to calculate the X if not at start of
+        // use the prev_align to calculate the Xx if not at start of
         // new line
         if (prev_align != null &&
                 !prev_align.break_after &&
                 !box.break_before
         ) {
-            //U.p("prev align = " + prev_align);
-            //U.p("floated = " + LayoutUtil.isFloatedBlock( prev_align.node, c ) );
+            //Uu.p("prev align = " + prev_align);
+            //Uu.p("floated = " + LayoutUtil.isFloatedBlock( prev_align.node, c ) );
             box.x = prev_align.x + prev_align.width;
         } else {
             box.x = 0;
@@ -89,11 +89,11 @@ public class BoxBuilder {
                 */
         box.width = (int) box.text_bounds.getWidth();
         //box.width = FontUtil.len(c , box.node, box.getSubstring(), font);
-        // U.p("width = " + box.width + " from '"+box.getSubstring() +"'");
+        // Uu.p("width = " + box.width + " from '"+box.getSubstring() +"'");
         /*
             box.width = bounds.width;
         }
-        //U.p("box.X = " + box.X);
+        //Uu.p("box.Xx = " + box.Xx);
         */
         
         

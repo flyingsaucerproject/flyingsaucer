@@ -39,29 +39,29 @@ public class Absolute {
         String position = LayoutUtil.getPosition(style);
         if (position.equals("absolute")) {
             if (style.hasProperty("right")) {
-                //U.p("prop = " + c.css.getProperty(box.getRealElement(),"right",false));
+                //Uu.p("prop = " + c.css.getProperty(box.getRealElement(),"right",false));
                 if (style.isIdentifier("right")) {
                     if (style.getStringProperty("right").equals("auto")) {
                         box.right_set = false;
-                        //U.p("right set to auto");
+                        //Uu.p("right set to auto");
                     }
                 } else {
                     box.right = (int) style.getFloatPropertyRelative("right", 0);
                     box.right_set = true;
-                    //U.p("right set to : " + box.right);
+                    //Uu.p("right set to : " + box.right);
                 }
             }
             if (style.hasProperty("left")) {
-                //U.p("prop = " + c.css.getProperty(box.getRealElement(),"left",false));
+                //Uu.p("prop = " + c.css.getProperty(box.getRealElement(),"left",false));
                 if (style.isIdentifier("left")) {
                     if (style.getStringProperty("left").equals("auto")) {
                         box.left_set = false;
-                        //U.p("left set to auto");
+                        //Uu.p("left set to auto");
                     }
                 } else {
                     box.left = (int) style.getFloatPropertyRelative("left", 0);
                     box.left_set = true;
-                    //U.p("left set to : " + box.left);
+                    //Uu.p("left set to : " + box.left);
                 }
             }
             /*
@@ -105,9 +105,9 @@ public class Absolute {
             /*
             // bottom positioning
             child_box.y = bfc.getY() + bfc.getHeight() - child_box.height - child_box.top + 50;
-            U.p("bfc = " + bfc);
-            U.p("bfc.height = " + bfc.getHeight());
-            U.p("final child box = " + child_box);
+            Uu.p("bfc = " + bfc);
+            Uu.p("bfc.height = " + bfc.getHeight());
+            Uu.p("final child box = " + child_box);
             */
         } else {
             // top positioning

@@ -46,7 +46,7 @@ public class InputTextArea extends FormItemLayout {
      * @return Returns
      */
     public JComponent createComponent(Context c, Element elem) {
-        //U.p("created a TextArea");
+        //Uu.p("created a TextArea");
         int rows = 4;
         int cols = 10;
         if (elem.hasAttribute("rows")) {
@@ -62,7 +62,7 @@ public class InputTextArea extends FormItemLayout {
         sp.setVerticalScrollBarPolicy(sp.VERTICAL_SCROLLBAR_ALWAYS);
         sp.setHorizontalScrollBarPolicy(sp.HORIZONTAL_SCROLLBAR_ALWAYS);
         if (elem.getFirstChild() != null) {
-            //U.p("setting text to: " + elem.getFirstChild().getNodeValue());
+            //Uu.p("setting text to: " + elem.getFirstChild().getNodeValue());
             comp.setText(elem.getFirstChild().getNodeValue());
         }
 
@@ -75,6 +75,9 @@ public class InputTextArea extends FormItemLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/12 03:32:55  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.4  2004/12/12 02:59:11  tobega
  * Making progress
  *

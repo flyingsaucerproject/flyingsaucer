@@ -20,7 +20,7 @@
 package org.xhtmlrenderer.css;
 
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.util.U;
+import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -47,8 +47,8 @@ public class FontResolver {
     public FontResolver() {
         GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
         String[] available_fonts = gfx.getAvailableFontFamilyNames();
-        //U.p("available fonts =");
-        //U.p(available_fonts);
+        //Uu.p("available fonts =");
+        //Uu.p(available_fonts);
         instance_hash = new HashMap();
 
         // preload the font map with the font names as keys
@@ -63,7 +63,7 @@ public class FontResolver {
         // preload sans, serif, and monospace into the available font hash
         available_fonts_hash.put("Serif", new Font("Serif", Font.PLAIN, 1));
         available_fonts_hash.put("SansSerif", new Font("SansSerif", Font.PLAIN, 1));
-        //U.p("put in sans serif");
+        //Uu.p("put in sans serif");
         available_fonts_hash.put("Monospaced", new Font("Monospaced", Font.PLAIN, 1));
     }
 
@@ -82,8 +82,8 @@ public class FontResolver {
      * @return Returns
      */
     public Font resolveFont(Context c, String[] families, float size, String weight, String style, String variant) {
-        //U.p("familes = ");
-        //U.p(families);
+        //Uu.p("familes = ");
+        //Uu.p(families);
         // for each font family
         if (families != null) {
             for (int i = 0; i < families.length; i++) {
@@ -95,14 +95,14 @@ public class FontResolver {
         }
 
         // if we get here then no font worked, so just return default sans
-        //U.p("pulling out: -" + available_fonts_hash.get("SansSerif") + "-");
+        //Uu.p("pulling out: -" + available_fonts_hash.get("SansSerif") + "-");
         try {
             Font fnt = createFont(c, (Font) available_fonts_hash.get("SansSerif"), size, weight, style, variant);
             instance_hash.put(getFontInstanceHashName("SansSerif", size, weight, style, variant), fnt);
-            //U.p("subbing in base sans : " + fnt);
+            //Uu.p("subbing in base sans : " + fnt);
             return fnt;
         } catch (Exception ex) {
-            U.p("exception: " + ex);
+            Uu.p("exception: " + ex);
             return c.getGraphics().getFont();
         }
 
@@ -118,7 +118,7 @@ public class FontResolver {
      * @return Returns
      */
     protected Font createFont(Context c, Font root_font, float size, String weight, String style, String variant) {
-        //U.p("creating font: " + root_font + " size = " + size +
+        //Uu.p("creating font: " + root_font + " size = " + size +
         //    " weight = " + weight + " style = " + style + " variant = " + variant);
         int font_const = Font.PLAIN;
         if (weight != null && weight.equals("bold")) {
@@ -156,7 +156,7 @@ public class FontResolver {
      * @return Returns
      */
     protected Font resolveFont(Context c, String font, float size, String weight, String style, String variant) {
-        //U.p("here");
+        //Uu.p("here");
         // strip off the "s if they are there
         if (font.startsWith("\"")) {
             font = font.substring(1);
@@ -165,7 +165,7 @@ public class FontResolver {
             font = font.substring(0, font.length() - 1);
         }
 
-        //U.p("final font = " + font);
+        //Uu.p("final font = " + font);
         // normalize the font name
         if (font.equals("serif")) {
             font = "Serif";
@@ -179,21 +179,21 @@ public class FontResolver {
 
         // assemble a font instance hash name
         String font_instance_name = getFontInstanceHashName(font, size, weight, style, variant);
-        //U.p("looking for font: " + font_instance_name);
+        //Uu.p("looking for font: " + font_instance_name);
         // check if the font instance exists in the hash table
         if (instance_hash.containsKey(font_instance_name)) {
             // if so then return it
             return (Font) instance_hash.get(font_instance_name);
         }
 
-        //U.p("font lookup failed for: " + font_instance_name);
-        //U.p("searching for : " + font + " " + size + " " + weight + " " + style + " " + variant);
+        //Uu.p("font lookup failed for: " + font_instance_name);
+        //Uu.p("searching for : " + font + " " + size + " " + weight + " " + style + " " + variant);
 
 
         // if not then
         //  does the font exist
         if (available_fonts_hash.containsKey(font)) {
-            //U.p("found an available font for: " + font);
+            //Uu.p("found an available font for: " + font);
             Object value = available_fonts_hash.get(font);
             // have we actually allocated the root font object yet?
             Font root_font = null;
@@ -234,6 +234,9 @@ public class FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/12/12 03:32:55  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.7  2004/12/12 02:56:59  tobega
  * Making progress
  *

@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.util.U;
+import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
 import java.util.logging.Logger;
@@ -94,7 +94,7 @@ public class BrowserStartup {
         try {
             panel.loadPage("demo:demos/splash/splash.html");
         } catch (Exception ex) {
-            U.p(ex);
+            Uu.p(ex);
         }
     }
 
@@ -145,6 +145,9 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/12/12 03:33:07  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.7  2004/12/12 02:54:30  tobega
  * Making progress
  *

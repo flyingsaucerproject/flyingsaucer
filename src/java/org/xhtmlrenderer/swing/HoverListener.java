@@ -1,12 +1,8 @@
 package org.xhtmlrenderer.swing;
 
-import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.InlineLayout;
-import org.xhtmlrenderer.layout.Layout;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.util.u;
 
 import javax.swing.event.MouseInputAdapter;
 import java.awt.event.MouseEvent;
@@ -35,7 +31,8 @@ public class HoverListener extends MouseInputAdapter {
     }
 
     private void restyle(Box ib) {
-        // u.p("under cursor = " + ib);
+        // Uu.p("under cursor = " + ib);
+        boolean needRepaint = false;
         if (prev == ib) {
             return;
         }
@@ -43,59 +40,43 @@ public class HoverListener extends MouseInputAdapter {
         if (ib == null)
             panel.hovered_element = null;
         else
-            panel.hovered_element = ib.getRealElement();
+            panel.hovered_element = ib.content.getElement();
 
         // if moved out of the old block then unstyle it
         if (prev != null) {
-            boolean restyled = panel.getContext().css.wasHoverRestyled(prev.getRealElement());
-            //u.p("previous was styled = " + restyled);
-            //u.p("prev = " + prev);
-            CalculatedStyle style = panel.getContext().css.getStyle(prev.getRealElement());
-            //u.p("prev calc style = " + style);
-            //u.p("prev color = " + style.getColor());
+            boolean restyled = panel.getContext().css.wasHoverRestyled(prev.content.getElement());
             if (restyled) {
-                Layout lt = panel.getContext().getLayout(prev.getRealElement());
-                if (lt instanceof InlineLayout) {
-                    //u.p("unstyling: " + prev);
-                    ((InlineLayout) lt).restyle(panel.getContext(), prev);
-                    panel.repaint();
-                }
+                prev.restyle = true;//notify rendering to restyle the box
+                needRepaint = true;
             }
         }
 
         prev = ib;
         // return if no new hovered block;
-        if (ib == null) {
-            return;
-        }
+        if (ib != null) {
 
-        /* 
-            if the box is an inline box
-             and if it is a text only box, meaning it
-             does not have it's own element but is merely a child
-             of an enclosing box.
-             is inline element
-        */
-        // u.p("real element = " + ib.getRealElement());
-        // skip it if it's just a text child of a block. we should
-        // do the block instead
-        if(ib.isInlineElement() || !(ib instanceof InlineBox)) {
-            boolean restyled = panel.getContext().css.wasHoverRestyled(ib.getRealElement());
-            //u.p("was styled = " + ib);
-            
-            CalculatedStyle style = panel.getContext().css.getStyle(ib.getRealElement());
-            //u.p("color = " + style.getColor());
-    
-            // if the block has a hover style then restyle it
-            if (restyled) {
-                Layout lt = panel.getContext().getLayout(ib.getRealElement());
-                if (lt instanceof InlineLayout) {
-                    //u.p("restyling: " + ib);
-                    ((InlineLayout) lt).restyle(panel.getContext(), ib);
-                    panel.repaint();
+            /*
+                if the box is an inline box
+                 and if it is a text only box, meaning it
+                 does not have it's own element but is merely a child
+                 of an enclosing box.
+                 is inline element
+            */
+            // Uu.p("real element = " + ib.getRealElement());
+            // skip it if it's just a text child of a block. we should
+            // do the block instead
+            if (ib.isInlineElement() || !(ib instanceof InlineBox)) {
+                boolean restyled = panel.getContext().css.wasHoverRestyled(ib.content.getElement());
+                //Uu.p("was styled = " + ib);
+
+                // if the block has a hover style then restyle it
+                if (restyled) {
+                    ib.restyle = true;
+                    needRepaint = true;
                 }
             }
         }
+        if (needRepaint) panel.repaint();
     }
 
     private Box findBox(MouseEvent evt) {

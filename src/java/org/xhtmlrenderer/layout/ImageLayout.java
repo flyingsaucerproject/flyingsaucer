@@ -28,9 +28,9 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.ImageRenderer;
 import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.util.ImageUtil;
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Image;
 
 /**
  * Description of the Class
@@ -52,9 +52,7 @@ public class ImageLayout extends BoxLayout {
 
         BlockBox box = new BlockBox();
 
-        box.setNode(content.getElement());
-
-        box.setContent(content);
+        box.content = content;
 
         return box;
     }
@@ -149,7 +147,7 @@ public class ImageLayout extends BoxLayout {
      * // do all of the painting
      * // set the origin to the origin of our box
      * c.getExtents().y = box.y;
-     * c.getExtents().x = box.x;
+     * c.getExtents().Xx = box.Xx;
      * paintBackground(c,elem,contents);
      * // move the contents in to account for the insets
      * c.getExtents().translate(left_inset,top_inset);
@@ -186,7 +184,7 @@ public class ImageLayout extends BoxLayout {
 
         } catch (Exception ex) {
 
-            u.p(ex);
+            Uu.p(ex);
 
         }
 
@@ -199,7 +197,7 @@ public class ImageLayout extends BoxLayout {
 
     /*
      * public void paintComponent(Context c, Element elem, InlineBox box) {
-     * c.getGraphics().drawImage(img,box.x,box.y,null);
+     * c.getGraphics().drawImage(img,box.Xx,box.y,null);
      * }
      */
 
@@ -209,6 +207,9 @@ public class ImageLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/12/12 03:32:58  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.9  2004/12/10 06:51:02  tobega
  * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
  *

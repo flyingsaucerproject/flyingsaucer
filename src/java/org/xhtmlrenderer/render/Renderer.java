@@ -25,54 +25,66 @@ import org.xhtmlrenderer.layout.Context;
 /**
  * Description of the Interface
  *
- * @author   empty
+ * @author empty
  */
 public interface Renderer {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public void paint( Context c, Box box );
+    public void paint(Context c, Box box);
 
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public void paintBackground( Context c, Box box );
+    public void paintBackground(Context c, Box box);
 
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public void paintComponent( Context c, Box box );
+    public void paintComponent(Context c, Box box);
 
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public void paintBorder( Context c, Box box );
+    public void paintBorder(Context c, Box box);
 
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public void paintChildren( Context c, Box box );
+    public void paintChildren(Context c, Box box);
+
+    /**
+     * Do the type of restyling allowed from dynamic events
+     *
+     * @param c
+     * @param box
+     */
+    public void restyle(Context c, Box box);
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/12/12 03:33:01  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.2  2004/10/23 13:50:27  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

@@ -20,7 +20,7 @@
 package org.xhtmlrenderer.demo.browser;
 
 import org.w3c.dom.Document;
-import org.xhtmlrenderer.util.U;
+import org.xhtmlrenderer.util.Uu;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -103,8 +103,8 @@ public class HistoryManager {
      * @param url PARAM
      */
     public void goNewDocument(Document doc, URL url) {
-        //U.p("going to a new document: " + doc + " " + url);
-        //U.dump_stack();
+        //Uu.p("going to a new document: " + doc + " " + url);
+        //Uu.dump_stack();
         Entry entry = new Entry();
         entry.doc = doc;
         entry.url = url;
@@ -124,9 +124,9 @@ public class HistoryManager {
      * Description of the Method
      */
     public void dumpHistory() {
-        U.p("history:");
-        U.p(entries);
-        U.p("current index = " + index);
+        Uu.p("history:");
+        Uu.p(entries);
+        Uu.p("current index = " + index);
     }
 
     /**
@@ -188,6 +188,9 @@ public class HistoryManager {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/12 03:33:07  tobega
+ * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+ *
  * Revision 1.5  2004/12/12 02:55:29  tobega
  * Making progress
  *

@@ -1,14 +1,13 @@
 package org.xhtmlrenderer.simple;
 
+import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.swing.BasicPanel;
-import org.xhtmlrenderer.util.u;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
-import org.w3c.dom.Document;
 
 /**
  * <p>XHTMLPanel is a simple Swing component that renders valid
@@ -18,13 +17,13 @@ import org.w3c.dom.Document;
  * <pre>
  * import org.xhtmlrenderer.simple.*;
  * .....
- *
+ * <p/>
  * public static void main(String[] args) {
- *
+ * <p/>
  *   // set up the xhtml panel
  *   XHTMLPanel xhtml = new XHTMLPanel();
  *   xhtml.setDocument(new URL("http://myserver.com/page.xhtml"));
- *
+ * <p/>
  *   JScrollPane scroll = new JScrollPane(xhtml);
  *   JFrame frame = new JFrame("Demo");
  *   frame.getContentPane().add(scroll);
@@ -33,13 +32,13 @@ import org.w3c.dom.Document;
  *   frame.show();
  * }
  * </pre>
- *
+ * <p/>
  * <p>XHTMLPanel also lets you make simple changes with simple methods
  * like setFontScale() and setMediaType(). If you want to make other changes
  * you will need to get the rendering context (getRenderingContext()) and
  * call methods on that.  Ex:
  * </p>
- *
+ * <p/>
  * <pre>
  * XHTMLPanel xhtml = new XHTMLPanel();
  * RenderingContext ctx = xhtml.getRenderingContext();
@@ -85,9 +84,9 @@ public class XHTMLPanel extends BasicPanel {
     public void setDocument(Document doc, URL url) {
         super.setDocument(doc, url);
     }
-    
-    public void setDocument(InputStream stream, URL url)  throws Exception {
-        super.setDocument(stream,url);
+
+    public void setDocument(InputStream stream, URL url) throws Exception {
+        super.setDocument(stream, url);
     }
     
     /*
@@ -121,6 +120,7 @@ public class XHTMLPanel extends BasicPanel {
         super.calcLayout();
         ctx.getContext().flushFonts();
     }
+
     public void repaint() {
         super.repaint();
     }
