@@ -26,6 +26,8 @@ import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
 
+import org.joshy.html.css.RuleNormalizer;
+
 import com.pdoubleya.xhtmlrenderer.css.constants.CSSName;
 import com.pdoubleya.xhtmlrenderer.css.impl.XRValueImpl;
 
@@ -41,9 +43,12 @@ public class BorderSidePropertyFactory extends AbstractPropertyFactory {
     private static BorderSidePropertyFactory _instance;
 
     /** TODO--used in property explosion */
-    private final static Map PROP_EXPLODE;
+    private static final Map PROP_EXPLODE;
 
-
+    private static final int WIDTH_IDX;
+    private static final int STYLE_IDX;
+    private static final int COLOR_IDX;
+    
     /** Constructor for the BorderSidePropertyFactory object */
     private BorderSidePropertyFactory() { }
 
@@ -88,37 +93,58 @@ public class BorderSidePropertyFactory extends AbstractPropertyFactory {
         // CAREFUL: note that with steadyState parser impl, their value class impl
         // both primitive and value list interfaces! use getCssValueType(), not instanceof!!
         if ( cssValue.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
-            // TODO
+            addPrimitive(style, (CSSPrimitiveValue)cssValue, priority, sequence, explodes, list);
         } else {
             // is a value list
+            // border explodes differently based on number of supplied values
+            // but values for color, style, width can be given in any order
+            // loop over the ones given and sniff them out to see if they 
+            // look like color, style, width, then apply to all four sides 
+
             CSSValueList vList = (CSSValueList)cssValue;
-
-            // border-style explodes differently based on number of supplied values
             CSSPrimitiveValue primitive = null;
-            // treat this as exploded border-style, border-width and border-color
-            switch ( vList.getLength() ) {
-                case 3:
-                    primitive = (CSSPrimitiveValue)vList.item( 2 );
-                    list.add( newProperty( (String)explodes.get( 2 ), primitive, priority, style, sequence ) );
-                // fall thru;
 
-                case 2:
-                    primitive = (CSSPrimitiveValue)vList.item( 1 );
-                    list.add( newProperty( (String)explodes.get( 1 ), primitive, priority, style, sequence ) );
-                // fall thru
-
-                case 1:
-                    primitive = (CSSPrimitiveValue)vList.item( 0 );
-                    list.add( newProperty( (String)explodes.get( 0 ), primitive, priority, style, sequence ) );
-                    break;
-                default:
-                // TODO: error!
-            }
+            for ( int i = 0, len = vList.getLength(); i < len; i++ ) {
+                primitive = (CSSPrimitiveValue)vList.item( i );
+                addPrimitive(style, primitive, priority, sequence, explodes, list);
+            }            
         }
         return list.iterator();
     }
 
+    private void addPrimitive(
+        CSSStyleDeclaration style,
+        CSSPrimitiveValue primitive, 
+        String priority,
+        int sequence,
+        List explodeTo,
+        List list) {
+            
+        String val = primitive.getCssText().trim();
+        String propName = "";
+        if ( RuleNormalizer.looksLikeAColor( val ) ) {
+            propName = (String)explodeTo.get( COLOR_IDX );
+        } else if ( RuleNormalizer.looksLikeABorderStyle( val ) ) {
+            propName = (String)explodeTo.get( STYLE_IDX );
+        } else {
+            // HACK: as with background, we should go ahead and check this is a valid CSS length value (PWW 24-08-04)
+            propName = (String)explodeTo.get( WIDTH_IDX );
+        }
+        list.add( 
+            newProperty( 
+                propName, 
+                primitive, 
+                priority, 
+                style, 
+                sequence ) 
+            );
+    }    
+
     static {
+        WIDTH_IDX = 0;
+        STYLE_IDX = 1;
+        COLOR_IDX = 2;
+
         PROP_EXPLODE = new HashMap();
         List l = new ArrayList();
         l.add( CSSName.BORDER_WIDTH_TOP );

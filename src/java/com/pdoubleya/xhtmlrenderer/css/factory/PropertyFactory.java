@@ -32,6 +32,7 @@ import org.w3c.dom.css.CSSStyleDeclaration;
  * @author   Patrick Wright
  */
 public interface PropertyFactory {
+    // TODO: values not assigned in a shorthand prop should default to initial CSS2 spec (PWW 24-08-04) 
     /**
      * Explodes a single property declaration into one or more XRProperty
      * instances. The exact form of the explosion is left to the implementing

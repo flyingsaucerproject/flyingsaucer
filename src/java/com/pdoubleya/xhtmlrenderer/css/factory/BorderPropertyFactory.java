@@ -26,15 +26,17 @@ import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
 
+import org.joshy.html.css.RuleNormalizer;
+
 import com.pdoubleya.xhtmlrenderer.css.constants.CSSName;
 import com.pdoubleya.xhtmlrenderer.css.impl.XRValueImpl;
 
 
 /**
- * A PropertyFactory for CSS 2 "border" shorthand property, instantiating XRProperties.
+ * A PropertyFactory for CSS 2 "border" shorthand property, instantiating
+ * XRProperties.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public class BorderPropertyFactory extends AbstractPropertyFactory {
     /** Singleton instance. */
@@ -48,23 +50,15 @@ public class BorderPropertyFactory extends AbstractPropertyFactory {
     private final static String COLOR_PRP[];
     /** TODO--used in property explosion */
     private final static String LISTS[][];
-
+    /** TODO--used in property explosion */
+    private static final int WIDTH_IDX;
+    /** TODO--used in property explosion */
+    private static final int STYLE_IDX;
+    /** TODO--used in property explosion */
+    private static final int COLOR_IDX;
 
     /** Constructor for the BorderPropertyFactory object */
     private BorderPropertyFactory() { }
-
-
-    /**
-     * * Returns the singleton instance.
-     *
-     * @return   Returns
-     */
-    public static synchronized PropertyFactory instance() {
-        if ( _instance == null ) {
-            _instance = new BorderPropertyFactory();
-        }
-        return _instance;
-    }
 
     // thread-safe
     /**
@@ -78,7 +72,8 @@ public class BorderPropertyFactory extends AbstractPropertyFactory {
      * @param propName  The String property name for the property to explode.
      * @param sequence  Sequence in which the declaration was found in the
      *      containing stylesheet.
-     * @return          Iterator of one or more XRProperty instances representing the exploded values.
+     * @return          Iterator of one or more XRProperty instances
+     *      representing the exploded values.
      */
     public Iterator explodeProperties( CSSStyleDeclaration style, String propName, int sequence ) {
         List list = new ArrayList();
@@ -88,33 +83,57 @@ public class BorderPropertyFactory extends AbstractPropertyFactory {
         // CAREFUL: note that with steadyState parser impl, their value class impl
         // both primitive and value list interfaces! use getCssValueType(), not instanceof!!
         if ( cssValue.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
-            // TODO
+            System.err.println("BORDER: PRIMITIVE VALUE. NOT CURRENTLY CODED.");
         } else {
             // is a value list
             CSSValueList vList = (CSSValueList)cssValue;
 
-            // border-style explodes differently based on number of supplied values
+            // border explodes differently based on number of supplied values
+            // but values for color, style, width can be given in any order
+            // loop over the ones given and sniff them out to see if they 
+            // look like color, style, width, then apply to all four sides 
+            
             CSSPrimitiveValue primitive = null;
 
-            primitive = (CSSPrimitiveValue)vList.item( 0 );
-            list.add( newProperty( (String)LISTS[0][0], primitive, priority, style, sequence ) );
-            list.add( newProperty( (String)LISTS[0][1], primitive, priority, style, sequence ) );
-            list.add( newProperty( (String)LISTS[0][2], primitive, priority, style, sequence ) );
-            list.add( newProperty( (String)LISTS[0][3], primitive, priority, style, sequence ) );
-
-            primitive = (CSSPrimitiveValue)vList.item( 1 );
-            list.add( newProperty( (String)LISTS[1][0], primitive, priority, style, sequence ) );
-            list.add( newProperty( (String)LISTS[1][1], primitive, priority, style, sequence ) );
-            list.add( newProperty( (String)LISTS[1][2], primitive, priority, style, sequence ) );
-            list.add( newProperty( (String)LISTS[1][3], primitive, priority, style, sequence ) );
-
-            primitive = (CSSPrimitiveValue)vList.item( 2 );
-            list.add( newProperty( (String)LISTS[2][0], primitive, priority, style, sequence ) );
-            list.add( newProperty( (String)LISTS[2][1], primitive, priority, style, sequence ) );
-            list.add( newProperty( (String)LISTS[2][2], primitive, priority, style, sequence ) );
-            list.add( newProperty( (String)LISTS[2][3], primitive, priority, style, sequence ) );
+            String sides[] = null;
+            for ( int i = 0, len = vList.getLength(); i < len; i++ ) {
+                primitive = (CSSPrimitiveValue)vList.item( i );
+                String val = primitive.getCssText();
+                if ( RuleNormalizer.looksLikeAColor( val ) ) {
+                    sides = LISTS[COLOR_IDX];
+                } else if ( RuleNormalizer.looksLikeABorderStyle( val ) ) {
+                    sides = LISTS[STYLE_IDX];
+                } else {
+                    // it is a length
+                    sides = LISTS[WIDTH_IDX];
+                }
+                for ( int j = 0; j < 4; j++ ) {
+                    list.add(
+                            newProperty(
+                            sides[j],
+                            primitive,
+                            priority,
+                            style,
+                            sequence
+                             )
+                             );
+                }
+            }
         }
         return list.iterator();
+    }
+
+
+    /**
+     * * Returns the singleton instance.
+     *
+     * @return   Returns
+     */
+    public static synchronized PropertyFactory instance() {
+        if ( _instance == null ) {
+            _instance = new BorderPropertyFactory();
+        }
+        return _instance;
     }
 
     static {
@@ -139,10 +158,13 @@ public class BorderPropertyFactory extends AbstractPropertyFactory {
                 CSSName.BORDER_COLOR_LEFT
                 };
 
+        WIDTH_IDX = 0;
+        STYLE_IDX = 1;
+        COLOR_IDX = 2;
+
         LISTS = new String[3][];
-        LISTS[0] = WIDTH_PRP;
-        LISTS[1] = STYLE_PRP;
-        LISTS[2] = COLOR_PRP;
+        LISTS[WIDTH_IDX] = WIDTH_PRP;
+        LISTS[STYLE_IDX] = STYLE_PRP;
+        LISTS[COLOR_IDX] = COLOR_PRP;
     }
 }
-

@@ -158,12 +158,12 @@ public class BorderStylePropertyFactory extends AbstractPropertyFactory {
 
         // HACK: current BorderPainter in Josh's code expects single border-style to still be there
         // even though in principle it is explodable.
-        newList.add( new XRPropertyImpl( style, CSSName.BORDER_STYLE_SHORTHAND, sequence, val ) );
+        newList.add( new XRPropertyImpl( CSSName.BORDER_STYLE_SHORTHAND, sequence, val ) );
 
-        newList.add( new XRPropertyImpl( style, CSSName.BORDER_STYLE_TOP, sequence, val ) );
-        newList.add( new XRPropertyImpl( style, CSSName.BORDER_STYLE_RIGHT, sequence, val ) );
-        newList.add( new XRPropertyImpl( style, CSSName.BORDER_STYLE_BOTTOM, sequence, val ) );
-        newList.add( new XRPropertyImpl( style, CSSName.BORDER_STYLE_LEFT, sequence, val ) );
+        newList.add( new XRPropertyImpl( CSSName.BORDER_STYLE_TOP, sequence, val ) );
+        newList.add( new XRPropertyImpl( CSSName.BORDER_STYLE_RIGHT, sequence, val ) );
+        newList.add( new XRPropertyImpl( CSSName.BORDER_STYLE_BOTTOM, sequence, val ) );
+        newList.add( new XRPropertyImpl( CSSName.BORDER_STYLE_LEFT, sequence, val ) );
         return newList;
     }
 }

@@ -20,14 +20,13 @@
  */
 package com.pdoubleya.xhtmlrenderer.css.factory;
 
-import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSStyleDeclaration;
-
 import com.pdoubleya.xhtmlrenderer.css.XRProperty;
 import com.pdoubleya.xhtmlrenderer.css.XRValue;
 import com.pdoubleya.xhtmlrenderer.css.impl.XRPropertyImpl;
 import com.pdoubleya.xhtmlrenderer.css.impl.XRValueImpl;
-
+import org.joshy.html.css.RuleNormalizer;
+import org.w3c.dom.css.CSSPrimitiveValue;
+import org.w3c.dom.css.CSSStyleDeclaration;
 
 /**
  * Base class for <code>PropertyFactories</code>.
@@ -53,8 +52,16 @@ public abstract class AbstractPropertyFactory implements PropertyFactory {
             CSSStyleDeclaration style,
             int sequence ) {
 
+        if ( newPropertyName.indexOf("color") >=0 ) {
+            try {
+            if ( !primitive.getCssText().equals("transparent"))
+                primitive.setCssText(RuleNormalizer.getColorHex(primitive.getCssText()));
+            } catch ( Exception ex ) {
+                System.out.println("can't set color: " + primitive.getCssText());   
+            }
+        }
         XRValue val = new XRValueImpl( primitive, priority );
-        return new XRPropertyImpl( style, newPropertyName, sequence, val );
+        return new XRPropertyImpl( newPropertyName, sequence, val );
     }
 }
 

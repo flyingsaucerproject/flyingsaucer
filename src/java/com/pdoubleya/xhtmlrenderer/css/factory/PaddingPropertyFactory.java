@@ -155,10 +155,10 @@ public class PaddingPropertyFactory extends AbstractPropertyFactory {
         List list = new ArrayList();
         XRValueImpl val = null;
         val = new XRValueImpl( primitive, priority );
-        list.add( new XRPropertyImpl( style, CSSName.PADDING_TOP, sequence, val ) );
-        list.add( new XRPropertyImpl( style, CSSName.PADDING_RIGHT, sequence, val ) );
-        list.add( new XRPropertyImpl( style, CSSName.PADDING_BOTTOM, sequence, val ) );
-        list.add( new XRPropertyImpl( style, CSSName.PADDING_LEFT, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.PADDING_TOP, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.PADDING_RIGHT, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.PADDING_BOTTOM, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.PADDING_LEFT, sequence, val ) );
         return list;
     }
 }

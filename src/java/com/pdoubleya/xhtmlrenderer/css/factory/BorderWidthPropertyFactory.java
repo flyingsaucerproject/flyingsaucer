@@ -155,10 +155,10 @@ public class BorderWidthPropertyFactory extends AbstractPropertyFactory {
         List list = new ArrayList();
         XRValueImpl val = null;
         val = new XRValueImpl( primitive, priority );
-        list.add( new XRPropertyImpl( style, CSSName.BORDER_WIDTH_TOP, sequence, val ) );
-        list.add( new XRPropertyImpl( style, CSSName.BORDER_WIDTH_RIGHT, sequence, val ) );
-        list.add( new XRPropertyImpl( style, CSSName.BORDER_WIDTH_BOTTOM, sequence, val ) );
-        list.add( new XRPropertyImpl( style, CSSName.BORDER_WIDTH_LEFT, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.BORDER_WIDTH_TOP, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.BORDER_WIDTH_RIGHT, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.BORDER_WIDTH_BOTTOM, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.BORDER_WIDTH_LEFT, sequence, val ) );
         return list;
     }
 }

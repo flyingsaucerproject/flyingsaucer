@@ -26,6 +26,7 @@ import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
 
+import org.joshy.html.css.RuleNormalizer;
 import com.pdoubleya.xhtmlrenderer.css.constants.CSSName;
 import com.pdoubleya.xhtmlrenderer.css.impl.XRPropertyImpl;
 import com.pdoubleya.xhtmlrenderer.css.impl.XRValueImpl;
@@ -76,6 +77,7 @@ public class BorderColorPropertyFactory extends AbstractPropertyFactory {
     public Iterator explodeProperties( CSSStyleDeclaration style, String propName, int sequence ) {
         List list = new ArrayList();
         CSSValue cssValue = style.getPropertyCSSValue( propName );
+        cssValue.setCssText(RuleNormalizer.getColorHex(cssValue.getCssText()));
         String priority = style.getPropertyPriority( propName );
 
         // CAREFUL: note that with steadyState parser impl, their value class impl
@@ -154,10 +156,10 @@ public class BorderColorPropertyFactory extends AbstractPropertyFactory {
         List list = new ArrayList();
         XRValueImpl val = null;
         val = new XRValueImpl( primitive, priority );
-        list.add( new XRPropertyImpl( style, CSSName.BORDER_COLOR_TOP, sequence, val ) );
-        list.add( new XRPropertyImpl( style, CSSName.BORDER_COLOR_RIGHT, sequence, val ) );
-        list.add( new XRPropertyImpl( style, CSSName.BORDER_COLOR_BOTTOM, sequence, val ) );
-        list.add( new XRPropertyImpl( style, CSSName.BORDER_COLOR_LEFT, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.BORDER_COLOR_TOP, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.BORDER_COLOR_RIGHT, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.BORDER_COLOR_BOTTOM, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.BORDER_COLOR_LEFT, sequence, val ) );
         return list;
     }
 }

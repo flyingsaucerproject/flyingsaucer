@@ -32,10 +32,10 @@ import com.pdoubleya.xhtmlrenderer.css.impl.XRValueImpl;
 
 
 /**
- * A PropertyFactory for CSS 2 "margin" shorthand property, instantiating XRProperties.
+ * A PropertyFactory for CSS 2 "margin" shorthand property, instantiating
+ * XRProperties; Singleton, use {@link #instance()}.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public class MarginPropertyFactory extends AbstractPropertyFactory {
     /** Singleton instance. */
@@ -45,20 +45,6 @@ public class MarginPropertyFactory extends AbstractPropertyFactory {
     /** Constructor for the MarginPropertyFactory object */
     private MarginPropertyFactory() { }
 
-
-    /**
-     * Returns the singleton instance.
-     *
-     * @return   Returns
-     */
-    public static synchronized PropertyFactory instance() {
-        if ( _instance == null ) {
-            _instance = new MarginPropertyFactory();
-        }
-        return _instance;
-    }
-
-    // thread-safe
     /**
      * If <code>propName</code> describes a shorthand property, explodes it into
      * the specific properties it is a shorthand for, and returns those as an
@@ -70,7 +56,8 @@ public class MarginPropertyFactory extends AbstractPropertyFactory {
      * @param propName  The String property name for the property to explode.
      * @param sequence  Sequence in which the declaration was found in the
      *      containing stylesheet.
-     * @return          Iterator of one or more XRProperty instances representing the exploded values.
+     * @return          Iterator of one or more XRProperty instances
+     *      representing the exploded values.
      */
     public Iterator explodeProperties( CSSStyleDeclaration style, String propName, int sequence ) {
         List list = new ArrayList();
@@ -137,7 +124,8 @@ public class MarginPropertyFactory extends AbstractPropertyFactory {
 
 
     /**
-     * Explodes a single shorthand property declaration into components (one per side).
+     * Explodes a single shorthand property declaration into components (one per
+     * side).
      *
      * @param primitive  PARAM
      * @param priority   PARAM
@@ -153,11 +141,24 @@ public class MarginPropertyFactory extends AbstractPropertyFactory {
         List list = new ArrayList();
         XRValueImpl val = null;
         val = new XRValueImpl( primitive, priority );
-        list.add( new XRPropertyImpl( style, CSSName.MARGIN_TOP, sequence, val ) );
-        list.add( new XRPropertyImpl( style, CSSName.MARGIN_RIGHT, sequence, val ) );
-        list.add( new XRPropertyImpl( style, CSSName.MARGIN_BOTTOM, sequence, val ) );
-        list.add( new XRPropertyImpl( style, CSSName.MARGIN_LEFT, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.MARGIN_TOP, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.MARGIN_RIGHT, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.MARGIN_BOTTOM, sequence, val ) );
+        list.add( new XRPropertyImpl( CSSName.MARGIN_LEFT, sequence, val ) );
         return list;
     }
-}
+
+
+    /**
+     * Returns the singleton instance.
+     *
+     * @return   Returns
+     */
+    public static synchronized PropertyFactory instance() {
+        if ( _instance == null ) {
+            _instance = new MarginPropertyFactory();
+        }
+        return _instance;
+    }
+} // end class
 
