@@ -177,7 +177,11 @@ public class InlineLayout extends BoxLayout {
                     //continue;//have to discard it and recalculate, particularly if this was the first line
                 }
 
-                if (new_inline.getSubstring().equals("")) break;
+                if (!(currentContent instanceof InlineBlockContent)) {
+                    if (!(currentContent instanceof FloatedBlockContent)) {
+                        if (new_inline.getSubstring().equals("")) break;
+                    }
+                }
 
                 isFirstLetter = false;
                 new_inline.pushstyles = pendingPushStyles;
@@ -409,6 +413,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.55  2004/12/13 00:13:11  tobega
+* Oops, happened to remove images as well as empty text, fixed.
+*
 * Revision 1.54  2004/12/12 23:45:47  tobega
 * Discard inline boxes containing empty strings.
 *
