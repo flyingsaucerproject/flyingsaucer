@@ -286,9 +286,11 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             int tx = x;
             int ty = y;
             tx -= bx.x;
-            //is this needed? tx -= bx.totalLeftPadding(c.getCurrentStyle());
+            //is this needed?
+            tx -= bx.totalLeftPadding();
             ty -= bx.y;
-            //is this needed? ty -= bx.totalTopPadding(c.getCurrentStyle());
+            //is this needed? 
+            ty -= bx.totalTopPadding();
 
             // test the contents
             Box retbox = null;
@@ -334,9 +336,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             int tx = x;
             int ty = y;
             tx -= bx.x;
-            //is this needed? tx -= bx.totalLeftPadding(c.getCurrentStyle());
+            tx -= bx.totalLeftPadding();
             ty -= bx.y;
-            //is this needed? ty -= bx.totalTopPadding(c.getCurrentStyle());
+            ty -= bx.totalTopPadding();
 
             // test the contents
             Box retbox = null;
@@ -868,6 +870,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2005/01/31 22:54:14  pdoubleya
+ * Adjusted calcs for findBox and findElementBox.
+ *
  * Revision 1.36  2005/01/29 20:17:42  pdoubleya
  * Updated panels to support page up/down properly, and formatted/cleaned.
  *
