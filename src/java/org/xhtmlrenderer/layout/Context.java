@@ -140,6 +140,8 @@ public class Context {
     protected Map forms = new HashMap();
     /** Description of the Field */
     protected Map actions = new HashMap();
+    /** the current block formatting context */
+    protected BlockFormattingContext bfc;
 
 
     /** Description of the Field */
@@ -824,12 +826,29 @@ public class Context {
             }
         }
     }
+    
+    public BlockFormattingContext getBlockFormattingContext() {
+        return bfc;
+    }
+    public void setBlockFormattingContext(BlockFormattingContext bfc) {
+        this.bfc = bfc;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/02 20:44:55  joshy
+ * put in some prep work for float support
+ * removed some dead debugging code
+ * moved isBlock code to LayoutFactory
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:46:46  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

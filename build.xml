@@ -269,6 +269,9 @@
             <fileset dir="${dest.dir}">
                 <include name="resources/**"/>
             </fileset>
+            <fileset dir="${dest.java.dir}">
+                <include name="resources/**"/>
+            </fileset>
         </jar>
     </target>
     
@@ -605,6 +608,16 @@
 $Id$
 
 $Log$
+Revision 1.55  2004/11/02 20:44:54  joshy
+put in some prep work for float support
+removed some dead debugging code
+moved isBlock code to LayoutFactory
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.54  2004/10/31 21:30:43  tobega
 is now sane without building jars
 

@@ -1,3 +1,39 @@
+new ideas
+
+the float will go to the inner edge of it's containing block or the previous float
+a float must establish a new block formatting context
+top of box is at top of current line box
+if not enough room on the current line and there is previous float that it's next to, then shift down until there is room or no previous float.
+block boxes don't shrink. line boxes do.
+
+
+context.getBlockFormattingContext()
+context.getContainingBlock()
+context.setBlockFormattingContext()
+
+blockformattingcontext.addFloat(block,direction)
+blockformattingcontext.translate(x,y)
+bfc.isFloatPresent(current line block)
+bfc.getLeftFloatDistance(current line block)
+bfc.getRightFloatDistance(current line block)
+bfc.getFloatBottom(current line block)
+
+tests:
+1    span that does nothing
+2    span that becomes a left float in a single paragraph with 5 lines
+3    span that becomes a left float in a para w/ 1 lines
+4    span, float left, 2 para, float extends to second para
+5    span float left in big para with long word that must shove down
+6    span float left with next span w/ clear to shove down
+7    two span floats left, in one big para
+8    two spans float left and not enough room so wrap to next line, in one big para
+9    5 spans float left w/ different heights in one big para w/ float wrapping
+10    5 spans float left w/ long words and images and wrap to next para    
+11    span float right in a single para
+
+
+------------------
+
 plan for floating
 
 when looping through text to create inline

@@ -334,28 +334,7 @@ public class DefaultLayout implements Layout {
      * @return      The replaced value
      */
     public static boolean isReplaced( Node node ) {
-        // all images are replaced (because they have intrinsic sizes)
-        if ( node.getNodeName().equals( "img" ) ) {
-            return true;
-        }
-        if ( node.getNodeName().equals( "select" ) ) {
-            return true;
-        }
-        if ( node.getNodeName().equals( "textarea" ) ) {
-            return true;
-        }
-        // all input elements are replaced except for hidden forms
-        if ( node.getNodeName().equals( "input" ) ) {
-            Element el = (Element)node;
-            // skip hidden forms. they aren't replaced
-            if ( el.getAttribute( "type" ) != null
-                    && el.getAttribute( "type" ).equals( "hidden" ) ) {
-                return false;
-            }
-            return true;
-        }
-
-        return false;
+        return LayoutFactory.isReplaced(node);
     }
 
     /**
@@ -388,6 +367,16 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/02 20:44:55  joshy
+ * put in some prep work for float support
+ * removed some dead debugging code
+ * moved isBlock code to LayoutFactory
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/10/28 02:13:41  joshy
  * finished moving the painting code into the renderers
  *

@@ -270,6 +270,30 @@ public class LayoutFactory {
          return node.getNodeName().equals( "a" );
     }
 
+    public static boolean isReplaced( Node node ) {
+        // all images are replaced (because they have intrinsic sizes)
+        if ( node.getNodeName().equals( "img" ) ) {
+            return true;
+        }
+        if ( node.getNodeName().equals( "select" ) ) {
+            return true;
+        }
+        if ( node.getNodeName().equals( "textarea" ) ) {
+            return true;
+        }
+        // all input elements are replaced except for hidden forms
+        if ( node.getNodeName().equals( "input" ) ) {
+            Element el = (Element)node;
+            // skip hidden forms. they aren't replaced
+            if ( el.getAttribute( "type" ) != null
+                    && el.getAttribute( "type" ).equals( "hidden" ) ) {
+                return false;
+            }
+            return true;
+        }
+
+        return false;
+    }
 
 }
 
@@ -277,6 +301,16 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.10  2004/11/02 20:44:56  joshy
+* put in some prep work for float support
+* removed some dead debugging code
+* moved isBlock code to LayoutFactory
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.9  2004/10/28 13:46:32  joshy
 * removed dead code
 * moved code about specific elements to the layout factory (link and br)
