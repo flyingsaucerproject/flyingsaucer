@@ -114,8 +114,13 @@ public class BoxLayout extends DefaultLayout {
 
         // set up a float bfc
         FloatUtil.preChildrenLayout(c, block);
+        
         // set up an absolute bfc
         Absolute.preChildrenLayout(c, block);
+        
+        // save height incase fixed height
+        int original_height = block.height;
+
         // do children's layout
         boolean old_sub = c.isSubBlock();
         c.setSubBlock(false);
@@ -126,8 +131,15 @@ public class BoxLayout extends DefaultLayout {
         c.translate(-tx, -ty);
         c.setSubBlock(old_sub);
 
+        // restore height incase fixed height
+        if(block.auto_height == false) {
+            u.p("restoring original height");
+            block.height = original_height;
+        }
+
         // remove the float bfc
         FloatUtil.postChildrenLayout(c, block);
+        
         // remove the absolute bfc
         Absolute.postChildrenLayout(c, block);
         
@@ -194,6 +206,7 @@ public class BoxLayout extends DefaultLayout {
             c.getExtents().height = (int) new_height;
             block.height = (int) new_height;
             block.auto_height = false;
+            u.p("set height to: " + block.height);
         }
     }
 
@@ -208,6 +221,10 @@ public class BoxLayout extends DefaultLayout {
     public Box layoutChildren(Context c, Box box) {
         BlockBox block = (BlockBox) box;
         c.shrinkExtents(block);
+        
+        // save the original height in case it
+        // has a fixed height
+        int original_height = block.height;
 
         Element elem = (Element) box.getNode();
         // prepare for the list items
@@ -306,6 +323,7 @@ public class BoxLayout extends DefaultLayout {
         c.setListCounter(old_counter);
 
         c.unshrinkExtents(block);
+        
         return block;
     }
 
@@ -338,6 +356,15 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2004/12/05 05:00:39  joshy
+ * fixed bug that prevented explict box heights from working.
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.31  2004/12/05 00:48:57  tobega
  * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
  *

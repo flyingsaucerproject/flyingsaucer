@@ -96,8 +96,6 @@
 //codify the demo filebrowser
 //codify the photo gallery demo
 
-call mike wolf at: 603 624 7370
-
 AA the bullets
 fix explict height bug (in photo gallery)
 unit test space collapsing w/ images
