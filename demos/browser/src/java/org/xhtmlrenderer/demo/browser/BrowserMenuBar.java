@@ -37,6 +37,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import org.xhtmlrenderer.swing.DOMInspector;
+import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.util.u;
 import org.sektor37.minium.*;
 import java.util.Map;
@@ -140,6 +141,7 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add( new LoadAction( "Hamlet", "demo:demos/hamlet.xhtml"));
         demos.add( new LoadAction( "Alice", "demo:demos/alice/alice.xhtml"));
         demos.add( new LoadAction( "Financial Report", "demo:demos/report.xhtml"));
+        demos.add( new LoadAction( "Rollovers with :hover ", "demo:demos/hover.xhtml"));
         try {
             //demos.add(new LoadAction("File Listing (Win)","file:///c:"));
             //demos.add(new LoadAction("File Listing (Unix)","file:///"));
@@ -204,7 +206,11 @@ public class BrowserMenuBar extends JMenuBar {
         SelectionMouseListener ma = new SelectionMouseListener();
         root.panel.view.addMouseListener( ma );
         root.panel.view.addMouseMotionListener( ma );
-        logger.info( "added a mouse motion listener: " + ma );
+        logger.info( "added mouse selection listener: " + ma );
+        HoverListener hl = new HoverListener(root.panel.view);
+        root.panel.view.addMouseListener(hl);
+        root.panel.view.addMouseMotionListener(hl);
+        logger.info( "added hover listener:" + hl);
     }
 
     /**
@@ -440,6 +446,16 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/11/12 20:25:16  joshy
+ * added hover support to the browser
+ * created hover demo
+ * fixed bug with inline borders
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.13  2004/11/10 17:28:53  joshy
  * initial support for anti-aliased text w/ minium
  *

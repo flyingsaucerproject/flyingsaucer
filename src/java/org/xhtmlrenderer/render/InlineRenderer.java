@@ -204,7 +204,6 @@ public class InlineRenderer extends BoxRenderer {
             //c.getGraphics().drawString( text, ix, iy );
             c.getTextRenderer().drawString( c.getGraphics(), text, ix, iy );
         }
-        c.getGraphics().setColor( oldcolor );
         //draw any text decoration
         int stringWidth = (int)Math.ceil(c.getTextRenderer().
             getLogicalBounds(c.getGraphics(),
@@ -214,7 +213,6 @@ public class InlineRenderer extends BoxRenderer {
         if ( inline.underline ) {
             float down = lm.getUnderlineOffset();
             float thick = lm.getUnderlineThickness();
-            //g.fillRect( ix, iy + (int)down, g.getFontMetrics().stringWidth( text ), (int)thick );
             g.fillRect( ix, iy + (int)down, stringWidth, (int)thick );
         }
 
@@ -232,6 +230,7 @@ public class InlineRenderer extends BoxRenderer {
             g.fillRect( ix, iy + (int)down, stringWidth, (int)thick );
         }
 
+        c.getGraphics().setColor( oldcolor );
         if ( c.debugDrawFontMetrics() ) {
             g.setColor(Color.red);
             g.drawLine(ix,iy, ix+inline.width, iy);
@@ -249,14 +248,37 @@ public class InlineRenderer extends BoxRenderer {
         c.getGraphics().setFont( oldfont );
     }
     
-    public void paintPadding(Context c, LineBox line, InlineBox inline) {
+    public void paintPadding(Context c, LineBox line,  InlineBox inline) {
         // paint the background
         //u.p("painting the padding: " + inline);
         //int padding_xoff = inline.totalLeftPadding();
         int padding_xoff = 0;
         int padding_yoff = inline.totalTopPadding();
-        //u.p("padding yoff = " + padding_yoff);
-        c.translate(-padding_xoff, line.baseline-inline.y-inline.height - padding_yoff);
+        // u.p("========");
+        // u.p("padding yoff = " + padding_yoff);
+        // u.p("baseline = " + line.baseline);
+        // u.p("y = " + inline.y);
+        // u.p("height = " + inline.height);
+        
+        int ty = line.baseline
+             -inline.y 
+             - inline.height 
+            - padding_yoff
+            + line.y
+            ;
+        // u.p("ty = " + ty);
+        
+        LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), inline.getFont(), inline.getSubstring());
+        // u.p("lm descent = " + lm.getDescent());
+        ty += (int)lm.getDescent();
+        /*
+            padding yoff = 6
+            baseline = 21
+            y = 5
+            height = 26
+            ty = -16
+        */
+        c.translate(-padding_xoff, ty);
         //u.p("line = " + line);
         //u.p("inline = " + inline);
         int old_width = inline.width;
@@ -267,7 +289,7 @@ public class InlineRenderer extends BoxRenderer {
         paintBorder(c,inline);
         inline.width = old_width;
         inline.height = old_height;
-        c.translate(+padding_xoff, -(line.baseline-inline.y-inline.height) + padding_yoff);
+        c.translate(+padding_xoff, -ty);
     }
 }
 

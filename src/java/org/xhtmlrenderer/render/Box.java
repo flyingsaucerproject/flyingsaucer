@@ -430,6 +430,10 @@ public class Box {
      * @return   The element value
      */
     public boolean isElement() {
+        if(node == null) {
+            u.p("this = " + this);
+            return false;
+        }
         if ( node.getNodeType() == node.ELEMENT_NODE ) {
             return true;
         }
@@ -577,6 +581,16 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/11/12 20:25:18  joshy
+ * added hover support to the browser
+ * created hover demo
+ * fixed bug with inline borders
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.12  2004/11/12 17:05:25  joshy
  * support for fixed positioning
  * Issue number:

@@ -11,23 +11,23 @@ import java.awt.event.*;
 
 public class HoverListener extends MouseInputAdapter {
     private HTMLPanel panel;
-    private InlineBox prev;
+    private Box prev;
     public HoverListener(HTMLPanel panel) {
         this.panel = panel;
     }
     public void mouseMoved( MouseEvent evt ) {
-        InlineBox ib = findInlineBox(evt);
+        Box ib = findBox(evt);
         restyle(ib);
     }
     public void mouseEntered( MouseEvent evt ) {
-        InlineBox ib = findInlineBox(evt);
+        Box ib = findBox(evt);
         restyle(ib);
     }
     public void mouseExited( MouseEvent evt ) {
-        InlineBox ib = findInlineBox(evt);
+        Box ib = findBox(evt);
         restyle(ib);
     }
-    private void restyle(InlineBox ib) {
+    private void restyle(Box ib) {
         if(prev == ib) {
             return;
         }
@@ -72,14 +72,11 @@ public class HoverListener extends MouseInputAdapter {
         }
     }
     
-    private InlineBox findInlineBox(MouseEvent evt) {
+    private Box findBox(MouseEvent evt) {
         Box box = panel.findBox( evt.getX(), evt.getY() );
         if ( box == null ) return null;
-        if(box instanceof InlineBox) {
-            InlineBox ib = (InlineBox)box;
-            return ib;
-        }
-        return null;
+        if ( box instanceof LineBox) return null;
+        return box;
     }
 }
 

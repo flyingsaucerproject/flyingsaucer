@@ -354,13 +354,29 @@ public class InlineLayout extends BoxLayout {
         return new InlineRenderer();
     }
     
-    
+    public void restyle(Context ctx, Box box) {
+        super.restyle(ctx,box);
+        if(box instanceof InlineBox) {
+            FontUtil.setupTextDecoration(ctx, box.node, (InlineBox)box );
+        }
+    }
+
 
 }
 /*
 * $Id$
 *
 * $Log$
+* Revision 1.21  2004/11/12 20:25:18  joshy
+* added hover support to the browser
+* created hover demo
+* fixed bug with inline borders
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.20  2004/11/09 16:41:33  joshy
 * moved text alignment code
 * Issue number:

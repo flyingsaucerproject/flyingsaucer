@@ -147,6 +147,13 @@ public class FontUtil {
         } else {
             el = (Element)node.getParentNode();
         }
+        
+        // set to defaults
+        box.underline = false;
+        box.strikethrough = false;
+        box.overline = false;
+        
+        // override based on settings
         String text_decoration = c.css.getStringProperty( el, "text-decoration" );
         if ( text_decoration != null && text_decoration.equals( "underline" ) ) {
             box.underline = true;
@@ -319,6 +326,16 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/11/12 20:25:18  joshy
+ * added hover support to the browser
+ * created hover demo
+ * fixed bug with inline borders
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.12  2004/11/10 17:28:54  joshy
  * initial support for anti-aliased text w/ minium
  *
