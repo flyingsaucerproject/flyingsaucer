@@ -179,10 +179,6 @@ public class InlineBox extends Box {
     public String getText() {
         return this.text;
     }
-    
-    public boolean hasHoverStyle() {
-        return false;
-    }
 
 }
 
@@ -190,6 +186,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/10 14:34:20  joshy
+ * more hover support
+ *
  * Revision 1.7  2004/11/09 15:53:50  joshy
  * initial support for hover (currently disabled)
  * moved justification code into it's own class in a new subpackage for inline

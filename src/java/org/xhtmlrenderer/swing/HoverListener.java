@@ -3,6 +3,9 @@ package org.xhtmlrenderer.swing;
 import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.util.*;
 import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.css.bridge.*;
+import org.xhtmlrenderer.css.*;
+import org.xhtmlrenderer.css.style.*;
 import javax.swing.event.*;
 import java.awt.event.*;
 
@@ -41,7 +44,20 @@ public class HoverListener extends MouseInputAdapter {
         // return if no new hovered block;
         if(ib == null) { return; }
         
+        u.p("ib = " + ib);
+        CalculatedStyle style = panel.getContext().css.getStyle(ib.getRealElement());
+        u.p("calc style = " + style);
+        u.p("color = " + style.getColor());
+        
+        //panel.hovered_element = ib.getRealElement();
+        boolean b = panel.getContext().css.wasHoverRestyled(ib.getRealElement());
+        u.p("was styled = " + b);
+        
+        style = panel.getContext().css.getStyle(ib.getRealElement());
+        u.p("calc style = " + style);
+        u.p("color = " + style.getColor());
         // if the block has a hover style then restyle it
+        /*
         if(ib.hasHoverStyle()) {
             prev = ib;
             Layout lt = LayoutFactory.getLayout(ib.getRealElement());
@@ -50,6 +66,7 @@ public class HoverListener extends MouseInputAdapter {
                 panel.repaint();
             }
         }
+        */
     }
     private InlineBox findInlineBox(MouseEvent evt) {
         Box box = panel.findBox( evt.getX(), evt.getY() );

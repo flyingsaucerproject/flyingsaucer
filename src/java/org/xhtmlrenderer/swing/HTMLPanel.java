@@ -494,7 +494,17 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         c.setBaseURL( url );
         u.p("doc = " + doc);
         u.p("Url = " + url);
-        c.css.setDocumentContext(c, new XhtmlNamespaceHandler(), new StaticXhtmlAttributeResolver(), doc);
+        StaticXhtmlAttributeResolver ar = new StaticXhtmlAttributeResolver() {
+            public boolean isHover(org.w3c.dom.Element e) {
+                u.p("checking e");
+                if(e == hovered_element) {
+                    u.p("e = hovered");
+                    return true;
+                }
+                return false;
+            }
+        };
+        c.css.setDocumentContext(c, new XhtmlNamespaceHandler(), ar, doc);
         //c.css.setDocumentContext(c, null, null, doc);
 
         calcLayout();
@@ -679,7 +689,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         }
     }
     
-    
+    public Element hovered_element = null;
 }
 class LayoutThread implements Runnable {
     private boolean done;
@@ -762,6 +772,9 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2004/11/10 14:34:21  joshy
+ * more hover support
+ *
  * Revision 1.22  2004/11/10 04:46:12  tobega
  * no message
  *
