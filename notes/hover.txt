@@ -1,0 +1,20 @@
+hover
+
+hover is the first step to doing dynamic reflow.
+
+two parts
+tell the layout engine about the hover event
+support :hover in CSS. see who it applies to. make it more specific than link: ?
+redo layout to change the color? or just skip relayot?
+repaint the canvas.
+redo on moves.
+
+damaged rects
+    each box should have a dirty bit that tells if it's been changed. that way we know if we need to update the screen or not. if we are smart then we can create a damaged rect that indicates the part of the screen to update and only draw that part.
+    
+    damaged rects also gives us the ability to only repaint the part of the canvas that is visible. thus any subtree that is wholly off screen can be skipped. of course this means we need to be able to calculate what space any given subtree takes up.  for standard layouts all children fit inside thier parent box, but there are places where a child could be outside it's parent, like with abs or relative positioning.
+    
+    
+how do we support a pseudo element?
+    the matching occurs in the CSS module so it must know about where the cursor is and whether or not a current element is being hovered over. perhaps we should store the current cursor location in the context, then we need a function to return true if the given element is under the cursor (local coords). this means the context needs to be aware of coord shifts. perhaps the constant g.translate and c.origin calcuations could be moved into the context itself and we go in and out of coords with push and pops of offsets (implemented as points) to a coord stack.
+    of course css doesn't know about the size of the element either. i think we have to calcuate whether or not the current element is hovered outside and then make sure that boolean is available to the css routines for pseudo element matching.

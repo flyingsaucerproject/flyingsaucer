@@ -1,0 +1,113 @@
+petshop application? make it like a friendster type of service maybe?
+
+
+faq
+
+what is Flying Saucer?  
+        
+    
+    Flying Saucer is an XHTML renderer written in Java. It's 100% Java, not a native wrapper, and it only handles valid XHTML + CSS. It is intended for embedding webbased user interfaces into java applications (ex. the iTunes Music Store). It cannot be used as a general purpose webbrowser since it does not support the malformed legacy HTML found on the web, though recent work on compatibility libraries may be enough to do what you need. See JTidy integration
+    
+    
+Does Flying Saucer support legacy HTML?
+
+    Flying Saucer is not an HTML component. It is a rendering component for XHTML content, but it cannot support the malformed HTML 4.0 of general webpages, and it has no support for purely stylistic markup like FONT and CENTER. You have to use valid XHTML and CSS. For most embedded uses this is fine since the application author usually has control over the documents to be loaded. If you really need full IE/Mozilla/Safari like fidelity for general purpose webpages you should look into a webbrowser wrapper like JRex or JDIC's Browser component.
+
+Is flying saucer a webbrowser?
+    The core renderer just handles XHTML and CSS. It doesn't know anything about form submission, managing cookies, or tracking the browsing history. It just renders XHTML/CSS to the screen. However, Flying Saucer does include a Browser application which provides these features an more. You can use this as a good starting point for your own applications.
+    
+What kind of applications can i use flying saucer for?
+    
+    Flying Saucer can be used for any java application that requires some sort of styled text. This can be as simple as a chat program or as complicated as a complete ebook reader with dynamic stylesheets. Flying Saucer is very forward thinking and is designed to be a part of the next generation of applications that combine rich clients with web content.  Some examples of application types are:
+        chat programs
+        music stores
+        a gutenberg ebook reader
+        a distributed dictionary application
+        sherlock style map search and movie search
+        Konfabulator and Dashboard components
+        an RSS reader
+        a local friendster client
+        a splash screen
+        an about box
+        a helpfile viewer
+        a javadoc viewer
+        report generation and viewing
+        a stock ticker / weather reporter
+        
+what XHTML/CSS features does flying saucer currently support?
+    
+    With FS's 3rd release on August 31st it supports most of the common XHTML and CSS features. This includes
+        text and images (paragraphs, bold, italics, fonts, alignment, etc)
+        the box model (borders, backgrounds, padding, margins)
+        forms
+        tables
+        list items
+        most CSS properties and shorthands
+        some float and absolute positioning support
+        
+What XHTML/CSS features is Flying Saucer missing?
+
+    the main things that are missing as of R3 is the automatic table model (fixed tables are supported). Floats and positioning (absolute, relative, fixed) are there but buggy.  There is also no support for things outside the scope of XHTML/CSS such as Javascript, printing, Flash, SVG, or legacy HTML (though there is interest in all of those)
+        
+How do I make my program follow hyperlinks. 
+    
+    You'll need to create a mouse listener that detects link clicks and does the HTTP request. See Creating a HyperLink Listener in the getting started guide.
+    
+How do I get access to the Swing components that make up my form fields?
+    
+    You can use the form accessor methods on the context. See Form Field Access in the getting started guide.
+    
+    
+Getting Started with Flying Saucer
+
+the basics, showing a page
+    create an HTMLPanel
+    stuff a URL into it
+    add it to a frame
+    
+getting scroling
+    create HTMLPanel
+    stuff it in a scroll pane
+    show it
+    
+AboutBox
+    what is it
+    5 lines to launch it as a menu handler
+
+getting access to form components
+    If you want to access the Swing components for each form input field you can use the accessors on the Context object. HTMLPanel.getContext().getFormFieldComponents().  Take a look at org.joshy.html.app.browser.ResetAction.setupResets() for an example of pulling out each reset button and adding an ActionListener to them.
+    If you want to access the actual DOM elements that make up the form you'll have to paw through your document tree (start with HTMLPanel.getDocument()).
+
+doing form submission.
+    since network access is outside the scope of the core renderer, form submission is currently implemented as an actionlistener attached to the submit button in the browser application. Depending on your needs you can probably modify that code. Take a look at org.joshy.html.app.browser.SubmitAction.
+    
+receiving and following mouse clicks
+    to follow hyperlinks you will need a mouse listener which detects the mouse clicks, then determine if a link was clicked, and then load the document specified by that link's href. The basic code looks like this:
+    
+    see org.joshy.html.app.browser.HyperlinkListener for the complete code.
+
+receiving document events
+    if you want to know when the document is loaded you'll need to implement the DocumentListener interface, which currently only has one method: documentLoaded()
+    
+    
+CSS references
+
+    The Specs:
+        the W3C XHTML spec 
+        the W3C CSS 2.1 spec (exhaustive but precise)
+        The W3CSchools XHTML site
+            a more hands on definition of XHTML with examples and tutorials
+        
+    Learning about good CSS design
+        tutorial 1
+        tutorial 2
+        a list apart, years of articles about good CSS design
+        complex spiral design demos. cool tutorials
+        zengarden.  example site showing the power of CSS
+        Dashboard. Apple's upcoming technology to free XHTML/CSS from the webbrowser.
+
+    Books
+        eric myers on css
+        more eric myers on css
+        CSS pocket reference from oreilly (only 10$!)
+

@@ -1,0 +1,20 @@
+notes about forms
+
+to access the forms programmatically, (rather than through javascript or posting to a url) we need a way of retrieving the actual swing widgets.
+
+proposal
+    during the layout phase, when a form is encountered it sets a 'current_form_name' variable.  when a form input is encountered it adds a reference to the JComponent to a special hashtable stored in the context.  then the programmer can get access to the JComponent via a special method on the context.
+    
+problems
+    what happens when you reload or redo the layout. are new components allocated? what happens to the old components? how can we prevent this from happening? perhaps the components should be cached and then only created if they aren't already in the cache?
+    is the context itself recreated on a resize?
+    reload should recreate everything. resize should not recreate the components.
+    
+test implementation.
+    add get/setFormName() to context. 
+    modify the Layout.layoutChildren [?] to use setFormName()
+    add get/setFormInputComponent(JComponent)
+    modify the FormItemLayout to use setFormInputComponent()
+    create test app that loads a page w/ a form and adds an action to it
+    modify formitemlayout to pull the component from the cache if necessary.
+    
