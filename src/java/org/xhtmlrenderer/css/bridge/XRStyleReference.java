@@ -405,10 +405,10 @@ public class XRStyleReference implements StyleReference {
                 Reader reader = null;
                 try {
                     URL url = null;
-                    if ( !href.startsWith("http://") && !href.startsWith("file://"))
+                    if ( !href.startsWith("http://") && !href.startsWith("file://")) {
                         url = new URL(_context.getBaseURL(),href);
-
-                    url = new URL(href);
+                    } else url = new URL(href);
+                    
                     InputStream is = url.openStream();
                     BufferedInputStream bis = new BufferedInputStream(is);
                     reader = new InputStreamReader(bis);
@@ -422,7 +422,7 @@ public class XRStyleReference implements StyleReference {
                         reader = new BufferedReader(new FileReader(f));
                         System.out.println("Loading CSS " + href + " as a file.");
                     } else {
-                        System.err.println("Can't figure out how to load stylesheet '" + href + "'.");   
+                        System.err.println("Can't figure out how to load stylesheet '" + href + "' with base URL "+_context.getBaseURL());   
                     }
                 } 
                 if ( reader != null ) {
