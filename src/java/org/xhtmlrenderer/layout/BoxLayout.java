@@ -244,6 +244,7 @@ public class BoxLayout extends DefaultLayout {
         c.setListCounter(0);
 
         java.util.List contentList = block.content.getChildContent(c);
+        if(contentList == null) return block;
         if (contentList.size() == 0) return block;//we can do this if there is no content, right?
         layoutContent(c, box, contentList, block);
 
@@ -270,6 +271,7 @@ public class BoxLayout extends DefaultLayout {
                 block.firstLetterStyle = ((FirstLetterStyle) o).getStyle();
                 continue;
             }
+            Uu.p("o = " + o);
             Content currentContent = (Content) o;
 
             Box child_box = null;
@@ -354,6 +356,14 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.51  2004/12/16 17:10:41  joshy
+ * fixed box bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.50  2004/12/16 15:53:08  joshy
  * fixes for absolute layout
  *

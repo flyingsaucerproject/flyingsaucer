@@ -147,6 +147,7 @@ the extra space at the top of the splash page collapses
 tables are broken
 hovers are broken
 abs pos list items on game screen are missing
+fixed bg images are broken
 
 ============
 thoughts on an fs game
