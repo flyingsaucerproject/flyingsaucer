@@ -118,7 +118,7 @@ public class InlineLayout extends BoxLayout {
             if (o instanceof StylePush) {
                 c.pushStyle(((StylePush) o).getStyle());
                 if (pendingPushStyles == null) pendingPushStyles = new LinkedList();
-                pendingPushStyles.add(o);
+                pendingPushStyles.add(((StylePush) o).getStyle());
                 continue;
             }
             if (o instanceof StylePop) {
@@ -127,6 +127,8 @@ public class InlineLayout extends BoxLayout {
                 continue;
             }
             Content currentContent = (Content) o;
+            if (currentContent.getStyle() != null) c.pushStyle(currentContent.getStyle());
+
             // loop until no more text in this node
             while (true) {
 
@@ -216,6 +218,8 @@ public class InlineLayout extends BoxLayout {
 
                 prev_inline = new_inline;
             }
+
+            if (currentContent.getStyle() != null) c.popStyle();
 
         }
         
@@ -396,6 +400,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.50  2004/12/12 05:51:48  tobega
+* Now things run. But there is a lot to do before it looks as nice as it did. At least we now have :before and :after content and handling of breaks by css.
+*
 * Revision 1.49  2004/12/12 03:32:58  tobega
 * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
 *

@@ -19,152 +19,160 @@
  */
 package org.xhtmlrenderer.demo.aboutbox;
 
+import org.w3c.dom.Document;
+import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.util.Uu;
+
+import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URL;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.w3c.dom.Document;
-import org.xhtmlrenderer.simple.XHTMLPanel;
-import org.xhtmlrenderer.util.u;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class AboutBox extends JDialog implements Runnable {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     JScrollPane scroll;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     JButton close_button;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     boolean go = false;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     Thread thread;
 
     /**
      * Constructor for the AboutBox object
      *
-     * @param text  PARAM
-     * @param url   PARAM
+     * @param text PARAM
+     * @param url  PARAM
      */
-    public AboutBox( String text, String url ) {
+    public AboutBox(String text, String url) {
         super();
-        u.p( "starting the about box" );
-        setTitle( text );
+        Uu.p("starting the about box");
+        setTitle(text);
         XHTMLPanel panel = new XHTMLPanel();
         int w = 400;
         int h = 500;
-        panel.setPreferredSize( new Dimension( w, h ) );
+        panel.setPreferredSize(new Dimension(w, h));
 
-        scroll = new JScrollPane( panel );
-        scroll.setVerticalScrollBarPolicy( scroll.VERTICAL_SCROLLBAR_ALWAYS );
-        scroll.setHorizontalScrollBarPolicy( scroll.HORIZONTAL_SCROLLBAR_NEVER );
-        scroll.setPreferredSize( new Dimension( w, h ) );
+        scroll = new JScrollPane(panel);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setPreferredSize(new Dimension(w, h));
         //panel.setViewportComponent(scroll);
         //panel.setJScrollPane(scroll);
-        getContentPane().add( scroll, "Center" );
-        close_button = new JButton( "Close" );
-        getContentPane().add( close_button, "South" );
-        close_button.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed( ActionEvent evt ) {
-                            setVisible( false );
-                            go = false;
-                        }
-                    } );
+        getContentPane().add(scroll, "Center");
+        close_button = new JButton("Close");
+        getContentPane().add(close_button, "South");
+        close_button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                setVisible(false);
+                go = false;
+            }
+        });
 
         try {
-            loadPage( url, panel );
-        } catch ( Exception ex ) {
-            u.p( ex );
+            loadPage(url, panel);
+        } catch (Exception ex) {
+            Uu.p(ex);
         }
         pack();
-        setSize( w, h );
+        setSize(w, h);
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        setLocation( ( screen.width - w ) / 2, ( screen.height - h ) / 2 );
+        setLocation((screen.width - w) / 2, (screen.height - h) / 2);
     }
 
     /**
      * Description of the Method
      *
-     * @param url_text       PARAM
-     * @param panel          PARAM
-     * @exception Exception  Throws
+     * @param url_text PARAM
+     * @param panel    PARAM
+     * @throws Exception Throws
      */
-    public void loadPage( String url_text, XHTMLPanel panel )
-        throws Exception {
+    public void loadPage(String url_text, XHTMLPanel panel)
+            throws Exception {
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
-        fact.setValidating( true );
+        fact.setValidating(true);
         DocumentBuilder builder = fact.newDocumentBuilder();
         //builder.setErrorHandler(root.error_handler);
         Document doc = null;
 
         URL ref = null;
 
-        if ( url_text.startsWith( "demo:" ) ) {
-            u.p( "starts with demo" );
+        if (url_text.startsWith("demo:")) {
+            Uu.p("starts with demo");
             DemoMarker marker = new DemoMarker();
-            u.p( "url text = " + url_text );
-            String short_url = url_text.substring( 5 );
-            if ( !short_url.startsWith( "/" ) ) {
+            Uu.p("url text = " + url_text);
+            String short_url = url_text.substring(5);
+            if (!short_url.startsWith("/")) {
                 short_url = "/" + short_url;
             }
-            u.p( "short url = " + short_url );
-            ref = marker.getClass().getResource( short_url );
-            u.p( "ref = " + ref );
-            doc = builder.parse( marker.getClass().getResourceAsStream( short_url ) );
-        } else if ( url_text.startsWith( "http" ) ) {
-            doc = builder.parse( url_text );
-            ref = new File( url_text ).toURL();
+            Uu.p("short url = " + short_url);
+            ref = marker.getClass().getResource(short_url);
+            Uu.p("ref = " + ref);
+            doc = builder.parse(marker.getClass().getResourceAsStream(short_url));
+        } else if (url_text.startsWith("http")) {
+            doc = builder.parse(url_text);
+            ref = new File(url_text).toURL();
         } else {
-            doc = builder.parse( url_text );
-            ref = new File( url_text ).toURL();
+            doc = builder.parse(url_text);
+            ref = new File(url_text).toURL();
         }
-        u.p( "ref = " + ref );
-        u.p( "url_text = " + url_text );
-        panel.setDocument( doc, ref );
+        Uu.p("ref = " + ref);
+        Uu.p("url_text = " + url_text);
+        panel.setDocument(doc, ref);
     }
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     public void startScrolling() {
         go = true;
-        thread = new Thread( this );
+        thread = new Thread(this);
         thread.start();
     }
 
-    /** Main processing method for the AboutBox object */
+    /**
+     * Main processing method for the AboutBox object
+     */
     public void run() {
-        while ( go ) {
+        while (go) {
             try {
-                Thread.currentThread().sleep( 100 );
-            } catch ( Exception ex ) {
-                u.p( ex );
+                Thread.sleep(100);
+            } catch (Exception ex) {
+                Uu.p(ex);
             }
             JScrollBar sb = scroll.getVerticalScrollBar();
-            sb.setValue( sb.getValue() + 1 );
+            sb.setValue(sb.getValue() + 1);
         }
     }
 
     /**
      * Sets the visible attribute of the AboutBox object
      *
-     * @param vis  The new visible value
+     * @param vis The new visible value
      */
-    public void setVisible( boolean vis ) {
-        super.setVisible( vis );
-        if ( vis == true ) {
+    public void setVisible(boolean vis) {
+        super.setVisible(vis);
+        if (vis == true) {
             startScrolling();
         }
     }
@@ -172,23 +180,22 @@ public class AboutBox extends JDialog implements Runnable {
     /**
      * The main program for the AboutBox class
      *
-     * @param args  The command line arguments
+     * @param args The command line arguments
      */
-    public static void main( String[] args ) {
-        JFrame frame = new JFrame( "About Box Test" );
-        frame.setDefaultCloseOperation( frame.EXIT_ON_CLOSE );
-        JButton launch = new JButton( "Show About Box" );
-        frame.getContentPane().add( launch );
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("About Box Test");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JButton launch = new JButton("Show About Box");
+        frame.getContentPane().add(launch);
         frame.pack();
-        frame.setVisible( true );
+        frame.setVisible(true);
 
-        launch.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed( ActionEvent evt ) {
-                            AboutBox ab = new AboutBox( "About Flying Saucer", "demo:demos/index.xhtml" );
-                            ab.setVisible( true );
-                        }
-                    } );
+        launch.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                AboutBox ab = new AboutBox("About Flying Saucer", "demo:demos/index.xhtml");
+                ab.setVisible(true);
+            }
+        });
     }
 }
 
@@ -196,6 +203,9 @@ public class AboutBox extends JDialog implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/12 05:51:47  tobega
+ * Now things run. But there is a lot to do before it looks as nice as it did. At least we now have :before and :after content and handling of breaks by css.
+ *
  * Revision 1.4  2004/11/12 02:23:55  joshy
  * added new APIs for rendering context, xhtmlpanel, and graphics2drenderer.
  * initial support for font mapping additions

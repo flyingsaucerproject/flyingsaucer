@@ -54,14 +54,21 @@ public class InlineRenderer extends BoxRenderer {
         // account for the origin of the containing box
         c.translate(box.x, box.y);
         // for each line box
-        BlockBox block = (BlockBox) box;
-        if (block.firstLineStyle != null) c.pushStyle(block.firstLineStyle);
-        //TODO: should we do something with firstLetterStyle here?
+        BlockBox block = null;
+        if (box instanceof BlockBox) {//Why isn't it always a BlockBox?
+            block = (BlockBox) box;
+            if (block.firstLineStyle != null) c.pushStyle(block.firstLineStyle);
+            //TODO: should we do something with firstLetterStyle here?
+        }
 
         for (int i = 0; i < box.getChildCount(); i++) {
+            if (box.restyle) {
+                restyle(c, box);
+                box.restyle = false;
+            }
             // get the line box
             paintLine(c, (LineBox) box.getChild(i));
-            if (i == 0 && block.firstLineStyle != null) c.popStyle();
+            if (i == 0 && block != null && block.firstLineStyle != null) c.popStyle();
         }
 
         // translate back to parent coords
@@ -78,7 +85,12 @@ public class InlineRenderer extends BoxRenderer {
 
         // for each inline box
         for (int j = 0; j < line.getChildCount(); j++) {
-            paintInline(c, (InlineBox) line.getChild(j), lx, ly, line);
+            InlineBox box = (InlineBox) line.getChild(j);
+            if (box.restyle) {
+                restyle(c, box);
+                box.restyle = false;
+            }
+            paintInline(c, box, lx, ly, line);
         }
         if (c.debugDrawLineBoxes()) {
             GraphicsUtil.drawBox(c.getGraphics(), line, Color.blue);

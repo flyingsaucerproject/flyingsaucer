@@ -54,23 +54,23 @@ public class ContentUtil {
         CascadedStyle parentStyle = parent.getStyle();
         Element parentElement = parent.getElement();
 
-        if (mayHaveFirstLine(parentStyle)) {
-            //put in a marker if there is first-line styling
-            CascadedStyle firstLine = c.css.getPseudoElementStyle(parentElement, "first-line");
-            if (firstLine != null) {
-                firstLineStyle = new FirstLineStyle(firstLine);
-            }
-        }
-
-        if (mayHaveFirstLetter(parentStyle)) {
-            //put in a marker if there is first-letter styling
-            CascadedStyle firstLetter = c.css.getPseudoElementStyle(parentElement, "first-letter");
-            if (firstLetter != null) {
-                firstLetterStyle = new FirstLetterStyle(firstLetter);
-            }
-        }
-
         if (parentElement != null) {
+            if (mayHaveFirstLine(parentStyle)) {
+                //put in a marker if there is first-line styling
+                CascadedStyle firstLine = c.css.getPseudoElementStyle(parentElement, "first-line");
+                if (firstLine != null) {
+                    firstLineStyle = new FirstLineStyle(firstLine);
+                }
+            }
+
+            if (mayHaveFirstLetter(parentStyle)) {
+                //put in a marker if there is first-letter styling
+                CascadedStyle firstLetter = c.css.getPseudoElementStyle(parentElement, "first-letter");
+                if (firstLetter != null) {
+                    firstLetterStyle = new FirstLetterStyle(firstLetter);
+                }
+            }
+
             //TODO: before and after may be block!
             //<br/> handling should be done by :before content
             CascadedStyle before = c.css.getPseudoElementStyle(parentElement, "before");
@@ -307,7 +307,9 @@ public class ContentUtil {
         return block;
     }
 
+    //TODO: following methods should not need to be public
     public static boolean mayHaveFirstLetter(CascadedStyle style) {
+        if (style == null) return false;//for BodyContent
         if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
         String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
         if (display.equals("block")) return true;
@@ -319,6 +321,7 @@ public class ContentUtil {
     }
 
     public static boolean mayHaveFirstLine(CascadedStyle style) {
+        //if(style == null) return false;//for BodyContent
         if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
         String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
         if (display.equals("block")) return true;
@@ -332,6 +335,7 @@ public class ContentUtil {
     }
 
     public static boolean isBlockLevel(CascadedStyle style) {
+        if (style == null) return false;
         if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
         String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
         if (display.equals("block")) return true;
@@ -362,6 +366,7 @@ public class ContentUtil {
     }
 
     public static boolean isListItem(CascadedStyle style) {
+        if (style == null) return false;
         if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
         String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
         if (display.equals("list-item")) return true;
@@ -384,6 +389,7 @@ public class ContentUtil {
     }
 
     public static boolean isFloated(CascadedStyle style) {
+        if (style == null) return false;
         if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
         String float_val = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
         if (float_val == null) {
@@ -413,6 +419,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/12/12 05:51:48  tobega
+ * Now things run. But there is a lot to do before it looks as nice as it did. At least we now have :before and :after content and handling of breaks by css.
+ *
  * Revision 1.8  2004/12/12 03:32:56  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

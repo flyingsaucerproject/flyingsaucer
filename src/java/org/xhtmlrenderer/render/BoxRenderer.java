@@ -30,6 +30,11 @@ public class BoxRenderer extends DefaultRenderer {
         if (!(box instanceof AnonymousBlockBox))
             c.pushStyle(block.content.getStyle());
 
+        if (box.restyle) {
+            restyle(c, box);
+            box.restyle = false;
+        }
+
         // copy the bounds to we don't mess it up
         Rectangle oldBounds = new Rectangle(c.getExtents());
 

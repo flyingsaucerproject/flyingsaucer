@@ -22,6 +22,7 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.awt.Font;
@@ -29,6 +30,7 @@ import java.awt.FontMetrics;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
+import java.util.logging.Level;
 
 
 /**
@@ -208,7 +210,8 @@ public class InlineBox extends Box {
             }
             return master.substring(start_index, end_index);
         } else {
-            throw new NullPointerException("Fail fast, no master text set!");
+            XRLog.render(Level.WARNING, "No master text set!");
+            return "";
         }
 
     }
@@ -310,6 +313,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2004/12/12 05:51:49  tobega
+ * Now things run. But there is a lot to do before it looks as nice as it did. At least we now have :before and :after content and handling of breaks by css.
+ *
  * Revision 1.18  2004/12/12 03:33:00  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

@@ -96,6 +96,8 @@ public class LayoutUtil {
      * @return The position value
      */
     public static String getPosition(CascadedStyle style) {
+        if (style == null) return "";//TODO: this should not be necessary?
+        if (!style.hasProperty("position")) return "";
         String position = style.propertyByName("position").getValue().getCssText();
         if (position == null) {
             //TODO: check if we ever can get here. CSS-code should have taken care of this, surely?
@@ -112,6 +114,8 @@ public class LayoutUtil {
      * @return The floated value
      */
     public static boolean isFloated(CascadedStyle style) {
+        if (style == null) return false;//TODO: this should be unnecessary?
+        if (!style.hasProperty("float")) return false;
         String float_val = style.propertyByName("float").getValue().getCssText();
         if (float_val == null) {
             return false;

@@ -21,6 +21,7 @@
 
 package org.xhtmlrenderer.css.style;
 
+
 /**
  * Represents the outer box to be used for evaluating positioning of internal boxes
  *
@@ -41,20 +42,7 @@ public class EmptyStyle extends CalculatedStyle {
      * @return Returns
      */
     public boolean hasProperty(String propName) {
-        return false;
+        return true;
     }
 
-
-    /**
-     * Returns a XRProperty by name. Because we are a derived style, the
-     * property will already be resolved at this point--the method is
-     * synchronized in order to allow this resolution to happen safely. Thus, on
-     * this XRProperty you can call actualValue() to get something meaningful.
-     *
-     * @param propName PARAM
-     * @return Returns
-     */
-    public DerivedProperty propertyByName(String propName) {
-        return null;
-    }
 }

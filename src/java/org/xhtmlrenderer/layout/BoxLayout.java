@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Fixed;
@@ -90,7 +91,8 @@ public class BoxLayout extends DefaultLayout {
 
     public Box layout(Context c, Box block) {
         //OK, first set up the current style. All depends on this...
-        c.pushStyle(block.content.getStyle());
+        CascadedStyle pushed = block.content.getStyle();
+        if (pushed != null) c.pushStyle(pushed);
         // this is to keep track of when we are inside of a form
         //TODO: rethink: saveForm(c, (Element) block.getNode());
 
@@ -176,7 +178,7 @@ public class BoxLayout extends DefaultLayout {
         }
 
         //and now, back to previous style
-        c.popStyle();
+        if (pushed != null) c.popStyle();
 
         return block;
     }
@@ -347,6 +349,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2004/12/12 05:51:48  tobega
+ * Now things run. But there is a lot to do before it looks as nice as it did. At least we now have :before and :after content and handling of breaks by css.
+ *
  * Revision 1.43  2004/12/12 04:18:56  tobega
  * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
  *

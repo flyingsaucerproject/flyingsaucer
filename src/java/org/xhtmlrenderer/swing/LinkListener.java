@@ -80,6 +80,10 @@ public class LinkListener extends MouseInputAdapter {
             return;
         }
 
+        if (box.content == null) {
+            return;
+        }
+
         if (box.content.getElement() == null) {
             return;
         }

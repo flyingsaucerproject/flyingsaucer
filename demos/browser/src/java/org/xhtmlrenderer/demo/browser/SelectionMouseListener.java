@@ -92,8 +92,8 @@ public class SelectionMouseListener implements MouseListener, MouseMotionListene
                 return;
             }
             // if box is text node then start selection
-            if ((box.hasContent() &&
-                    box.getContent() instanceof TextContent)) {
+            if ((box.content != null &&
+                    box.content instanceof TextContent)) {
                 int x = panel.findBoxX(e.getX(), e.getY());
                 panel.getContext().setSelectionEnd(box, x);
                 panel.repaint();

@@ -25,6 +25,8 @@ import org.xhtmlrenderer.render.BodyRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Renderer;
 
+import java.util.List;
+
 /**
  * Description of the Class
  *
@@ -44,11 +46,14 @@ public class BodyLayout extends InlineLayout {
     public Box layout(Context c, Content content) {
         //set the current style
         c.initializeStyles(new EmptyStyle());
-
-        Box box = super.layout(c, content);
+        Box bodybox = createBox(c, content);
+        List children = content.getChildContent(c);
+        //TODO: fix this properly
+        Box childbox = (new InlineLayout()).layout(c, (Content) children.get(0));
+        bodybox.addChild(childbox);
         // Uu.p("done laying it all out");
         // Uu.p("\n=====================\n\n\n");
-        return box;
+        return bodybox;
     }
 
 
@@ -62,6 +67,9 @@ public class BodyLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/12/12 05:51:48  tobega
+ * Now things run. But there is a lot to do before it looks as nice as it did. At least we now have :before and :after content and handling of breaks by css.
+ *
  * Revision 1.12  2004/12/12 03:32:57  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *
