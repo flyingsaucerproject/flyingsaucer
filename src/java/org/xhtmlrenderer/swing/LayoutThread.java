@@ -22,8 +22,8 @@ public class LayoutThread implements Runnable {
     
     public synchronized void startLayout(Graphics g) {
         if(isLayoutDone()) {
-            u.p("really starting new thread");
-            u.p("threaded = " + threaded);
+            //u.p("really starting new thread");
+            //u.p("threaded = " + threaded);
             done = false;
             graphics = g;
             if(threaded) {
@@ -61,7 +61,6 @@ public class LayoutThread implements Runnable {
         g.setColor(Color.black);
         if(this.isLayoutDone()) {
             if(panel.body_box != null) {
-                //u.p("really painting: " + panel.body_box);
                 try {
                     panel.doRender();
                 } catch (Throwable thr) {

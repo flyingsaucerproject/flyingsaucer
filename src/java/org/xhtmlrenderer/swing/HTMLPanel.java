@@ -225,6 +225,14 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
         //long start_time = new java.util.Date().getTime();
         //u.p("layout = " + layout);
         body_box = layout.layout( getContext(), html );
+        //u.p("is a fixed child: " + body_box.isChildrenExceedBounds());
+        // if there is a fixed child then we need to set opaque to false
+        // so that the entire viewport will be repainted. this is slower
+        // but that's the hit you get from using fixed layout
+        if(body_box.isChildrenExceedBounds()) {
+            setOpaque(false);
+        }
+
         getRenderingContext().root_box = body_box;
         //u.p("after layout: " + body_box);
         //long end_time = new java.util.Date().getTime();
@@ -258,28 +266,11 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
     }
 
 
+    boolean inside = false;
     public void doRender() {
-        /*
-        //u.p("graphics clip = " + g.getClip());
-        if(enclosingScrollPane != null) {
-            //u.p("this = " + this);
-            //u.p("viewport = " + enclosingScrollPane.getViewportBorderBounds());
-            Graphics g = getRenderingContext().getContext().getGraphics();
-            Shape old_clip = g.getClip();
-            Rectangle new_clip = new Rectangle(enclosingScrollPane.getViewportBorderBounds());
-            new_clip = new Rectangle(-this.getX(),-this.getY(), 
-                (int)new_clip.getWidth(),(int)new_clip.getHeight());
-            g.setClip(new_clip);
-            layout.getRenderer().paint(
-                getRenderingContext().getContext(),
-                body_box );
-            g.setClip(old_clip);
-        } else {
-            */
-            layout.getRenderer().paint(
-                getRenderingContext().getContext(),
-                body_box );
-        //}
+        layout.getRenderer().paint(
+            getRenderingContext().getContext(),
+            body_box );
     }
     /* ========= The box finding routines. Should probably move out to another
      class */
@@ -667,6 +658,9 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
             enclosingScrollPane.addComponentListener( this );
         }
     }
+    public Rectangle getFixedRectangle() {
+        return enclosingScrollPane.getViewportBorderBounds();
+    }
     
     public Element hovered_element = null;
 }
@@ -675,6 +669,13 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2004/11/12 17:05:25  joshy
+ * support for fixed positioning
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.29  2004/11/12 02:54:38  joshy
  * removed more dead code
  * Issue number:

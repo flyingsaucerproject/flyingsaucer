@@ -87,6 +87,10 @@ public class DefaultRenderer implements Renderer {
      * @param layout  PARAM
      */
     public void paintChild( Context c, Box box, Renderer layout ) {
+        if(box.isChildrenExceedBounds()) {
+            layout.paint(c,box);
+            return;
+        }
         
         if(Configuration.isTrue("xr.renderer.viewport-repaint",false)) {
             if(c.getGraphics().getClip() != null) {
@@ -98,6 +102,7 @@ public class DefaultRenderer implements Renderer {
                 return;
             }
         }
+        
         
         layout.paint( c, box );
     }

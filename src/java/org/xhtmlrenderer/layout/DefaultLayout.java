@@ -164,6 +164,7 @@ public class DefaultLayout implements Layout {
             // because fixed elements are removed from normal flow
             if ( child_box.fixed ) {
                 // put fixed positioning in later
+                positionFixedChild(c,child_box);
             }
             
             if ( child_box.absolute ) {
@@ -234,6 +235,42 @@ public class DefaultLayout implements Layout {
         }
         // handle the top
         child_box.y = bfc.getY() + child_box.top;
+    }
+    
+    private void positionFixedChild(Context c, Box box) {
+        if ( isFixed( c, box ) ) {
+            Point origin = c.getOriginOffset();
+            box.x = 0;
+            box.y = 0;
+            box.x -= origin.x;
+            box.y -= origin.y;
+            //u.p("origin = " + origin);
+        }
+    }
+    
+    public void setupFixed( Context c, Box box ) {
+        if ( isFixed( c, box ) ) {
+            box.fixed = true;
+            box.setChildrenExceedBounds(true);
+            
+            if ( c.css.hasProperty( box.node, "top", false ) ) {
+                box.top = (int)c.css.getFloatProperty( box.node, "top", 0, false );
+                box.top_set = true;
+            }
+            if ( c.css.hasProperty( box.node, "right", false ) ) {
+                box.right = (int)c.css.getFloatProperty( box.node, "right", 0, false );
+                box.right_set = true;
+            }
+            if ( c.css.hasProperty( box.node, "bottom", false ) ) {
+                box.bottom = (int)c.css.getFloatProperty( box.node, "bottom", 0, false );
+                box.bottom_set = true;
+            }
+            if ( c.css.hasProperty( box.node, "left", false ) ) {
+                box.left = (int)c.css.getFloatProperty( box.node, "left", 0, false );
+                box.left_set = true;
+            }
+            
+        }
     }
 
 
@@ -469,6 +506,13 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/11/12 17:05:24  joshy
+ * support for fixed positioning
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.17  2004/11/12 02:42:19  joshy
  * context cleanup
  * Issue number:

@@ -34,6 +34,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.swing.*;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.FontResolverTest;
@@ -66,7 +67,7 @@ public class Context {
     public boolean debug_draw_font_metrics;
 
     /** Description of the Field */
-    public JComponent canvas;
+    public HTMLPanel canvas;
 
     //public Graphics canvas_graphics;
 
@@ -208,6 +209,10 @@ public class Context {
         }
         xoff += x;
         yoff += y;
+    }
+    
+    public Point getOriginOffset() {
+        return new Point(xoff,yoff);
     }
 
     /**
@@ -664,12 +669,28 @@ public class Context {
     public void setFirstLine(boolean first_line) {
         this.first_line = first_line;
     }
+    
+    
+    public Rectangle getFixedRectangle() {
+        //u.p("this = " + canvas);
+        Rectangle rect = canvas.getFixedRectangle();
+        rect.translate(canvas.getX(),canvas.getY());
+        return rect;
+    }
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/11/12 17:05:24  joshy
+ * support for fixed positioning
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.13  2004/11/12 02:54:38  joshy
  * removed more dead code
  * Issue number:

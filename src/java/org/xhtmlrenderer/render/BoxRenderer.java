@@ -82,40 +82,26 @@ public class BoxRenderer extends DefaultRenderer {
      * @param block  PARAM
      */
     public void paintFixed( Context c, Box block ) {
-        int xoff = 0;
-        int yoff = 0;
+        Rectangle rect = c.getFixedRectangle();
+        //u.p("rect = " + rect);
+        Graphics g = c.getGraphics();
+        int xoff = -rect.x;
+        int yoff = -rect.y;
 
-        xoff = c.canvas.getWidth();
-        yoff = c.canvas.getHeight();
-        if ( block.right_set ) {
-            xoff = xoff - block.width;
+        if(block.top_set) {
+            yoff += block.top;
         }
-
-        if ( block.bottom_set ) {
-            //joshy: this should really be block.height instead of bnds.y
-            // need to fix the setting of block.height
-            //joshy: need to do horizontal calcs too, inc scrolling
-            //joshy: need to make the body paint the whole canvas.
-
-            // start at the bottom of the viewport
-            yoff = c.viewport.getHeight();
-
-            // account for the width of the box
-            yoff = yoff - block.height;
-            // - bnds.y
-
-            // account for the current y offset of the box
-            yoff = yoff - c.getExtents().y;
-            //orig.y;
-
-            // account for the scrolling of the viewport
-            yoff = yoff - c.canvas.getLocation().y;
+        if(block.right_set) {
+            xoff = -rect.x + rect.width - block.width - block.right;
         }
-
+        if(block.left_set) {
+            xoff = block.left;
+        }
+        if(block.bottom_set) {
+            yoff = -rect.y + rect.height - block.height - block.bottom;
+        }
         c.translate( xoff, yoff );
-
         paintNormal( c, block );
-
         c.translate( -xoff, -yoff );
     }
 

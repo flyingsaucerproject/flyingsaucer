@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.value.BorderColor;
-
+import org.xhtmlrenderer.util.u;
 
 /**
  * Description of the Class
@@ -70,11 +70,13 @@ public class Box {
     // position stuff
     /** Description of the Field */
     public boolean relative = false;
-    /** Description of the Field */
     public boolean fixed = false;
     public boolean absolute = false;
+    public boolean floated = false;
+    
     /** Description of the Field */
     public int top = 0;
+    public boolean top_set = false;
     /** Description of the Field */
     public int right = 0;
     /** Description of the Field */
@@ -86,8 +88,7 @@ public class Box {
     /** Description of the Field */
     public int left = 0;
     public boolean left_set = false;
-    /** Description of the Field */
-    public boolean floated = false;
+    
 
     // margins, borders, and padding stuff
     /** Description of the Field */
@@ -211,7 +212,9 @@ public class Box {
     public void addChild( Box child ) {
         child.setParent( this );
         boxes.add( child );
-        //u.p("added child: " + child + " to " + this);
+        if(child.isChildrenExceedBounds()) {
+            setChildrenExceedBounds(true);
+        }
     }
 
     /**
@@ -452,6 +455,14 @@ public class Box {
         int h = this.getHeight() - totalVerticalPadding();
         return new Dimension( w, h );
     }
+    
+    private boolean children_exceeds;
+    public boolean isChildrenExceedBounds() {
+        return children_exceeds;
+    }
+    public void setChildrenExceedBounds(boolean children_exceeds) {
+        this.children_exceeds = children_exceeds;
+    }
 
 
     /**
@@ -566,6 +577,13 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/11/12 17:05:25  joshy
+ * support for fixed positioning
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.11  2004/11/09 02:04:23  joshy
  * support for text-align: justify
  *

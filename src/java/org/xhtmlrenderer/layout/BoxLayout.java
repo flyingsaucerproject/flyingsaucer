@@ -264,19 +264,6 @@ public class BoxLayout extends DefaultLayout {
      * @param c    PARAM
      * @param box  PARAM
      */
-    public void setupFixed( Context c, Box box ) {
-        if ( isFixed( c, box ) ) {
-            box.fixed = true;
-            if ( c.css.hasProperty( box.node, "right", false ) ) {
-                box.right = (int)c.css.getFloatProperty( box.node, "right", 0, false );
-                box.right_set = true;
-            }
-            if ( c.css.hasProperty( box.node, "bottom", false ) ) {
-                box.bottom = (int)c.css.getFloatProperty( box.node, "bottom", 0, false );
-                box.bottom_set = true;
-            }
-        }
-    }
     
     public void setupFloat( Context c, Box box ) {
         if( isFloated(box.node, c)) {
@@ -423,12 +410,12 @@ public class BoxLayout extends DefaultLayout {
                 if(hasIdent(c,box.getRealElement(),"right",false)) {
                     if(c.css.getStringProperty(box.node,"right",false).equals("auto")) {
                         box.right_set = false;
-                        u.p("right set to auto");
+                        //u.p("right set to auto");
                     }
                 } else {
                     box.right = (int)c.css.getFloatProperty( box.node, "right", 0, false );
                     box.right_set = true;
-                    u.p("right set to : " + box.right);
+                    //u.p("right set to : " + box.right);
                 }
             }
             if ( c.css.hasProperty( box.node, "left", false ) ) {
@@ -436,12 +423,12 @@ public class BoxLayout extends DefaultLayout {
                 if(hasIdent(c,box.getRealElement(),"left",false)) {
                     if(c.css.getStringProperty(box.node,"left",false).equals("auto")) {
                         box.left_set = false;
-                        u.p("left set to auto");
+                        //u.p("left set to auto");
                     }
                 } else {
                     box.left = (int)c.css.getFloatProperty( box.node, "left", 0, false );
                     box.left_set = true;
-                    u.p("left set to : " + box.left);
+                    //u.p("left set to : " + box.left);
                 }
             }
             /*
@@ -475,6 +462,13 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/11/12 17:05:24  joshy
+ * support for fixed positioning
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.16  2004/11/09 15:53:48  joshy
  * initial support for hover (currently disabled)
  * moved justification code into it's own class in a new subpackage for inline
