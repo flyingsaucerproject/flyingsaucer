@@ -32,6 +32,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.logging.Logger;
+import java.net.URL;
 
 /**
  * Description of the Class
@@ -58,7 +59,7 @@ public class BrowserActions {
      */
     public BrowserStartup root;
 
-    public Action increase_font, decrease_font;
+    public Action increase_font, decrease_font, reset_font;
 
     /**
      * The system logger for app.browser
@@ -78,8 +79,17 @@ public class BrowserActions {
      * Description of the Method
      */
     public void init() {
-        stop = new EmptyAction("Stop");
+        /* URL url = null;
+        try {
+            url = new URL("/icons/images/stop24.gif");
+        } catch ( Exception ex ) {
+            System.out.println("Exception on URL: " + ex.getMessage());
+        } */
+        //if ( url == null ) throw new RuntimeException("Can't find image");
+        //stop = new EmptyAction("Stop", new ImageIcon(url));
+        stop = new EmptyAction("Stop", null);
         setAccel(stop, KeyEvent.VK_ESCAPE);
+        stop.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_S));
 
         open_file =
                 new AbstractAction() {
@@ -127,7 +137,7 @@ public class BrowserActions {
         setMnemonic(paste, new Integer(KeyEvent.VK_P));
 
 
-        backward = new AbstractAction("Back") {
+        backward = new AbstractAction("Back",new ImageIcon("StepBack24.gif")) {
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.goBack();
@@ -144,7 +154,7 @@ public class BrowserActions {
                         InputEvent.ALT_MASK));
 
 
-        forward = new AbstractAction("Forward") {
+        forward = new AbstractAction("Forward",new ImageIcon("StepForward24.gif")) {
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.goForward();
@@ -160,7 +170,7 @@ public class BrowserActions {
                         InputEvent.ALT_MASK));
 
 
-        refresh = new EmptyAction("Refresh Page") {
+        refresh = new EmptyAction("Refresh", new ImageIcon("Refresh24.gif")) {
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.view.invalidate();
@@ -186,6 +196,7 @@ public class BrowserActions {
         reload.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_F5,
                         InputEvent.SHIFT_MASK));
+        reload.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_R));
 
         load = new AbstractAction("Load") {
             public void actionPerformed(ActionEvent evt) {
@@ -200,10 +211,18 @@ public class BrowserActions {
         };
 
         generate_diff = new GenerateDiffAction(root);
-        increase_font = new FontSizeAction(root, 1.2f);
-        decrease_font = new FontSizeAction(root, 1f / 1.2f);
-        setName(increase_font, "A+");
-        setName(decrease_font, "a-");
+        increase_font = new FontSizeAction(root, FontSizeAction.INCREMENT);
+        increase_font.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
+        increase_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_I));
+        reset_font = new FontSizeAction(root, FontSizeAction.RESET);
+        reset_font.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.CTRL_MASK));
+        reset_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_N));
+        decrease_font = new FontSizeAction(root, FontSizeAction.DECREMENT);
+        decrease_font.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
+        decrease_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_D));
+        setName(increase_font, "Increase");
+        setName(reset_font, "Normal");
+        setName(decrease_font, "Decrease");
     }
 
 
@@ -244,6 +263,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/03/28 19:06:16  pdoubleya
+ * Added font-size actions.
+ *
  * Revision 1.12  2004/12/12 03:33:06  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *
