@@ -430,10 +430,10 @@ public final class CSSName {
         INITIAL_VALUE_MAP.put(BORDER_STYLE_BOTTOM, "none");
         INITIAL_VALUE_MAP.put(BORDER_STYLE_LEFT,   "none");
         
-        INITIAL_VALUE_MAP.put(BORDER_WIDTH_TOP,    "thin");
-        INITIAL_VALUE_MAP.put(BORDER_WIDTH_RIGHT,  "thin");
-        INITIAL_VALUE_MAP.put(BORDER_WIDTH_BOTTOM, "thin");
-        INITIAL_VALUE_MAP.put(BORDER_WIDTH_LEFT,   "thin");
+        INITIAL_VALUE_MAP.put(BORDER_WIDTH_TOP,    "medium");
+        INITIAL_VALUE_MAP.put(BORDER_WIDTH_RIGHT,  "medium");
+        INITIAL_VALUE_MAP.put(BORDER_WIDTH_BOTTOM, "medium");
+        INITIAL_VALUE_MAP.put(BORDER_WIDTH_LEFT,   "medium");
 
         INITIAL_VALUE_MAP.put(BOTTOM,    "auto");
 
