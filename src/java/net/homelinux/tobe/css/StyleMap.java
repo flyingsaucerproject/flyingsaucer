@@ -78,7 +78,7 @@ public class StyleMap {
             if(!sel.matchesDynamic(e, _attRes)) return;
             Selector chain = sel.getChainedSelector();
             if(chain == null) {
-                child.propertyDeclarations.addAll(sel.getRuleset().getPropertyDeclarations());
+                child.mappedSelectors.add(sel);
             } else if(chain.getAxis() == Selector.CHILD_AXIS) {
                 child.childAxis.add(chain);
             } else if(chain.getAxis() == Selector.DESCENDANT_AXIS) {
@@ -89,13 +89,12 @@ public class StyleMap {
                 immediateSiblingAxis.add(chain);
             }
         }
-
-
+        
         java.util.List descendantAxis = new java.util.LinkedList();
         java.util.List childAxis = new java.util.LinkedList();
         java.util.List immediateSiblingAxis;
 
-        java.util.List propertyDeclarations = new java.util.LinkedList();
+        java.util.List mappedSelectors = new java.util.LinkedList();
     }
     
     private StyleMap() {
@@ -107,11 +106,17 @@ public class StyleMap {
         return _doc;
     }
     
-    /** TODO: this should probably return a StyleSet */
+    /** TODO: this should probably return a StyleSet or PropertyDeclarations with Cascade info*/
     public java.util.List getMappedProperties(org.w3c.dom.Element e) {
         Mapper m = (Mapper) map.get(e);
-        return m.propertyDeclarations;
+        java.util.List mappedProperties = new java.util.LinkedList();
+        for(java.util.Iterator i = m.mappedSelectors.iterator(); i.hasNext();) {
+            Selector sel = (Selector) i.next();
+            mappedProperties.add(sel.getRuleset().getStyleDeclaration());
+        }
+        return mappedProperties;
     }
+    
     
     /** create a StyleMap from a DOM document. If ClassAndIDResolver is null, then identity conditions cannot match */
     public static StyleMap createMap(org.w3c.dom.Document doc, java.util.List rulesets, AttributeResolver attRes) {

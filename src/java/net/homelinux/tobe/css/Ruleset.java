@@ -23,16 +23,17 @@ public class Ruleset {
     /** TODO: returns the list of property declarations of this ruleset
      *  This method's signature may change
      */
-    public java.util.List getPropertyDeclarations() {
+    /*public java.util.List getPropertyDeclarations() {
         return declarations;
+    }*/
+    public Object getStyleDeclaration() {
+        return styleDeclaration;
     }
     
-    /** TODO: add property declarations to this ruleset
-     *  This method's signature may change
-     *  Perhaps it might as well be Object, the mapping algorithm does not care
-     */
-    public void addPropertyDeclaration(Object declaration) {
-        declarations.add(declaration);
+    /** Leave parameter as Object, tests of logic rely on it. Refactor!? */
+    public void setStyleDeclaration(Object declaration) {
+        //declarations.add(declaration);
+        styleDeclaration = declaration;
     }
     
     public Selector createSelector(int axis, String elementName) {
@@ -46,6 +47,6 @@ public class Ruleset {
     }
     
     private java.util.List selectors = new java.util.ArrayList();
-    private java.util.List declarations = new java.util.ArrayList();
+    private Object styleDeclaration;
     
 }

@@ -49,18 +49,18 @@ public class StyleMapTest extends TestCase {
         
         Ruleset r = new Ruleset();
         Selector s = r.createSelector(Selector.DESCENDANT_AXIS, "root");
-        r.addPropertyDeclaration("rootProperty");
+        r.setStyleDeclaration("rootProperty");
         l.add(r);
         
         r = new Ruleset();
         s = r.createSelector(Selector.DESCENDANT_AXIS, "first");
-        r.addPropertyDeclaration("firstProperty");
+        r.setStyleDeclaration("firstProperty");
         l.add(r);
         
         r = new Ruleset();
         s = r.createSelector(Selector.DESCENDANT_AXIS, "first");
         s.appendChainedSelector(Selector.DESCENDANT_AXIS, "first");
-        r.addPropertyDeclaration("firstfirstProperty");
+        r.setStyleDeclaration("firstfirstProperty");
         l.add(r);
         
         StyleMap myStyles = StyleMap.createMap(doc, l, null);
@@ -107,19 +107,19 @@ public class StyleMapTest extends TestCase {
         Ruleset r = new Ruleset();
         Selector s = r.createSelector(Selector.DESCENDANT_AXIS, "root");
         s.appendChainedSelector(Selector.CHILD_AXIS, "first");
-        r.addPropertyDeclaration("childProperty");
+        r.setStyleDeclaration("childProperty");
         l.add(r);
         
         r = new Ruleset();
         s = r.createSelector(Selector.DESCENDANT_AXIS, "first");
         s.appendChainedSelector(Selector.CHILD_AXIS, "first");
-        r.addPropertyDeclaration("firstChildProperty");
+        r.setStyleDeclaration("firstChildProperty");
         l.add(r);
         
         r = new Ruleset();
         s = r.createSelector(Selector.DESCENDANT_AXIS, "root");
         s.appendChainedSelector(Selector.CHILD_AXIS, "second");
-        r.addPropertyDeclaration("noChildProperty");
+        r.setStyleDeclaration("noChildProperty");
         l.add(r);
         
         StyleMap myStyles = StyleMap.createMap(doc, l, null);
@@ -160,13 +160,13 @@ public class StyleMapTest extends TestCase {
         Ruleset r = new Ruleset();
         Selector s = r.createSelector(Selector.DESCENDANT_AXIS, "root");
         s.appendChainedSelector(Selector.IMMEDIATE_SIBLING_AXIS, "first");
-        r.addPropertyDeclaration("noProperty");
+        r.setStyleDeclaration("noProperty");
         l.add(r);
         
         r = new Ruleset();
         s = r.createSelector(Selector.DESCENDANT_AXIS, "first");
         s.appendChainedSelector(Selector.IMMEDIATE_SIBLING_AXIS, "second");
-        r.addPropertyDeclaration("siblingProperty");
+        r.setStyleDeclaration("siblingProperty");
         l.add(r);
         
         StyleMap myStyles = StyleMap.createMap(doc, l, null);
@@ -216,7 +216,7 @@ public class StyleMapTest extends TestCase {
         s = s.appendChainedSelector(Selector.DESCENDANT_AXIS, "first");
         s.setPseudoClass(AttributeResolver.HOVER_PSEUDOCLASS);
         s = s.appendChainedSelector(Selector.DESCENDANT_AXIS, "first");
-        r.addPropertyDeclaration("firstfirstProperty");
+        r.setStyleDeclaration("firstfirstProperty");
         l.add(r);
         
         StyleMap myStyles = StyleMap.createMap(doc, l, no);

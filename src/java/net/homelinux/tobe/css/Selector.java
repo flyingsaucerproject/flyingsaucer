@@ -26,6 +26,17 @@ public class Selector {
         _parent = parent;
         _axis = axis;
         _name = elementName;
+        _specificityB = 0;
+        _specificityC = 0;
+        _specificityD = 0;
+        if(_name != null) _specificityD++;
+    }
+    
+    private Selector(int specificityB, int specificityC, int specificityD, Ruleset parent, int axis, String elementName) {
+        this(parent,axis,elementName);
+        _specificityB += specificityB;
+        _specificityC += specificityC;
+        _specificityD += specificityD;
     }
 
     /** Check if the given Element matches this selector.
@@ -65,54 +76,64 @@ public class Selector {
 
     /** append a selector to this chain, specifying which axis it should be evaluated on */
     public Selector appendChainedSelector(int axis, String elementName) {
-        if(chainedSelector == null) return (chainedSelector = new Selector(_parent, axis, elementName));
+        if(chainedSelector == null) return (chainedSelector = new Selector(_specificityB, _specificityC, _specificityD, _parent, axis, elementName));
         else return chainedSelector.appendChainedSelector(axis, elementName);
     }
 
     /** the CSS condition that element has pseudo-class :first-child */
     public void addFirstChildCondition() {
+        _specificityC++;
         addCondition(Condition.createFirstChildCondition());
     }
 
     /** the CSS condition :lang(x) */
     public void addLangCondition(String lang) {
+        _specificityC++;
         addCondition(Condition.createLangCondition(lang));
     }
 
     /** the CSS condition #ID */
     public void addIDCondition(String id) {
+        _specificityB++;
         addCondition(Condition.createIDCondition(id));
     }
 
     /** the CSS condition .class */
     public void addClassCondition(String className) {
+        _specificityC++;
         addCondition(Condition.createClassCondition(className));
     }
 
     /** the CSS condition [attribute] */
     public void addAttributeExistsCondition(String name) {
+        _specificityC++;
         addCondition(Condition.createAttributeExistsCondition(name));
     }
 
    /** the CSS condition [attribute=value] */
     public void addAttributeEqualsCondition(String name, String value) {
+        _specificityC++;
         addCondition(Condition.createAttributeEqualsCondition(name, value));
     }
     
     /** the CSS condition [attribute~=value] */
     public void addAttributeMatchesListCondition(String name, String value) {
+        _specificityC++;
         addCondition(Condition.createAttributeMatchesListCondition(name, value));
     }
     
     /** the CSS condition [attribute|=value] */
     public void addAttributeMatchesFirstPartCondition(String name, String value) {
+        _specificityC++;
         addCondition(Condition.createAttributeMatchesFirstPartCondition(name, value));
     }
     
     /** set which pseudoclasses must apply for this selector
      *  @param pc the values from AttributeResolver should be used. Once set they cannot be unset.
+     *  Note that the pseudo-classes should be set one at a time, otherwise specificity of declaration becomes wrong.
      */
     public void setPseudoClass(int pc) {
+        if(!isPseudoClass(pc)) _specificityC++;
         _pc |= pc;
     }
     
@@ -154,6 +175,11 @@ public class Selector {
     private int _axis;
     private String _name;
     private int _pc = 0;
+    
+    //specificity - correct values are gotten from the last Selector in the chain
+    private int _specificityB;
+    private int _specificityC;
+    private int _specificityD;
     
     private java.util.List conditions;
 
