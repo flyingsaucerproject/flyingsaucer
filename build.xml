@@ -105,6 +105,10 @@
                 <include name="splash/**"/>
                 <include name="about/**"/>
             </zipfileset>
+            <zipfileset dir="demos/splash" prefix="demos/splash">
+                <include name="*.html"/>
+                <include name="images/**"/>
+            </zipfileset>
         </jar>
     </target>
 
