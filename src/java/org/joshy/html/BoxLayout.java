@@ -34,6 +34,8 @@ import org.joshy.html.painter.BackgroundPainter;
 
 import org.joshy.html.painter.BorderPainter;
 
+import org.joshy.html.painter.ListItemPainter;
+
 import org.joshy.html.util.GraphicsUtil;
 
 import org.joshy.html.util.ImageUtil;
@@ -655,25 +657,7 @@ public class BoxLayout extends Layout {
 
 
     public void paintListItem(Context c, Box box) {
-
-        String type = c.css.getStringProperty(box.node,"list-style-type");
-
-        if(type.equals("disc")) {
-
-            int rad = 8;  // change this to use the glyph height
-
-            int baseline = box.height; // change this to use the real baseline
-
-            c.getGraphics().fillOval(box.x-rad-2,box.y+baseline/2 - rad/2 + 2,rad,rad);
-
-        }
-
-        if(type.equals("decimal")) {
-
-            c.getGraphics().drawString(""+box.list_count,box.x-15, box.y+box.height/2+8);
-
-        }
-
+        ListItemPainter.paint(c,box);
     }
 
     
