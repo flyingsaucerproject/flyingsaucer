@@ -278,6 +278,7 @@ public class CalculatedStyle {
      * this element, properly cascaded.</p>
      */
     private void derive() {
+        if(_matched == null) return;//nothing to derive
         Iterator mProps = _matched.getMatchedPropertyDeclarations();
         while ( mProps.hasNext() ) {
             PropertyDeclaration pd = (PropertyDeclaration)mProps.next();
