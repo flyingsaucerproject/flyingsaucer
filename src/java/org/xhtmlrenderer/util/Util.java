@@ -111,16 +111,16 @@ public class Util {
             if(pw == null) {
                 System.out.println(s);
             } else {
-                System.out.println(s);
-                //pw.println(s);
+                //System.out.println(s);
+                pw.println(s);
                 //pw.println("<br>");
             }
         } else {
             if(pw == null) {
                 System.out.print(s);
             } else {
-                System.out.print(s);
-                //pw.print(s);
+                //System.out.print(s);
+                pw.print(s);
                 //pw.print("<br>");
             }
         }
