@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="https://xhtmlrenderer.dev.java.net/files/documents/1821/5842/fs.jnlp">
+<jnlp codebase="https://xhtmlrenderer.dev.java.net/dist/">
     <information>
         <title>Browser Demo</title>
         <vendor>Flying Saucer</vendor>
@@ -13,9 +13,9 @@
     </information>
     <resources>
         <j2se version="1.4+"/>
-        <jar href="https://xhtmlrenderer.dev.java.net/files/documents/1821/5843/FlyingSaucer.jar"/>
-        <jar href="https://xhtmlrenderer.dev.java.net/files/documents/1821/5844/joshy-common.jar"/>
-        <jar href="https://xhtmlrenderer.dev.java.net/files/documents/1821/5845/ss_css2.jar"/>
+        <jar href="FlyingSaucer.jar"/>
+        <jar href="joshy-common.jar"/>
+        <jar href="ss_css2.jar"/>
     </resources>
     <application-desc main-class="org.joshy.html.app.browser.BrowserStartup"/>
     <security>
