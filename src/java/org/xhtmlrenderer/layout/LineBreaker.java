@@ -212,7 +212,7 @@ public class LineBreaker {
         box.break_after = true;
         box.x = 0;
         box.y = 0;
-        box.is_break = true;
+        box.setBreak(true);
         return box;
     }
 
@@ -526,6 +526,13 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2004/11/10 14:54:43  joshy
+ * code cleanup on aisle 6
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.18  2004/11/10 14:31:15  joshy
  * removed commented out lines
  *

@@ -91,7 +91,13 @@ public class InlineBox extends Box {
     public boolean bottom_align = false;
 
     /** Description of the Field */
-    public boolean is_break = false;
+    private boolean is_break = false;
+    public void setBreak(boolean is_break) {
+        this.is_break = is_break;
+    }
+    public boolean isBreak() {
+        return this.is_break;
+    }
 
 
     // text stuff
@@ -186,6 +192,13 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/10 14:54:43  joshy
+ * code cleanup on aisle 6
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/11/10 14:34:20  joshy
  * more hover support
  *
