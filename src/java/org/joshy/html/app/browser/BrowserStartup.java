@@ -1,5 +1,6 @@
 package org.joshy.html.app.browser;
 
+import java.io.File;
 import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -9,11 +10,15 @@ import org.joshy.html.swing.*;
 import org.joshy.u;
 import org.joshy.x;
 import java.util.logging.*;
+import org.xml.sax.*;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
 
 public class BrowserStartup {
     public static Logger logger = Logger.getLogger("app.browser");
     BrowserPanel panel;
     BrowserMenuBar menu;
+    JFrame frame;
         
     public BrowserStartup() {
         logger.info("starting up");
@@ -33,9 +38,10 @@ public class BrowserStartup {
     }
     
     public static void main(String[] args) {
-        BrowserStartup bs = new BrowserStartup();
-        bs.init();
         JFrame frame = new JFrame();
+        BrowserStartup bs = new BrowserStartup();
+        bs.frame = frame;
+        bs.init();
         frame.setJMenuBar(bs.menu);
         frame.getContentPane().add(bs.panel);
         frame.pack();
@@ -49,6 +55,8 @@ class BrowserMenuBar extends JMenuBar {
     JMenu file;
     JMenuItem quit;
     JMenuItem open_file;
+    JMenu view;
+    JMenuItem view_source;
     JMenu debug;
     BrowserStartup root;
     
@@ -61,6 +69,8 @@ class BrowserMenuBar extends JMenuBar {
         open_file = new JMenuItem("Open File...");
         quit = new JMenuItem("Quit");
         debug = new JMenu("Debug");
+        view = new JMenu("View");
+        view_source = new JMenuItem("Page Source");
     }
     
     public void createLayout() {
@@ -68,6 +78,8 @@ class BrowserMenuBar extends JMenuBar {
         file.add(quit);
         add(file);
         
+        view.add(view_source);
+        add(view);
         
         debug.add(new AbstractAction("draw boxes") {
             public void actionPerformed(ActionEvent evt) {
@@ -105,6 +117,18 @@ class BrowserMenuBar extends JMenuBar {
     }
     
     public void createActions() {
+        open_file.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    FileDialog fd = new FileDialog(root.frame,"Open a local file",FileDialog.LOAD);
+                    fd.show();
+                    String file = fd.getDirectory() + fd.getFile();
+                    root.panel.loadPage(file);
+                } catch (Exception ex) {
+                    logger.info("error:" + ex);
+                }
+            }
+        });
         quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 System.exit(0);
@@ -112,7 +136,8 @@ class BrowserMenuBar extends JMenuBar {
         });
     }
     
-    
+    public static Logger logger = Logger.getLogger("app.browser");
+
 
 }
 
@@ -204,11 +229,36 @@ class BrowserPanel extends JPanel {
     public void loadPage(String url_text) throws Exception {
         logger.info("Loading Page: " + url_text);
         current_url = url_text;
+        
+        DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = fact.newDocumentBuilder();
+        builder.setErrorHandler(new ErrorHandler() {
+            public void warning(SAXParseException ex) throws SAXException {
+                logger.info("warning: " + ex);
+            }
+            public void error(SAXParseException ex) throws SAXException {
+                logger.info("error: " + ex);
+                logger.info("error on line: " + ex.getLineNumber() + " column: " + ex.getColumnNumber());
+                setStatus("Error Loading Document");
+            }
+            public void fatalError(SAXParseException ex) throws SAXException {
+                logger.info("fatal error: " + ex);
+                logger.info("error on line: " + ex.getLineNumber() + " column: " + ex.getColumnNumber());
+                setStatus("Error Loading Document");
+            }
+        });
+        
+        Document doc = null;
+        
+        
+        URL toLoad = null;
         if(url_text.startsWith("http")) {
-            view.setDocument(new URL(url.getText()));
+            doc = builder.parse(url_text);
         } else {
-            view.setDocument(url_text);
+            doc = builder.parse(url_text);
         }
+        
+        view.setDocument(doc);
         setStatus("Successfully loaded: " + url_text);
     }
     
@@ -244,6 +294,9 @@ class BrowserPanel extends JPanel {
     }
     
 }
+
+
+
 
 
 
