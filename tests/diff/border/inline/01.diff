@@ -1,0 +1,17 @@
+box:-element:html-box(0,0)-(200x96)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#ffffffff)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-none-scroll-0-0)-value:null
+ box:-element:head-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-repeat-scroll-0-0)-value:null
+ box:-element:body-box(0,0)-(200x96)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#ffffffff)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+  box:-element:p-box(0,0)-(194x44)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:p-box(0,0)-(169x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(42x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:normal 
+    inline:-element:#text-box(42,-3)-(68x16)-pos(0,0,0,0)-colors(for#ff000000-bor#ffff0000-bak#0)-style(solid)-insets(mar(0,0,0,0)-bor(1,1,1,1)-pad(0,0,0,0))-backimg(null-repeat-scroll-0-0)-value:bold, border
+    inline:-element:#text-box(110,-3)-(59x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:normal no border
+   line:-element:p-box(0,19)-(36x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(36x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:normal no border
+  box:-element:p-box(0,44)-(194x46)-pos(0,0,0,0)-colors(for[null]-bor#ff0000ff-bak#0)-style(solid)-insets(mar(0,0,0,0)-bor(1,1,1,1)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:p-box(0,0)-(180x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(42x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:normal 
+    inline:-element:#text-box(42,-3)-(68x16)-pos(0,0,0,0)-colors(for#ff000000-bor#ffff0000-bak#0)-style(solid)-insets(mar(0,0,0,0)-bor(1,1,1,1)-pad(0,0,0,0))-backimg(null-repeat-scroll-0-0)-value:bold, border
+    inline:-element:#text-box(110,-3)-(70x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:normal, only paragraph border
+   line:-element:p-box(0,19)-(96x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(96x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:normal, only paragraph border

@@ -4,15 +4,18 @@
         <title>Test : Border : Color : multi-side</title>
         <style type="text/css">
             p.p1 {
-                border-width: 1px;
+                border-width: 10px;
                 border-style: solid;
-                border-color: #000000;
-                border-bottom-color: #ff0000;
+                border-color: #ff0000;
+                border-bottom-color: #00ff00;
+                border-left-color: #00ff00;
                 }
+                /*
             p.p2 {
                 border: 1px solid black;
                 border-bottom-color: #ff0000;
                 }
+                */
             p.p3 {
                 border-width: 10px;
                 border-style: outset;
@@ -66,13 +69,15 @@
     </head>
     
     <body>
-        <p class="p1">This is a paragraph with a solid 1px black border
+        <p class="p1">This is a paragraph with a solid 10px black border
         except for the bottom is red.
         </p>
+        <!--
         <p></p>
         <p class="p2">This is a paragraph with a solid 1px black border
         except for the bottom is red.
         </p>
+        -->
         <p></p>
         <p class="p3">This is a paragraph with an outset 10px red border
         except for the bottom and left is green.

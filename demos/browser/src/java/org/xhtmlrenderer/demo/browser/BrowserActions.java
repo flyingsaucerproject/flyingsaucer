@@ -25,10 +25,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.logging.*;
+import java.net.*;
+import java.io.*;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.KeyStroke;
+import javax.swing.JOptionPane;
 import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.test.*;
 
 
 /**
@@ -43,6 +47,8 @@ public class BrowserActions {
     Action cut, copy, paste;
     /** Description of the Field */
     Action forward, backward, refresh, reload, load, stop;
+    
+    Action generate_diff;
     /** Description of the Field */
     BrowserStartup root;
     /** Description of the Field */
@@ -175,6 +181,38 @@ public class BrowserActions {
                 }
             };
 
+        generate_diff =
+            new AbstractAction( "Generate Diff" ) {
+                public void actionPerformed( ActionEvent evt ) {
+                    try {
+                        
+                        URL url = root.panel.view.getURL();
+                        if(url != null) {
+                            if(url.toString().startsWith("file:")) {
+                                String str = url.toString();
+                                str = str.substring(6,str.length()-6);
+                                if(new File(str+".diff").exists()) {
+                                    int n = JOptionPane.showConfirmDialog(root.panel.view, 
+                                        "Diff already exists. Overwrite?",
+                                        "Warning",
+                                        JOptionPane.OK_CANCEL_OPTION);
+                                    if(n != JOptionPane.OK_OPTION) {
+                                        return;
+                                    }
+                                }
+                                DocumentDiffTest.generateTestFile(
+                                    str+".xhtml",
+                                    str+".diff",
+                                    500,500);
+                                u.p("wrote out: " + str+".diff");
+                            }
+                        }
+                        
+                    } catch ( Exception ex ) {
+                        u.p( ex );
+                    }
+                }
+            };
     }
 
 
@@ -215,6 +253,15 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/07 23:24:18  joshy
+ * added menu item to generate diffs
+ * added diffs for multi-colored borders and inline borders
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 14:38:58  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

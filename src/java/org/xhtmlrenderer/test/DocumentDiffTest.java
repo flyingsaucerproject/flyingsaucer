@@ -100,8 +100,9 @@ public class DocumentDiffTest {
      * @param height         PARAM
      * @exception Exception  Throws
      */
-    public void generateTestFile( String test, String diff, int width, int height )
+    public static void generateTestFile( String test, String diff, int width, int height )
         throws Exception {
+            u.p("test = " + test);
         String out = xhtmlToDiff( test, width, height );
         //u.p("diff = \n" + out);
         u.string_to_file( out, new File( diff ) );
@@ -116,18 +117,17 @@ public class DocumentDiffTest {
      * @return               Returns
      * @exception Exception  Throws
      */
-    public String xhtmlToDiff( String xhtml, int width, int height )
+    public static String xhtmlToDiff( String xhtml, int width, int height )
         throws Exception {
         Document doc = x.loadDocument( xhtml );
         HTMLPanel panel = new HTMLPanel();
-        panel.setDocument( doc );
+        panel.setDocument( doc , new File(xhtml).toURL());
         panel.setSize( width, height );
         BufferedImage buff = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
         Graphics g = buff.getGraphics();
         panel.setThreadedLayout(false);
         panel.paintComponent( g );
         StringBuffer sb = new StringBuffer();
-        // u.p("root box = " + panel.getRootBox());
         getDiff( sb, panel.getRootBox(), "" );
         return sb.toString();
     }
@@ -174,7 +174,7 @@ public class DocumentDiffTest {
      * @param box  PARAM
      * @param tab  PARAM
      */
-    public void getDiff( StringBuffer sb, Box box, String tab ) {
+    public static void getDiff( StringBuffer sb, Box box, String tab ) {
         sb.append( tab + box.getTestString() + "\n" );
         for ( int i = 0; i < box.getChildCount(); i++ ) {
             getDiff( sb, (Box)box.getChild( i ), tab + " " );
@@ -203,6 +203,15 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/07 23:24:19  joshy
+ * added menu item to generate diffs
+ * added diffs for multi-colored borders and inline borders
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/11/04 15:35:46  joshy
  * initial float support
  * includes right and left float

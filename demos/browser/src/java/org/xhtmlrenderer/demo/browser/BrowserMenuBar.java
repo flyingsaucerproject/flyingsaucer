@@ -185,6 +185,7 @@ public class BrowserMenuBar extends JMenuBar {
                         }
                     } );
 
+        debug.add(root.actions.generate_diff);
         add( debug );
     }
 
@@ -399,6 +400,15 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/07 23:24:19  joshy
+ * added menu item to generate diffs
+ * added diffs for multi-colored borders and inline borders
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.7  2004/11/05 18:48:42  joshy
  * added alice demo to the browser
  * Issue number:

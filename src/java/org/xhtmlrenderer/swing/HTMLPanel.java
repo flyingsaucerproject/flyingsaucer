@@ -488,19 +488,27 @@ public class HTMLPanel extends JPanel implements ComponentListener {
      * @param doc  The new document value
      * @param url  The new document value
      */
-    public void setDocument( Document doc, URL url ) {
+    public void setDocument( Document doc, URL url) {
         resetScrollPosition();
         this.doc = doc;
+        this.url = url;
 
         //have to do this first
         c.setBaseURL( url );
-        
+        u.p("doc = " + doc);
+        u.p("Url = " + url);
         c.css.setDocumentContext(c, new XhtmlNamespaceHandler(), new StaticXhtmlAttributeResolver(), doc);
         //c.css.setDocumentContext(c, null, null, doc);
 
         calcLayout();
         repaint();
     }
+    
+    URL url;
+    public URL getURL() {
+        return this.url;
+    }
+    
 
 
     /**
@@ -757,6 +765,15 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2004/11/07 23:24:19  joshy
+ * added menu item to generate diffs
+ * added diffs for multi-colored borders and inline borders
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.20  2004/11/05 23:59:10  tobega
  * "New" matching and styling
  *

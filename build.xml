@@ -475,6 +475,7 @@
     </target>
 
     <!-- Builds the core jar and runs diff tests -->
+    <!-- this should almost never be called *** 
     <target name="generate-diff-tests" depends="core-jar">
         <java classname="org.xhtmlrenderer.test.DocumentDiffGenerate" 
               fork="${java-exec.fork.tests}">
@@ -485,6 +486,7 @@
             </syspropertyset> 
         </java>
     </target>
+    -->
 
     <!-- =================================================
          Documentation
@@ -609,6 +611,15 @@
 $Id$
 
 $Log$
+Revision 1.66  2004/11/07 23:24:18  joshy
+added menu item to generate diffs
+added diffs for multi-colored borders and inline borders
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.65  2004/11/07 16:23:16  joshy
 added support for lighten and darken to bordercolor
 added support for different colored sides
