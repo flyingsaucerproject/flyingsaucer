@@ -100,24 +100,8 @@
 //fix new NPEs
 //fix explict height bug (in photo gallery)
 
-unit test space collapsing w/ images
-implement tab alignment for pres
-unit test tab alignment
-implement media support for printing and test it
-    make financial table demo print differently
-make hover work on parents and children
-make graphic2drenderer not use basicpanel
-spruce up photo background
-build demo w/ fixed pos menu, hovers, and scrolling
-make all demos webstartable
-codify the demo html editor
-//build game screen demo
-jtable -> report -> printed doc demo
 
-if width set on body abs still goes relative to viewport width, not
-body width.  the default block formatting context should be at the top most block's size, not at the viewport size.
-
-some issues with hover when the cursor is in the padding of an inline and only hits part of the hovered styles
+//some issues with hover when the cursor is in the padding of an inline and //only hits part of the hovered styles
 
 //text inside a list-item pick up borders even if they are not inline //elements
 
@@ -125,29 +109,85 @@ some issues with hover when the cursor is in the padding of an inline and only h
 
 //inlines inside of a hovered block don't get restyled when the block does
 
-inlines are picking up parent block's background when they shouldn't
+//inlines are picking up parent block's background when they shouldn't
+
+//build game screen demo
+
+===========
+
+unit test space collapsing w/ images
+implement tab alignment for pres
+unit test tab alignment
+implement media support for printing and test it
+    make financial table demo print differently
+make graphic2drenderer not use basicpanel
+spruce up photo background
+build demo w/ fixed pos menu, hovers, and scrolling
+make all demos webstartable
+codify the demo html editor
+jtable -> report -> printed doc demo
+
+form elements are still broken
+if width set on body abs still goes relative to viewport width, not
+body width.  the default block formatting context should be at the top most block's size, not at the viewport size.
+
 line-height isn't working for Alice dropcap
 
+============
+notes of the changes that tobe has made
+
+Whitespace only inlines are not being dropped. they produce anonymous inlines that take up some screen space.
+
+Anonymous Inlines are picking up border, padding, and margins from their parent. Only element inlines should inherit those.
+
+============
+thoughts on an fs game
+
+tetris game with fleets of ships falling down
+there is a skyline of buildings that you must fill up.
+when you clear a line there is a big ID4esque explosion
+alien bombs can blow large areas
+if you match the same color ship to a building it blows up the building?
+humans build up new levels of buildings below in the subways and underground tunnels. eventually you get to the core of the earth and blow up the planet.
+little animated people build stuff below
+alien virus can poison the humans and slow them down
+go from city to city
+cities evolve over time. start w/ pyramids, move to cooler stuff over time.
+spaceships are drones.
+kamakazi ship w/ alien in it
+aliens watch from mother ship at top which drops drone ships
+
+pro version would have level packs.
+purchase levels individually from an itunes like store
+purchase w/ free gift copies to give to others
+target at non-traditional gamers.
+
+"Invading the earth, 5 minutes a day!"
+
+create a head to head version.
+
+humans invade alien planet version
+
+humans and aliens team up version
+============
+thoughts on another game.
+instead of a game that blows things down, what about building things up?
+if you had to construct buildings to reach certain goals?
+reach a light bulb?
+rescue dog from a burning building?
+============
+
+
 rachel in town arrive 20th @ 7, leave 5th @ 7
+
+
+rachel ccard: mc 5291 4922 9515 2504 exp. 03/05
 
 --crash w/ width = 50%
 --% width for absolute layout
 --styles on each border side
 --font family resolution
 --bottom border resolution
-
-
-game screen
-    menu
-        new game
-        instructions
-        high score
-        quit
-    cool font
-    cool tiled background
-    centered background splash image (flyingsaucer?)
-    dark colors w/ highlight rollovers
-    several images w/ transparency
 
 
 

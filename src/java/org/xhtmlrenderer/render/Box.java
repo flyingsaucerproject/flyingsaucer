@@ -232,8 +232,8 @@ public class Box {
     /**
      * Return true if the target coordinates are inside of this box. The target
      * coordinates are already translated to be relative to the origin of this
-     * box. ie Xx=0 & y=0. Thus the point 100,100 in a box with coordinates 20,20
-     * Xx 90x90 would have the target coordinates passed in as 80,80 and the
+     * box. ie x=0 & y=0. Thus the point 100,100 in a box with coordinates 20,20
+     * x 90x90 would have the target coordinates passed in as 80,80 and the
      * function would return true.
      *
      * @param x PARAM
@@ -356,14 +356,20 @@ public class Box {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Box: ");
-        /*if (getContent() == null) {
+        if (content == null) {
             sb.append(" null content, ");
         } else {
-            sb.append(getContent().getClass().getName() + " (" + getContent().hashCode() + ")");
-        }*/
-        sb.append(" (" + x + "," + y + ")->(" + width + " Xx " + height + ")");
+            String nm = content.getClass().getName();
+            nm = nm.substring(nm.lastIndexOf('.')+1,nm.length());
+            sb.append(nm);// + " (" + content.hashCode() + ")");
+            sb.append("-");
+            if(content.getElement() != null) {
+            sb.append(content.getElement().getNodeName());
+            }
+        }
+        sb.append(" (" + x + "," + y + ")->(" + width + " x " + height + ")");
         // CLN: (PWW 13/08/04)
-        sb.append(" color: " + color + " background-color: " + background_color + " ");
+        //sb.append(" color: " + color + " background-color: " + background_color + " ");
         return sb.toString();
     }
 
@@ -526,7 +532,7 @@ public class Box {
         //sb.append("-content:" + this.getContent());
 
         // dimensions and location
-        sb.append("-box(" + x + "," + y + ")-(" + width + "Xx" + height + ")");
+        sb.append("-box(" + x + "," + y + ")-(" + width + "x" + height + ")");
 
         // positioning info
         if (relative) {
@@ -609,6 +615,16 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2004/12/13 15:15:57  joshy
+ * fixed bug where inlines would pick up parent styles when they aren't supposed to
+ * fixed extra Xx's in printed text
+ * added conf boolean to turn on box outlines
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.27  2004/12/12 23:19:26  tobega
  * Tried to get hover working. Something happens, but not all that's supposed to happen.
  *

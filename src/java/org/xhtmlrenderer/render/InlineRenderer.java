@@ -7,7 +7,7 @@ import org.xhtmlrenderer.layout.content.InlineBlockContent;
 import org.xhtmlrenderer.layout.content.StylePop;
 import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.inline.TextDecoration;
-import org.xhtmlrenderer.util.GraphicsUtil;
+import org.xhtmlrenderer.util.*;
 
 import java.awt.*;
 import java.awt.font.LineMetrics;
@@ -137,6 +137,9 @@ public class InlineRenderer extends BoxRenderer {
         int iy = ly + inline.y;
         int ix = lx + inline.x;
         // account for padding
+        // Uu.p("adjusted inline by: " + inline.totalLeftPadding());
+        // Uu.p("inline = " + inline);
+        // Uu.p("padding = " + inline.padding);
         ix += inline.totalLeftPadding();
 
         paintSelection(c, inline, lx, ly);

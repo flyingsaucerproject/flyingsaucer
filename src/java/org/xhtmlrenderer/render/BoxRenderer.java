@@ -9,6 +9,7 @@ import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.Configuration;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -24,7 +25,7 @@ public class BoxRenderer extends DefaultRenderer {
      * @param box PARAM
      */
     public void paint(Context c, Box box) {
-        //Uu.p("BoxRenderer.paint " + box);
+        // Uu.p("BoxRenderer.paint " + box);
         Box block = (Box) box;
 
         //set the current style
@@ -69,7 +70,9 @@ public class BoxRenderer extends DefaultRenderer {
             c.popStyle();
         }
 
-        if (c.debugDrawBoxes()) {
+        
+        if (c.debugDrawBoxes() ||
+            Configuration.isTrue("xr.renderer.debug.box-outlines", true)) {
             GraphicsUtil.drawBox(c.getGraphics(), block, Color.red);
         }
     }

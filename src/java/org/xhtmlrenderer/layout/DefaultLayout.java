@@ -28,6 +28,7 @@ import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.DefaultRenderer;
 import org.xhtmlrenderer.render.Renderer;
+import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Color;
 
@@ -94,6 +95,7 @@ public class DefaultLayout implements Layout {
      * @param c   PARAM
      */
     public void prepareBox(Context c, Box box) {
+        // Uu.p("prepareBox: " + box);
         getBorder(c, box);
         getPadding(c, box);
         getMargin(c, box);
@@ -118,7 +120,8 @@ public class DefaultLayout implements Layout {
      */
     public static Border getPadding(Context c, Box box) {
         //TODO: can this be removed?: if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
-        if (box.isInlineElement() || !(box.content instanceof TextContent)) {
+        //if (box.isInlineElement() || !(box.content instanceof TextContent)) {
+        if(LayoutUtil.isBlockOrInlineElementBox(box)) {
             if (box.padding == null) {
                 box.padding = c.getCurrentStyle().getPaddingWidth();
             }
@@ -136,7 +139,8 @@ public class DefaultLayout implements Layout {
      */
     public static Border getMargin(Context c, Box box) {
         //TODO: can this be removed?: if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
-        if (box.isInlineElement() || !(box.content instanceof TextContent)) {
+        // if (box.isInlineElement() || !(box.content instanceof TextContent)) {
+        if(LayoutUtil.isBlockOrInlineElementBox(box)) {
             if (box.margin == null) {
                 box.margin = c.getCurrentStyle().getMarginWidth();
             }
@@ -158,7 +162,8 @@ public class DefaultLayout implements Layout {
      */
     public static Color getBackgroundColor(Context c, Box box) {
         //TODO: can this be removed?: if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
-        if (box.isInlineElement() || !(box.content instanceof TextContent)) {
+        // if (box.isInlineElement() || !(box.content instanceof TextContent)) {
+        if (LayoutUtil.isBlockOrInlineElementBox(box)) {
             if (box.background_color == null) {
                 CalculatedStyle style = c.getCurrentStyle();
                 if (style.isIdentifier(CSSName.BACKGROUND_COLOR)) {
@@ -182,6 +187,16 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2004/12/13 15:15:57  joshy
+ * fixed bug where inlines would pick up parent styles when they aren't supposed to
+ * fixed extra Xx's in printed text
+ * added conf boolean to turn on box outlines
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.34  2004/12/13 02:12:53  tobega
  * Borders are working again
  *

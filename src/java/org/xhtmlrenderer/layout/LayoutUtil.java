@@ -4,7 +4,9 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.content.TextContent;
+import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.util.Uu;
 
 public class LayoutUtil {
 
@@ -36,9 +38,47 @@ public class LayoutUtil {
         return false;
     }
 
+    public static boolean isBlockOrInlineElementBox(Box box) {
+        //Uu.p("box = " + box);
+        if(box.content instanceof BlockContent) {
+            //Uu.p("box is a block or element");
+            return true;
+        }
+        if(box.content instanceof BodyContent) {
+            //Uu.p("box is a block or element");
+            return true;
+        }
+        if(box.content instanceof AnonymousBlockContent) {
+            //Uu.p("box is a block or element");
+            return true;
+        }
+        
+        if(box.content instanceof TextContent) {
+            // Uu.p("box is not a block or inline element");
+            return false;
+        }
+        
+        if(box.content instanceof InlineBlockContent) {
+            return true;
+        }
+        
+        // if (box.content instanceof BlockContent ||
+        //     (box.isInlineElement() && !(box.content instanceof TextContent))) {
+        //     Uu.p("box is a block or element");
+        //     return true;
+        // }
+        
+        Uu.p("fall through!" + box);
+        return true;
+    }
+    
     public static Border getBorder(Context c, Box box) {
-        //TODO: can I skip this? if (isBlockOrInlineElementBox(c, box)) {
-        if (box.isInlineElement() || !(box.content instanceof TextContent)) {
+        //TODO: can I skip this? 
+        //Uu.p("box on: " + box);
+        //Uu.p("is inline element = " + box.isInlineElement());
+        //Uu.p("text content = " + (box.content instanceof TextContent));
+        if (isBlockOrInlineElementBox(box)) {
+        // if (box.isInlineElement() || !(box.content instanceof TextContent)) {
             // Uu.p("setting border for: " + box);
             if (box.border == null) {
                 box.border = c.getCurrentStyle().getBorderWidth();

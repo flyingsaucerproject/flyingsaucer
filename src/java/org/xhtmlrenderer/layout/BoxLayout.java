@@ -221,7 +221,7 @@ public class BoxLayout extends DefaultLayout {
             c.getExtents().height = (int) new_height;
             block.height = (int) new_height;
             block.auto_height = false;
-            Uu.p("set height to: " + block.height);
+            //Uu.p("set height to: " + block.height);
         }
     }
 
@@ -355,6 +355,16 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.47  2004/12/13 15:15:56  joshy
+ * fixed bug where inlines would pick up parent styles when they aren't supposed to
+ * fixed extra Xx's in printed text
+ * added conf boolean to turn on box outlines
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.46  2004/12/13 01:29:40  tobega
  * Got the scrollbars back (by accident), and now we should be able to display DocumentFragments as well as Documents, if someone finds that useful.
  *

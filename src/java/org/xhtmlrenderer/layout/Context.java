@@ -254,6 +254,7 @@ public class Context {
      * @param y PARAM
      */
     public void translate(int x, int y) {
+        //Uu.p("trans: " + x + "," + y);
         this.graphics.translate(x, y);
         if (bfc != null) {
             bfc.translate(x, y);
@@ -372,7 +373,9 @@ public class Context {
      * @return A string representation of the object.
      */
     public String toString() {
-        return "Context: extents = " + extents //" cursor = " + cursor +
+        return "Context: extents = " + 
+        "("+extents.x+","+extents.y+") -> ("+extents.width+"x"+extents.height+")"
+        //" cursor = " + cursor +
                 //"\n color = " + color + " background color = " + background_color;
                 + " offset = " + xoff + "," + yoff
                 ;
@@ -821,6 +824,16 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2004/12/13 15:15:57  joshy
+ * fixed bug where inlines would pick up parent styles when they aren't supposed to
+ * fixed extra Xx's in printed text
+ * added conf boolean to turn on box outlines
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.31  2004/12/12 03:32:58  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *
