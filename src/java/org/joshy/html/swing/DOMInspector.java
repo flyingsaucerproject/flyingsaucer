@@ -38,6 +38,7 @@ public class DOMInspector extends JPanel {
     Context context;
     ElementPropertiesPanel elementPropPanel;
     DOMSelectionListener nodeSelectionListener;
+    JSplitPane splitPane;
     // PW 
     
     Document doc;
@@ -45,6 +46,38 @@ public class DOMInspector extends JPanel {
     JTree tree;
 
     JScrollPane scroll;
+
+    public DOMInspector(Document doc) {
+        this(doc, null, null);
+    }    
+
+    public DOMInspector(Document doc, Context context, XRStyleReference xsr) {
+        super();
+
+        this.setLayout(new java.awt.BorderLayout());
+        
+        JPanel treePanel = new JPanel();
+        this.tree = new JTree();
+        this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        this.scroll = new JScrollPane(tree);
+
+        splitPane = null;
+        if ( xsr == null ) {
+            add(scroll,"Center");
+        } else {
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+            splitPane.setOneTouchExpandable(true);
+            splitPane.setDividerLocation(150);
+            
+            this.add(splitPane, "Center");
+            splitPane.setLeftComponent(scroll);
+        }
+
+        this.add(new JButton("close"),"South");
+        this.setPreferredSize(new Dimension(300,300));
+
+        setForDocument(doc, context, xsr);
+    }
 
     public void setForDocument(Document doc) {
         setForDocument(doc, null, null);
@@ -55,28 +88,6 @@ public class DOMInspector extends JPanel {
         this.xrStyleReference = xsr;
         this.context = context;
         this.initForCurrentDocument();
-    }
-
-    public DOMInspector(Document doc) {
-        this(doc, null, null);
-    }    
-
-    public DOMInspector(Document doc, Context context, XRStyleReference xsr) {
-        super();
-        this.setLayout(new java.awt.BorderLayout());
-        this.tree = new JTree();
-        this.scroll = new JScrollPane(tree);
-        if ( xsr == null ) {
-            add(scroll,"Center");
-        } else {
-            add(scroll,"West");
-            this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        }
-
-        this.add(new JButton("close"),"South");
-        this.setPreferredSize(new Dimension(300,300));
-
-        setForDocument(doc, context, xsr);
     }
 
     public void paintComponent(Graphics g) {
@@ -96,9 +107,9 @@ public class DOMInspector extends JPanel {
 
 
         if ( xrStyleReference != null ) {        
-            if ( elementPropPanel != null ) this.remove(elementPropPanel);
+            if ( elementPropPanel != null ) splitPane.remove(elementPropPanel);
             elementPropPanel = new ElementPropertiesPanel(context, xrStyleReference);
-            add(elementPropPanel,"Center");
+            splitPane.setRightComponent(elementPropPanel);
             
             tree.removeTreeSelectionListener(nodeSelectionListener);
 
@@ -113,14 +124,17 @@ class ElementPropertiesPanel extends JPanel {
     private Context _context;
     private XRStyleReference _xsr;
     private JTable _properties;
+    private TableModel _defaultTableModel;
     ElementPropertiesPanel(Context context, XRStyleReference xsr) {
         super();
         this._context = context;
         this._xsr = xsr;
-        _properties = new PropertiesJTable();
-        JScrollPane spn = new JScrollPane( _properties );
+        
+        this._properties = new PropertiesJTable();
+        this._defaultTableModel = new DefaultTableModel();
+        
         this.setLayout( new BorderLayout() );
-        this.add( spn, BorderLayout.CENTER );
+        this.add( new JScrollPane( _properties ), BorderLayout.CENTER );
     }
     
     public void setForElement(Node node) {
@@ -174,7 +188,7 @@ class ElementPropertiesPanel extends JPanel {
         XRElement xrElem = _xsr.getNodeXRElement(node);
         if ( xrElem == null ) {
             Toolkit.getDefaultToolkit().beep();
-            return new DefaultTableModel();
+            return _defaultTableModel;
         }
         Iterator iter = xrElem.derivedStyle().listXRProperties();
         while ( iter.hasNext()) {
@@ -192,7 +206,7 @@ class ElementPropertiesPanel extends JPanel {
      */
     class PropertiesTableModel extends AbstractTableModel {
         /** Description of the Field */
-        String _colNames[] = {"Property Name", "Text", "Value", "Convert", "Important-Inherit"};
+        String _colNames[] = {"Property Name", "Text", "Value", "Important-Inherit"};
 
         List _properties;
         
@@ -264,10 +278,6 @@ class ElementPropertiesPanel extends JPanel {
             break;
             
             case 3:
-            val = (ValueConstants.isAbsoluteUnit(actual.cssValue())? "" : "RELATIVE");
-            break;
-            
-            case 4:
             val = (actual.isImportant() ? "!Imp" : "") +
                   " " +
                   (actual.forcedInherit() ? "Inherit" : "");
