@@ -76,4 +76,7 @@ body, #fs {
 	margin: 3px;
 	border: 1px solid black;
 	}
+#fs #menu li:first-child a {
+	margin-left: 43px;
+	}
 	
