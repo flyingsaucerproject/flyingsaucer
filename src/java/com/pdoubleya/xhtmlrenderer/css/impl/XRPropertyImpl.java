@@ -46,7 +46,7 @@ import com.pdoubleya.xhtmlrenderer.css.factory.MarginPropertyFactory;
 import com.pdoubleya.xhtmlrenderer.css.factory.OutlinePropertyFactory;
 import com.pdoubleya.xhtmlrenderer.css.factory.PaddingPropertyFactory;
 import com.pdoubleya.xhtmlrenderer.css.factory.PropertyFactory;
-import org.joshy.html.Context;
+import org.xhtmlrenderer.layout.Context;
 
 import org.joshy.html.css.RuleNormalizer;
 

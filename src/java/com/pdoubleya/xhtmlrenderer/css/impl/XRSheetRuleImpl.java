@@ -31,7 +31,7 @@ import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSStyleRule;
 import org.w3c.dom.css.CSSStyleSheet;
 
-import org.joshy.html.Context;
+import org.xhtmlrenderer.layout.Context;
 
 import com.pdoubleya.xhtmlrenderer.css.XRProperty;
 import com.pdoubleya.xhtmlrenderer.css.XRRule;

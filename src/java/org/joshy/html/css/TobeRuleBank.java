@@ -4,6 +4,8 @@
  * Created on den 30 juli 2004, 23:15
  */
 
+
+
 package org.joshy.html.css;
 
 import org.w3c.css.sac.*;
@@ -14,7 +16,7 @@ import net.homelinux.tobe.css.StyleMap;
 /**
  * Tries to make sense of SAC, which is not easy. This might be very wrong because SAC totally SUCKS.
  *
- * @author  Torbjörn Gannholm
+ * @author  Torbjï¿½rn Gannholm
  */
 public class TobeRuleBank implements RuleBank {
     

@@ -49,10 +49,10 @@ import org.w3c.dom.css.CSSStyleSheet;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
 
-import org.joshy.html.Border;
-import org.joshy.html.Context;
-import org.joshy.html.css.StaticHtmlAttributeResolver;
-import org.joshy.html.css.StyleReference;
+import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.css.StaticHtmlAttributeResolver;
+import org.xhtmlrenderer.css.StyleReference;
 
 import com.pdoubleya.xhtmlrenderer.css.XRElement;
 import com.pdoubleya.xhtmlrenderer.css.XRProperty;
@@ -75,10 +75,10 @@ import org.apache.xpath.XPathAPI;
 /**
  * <p>
  *
- * Implementation of {@link org.joshy.html.css.StyleReference} which uses the
+ * Implementation of {@link org.xhtmlrenderer.css.StyleReference} which uses the
  * output of a SAC CSS parser to parse stylesheets, uses the {@link
  * net.homelinux.tobe.css.StyleMap} and related classes as a CSS-DOM matcher,
- * and a {@link org.joshy.html.Context} instance for property resolution where
+ * and a {@link org.xhtmlrenderer.layout.Context} instance for property resolution where
  * neeeded. Idiomatic use is </p>
  * <ul>
  *   <li> to {@link XRStyleReference#XRStyleReference(Context)} with a Context

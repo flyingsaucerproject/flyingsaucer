@@ -1,0 +1,257 @@
+/* this applies to all elements */
+html {
+    /* type and positioning */
+    display: inline;
+    position: static;
+    float: none;
+
+    /* coloring */
+    color: #000000;
+    background-color: transparent;
+    background-image: none;
+    background-position: 0% 0%;
+    background-attachment: scroll;
+    background-repeat: none;
+
+
+    /* border, padding, and margin stuff */
+    border-top-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+    border-left-width: 0px;
+    border-color: #000000;
+    /*border-style: solid;*/
+    border-style: none;
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+
+    /* standard text stuff */
+    font-size: 12pt;
+    /*
+    font-weight: inherit;
+    font-style: normal;
+    font-family: sans-serif;
+    */
+    text-decoration: none;
+    white-space: normal;
+    vertical-align: baseline;
+    text-transform: none;
+    /*
+    text-align: inherit;
+    */
+
+
+    /* default list stuff */
+    list-style-type: none;
+    list-style-image: none;
+}
+head {
+    display: none;
+}
+body {
+    background-color: #ffffff;
+    background-repeat: repeat;
+    padding: 3px;
+    margin: 0px;
+    border-width: 0px;
+    display: block;
+    text-align: left;
+    font-size: 12pt;
+    font-weight: normal;
+    font-family: sans-serif;
+    font-style: normal;
+}
+
+p {
+    display: block;
+    padding-top: 3px;
+    padding-right: 3px;
+    padding-bottom: 3px;
+    padding-left: 3px;
+    /*text-align: left;*/
+    text-decoration: none;
+}
+
+span, tt, b, i, a, big, small,sup, sub, u,
+em, strong, dfn, code, samp, kbd, var, cite,
+ins, del {
+    display:inline;
+}
+
+span {
+}
+
+
+tt {
+    font-family: monospace;
+}
+
+b {
+    font-weight: bold;
+}
+
+i {
+    font-style: italic;
+}
+
+a {
+    text-decoration: underline;
+    color: #ff0000;
+}
+big {
+    font-size: 15pt;
+}
+
+small {
+    font-size: 8pt;
+}
+
+sup {
+    vertical-align: super;
+    font-size: 80%;
+}
+
+sub {
+    vertical-align: sub;
+    font-size: 80%;
+}
+
+u {
+    text-decoration: underline;
+}
+
+/*
+deprecated in xhtml strict
+strike {
+    text-decoration: line-through;
+}
+*/
+
+em { font-style:italic; }
+strong { font-weight: bold; }
+dfn { font-style: italic; }
+code { font-family: monospace; }
+samp { font-family: monospace; }
+kbd { font-family: monospace; }
+var { font-style: italic; }
+cite { font-style: italic; }
+
+ins { text-decoration: underline; }
+del { text-decoration: line-through; }
+
+ul, ol {
+    padding-left: 20px;
+}
+li {
+    display: list-item;
+}
+ul li { list-style-type: disc; }
+ol li { list-style-type: decimal; }
+
+
+h1, h2, h3, h4, h5, h6 {
+    display: block;
+}
+
+div, p, table {
+    display: block;
+}
+
+h1 {
+    font-size: 30pt;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 20pt;
+    font-weight: bold;
+}
+
+h3 {
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+h4 {
+    font-size: 14pt;
+    font-weight: bold;
+}
+
+h5 {
+    font-size: 12pt;
+    font-weight: bold;
+}
+
+h6 {
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+div {
+    display: block;
+    padding-top: 3px;
+    padding-right: 3px;
+    padding-bottom: 3px;
+    padding-left: 3px;
+}
+
+img {
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+}
+
+pre {
+    white-space: pre;
+    font-family: monospace;
+}
+
+
+table {
+    table-layout: fixed;
+    border-spacing: 0px;
+}
+
+td, th {
+    border-top-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+    border-left-width: 0px;
+    padding-top: 3px;
+    padding-right: 3px;
+    padding-bottom: 3px;
+    padding-left: 3px;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+th {
+    font-weight: bold;
+}
+
+form {
+    display: block;
+}
+
+input {
+    border: 0px solid red;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: baseline;
+}

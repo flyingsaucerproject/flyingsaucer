@@ -50,7 +50,7 @@ public class Test {
      */
     public static void main( String args[] ) {
         try {
-            String cssname = "default.css";
+            String cssname = "/resources/css/default.css";
             if ( args.length > 0 ) {
                 cssname = args[0];
             }

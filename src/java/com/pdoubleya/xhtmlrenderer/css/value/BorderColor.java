@@ -24,7 +24,7 @@ import java.awt.Color;
 
 
 /**
- * Adapted from org.joshy.html.Border by Josh M.
+ * Adapted from org.xhtmlrenderer.css.Border by Josh M.
  *
  * @author    Patrick Wright
  *

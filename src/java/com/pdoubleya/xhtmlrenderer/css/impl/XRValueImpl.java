@@ -38,8 +38,8 @@ import com.pdoubleya.xhtmlrenderer.css.constants.ValueConstants;
 import com.pdoubleya.xhtmlrenderer.css.util.ConversionUtil;
 import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
 
-import org.joshy.html.Context;
-import org.joshy.html.util.FontUtil;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.FontUtil;
 
 
 /**

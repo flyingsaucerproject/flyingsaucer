@@ -42,13 +42,26 @@
                     <include name="*.jar"/>
                 </fileset>
             </classpath>
-            <exclude name="net/homelinux/**"/>
-            <exclude name="**/TobeRuleBank**"/>
-            <exclude name="**/test/**"/>
+            <include name="org/xhtmlrenderer/**"/>
         </javac>
-        <copy todir="build/classes/org/joshy/html/css" file="src/java/org/joshy/html/css/default.css"/>
+        <mkdir dir="build/classes/resources/css"/>
+        <copy todir="build/classes/resources/css/" file="src/css/default.css"/>
     </target>
-
+    
+    <target name="compile.browser" depends="compile">
+        <javac
+            srcdir="demos/browser/src/java"
+            destdir="build/classes"
+            debug="on"
+            source="1.4">
+            <classpath>
+                <fileset dir="lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+    
     <target name="compile-test" depends="compile">
         <javac
             srcdir="src/java"
@@ -60,10 +73,6 @@
                     <include name="*.jar"/>
                 </fileset>
             </classpath>
-            <!--
-            <exclude name="net/homelinux/**"/>
-            <exclude name="**/TobeRuleBank**"/>
-            -->
         </javac>
     </target>
     
@@ -74,26 +83,27 @@
         <jar jarfile="build/core-renderer.jar" compress="true" >
             <fileset dir="build/classes">
                 <include name="**/*.class"/>
-                <include name="org/joshy/html/css/default.css"/>
+                <include name="resources/**"/>
                 <exclude name="org/joshy/html/app"/>
+                <exclude name="**/demo/**"/>
             </fileset>
         </jar>
     </target>
     
-    <target name="browser-jar" depends="compile" description="build browser jar">
+    <target name="browser-jar" depends="compile.browser" description="build browser jar">
         <jar jarfile="build/browser.jar" compress="true" 
             manifest="src/packaging/manifest"
             >
             <fileset dir="build/classes">
-                <include name="org/joshy/html/app/**/*.class"/>
+                <include name="org/xhtmlrenderer/demo/browser/**"/>
             </fileset>
-            <fileset dir=".">
-                <include name="demos/*.xhtml"/>
-                <include name="demos/*.gif"/>
-                <include name="demos/*.png"/>
-                <include name="demos/splash/**"/>
-                <include name="demos/about/**"/>
-            </fileset>
+            <zipfileset dir="demos/browser/xhtml" prefix="demos/">
+                <include name="*.xhtml"/>
+                <include name="*.gif"/>
+                <include name="*.png"/>
+                <include name="splash/**"/>
+                <include name="about/**"/>
+            </zipfileset>
         </jar>
     </target>
 
@@ -149,7 +159,7 @@
 
     <target name="test" depends="compile" description="Test">
         <java
-            classname="org.joshy.html.HTMLTest"
+            classname="org.xhtmlrenderer.swing.HTMLTest"
             classpath="build/classes"
             fork="true"
             >
@@ -167,32 +177,24 @@
     </target>
 
     <target name="test-css-speed" depends="compile-test">
-        <java classname="org.joshy.html.test.CSSSpeedTest" classpath="build/classes" fork="true">
+        <java classname="org.xhtmlrenderer.test.CSSSpeedTest" classpath="build/classes" fork="true">
             <!--<jvmarg value="-prof"/>-->
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
         </java>
     </target>
 
     <target name="test-customblock" depends="compile">
-        <java classname="org.joshy.html.test.CustomBlockTest" classpath="build/classes" fork="true">
+        <java classname="org.xhtmlrenderer.test.CustomBlockTest" classpath="build/classes" fork="true">
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
         </java>
     </target>
 
-    <target name="browser" depends="compile, jars">
-        <java classname="org.joshy.html.app.browser.BrowserStartup" fork="true">
+    <target name="browser" depends="compile.browser, jars">
+        <java classname="org.xhtmlrenderer.demo.browser.BrowserStartup" fork="true">
             <classpath>
                 <fileset dir="lib"><include name="*.jar"/></fileset>
                 <fileset dir="build"><include name="*.jar"/></fileset>
             </classpath>
-        </java>
-    </target>
-
-
-    <target name="test-moz-css" depends="compile">
-        <java classname="org.joshy.html.app.browser.BrowserStartup" classpath="build/classes" fork="true">
-            <arg value="demos/simple.xhtml"/>
-            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
         </java>
     </target>
 
@@ -202,19 +204,6 @@
                 <fileset dir="lib"><include name="*.jar"/></fileset>
                 <fileset dir="build"><include name="*.jar"/></fileset>
             </classpath>
-        </java>
-    </target>
-
-    <target name="test-test" depends="compile">
-        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
-            <arg value="test.html"/>
-            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
-        </java>
-    </target>
-    
-    <target name="demo-test" depends="compile">
-        <java classname="org.joshy.html.PanelTest" classpath="build/classes" fork="true">
-            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
         </java>
     </target>
 

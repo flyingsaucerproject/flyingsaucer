@@ -43,7 +43,7 @@ import org.w3c.dom.css.CSSStyleSheet;
 
 import com.steadystate.css.parser.CSSOMParser;
 
-import org.joshy.html.Context;
+import org.xhtmlrenderer.layout.Context;
 
 import com.pdoubleya.xhtmlrenderer.css.impl.XRElementImpl;
 import com.pdoubleya.xhtmlrenderer.css.impl.XRStyleRuleImpl;

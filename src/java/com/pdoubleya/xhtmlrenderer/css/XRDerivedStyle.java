@@ -22,8 +22,8 @@ package com.pdoubleya.xhtmlrenderer.css;
 
 import java.awt.Color;
 
-import org.joshy.html.Border;
-import org.joshy.html.Context;
+import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.layout.Context;
 
 import com.pdoubleya.xhtmlrenderer.css.value.BorderColor;
 
@@ -38,14 +38,14 @@ import com.pdoubleya.xhtmlrenderer.css.value.BorderColor;
  * only one value in this class (e.g. one-one map). An <code>XRDerivedStyle</code>
  * is retrieved from an {@link XRElement} using the {@link
  * XRElement#derivedStyle()} method. Any methods to retrieve property values
- * from an instance of this class require a valid {@link org.joshy.html.Context} be given to
+ * from an instance of this class require a valid {@link org.xhtmlrenderer.layout.Context} be given to
  * it, for some cases of property resolution. Generally, a programmer will not
  * use this class directly, but will retrieve properties using a {@link
  * org.joshy.html.css.StyleReference} implementation.
  *
  * @author   Patrick Wright
  * @see      XRElement
- * @see      org.joshy.html.Context
+ * @see      org.xhtmlrenderer.layout.Context
  * @see      org.joshy.html.css.StyleReference
  */
 // ASK: marker interface?
@@ -55,7 +55,7 @@ public interface XRDerivedStyle extends XRRule {
      * the four-sided border width. Uses the actual value (computed actual
      * value) for this element.
      *
-     * @param context  A {@link org.joshy.html.Context} instance used in resolving relative
+     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used in resolving relative
      *      property values.
      * @return         The borderWidth value
      */
@@ -67,7 +67,7 @@ public interface XRDerivedStyle extends XRRule {
      * the four-sided margin width. Uses the actual value (computed actual
      * value) for this element.
      *
-     * @param context  A {@link org.joshy.html.Context} instance used in resolving relative
+     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used in resolving relative
      *      property values.
      * @return         The marginWidth value
      */
@@ -79,7 +79,7 @@ public interface XRDerivedStyle extends XRRule {
      * the four-sided padding width. Uses the actual value (computed actual
      * value) for this element.
      *
-     * @param context  A {@link org.joshy.html.Context} instance used in resolving relative
+     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used in resolving relative
      *      property values.
      * @return         The paddingWidth value
      */
@@ -91,7 +91,7 @@ public interface XRDerivedStyle extends XRRule {
      * the background color value; Uses the actual value (computed actual value)
      * for this element.
      *
-     * @param context  A {@link org.joshy.html.Context} instance used in resolving relative
+     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used in resolving relative
      *      property values.
      * @return         The backgroundColor value
      */
@@ -103,7 +103,7 @@ public interface XRDerivedStyle extends XRRule {
      * with the four-sided border color. Uses the actual value (computed actual
      * value) for this element.
      *
-     * @param context  A {@link org.joshy.html.Context} instance used in resolving relative
+     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used in resolving relative
      *      property values.
      * @return         The borderColor value
      */
@@ -115,7 +115,7 @@ public interface XRDerivedStyle extends XRRule {
      * the foreground color Uses the actual value (computed actual value) for
      * this element.
      *
-     * @param context  A {@link org.joshy.html.Context} instance used in resolving relative
+     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used in resolving relative
      *      property values.
      * @return         The color value
      */

@@ -26,8 +26,8 @@ import java.awt.Font;
 import java.util.*;
 import java.util.logging.*;
 
-import org.joshy.html.Border;
-import org.joshy.html.Context;
+import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.layout.Context;
 import org.joshy.html.css.RuleNormalizer;
 
 import com.pdoubleya.xhtmlrenderer.css.XRDerivedStyle;

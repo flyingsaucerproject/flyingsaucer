@@ -22,7 +22,7 @@ package com.pdoubleya.xhtmlrenderer.css;
 
 import java.util.*;
 
-import org.joshy.html.Context;
+import org.xhtmlrenderer.layout.Context;
 
 
 /**

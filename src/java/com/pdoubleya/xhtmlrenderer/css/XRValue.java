@@ -24,7 +24,7 @@ import java.awt.Color;
 
 import org.w3c.dom.css.CSSValue;
 
-import org.joshy.html.Context;
+import org.xhtmlrenderer.layout.Context;
 
 
 /**

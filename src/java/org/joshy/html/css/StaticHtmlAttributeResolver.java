@@ -4,11 +4,13 @@
  * Created on den 31 juli 2004, 01:17
  */
 
+
+
 package org.joshy.html.css;
 
 /**
  *
- * @author  Torbjörn Gannholm
+ * @author  Torbjï¿½rn Gannholm
  */
 public class StaticHtmlAttributeResolver implements net.homelinux.tobe.css.AttributeResolver {
     

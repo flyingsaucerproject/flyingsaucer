@@ -20,7 +20,7 @@
  */
 package com.pdoubleya.xhtmlrenderer.css;
 
-import org.joshy.html.Context;
+import org.xhtmlrenderer.layout.Context;
 
 
 /**
