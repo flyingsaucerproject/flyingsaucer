@@ -5,6 +5,7 @@ import org.joshy.html.box.*;
 import org.joshy.u;
 import org.joshy.html.*;
 import java.awt.Rectangle;
+import java.awt.Font;
 
 
 
@@ -34,18 +35,20 @@ public static InlineBox generateMultilineBreak(Context c, Node node, int start, 
         int next_space = text.indexOf(" ",end);
         if(next_space == -1) { next_space = text.length(); }
         //u.p("next space = " + next_space);
+        
+        Font font = FontUtil.getFont(c,node);
 
-        int len2 = FontUtil.len(c,node,text.substring(start,next_space));
+        int len2 = FontUtil.len(c,node,text.substring(start,next_space),font);
         //u.p("len2 = " + len2 + " avail = " + avail);
         // if this won't fit, then break and use the previous span
         if(len2 > avail) {
-            InlineBox box = newBox(c, node, start, end, prev, text, prev_align);
+            InlineBox box = newBox(c, node, start, end, prev, text, prev_align, font);
             //u.p("normal break returning span: " + box);
             return box;
         }
         // if this will fit but we are at the end then break and use current span
         if(next_space == text.length()) {
-            InlineBox box = newBox(c, node, start, next_space, prev, text, prev_align);
+            InlineBox box = newBox(c, node, start, next_space, prev, text, prev_align, font);
             //u.p("normal break returning curr span: " + box);
             return box;
         }
@@ -54,33 +57,33 @@ public static InlineBox generateMultilineBreak(Context c, Node node, int start, 
     }
 }
 
-public static boolean canFitOnLine(Context c, Node node, int start, String text, int avail) {
+public static boolean canFitOnLine(Context c, Node node, int start, String text, int avail, Font font) {
     // if the rest of text can fit on the current line
     // if length of remaining text < available width
     //u.p("avail = " + avail + " len = " + FontUtil.len(c,node,text.substring(start)));
-    if(FontUtil.len(c,node,text.substring(start)) < avail) {
+    if(FontUtil.len(c,node,text.substring(start),font ) < avail) {
         return true;
     } else {
         return false;
     }
 }
 public static InlineBox generateRestOfTextNodeInlineBox(Context c, Node node, int start, String text,
-    InlineBox prev, InlineBox prev_align) {
-        InlineBox box = newBox(c,node,start,text.length(),prev,text, prev_align);
+    InlineBox prev, InlineBox prev_align, Font font) {
+        InlineBox box = newBox(c,node,start,text.length(),prev,text, prev_align, font);
         // turn off breaking since more might fit on this line
         box.break_after = false;
         //u.p("fits on line returning : " + box);
         return box;
 }
 
-public static boolean isUnbreakableLine(Context c, Node node, int start, String text, int avail) {
+public static boolean isUnbreakableLine(Context c, Node node, int start, String text, int avail, Font font) {
     int first_word_index = text.indexOf(" ",start);
     if(first_word_index == -1) {
         first_word_index = text.length();
     }
     String first_word = text.substring(start,first_word_index);
     first_word = first_word.trim();
-    if(avail < FontUtil.len(c, node, first_word)) {
+    if(avail < FontUtil.len(c, node, first_word, font)) {
         return true;
     } else {
         return false;
@@ -88,14 +91,14 @@ public static boolean isUnbreakableLine(Context c, Node node, int start, String 
 }
 
 
-public static InlineBox generateUnbreakableInlineBox(Context c, Node node, int start, String text,  InlineBox prev, InlineBox prev_align) {
+public static InlineBox generateUnbreakableInlineBox(Context c, Node node, int start, String text,  InlineBox prev, InlineBox prev_align, Font font) {
     int first_word_index = text.indexOf(" ",start);
     if(first_word_index == -1) {
         first_word_index = text.length();
     }
     String first_word = text.substring(start,first_word_index);
     first_word = first_word.trim();
-    InlineBox box = newBox(c, node, start, first_word_index, prev, text, prev_align);
+    InlineBox box = newBox(c, node, start, first_word_index, prev, text, prev_align,font);
     // move back to the left margin since this is on it's own line
     box.x = 0;
     box.break_before = true;
@@ -115,14 +118,14 @@ public static boolean isWhitespace(Context c, Element containing_block) {
 }
 
 public static InlineBox generateWhitespaceInlineBox(Context c, Node node, int start,
-    InlineBox prev, String text, InlineBox prev_align) {
+    InlineBox prev, String text, InlineBox prev_align, Font font) {
         //u.p("preformatted text");
         int cr_index = text.indexOf("\n",start+1);
         //u.p("cr_index = " + cr_index);
         if(cr_index == -1) {
             cr_index = text.length();
         }
-        InlineBox box = newBox(c,node,start,cr_index,prev,text, prev_align);
+        InlineBox box = newBox(c,node,start,cr_index,prev,text, prev_align, font);
         return box;
 }
 
@@ -139,14 +142,14 @@ public static InlineBox generateBreakInlineBox(Node node) {
 }
 
 // change this to use the existing block instead of a new one
-public static InlineBox generateFloatedBlockInlineBox(Context c, Node node, int avail, InlineBox prev, String text, InlineBox prev_align) {
+public static InlineBox generateFloatedBlockInlineBox(Context c, Node node, int avail, InlineBox prev, String text, InlineBox prev_align, Font font) {
     Layout layout = LayoutFactory.getLayout(node);
     Rectangle oe = c.getExtents();
     c.setExtents(new Rectangle(oe));
     BlockBox block = (BlockBox) layout.layout(c,(Element)node);
     Rectangle bounds = new Rectangle(block.x,block.y,block.width,block.height);
     c.setExtents(oe);
-    InlineBox box = newBox(c,node,0,0,prev,text,bounds,prev_align);
+    InlineBox box = newBox(c,node,0,0,prev,text,bounds,prev_align, font);
     box.sub_block = block;
     box.width = bounds.width;
     box.height = bounds.height;
@@ -159,7 +162,7 @@ public static InlineBox generateFloatedBlockInlineBox(Context c, Node node, int 
 }
 
     // change this to use the existing block instead of a new one
-public static InlineBox generateReplacedInlineBox(Context c, Node node, int avail, InlineBox prev, String text, InlineBox prev_align) {
+public static InlineBox generateReplacedInlineBox(Context c, Node node, int avail, InlineBox prev, String text, InlineBox prev_align, Font font) {
     //u.p("generating replaced Inline Box");
     
     // get the layout for the replaced element
@@ -172,7 +175,7 @@ public static InlineBox generateReplacedInlineBox(Context c, Node node, int avai
     a  new one*/
     
     // create new inline
-    InlineBox box = newBox(c,node,0,0,prev,text, bounds, prev_align);
+    InlineBox box = newBox(c,node,0,0,prev,text, bounds, prev_align, font);
     //joshy: activate this: box.block = block
     //u.p("created a new inline box");
     box.replaced = true;
@@ -195,13 +198,13 @@ public static InlineBox generateReplacedInlineBox(Context c, Node node, int avai
     return box;
 }
 
-private static InlineBox newBox(Context c, Node node,int start, int end, InlineBox prev, String text, InlineBox prev_align) {
-    return newBox(c,node,start,end,prev,text,null, prev_align);
+private static InlineBox newBox(Context c, Node node,int start, int end, InlineBox prev, String text, InlineBox prev_align, Font font) {
+    return newBox(c,node,start,end,prev,text,null, prev_align, font);
 }
 
 // this function by itself takes up fully 29% of the complete program's
 // rendering time.
-private static InlineBox newBox(Context c, Node node,int start, int end, InlineBox prev, String text, Rectangle bounds, InlineBox prev_align) {
+private static InlineBox newBox(Context c, Node node,int start, int end, InlineBox prev, String text, Rectangle bounds, InlineBox prev_align, Font font) {
     //u.p("newBox node = " + node.getNodeName() + " start = " + start + " end = " + end +
     //" prev = " + prev + " text = " + text + " bounds = " + bounds + " prev_align = " + prev_align);
     //u.p("Making box for: "  + node);
@@ -236,7 +239,7 @@ private static InlineBox newBox(Context c, Node node,int start, int end, InlineB
     try {
         if(!InlineLayout.isReplaced(node)) {
             if(!InlineLayout.isFloatedBlock(node,c)) {
-                box.width = FontUtil.len(c,node,text.substring(start,end));
+                box.width = FontUtil.len(c,node,text.substring(start,end),font);
             } else {
                 box.width = bounds.width;
             }
@@ -276,7 +279,7 @@ private static InlineBox newBox(Context c, Node node,int start, int end, InlineB
     // do vertical alignment
     //u.p("setting up vertical align on: " + node);
     FontUtil.setupVerticalAlign(c,node,box);
-    box.setFont(FontUtil.getFont(c,node));
+    box.setFont(font);//FontUtil.getFont(c,node));
     if(node.getNodeType()== node.TEXT_NODE) {
         box.color = c.css.getColor((Element)node.getParentNode(),true);
     } else {

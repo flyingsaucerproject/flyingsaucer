@@ -26,9 +26,9 @@ public class FontUtil {
 
     
 
-public static int len(Context c, Node node, String str) {
+public static int len(Context c, Node node, String str, Font font) {
 
-    return c.getGraphics().getFontMetrics(getFont(c,node)).stringWidth(str);
+    return c.getGraphics().getFontMetrics(font).stringWidth(str);
 
 }
 

@@ -41,7 +41,7 @@ public class CSSSpeedTest {
 
         // load doc
 
-        Document doc = x.loadDocument("c:/j3p/xhtmlrenderer/demos/hamlet.xhtml");
+        Document doc = x.loadDocument("demos/hamlet.xhtml");
 
         Element html = (Element)doc.getDocumentElement();
 

@@ -278,25 +278,26 @@ private InlineBox calculateInline(Context c, Node node, int avail, int max_width
     text = TextUtil.transformText(c,node,text);
     //u.p("text = " + text);
 
+    Font font = FontUtil.getFont(c,node);
     if(isReplaced(node)) {
-        return LineBreaker.generateReplacedInlineBox(c,node,avail,prev, text,prev_align);
+        return LineBreaker.generateReplacedInlineBox(c,node,avail,prev, text,prev_align,font);
     }
     if(isFloatedBlock(node,c)) {
-        return LineBreaker.generateFloatedBlockInlineBox(c,node,avail,prev, text,prev_align);
+        return LineBreaker.generateFloatedBlockInlineBox(c,node,avail,prev, text,prev_align,font);
     }
     if(InlineUtil.isBreak(node)) {
         return LineBreaker.generateBreakInlineBox(node);
     }
     if(LineBreaker.isWhitespace(c,containing_block)) {
-        return LineBreaker.generateWhitespaceInlineBox(c,node,start,prev,text,prev_align);
+        return LineBreaker.generateWhitespaceInlineBox(c,node,start,prev,text,prev_align,font);
     }
     // ==== unbreakable long word =====
-    if(LineBreaker.isUnbreakableLine(c,node,start,text,avail)) {
-        return LineBreaker.generateUnbreakableInlineBox(c,node,start,text,prev,prev_align);
+    if(LineBreaker.isUnbreakableLine(c,node,start,text,avail,font)) {
+        return LineBreaker.generateUnbreakableInlineBox(c,node,start,text,prev,prev_align,font);
     }
     // rest of this string can fit on the line
-    if(LineBreaker.canFitOnLine(c,node,start,text,avail)) {
-        return LineBreaker.generateRestOfTextNodeInlineBox(c,node,start,text,prev,prev_align);
+    if(LineBreaker.canFitOnLine(c,node,start,text,avail,font)) {
+        return LineBreaker.generateRestOfTextNodeInlineBox(c,node,start,text,prev,prev_align,font);
     }
     // normal multiline break
     return LineBreaker.generateMultilineBreak(c,node,start,text,prev,prev_align,avail);
