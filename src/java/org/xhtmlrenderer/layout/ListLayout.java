@@ -28,7 +28,7 @@ import org.xhtmlrenderer.render.*;
  * @author   empty
  */
 
- public class ListLayout extends BoxLayout {
+public class ListLayout extends BoxLayout {
      public Renderer getRenderer() {
          return new ListRenderer();
      }
@@ -38,6 +38,15 @@ import org.xhtmlrenderer.render.*;
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/18 14:26:23  joshy
+ * more code cleanup
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/11/14 16:40:59  joshy
  * refactored layout factory
  *

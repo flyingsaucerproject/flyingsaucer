@@ -30,7 +30,7 @@ public class BoxRenderer extends DefaultRenderer {
         }
 
         //u.p("here it's : " + c.getListCounter());
-        if ( BoxLayout.isListItem( c, box ) ) {
+        if ( LayoutUtil.isListItem( c, box ) ) {
             paintListItem( c, box );
         }
 

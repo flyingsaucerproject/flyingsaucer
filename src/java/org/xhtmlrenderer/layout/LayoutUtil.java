@@ -223,5 +223,15 @@ public class LayoutUtil {
         }
         return false;
     }
+    
+    
+    public static boolean isListItem(Context c, Box box) {
+        String display = c.css.getStringProperty((Element) box.node, "display", false);
+        if (display.equals("list-item")) {
+            return true;
+        }
+        return false;
+    }
+
 
 }

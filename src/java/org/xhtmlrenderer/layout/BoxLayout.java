@@ -82,16 +82,9 @@ public class BoxLayout extends DefaultLayout {
         // ie. if it's null.
         
         // this is to keep track of when we are inside of a form
-        if (c.getRenderingContext().getLayoutFactory().isForm(elem)) {
-            if (elem.hasAttribute("name")) {
-                String name = elem.getAttribute("name");
-                String action = elem.getAttribute("action");
-                c.setForm(name, action);
-            }
-        }
+        saveForm(c,elem);
 
         BlockBox block = (BlockBox) createBox(c, elem);
-
 
         // set up the bfc
         BlockFormattingContext old_bfc = null;
@@ -129,11 +122,9 @@ public class BoxLayout extends DefaultLayout {
         c.translate(-tx, -ty);
         c.setSubBlock(old_sub);
 
-        // calculate the inner width
-        block.width = block.margin.left + block.border.left + block.padding.left + block.width +
-                block.padding.right + block.border.right + block.margin.right;
-        block.height = block.margin.top + block.border.top + block.padding.top + block.height +
-                block.padding.bottom + block.border.bottom + block.margin.bottom;
+        // calculate the total outer width
+        block.width = block.totalHorizontalPadding() + block.width;
+        block.height = block.totalVerticalPadding() + block.height;
         
         //restore the extents
         c.setExtents(oe);
@@ -142,8 +133,8 @@ public class BoxLayout extends DefaultLayout {
         Relative.setupRelative(c, block);
         Absolute.setupAbsolute(c, block);
         Fixed.setupFixed(c, block);
-        setupFloat(c, block);
-        setupForm(c, block);        
+        FloatUtil.setupFloat(c, block);
+        setupForm(c, block);
         this.contents_height = block.height;
         
         if (set_bfc) {
@@ -307,6 +298,16 @@ public class BoxLayout extends DefaultLayout {
 
 
 
+    private void saveForm(Context c, Element elem) {
+        if (c.getRenderingContext().getLayoutFactory().isForm(elem)) {
+            if (elem.hasAttribute("name")) {
+                String name = elem.getAttribute("name");
+                String action = elem.getAttribute("action");
+                c.setForm(name, action);
+            }
+        }
+    }
+    
     private void setupForm(Context c, Box block) {
         if (c.getRenderingContext().getLayoutFactory().isForm(block.getRealElement())) {
             if (block.getRealElement().hasAttribute("name")) {
@@ -315,25 +316,6 @@ public class BoxLayout extends DefaultLayout {
         }
     }
 
-
-    private void setupFloat(Context c, Box box) {
-        if (LayoutUtil.isFloated(box.node, c)) {
-            String float_val = c.css.getStringProperty(box.node, CSSName.FLOAT, false);
-            if (float_val == null) {
-                float_val = "none";
-            }
-            if (float_val.equals("none")) {
-                return;
-            }
-            box.floated = true;
-            if (float_val.equals("left")) {
-                c.getBlockFormattingContext().addLeftFloat(box);
-            }
-            if (float_val.equals("right")) {
-                c.getBlockFormattingContext().addRightFloat(box);
-            }
-        }
-    }
 
 
 
@@ -346,6 +328,15 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2004/11/18 14:26:22  joshy
+ * more code cleanup
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.23  2004/11/18 02:51:14  joshy
  * moved more code out of the box into custom classes
  * added more preload logic to the default layout's preparebox method

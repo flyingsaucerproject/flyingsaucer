@@ -87,7 +87,16 @@ public class DefaultLayout implements Layout {
     }
     
     
-    /* prepare box and it's support code. */
+    /* prepare box and it's support code. 
+    
+    MORE OF THE CSS SHOULD GO HERE
+    This is the best place to look at pre-caching the common css properties,
+    especially once we start store larger objects like Border instead of individual
+    properties.
+    
+    - JMM: 11/18/04
+    
+    */
     /**
      * Pre-load the most common css properties into the box. Eventually
      * we will need to depend on this code being here.
@@ -109,14 +118,6 @@ public class DefaultLayout implements Layout {
      * @param box PARAM
      * @return The listItem value
      */
-    public static boolean isListItem(Context c, Box box) {
-        String display = c.css.getStringProperty((Element) box.node, "display", false);
-        //u.p("display = " + display);
-        if (display.equals("list-item")) {
-            return true;
-        }
-        return false;
-    }
 
     // === caching accessors =========
     /**
@@ -185,6 +186,15 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2004/11/18 14:26:22  joshy
+ * more code cleanup
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.23  2004/11/18 02:51:15  joshy
  * moved more code out of the box into custom classes
  * added more preload logic to the default layout's preparebox method

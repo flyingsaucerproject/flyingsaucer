@@ -29,9 +29,9 @@ import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.u;
 
 /**
- * Description of the Class
+ * 
  *
- * @author   empty
+ * @author   joshy
  */
 public class InlineUtil {
 
@@ -212,6 +212,15 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/11/18 14:26:22  joshy
+ * more code cleanup
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.11  2004/11/18 02:37:26  joshy
  * moved most of default layout into layout util or box layout
  *

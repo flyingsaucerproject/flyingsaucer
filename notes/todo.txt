@@ -63,13 +63,16 @@ bugs:
     table crashes on empty tr
 
     abs pos w/ bottom align
-    whitespace bugs
+--    whitespace bugs
     
     javadoc xhtmlpanel
     javadoc graphic2drenderer
     remove isPrinting(). check the graphics instanceof printablegraphics
     
     show current resources in browser
+
+
+can we separate inline and box more? maybe do that later?
     
 layout cleanups
     cache linemetrics and ascend/dscend more
