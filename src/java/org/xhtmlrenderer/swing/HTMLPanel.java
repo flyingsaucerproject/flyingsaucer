@@ -24,27 +24,41 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.layout.*;
-import org.xhtmlrenderer.css.*;
+import org.xhtmlrenderer.layout.BodyLayout;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.css.CSSBank;
 import org.xhtmlrenderer.DefaultCSSMarker;
-import java.awt.event.*;
-import java.awt.*;
-import javax.swing.*;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.XRLog;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import java.util.logging.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.*;
-import javax.xml.parsers.*;
-import org.xml.sax.*;
+import org.w3c.dom.Node;
+import org.xml.sax.ErrorHandler;
 import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.util.x;
 import java.net.URL;
 import java.io.File;
 import org.apache.xpath.XPathAPI;
-import org.xhtmlrenderer.forms.*;
+import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
 import org.xhtmlrenderer.css.bridge.XRStyleReference;
 import org.xhtmlrenderer.css.XRStyleSheet;
 
@@ -147,6 +161,8 @@ public class HTMLPanel extends JPanel implements ComponentListener
 
    private Document loadDocument(final URL url) throws Exception
    {
+       /* XRDocument xrDoc = XRDocumentFactory.loadDocument(null, url);
+       return xrDoc.getDOMDocument(); */
       DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder = fact.newDocumentBuilder();
       builder.setErrorHandler(error_handler);
@@ -208,7 +224,7 @@ public class HTMLPanel extends JPanel implements ComponentListener
          Object marker = new DefaultCSSMarker();
          //u.p("getting: " + marker.getClass().getResource("default.css"));
 
-         String defaultStyleSheetLocation = "/resources/css/default.css";
+         String defaultStyleSheetLocation = Configuration.valueFor("xr.css.user-agent-default-css");
          if (marker.getClass().getResourceAsStream(defaultStyleSheetLocation) != null)
          {
             URL stream = marker.getClass().getResource(defaultStyleSheetLocation);
@@ -220,7 +236,9 @@ public class HTMLPanel extends JPanel implements ComponentListener
          }
          else
          {
-            u.p("can't load default css");
+            XRLog.exception(
+                "Can't load default CSS from " + defaultStyleSheetLocation + "." +
+                "This file must be on your CLASSPATH. Please check before continuing.");
          }
 
          c.css.parseDeclaredStylesheets(html);
@@ -656,4 +674,12 @@ public class HTMLPanel extends JPanel implements ComponentListener
 }
 
 
-
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.7  2004/10/14 15:43:32  pdoubleya
+ * Reads location of default.CSS from configuration file.
+ *
+ *
+ */
