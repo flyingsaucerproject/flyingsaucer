@@ -24,6 +24,8 @@ package org.xhtmlrenderer.css.newmatch;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.extend.AttributeResolver;
 
+import org.xhtmlrenderer.util.XRLog;
+
  /**
  * A Selector is really a chain of CSS selectors that all need to be valid for the selector to match.
  *
@@ -109,6 +111,9 @@ class Selector {
 
     /** append a selector to this chain, specifying which axis it should be evaluated on */
     public Selector appendChainedSelector(int axis, String elementName) {
+        if(_pe != null) {
+            XRLog.exception("Trying to append child selectors to pseudoElement "+_pe);
+        }
         if(chainedSelector == null) return (chainedSelector = new Selector(_pos, _specificityB, _specificityC, _specificityD, _parent, axis, elementName));
         else return chainedSelector.appendChainedSelector(axis, elementName);
     }
@@ -182,6 +187,18 @@ class Selector {
         return (_pc != 0);
     }
     
+    public void setPseudoElement(String pseudoElement) {
+        if(_pe != null) {
+            XRLog.exception("Trying to set more than one pseudo-element");
+        } else _pe = pseudoElement;
+    }
+    
+    public String getPseudoElement() {
+        //only care about the last in the chain
+        if(chainedSelector != null) return chainedSelector.getPseudoElement();
+        else return _pe;
+    }
+    
     private void addCondition(Condition c) {
         if(conditions == null) conditions = new java.util.ArrayList();
         conditions.add(c);
@@ -208,6 +225,7 @@ class Selector {
     private int _axis;
     private String _name;
     private int _pc = 0;
+    private String _pe;
     
     //specificity - correct values are gotten from the last Selector in the chain
     private int _specificityB;

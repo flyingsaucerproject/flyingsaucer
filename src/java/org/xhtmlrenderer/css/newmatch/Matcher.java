@@ -80,7 +80,18 @@ public class Matcher {
                     i--;
                 }
                 if(!sel.matches(e, _attRes)) continue;
-                //TODO: if this selector has dynamic properties, we could note it in the child mapper, for easier handling
+                //Assumption: if it is a pseudo-element, it does not also have dynamic pseudo-class
+                String pseudoElement = sel.getPseudoElement();
+                if(pseudoElement != null) {
+                    java.util.List l = (java.util.List) childMapper.pseudoSelectors.get(pseudoElement);
+                    if(l == null) {
+                        l = new java.util.LinkedList();
+                        childMapper.pseudoSelectors.put(pseudoElement, l);
+                    }
+                    l.add(sel);
+                    continue;
+                }
+                if(sel.isDynamic()) isDynamic = true;
                 if(!sel.matchesDynamic(e, _attRes)) continue;
                 Selector chain = sel.getChainedSelector();
                 if(chain == null) {
@@ -100,6 +111,10 @@ public class Matcher {
         java.util.List axes = new java.util.ArrayList();
         
         java.util.List mappedSelectors = new java.util.LinkedList();
+        
+        java.util.HashMap pseudoSelectors = new java.util.HashMap();
+        
+        boolean isDynamic = false;
     }
     
     Matcher() {
@@ -120,6 +135,7 @@ public class Matcher {
         _map = null;
         _csCache = null;
         _csMap = null;
+        _peMap = null;
     }
     
     public void setAttributeResolver(org.xhtmlrenderer.extend.AttributeResolver ar) {
@@ -179,7 +195,7 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
                 addConditions( s, cond );
             } else if ( selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR ) {
                 s = new Selector(pos, rs, Selector.DESCENDANT_AXIS, ( (org.w3c.css.sac.ElementSelector)selector ).getLocalName() );
-            } else XRLog.exception("bad selector in addSelector");
+            } else XRLog.exception("unsupported selector in addSelector: "+selector.getSelectorType());
 
             return s;
     }
@@ -273,17 +289,20 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
                 if ( attr.getValue().equals( "link" ) ) {
                     s.setPseudoClass( org.xhtmlrenderer.extend.AttributeResolver.LINK_PSEUDOCLASS );
                 }
-                if ( attr.getValue().equals( "visited" ) ) {
+                else if ( attr.getValue().equals( "visited" ) ) {
                     s.setPseudoClass( org.xhtmlrenderer.extend.AttributeResolver.VISITED_PSEUDOCLASS );
                 }
-                if ( attr.getValue().equals( "hover" ) ) {
+                else if ( attr.getValue().equals( "hover" ) ) {
                     s.setPseudoClass( org.xhtmlrenderer.extend.AttributeResolver.HOVER_PSEUDOCLASS );
                 }
-                if ( attr.getValue().equals( "active" ) ) {
+                else if ( attr.getValue().equals( "active" ) ) {
                     s.setPseudoClass( org.xhtmlrenderer.extend.AttributeResolver.ACTIVE_PSEUDOCLASS );
                 }
-                if ( attr.getValue().equals( "focus" ) ) {
+                else if ( attr.getValue().equals( "focus" ) ) {
                     s.setPseudoClass( org.xhtmlrenderer.extend.AttributeResolver.FOCUS_PSEUDOCLASS );
+                }
+                else {//it must be a pseudo-element
+                    s.setPseudoElement(attr.getValue());
                 }
                 break;
             default:
@@ -301,7 +320,7 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
         if(elementStyling == null) {//try to re-use a CascadedStyle
             StringBuffer sb = new StringBuffer();
             for(java.util.Iterator i = getMatchedRulesets(e); i.hasNext();) {
-                sb.append(i.next());
+                sb.append(i.next().hashCode());
                 sb.append(":");
             }
             fingerprint = sb.toString();
@@ -332,6 +351,56 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
         
         return cs;
 }
+
+    public java.util.Map getPECascadedStyleMap(org.w3c.dom.Element e) {
+        if(_peMap == null) _peMap = new java.util.HashMap();
+        java.util.Map elm = (java.util.Map) _peMap.get(e);
+        if(elm == null) {
+            elm = resolvePseudoElements(e);
+            _peMap.put(e,elm);
+        }
+        return elm;
+        
+    }
+    
+    private java.util.Map resolvePseudoElements(org.w3c.dom.Element e) {
+        java.util.Map pelm = new java.util.HashMap();
+        Mapper m = getMapper(e);
+        java.util.Iterator si = m.pseudoSelectors.entrySet().iterator();
+        while(si.hasNext()) {
+            java.util.Map.Entry me = (java.util.Map.Entry) si.next();
+            String fingerprint = null;
+            //try to re-use a CascadedStyle
+            StringBuffer sb = new StringBuffer();
+            for(java.util.Iterator i = getSelectedRulesets((java.util.List)me.getValue()); i.hasNext();) {
+                sb.append(i.next().hashCode());
+                sb.append(":");
+            }
+            fingerprint = sb.toString();
+            if(_csCache == null) _csCache = new java.util.HashMap();
+            CascadedStyle cs = (CascadedStyle) _csCache.get(fingerprint);
+       
+            if(cs == null) {
+                java.util.List propList = new java.util.LinkedList();
+                for(java.util.Iterator i = getSelectedRulesets((java.util.List)me.getValue()); i.hasNext();) {
+                    org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
+                    for(java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
+                        propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
+                    }
+                }
+                cs = new CascadedStyle(propList.iterator() );
+                _csCache.put(fingerprint, cs);
+            }
+            
+            pelm.put(me.getKey(), cs);
+        }
+        return pelm;
+}
+    
+    public boolean isDynamic(org.w3c.dom.Element e) {
+        Mapper m = getMapper(e);
+        return m.isDynamic;
+    }
     
     private Mapper getMapper(org.w3c.dom.Element e) {
         if(_map == null) {
@@ -346,6 +415,23 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
         final Mapper m = getMapper(e);
         return new java.util.Iterator() {
             java.util.Iterator selectors = m.mappedSelectors.iterator();
+            public boolean hasNext() {
+                return selectors.hasNext();
+            }
+            public Object next() {
+                if(hasNext()) return ((Selector)selectors.next()).getRuleset();
+                else throw new java.util.NoSuchElementException();
+            }
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+   }
+        
+    private java.util.Iterator getSelectedRulesets(java.util.List selectorList) {
+        final java.util.List sl = selectorList;
+        return new java.util.Iterator() {
+            java.util.Iterator selectors = sl.iterator();
             public boolean hasNext() {
                 return selectors.hasNext();
             }
@@ -384,6 +470,7 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
     private org.xhtmlrenderer.extend.AttributeResolver _attRes;
     private java.util.HashMap _map;
     private java.util.HashMap _csMap;
+    private java.util.HashMap _peMap;
     private java.util.HashMap _csCache;
     private java.util.HashMap _elStyle;
     private org.xhtmlrenderer.css.sheet.StylesheetFactory _styleFactory;

@@ -30,6 +30,7 @@ import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 public class Styler {
     
     java.util.HashMap _styleMap = new java.util.HashMap();
+    java.util.HashMap _peStyleMap = new java.util.HashMap();
     
     java.util.HashMap _styleCache = new java.util.HashMap();
     
@@ -42,8 +43,40 @@ public class Styler {
     }
     
     public CalculatedStyle getCalculatedStyle(org.w3c.dom.Element e) {
-        //System.err.println("element "+e.getNodeName()+" calcStyle "+_styleMap.get(e));
         return (CalculatedStyle) _styleMap.get(e);
+    }
+    
+    /** May return null */
+    public CalculatedStyle getPECalculatedStyle(org.w3c.dom.Element e, String pseudoElement) {
+        java.util.Map elm = (java.util.Map) _peStyleMap.get(e);
+        if(elm == null) {
+            elm = resolvePEStyles(e);
+            _peStyleMap.put(e, elm);
+        }
+        return (CalculatedStyle) elm.get(pseudoElement);
+    }
+    
+    private java.util.Map resolvePEStyles(org.w3c.dom.Element e) {
+        java.util.Map elm = new java.util.HashMap();
+        CalculatedStyle parent = getCalculatedStyle(e);
+        java.util.Map peCascades = _matcher.getPECascadedStyleMap(e);
+        for(java.util.Iterator i = peCascades.entrySet().iterator(); i.hasNext();) {
+            java.util.Map.Entry me = (java.util.Map.Entry) i.next();
+            org.xhtmlrenderer.css.newmatch.CascadedStyle matched = (org.xhtmlrenderer.css.newmatch.CascadedStyle) me.getValue();
+            
+            CalculatedStyle cs = null;
+            StringBuffer sb = new StringBuffer();
+            sb.append(parent.hashCode()).append(":").append(matched.hashCode());
+            String fingerprint = sb.toString();
+            cs = (CalculatedStyle) _styleCache.get(fingerprint);
+            
+            if(cs == null) {
+                cs = new CalculatedStyle(parent, matched);
+                _styleCache.put(fingerprint, cs);
+            }
+            elm.put( me.getKey(), cs );
+        }
+        return elm;
     }
     
     //changing this should cause a restyle
@@ -78,7 +111,7 @@ public class Styler {
             
             CalculatedStyle cs = null;
             StringBuffer sb = new StringBuffer();
-            sb.append(parent).append(":").append(matched);
+            sb.append(parent.hashCode()).append(":").append(matched.hashCode());
             String fingerprint = sb.toString();
             cs = (CalculatedStyle) _styleCache.get(fingerprint);
             

@@ -602,6 +602,14 @@ import org.xhtmlrenderer.util.XRLog;
         return null;//not supported yet
     }
     
+    public CalculatedStyle getPseudoElementStyle(Element e, String pseudoElement) {
+        return _styler.getPECalculatedStyle(e, pseudoElement);
+    }
+    
+    public CalculatedStyle getStyle(Element e) {
+        return _styler.getCalculatedStyle(e);
+    }
+    
 }
 /*
  * :folding=java:collapseFolds=1:noTabs=true:tabSize=4:indentSize=4:

@@ -446,9 +446,14 @@ public interface StyleReference {
     public void setDocumentContext(Context context, NamespaceHandler nsh, AttributeResolver ar, Document doc);
     
     /**
-     * Handle the pseudoElement first-letter
+     * Handle the pseudoElements, may return null
      */
-    public CalculatedStyle getFirstLetterStyle(Element e);
+    public CalculatedStyle getPseudoElementStyle(Element e, String pseudoElement);
+    
+    /**
+     * get the CalculatedStyle once for the element, then query that
+     */
+    public CalculatedStyle getStyle(Element e);
 
 }// end interface
 
@@ -456,6 +461,9 @@ public interface StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/08 08:22:15  tobega
+ * Added support for pseudo-elements
+ *
  * Revision 1.6  2004/11/07 01:31:38  tobega
  * Added hooks for handling First-letter pseudo-element
  *

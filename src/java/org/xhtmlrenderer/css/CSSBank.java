@@ -344,7 +344,11 @@ public class CSSBank extends CSSAccessor {
         return new java.util.HashMap();//not supported
     }
     
-    public org.xhtmlrenderer.css.style.CalculatedStyle getFirstLetterStyle(Element e) {
+    public org.xhtmlrenderer.css.style.CalculatedStyle getPseudoElementStyle(Element e, String pseudoElement) {
+        return null;//not supported
+    }
+    
+    public org.xhtmlrenderer.css.style.CalculatedStyle getStyle(Element e) {
         return null;//not supported
     }
     
@@ -354,6 +358,9 @@ public class CSSBank extends CSSAccessor {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/08 08:22:15  tobega
+ * Added support for pseudo-elements
+ *
  * Revision 1.8  2004/11/07 01:31:37  tobega
  * Added hooks for handling First-letter pseudo-element
  *

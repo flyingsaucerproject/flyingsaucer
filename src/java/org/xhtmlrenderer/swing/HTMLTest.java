@@ -119,7 +119,7 @@ public class HTMLTest extends JFrame {
         addFileLoadAction( test, "extended", demoRootDir + "/extended.xhtml" );
         addFileLoadAction( test, "XML-like", demoRootDir + "/xml.xhtml" );
         addFileLoadAction( test, "XML", demoRootDir + "/xml.xml" );
-        addFileLoadAction( test, "expansion-bug", "/home/tobe/Projekt/xhtmlrenderer/demos/expansion-bug.html" );
+        addFileLoadAction( test, "pseudo-element", "/home/tobe/Projekt/xhtmlrenderer/test.xhtml" );
 
         JMenu debug = new JMenu( "Debug" );
         mb.add( debug );
@@ -510,6 +510,9 @@ class ClickMouseListener extends MouseAdapter {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/11/08 08:22:17  tobega
+ * Added support for pseudo-elements
+ *
  * Revision 1.10  2004/11/07 01:17:56  tobega
  * DOMInspector now works with any StyleReference
  *
