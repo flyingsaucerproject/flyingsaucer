@@ -150,7 +150,7 @@ public class FontUtil {
         LineMetrics parent_metrics = null;
         if ( !InlineLayout.isReplaced( node ) ) {
             if ( !InlineLayout.isFloatedBlock( node, c ) ) {
-                parent_metrics = parent_font.getLineMetrics( box.text, ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
+                parent_metrics = parent_font.getLineMetrics( box.getText(), ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
             } else {
                 parent_metrics = parent_font.getLineMetrics( "Test", ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
             }
@@ -390,6 +390,17 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/04 15:35:45  joshy
+ * initial float support
+ * includes right and left float
+ * cannot have more than one float per line per side
+ * floats do not extend beyond enclosing block
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/10/23 13:46:47  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

@@ -50,6 +50,9 @@ abs span (turns into block?)
 nested blocks and inline content inside abs div
 abs div left inside abs div right
 
+need to figure out how to handle repaint optimization on absolute positioned blocks where it's way outside of it's
+parent block
+
 ------------------
 
 plan for floating

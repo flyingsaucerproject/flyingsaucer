@@ -34,8 +34,10 @@ import org.xhtmlrenderer.util.u;
  * @author   empty
  */
 public class LineBreaker {
+
     /**
-     * Description of the Method
+     * Standard multiline breaking. This is the most commonly called
+     * method and is a good target for speedups.
      *
      * @param c           PARAM
      * @param node        PARAM
@@ -48,11 +50,13 @@ public class LineBreaker {
      */
     public static InlineBox generateMultilineBreak( Context c, Node node, int start, String text,
                                                     InlineBox prev, InlineBox prev_align, int avail ) {
-        //u.p("normal breaking");
         // calc end index to most words that will fit
         int end = start;
         int dbcount = 0;
         while ( true ) {
+            
+            
+            // debugging code
             dbcount++;
             //u.off();
             u.on();
@@ -67,21 +71,19 @@ public class LineBreaker {
                 throw new InfiniteLoopError( "Caught a potential infinite loop in the LineBreaker" );
             }
 
-            //u.p("end = " + end);
+            
+            
             int next_space = text.indexOf( " ", end );
             if ( next_space == -1 ) {
                 next_space = text.length();
             }
-            //u.p("next space = " + next_space);
 
             Font font = FontUtil.getFont( c, node );
 
             int len2 = FontUtil.len( c, node, text.substring( start, next_space ), font );
-            //u.p("len2 = " + len2 + " avail = " + avail);
             // if this won't fit, then break and use the previous span
             if ( len2 > avail ) {
                 InlineBox box = newBox( c, node, start, end, prev, text, prev_align, font );
-                //u.p("normal break returning span: " + box);
                 return box;
             }
             // if this will fit but we are at the end then break and use current span
@@ -426,11 +428,11 @@ public class LineBreaker {
         //box.baseline = box.height;
         box.break_after = true;
 
-        box.text = text;
+        box.setText(text);
         if ( !InlineLayout.isReplaced( node ) ) {
             if ( !InlineLayout.isFloatedBlock( node, c ) ) {
                 FontUtil.setupTextDecoration( c, node, box );
-                if ( box.text == null ) {
+                if ( box.getText() == null ) {
                     return box;
                 }
             }
@@ -460,6 +462,17 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/04 15:35:45  joshy
+ * initial float support
+ * includes right and left float
+ * cannot have more than one float per line per side
+ * floats do not extend beyond enclosing block
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:46:47  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

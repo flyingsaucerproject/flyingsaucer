@@ -56,7 +56,7 @@ public class DocumentDiffTest {
                 String testfile = files[i].getAbsolutePath();
                 String difffile = testfile.substring( 0, testfile.length() - 6 ) + ".diff";
                 u.p( "test file = " + testfile );
-                u.p( "diff file = " + difffile );
+                //u.p( "diff file = " + difffile );
                 boolean is_correct = compareTestFile( testfile, difffile, 500, 500 );
                 u.p( "is correct = " + is_correct );
             }
@@ -145,7 +145,12 @@ public class DocumentDiffTest {
     public boolean compareTestFile( String test, String diff, int width, int height )
         throws Exception {
         String tin = xhtmlToDiff( test, width, height );
-        String din = u.file_to_string( diff );
+        String din = null;
+        try {
+            din = u.file_to_string( diff );
+        } catch (FileNotFoundException ex) {
+            return false;
+        }
         //u.p("tin = ");
         //u.p(tin);
         //u.p("din = ");
@@ -198,6 +203,17 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/04 15:35:46  joshy
+ * initial float support
+ * includes right and left float
+ * cannot have more than one float per line per side
+ * floats do not extend beyond enclosing block
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/11/01 14:24:20  joshy
  * added a boolean for turning off threading
  * fixed the diff tests

@@ -55,6 +55,7 @@ public class InlineLayout extends BoxLayout {
                 return super.layoutChildren( c, box );
             }
         }
+        
         int debug_counter = 0;
         int childcount = 0;
         BlockBox block = (BlockBox)box;
@@ -69,6 +70,8 @@ public class InlineLayout extends BoxLayout {
         //block.width = bounds.width;
         //u.p("child layout: " + block);
         int remaining_width = bounds.width;
+        
+        
         // account for text-indent
         LineBox curr_line = new LineBox();
         curr_line.x = bounds.x;
@@ -80,7 +83,10 @@ public class InlineLayout extends BoxLayout {
         prev_line.y = bounds.y;
         prev_line.height = 0;
         InlineBox prev_inline = null;
-        //boolean adjusted_left_tab = false;
+
+        /*
+        // prep the tab stuff
+        // reduce the tab left by the current distance down
         if ( c.getLeftTab().y > 0 ) {
             c.getLeftTab().y -= c.placement_point.y;
         }
@@ -93,6 +99,8 @@ public class InlineLayout extends BoxLayout {
         if ( c.getLeftTab().y < 0 ) {
             c.getLeftTab().y = 0;
         }
+        */
+        
         InlineBox prev_align_inline = null;
         List inline_node_list = null;
         if ( box.isAnonymous() ) {
@@ -100,18 +108,30 @@ public class InlineLayout extends BoxLayout {
         } else {
             inline_node_list = InlineUtil.getInlineNodeList( elem, elem, c );
         }
+        
         // loop until no more nodes
         Node current_node = InlineUtil.nextTextNode( inline_node_list );
         TextUtil.stripWhitespace( c, current_node, elem );
-        // ajdust the first line for tabs
+        // adjust the first line for tabs
+        
+        //u.p("remaining width before = " + remaining_width);
         remaining_width = adjustForTab( c, prev_line, remaining_width );
+        //u.p("remaining width after = " + remaining_width);
         while ( current_node != null ) {
             // loop until no more text in this node
             while ( true ) {
+                
+                
+                
+                // debugging check
                 if ( bounds.width < 0 ) {
                     u.p( "bounds width = " + bounds.width );
                     System.exit( -1 );
                 }
+                
+                
+                
+                
                 // test if there is no more text in the current text node
                 // if there is a prev, and if the prev was part of this current node
                 if ( prev_inline != null && prev_inline.node == current_node ) {
@@ -131,6 +151,11 @@ public class InlineLayout extends BoxLayout {
                         break;
                     }
                 }
+                
+                
+                
+                
+                // the crash warning code
                 if ( bounds.width < 10 ) {
                     u.p( "warning. width < 10 " + bounds.width );
                 }
@@ -156,9 +181,12 @@ public class InlineLayout extends BoxLayout {
                     System.exit( -1 );
                     throw new InfiniteLoopError( "Infinite loop detected in InlineLayout" );
                 }
+                
+                
+                
                 // look at current inline
                 // break off the longest section that will fit
-                InlineBox new_inline = this.calculateInline( c, current_node, remaining_width, bounds.width,
+                InlineBox new_inline = calculateInline( c, current_node, remaining_width, bounds.width,
                     curr_line, prev_inline, elem, prev_align_inline );
                 // if this inline needs to be on a new line
                 if ( new_inline.break_before && !new_inline.floated ) {
@@ -170,16 +198,21 @@ public class InlineLayout extends BoxLayout {
                     curr_line = new LineBox();
                     curr_line.x = bounds.x;
                     // adjust remaining width for floats
-                    remaining_width = adjustForTab( c, prev_line, remaining_width );
+                    curr_line.y = prev_line.y + prev_line.height;
+                    curr_line.setParent(prev_line.getParent());
+                    remaining_width = adjustForTab( c, curr_line, remaining_width );
                     curr_line.width = 0;
                 }
+                
+                
+                
                 // save the new inline to the list
                 curr_line.addChild( new_inline );
                 // calc new height of the line
                 // don't count the inline towards the line height and
                 //line baseline if it's a floating inline.
                 if ( !isFloated( new_inline, c ) ) {
-                    if ( !this.isFloatedBlock( new_inline.node, c ) ) {
+                    if ( !isFloatedBlock( new_inline.node, c ) ) {
                         //u.p("calcing new height of line");
                         if ( new_inline.height + new_inline.y > curr_line.height ) {
                             curr_line.height = new_inline.height + new_inline.y;
@@ -189,6 +222,7 @@ public class InlineLayout extends BoxLayout {
                         }
                     }
                 }
+                
                 InlineUtil.handleFloated( c, new_inline, curr_line, bounds.width, elem );
                 // calc new width of the line
                 curr_line.width += new_inline.width;
@@ -206,9 +240,12 @@ public class InlineLayout extends BoxLayout {
                     curr_line = new LineBox();
                     curr_line.x = bounds.x;
                     // adjust remaining width for floats
-                    remaining_width = adjustForTab( c, prev_line, remaining_width );
+                    curr_line.y = prev_line.y + prev_line.height;
+                    curr_line.setParent(prev_line.getParent());
+                    remaining_width = adjustForTab( c, curr_line, remaining_width );
                     curr_line.width = 0;
                 }
+                
                 // set the inline to use for left alignment
                 if ( !isFloated( new_inline, c ) ) {
                     prev_align_inline = new_inline;
@@ -226,8 +263,11 @@ public class InlineLayout extends BoxLayout {
         block.height = bounds.height;
         block.x = 0;
         block.y = 0;
+        /*
+        // old float code
         c.getLeftTab().y += c.placement_point.y;
         c.getRightTab().y += c.placement_point.y;
+        */
         return block;
     }
 
@@ -240,6 +280,15 @@ public class InlineLayout extends BoxLayout {
      * @param remaining_width  PARAM
      * @return                 Returns
      */
+     
+     /* the new way of doing floats */
+     private int adjustForTab( Context c, LineBox prev_line, int remaining_width ) {
+         BlockFormattingContext bfc = c.getBlockFormattingContext();
+         remaining_width -= bfc.getLeftFloatDistance(prev_line);
+         remaining_width -= bfc.getRightFloatDistance(prev_line);
+         return remaining_width;
+     }
+     /*  the old way of doing floats
      private int adjustForTab( Context c, LineBox prev_line, int remaining_width ) {
         if ( prev_line.y < c.getLeftTab().y ) {
             remaining_width -= c.getLeftTab().x;
@@ -249,6 +298,7 @@ public class InlineLayout extends BoxLayout {
         }
         return remaining_width;
      }
+     */
 
      
     /**
@@ -266,7 +316,6 @@ public class InlineLayout extends BoxLayout {
     */
     private InlineBox calculateInline( Context c, Node node, int avail, int max_width,
             LineBox line, InlineBox prev, Element containing_block, InlineBox prev_align ) {
-        //u.p("line calc with avail = " + avail);
         // calculate the starting index
         int start = 0;
         if ( prev != null && prev.node == node ) {
@@ -278,7 +327,11 @@ public class InlineLayout extends BoxLayout {
         // this must be done before any measuring since it might change the
         // size of the text
         text = TextUtil.transformText( c, node, text );
+        
+        // get the current font. required for sizing
         Font font = FontUtil.getFont( c, node );
+        
+        // handle each case
         if ( isReplaced( node ) ) {
             return LineBreaker.generateReplacedInlineBox( c, node, avail, prev, text, prev_align, font );
         }
@@ -303,6 +356,9 @@ public class InlineLayout extends BoxLayout {
         // normal multiline break
         return LineBreaker.generateMultilineBreak( c, node, start, text, prev, prev_align, avail );
     }
+    
+    
+    
     /**
     * Description of the Method
     *
@@ -328,11 +384,19 @@ public class InlineLayout extends BoxLayout {
         }
         // set the y
         line_to_save.y = prev_line.y + prev_line.height;
+        
+        
+        /* old float code
         if ( line_to_save.y < c.getLeftTab().y ) {
             line_to_save.x += c.getLeftTab().x;
         }
         if ( c.getRightTab().y > 0 ) {
         }
+        */
+        // new float code
+        line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(line_to_save);
+        
+        
         FontUtil.setupVerticalAlign( c, containing_block, line_to_save );
         block.addChild( line_to_save );
     }
@@ -347,6 +411,17 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.9  2004/11/04 15:35:45  joshy
+* initial float support
+* includes right and left float
+* cannot have more than one float per line per side
+* floats do not extend beyond enclosing block
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.8  2004/11/03 23:54:33  joshy
 * added hamlet and tables to the browser
 * more support for absolute layout

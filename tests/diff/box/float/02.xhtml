@@ -3,15 +3,24 @@
     <head>
         <title>Test : Borders : none</title>
         <style type="text/css">
-            p { border: 1px solid black; width: 150px; }
-            .floater { 
-                float: left; border: 1px solid blue; 
-                width: 50px; height: 50px; }
+           .floatholder {
+                border: 1px solid black;
+                width: 150px;
+                }
+           .floater {
+                float: right;
+                border: 1px solid blue;
+                width: 50px;
+                height: 50px;
+                }
         </style>
     </head>
     
     <body>
-        <p><span class="floater">float</span>
+        <p>normal</p>
+        <p class="floatholder"><div class="floater">float</div>
+        this is some text
+        this is some text
         this is some text
         this is some text
         this is some text
@@ -19,6 +28,7 @@
         this is some text
         this is some text
         </p>
+        <p>normal</p>
     </body>
 
 </html>

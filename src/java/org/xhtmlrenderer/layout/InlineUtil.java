@@ -60,7 +60,7 @@ public class InlineUtil {
 
 
     /**
-     * Description of the Method
+     * Sets up all required code for a floated block
      *
      * @param c                PARAM
      * @param inline           PARAM
@@ -70,73 +70,67 @@ public class InlineUtil {
      */
     public static void handleFloated( Context c, InlineBox inline, LineBox line,
                                       int full_width, Element enclosing_block ) {
-
+        BlockFormattingContext bfc = c.getBlockFormattingContext();
+        
+        // joshy: ??? i don't know what this is for. nesting?
         if ( inline.node == enclosing_block ) {
-
             return;
         }
-
+        // joshy: ??? i don't know what this is for. nesting?
         // we must make sure not to grab the float from the containing
-
         // block incase it is floated.
-
         if ( inline.node.getNodeType() == inline.node.TEXT_NODE ) {
-
             if ( inline.node.getParentNode() == enclosing_block ) {
-
                 return;
             }
         }
 
+        // calculate the float property
         String float_val = c.css.getStringProperty( inline.node, CSSName.FLOAT, false );
-
         if ( float_val == null ) {
-
             float_val = "none";
-
         }
-
         if ( float_val.equals( "none" ) ) {
-
             return;
         }
-
-        if ( float_val.equals( "left" ) ) {
-
-            // move the inline to the left
-
-            inline.x = 0 - inline.width;
-
-            // adjust the left tab
-
-            c.getLeftTab().x = inline.width;
-
-            c.getLeftTab().y += inline.height;
-
-        }
-
-        if ( float_val.equals( "right" ) ) {
-
-            // move the inline to the right
-
-            inline.x = full_width - inline.width;
-
-            // adjust the right tab
-
-            c.getRightTab().x = inline.width;
-
-            c.getRightTab().y += inline.height;
-
-        }
-
-        // shrink the line width
-
-        line.width = line.width - inline.width;
-
+        
+        
         // mark as floated
-
         inline.floated = true;
-
+        
+        if ( float_val.equals( "left" ) ) {
+            // move the inline to the left
+            //inline.x = 0 - inline.width;
+            inline.x = bfc.getLeftFloatDistance(line) - inline.width;
+            // add the float to the containing block
+            bfc.addLeftFloat(inline);
+            
+            /*
+            // adjust the left tab
+            c.getLeftTab().x = inline.width;
+            c.getLeftTab().y += inline.height;
+            */
+        }
+        
+        if( float_val.equals( "right" ) ) {
+            // move the inline to the right
+            inline.x = full_width - inline.width - bfc.getRightFloatDistance(line);
+            bfc.addRightFloat(inline);
+        }
+        /*
+        if ( float_val.equals( "right" ) ) {
+            // move the inline to the right
+            inline.x = full_width - inline.width;
+            // adjust the right tab
+            c.getRightTab().x = inline.width;
+            c.getRightTab().y += inline.height;
+        }
+        */
+        
+        // shrink the line width to account for the possible floats
+        line.width -= bfc.getLeftFloatDistance(line);
+        line.width -= bfc.getRightFloatDistance(line);
+        //line.width = line.width - inline.width;
     }
 
 
@@ -366,6 +360,17 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/04 15:35:45  joshy
+ * initial float support
+ * includes right and left float
+ * cannot have more than one float per line per side
+ * floats do not extend beyond enclosing block
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/10/28 13:46:32  joshy
  * removed dead code
  * moved code about specific elements to the layout factory (link and br)

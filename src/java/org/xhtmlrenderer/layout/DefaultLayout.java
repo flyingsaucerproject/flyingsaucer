@@ -170,7 +170,7 @@ public class DefaultLayout implements Layout {
 
             // increase the final layout width if the child was greater
             if ( child_box.width > box.width ) {
-                u.p("upping: " + box.width + " -> " + child_box.width);
+                //u.p("upping: " + box.width + " -> " + child_box.width);
                 box.width = child_box.width;
             }
 
@@ -405,6 +405,17 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/04 15:35:45  joshy
+ * initial float support
+ * includes right and left float
+ * cannot have more than one float per line per side
+ * floats do not extend beyond enclosing block
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.9  2004/11/03 23:54:33  joshy
  * added hamlet and tables to the browser
  * more support for absolute layout

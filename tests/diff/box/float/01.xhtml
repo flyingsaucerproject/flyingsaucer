@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
         <title>Test : Borders : none</title>
         <style type="text/css">
-           div { border-style: none; }
+           .floatholder {
+                border: 1px solid black;
+                width: 150px;
+                }
+           .floater {
+                float: left;
+                border: 1px solid blue;
+                width: 50px;
+                height: 50px;
+                }
         </style>
     </head>
     
     <body>
-        <p><span class="floater">float</span>
+        <p>normal</p>
+        <p class="floatholder"><div class="floater">float</div>
+        this is some text
+        this is some text
+        this is some text
         this is some text
         this is some text
         this is some text
         this is some text
         this is some text
         </p>
+        <p>normal</p>
     </body>
 
 </html>

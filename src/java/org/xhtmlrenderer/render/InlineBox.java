@@ -91,7 +91,7 @@ public class InlineBox extends Box {
     public int end_index = -1;
 
     /** Description of the Field */
-    public String text;
+    private String text;
 
 
     /** Description of the Field */
@@ -176,6 +176,17 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/11/04 15:35:45  joshy
+ * initial float support
+ * includes right and left float
+ * cannot have more than one float per line per side
+ * floats do not extend beyond enclosing block
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.2  2004/10/23 13:50:26  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

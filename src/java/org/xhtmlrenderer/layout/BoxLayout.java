@@ -102,7 +102,7 @@ public class BoxLayout extends DefaultLayout {
             c.setBlockFormattingContext(bfc);
             set_bfc = true;
             old_bfc = null;
-            u.p("extents here = " + c.getExtents());
+            //u.p("extents here = " + c.getExtents());
             bfc.setWidth((int)c.getExtents().getWidth());
         }
         Rectangle oe = c.getExtents();
@@ -396,6 +396,17 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/04 15:35:44  joshy
+ * initial float support
+ * includes right and left float
+ * cannot have more than one float per line per side
+ * floats do not extend beyond enclosing block
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.9  2004/11/03 23:54:33  joshy
  * added hamlet and tables to the browser
  * more support for absolute layout
