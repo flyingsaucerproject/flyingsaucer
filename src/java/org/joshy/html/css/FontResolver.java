@@ -6,7 +6,12 @@ import org.joshy.html.Context;
 public class FontResolver {
 
     public Font resolveFont(Context c, String[] families, float size, String weight, String style) {
-        Font f = c.getGraphics().getFont();
+      return this.resolveFont(c.getGraphics().getFont(), families, size, weight, style);
+    }
+    
+    public Font resolveFont(Font baseFont, String[] families, float size, String weight, String style) {
+        Font f = baseFont;
+        
         f = f.deriveFont((float)size);
 
         if(weight.equals("bold")) {
