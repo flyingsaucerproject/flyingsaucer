@@ -60,7 +60,7 @@ public class InlineLayout extends BoxLayout {
         // Uu.p("block content = " + ContentUtil.isBlockContent(contentList));
         if (ContentUtil.isBlockContent(contentList)) {//this should be block layed out
             //BoxLayout.layoutContent(c, box, contentList, block);
-            super.layoutChildren(c,box);
+            super.layoutChildren(c, box);
         } else {
             layoutContent(c, box, contentList, block);
         }
@@ -187,12 +187,6 @@ public class InlineLayout extends BoxLayout {
                     //HACK: is my thinking straight? - tobe
                     prev_align_inline.break_after = true;
                     continue;
-                }
-
-                if (!(currentContent instanceof InlineBlockContent)) {
-                    if (!(currentContent instanceof FloatedBlockContent)) {
-                        if (new_inline.getSubstring().equals("")) break;
-                    }
                 }
 
                 isFirstLetter = false;
@@ -423,6 +417,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.59  2004/12/14 02:18:30  tobega
+* house-cleaning
+*
 * Revision 1.58  2004/12/14 01:56:23  joshy
 * fixed layout width bugs
 * fixed extra border on document bug
