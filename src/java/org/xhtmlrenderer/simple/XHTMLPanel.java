@@ -28,6 +28,7 @@ import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.BasicPanel;
+import org.xhtmlrenderer.swing.LinkListener;
 
 
 /**
@@ -96,6 +97,7 @@ public class XHTMLPanel extends BasicPanel {
      */
     public XHTMLPanel( UserAgentCallback uac ) {
         super( uac );
+        addMouseListener(new LinkListener(this));
     }
 
     /*
