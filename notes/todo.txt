@@ -1,22 +1,32 @@
 last bit for R4
 
-add javadocs online
+--add javadocs online
 remove java.net stuff from javadocs pages
 build new news release
 link to RSS feed
 update src, binary, and java webstart links
 create sub document links on FAQ page
-getting started guide
-    change class names and packages
-    update code for 'showing a page'
-        remove calls to setViewport blah
+//getting started guide
+//    change class names and packages
+//    update code for 'showing a page'
+//        remove calls to setViewport blah
         
-add changing default css
+--add changing default css
     overide in document
     change default.css
     point to new default.css
+    
 
+The Flying Saucer Team is proud to present Beta Release 4 (R4) of our 100% Java XHTML + CSS2 Renderer.
 
+This release brings updates to the infrastructure with
+
+    a new package heirarchy
+    automated unit tests to validate our rendering compliance
+    new configuration and logging subsystem
+    lots more code cleanup
+    separate browser and about box sub projects
+    
 
 
 
