@@ -302,9 +302,14 @@ public class LayoutFactory {
         addCustomLayout( "ol", new ListLayout() );
         addCustomLayout( "ul", new ListLayout() );
         addCustomLayout( "img", new ImageLayout() );
-        addCustomLayout( "table", new TableLayout2() );
-        addCustomLayout( "td", new TableCellLayout() );
-        addCustomLayout( "th", new TableCellLayout() );
+        
+        Layout table = new TableLayout2();
+        addDisplayLayout("table",table);
+        //addCustomLayout( "table", table );
+        Layout table_cell = new TableCellLayout();
+        addDisplayLayout("table-cell",table_cell);
+        //addCustomLayout( "td", new TableCellLayout() );
+        //addCustomLayout( "th", new TableCellLayout() );
         addCustomLayout( "br", inline );
         addCustomLayout( "hr", new NullLayout() );
         addCustomLayout( "form", inline );
@@ -324,6 +329,17 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.16  2004/11/19 14:27:37  joshy
+* removed hard coded element names
+* added support for tbody, or tbody missing
+*
+*
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.15  2004/11/18 23:29:38  joshy
 * fixed xml bug
 * Issue number:

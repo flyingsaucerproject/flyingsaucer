@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutUtil;
 
 
 /**
@@ -51,23 +52,58 @@ public class Table {
      *
      * @param elem  The feature to be added to the Table attribute
      */
-    public void addTable( Element elem ) {
+    public void addTable( Context c, Element elem ) {
         // for each tr
         NodeList rows = elem.getChildNodes();
         boolean first_row = true;
         int row_count = 0;
         for ( int i = 0; i < rows.getLength(); i++ ) {
             Node row = rows.item( i );
-            if ( row.getNodeName().equals( "tr" ) ) {
+            
+            // NOTE: JMM 11/19/04
+            // if there is a tbody then parse it instead
+            // and break out early. is this spec compliant??
+            if ( isRowGroup(c,row) ) {
+                addTable(c,(Element)row);
+                return;
+            }
+            
+            if ( isRow(c,row) ) {
                 if ( first_row ) {
-                    addFirstRow( row );
+                    addFirstRow(c, row );
                     first_row = false;
                 } else {
-                    addRow( row, row_count );
+                    addRow(c, row, row_count );
                 }
                 row_count++;
             }
         }
+    }
+    
+
+    
+    private boolean isRowGroup(Context c, Node node) {
+        // only elements can be table row groups
+        if(!(node instanceof Element)) {
+            return false;
+        }
+        // check the display value
+        if(LayoutUtil.getDisplay(c,(Element)node).equals("table-row-group")) {
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean isRow(Context c, Node node) {
+        // only elements can be rows
+        if(!(node instanceof Element)) {
+            return false;
+        }
+        // check the display value
+        if(LayoutUtil.getDisplay(c,(Element)node).equals("table-row")) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -76,8 +112,8 @@ public class Table {
      * @param row  The feature to be added to the Row attribute
      * @param y    The feature to be added to the Row attribute
      */
-    public void addRow( Node row, int y ) {
-        addRow( row, false, y );
+    public void addRow( Context c, Node row, int y ) {
+        addRow(c, row, false, y );
     }
 
     /**
@@ -85,8 +121,8 @@ public class Table {
      *
      * @param row  The feature to be added to the FirstRow attribute
      */
-    public void addFirstRow( Node row ) {
-        addRow( row, true, 0 );
+    public void addFirstRow( Context c, Node row ) {
+        addRow(c, row, true, 0 );
     }
 
     /**
@@ -96,7 +132,7 @@ public class Table {
      * @param first_row  The feature to be added to the Row attribute
      * @param y          The feature to be added to the Row attribute
      */
-    public void addRow( Node row, boolean first_row, int y ) {
+    public void addRow( Context c, Node row, boolean first_row, int y ) {
         // for each td
         //Row rw = new Row();
         //rw.node = row;
@@ -105,7 +141,8 @@ public class Table {
         int col_counter = 0;
         for ( int j = 0; j < cells.getLength(); j++ ) {
             Node cell = cells.item( j );
-            if ( cell.getNodeName().equals( "td" ) || cell.getNodeName().equals( "th" ) ) {
+            if ( isTableCell(c, cell) ) {
+        //cell.getNodeName().equals( "td" ) || cell.getNodeName().equals( "th" ) ) {
                 //u.p("adding: " + col_counter + " " + y);
                 // add the cell
                 Cell cl = null;
@@ -122,6 +159,21 @@ public class Table {
         first_row = false;
         //rows.add(rw);
     }
+    
+    
+    private boolean isTableCell(Context c, Node node) {
+        // only elements can be rows
+        if(!(node instanceof Element)) {
+            return false;
+        }
+        // check the display value
+        if(LayoutUtil.getDisplay(c,(Element)node).equals("table-cell")) {
+            return true;
+        }
+        return false;
+    }
+
+    
 
 
     /**
@@ -300,6 +352,17 @@ public class Table {
 /*
    $Id$
    $Log$
+   Revision 1.4  2004/11/19 14:27:38  joshy
+   removed hard coded element names
+   added support for tbody, or tbody missing
+
+
+
+   Issue number:
+   Obtained from:
+   Submitted by:
+   Reviewed by:
+
    Revision 1.3  2004/10/23 13:59:18  pdoubleya
    Re-formatted using JavaStyle tool.
    Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

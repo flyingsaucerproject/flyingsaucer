@@ -142,6 +142,7 @@ public class LayoutUtil {
             String display = getDisplay(c,(Element)child);
             if ( display != null && 
                 (display.equals( "block" ) ||
+                 display.equals( "table" ) ||
                  display.equals( "table-cell" ))
                ) {
                 if(isFloated(c,(Element)child)) {

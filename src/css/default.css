@@ -166,7 +166,7 @@ h1, h2, h3, h4, h5, h6 {
     margin: 1em;
 }
 
-div, p, table {
+div, p {
     display: block;
 }
 
@@ -210,18 +210,9 @@ div {
 
 img {
     display: inline-block;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
-    padding-top: 0px;
-    padding-right: 0px;
-    padding-bottom: 0px;
-    padding-left: 0px;
-    margin-top: 0px;
-    margin-left: 0px;
-    margin-bottom: 0px;
-    margin-right: 0px;
+    border-width: 1px 1px 1px 1px;
+    margin: 0px;
+    padding: 0px;
 }
 
 pre {
@@ -229,37 +220,42 @@ pre {
     font-family: monospace;
 }
 
+/* =================== tables =================== */
 
 table {
+    display: table;
     table-layout: fixed;
     border-spacing: 0px;
 }
 
+tr       { display: table-row; }
+thead    { display: table-header-group; }
+tbody    { display: table-row-group; }
+tfoot    { display: table-footer-group; }
+col      { display: table-column; }
+colgroup { display: table-column-group; }
+caption  { display: table-caption; }
+
 td, th {
     display: table-cell;
-    border-top-width: 0px;
-    border-right-width: 0px;
-    border-bottom-width: 0px;
-    border-left-width: 0px;
-    padding-top: 3px;
-    padding-right: 3px;
-    padding-bottom: 3px;
-    padding-left: 3px;
-    margin-top: 0px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
+    border-width: 0px 0px 0px 0px;
+    padding: 3px 3px 3px 3px;
+    margin: 0px 0px 0px 0px;
 }
+
 th {
     font-weight: bold;
 }
+
+
+/* =================== forms =================== */
 
 form {
     display: block;
 }
 
 input {
-    border: 0px solid red;
+    border: 0px solid black;
     margin: 0px;
     padding: 0px;
     vertical-align: baseline;

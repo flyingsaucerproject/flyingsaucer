@@ -52,52 +52,31 @@
 //add dpi awareness
 //fix line breaking bugs
 //initial printing (no media or paging support)
-
-rachel in town arrive 20th @ 7, leave 5th @ 7
-
-
-
-write up some queue notes.
-
-bugs:
-
-if a block is floated right and it's the first block inside the parent, it doesn't work.
-
-if a block is not first and it's floated left, then it doesn't work. it only works if it's first.  actually, it does seem to work now, but the padding is different. ?
-
-this is because if the block is first then it is processed differently than if it's not first.  
-
-I need to flesh out the cooperation between the inline and block layouts. If a box has at least one block child then it needs to switch to block layout. If a box which would be block has only inlines, then it needs to switch to inline.  Tricky stuff.
-
 //    if something is floated or absolute it should be turned into a block
 //    floated divs work, but not floated spans. span should turn into a
 //    block when floated
-
-    table crashes on tbody
-    table crashes on empty tr
-
-    abs pos w/ bottom align
---    whitespace bugs
-    
-    javadoc xhtmlpanel
-    javadoc graphic2drenderer
-    remove isPrinting(). check the graphics instanceof printablegraphics
-    
-    show current resources in browser
-
-
-can we separate inline and box more? maybe do that later?
-    
-layout cleanups
-    cache linemetrics and ascend/dscend more
-    take out redundant functions
+//I think the floating problems are solved now.
+//    abs pos w/ bottom align
+//move actions out into their own code
     //collapse fontresolver and fontresolvertest
     //move defaultlayout into boxlayout and get it all to compile
     //make layoututil w/ util functions from defaultlayout
     //create preloadbox in layout interface
+
+
+rachel in town arrive 20th @ 7, leave 5th @ 7
+
+table crashes on tbody. skip tbody? 
+table crashes on empty tr
+reimplement whitespace handling
+javadoc xhtmlpanel
+javadoc graphic2drenderer
+remove isPrinting(). check the graphics instanceof printablegraphics
+show current resources in browser
+can we separate inline and box more? maybe do that later?    
+cache linemetrics and ascend/dscend more
+take out redundant functions in font stuff
     
-browser cleanups
-    //move actions out into their own code
 
 --crash w/ width = 50%
 --% width for absolute layout
