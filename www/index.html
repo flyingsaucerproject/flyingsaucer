@@ -6,79 +6,46 @@
 <body> 
 
 
-<h1><img src="images/flyingsaucer.jpg" float="left"/>Flying Saucer: a 100% Java XHTML + CSS 2 renderer</h1>
+<h1 align="center"><img src="images/flyingsaucer.jpg" float="left"/></h1>
+<h1>Flying Saucer: The 100% Java XHTML + CSS 2 renderer</h1>
+<p>Flying Saucer is a 100% Java  XHTML renderer with a focus on
+  strict compliance with the complete W3C CSS 2.1 standard, mainly for thick
+  clients like the iTunes Music Store, chat programs, help viewers, ebook readers,
+  splashscreens, and any other place where html is useful inside an application.
+  Flying Saucer is not a general purpose webbrowser. Legacy and non-compliant
+  pages (ie, the general internet) will be supported through compatibility libraries
+  rather than modifying the core renderer. We aim to be the definitive open 100%
+  Java renderer for XHTML content.</p>
+<h2>News</h2>
+<p>We are currently reorganizing the codebase and have released a <a href="roadmap.html">roadmap</a> for
+  the next six releases </p>
+<p><a href="http://wiki.java.net/bin/view/Javadesktop/XHTMLRenderer">the wiki</a> |
+  <a href="roadmap.html">roadmap</a> | <a
+href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">mailing
+list</a> | </p>
+<h2>Current Release </h2>
 
-
-<p>Flying Saucer is a 100% Java strictly compliant XHTML + CSS1/2 (3?)
-renderer. We are focusing on strict compliance with the complete CSS
-standard (the W3C's 2.1 standard initially), mainly for thick clients
-like the iTunes Music Store, chat programs, help viewers, splashscreens, and
-any other place where html is useful inside an application.</p>
-
-<p>Flying Saucer is not a general purpose webbrowser. This means legacy
-/non-compliant pages (ie, the general internet) will be supported through
-compatibility libraries rather than modifying the core renderer. We aim to be
-the definitive open 100% Java renderer for HTML content.</p>
-
-<h3>Quick Start</h3>
-
-<p>v 0.02 : <a href="changes.html">changes</a>
-<a href="https://xhtmlrenderer.dev.java.net/dist/fs.jnlp">webstart</a> link<br/>
-<a href="https://xhtmlrenderer.dev.java.net/files/documents/1821/5847/flyingsaucer.zip">binary</a> distribution<br/>
-<a href="https://xhtmlrenderer.dev.java.net/files/documents/1821/5846/flyingsaucer.src.zip">source</a> distribution<br/>
-
-You need <a href="http://ant.apache.org/">Ant</a> and the 1.4 JDK to compile the source. Run <i>ant
-test</i> to launch the test program. Select different tests from the
-<i>Test</i> menu. </p>
-
-<h3>We need help!</h3>
+<p>v 0.02 : </p>
+<ul>
+  <li><a href="changes.html">changes</a>    </li>
+  <li><a href="https://xhtmlrenderer.dev.java.net/dist/fs.jnlp">webstart</a> link</li>
+  <li><a href="https://xhtmlrenderer.dev.java.net/files/documents/1821/5847/flyingsaucer.zip">binary</a> distribution</li>
+  <li><a href="https://xhtmlrenderer.dev.java.net/files/documents/1821/5846/flyingsaucer.src.zip">source</a> distribution</li>
+</ul>
+<p>You
+      need <a href="http://ant.apache.org/">Ant</a> and the 1.4 JDK to compile
+            the source. Run <i>ant
+          test</i> to launch the test program. Select different tests from the <i>Test</i> menu. </p>
+<h2>We need help!</h2>
 
 <p><b>If you want to contribute</b> or just see what's going on then please
 join the <a
 href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList"><b>dev</b>
 mailing list</a>! We need developers, beta testers, doc writers,
-evangelists, and users. Even if you are just curious please join in. </p>
-
-<p> This is a *very challenging project* and we need some top flight people
-to work on it. In particular we want module owners for the following:
-
-<ul>
-
-<li> Rendering compliance (research the latest standards, build it, test it)</li>
-<li> CSS (parsing, converting, optimizing, rendering new features)</li>
-<li> HTML-&gt;XHTML converter (support for HTML 3/4.0 pages)</li>
-<li> Browser component (a standalone webbrowser based on Flying Saucer)</li>
-<li> Javascript support (how do we plug in rhino?)</li>
-<li> I18N efforts (how do we make sure the whole thing is i18n-able)</li>
-<li> forms (input, select, text area, etc)</li>
-<li> object and plugin support (SVG, xforms, flash, pdf)</li>
-<li> printing module (we can't print anything yet!)</li>
-<li> network module (ssl, redirects, image loading, etc.)</li>
-<li> performance and memory optimization (how do we make the whole thing as fast and light as possible)</li>
-
-</ul>
-
-</p>
-
-<h3>Current Status</h3>
-
-<p>The code currently supports a good portion of the CSS 2.0 spec. There
-are still parts missing with tables (row spanning and the alternative
-layout algorithm), floating (inter context floats don't work properly), and
-there's still a bit of wonkiness with absolute vs relative boxes. There is
-also no support for forms yet. The main limitation is that it's very very
-slow (the line breaking algorithm uses regexs) and does a lot of
-unnecessary recalculations. </p>
-
-
-<h3>Resources and Links</h3>
-
-<p>
-<a href="http://wiki.java.net/bin/view/Javadesktop/XHTMLRenderer">the wiki</a>
-all work is going to start off here and on the mailing list.<br/>
-Joshua's original <a href="http://weblogs.java.net/pub/wlg/1444">weblog post</a> about FS.
-</p>
-
+evangelists, and users. Even if you are just curious please join in. This is
+a *very challenging project* and we need some top flight people to work on it.</p>
+<h2><br/>
+</h2>
 
 </body>
 
