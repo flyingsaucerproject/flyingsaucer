@@ -1,0 +1,190 @@
+package tests.public_apis.css.properties.factory;
+
+import java.awt.Color;
+import java.io.*;
+import java.util.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import com.steadystate.css.parser.CSSOMParser;
+import org.w3c.css.sac.InputSource;
+import org.w3c.dom.css.CSSRule;
+import org.w3c.dom.css.*;
+import org.w3c.dom.css.CSSRuleList;
+import org.w3c.dom.css.CSSStyleDeclaration;
+import org.w3c.dom.css.CSSStyleSheet;
+
+import org.xhtmlrenderer.css.sheet.*;
+import org.xhtmlrenderer.css.sheet.factory.*;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.util.*;
+import tests.public_apis.css.FSCssTestCase;
+
+/**
+ * Margin property assignment tests.
+ *
+ * @author   Patrick Wright
+ */
+public class BorderColorPropertyExplosionTest extends TestCase {
+    /**
+     * Description of the Field
+     */
+    private CSSOMParser parser = new CSSOMParser();
+    
+    CSSStyleSheet cssStyleSheet;
+
+    /**
+     * Constructor for the FSCssTestCase object
+     *
+     * @param name  PARAM
+     */
+    public BorderColorPropertyExplosionTest( String name ) {
+        super( name );
+    }
+    
+    protected void tearDown() {}
+    
+    protected void setUp() {
+        InputSource is = new InputSource(new StringReader(getCSSText()));
+        try {
+            cssStyleSheet = parser.parseStyleSheet(is);
+        } catch (java.io.IOException e) {
+            throw new XRRuntimeException("IOException on parsing style seet from a Reader; don't know the URI.", e);
+        }
+    }
+
+    /** A unit test for JUnit */
+    public void testExplode() {
+        PropertyDeclarationFactory factory = BorderColorPropertyDeclarationFactory.instance();
+
+        String sel = null;
+        CSSStyleDeclaration decl = null;
+        String propName = null;
+        int origin = Stylesheet.USER_AGENT;
+        Map testMap = null;
+
+        CSSRuleList rlist = cssStyleSheet.getCssRules();
+        System.out.println("   CSS RULES:" + rlist.getLength());
+        for ( int i=0; i < rlist.getLength(); i++ ) {
+            CSSStyleRule rule = (CSSStyleRule)rlist.item(i);
+            sel = rule.getSelectorText();
+            decl = rule.getStyle();
+            propName = decl.item(0);
+            assertEquals("Property name in test input data (CSS) should be '" + 
+            CSSName.BORDER_COLOR_SHORTHAND + "' but it is '" + propName, 
+            CSSName.BORDER_COLOR_SHORTHAND, propName);
+            
+            if ( sel.equals("p#OneToFour")) {
+                testMap = getOneToFourMap();
+            } else if ( sel.equals("p#TwoToFour")) {
+                testMap = getTwoToFourMap();
+            } else if ( sel.equals("p#ThreeToFour")) {
+                testMap = getThreeToFourMap();
+            } else if ( sel.equals("p#FourToFour")) {
+                testMap = getFourToFourMap();
+            }
+            Iterator iter = factory.buildDeclarations( decl, propName, origin );
+            while ( iter.hasNext()) {
+                PropertyDeclaration pd = (PropertyDeclaration)iter.next();
+                Color expected = (Color)testMap.get(pd.getName());
+                Color actual = Color.decode(pd.getValue().toString());
+                assertEquals("Value for " + pd.getName() + " should be " +
+                    expected, expected, actual); 
+                
+                // DEBUG: use this to verify comparisons by selector
+                //System.out.println(sel + "=> " + pd);
+            }
+            
+        }
+    }
+    
+    private Map getOneToFourMap() {
+        Map testVals = new HashMap();
+        testVals.put(CSSName.BORDER_COLOR_TOP, Color.BLACK);
+        testVals.put(CSSName.BORDER_COLOR_BOTTOM, Color.BLACK);
+        testVals.put(CSSName.BORDER_COLOR_RIGHT, Color.BLACK);
+        testVals.put(CSSName.BORDER_COLOR_LEFT, Color.BLACK);
+        return testVals;
+    }
+
+    private Map getTwoToFourMap() {
+        Map testVals = new HashMap();
+        Color aqua = Color.decode("#00ffff");
+        Color blue = Color.decode("#0000ff");
+        testVals.put(CSSName.BORDER_COLOR_TOP, aqua);
+        testVals.put(CSSName.BORDER_COLOR_BOTTOM, aqua);
+        testVals.put(CSSName.BORDER_COLOR_RIGHT, blue);
+        testVals.put(CSSName.BORDER_COLOR_LEFT, blue);
+        return testVals;
+    }
+    
+    private Map getThreeToFourMap() {
+        Map testVals = new HashMap();
+        Color fuschia = Color.decode("#ff00ff");
+        Color gray = Color.decode("#808080");
+        Color green = Color.decode("#008000");
+        testVals.put(CSSName.BORDER_COLOR_TOP, fuschia);
+        testVals.put(CSSName.BORDER_COLOR_RIGHT, gray);
+        testVals.put(CSSName.BORDER_COLOR_LEFT, gray);
+        testVals.put(CSSName.BORDER_COLOR_BOTTOM, green);
+        return testVals;
+    }
+
+    private Map getFourToFourMap() {
+        Map testVals = new HashMap();
+        Color lime = Color.decode("#00ff00");
+        Color maroon = Color.decode("#800000");
+        Color navy = Color.decode("#000080");
+        Color olive = Color.decode("#808000");
+        testVals.put(CSSName.BORDER_COLOR_TOP, lime);
+        testVals.put(CSSName.BORDER_COLOR_RIGHT, maroon);
+        testVals.put(CSSName.BORDER_COLOR_BOTTOM, navy);
+        testVals.put(CSSName.BORDER_COLOR_LEFT, olive);
+        return testVals;
+    }
+
+    protected String getDocumentText() { 
+        return
+        "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">" +
+        "<head></head>" +
+        "<body></body>" +
+        "</html>";
+    }
+
+    protected String getCSSText() {
+        // careful about testing for transparent--because it wont
+        // decode into a Color instance with Color.decode()--the
+        // string is left as 'transparent' in our normalization and
+        // only converted to Color(0,0,0,0) when referenced (PWW 19-11-04)
+        return "   p#OneToFour   { border-color: black; }" +
+               "   p#TwoToFour   { border-color: aqua blue; }" +
+               "   p#ThreeToFour { border-color: fuchsia gray green; }" +
+               "   p#FourToFour  { border-color: lime maroon navy olive; }";
+    }
+
+    /**
+     * A unit test suite for JUnit
+     *
+     * @return   The test suite
+     */
+    public static Test suite() {
+        return new TestSuite( BorderColorPropertyExplosionTest.class );
+    }
+} // end class
+
+/*
+
+ * $Id$
+
+ *
+
+ * $Log$
+ * Revision 1.1  2005/01/24 14:26:46  pdoubleya
+ * Added to CVS.
+ *
+
+ *
+
+*/
+
+
