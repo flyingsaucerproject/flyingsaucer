@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--<!DOCTYPE html
+
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+
+
+<head>
+
+<title>Test: Mixed Content (1)</title>
+
+<style type="text/css">
+
+body {
+
+  background-color: #f0fff0;
+
+  font-family: sans-serif;
+
+}
+
+hr {
+
+  height: 8px;
+
+  color: #008800;
+
+}
+
+a {
+
+  color: #009900;
+
+  text-decoration: none;
+
+}
+
+a:hover {
+
+  text-decoration: underline;
+
+}
+
+pre {
+
+    margin-left: 30px;
+
+    margin-right: 10px;
+
+    margin-top: 10px;
+
+    margin-bottom: 10px;
+
+    border-top-width: 2px;
+
+    border-bottom-width: 2px;
+
+    border-left-width: 2px;
+
+    border-right-width: 2px;
+
+    border-color: #99dd99;
+
+    padding-top: 5px;
+
+    padding-bottom: 5px;
+
+    padding-left: 5px;
+
+    padding-right: 5px;
+
+    background-color: #b0ffb0;
+
+}
+
+code {
+
+  font-family: mono-space;
+
+}
+
+blockquote code {
+
+  white-space: pre;
+
+}
+
+h1 {
+
+    margin-top: 0px;
+
+    margin-right: 0px;
+
+    margin-bottom: 0px;
+
+    margin-left: 0px;
+
+    border-top-width: 0px;
+
+    border-bottom-width: 2px;
+
+    border-left-width: 0px;
+
+    border-right-width: 0px;
+
+    border-color: #008800;
+
+    background-color: #88ff88;
+
+    padding-top: 3px;
+
+    padding-bottom: 10px;
+
+    padding-left: 3px;
+
+    padding-right: 3px;
+
+    color: #005500;
+
+}
+
+
+
+
+
+table {
+
+  empty-cells: show;
+
+  border-collapse: collapse;
+
+}
+
+td {
+
+  border: solid 2px #006600;
+
+  padding: 3px;
+
+}
+
+
+
+ul {
+
+  list-style-type: disc;
+
+}
+
+ol {
+
+  list-style-type: lower-alpha;
+
+}
+
+
+
+</style>
+
+
+
+    </head>
+
+    <body>
+
+    
+
+    <h1>Test 14: How do I make an XPATH node query?</h1>
+
+<p>If you want to select a set of nodes from an XML document
+
+you should start with the top node and select on down.</p>
+
+
+
+
+
+<p>ex: if you have this XML</p>
+
+
+
+<pre>&lt;root&gt;
+
+  &lt;sub1&gt;
+
+    &lt;sub2&gt;
+
+      &lt;target&gt;the answer&lt;/target&gt;
+
+    &lt;/sub2&gt;
+
+  &lt;/sub1&gt;
+
+&lt;/root&gt;</pre>
+
+
+
+<p>then this XPATH</p>
+
+
+
+<pre>/root/sub1/sub2/target</pre>
+
+
+
+<p>will return this text</p>
+
+
+
+<pre>the answer</pre>
+
+
+
+</body>
+
+</html>
+
+
+
