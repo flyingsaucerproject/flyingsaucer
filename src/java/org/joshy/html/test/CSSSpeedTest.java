@@ -101,6 +101,16 @@ public class CSSSpeedTest {
         c.css = new XRStyleReference(c);
 
         runLoopTest(c,g,html);
+
+        u.p("");
+
+        u.p("TBStyleReference");
+
+        c = new Context();
+
+        c.css = new net.homelinux.tobe.xhtmlrenderer.bridge.TBStyleReference(c);
+
+        runLoopTest(c,g,html);
     }
 
     
@@ -116,6 +126,18 @@ public class CSSSpeedTest {
         Object marker = new DefaultCSSMarker();
 
         //u.p("getting: " + marker.getClass().getResource("default.css"));
+
+
+               
+
+        int total = 0;
+        long first = 0;
+        int loop = 10;
+        for(int i=0; i < loop; i++) {
+
+            u.sleep(100);
+
+            long start_time = new java.util.Date().getTime();
 
         InputStream stream = marker.getClass().getResourceAsStream("default.css");
 
@@ -142,17 +164,6 @@ public class CSSSpeedTest {
         BodyLayout layout = new BodyLayout();
 
         
-
-               
-
-        int total = 0;
-        int loop = 30;
-        for(int i=0; i < loop; i++) {
-
-            u.sleep(100);
-
-            long start_time = new java.util.Date().getTime();
-
             // execute layout
 
             //u.p("body = " + body);
@@ -163,12 +174,14 @@ public class CSSSpeedTest {
 
             u.p(i + ") ending count = " + (end_time-start_time) + " msec");
 
-            if ( i > 0 )
+            if ( i == 0 )
+                first = (end_time-start_time);
+            else
                 total += (end_time-start_time);
 
         }
 
-        u.p("avg = " + (total/loop));
+        u.p("first = "+first+", avg = " + (total/(loop-1)));
 
     }
 
