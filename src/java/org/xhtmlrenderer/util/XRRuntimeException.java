@@ -20,9 +20,6 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.util.logging.*;
-
-
 
 /**
  * General runtime exception used in XHTMLRenderer. Auto-logs messages to
@@ -59,7 +56,7 @@ public class XRRuntimeException extends RuntimeException {
      * @param msg  Message for the log.
      */
     private void log( String msg ) {
-        XRLog.exception("Unhandled exception. " + msg );
+        XRLog.exception( "Unhandled exception. " + msg );
     }
 
     /**
@@ -71,7 +68,7 @@ public class XRRuntimeException extends RuntimeException {
      *      IOException.
      */
     private void log( String msg, Throwable cause ) {
-        XRLog.exception("Unhandled exception. " + msg, cause );
+        XRLog.exception( "Unhandled exception. " + msg, cause );
     }
 }
 
@@ -79,6 +76,11 @@ public class XRRuntimeException extends RuntimeException {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/10/23 14:06:57  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
  * Revision 1.2  2004/10/14 12:54:54  pdoubleya
  * Use XRLog for logging.
  *

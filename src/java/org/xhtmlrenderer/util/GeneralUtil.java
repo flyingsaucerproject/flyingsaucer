@@ -21,8 +21,7 @@
 package org.xhtmlrenderer.util;
 
 import java.io.*;
-import java.net.*;
-import org.xhtmlrenderer.*;
+import java.net.URL;
 
 
 /**
@@ -34,10 +33,11 @@ public class GeneralUtil {
     /**
      * Description of the Method
      *
+     * @param obj       PARAM
      * @param resource  PARAM
      * @return          Returns
      */
-    public static InputStream openStreamFromClasspath(Object obj, String resource ) {
+    public static InputStream openStreamFromClasspath( Object obj, String resource ) {
         InputStream readStream = null;
         try {
             ClassLoader loader = obj.getClass().getClassLoader();
@@ -51,7 +51,7 @@ public class GeneralUtil {
                 readStream = stream.openStream();
             }
         } catch ( Exception ex ) {
-            XRLog.exception("Could not open stream from CLASSPATH: " + resource, ex );
+            XRLog.exception( "Could not open stream from CLASSPATH: " + resource, ex );
         }
         return readStream;
     }
@@ -61,6 +61,11 @@ public class GeneralUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/10/23 14:06:56  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
  * Revision 1.4  2004/10/19 15:00:53  joshy
  * updated the build file
  * removed some extraneous files

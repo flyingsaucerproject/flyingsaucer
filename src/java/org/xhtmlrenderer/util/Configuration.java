@@ -23,8 +23,8 @@ package org.xhtmlrenderer.util;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-
 import org.xhtmlrenderer.DefaultCSSMarker;
+
 
 /**
  * <p>
@@ -64,68 +64,127 @@ public class Configuration {
     /** Our backing data store of properties. */
     private Properties properties;
 
+    /** Description of the Field */
+    private Level logLevel;
+
     /** The Singleton instance of the class. */
     private static Configuration sInstance;
 
     /** The location of our default properties file; must be on the CLASSPATH. */
     private final static String SF_FILE_NAME = "resources/conf/xhtmlrenderer.conf";
-    
-    private Level logLevel;
 
     /** Default constructor. */
     private Configuration() {
         // read logging level from System properties
-        String val = System.getProperty("show-config");
+        String val = System.getProperty( "show-config" );
         logLevel = Level.INFO;
         if ( val != null ) {
-            if ( "ALL".equals(val)) logLevel = Level.ALL;
-            if ( "CONFIG".equals(val)) logLevel = Level.CONFIG;
-            if ( "FINE".equals(val)) logLevel = Level.FINE;
-            if ( "FINER".equals(val)) logLevel = Level.FINER;
-            if ( "FINEST".equals(val)) logLevel = Level.FINEST;
-            if ( "INFO".equals(val)) logLevel = Level.INFO;
-            if ( "OFF".equals(val)) logLevel = Level.OFF;
-            if ( "SEVERE".equals(val)) logLevel = Level.SEVERE;
-            if ( "WARNING".equals(val)) logLevel = Level.WARNING;
+            if ( "ALL".equals( val ) ) {
+                logLevel = Level.ALL;
+            }
+            if ( "CONFIG".equals( val ) ) {
+                logLevel = Level.CONFIG;
+            }
+            if ( "FINE".equals( val ) ) {
+                logLevel = Level.FINE;
+            }
+            if ( "FINER".equals( val ) ) {
+                logLevel = Level.FINER;
+            }
+            if ( "FINEST".equals( val ) ) {
+                logLevel = Level.FINEST;
+            }
+            if ( "INFO".equals( val ) ) {
+                logLevel = Level.INFO;
+            }
+            if ( "OFF".equals( val ) ) {
+                logLevel = Level.OFF;
+            }
+            if ( "SEVERE".equals( val ) ) {
+                logLevel = Level.SEVERE;
+            }
+            if ( "WARNING".equals( val ) ) {
+                logLevel = Level.WARNING;
+            }
         }
-            
+
         loadDefaultProperties();
         loadOverrideProperties();
         loadSystemProperties();
         logAfterLoad();
     }
-    
-    private void println(String msg) {
-        if ( logLevel != Level.OFF ) 
-            System.out.println("Configuration: " + msg);
+
+    /**
+     * Description of the Method
+     *
+     * @param msg  PARAM
+     */
+    private void println( String msg ) {
+        if ( logLevel != Level.OFF ) {
+            System.out.println( "Configuration: " + msg );
+        }
     }
 
-    private void info(String msg) {
-        if ( logLevel.intValue() <= Level.INFO.intValue() ) println(msg);
+    /**
+     * Description of the Method
+     *
+     * @param msg  PARAM
+     */
+    private void info( String msg ) {
+        if ( logLevel.intValue() <= Level.INFO.intValue() ) {
+            println( msg );
+        }
     }
 
-    private void warning(String msg) {
-        if ( logLevel.intValue() <= Level.WARNING.intValue() ) println(msg);
+    /**
+     * Description of the Method
+     *
+     * @param msg  PARAM
+     */
+    private void warning( String msg ) {
+        if ( logLevel.intValue() <= Level.WARNING.intValue() ) {
+            println( msg );
+        }
     }
 
-    private void warning(String msg, Throwable th) {
-        warning(msg);
+    /**
+     * Description of the Method
+     *
+     * @param msg  PARAM
+     * @param th   PARAM
+     */
+    private void warning( String msg, Throwable th ) {
+        warning( msg );
         th.printStackTrace();
     }
 
-    private void fine(String msg) {
-        if ( logLevel.intValue() <= Level.FINE.intValue() ) println(msg);
+    /**
+     * Description of the Method
+     *
+     * @param msg  PARAM
+     */
+    private void fine( String msg ) {
+        if ( logLevel.intValue() <= Level.FINE.intValue() ) {
+            println( msg );
+        }
     }
 
-    private void finer(String msg) {
-        if ( logLevel.intValue() <= Level.FINER.intValue() ) println(msg);
+    /**
+     * Description of the Method
+     *
+     * @param msg  PARAM
+     */
+    private void finer( String msg ) {
+        if ( logLevel.intValue() <= Level.FINER.intValue() ) {
+            println( msg );
+        }
     }
-    
+
 
     /** Loads the default set of properties, which may be overridden. */
     private void loadDefaultProperties() {
         try {
-            InputStream readStream = GeneralUtil.openStreamFromClasspath(new DefaultCSSMarker(), SF_FILE_NAME );
+            InputStream readStream = GeneralUtil.openStreamFromClasspath( new DefaultCSSMarker(), SF_FILE_NAME );
 
             if ( readStream == null ) {
                 throw new XRRuntimeException( "No configuration files found in classpath using URL: " + SF_FILE_NAME );
@@ -148,17 +207,17 @@ public class Configuration {
      * is optional. See class documentation.
      */
     private void loadOverrideProperties() {
-        String overrideName = System.getProperty( "user.home" ) + File.separator + ".flyingsaucer/local.xhtmlrenderer.conf"; 
-        
-        File f = new File(overrideName);
+        String overrideName = System.getProperty( "user.home" ) + File.separator + ".flyingsaucer/local.xhtmlrenderer.conf";
+
+        File f = new File( overrideName );
         if ( f.exists() ) {
-            fine("Found local config override file " + f.getAbsolutePath());
+            fine( "Found local config override file " + f.getAbsolutePath() );
             Properties temp = new Properties();
             try {
-                InputStream readStream = new BufferedInputStream(new FileInputStream(f));
+                InputStream readStream = new BufferedInputStream( new FileInputStream( f ) );
                 temp.load( readStream );
             } catch ( IOException iex ) {
-                warning("Error while loading override properties file; skipping.", iex );
+                warning( "Error while loading override properties file; skipping.", iex );
                 return;
             }
 
@@ -187,8 +246,10 @@ public class Configuration {
         int cnt = 0;
         while ( elem.hasMoreElements() ) {
             String key = (String)elem.nextElement();
-            if ( !key.startsWith("xr.")) continue;
-            
+            if ( !key.startsWith( "xr." ) ) {
+                continue;
+            }
+
             String val = System.getProperty( key );
             if ( val != null ) {
                 properties.setProperty( key, val );
@@ -410,8 +471,8 @@ public class Configuration {
     }
 
     /**
-     * Returns all configuration keys that start with prefix. Iterator
-     * will be empty if no such keys are found.
+     * Returns all configuration keys that start with prefix. Iterator will be
+     * empty if no such keys are found.
      *
      * @param prefix  Prefix to filter on. No regex.
      * @return        Returns Iterator, see description.
@@ -503,6 +564,11 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/10/23 14:06:56  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
  * Revision 1.6  2004/10/19 15:00:53  joshy
  * updated the build file
  * removed some extraneous files

@@ -21,8 +21,8 @@
 package org.xhtmlrenderer.util;
 
 import java.io.*;
-import java.util.logging.*;
 import java.text.MessageFormat;
+import java.util.logging.*;
 
 
 /**
@@ -32,22 +32,22 @@ import java.text.MessageFormat;
  * @author   Patrick Wright
  */
 public class XRSimpleLogFormatter extends Formatter {
-    private final static String msgFmt;
-    private final static String exmsgFmt;
+    /** Description of the Field */
     private final MessageFormat mformat;
+    /** Description of the Field */
     private final MessageFormat exmformat;
-    
-    static {
-        msgFmt = Configuration.valueFor("xr.simple-log-format", "{1}:\n  {5}\n").trim() + "\n";
-        exmsgFmt = Configuration.valueFor("xr.simple-log-format-throwable", "{1}:\n  {5}\n{8}").trim() + "\n";
-    }
-    
+    /** Description of the Field */
+    private final static String msgFmt;
+    /** Description of the Field */
+    private final static String exmsgFmt;
+
+    /** Constructor for the XRSimpleLogFormatter object */
     public XRSimpleLogFormatter() {
         super();
-        mformat = new MessageFormat(msgFmt);
-        exmformat = new MessageFormat(exmsgFmt);
+        mformat = new MessageFormat( msgFmt );
+        exmformat = new MessageFormat( exmsgFmt );
     }
-    
+
     /**
      * Format the given log record and return the formatted string.
      *
@@ -55,35 +55,35 @@ public class XRSimpleLogFormatter extends Formatter {
      * @return        Returns
      */
     public String format( LogRecord record ) {
-        
+
         Throwable th = record.getThrown();
-        String thName = ""; 
-        String thMessage = ""; 
+        String thName = "";
+        String thMessage = "";
         String trace = null;
         if ( th != null ) {
             StringWriter sw = new StringWriter();
-            th.printStackTrace(new PrintWriter(sw));
+            th.printStackTrace( new PrintWriter( sw ) );
             trace = sw.toString();
-            
+
             thName = th.getClass().getName();
             thMessage = th.getMessage();
         }
-        String args[] = { 
-            String.valueOf(record.getMillis()),
-            record.getLoggerName(),
-            record.getLevel().toString(),
-            record.getSourceClassName(),
-            record.getSourceMethodName(),
-            record.getMessage(),       
-            thName,       
-            thMessage,       
-            trace       
-        };
+        String args[] = {
+                String.valueOf( record.getMillis() ),
+                record.getLoggerName(),
+                record.getLevel().toString(),
+                record.getSourceClassName(),
+                record.getSourceMethodName(),
+                record.getMessage(),
+                thName,
+                thMessage,
+                trace
+                };
         String log = null;
         if ( th == null ) {
-          log = mformat.format(args);
+            log = mformat.format( args );
         } else {
-          log = exmformat.format(args);
+            log = exmformat.format( args );
         }
         return log;
     }
@@ -118,12 +118,22 @@ public class XRSimpleLogFormatter extends Formatter {
         return super.getTail( h );
     }
 
+    static {
+        msgFmt = Configuration.valueFor( "xr.simple-log-format", "{1}:\n  {5}\n" ).trim() + "\n";
+        exmsgFmt = Configuration.valueFor( "xr.simple-log-format-throwable", "{1}:\n  {5}\n{8}" ).trim() + "\n";
+    }
+
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/10/23 14:06:57  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
  * Revision 1.3  2004/10/18 12:08:37  pdoubleya
  * Incorrect Configuration key fixed.
  *

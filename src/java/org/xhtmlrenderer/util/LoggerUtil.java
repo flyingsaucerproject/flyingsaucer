@@ -26,8 +26,7 @@ import java.util.logging.*;
 /**
  * Utility class for working with java.logging Logger classes
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public class LoggerUtil {
     /**
@@ -43,4 +42,16 @@ public class LoggerUtil {
     }
 
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 14:06:57  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 
