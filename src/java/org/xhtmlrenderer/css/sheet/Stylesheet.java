@@ -51,16 +51,13 @@ public class Stylesheet {
     /**
      * Creates a new instance of Stylesheet
      *
-     * @param sheet   The SAC CSSStyleSheet instance that holds the sheet rules
-     *      and etc. Usually the output of a SAC parser.
      * @param origin  One of the integer constants USER_AGENT, USER or AUTHOR,
      *      indicates where the sheet originated and thus its precedence in the
      *      cascade.
      */
-    public Stylesheet( org.w3c.dom.css.CSSStyleSheet sheet, int origin ) {
+    public Stylesheet( int origin ) {
         _origin = origin;
         _rulesets = new java.util.LinkedList();
-        pullRulesets( sheet );
     }
 
     /**
@@ -82,20 +79,11 @@ public class Stylesheet {
     }
 
     /**
-     * Given the SAC sheet input, extracts all CSSStyleRules and loads Rulesets
-     * from them.
-     *
-     * @param sheet  PARAM
+     * Set the Rulesets to this stylesheet. Should usually only be called by StylesheetFactory.
+     * TODO: where do we keep track of @media? In Ruleset?
      */
-    private void pullRulesets( org.w3c.dom.css.CSSStyleSheet sheet ) {
-        org.w3c.dom.css.CSSRuleList rl = sheet.getCssRules();
-        int nr = rl.getLength();
-        for ( int i = 0; i < nr; i++ ) {
-            if ( rl.item( i ).getType() != org.w3c.dom.css.CSSRule.STYLE_RULE ) {
-                continue;
-            }
-            _rulesets.add( new Ruleset( (org.w3c.dom.css.CSSStyleRule)rl.item( i ), getOrigin() ) );
-        }
+    void addRuleset(Ruleset r) {
+        _rulesets.add(r);
     }
 } // end class
 
@@ -103,6 +91,9 @@ public class Stylesheet {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/11/15 19:46:14  tobega
+ * Refactoring in preparation for handling @import stylesheets
+ *
  * Revision 1.2  2004/11/15 12:42:23  pdoubleya
  * Across this checkin (all may not apply to this particular file)
  * Changed default/package-access members to private.

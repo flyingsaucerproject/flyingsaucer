@@ -89,7 +89,7 @@ public class TBStyleReference implements StyleReference {
      */
     public TBStyleReference( UserAgentCallback userAgent ) {
         _userAgent = userAgent;
-        _stylesheetFactory = new StylesheetFactory();
+        _stylesheetFactory = new StylesheetFactory(userAgent);
     }
 
 
@@ -638,6 +638,9 @@ public class TBStyleReference implements StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/11/15 19:46:13  tobega
+ * Refactoring in preparation for handling @import stylesheets
+ *
  * Revision 1.12  2004/11/15 12:42:22  pdoubleya
  * Across this checkin (all may not apply to this particular file)
  * Changed default/package-access members to private.

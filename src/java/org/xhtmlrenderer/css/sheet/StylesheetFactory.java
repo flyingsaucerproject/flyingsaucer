@@ -26,6 +26,7 @@ import com.steadystate.css.parser.CSSOMParser;
 
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 
 
 /**
@@ -38,6 +39,9 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 // ASK: tested for multi-thread access? (PW 12-11-04)
 // TODO: add timestamp check (PW 12-11-04)
 public class StylesheetFactory {
+
+    /** the UserAgentCallback to resolve uris */
+    private UserAgentCallback _userAgent;
 
     /** Description of the Field */
     private CSSOMParser parser = new CSSOMParser();
@@ -54,7 +58,9 @@ public class StylesheetFactory {
         };
 
     /** Creates a new instance of StylesheetFactory */
-    public StylesheetFactory() { }
+    public StylesheetFactory(UserAgentCallback userAgent) {
+        _userAgent = userAgent;
+    }
 
     /**
      * Description of the Method
@@ -72,7 +78,29 @@ public class StylesheetFactory {
             throw new XRRuntimeException( "IOException on parsing style seet from a Reader; don't know the URI.", e );
         }
 
-        return new Stylesheet( style, origin );
+        Stylesheet sheet = new Stylesheet(origin);
+        pullRulesets(style, sheet);
+
+        return sheet;
+    }
+
+    /**
+     * Given the SAC sheet input, extracts all CSSStyleRules and loads Rulesets
+     * from them.
+     *
+     * @param cssSheet  The SAC CSSStyleSheet instance that holds the sheet rules
+     *      and etc. from which rules are taken. Usually the output of a SAC parser.
+     * @param stylesheet  stylesheet to which rules are added
+     */
+    private void pullRulesets( org.w3c.dom.css.CSSStyleSheet cssSheet, Stylesheet stylesheet ) {
+        org.w3c.dom.css.CSSRuleList rl = cssSheet.getCssRules();
+        int nr = rl.getLength();
+        for ( int i = 0; i < nr; i++ ) {
+            if ( rl.item( i ).getType() != org.w3c.dom.css.CSSRule.STYLE_RULE ) {
+                continue;
+            }
+            stylesheet.addRuleset( new Ruleset( (org.w3c.dom.css.CSSStyleRule)rl.item( i ), stylesheet.getOrigin() ) );
+        }
     }
 
     /**
@@ -120,6 +148,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/15 19:46:14  tobega
+ * Refactoring in preparation for handling @import stylesheets
+ *
  * Revision 1.3  2004/11/15 12:42:23  pdoubleya
  * Across this checkin (all may not apply to this particular file)
  * Changed default/package-access members to private.
