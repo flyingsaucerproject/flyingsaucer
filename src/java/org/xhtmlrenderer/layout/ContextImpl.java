@@ -32,7 +32,9 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Stack;
 import java.util.logging.Level;
 
@@ -407,9 +409,11 @@ public class ContextImpl implements Context {
      * Description of the Method
      *
      * @param box PARAM
+     * @deprecated
      */
+    //TODO: this is wrong! margins can collapse, for starters!
     public void translateInsets(Box box) {
-        Border border = LayoutUtil.getBorder(box, getCurrentStyle());
+        Border border = getCurrentStyle().getBorderWidth();
         Border margin = getCurrentStyle().getMarginWidth();
         Border padding = getCurrentStyle().getPaddingWidth();
         if (box == null) {
@@ -436,9 +440,11 @@ public class ContextImpl implements Context {
      * Description of the Method
      *
      * @param box PARAM
+     * @deprecated
      */
+    //TODO: this is wrong! margins can collapse, for starters!
     public void untranslateInsets(Box box) {
-        Border border = LayoutUtil.getBorder(box, getCurrentStyle());
+        Border border = getCurrentStyle().getBorderWidth();
         Border margin = getCurrentStyle().getMarginWidth();
         Border padding = getCurrentStyle().getPaddingWidth();
         if (margin == null) {

@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -36,7 +35,8 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.table.TableBoxing;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Rectangle;
 import java.util.List;
 
 
@@ -244,10 +244,10 @@ public class Boxing {
      * @param box PARAM
      * @return The padding value
      */
-    public static Border getPadding(Context c, Box box) {
+    /*public static Border getPadding(Context c, Box box) {
         Border padding = c.getCurrentStyle().getPaddingWidth();
         return padding;
-    }
+    }*/
 
 
     /**
@@ -257,15 +257,15 @@ public class Boxing {
      * @param box PARAM
      * @return The margin value
      */
-    public static Border getMargin(Context c, Box box) {
+    /*public static Border getMargin(Context c, Box box) {
         Border margin = c.getCurrentStyle().getMarginWidth();
         return margin;
-    }
+    }*/
 
-    public static Border getBorder(Context c, Box block) {
-        Border border = LayoutUtil.getBorder(block, c.getCurrentStyle());
+    /*public static Border getBorder(Context c, Box block) {
+        Border border = LayoutUtil.getBorder(c.getCurrentStyle());
         return border;
-    }
+    }*/
 
     /**
      * Gets the backgroundColor attribute of the BoxLayout object
@@ -292,6 +292,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/01/09 15:22:48  tobega
+ * Prepared improved handling of margins, borders and padding.
+ *
  * Revision 1.5  2005/01/07 00:29:28  tobega
  * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
  *

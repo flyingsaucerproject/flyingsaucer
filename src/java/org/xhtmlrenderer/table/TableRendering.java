@@ -20,11 +20,10 @@
 package org.xhtmlrenderer.table;
 
 import org.xhtmlrenderer.css.Border;
-import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.render.BoxRendering;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 public class TableRendering {
 
@@ -38,7 +37,7 @@ public class TableRendering {
 
         c.getGraphics().translate(table.x, table.y);
 
-        Border border = Boxing.getBorder(c, table);
+        Border border = c.getCurrentStyle().getBorderWidth();
         Border margin = c.getCurrentStyle().getMarginWidth();
         Border padding = c.getCurrentStyle().getPaddingWidth();
 

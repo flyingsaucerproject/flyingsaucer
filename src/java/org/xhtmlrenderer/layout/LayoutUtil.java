@@ -1,9 +1,6 @@
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.Border;
-import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.Box;
 
 public class LayoutUtil {
@@ -36,20 +33,15 @@ public class LayoutUtil {
         return false;
     }
 
-    //TODO: move this to Box
-    public static Border getBorder(Box box, CalculatedStyle style) {
+    /*public static Border getBorder(CalculatedStyle style) {
         Border border = new Border(0, 0, 0, 0);
-        //if (isBlockOrInlineElementBox(box)) {
-        //if (border == null) {
         border = style.getBorderWidth();
         String border_style = style.getStringProperty(CSSName.BORDER_STYLE_TOP);
         if (border_style.equals("none")) {
             border = new Border(0, 0, 0, 0);
         }
-        //}
-        //}
         return border;
-    }
+    }*/
 
     /**
      * Gets the fixed attribute of the DefaultLayout object

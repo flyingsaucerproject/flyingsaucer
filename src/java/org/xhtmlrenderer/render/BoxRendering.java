@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Boxing;
@@ -32,7 +33,9 @@ import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 public class BoxRendering {
 
@@ -115,7 +118,15 @@ public class BoxRendering {
         }
         if (!(block instanceof AnonymousBlockBox)) c.untranslateInsets(block);
 
-        if (!(block instanceof AnonymousBlockBox)) paintBorder(c, block);
+        if (!(block instanceof AnonymousBlockBox)) {
+            Border margin = c.getCurrentStyle().getMarginWidth();
+
+            Rectangle bounds = new Rectangle(block.x + margin.left,
+                    block.y + margin.top,
+                    block.width - margin.left - margin.right,
+                    block.height - margin.top - margin.bottom);
+            BorderPainter.paint(c, bounds, BorderPainter.ALL);
+        }
     }
 
     // adjustments for relative painting
@@ -268,20 +279,20 @@ public class BoxRendering {
      * @param c   PARAM
      * @param box PARAM
      */
-    public static void paintBorder(Context c, Box box) {
+    /*public static void paintBorder(Context c, Box box) {
         Box block = box;
         // get the border parts
 
         // paint the border
-        BorderPainter bp = new BorderPainter();
+        //BorderPainter bp = new BorderPainter();
 
         // adjust to a fixed height, if necessary
         //if (!block.auto_height) {
         //bnds.y = block.height - block.margin.top - block.margin.bottom;
         //}
 
-        bp.paint(c, block);
-    }
+        BorderPainter.paint(c, block);
+    }*/
 
     /**
      * Description of the Method

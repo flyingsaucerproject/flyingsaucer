@@ -24,10 +24,9 @@ import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
-import org.xhtmlrenderer.layout.LayoutUtil;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -290,7 +289,7 @@ public class Box {
         if (padding != null) {
             pd += padding.left + padding.right;
         }
-        Border border = LayoutUtil.getBorder(this, style);
+        Border border = style.getBorderWidth();
         if (border != null) {
             pd += border.left + border.right;
         }
@@ -313,7 +312,7 @@ public class Box {
         if (padding != null) {
             pd += padding.top + padding.bottom;
         }
-        Border border = LayoutUtil.getBorder(this, style);
+        Border border = style.getBorderWidth();
         if (border != null) {
             pd += border.top + border.bottom;
         }
@@ -336,7 +335,7 @@ public class Box {
         if (padding != null) {
             pd += padding.top;
         }
-        Border border = LayoutUtil.getBorder(this, style);
+        Border border = style.getBorderWidth();
         if (border != null) {
             pd += border.top;
         }
@@ -359,7 +358,7 @@ public class Box {
         if (padding != null) {
             pd += padding.left;
         }
-        Border border = LayoutUtil.getBorder(this, style);
+        Border border = style.getBorderWidth();
         if (border != null) {
             pd += border.left;
         }
@@ -376,7 +375,7 @@ public class Box {
         if (padding != null) {
             pd += padding.right;
         }
-        Border border = LayoutUtil.getBorder(this, style);
+        Border border = style.getBorderWidth();
         if (border != null) {
             pd += border.right;
         }
@@ -649,6 +648,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2005/01/09 15:22:50  tobega
+ * Prepared improved handling of margins, borders and padding.
+ *
  * Revision 1.38  2005/01/07 00:29:29  tobega
  * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
  *

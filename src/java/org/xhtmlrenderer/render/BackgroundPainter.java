@@ -21,10 +21,12 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.util.Configuration;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -49,7 +51,7 @@ public class BackgroundPainter {
             return;
         }
 
-        Border border = LayoutUtil.getBorder(block, c.getCurrentStyle());
+        Border border = c.getCurrentStyle().getBorderWidth();
         if (border == null) return;
         Border margin = c.getCurrentStyle().getMarginWidth();
         Rectangle box = new Rectangle(block.x + margin.left + border.left,
@@ -211,6 +213,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/01/09 15:22:49  tobega
+ * Prepared improved handling of margins, borders and padding.
+ *
  * Revision 1.14  2005/01/02 12:22:19  tobega
  * Cleaned out old layout code
  *

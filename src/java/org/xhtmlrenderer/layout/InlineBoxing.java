@@ -50,7 +50,7 @@ public class InlineBoxing {
         // Uu.p("+ InlineLayout.layoutContent(): " + box);
         Rectangle bounds = new Rectangle();
         bounds.width = c.getExtents().width;
-        Border border = LayoutUtil.getBorder(box, c.getCurrentStyle());
+        Border border = c.getCurrentStyle().getBorderWidth();
         Border margin = c.getCurrentStyle().getMarginWidth();
         Border padding = c.getCurrentStyle().getPaddingWidth();
         //below should maybe be done somewhere else?
@@ -477,6 +477,9 @@ public class InlineBoxing {
 * $Id$
 *
 * $Log$
+* Revision 1.9  2005/01/09 15:22:48  tobega
+* Prepared improved handling of margins, borders and padding.
+*
 * Revision 1.8  2005/01/09 13:32:35  tobega
 * Caching image components. Also fixed two bugs that were introduced fixing the last one. Code still too brittle...
 *

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
@@ -147,7 +148,7 @@ public class InlineRendering {
         // Uu.p("adjusted inline by: " + inline.totalLeftPadding());
         // Uu.p("inline = " + inline);
         // Uu.p("padding = " + inline.padding);
-        ix += inline.totalLeftPadding(c.getCurrentStyle());
+        //ix += inline.totalLeftPadding(c.getCurrentStyle());
 
         paintSelection(c, inline, lx, ly);
         paintText(c, lx, ly, ix, iy, inline);
@@ -322,7 +323,13 @@ public class InlineRendering {
         int old_height = inline.height;
         inline.height += inline.totalVerticalPadding(c.getCurrentStyle());
         BoxRendering.paintBackground(c, inline);
-        BoxRendering.paintBorder(c, inline);
+        Border margin = c.getCurrentStyle().getMarginWidth();
+
+        Rectangle bounds = new Rectangle(inline.x + margin.left,
+                inline.y + margin.top,
+                inline.width - margin.left - margin.right,
+                inline.height - margin.top - margin.bottom);
+        BorderPainter.paint(c, bounds, BorderPainter.ALL);
         inline.width = old_width;
         inline.height = old_height;
         c.translate(+padding_xoff, -ty);
