@@ -27,8 +27,8 @@ import java.io.File;
 public class HTMLPanel extends JPanel implements  ComponentListener {
     //private int html_height = -1;
     //private int max_width = -1;
-    Document doc;
-    Context c;
+    public Document doc;
+    public Context c;
     public Box body_box = null;
     private JScrollPane viewport;
     BodyLayout layout;
@@ -52,6 +52,10 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
     }
     public void setDocument(String filename) throws Exception {
         setDocument(x.loadDocument(filename),new File(filename).toURL());
+    }
+    
+    public void setDocument(URL url) throws Exception {
+        setDocument(x.loadDocument(url),url);
     }
     
     public void setDocument(Document doc) {
