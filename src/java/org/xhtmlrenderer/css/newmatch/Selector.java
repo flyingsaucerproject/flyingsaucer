@@ -198,9 +198,9 @@ class Selector {
     }
     
     /** check if selector queries for dynamic properties */
-    public boolean isDynamic() {
+    /*public boolean isDynamic() {
         return (_pc != 0);
-    }
+    }*/
     
     public void setPseudoElement(String pseudoElement) {
         if(_pe != null) {

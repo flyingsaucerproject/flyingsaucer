@@ -21,24 +21,31 @@ public class HoverListener extends MouseInputAdapter {
     }
     public void mouseEntered( MouseEvent evt ) {
         InlineBox ib = findInlineBox(evt);
+        panel.hovered_element = ib.getRealElement();
+        XRLog.general("Element "+panel.hovered_element+" entered");
         restyle(ib);
     }
     public void mouseExited( MouseEvent evt ) {
         InlineBox ib = findInlineBox(evt);
-        restyle(ib);
+        //restyle(ib);
     }
     private void restyle(InlineBox ib) {
         // if moved out of the old block then unstyle it
-        if(prev != null && prev != ib) {
+        /* 
+         if(prev != null && prev != ib) {
             Layout lt = LayoutFactory.getLayout(prev.getRealElement());
             if(lt instanceof InlineLayout) {
                 ((InlineLayout)lt).restyleNormal(panel.getContext(), prev);
                 panel.repaint();
             }
-        }
+        }*/
         
         if(prev == ib) {
             return;
+        }
+        if(prev != null) {
+            boolean b = panel.getContext().css.wasHoverRestyled(prev.getRealElement());
+            u.p("previous was styled = " + b);
         }
         prev = ib;
         // return if no new hovered block;

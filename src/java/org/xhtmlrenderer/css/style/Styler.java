@@ -93,10 +93,6 @@ public class Styler {
     public void restyleTree( org.w3c.dom.Element elem ) {
             CalculatedStyle parent = null;
 
-            // if this is the root, we will have no parent XRElement; otherwise
-            // we will check to see if our parent was loaded. Since we expect to load
-            // from root to leaves, we should always find a parent
-            // this means, however, that root will have a null parent
             if ( elem.getOwnerDocument().getDocumentElement() == elem ) {
                 _styleCache = new java.util.HashMap();
                 parent = new CurrentBoxStyle(_rect);
@@ -107,7 +103,8 @@ public class Styler {
                     throw new RuntimeException( "Applying matches to elements, found an element with no mapped parent; can't continue." );
                 }
             }
-            org.xhtmlrenderer.css.newmatch.CascadedStyle matched = _matcher.getCascadedStyle(elem);
+            org.xhtmlrenderer.css.newmatch.CascadedStyle matched = _matcher.matchElement(elem);
+            //org.xhtmlrenderer.css.newmatch.CascadedStyle matched = _matcher.getCascadedStyle(elem);
             
             CalculatedStyle cs = null;
             StringBuffer sb = new StringBuffer();

@@ -612,6 +612,8 @@ import org.xhtmlrenderer.util.XRLog;
     }
     
     public boolean wasHoverRestyled(Element e) {
+        boolean isHoverStyled = _tbStyleMap.isHoverStyled(e);
+        XRLog.general("Element "+e+" tested for hover styling "+isHoverStyled);
         if(_tbStyleMap.isHoverStyled(e)) {
             _styler.restyleTree(e);
             return true;

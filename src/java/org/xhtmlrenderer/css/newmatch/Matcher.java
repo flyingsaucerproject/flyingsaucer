@@ -38,23 +38,25 @@ public class Matcher {
     class Mapper {
 
         /** Creates a new instance of Mapper */
-        Mapper(java.util.Collection selectors) {
+        Mapper(java.util.Collection selectors, org.w3c.dom.Node node) {
+            _node = node;
             axes.addAll(selectors);
         }
 
-        private Mapper(Mapper parent) {
+        private Mapper(Mapper parent, org.w3c.dom.Node node) {
+            _node = node;
             /* do nothing! Add descendant selectors when iterating!*/
         }
         /** Maps the children of the given document */
-        void mapChildren(org.w3c.dom.Document doc) {
+        /*void mapChildren(org.w3c.dom.Document doc) {
             org.w3c.dom.NodeList children = doc.getChildNodes();
             mapElements(children);
-        }
+        }*/
 
-        /** Maps the children of the given element */
+        /** Maps the children of the node connected with this mapper */
         //NB handling of immediate sibling requires child elements to be traversed in order
-        private void mapChildren(org.w3c.dom.Element e) {
-            org.w3c.dom.NodeList children = e.getChildNodes();
+        void mapChildren() {
+            org.w3c.dom.NodeList children = _node.getChildNodes();
             mapElements(children);
         }
         
@@ -62,17 +64,18 @@ public class Matcher {
             for(int i=0; i<children.getLength(); i++) {
                 org.w3c.dom.Node child = children.item(i);
                 if(child.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-                    mapElement((org.w3c.dom.Element)child);
+                    mapChild((org.w3c.dom.Element)child);
                 }
             }
         }
         
         //should now preserve sort order of rules
-        private void mapElement(org.w3c.dom.Element e) {
-            Mapper childMapper = new Mapper(this);
+        private void mapChild(org.w3c.dom.Element e) {
+            Mapper childMapper = new Mapper(this, e);
             for(int i = 0; i < axes.size(); i++) {
                 Selector sel = (Selector) axes.get(i);
                 if(sel.getAxis() == Selector.DESCENDANT_AXIS) {
+                    //carry it forward to other descendants
                     childMapper.axes.add(sel);
                 } else if(sel.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
                     //remove it from this mapper immediately
@@ -94,7 +97,9 @@ public class Matcher {
                 }
                 if(sel.isPseudoClass(Selector.VISITED_PSEUDOCLASS)) _visitElements.add(e);
                 if(sel.isPseudoClass(Selector.ACTIVE_PSEUDOCLASS)) _activeElements.add(e);
-                if(sel.isPseudoClass(Selector.HOVER_PSEUDOCLASS)) _hoverElements.add(e);
+                if(sel.isPseudoClass(Selector.HOVER_PSEUDOCLASS)) {
+                    _hoverElements.add(e);
+                }
                 if(sel.isPseudoClass(Selector.FOCUS_PSEUDOCLASS)) _focusElements.add(e);
                 if(!sel.matchesDynamic(e, _attRes)) continue;
                 Selector chain = sel.getChainedSelector();
@@ -109,8 +114,11 @@ public class Matcher {
                 }
             }
             link(e, childMapper);
-            childMapper.mapChildren(e);
+            //childMapper.mapChildren(e); No, let the styler request the recursion
         }
+        
+        /** the node connected to this mapper */
+        org.w3c.dom.Node _node;
         
         java.util.List axes = new java.util.ArrayList();
         
@@ -120,40 +128,41 @@ public class Matcher {
 
     }
     
-    Matcher() {
-        
-    }
-    
+    /** creates a new matcher for the combination of parameters */
     public Matcher(org.w3c.dom.Document doc, org.xhtmlrenderer.extend.AttributeResolver ar, java.util.Iterator stylesheets) {
+        newMaps();
         setDocument(doc);
         setAttributeResolver(ar);
-        setStylesheets(stylesheets);
+        docMapper = createDocumentMapper(stylesheets);
     }
     
     private void link(org.w3c.dom.Element e, Mapper m) {
         _map.put(e, m);
     }
     
-    private void clearMaps() {
-        _map = null;
-        _csCache = null;
-        _csMap = null;
-        _peMap = null;
+    private void newMaps() {
+        _map = new java.util.HashMap();
+        _csCache = new java.util.HashMap();
+        _csMap = new java.util.HashMap();
+        _peMap = new java.util.HashMap();
+        _elStyle = new java.util.HashMap();
+        _hoverElements = new java.util.HashSet();
+        _activeElements = new java.util.HashSet();
+        _focusElements = new java.util.HashSet();
+        _visitElements = new java.util.HashSet();
     }
     
-    public void setAttributeResolver(org.xhtmlrenderer.extend.AttributeResolver ar) {
+    void setAttributeResolver(org.xhtmlrenderer.extend.AttributeResolver ar) {
         _attRes = ar;
-        clearMaps();
         if(_elStyle != null) _elStyle = new java.util.HashMap();
     }
     
-    public void setDocument(org.w3c.dom.Document doc) {
+    void setDocument(org.w3c.dom.Document doc) {
         _doc = doc;
-        clearMaps();
         if(_elStyle != null) _elStyle = new java.util.HashMap();
     }
     
-    public void setStylesheets(java.util.Iterator stylesheets) {
+    Mapper createDocumentMapper(java.util.Iterator stylesheets) {
             int count = 0;
             java.util.TreeMap sorter = new java.util.TreeMap();
             while(stylesheets.hasNext()) {
@@ -169,9 +178,8 @@ public class Matcher {
                     }
                 }
             }
-XRLog.match("Matcher called with "+sorter.size()+" selectors");
-        docMapper = new Mapper(sorter.values());
-        clearMaps();
+XRLog.match("Matcher created with "+sorter.size()+" selectors");
+        return new Mapper(sorter.values(), _doc);
     }
         
     /**
@@ -309,12 +317,20 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
                 System.err.println( "Bad condition" );
         }
     }
-
-    public CascadedStyle getCascadedStyle(org.w3c.dom.Element e) {
-        if(_csMap == null) _csMap = new java.util.HashMap();
-        CascadedStyle cs = (CascadedStyle)_csMap.get(e);
-        if(cs != null) return cs;
-        
+    
+    public CascadedStyle matchElement(org.w3c.dom.Element e) {
+        org.w3c.dom.Node parent = e.getParentNode();
+        if(parent.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+            Mapper m = getMapper((org.w3c.dom.Element)parent);
+            m.mapChildren();
+        } else {//has to be document node, we don't do fragments
+            docMapper.mapChildren();
+        }
+        return createCascadedStyle(e);
+    }
+    
+    CascadedStyle createCascadedStyle(org.w3c.dom.Element e) {
+        CascadedStyle cs = null;
         org.xhtmlrenderer.css.sheet.Ruleset elementStyling = getElementStyle(e);
         String fingerprint = null;
         if(elementStyling == null) {//try to re-use a CascadedStyle
@@ -348,7 +364,15 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
             }
         }
         _csMap.put(e, cs);
+        return cs;
+    }
+    
+    public CascadedStyle getCascadedStyle(org.w3c.dom.Element e) {
+        if(_csMap == null) _csMap = new java.util.HashMap();
+        CascadedStyle cs = (CascadedStyle)_csMap.get(e);
+        if(cs != null) return cs;
         
+        cs = createCascadedStyle(e);
         return cs;
 }
 
@@ -417,9 +441,11 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
     private Mapper getMapper(org.w3c.dom.Element e) {
         if(_map == null) {
             _map = new java.util.HashMap();
-            docMapper.mapChildren(_doc);
         }
-        return (Mapper) _map.get(e);
+        Mapper m = (Mapper) _map.get(e);
+        if(m == null) matchElement(e);
+        m = (Mapper) _map.get(e);
+        return m;
     }
     
         
@@ -469,28 +495,26 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
         return rs;
     }
 
+    /** StylesheetFactory needs to be set if Element styling is to be used */
     public void setStylesheetFactory(org.xhtmlrenderer.css.sheet.StylesheetFactory styleFactory) {
         _styleFactory = styleFactory;
-        //do not have to clear all maps here
-        _elStyle = null;
-        if(_styleFactory != null) _elStyle = new java.util.HashMap();
-        _csMap = null;
     }
     
     private org.w3c.dom.Document _doc;
     Mapper docMapper;
     private org.xhtmlrenderer.extend.AttributeResolver _attRes;
+    private org.xhtmlrenderer.css.sheet.StylesheetFactory _styleFactory;
+
     private java.util.HashMap _map;
     private java.util.HashMap _csMap;
     private java.util.HashMap _peMap;
     private java.util.HashMap _csCache;
     private java.util.HashMap _elStyle;
-    private org.xhtmlrenderer.css.sheet.StylesheetFactory _styleFactory;
     
     //handle dynamic
-    private Set _hoverElements = new java.util.HashSet();
-    private Set _activeElements = new java.util.HashSet();
-    private Set _focusElements = new java.util.HashSet();
-    private Set _visitElements = new java.util.HashSet();
+    private Set _hoverElements;
+    private Set _activeElements;
+    private Set _focusElements;
+    private Set _visitElements;
 
 }
