@@ -89,12 +89,12 @@ public class BoxRenderer extends DefaultRenderer {
     public void paintNormal(Context c, Box block) {
         paintBackground(c, block);
 
-        c.translateInsets(block);
+        if (!(block instanceof AnonymousBlockBox)) c.translateInsets(block);
         paintComponent(c, block);
         paintChildren(c, block);
-        c.untranslateInsets(block);
+        if (!(block instanceof AnonymousBlockBox)) c.untranslateInsets(block);
 
-        paintBorder(c, block);
+        if (!(block instanceof AnonymousBlockBox)) paintBorder(c, block);
     }
 
     // adjustments for relative painting

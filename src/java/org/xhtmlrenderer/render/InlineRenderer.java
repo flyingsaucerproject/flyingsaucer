@@ -58,12 +58,12 @@ public class InlineRenderer extends BoxRenderer {
         if (box instanceof BlockBox) {//Why isn't it always a BlockBox?
             block = (BlockBox) box;
         }
+        //if (box.restyle) {
+        restyle(c, box);
+        //box.restyle = false;
+        //}
 
         for (int i = 0; i < box.getChildCount(); i++) {
-            //if (box.restyle) {
-            restyle(c, box);
-            //box.restyle = false;
-            //}
             if (i == 0 && block != null && block.firstLineStyle != null) c.pushStyle(block.firstLineStyle);
             // get the line box
             paintLine(c, (LineBox) box.getChild(i));
@@ -82,6 +82,7 @@ public class InlineRenderer extends BoxRenderer {
         int lx = line.x;
         int ly = line.y + line.baseline;
 
+        restyle(c, line);
         // for each inline box
         for (int j = 0; j < line.getChildCount(); j++) {
             Box child = line.getChild(j);
