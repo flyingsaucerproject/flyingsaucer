@@ -15,7 +15,7 @@ public class InputTextArea extends FormItemLayout {
     public InputTextArea() {
     }
     
-    public JComponent createComponent(Element elem) {
+    public JComponent createComponent(Context c, Element elem) {
         //u.p("created a TextArea");
         int rows = 4;
         int cols = 10;

@@ -24,6 +24,13 @@ import org.joshy.html.box.*;
 
 import java.net.URL;
 
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import org.joshy.u;
+import org.w3c.dom.Element;
+import javax.swing.ButtonGroup;
 
 
 
@@ -495,6 +502,57 @@ public class Context {
 
     }
 
+
+    /* =========== form access code ============= */
+    protected String form_name = null;
+    protected Map forms = new HashMap();
+    public void setForm(String form_name) {
+        //u.p("set form to: " + form_name);
+        this.form_name = form_name;
+        if(form_name != null) {
+            forms.put(form_name,new HashMap());
+        }
+    }
+    public String getForm() {
+        return this.form_name;
+    }
+    public FormComponent addInputField(String name, Element element, JComponent comp) {
+        if(getForm() == null) {
+            u.p("warning! attempted to add input field: '" + name + "' to a form without a 'name' attribute");
+            return null;
+        }
+        Map fields = (Map)forms.get(getForm());
+        List field_list = new ArrayList();
+        if(fields.containsKey(name)) {
+            field_list = (List)fields.get(name);
+        }
+        FormComponent fc = new FormComponent();
+        fc.name = element.getAttribute("name");
+        fc.element = element;
+        fc.component = comp;
+        field_list.add(fc);
+        fields.put(name,field_list);
+        return fc;
+    }
     
+    public List getInputFieldComponents(String form_name, String field_name) {
+        Map fields = (Map)forms.get(form_name);
+        List field_list = (List)fields.get(field_name);
+        if(field_list == null) {
+            return new ArrayList();
+        }
+        return field_list;
+    }
+    
+    public Map getForms() {
+        return forms;
+    }
+    
+    public class FormComponent {
+        public String name;
+        public JComponent component;
+        public Element element;
+        public ButtonGroup group;
+    }
 }
 

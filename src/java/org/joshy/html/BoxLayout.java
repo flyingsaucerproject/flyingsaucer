@@ -77,6 +77,13 @@ public class BoxLayout extends Layout {
     
 
     public Box layout(Context c, Element elem) {
+        // this is to keep track of when we are inside of a form
+        if(elem.getNodeName().equals("form")) {
+            if(elem.hasAttribute("name")) {
+                String name = elem.getAttribute("name");
+                c.setForm(name);
+            }
+        }
 
         //u.p("BoxLayout.layout() : " + elem);
 
@@ -175,6 +182,12 @@ public class BoxLayout extends Layout {
 
 
         this.contents_height = block.height;
+
+        if(elem.getNodeName().equals("form")) {
+            if(elem.hasAttribute("name")) {
+                c.setForm(null);
+            }
+        }
 
         return block;
 

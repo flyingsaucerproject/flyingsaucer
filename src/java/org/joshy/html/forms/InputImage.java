@@ -17,8 +17,8 @@ public class InputImage extends InputButton {
     public InputImage() {
     }
     
-    public JComponent createComponent(Element elem) {
-        JButton comp = (JButton)super.createComponent(elem);
+    public JComponent createComponent(Context c, Element elem) {
+        JButton comp = (JButton)super.createComponent(c,elem);
         
         if(elem.hasAttribute("src")) {
             String src = elem.getAttribute("src");

@@ -27,8 +27,8 @@
         <h3>Button, Reset, and Submit Test</h3>
         <form>
             <input type="button" value="Panic!"/> normal button<br/>
-            <input type="reset"/> reset button<br/>
-            <input type="submit"/> submit button<br/>
+            <input type="reset" name="reset"/> reset button<br/>
+            <input type="submit" name="submit"/> submit button<br/>
             <input type="image" src="demos/image.png"/>image button<br/>
         </form>
         
@@ -52,10 +52,10 @@
         </form>
         
         <h3>Radio Test</h3>
-        <form>
-            <input type="radio" value="radio"/>not checked<br/>
-            <input type="radio" value="radio" checked="checked"/>checked<br/>
-            <input type="radio" value="radio" checked="checked" disabled="disabled"/>checked and disabled<br/>
+        <form name="radio_test">
+            <input name="rad" type="radio" value="radio"/>not checked<br/>
+            <input name="rad" type="radio" value="radio" checked="checked"/>checked<br/>
+            <input name="rad" type="radio" value="radio" checked="checked" disabled="disabled"/>checked and disabled<br/>
         </form>
         
         <h3>Select Test</h3>

@@ -15,7 +15,7 @@ public class InputSelect extends FormItemLayout {
     public InputSelect() {
     }
     
-    public JComponent createComponent(Element elem) {
+    public JComponent createComponent(Context c, Element elem) {
         JComboBox comp = new JComboBox();
         commonPrep(comp,elem);
         

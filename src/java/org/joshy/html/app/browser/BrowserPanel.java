@@ -1,5 +1,8 @@
 package org.joshy.html.app.browser;
 
+import java.util.Map;
+import java.util.List;
+import java.util.Iterator;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
 import org.joshy.*;
@@ -10,8 +13,9 @@ import java.util.logging.*;
 import java.io.*;
 import org.joshy.html.*;
 import java.net.*;
+import org.joshy.html.event.DocumentListener;
 
-public class BrowserPanel extends JPanel {
+public class BrowserPanel extends JPanel implements DocumentListener {
     public static Logger logger = Logger.getLogger("app.browser");
     JButton forward;
     JButton backward;
@@ -183,6 +187,7 @@ public class BrowserPanel extends JPanel {
     
     public void loadPage(Document doc, URL url) throws Exception {
         view.setDocument(doc,url);
+        view.addDocumentListener(this);
         root.history.goNewDocument(doc);
         updateButtons();
     }
@@ -245,6 +250,61 @@ public class BrowserPanel extends JPanel {
         loadPage(doc,ref);
         
         setStatus("Successfully loaded: " + url_text);
+    }
+    
+    
+    public void documentLoaded() {
+        //u.p("got a document loaded event");
+        setupSubmitActions();
+    }
+    
+    public void setupSubmitActions() {
+        //u.p("setup submit actions");
+        Context cx = view.getContext();
+        Map forms = cx.getForms();
+        //u.p("forms = " + forms);
+        Iterator form_it = forms.keySet().iterator();
+        while(form_it.hasNext()) {
+            String form_name = (String)form_it.next();
+            Map form = (Map)forms.get(form_name);
+            //u.p("got form: " + form_name);
+            Iterator fields = form.keySet().iterator();
+            while(fields.hasNext()) {
+                String field_name = (String)fields.next();
+                List field_list = (List)form.get(field_name);
+                //u.p("got field set: " + field_name);
+                
+                ButtonGroup bg = new ButtonGroup();
+                for(int i=0; i<field_list.size(); i++) {
+                    Context.FormComponent comp = (Context.FormComponent)field_list.get(i);
+                    //u.p("got component: " + comp);
+                    
+                    // bind radio buttons together
+                    if(comp.component instanceof JRadioButton) {
+                        bg.add((JRadioButton)comp.component);
+                    }
+                    
+                    // add reset action listeners
+                    if(comp.component instanceof JButton) {
+                        //u.p("it's a jbutton");
+                        if(comp.element.getAttribute("type").equals("reset")) {
+                            ((JButton)comp.component).addActionListener(new ActionListener() {
+                                public void actionPerformed(ActionEvent evt) {
+                                    u.p("reset button hit");
+                                }
+                            });
+                        }
+                        if(comp.element.getAttribute("type").equals("submit")) {
+                            ((JButton)comp.component).addActionListener(new ActionListener() {
+                                public void actionPerformed(ActionEvent evt) {
+                                    u.p("submit button hit");
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

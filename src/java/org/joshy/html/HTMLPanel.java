@@ -5,6 +5,9 @@ package org.joshy.html;
 import java.io.*;
 
 import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
+import org.joshy.html.event.DocumentListener;
 
 import javax.swing.JScrollPane;
 
@@ -106,7 +109,19 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         layout = new BodyLayout();
 
         setLayout(new AbsoluteLayoutManager());
-
+        documentListeners = new HashMap();
+    }
+    
+    Map documentListeners;
+    public void addDocumentListener(DocumentListener listener) {
+        this.documentListeners.put(listener,listener);
+    }
+    protected void fireDocumentLoaded() {
+        Iterator it = this.documentListeners.keySet().iterator();
+        while(it.hasNext()) {
+            DocumentListener list = (DocumentListener)it.next();
+            list.documentLoaded();
+        }
     }
 
     public String getDocumentTitle() {
@@ -260,6 +275,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         this.body_box = null;
 
         calcLayout();
+        
 
         repaint();
 
@@ -568,7 +584,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         //c.getGraphics().setColor(Color.blue);
 
         //c.getGraphics().drawLine(0,0,50,50);
-
+        this.fireDocumentLoaded();
     }
 
     

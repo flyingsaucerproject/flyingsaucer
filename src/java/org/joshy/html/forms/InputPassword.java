@@ -19,7 +19,7 @@ public class InputPassword extends InputText {
         return new JPasswordField();
     }
 /*    
-    public JComponent createComponent(Element elem) {
+    public JComponent createComponent(Context c, Element elem) {
         JPasswordField comp = new JPasswordField();
         commonPrep(comp,elem);
         if(elem.hasAttribute("value")) {

@@ -1,3 +1,11 @@
+08/19/2004
+    added a document listener interface to return document events 
+        (initially for the document loaded event)
+    added grouping support to radio buttons
+    added form field management and retrival to the Context
+    added action listeners to all reset and submit form fields
+08/19/2004
+    added support for image bullets
 08/18/2004
     added an infinite loop error and removed the extra system.exit()s
     added support for transparent backgrounds

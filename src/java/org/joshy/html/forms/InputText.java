@@ -21,7 +21,7 @@ public class InputText extends FormItemLayout {
     protected JTextField _createComponent() {
         return new JTextField();
     }
-    public JComponent createComponent(Element elem) {
+    public JComponent createComponent(Context c, Element elem) {
         JTextField comp = _createComponent();
         commonPrep(comp,elem);
         if(elem.hasAttribute("value")) {

@@ -14,7 +14,7 @@ public class InputCheckbox extends FormItemLayout {
     public InputCheckbox() {
     }
     
-    public JComponent createComponent(Element elem) {
+    public JComponent createComponent(Context c, Element elem) {
         JCheckBox comp = new JCheckBox();
         comp.setText("");
         comp.setOpaque(false);

@@ -12,13 +12,13 @@ import org.w3c.dom.*;
 
 public abstract class FormItemLayout extends CustomBlockLayout {
     
-    abstract public JComponent createComponent(Element elem);
+    abstract public JComponent createComponent(Context c, Element elem);
     
     private JComponent comp;
     
     public Box createBox(Context c, Node node) {
         Element elem = (Element)node;
-        comp = createComponent(elem);
+        comp = createComponent(c,elem);
         c.canvas.add(comp);
         comp.setLocation(100,100);
         //u.p("added a component to the viewport: " + comp);
@@ -26,6 +26,12 @@ public abstract class FormItemLayout extends CustomBlockLayout {
         InputBox box = new InputBox();
         box.node = node;
         box.component = comp;
+        
+        // this is so the context has a reference to all forms, fields,
+        // and components of those fields
+        if(elem.hasAttribute("name")) {
+            c.addInputField(elem.getAttribute("name"),elem,comp);
+        }
         return box;
     }
     

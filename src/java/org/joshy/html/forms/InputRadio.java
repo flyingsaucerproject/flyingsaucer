@@ -15,7 +15,7 @@ public class InputRadio extends FormItemLayout {
     public InputRadio() {
     }
     
-    public JComponent createComponent(Element elem) {
+    public JComponent createComponent(Context c, Element elem) {
         JRadioButton comp = new JRadioButton();
         comp.setText("");
         comp.setOpaque(false);
@@ -24,6 +24,20 @@ public class InputRadio extends FormItemLayout {
             comp.setSelected(true);
         }
         commonPrep(comp,elem);
+        
+        if(elem.hasAttribute("name")) {
+            String name = elem.getAttribute("name");
+            List other_comps = c.getInputFieldComponents(c.getForm(),name);
+            if(other_comps.size() > 0) {
+                for(int i=0; i<other_comps.size(); i++) {
+                    Context.FormComponent other_comp = (Context.FormComponent)other_comps.get(i);
+                    if(other_comp.component instanceof JRadioButton) {
+                        JRadioButton other_radio = (JRadioButton)other_comp.component;
+                        //u.p("found a matching component: " + other_radio);
+                    }
+                }
+            }
+        }
         return comp;
     }
     
