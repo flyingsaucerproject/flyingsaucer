@@ -1,4 +1,3 @@
-
 /* 
  * {{{ header & license 
  * Copyright (c) 2004 Joshua Marinacci 

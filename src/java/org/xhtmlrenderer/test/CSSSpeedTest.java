@@ -55,7 +55,7 @@ import org.xhtmlrenderer.DefaultCSSMarker;
 
 import java.io.*;
 
-import org.xhtmlrenderer.css.bridge.XRStyleReference;
+//import org.xhtmlrenderer.css.bridge.XRStyleReference;
 
 
 public class CSSSpeedTest {
@@ -123,7 +123,7 @@ public class CSSSpeedTest {
 
         c = new Context();
 
-        c.css = new XRStyleReference(c);
+        c.css = new CSSBank();
 
         runLoopTest(c,g,html);
     }
