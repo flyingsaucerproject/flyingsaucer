@@ -11,7 +11,7 @@ import java.io.File;
 import org.joshy.html.box.Box;
 
 public class HTMLTest extends JFrame {
-    public static final int text_width = 300;
+    public static final int text_width = 600;
     private final HTMLPanel panel = new HTMLPanel();
 
     public HTMLTest(String[] args) throws Exception {
@@ -118,7 +118,7 @@ public class HTMLTest extends JFrame {
         final JFrame frame = new HTMLTest(args);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        //frame.setSize(text_width,300);
+        frame.setSize(text_width,300);
         frame.show();
         /*
         new Thread(new Runnable() {

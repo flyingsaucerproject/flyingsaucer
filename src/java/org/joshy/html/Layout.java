@@ -60,6 +60,7 @@ public class Layout {
                 c.parent_box = box;
                 c.placement_point = new Point(0,box.height);
                 child_box = layout.layout(c,child_elem);
+                u.p("child box = " + child_box);
             } else {
                 //u.p("we have to do an anonymous text block on this: " + child.getNodeValue());
                 // create anonymous block box
