@@ -213,11 +213,11 @@ public class InlineLayout extends BoxLayout {
                 // don't count floats, absolutes, and inline-blocks
                 if (isNormalInline(currentContent)) {
                     adjustLineHeight(curr_line, new_inline);
+                }
+
+                if (!(currentContent instanceof FloatedBlockContent)) {
                     // calc new width of the line
                     curr_line.width += new_inline.width;
-                } else if (currentContent instanceof FloatedBlockContent) {
-                    //int leftFloat = c.getBlockFormattingContext().getLeftFloatDistance(curr_line);
-                    //curr_line.x += new_inline.width;
                 }
                 // reduce the available width
                 remaining_width = remaining_width - new_inline.width;
@@ -484,6 +484,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.69  2004/12/24 11:59:25  tobega
+* Starting to get some semblance of order concerning floats. Still needs more work.
+*
 * Revision 1.68  2004/12/24 08:46:49  tobega
 * Starting to get some semblance of order concerning floats. Still needs more work.
 *
