@@ -68,23 +68,14 @@
 //reimplement whitespace handling
 remove isPrinting(). check the graphics instanceof printablegraphics
 show current resources in browser
- 
 
-BERMU310
-
-
-post about dpi to units issue
+//post about dpi to units issue
 //fix n test vertical align
 //fix n test horizontal align
 //fix n test line wrapping w/ floats
 fix n test space collapsing w/ images
 fix n test tab alignment
-fix n test preformatted lines
-    pre
-    prewrap?
-    nowrap?
-    linewrap?
-    
+//fix n test preformatted lines
 //test first line pseudo
 //test first char pseudo
 
