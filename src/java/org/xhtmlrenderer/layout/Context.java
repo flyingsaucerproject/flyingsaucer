@@ -41,6 +41,7 @@ import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.extend.*;
 import org.sektor37.minium.*;
 
 /**
@@ -56,25 +57,16 @@ public class Context {
     /** Description of the Field */
     public Point cursor;
 
-    // CLN: (PWW 13/08/04)
-    // replace with StyleReference so we can swap in different interface implementations
-    //public CSSBank css;
     /** Description of the Field */
     public StyleReference css;
-
 
     /** Description of the Field */
     public boolean debug_draw_boxes;
 
-
     /** Description of the Field */
     public boolean debug_draw_line_boxes;
-
-
-    /** Description of the Field */
     public boolean debug_draw_inline_boxes;
     public boolean debug_draw_font_metrics;
-
 
     /** Description of the Field */
     public JComponent canvas;
@@ -84,12 +76,8 @@ public class Context {
     /** Description of the Field */
     public JComponent viewport;
 
-
     /** Description of the Field */
     public Point placement_point;
-
-    /** Description of the Field */
-    //public Box parent_box;
 
     /*
      * selection management code
@@ -137,13 +125,11 @@ public class Context {
     private int yoff = 0;
 
     /** Description of the Field */
-    private URL base_url;
-
-
-    /** Description of the Field */
     private int max_width;
     /** Description of the Field */
     private boolean sub_block = false;
+    
+    public RenderingContext ctx;
 
     private TextRenderer text_renderer;
     public TextRenderer getTextRenderer() {
@@ -404,9 +390,7 @@ public class Context {
      * @param rect  The new extents value
      */
     public void setExtents( Rectangle rect ) {
-
         this.extents = rect;
-
     }
 
 
@@ -416,9 +400,7 @@ public class Context {
      * @param base_url  The new baseURL value
      */
     public void setBaseURL( URL base_url ) {
-
-        this.base_url = base_url;
-
+        ctx.setBaseURL(base_url);
     }
 
     /**
@@ -427,9 +409,7 @@ public class Context {
      * @param max_width  The new maxWidth value
      */
     public void setMaxWidth( int max_width ) {
-
         this.max_width = max_width;
-
     }
 
 
@@ -439,9 +419,7 @@ public class Context {
      * @param box  The new selectionStart value
      */
     public void setSelectionStart( Box box ) {
-
         selection_start = box;
-
     }
 
     /**
@@ -450,9 +428,7 @@ public class Context {
      * @param box  The new selectionEnd value
      */
     public void setSelectionEnd( Box box ) {
-
         selection_end = box;
-
     }
 
     /**
@@ -461,9 +437,7 @@ public class Context {
      * @param x  The new selectionStartX value
      */
     public void setSelectionStartX( int x ) {
-
         selection_start_x = x;
-
     }
 
     /**
@@ -562,7 +536,6 @@ public class Context {
      * @return   The yoff value
      */
     public int getYoff() {
-
         return this.yoff;
     }
 
@@ -572,7 +545,7 @@ public class Context {
      * @return   The baseURL value
      */
     public URL getBaseURL() {
-        return this.base_url;
+        return ctx.getBaseURL();
     }
 
     /**
@@ -754,8 +727,8 @@ public class Context {
  * $Id$
  *
  * $Log$
- * Revision 1.10  2004/11/12 02:42:19  joshy
- * context cleanup
+ * Revision 1.11  2004/11/12 02:47:33  joshy
+ * moved baseurl to rendering context
  * Issue number:
  * Obtained from:
  * Submitted by:

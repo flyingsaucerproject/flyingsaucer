@@ -9,6 +9,7 @@ import org.xhtmlrenderer.css.bridge.TBStyleReference;
 import org.xhtmlrenderer.swing.*;
 import org.xhtmlrenderer.util.*;
 import org.xhtmlrenderer.render.Box;
+import java.net.*;
 
 /* should all of these properties be here? should some only be specified by the
 conf/props files? */
@@ -16,6 +17,7 @@ conf/props files? */
 public class RenderingContext {
     public RenderingContext() {
         setContext(new Context());
+        getContext().ctx = this;
         getContext().css = new TBStyleReference(new NaiveUserAgent());
         XRLog.render( "Using CSS implementation from: " + getContext().css.getClass().getName() );
     }
@@ -91,6 +93,16 @@ public class RenderingContext {
     public void setFontMapping(String name, Font font) {
         getContext().getFontResolver().setFontMapping(name, font);
     }
+    
+
+    URL base_url;
+    public URL getBaseURL() {
+        return base_url;
+    }
+    public void setBaseURL(URL url) {
+        base_url = url;
+    }
+
     
     /* should we reverse the order of these to match name=value ? */
     /*
