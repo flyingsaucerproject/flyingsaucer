@@ -94,7 +94,7 @@ public final class ValueConstants {
      * @param type  The CSSValue type to check.
      * @return          See desc.
      */
-    private static boolean isAbsoluteUnit( short type ) {
+    public static boolean isAbsoluteUnit( short type ) {
         // TODO: check this list...
 
         // note, all types are included here to make sure none are missed
@@ -292,6 +292,9 @@ public final class ValueConstants {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/01/24 14:52:20  pdoubleya
+ * Fixed accidental access modifier change to private--isAbsoluteUnit() is used in tests.
+ *
  * Revision 1.4  2005/01/24 14:36:32  pdoubleya
  * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
  *
