@@ -48,7 +48,7 @@ import org.xhtmlrenderer.css.factory.PaddingPropertyFactory;
 import org.xhtmlrenderer.css.factory.PropertyFactory;
 import org.xhtmlrenderer.layout.Context;
 
-import org.joshy.html.css.RuleNormalizer;
+import org.xhtmlrenderer.css.RuleNormalizer;
 
 
 /**

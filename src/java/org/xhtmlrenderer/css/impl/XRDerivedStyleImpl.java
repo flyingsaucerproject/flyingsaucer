@@ -28,7 +28,7 @@ import java.util.logging.*;
 
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
-import org.joshy.html.css.RuleNormalizer;
+import org.xhtmlrenderer.css.RuleNormalizer;
 
 import org.xhtmlrenderer.css.XRDerivedStyle;
 import org.xhtmlrenderer.css.XRElement;

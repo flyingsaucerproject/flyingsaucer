@@ -24,7 +24,7 @@ import org.xhtmlrenderer.css.XRProperty;
 import org.xhtmlrenderer.css.XRValue;
 import org.xhtmlrenderer.css.impl.XRPropertyImpl;
 import org.xhtmlrenderer.css.impl.XRValueImpl;
-import org.joshy.html.css.RuleNormalizer;
+import org.xhtmlrenderer.css.RuleNormalizer;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
 

@@ -26,7 +26,7 @@ import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
 
-import org.joshy.html.css.RuleNormalizer;
+import org.xhtmlrenderer.css.RuleNormalizer;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.impl.XRPropertyImpl;
