@@ -19,7 +19,9 @@ add version number to html panel and manifest of core-renderer.jar
 //update build.xml
 
     
+The Flying Saucer Team is proud to present Beta Release 4 (R4) of our 100% Java XHTML + CSS2 Renderer. This release focuses on infrastructure, code cleanup, and a new unit test system.
 
+------------
 The Flying Saucer Team is proud to present Beta Release 4 (R4) of our 100% Java XHTML + CSS2 Renderer.
 
 This release brings updates to the infrastructure with
@@ -38,6 +40,24 @@ The Flying Saucer XHTMLRenderer can be used anywhere a program needs rich
 styled content. This includes ebook readers, chat apps, splash screens,
 help viewers, report generation, web-enabled thick clients, and online
 music stores.
+
+
+
+<p>The Flying Saucer Team is proud to present Beta Release 4 (R4) of our 100% Java XHTML + CSS2 Renderer.</p>
+
+<p>This release brings updates to the infrastructure with:</p>
+<ul>
+    <li>a new package heirarchy</li>
+    <li>a new unified CSS module</li>
+    <li>automated unit tests to validate our rendering compliance</li>
+    <li>new configuration and logging subsystem</li>
+    <li>lots more code cleanup</li>
+    <li>separate browser and about box sub projects</li>
+</ul>
+
+<p>This release paves the way for the new features and speed increases coming in R5.  Thanks for all of your support and please send us your feedback.</p>
+
+<p>The Flying Saucer XHTMLRenderer can be used anywhere a program needs rich styled content. This includes ebook readers, chat apps, splash screens, help viewers, report generation, web-enabled thick clients, and online music stores.</p>
 
 -------------
 

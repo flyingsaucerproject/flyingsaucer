@@ -261,6 +261,7 @@
     <target name="browser-jar" depends="compile.browser" description="build browser jar">
         <jar jarfile="${dest.dir}/browser.jar" compress="true" 
             manifest="${src.packaging.dir}/manifest"
+            duplicate="preserve"
             >
             <fileset dir="${dest.java.dir}">
                 <include name="org/xhtmlrenderer/demo/browser/**"/>
@@ -274,6 +275,7 @@
     <target name="about-jar" depends="compile.about" description="build about jar">
         <jar jarfile="${dest.dir}/about.jar" compress="true" 
             manifest="${src.packaging.dir}/manifest"
+            duplicate="preserve"
             >
             <fileset dir="${dest.java.dir}">
                 <include name="org/xhtmlrenderer/demo/aboutbox/**"/>
@@ -588,6 +590,13 @@
 $Id$
 
 $Log$
+Revision 1.50  2004/10/22 14:07:10  joshy
+added homepage link
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.49  2004/10/22 13:48:05  joshy
 added missing files and a quick change to fix upload support for docs
 
