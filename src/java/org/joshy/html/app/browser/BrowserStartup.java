@@ -41,6 +41,7 @@ public class BrowserStartup {
     
     public static void main(String[] args) {
         JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         BrowserStartup bs = new BrowserStartup();
         bs.frame = frame;
         bs.init();
