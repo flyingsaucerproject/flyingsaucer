@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
+import org.xhtmlrenderer.util.x;//hmm, IntelliJ sees references to x below as being x in Component!
 
 
 /**
@@ -806,6 +807,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/12/06 02:52:22  tobega
+ * re-inserted reference to Class x, which IntelliJ thought was unused
+ *
  * Revision 1.10  2004/12/06 00:19:15  tobega
  * Worked on handling :before and :after. Got sidetracked by BasicPanel causing layout to be done twice: solved. If solution causes problems, check BasicPanel.setSize
  *
