@@ -38,5 +38,8 @@ public interface Content {
      */
     public List getChildContent(Context c);
 
+    /**
+     * @deprecated rethink, only block content has a style
+     */
     public CascadedStyle getStyle();
 }

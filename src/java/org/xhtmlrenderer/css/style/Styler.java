@@ -66,7 +66,7 @@ public class Styler {
 
         if (elem.getOwnerDocument().getDocumentElement() == elem) {
             _styleCache = new java.util.HashMap();
-            parent = new CurrentBoxStyle(_rect);
+            parent = new EmptyStyle();
         } else {
             org.w3c.dom.Node pnode = elem.getParentNode();
             if (pnode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
@@ -122,7 +122,7 @@ public class Styler {
 
         if (elem.getOwnerDocument().getDocumentElement() == elem) {
             _styleCache = new java.util.HashMap();
-            parent = new CurrentBoxStyle(_rect);
+            parent = new EmptyStyle();
         } else {
             org.w3c.dom.Node pnode = elem.getParentNode();
             if (pnode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
@@ -220,6 +220,9 @@ public class Styler {
  *
 
  * $Log$
+ * Revision 1.11  2004/12/12 02:56:36  tobega
+ * Making progress
+ *
  * Revision 1.10  2004/12/09 21:18:51  tobega
  * precaution: code still works
  *

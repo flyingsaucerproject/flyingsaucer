@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Represents the document (or perhaps a DocumentFragment).
  * This is the starting point, the content object that should be created by anyone using the content model.
- * Don't forget to set the CurrentBoxStyle to the Context.
+ * Don't forget to set the EmptyStyle to the Context.
  */
 public class BodyContent implements Content {
     private Node _node;

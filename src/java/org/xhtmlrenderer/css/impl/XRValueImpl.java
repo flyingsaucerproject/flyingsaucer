@@ -20,22 +20,13 @@
  */
 package org.xhtmlrenderer.css.impl;
 
-import java.awt.Color;
-import java.util.logging.Level;
 import org.w3c.dom.DOMException;
-import org.w3c.dom.Element;
-import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.CSSValueList;
-import org.w3c.dom.css.Counter;
-import org.w3c.dom.css.Rect;
+import org.w3c.dom.css.*;
 import org.xhtmlrenderer.css.XRValue;
-import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.util.ConversionUtil;
-import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.FontUtil;
-import org.xhtmlrenderer.util.XRLog;
+
+import java.awt.Color;
 
 
 /**
@@ -46,12 +37,14 @@ import org.xhtmlrenderer.util.XRLog;
  * should check with the cssSACPrimitiveValueType() to see if the value
  * conversion you are requesting is rational.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class XRValueImpl implements XRValue {
     // ASK: need to clarify if this class is for both List and Primitives, or just primitives...
 
-    /** The DOM CSSValue we are given from the Parse */
+    /**
+     * The DOM CSSValue we are given from the Parse
+     */
     private CSSValue _domCSSValue;
 
     /**
@@ -61,39 +54,49 @@ public class XRValueImpl implements XRValue {
      */
     private short _newPrimitiveValueType;
 
-    /** The value as text */
+    /**
+     * The value as text
+     */
     private String _domValueTextClean;
 
-    /** The priority, either "" or "important" */
+    /**
+     * The priority, either "" or "important"
+     */
     private String _domPriority;
 
-    /** CLEANUP: is this needed (PWW 13/08/04) */
+    /**
+     * CLEANUP: is this needed (PWW 13/08/04)
+     */
     private float _asFloat;
 
-    /** CLEANUP: is this needed (PWW 13/08/04) */
+    /**
+     * CLEANUP: is this needed (PWW 13/08/04)
+     */
     private boolean _requiresComputation;
 
-    /** String array, if there is one to split from value */
+    /**
+     * String array, if there is one to split from value
+     */
     private String[] _stringAsArray;
 
     /**
      * Constructor for the XRValueImpl object
      *
-     * @param domCSSValue  PARAM
-     * @param domPriority  PARAM
+     * @param domCSSValue PARAM
+     * @param domPriority PARAM
      */
-    public XRValueImpl( CSSValue domCSSValue, String domPriority ) {
+    public XRValueImpl(CSSValue domCSSValue, String domPriority) {
         _domCSSValue = domCSSValue;
         _domValueTextClean = getCssTextClean();
         _domPriority = domPriority;
         _newPrimitiveValueType = -1;
-        _requiresComputation = !ValueConstants.isAbsoluteUnit( domCSSValue );
+        _requiresComputation = !ValueConstants.isAbsoluteUnit(domCSSValue);
 
-        if ( ValueConstants.isNumber( cssSACPrimitiveValueType() ) ) {
-            if ( shouldConvertToPixels() ) {
+        if (ValueConstants.isNumber(cssSACPrimitiveValueType())) {
+            if (shouldConvertToPixels()) {
                 _asFloat = convertValueToPixels();
             } else {
-                _asFloat = new Float( _domValueTextClean ).floatValue();
+                _asFloat = new Float(_domValueTextClean).floatValue();
             }
         }
     }
@@ -103,10 +106,10 @@ public class XRValueImpl implements XRValue {
      * Deep copy operation. However, any contained SAC instances are not
      * deep-copied.
      *
-     * @return   Returns
+     * @return Returns
      */
     public XRValue copyOf() {
-        XRValueImpl nv = new XRValueImpl( _domCSSValue, _domPriority );
+        XRValueImpl nv = new XRValueImpl(_domCSSValue, _domPriority);
         //nv._newPrimitiveValueType = this._newPrimitiveValueType;
         return nv;
     }
@@ -116,14 +119,14 @@ public class XRValueImpl implements XRValue {
      * The value as a float; returns Float.MIN_VALUE (as float) if there is an
      * error.
      *
-     * @return   Returns
+     * @return Returns
      */
     public float asFloat() {
-        float f = new Float( Float.MIN_VALUE ).floatValue();
+        float f = new Float(Float.MIN_VALUE).floatValue();
         try {
             f = _asFloat;
-        } catch ( Exception ex ) {
-            System.err.println( "Value '" + _domValueTextClean + "' is not a valid float." );
+        } catch (Exception ex) {
+            System.err.println("Value '" + _domValueTextClean + "' is not a valid float.");
         }
         return f;
     }
@@ -133,7 +136,7 @@ public class XRValueImpl implements XRValue {
      * value as a string...same as getStringValue() but kept for parallel with
      * other as <type>... methods
      *
-     * @return   Returns
+     * @return Returns
      */
     public String asString() {
         return getStringValue();
@@ -143,19 +146,19 @@ public class XRValueImpl implements XRValue {
     /**
      * Returns the value as assigned, split into a string array on comma.
      *
-     * @return   Returns
+     * @return Returns
      */
     public String[] asStringArray() {
-        if ( _stringAsArray == null ) {
-            if ( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
+        if (_stringAsArray == null) {
+            if (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE) {
                 String str = getStringValue();
-                _stringAsArray = ( str == null ? new String[0] : str.split( "," ) );
-            } else if ( getCssValueType() == CSSValue.CSS_VALUE_LIST ) {
-                CSSValueList list = (CSSValueList)_domCSSValue;
+                _stringAsArray = (str == null ? new String[0] : str.split(","));
+            } else if (getCssValueType() == CSSValue.CSS_VALUE_LIST) {
+                CSSValueList list = (CSSValueList) _domCSSValue;
                 int len = list.getLength();
                 _stringAsArray = new String[len];
-                for ( int i = 0; i < len; i++ ) {
-                    _stringAsArray[i] = ( (CSSValue)list.item( i ) ).getCssText();
+                for (int i = 0; i < len; i++) {
+                    _stringAsArray[i] = ((CSSValue) list.item(i)).getCssText();
                 }
             }
         }
@@ -168,7 +171,7 @@ public class XRValueImpl implements XRValue {
      * changes to the properties should be made through the XRProperty and
      * XRValue classes.
      *
-     * @return   Returns
+     * @return Returns
      */
     public CSSValue cssValue() {
         return _domCSSValue;
@@ -178,22 +181,22 @@ public class XRValueImpl implements XRValue {
     /**
      * See interface.
      *
-     * @return   See desc.
+     * @return See desc.
      */
     public boolean forcedInherit() {
-        return _domCSSValue.getCssText().indexOf( INHERIT ) >= 0;
+        return _domCSSValue.getCssText().indexOf(INHERIT) >= 0;
     }
 
 
     /**
      * A text representation of the value, for dumping
      *
-     * @return   Returns
+     * @return Returns
      */
     public String toString() {
-        return getCssText() + " (" + ValueConstants.cssType( _domCSSValue.getCssValueType(), cssSACPrimitiveValueType() ) + "--" + ValueConstants.getCssValueTypeDesc( cssValue() ) + ")\n" +
-                "   " + ( isImportant() ? "" : "not " ) + "important" + "\n" +
-                "   " + ( forcedInherit() ? "" : "not " ) + "inherited";
+        return getCssText() + " (" + ValueConstants.cssType(_domCSSValue.getCssValueType(), cssSACPrimitiveValueType()) + "--" + ValueConstants.getCssValueTypeDesc(cssValue()) + ")\n" +
+                "   " + (isImportant() ? "" : "not ") + "important" + "\n" +
+                "   " + (forcedInherit() ? "" : "not ") + "inherited";
     }
 
 
@@ -229,9 +232,9 @@ public class XRValueImpl implements XRValue {
 
                 break;
             case CSSPrimitiveValue.CSS_EXS:
-                // HACK: just to convert the value to something meaningful, using the height of the 'x' character
+                // HACK: just to convert the value to something meaningful, using the height of the 'X' character
                 // on the default system font.
-                // To convert EMS to pixels, we need the height of the lowercase 'x' character in the current
+                // To convert EMS to pixels, we need the height of the lowercase 'X' character in the current
                 // element...
                 int xHeight = FontUtil.fontXHeightForElement( context, (Element)ownerElement.domNode() );
 
@@ -310,15 +313,15 @@ public class XRValueImpl implements XRValue {
     /**
      * HACK: this only works if the value is actually a primitve
      *
-     * @return   The rGBColorValue value
+     * @return The rGBColorValue value
      */
     public Color asColor() {
-        assert ( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
+        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
         String str = getCssText();
-        if ( "transparent".equals( str ) ) {
-            return new Color( 0, 0, 0, 0 );
+        if ("transparent".equals(str)) {
+            return new Color(0, 0, 0, 0);
         } else {
-            return ConversionUtil.rgbToColor( ( (CSSPrimitiveValue)_domCSSValue ).getRGBColorValue() );
+            return ConversionUtil.rgbToColor(((CSSPrimitiveValue) _domCSSValue).getRGBColorValue());
         }
     }
 
@@ -328,7 +331,7 @@ public class XRValueImpl implements XRValue {
      * been computed as an absolute computed value, or if by chance this is an
      * absolute unit.
      *
-     * @return   The relativeUnitComputed value
+     * @return The relativeUnitComputed value
      */
     public boolean requiresComputation() {
         return _requiresComputation;
@@ -338,64 +341,64 @@ public class XRValueImpl implements XRValue {
     /**
      * See interface.
      *
-     * @param index  The new stringValue value
-     * @param s      The new stringValue value
+     * @param index The new stringValue value
+     * @param s     The new stringValue value
      */
-    public void setStringValue( short index, String s ) {
-        assert ( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
-        ( (CSSPrimitiveValue)_domCSSValue ).setStringValue( index, s );
+    public void setStringValue(short index, String s) {
+        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+        ((CSSPrimitiveValue) _domCSSValue).setStringValue(index, s);
     }
 
 
     /**
      * See interface.
      *
-     * @param unitType  The new floatValue value
-     * @param val       The new floatValue value
+     * @param unitType The new floatValue value
+     * @param val      The new floatValue value
      */
-    public void setFloatValue( short unitType, float val ) {
-        assert ( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
-        ( (CSSPrimitiveValue)_domCSSValue ).setFloatValue( unitType, val );
+    public void setFloatValue(short unitType, float val) {
+        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+        ((CSSPrimitiveValue) _domCSSValue).setFloatValue(unitType, val);
     }
 
 
     /**
      * Sets the cssText attribute of the XRValueImpl object
      *
-     * @param str               The new cssText value
-     * @exception DOMException  Throws
+     * @param str The new cssText value
+     * @throws DOMException Throws
      */
-    public void setCssText( String str )
-        throws DOMException {
-        _domCSSValue.setCssText( str );
+    public void setCssText(String str)
+            throws DOMException {
+        _domCSSValue.setCssText(str);
     }
 
 
     /**
      * See interface.
      *
-     * @return   Returns
+     * @return Returns
      */
     public short getPrimitiveType() {
-        assert ( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
-        return ( (CSSPrimitiveValue)_domCSSValue ).getPrimitiveType();
+        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+        return ((CSSPrimitiveValue) _domCSSValue).getPrimitiveType();
     }
 
 
     /**
      * See interface.
      *
-     * @return   Returns
+     * @return Returns
      */
     public String getStringValue() {
-        assert ( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
+        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
 
-        switch ( getPrimitiveType() ) {
+        switch (getPrimitiveType()) {
             case CSSPrimitiveValue.CSS_IDENT:
                 return _domCSSValue.getCssText();
             case CSSPrimitiveValue.CSS_STRING:// fall-thru
             case CSSPrimitiveValue.CSS_URI:
-                return ( (CSSPrimitiveValue)_domCSSValue ).getStringValue();
+                return ((CSSPrimitiveValue) _domCSSValue).getStringValue();
             default:
                 return "NOT-A-STRING";
         }
@@ -405,41 +408,41 @@ public class XRValueImpl implements XRValue {
     /**
      * See interface.
      *
-     * @param unitType  PARAM
-     * @return          Returns
+     * @param unitType PARAM
+     * @return Returns
      */
-    public float getFloatValue( short unitType ) {
-        assert ( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
-        return ( (CSSPrimitiveValue)_domCSSValue ).getFloatValue( unitType );
+    public float getFloatValue(short unitType) {
+        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+        return ((CSSPrimitiveValue) _domCSSValue).getFloatValue(unitType);
     }
 
 
     /**
      * See interface.
      *
-     * @return   Returns
+     * @return Returns
      */
     public Counter getCounterValue() {
-        assert ( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
-        return ( (CSSPrimitiveValue)_domCSSValue ).getCounterValue();
+        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+        return ((CSSPrimitiveValue) _domCSSValue).getCounterValue();
     }
 
 
     /**
      * See interface.
      *
-     * @return   Returns
+     * @return Returns
      */
     public Rect getRectValue() {
-        assert ( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
-        return ( (CSSPrimitiveValue)_domCSSValue ).getRectValue();
+        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+        return ((CSSPrimitiveValue) _domCSSValue).getRectValue();
     }
 
 
     /**
      * Gets the primitiveType attribute of the XRValueImpl object
      *
-     * @return   The primitiveType value
+     * @return The primitiveType value
      */
     public boolean isPrimitiveType() {
         return getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE;
@@ -449,7 +452,7 @@ public class XRValueImpl implements XRValue {
     /**
      * Gets the valueList attribute of the XRValueImpl object
      *
-     * @return   The valueList value
+     * @return The valueList value
      */
     public boolean isValueList() {
         return getCssValueType() == CSSValue.CSS_VALUE_LIST;
@@ -459,7 +462,7 @@ public class XRValueImpl implements XRValue {
     /**
      * Gets the cssText attribute of the XRValueImpl object
      *
-     * @return   The cssText value
+     * @return The cssText value
      */
     public String getCssText() {
         return _domCSSValue.getCssText();
@@ -469,7 +472,7 @@ public class XRValueImpl implements XRValue {
     /**
      * Gets the cssValueType attribute of the XRValueImpl object
      *
-     * @return   The cssValueType value
+     * @return The cssValueType value
      */
     public short getCssValueType() {
         return _domCSSValue.getCssValueType();
@@ -479,10 +482,10 @@ public class XRValueImpl implements XRValue {
     /**
      * Gets the important attribute of the XRValueImpl object
      *
-     * @return   The important value
+     * @return The important value
      */
     public boolean isImportant() {
-        return _domPriority != null && _domPriority.equals( IMPORTANT );
+        return _domPriority != null && _domPriority.equals(IMPORTANT);
     }
 
 
@@ -492,15 +495,15 @@ public class XRValueImpl implements XRValue {
     /**
      * See interface.
      *
-     * @return   Returns
+     * @return Returns
      */
     private short cssSACPrimitiveValueType() {
-        assert ( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
+        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
 
-        if ( _newPrimitiveValueType >= 0 ) {
+        if (_newPrimitiveValueType >= 0) {
             return _newPrimitiveValueType;
         } else {
-            return ( (CSSPrimitiveValue)_domCSSValue ).getPrimitiveType();
+            return ((CSSPrimitiveValue) _domCSSValue).getPrimitiveType();
         }
     }
 
@@ -528,14 +531,14 @@ public class XRValueImpl implements XRValue {
     /**
      * See interface.
      *
-     * @return   Returns
+     * @return Returns
      */
     private float convertValueToPixels() {
-        assert ( shouldConvertToPixels() );
+        assert (shouldConvertToPixels());
 
-        float pixelVal = new Float( Float.MIN_VALUE ).floatValue();
+        float pixelVal = new Float(Float.MIN_VALUE).floatValue();
 
-        float startVal = new Float( _domValueTextClean ).floatValue();
+        float startVal = new Float(_domValueTextClean).floatValue();
 
         final float MM_PER_PX = 0.28F;
         final int MM_PER_CM = 10;
@@ -553,7 +556,7 @@ public class XRValueImpl implements XRValue {
 
         float pc = 0.0F;
 
-        switch ( cssSACPrimitiveValueType() ) {
+        switch (cssSACPrimitiveValueType()) {
             case CSSPrimitiveValue.CSS_EMS:
                 // TODO
                 pixelVal = startVal;
@@ -569,7 +572,7 @@ public class XRValueImpl implements XRValue {
             case CSSPrimitiveValue.CSS_PERCENTAGE:
                 // TODO
                 break;
-            // length
+                // length
             case CSSPrimitiveValue.CSS_IN:
                 cm = startVal * CM_PER_IN;
                 mm = cm * MM_PER_CM;
@@ -607,25 +610,25 @@ public class XRValueImpl implements XRValue {
     /**
      * Gets the length attribute of the XRValueImpl object
      *
-     * @return   The length value
+     * @return The length value
      */
     private boolean shouldConvertToPixels() {
-        return ValueConstants.isNumber( cssSACPrimitiveValueType() ) && cssSACPrimitiveValueType() != CSSPrimitiveValue.CSS_PT;
+        return ValueConstants.isNumber(cssSACPrimitiveValueType()) && cssSACPrimitiveValueType() != CSSPrimitiveValue.CSS_PT;
     }
 
 
     /**
      * Gets the cssText attribute of the XRValueImpl object
      *
-     * @return   The cssText value
+     * @return The cssText value
      */
     private String getCssTextClean() {
         String text = getCssText().trim();
         // TODO: use regex to pull out all possible endings
-        if ( text.endsWith( "px" ) || text.endsWith( "pt" ) || text.endsWith( "em" ) ) {
-            text = text.substring( 0, text.length() - 2 ).trim();
-        } else if ( text.endsWith( "%" ) ) {
-            text = text.substring( 0, text.length() - 1 ).trim();
+        if (text.endsWith("px") || text.endsWith("pt") || text.endsWith("em")) {
+            text = text.substring(0, text.length() - 2).trim();
+        } else if (text.endsWith("%")) {
+            text = text.substring(0, text.length() - 1).trim();
         }
         return text;
     }
@@ -635,6 +638,9 @@ public class XRValueImpl implements XRValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/12 02:55:58  tobega
+ * Making progress
+ *
  * Revision 1.4  2004/11/10 04:38:51  tobega
  * no message
  *

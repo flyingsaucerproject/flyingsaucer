@@ -19,49 +19,51 @@
  */
 package org.xhtmlrenderer.forms;
 
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.Context;
+
+import javax.swing.*;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class InputTextArea extends FormItemLayout {
 
-    /** Constructor for the InputTextArea object */
-    public InputTextArea() { }
+    /**
+     * Constructor for the InputTextArea object
+     */
+    public InputTextArea() {
+    }
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return Returns
      */
-    public JComponent createComponent( Context c, Element elem ) {
-        //u.p("created a TextArea");
+    public JComponent createComponent(Context c, Element elem) {
+        //U.p("created a TextArea");
         int rows = 4;
         int cols = 10;
-        if ( elem.hasAttribute( "rows" ) ) {
-            rows = Integer.parseInt( elem.getAttribute( "rows" ) );
+        if (elem.hasAttribute("rows")) {
+            rows = Integer.parseInt(elem.getAttribute("rows"));
         }
-        if ( elem.hasAttribute( "cols" ) ) {
-            cols = Integer.parseInt( elem.getAttribute( "cols" ) );
+        if (elem.hasAttribute("cols")) {
+            cols = Integer.parseInt(elem.getAttribute("cols"));
         }
 
-        JTextArea comp = new JTextArea( rows, cols );
-        commonPrep( comp, elem );
-        JScrollPane sp = new JScrollPane( comp );
-        sp.setVerticalScrollBarPolicy( sp.VERTICAL_SCROLLBAR_ALWAYS );
-        sp.setHorizontalScrollBarPolicy( sp.HORIZONTAL_SCROLLBAR_ALWAYS );
-        if ( elem.getFirstChild() != null ) {
-            //u.p("setting text to: " + elem.getFirstChild().getNodeValue());
-            comp.setText( elem.getFirstChild().getNodeValue() );
+        JTextArea comp = new JTextArea(rows, cols);
+        commonPrep(comp, elem);
+        JScrollPane sp = new JScrollPane(comp);
+        sp.setVerticalScrollBarPolicy(sp.VERTICAL_SCROLLBAR_ALWAYS);
+        sp.setHorizontalScrollBarPolicy(sp.HORIZONTAL_SCROLLBAR_ALWAYS);
+        if (elem.getFirstChild() != null) {
+            //U.p("setting text to: " + elem.getFirstChild().getNodeValue());
+            comp.setText(elem.getFirstChild().getNodeValue());
         }
 
         return sp;
@@ -73,6 +75,9 @@ public class InputTextArea extends FormItemLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/12/12 02:59:11  tobega
+ * Making progress
+ *
  * Revision 1.3  2004/10/23 13:40:29  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

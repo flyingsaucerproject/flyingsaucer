@@ -19,47 +19,50 @@
  */
 package org.xhtmlrenderer.forms;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.Context;
+
+import javax.swing.*;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class InputButton extends FormItemLayout {
 
-    /** Constructor for the InputButton object */
-    public InputButton() { }
+    /**
+     * Constructor for the InputButton object
+     */
+    public InputButton() {
+    }
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return Returns
      */
-    public JComponent createComponent( Context c, Element elem ) {
-        //u.p("created a button");
+    public JComponent createComponent(Context c, Element elem) {
+        //U.p("created a button");
         JButton comp = new JButton();
-        String type = elem.getAttribute( "type" );
-        if ( type == null || type.equals( "" ) ) {
+        String type = elem.getAttribute("type");
+        if (type == null || type.equals("")) {
             type = "button";
         }
-        String label = elem.getAttribute( "value" );
-        if ( label == null || label.equals( "" ) ) {
-            if ( type.equals( "reset" ) ) {
+        String label = elem.getAttribute("value");
+        if (label == null || label.equals("")) {
+            if (type.equals("reset")) {
                 label = "Reset";
             }
-            if ( type.equals( "submit" ) ) {
+            if (type.equals("submit")) {
                 label = "Submit";
             }
         }
-        comp.setText( label );
-        commonPrep( comp, elem );
+        comp.setText(label);
+        commonPrep(comp, elem);
         return comp;
     }
 
@@ -69,6 +72,9 @@ public class InputButton extends FormItemLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/12/12 02:58:33  tobega
+ * Making progress
+ *
  * Revision 1.3  2004/10/23 13:40:28  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

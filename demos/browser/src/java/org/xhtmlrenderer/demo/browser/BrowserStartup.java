@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.U;
 
 import javax.swing.*;
 import java.util.logging.Logger;
@@ -94,7 +94,7 @@ public class BrowserStartup {
         try {
             panel.loadPage("demo:demos/splash/splash.html");
         } catch (Exception ex) {
-            u.p(ex);
+            U.p(ex);
         }
     }
 
@@ -145,6 +145,9 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/12/12 02:54:30  tobega
+ * Making progress
+ *
  * Revision 1.6  2004/11/16 07:25:20  tobega
  * Renamed HTMLPanel to BasicPanel
  *

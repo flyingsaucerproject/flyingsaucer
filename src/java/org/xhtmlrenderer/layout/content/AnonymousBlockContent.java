@@ -31,12 +31,10 @@ import java.util.List;
  */
 public class AnonymousBlockContent implements Content {
     private Element _elem;
-    private CascadedStyle _style;
     private List _inline;
 
-    AnonymousBlockContent(Element parent, CascadedStyle style, List inlineList) {
+    AnonymousBlockContent(Element parent, List inlineList) {
         _elem = parent;
-        _style = style;
         _inline = inlineList;
     }
 
@@ -49,6 +47,6 @@ public class AnonymousBlockContent implements Content {
     }
 
     public CascadedStyle getStyle() {
-        return _style;
+        return null;
     }
 }

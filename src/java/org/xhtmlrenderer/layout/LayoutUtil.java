@@ -3,6 +3,7 @@ package org.xhtmlrenderer.layout;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.Box;
@@ -10,9 +11,9 @@ import org.xhtmlrenderer.render.Box;
 public class LayoutUtil {
 
     public static String getDisplay(CalculatedStyle style) {
-        // u.p("checking: " + child);
+        // U.p("checking: " + child);
         String display = style.getStringProperty("display");
-        // u.p("display = " + display);
+        // U.p("display = " + display);
         
         // override for floated
         if (isFloated(style)) {
@@ -28,7 +29,7 @@ public class LayoutUtil {
             return true;
         }
         if (box.absolute) {
-            //u.p("box is abs: " + box);
+            //U.p("box is abs: " + box);
             return true;
         }
         if (box.floated) {
@@ -38,14 +39,14 @@ public class LayoutUtil {
     }
 
     public static Border getBorder(Context c, Box box) {
-        if (isBlockOrInlineElementBox(c, box)) {
-            // u.p("setting border for: " + box);
+        //TODO: can I skip this? if (isBlockOrInlineElementBox(c, box)) {
+            // U.p("setting border for: " + box);
             if (box.border == null) {
-                box.border = box.getContent().getStyle().getBorderWidth();
+                box.border = c.getCurrentStyle().getBorderWidth();
             }
-        } else {
-            // u.p("skipping border for: " + box);
-        }
+        //} else {
+            // U.p("skipping border for: " + box);
+        //}
         return box.border;
     }
 
@@ -78,7 +79,7 @@ public class LayoutUtil {
             Node child = children.item(i);
             CalculatedStyle style = c.css.getStyle(child);
             if (isBlockNode(child, c) && !isFloated(style)) {
-                //u.p("this layout is block");
+                //U.p("this layout is block");
                 return true;
             }
             //grandchildren could be block! Tobe 2004-12-06
@@ -115,7 +116,7 @@ public class LayoutUtil {
      * @return The floated value
      */
     public static boolean isFloated(Box inline, Context c) {
-        CalculatedStyle style = inline.getContent().getStyle();
+        CalculatedStyle style = c.getCurrentStyle();
         return isFloated(style);
     }
 
@@ -140,51 +141,6 @@ public class LayoutUtil {
     }
 
     /**
-     * Gets the blockNode attribute of the DefaultLayout class
-     *
-     * @param child PARAM
-     * @param c     PARAM
-     * @return The blockNode value
-     */
-    public static boolean isBlockNode(Node child, Context c) {
-        //need this as a sensible default
-        if (child == child.getOwnerDocument().getDocumentElement()) return true;
-
-        if (child instanceof Element) {
-            CalculatedStyle style = c.css.getStyle(child);
-            String display = getDisplay(style);
-            if (display != null &&
-                    (display.equals("block") ||
-                    display.equals("table") ||
-                    //TODO:table cell should not be block according to spec. What did I miss? tobe
-                    display.equals("table-cell") ||
-                    display.equals("list-item"))
-            ) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Gets the hiddenNode attribute of the DefaultLayout class
-     *
-     * @param child PARAM
-     * @param c     PARAM
-     * @return The hiddenNode value
-     */
-    /* not used anymore: tobe 2004-12-10 public static boolean isHiddenNode(Node child, Context c) {
-        if (child instanceof Element) {
-            CalculatedStyle style = c.css.getStyle(child);
-            String display = getDisplay(style);//c.css.getStringProperty( el, "display", false );
-            if (display != null && display.equals("none")) {
-                return true;
-            }
-        }
-        return false;
-    } */
-
-    /**
      * Gets the replaced attribute of the DefaultLayout class
      *
      * @param node PARAM
@@ -194,45 +150,6 @@ public class LayoutUtil {
         return c.getRenderingContext().getLayoutFactory().isReplaced(node);
     }
 
-    /**
-     * Gets the floatedBlock attribute of the DefaultLayout class
-     *
-     * @param node PARAM
-     * @param c    PARAM
-     * @return The floatedBlock value
-     */
-    public static boolean isFloatedBlock(Node node, Context c) {
-        if (node.getNodeType() != Node.ELEMENT_NODE) {
-            return false;
-        }
-
-        CalculatedStyle style = c.css.getStyle(node);
-        //not used: String display = getDisplay(c, el);
-        if (isFloated(style)) {
-            return true;
-        }
-        return false;
-    }
-
-
-    public static boolean isBlockOrInlineElementBox(Context c, Box box) {
-        return !(box.getContent() instanceof TextContent);//TODO: check. This does seem to match what was intended, but the name is confusing
-    }
-
-
-    /*not used now public static boolean hasIdent(Context c, Element elem, String property, boolean inherit) {
-        return c.css.getStyle(elem).isIdentifier(property);
-    } */
-
-
-    public static boolean isListItem(Box box) {
-        CalculatedStyle style = box.getContent().getStyle();
-        String display = getDisplay(style);
-        if (display.equals("list-item")) {
-            return true;
-        }
-        return false;
-    }
 
 
 }

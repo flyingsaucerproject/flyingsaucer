@@ -24,12 +24,15 @@ import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.simple.XHTMLPanel;
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.U;
 
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -137,7 +140,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
             rc.setFontMapping("Fuzz", Font.createFont(Font.TRUETYPE_FONT,
                     new DemoMarker().getClass().getResourceAsStream("/demos/fonts/fuzz.ttf")));
         } catch (Exception ex) {
-            u.p(ex);
+            U.p(ex);
         }
         view.setErrorHandler(root.error_handler);
         status = new BrowserStatus();
@@ -335,16 +338,16 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
         if (url_text.startsWith("demo:")) {
             DemoMarker marker = new DemoMarker();
-            //u.p("marker = " + marker);
+            //U.p("marker = " + marker);
             String short_url = url_text.substring(5);
-            //u.p("sub = " + short_url);
+            //U.p("sub = " + short_url);
             if (!short_url.startsWith("/")) {
                 short_url = "/" + short_url;
             }
             doc = builder.parse(marker.getClass().getResourceAsStream(short_url));
             ref = marker.getClass().getResource(short_url);
-            u.p("doc = " + doc);
-            u.p("ref = " + ref);
+            U.p("doc = " + doc);
+            U.p("ref = " + ref);
         } else if (url_text.startsWith("http")) {
             doc = builder.parse(url_text);
             ref = new URL(url_text);
@@ -363,7 +366,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
             ref = new File(url_text).toURL();
         }
 
-        u.p("going to load a page: " + doc + " " + ref);
+        U.p("going to load a page: " + doc + " " + ref);
         loadPage(doc, ref);
 
         setStatus("Successfully loaded: " + url_text);
@@ -377,7 +380,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Method
      */
     public void documentLoaded() {
-        //u.p("got a document loaded event");
+        //U.p("got a document loaded event");
         setupSubmitActions();
     }
 
@@ -395,25 +398,25 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Method
      */
     public void setupSubmitActions() {
-        //u.p("setup submit actions");
+        //U.p("setup submit actions");
         Context cx = view.getContext();
         Map forms = cx.getForms();
-        //u.p("forms = " + forms);
+        //U.p("forms = " + forms);
         Iterator form_it = forms.keySet().iterator();
         while (form_it.hasNext()) {
             final String form_name = (String) form_it.next();
             Map form = (Map) forms.get(form_name);
-            //u.p("got form: " + form_name);
+            //U.p("got form: " + form_name);
             Iterator fields = form.keySet().iterator();
             while (fields.hasNext()) {
                 String field_name = (String) fields.next();
                 List field_list = (List) form.get(field_name);
-                //u.p("got field set: " + field_name);
+                //U.p("got field set: " + field_name);
 
                 ButtonGroup bg = new ButtonGroup();
                 for (int i = 0; i < field_list.size(); i++) {
                     Context.FormComponent comp = (Context.FormComponent) field_list.get(i);
-                    //u.p("got component: " + comp);
+                    //U.p("got component: " + comp);
 
                     // bind radio buttons together
                     if (comp.component instanceof JRadioButton) {
@@ -422,11 +425,11 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
                     // add reset action listeners
                     if (comp.component instanceof JButton) {
-                        //u.p("it's a jbutton");
+                        //U.p("it's a jbutton");
                         if (comp.element.getAttribute("type").equals("reset")) {
                             ((JButton) comp.component).addActionListener(new ActionListener() {
                                 public void actionPerformed(ActionEvent evt) {
-                                    u.p("reset button hit");
+                                    U.p("reset button hit");
 
                                     Context ctx = view.getContext();
                                     Iterator fields = ctx.getInputFieldComponents(form_name);
@@ -444,7 +447,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                         if (comp.element.getAttribute("type").equals("submit")) {
                             ((JButton) comp.component).addActionListener(new ActionListener() {
                                 public void actionPerformed(ActionEvent evt) {
-                                    u.p("submit button hit");
+                                    U.p("submit button hit");
                                     StringBuffer query = new StringBuffer();
                                     query.append("?");
                                     Context ctx = view.getContext();
@@ -462,11 +465,11 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                                         }
                                     }
                                     String url = ctx.getFormAction(form_name) + query.toString();
-                                    u.p("going to load: " + url);
+                                    U.p("going to load: " + url);
                                     try {
                                         loadPage(url);
                                     } catch (Exception ex) {
-                                        u.p(ex);
+                                        U.p(ex);
                                     }
                                 }
                             });
@@ -499,6 +502,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/12/12 02:54:11  tobega
+ * Making progress
+ *
  * Revision 1.12  2004/12/01 00:13:34  tobega
  * Fixed incorrect handling of http urls.
  *

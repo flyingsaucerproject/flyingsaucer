@@ -19,67 +19,68 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import java.io.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class DirectoryLister {
 
     /**
      * Description of the Method
      *
-     * @param file           PARAM
-     * @return               Returns
-     * @exception Exception  Throws
+     * @param file PARAM
+     * @return Returns
+     * @throws Exception Throws
      */
-    public Document list( File file )
-        throws Exception {
+    public Document list(File file)
+            throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.newDocument();
 
-        Element html = doc.createElement( "html" );
-        Element head = doc.createElement( "head" );
-        html.appendChild( head );
-        Element style = doc.createElement( "style" );
-        head.appendChild( style );
+        Element html = doc.createElement("html");
+        Element head = doc.createElement("head");
+        html.appendChild(head);
+        Element style = doc.createElement("style");
+        head.appendChild(style);
         StringBuffer stysb = new StringBuffer();
-        stysb.append( "table { background-color: #ddffdd; }" );
-        stysb.append( ".dir { font-weight: bold; color: #ff9966; }" );
-        stysb.append( ".file { font-weight: normal; color: #003333; }" );
-        style.appendChild( doc.createTextNode( stysb.toString() ) );
-        Element body = doc.createElement( "body" );
-        Element p = doc.createElement( "p" );
-        body.appendChild( p );
-        html.appendChild( body );
-        doc.appendChild( html );
+        stysb.append("table { background-color: #ddffdd; }");
+        stysb.append(".dir { font-weight: bold; color: #ff9966; }");
+        stysb.append(".file { font-weight: normal; color: #003333; }");
+        style.appendChild(doc.createTextNode(stysb.toString()));
+        Element body = doc.createElement("body");
+        Element p = doc.createElement("p");
+        body.appendChild(p);
+        html.appendChild(body);
+        doc.appendChild(html);
 
-        p.appendChild( doc.createTextNode( "the file " + file.toString() + " is" ) );
-        //u.p("listing file: " + file);
+        p.appendChild(doc.createTextNode("the file " + file.toString() + " is"));
+        //U.p("listing file: " + file);
 
-        if ( file.isDirectory() ) {
-            //u.p("is dir");
-            Element table = doc.createElement( "table" );
+        if (file.isDirectory()) {
+            //U.p("is dir");
+            Element table = doc.createElement("table");
             File[] files = file.listFiles();
-            for ( int i = 0; i < files.length; i++ ) {
-                //u.p("doing: " + files[i]);
-                Element tr = doc.createElement( "tr" );
-                if ( files[i].isDirectory() ) {
-                    tr.appendChild( td( files[i].getName(), "dir", doc ) );
+            for (int i = 0; i < files.length; i++) {
+                //U.p("doing: " + files[i]);
+                Element tr = doc.createElement("tr");
+                if (files[i].isDirectory()) {
+                    tr.appendChild(td(files[i].getName(), "dir", doc));
                 } else {
-                    tr.appendChild( td( files[i].getName(), "file", doc ) );
+                    tr.appendChild(td(files[i].getName(), "file", doc));
                 }
-                table.appendChild( tr );
+                table.appendChild(tr);
             }
-            body.appendChild( table );
+            body.appendChild(table);
         }
 
         return doc;
@@ -88,15 +89,15 @@ public class DirectoryLister {
     /**
      * Description of the Method
      *
-     * @param str  PARAM
-     * @param cls  PARAM
-     * @param doc  PARAM
-     * @return     Returns
+     * @param str PARAM
+     * @param cls PARAM
+     * @param doc PARAM
+     * @return Returns
      */
-    public Element td( String str, String cls, Document doc ) {
-        Element td = doc.createElement( "td" );
-        td.setAttribute( "class", cls );
-        td.appendChild( doc.createTextNode( str ) );
+    public Element td(String str, String cls, Document doc) {
+        Element td = doc.createElement("td");
+        td.setAttribute("class", cls);
+        td.appendChild(doc.createTextNode(str));
         return td;
     }
 }
@@ -105,6 +106,9 @@ public class DirectoryLister {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/12/12 02:55:10  tobega
+ * Making progress
+ *
  * Revision 1.3  2004/10/23 14:38:58  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

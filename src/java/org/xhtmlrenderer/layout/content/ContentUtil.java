@@ -111,7 +111,7 @@ public class ContentUtil {
             }
 
             if (isAbsolute(style)) {
-                // u.p("adding replaced: " + curr);
+                // U.p("adding replaced: " + curr);
                 if (textContent != null) {
                     inlineList.add(textContent);
                     textContent = null;
@@ -122,7 +122,7 @@ public class ContentUtil {
 
             //have to check for float here already. The element may still be replaced, though
             if (isFloated(style)) {
-                // u.p("adding floated block: " + curr);
+                // U.p("adding floated block: " + curr);
                 if (textContent != null) {
                     inlineList.add(textContent);
                     textContent = null;
@@ -181,7 +181,7 @@ public class ContentUtil {
 
             //TODO: this replaced thing is Namespace-dependent
             if (LayoutUtil.isReplaced(c, curr)) {
-                // u.p("adding replaced: " + curr);
+                // U.p("adding replaced: " + curr);
                 if (textContent != null) {
                     inlineList.add(textContent);
                     textContent = null;
@@ -273,7 +273,7 @@ public class ContentUtil {
             return inlineList;
         } else {
             if (inlineList.size() != 0) {
-                blockList.add(new AnonymousBlockContent(parentElement, parentStyle, inlineList));
+                blockList.add(new AnonymousBlockContent(parentElement, inlineList));
             }
             if (firstLetterStyle != null) {
                 blockList.add(0, firstLetterStyle);
@@ -293,7 +293,7 @@ public class ContentUtil {
             Object o = i.next();
             if (o instanceof RunInContent) {
                 if (inline.size() != 0) {
-                    block.add(new AnonymousBlockContent(parentElement, parentStyle, inline));
+                    block.add(new AnonymousBlockContent(parentElement, inline));
                     inline = new LinkedList();
                 }
                 block.add(o);
@@ -302,7 +302,7 @@ public class ContentUtil {
             }
         }
         if (inline.size() != 0) {
-            block.add(new AnonymousBlockContent(parentElement, parentStyle, inline));
+            block.add(new AnonymousBlockContent(parentElement, inline));
         }
         return block;
     }
@@ -361,6 +361,13 @@ public class ContentUtil {
         return false;
     }
 
+    public static boolean isListItem(CascadedStyle style) {
+        if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
+        String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
+        if (display.equals("list-item")) return true;
+        return false;
+    }
+
     public static boolean isAbsolute(CascadedStyle style) {
         if (!style.hasProperty(CSSName.POSITION)) return false;//default is inline
         String position = style.propertyByName(CSSName.POSITION).getValue().getCssText();
@@ -406,6 +413,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/12 02:49:58  tobega
+ * Making progress
+ *
  * Revision 1.5  2004/12/11 21:14:46  tobega
  * Prepared for handling run-in content (OK, I know, a side-track). Still broken, won't even compile at the moment. Working hard to fix it, though.
  *

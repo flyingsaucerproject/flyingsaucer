@@ -19,10 +19,11 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import org.w3c.dom.Document;
+import org.xhtmlrenderer.util.U;
+
 import java.net.URL;
 import java.util.ArrayList;
-import org.w3c.dom.Document;
-import org.xhtmlrenderer.util.u;
 
 
 /**
@@ -33,16 +34,22 @@ import org.xhtmlrenderer.util.u;
  * location URL. There is one history manager in memory per browser view (ie,
  * per window or tab), since each view has it's own navigation trail.
  *
- * @author   empty
+ * @author empty
  */
 
 public class HistoryManager {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected ArrayList entries = new ArrayList();
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected int index = -1;
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     public void goPrevious() {
         index--;
     }
@@ -50,10 +57,10 @@ public class HistoryManager {
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public boolean hasPrevious() {
-        if ( index > 0 ) {
+        if (index > 0) {
             return true;
         } else {
             return false;
@@ -63,17 +70,19 @@ public class HistoryManager {
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public boolean hasNext() {
-        if ( index + 1 < entries.size() && index >= 0 ) {
+        if (index + 1 < entries.size() && index >= 0) {
             return true;
         } else {
             return false;
         }
     }
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     public void goNext() {
         index++;
     }
@@ -81,86 +90,92 @@ public class HistoryManager {
     /**
      * Description of the Method
      *
-     * @param doc  PARAM
+     * @param doc PARAM
      */
-    public void goNewDocument( Document doc ) {
-        goNewDocument( doc, null );
+    public void goNewDocument(Document doc) {
+        goNewDocument(doc, null);
     }
 
     /**
      * Description of the Method
      *
-     * @param doc  PARAM
-     * @param url  PARAM
+     * @param doc PARAM
+     * @param url PARAM
      */
-    public void goNewDocument( Document doc, URL url ) {
-        //u.p("going to a new document: " + doc + " " + url);
-        //u.dump_stack();
+    public void goNewDocument(Document doc, URL url) {
+        //U.p("going to a new document: " + doc + " " + url);
+        //U.dump_stack();
         Entry entry = new Entry();
         entry.doc = doc;
         entry.url = url;
         // clear out array list after index
 
         int len = entries.size();
-        for ( int i = index + 1; i < len; i++ ) {
-            entries.remove( index + 1 );
+        for (int i = index + 1; i < len; i++) {
+            entries.remove(index + 1);
         }
 
-        entries.add( entry );
+        entries.add(entry);
         index++;
         //dumpHistory();
     }
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     public void dumpHistory() {
-        u.p("history:");
-        u.p( entries );
-        u.p( "current index = " + index );
+        U.p("history:");
+        U.p(entries);
+        U.p("current index = " + index);
     }
 
     /**
      * Gets the currentDocument attribute of the HistoryManager object
      *
-     * @return   The currentDocument value
+     * @return The currentDocument value
      */
     public Document getCurrentDocument() {
-        return getEntry( index ).doc;
+        return getEntry(index).doc;
     }
 
     /**
      * Gets the currentURL attribute of the HistoryManager object
      *
-     * @return   The currentURL value
+     * @return The currentURL value
      */
     public URL getCurrentURL() {
-        return getEntry( index ).url;
+        return getEntry(index).url;
     }
 
     /**
      * Gets the entry attribute of the HistoryManager object
      *
-     * @param i  PARAM
-     * @return   The entry value
+     * @param i PARAM
+     * @return The entry value
      */
-    protected Entry getEntry( int i ) {
-        return (Entry)entries.get( i );
+    protected Entry getEntry(int i) {
+        return (Entry) entries.get(i);
     }
 
     /**
      * Description of the Class
      *
-     * @author   empty
+     * @author empty
      */
     protected class Entry {
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         public Document doc;
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         public URL url;
 
         /**
          * Converts to a String representation of the object.
          *
-         * @return   A string representation of the object.
+         * @return A string representation of the object.
          */
         public String toString() {
             return "HistoryEntry: " + doc;
@@ -173,6 +188,9 @@ public class HistoryManager {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/12 02:55:29  tobega
+ * Making progress
+ *
  * Revision 1.4  2004/11/17 00:44:54  joshy
  * fixed bug in the history manager
  * added cursor support to the link listener
