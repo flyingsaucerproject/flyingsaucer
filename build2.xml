@@ -208,7 +208,7 @@
         <packageset dir="${src.java.dir}">
           <include name="org/xhtmlrenderer/**" />
         </packageset>
-        <link offline="true" href="http://java.sun.com/j2se/1.4.2/docs/api/index.html" packagelistLoc="${doc.dir}/j2se14"/>
+        <link offline="true" href="http://java.sun.com/j2se/1.4.2/docs/api" packagelistLoc="${doc.dir}/j2se14"/>
       </javadoc>
     </target>
     
@@ -499,6 +499,9 @@
 $Id$
 
 $Log$
+Revision 1.9  2004/10/19 15:09:05  pdoubleya
+Fixed API link for Sun j2se docs.
+
 Revision 1.8  2004/10/19 15:06:08  pdoubleya
 Added javadoc task and properties.
 
