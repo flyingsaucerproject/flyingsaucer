@@ -28,6 +28,8 @@ public interface Document {
     
     //javax.xml.transform.Source getSource();
     
+    java.net.URI getNamespace();
+    
     java.net.URI getURI();
     
     org.w3c.dom.Document getDomDocument();

@@ -47,7 +47,7 @@ import org.joshy.html.css.StyleReference;
 import net.homelinux.tobe.xhtmlrenderer.stylerImpl.DerivedProperty;
 
 import net.homelinux.tobe.xhtmlrenderer.bridge.StaticHtmlAttributeResolver;
-import net.homelinux.tobe.xhtmlrenderer.bridge.Stylesheet;
+import net.homelinux.tobe.xhtmlrenderer.Stylesheet;
 
 import net.homelinux.tobe.renderer.UserAgentCallback;
 import net.homelinux.tobe.renderer.Document;
@@ -70,17 +70,17 @@ import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
     private StylesheetFactory _stylesheetFactory;
 
    /** Whether elements in the current document have been checked for style attributes */
-    private boolean _elementStyleAttributesPulled;
+    //private boolean _elementStyleAttributesPulled;
     
     /** Map from Element to XRStyleRules created from style attribute on it */
-    private Map _elementXRStyleMap;
+    //private Map _elementXRStyleMap;
 
     /**
      * ASK: holdover from Josh's processing code...apparently used as a trap to
      * make sure the same <code><style></code> elements within a document were
      * not read more than once.
      */
-    private List _inlineStyleElements;
+    //private List _inlineStyleElements;
 
     /**
      * Instance of our element-styles matching class. Will be null if new rules
@@ -99,7 +99,7 @@ import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
      * Map from XRStyleRules to the Rulesets that contain them. Rulesets are passed
      * to Tobe's matching routine, hence...
      */
-    private Map _ruleSetMap;
+    //private Map _ruleSetMap;
 
     /**
      * Instantiates a new XRStyleReference for a given Context.
@@ -108,22 +108,25 @@ import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
      *      necessary.
      */
     public TBStyleReference(Context context, UserAgentCallback userAgent, Document doc) {
-        this();
-        _context = context;
+        this(userAgent);
+        setDocumentContext(context, doc);
+    }
+
+    /** Default constructor for initializing members. */
+    public TBStyleReference(UserAgentCallback userAgent) {
         _userAgent = userAgent;
+        //_inlineStyleElements = new ArrayList();
+        //_ruleSetMap = new HashMap();
+        //_elementXRStyleMap = new HashMap();
+        _stylesheetFactory = new StylesheetFactory();
+    }
+    
+    public void setDocumentContext(Context context, Document doc) {
+        _context = context;
         _doc = doc;
         
         parseStylesheets();
         matchStyles();
-    }
-
-    /** Default constructor for initializing members. */
-    private TBStyleReference() {
-        _inlineStyleElements = new ArrayList();
-        _stylesheets = new LinkedList();
-        _ruleSetMap = new HashMap();
-        _elementXRStyleMap = new HashMap();
-        _stylesheetFactory = new StylesheetFactory();
     }
 
 
@@ -171,21 +174,39 @@ import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
     }
     
     private void parseStylesheets() {
-                    long st = System.currentTimeMillis();
-        java.io.Reader reader = _doc.getDefaultStylesheet();
-        if(reader != null) {
-            _stylesheets.add(_stylesheetFactory.parse(Stylesheet.USER_AGENT, reader));
+        java.io.Reader reader;
+        _stylesheets = new LinkedList();
+long st = System.currentTimeMillis();
+        
+        java.net.URI uri = _doc.getNamespace();
+        Stylesheet sheet = (Stylesheet) _stylesheetFactory.getStylesheet(uri);
+        if(sheet == null) {
+            reader = _doc.getDefaultStylesheet();
+            if(reader != null) {
+                sheet = _stylesheetFactory.parse(Stylesheet.USER_AGENT, reader);
+                _stylesheetFactory.putStylesheet(uri, sheet);
+            }
+        }
+        if(sheet != null){
+            _stylesheets.add(sheet);
         }
         
         java.net.URI[] uris = _doc.getStylesheetURIs();
         if(uris != null) {
             for(int i=0; i<uris.length; i++) {
-                java.net.URI uri = _doc.getURI();
-                uri = uri.resolve(uris[i]);
-                java.io.InputStream is = _userAgent.getInputStreamForURI(uri);
-                if(is != null) {
-                    reader = new InputStreamReader(is);
-                    _stylesheets.add(_stylesheetFactory.parse(Stylesheet.AUTHOR, reader));
+                java.net.URI baseUri = _doc.getURI();
+                uri = baseUri.resolve(uris[i]);
+                sheet = _stylesheetFactory.getStylesheet(uri);
+                if(sheet == null) {
+                    java.io.InputStream is = _userAgent.getInputStreamForURI(uri);
+                    if(is != null) {
+                        reader = new InputStreamReader(is);
+                        sheet = _stylesheetFactory.parse(Stylesheet.AUTHOR, reader);
+                        _stylesheetFactory.putStylesheet(uri, sheet);
+                    }
+                }
+                if(sheet != null){
+                    _stylesheets.add(sheet);
                 }
             }
         }
@@ -199,6 +220,7 @@ import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
         }
         
         //here we should also get user stylesheet from userAgent
+        //
                     long el = System.currentTimeMillis() - st;
                     System.out.println("TIME: parse stylesheets  " + el + "ms");
     }

@@ -36,10 +36,18 @@ public class XhtmlDocument implements Document {
     
     private org.w3c.dom.Document _doc;
     private java.net.URI _uri;
+    private java.net.URI _namespace;
     
     /** Creates a new instance of XhtmlDocument */
     public XhtmlDocument(java.io.InputStream is, java.net.URI uri) {
         _uri = uri;
+        
+        try{
+            _namespace = new java.net.URI("http://www.w3.org/1999/xhtml");
+        }
+        catch(java.net.URISyntaxException e) {
+            e.printStackTrace();
+        }
         
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
 
@@ -171,6 +179,10 @@ public class XhtmlDocument implements Document {
         
         return reader;
 
+    }
+    
+    public java.net.URI getNamespace() {
+        return _namespace;
     }
     
 }

@@ -38,12 +38,20 @@ public class StylesheetFactory implements net.homelinux.tobe.xhtmlrenderer.Style
     
     private CSSOMParser parser = new CSSOMParser();
     
+    private int _cacheCapacity = 16;
+    //an LRU cache
+    private java.util.LinkedHashMap _cache = new java.util.LinkedHashMap(_cacheCapacity, 0.75f, true) {
+        protected boolean removeEldestEntry(java.util.Map.Entry eldest) {
+            return size() > _cacheCapacity;
+        }
+    };
+    
     /** Creates a new instance of StylesheetFactory */
     public StylesheetFactory() {
     }
     
     public net.homelinux.tobe.xhtmlrenderer.Stylesheet getStylesheet(Object key) {
-        return null;
+        return (net.homelinux.tobe.xhtmlrenderer.Stylesheet) _cache.get(key);
     }
     
     public net.homelinux.tobe.xhtmlrenderer.Stylesheet parse(int origin, java.io.Reader reader) {
@@ -73,6 +81,7 @@ public class StylesheetFactory implements net.homelinux.tobe.xhtmlrenderer.Style
     }
     
     public void putStylesheet(Object key, net.homelinux.tobe.xhtmlrenderer.Stylesheet sheet) {
+        _cache.put(key, sheet);
     }
     
 }

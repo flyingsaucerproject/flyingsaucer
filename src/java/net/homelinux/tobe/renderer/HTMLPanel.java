@@ -130,6 +130,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
     public HTMLPanel(UserAgentCallback userAgent) {
 
         c = new Context();
+        c.css = new net.homelinux.tobe.renderer.css.TBStyleReference(_userAgent);
 
         layout = new BodyLayout();
 
@@ -251,8 +252,10 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
 
         Element html = (Element)doc.getDomDocument().getDocumentElement();
         
-        c.css = new net.homelinux.tobe.renderer.css.TBStyleReference(c, _userAgent, doc);
+        //c.css = new net.homelinux.tobe.renderer.css.TBStyleReference(c, _userAgent, doc);
+        ((net.homelinux.tobe.renderer.css.TBStyleReference) c.css).setDocumentContext(c, doc);
         
+        //HACK: for now. Fix this properly via _userAgent
         try {
             c.setBaseURL((new java.io.File(".")).toURI().resolve(doc.getURI()).toURL());
         }
@@ -260,7 +263,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
             e.printStackTrace();
         }
         
-        System.out.println("Using CSS implementation from: " + c.css.getClass().getName());
+        //System.out.println("Using CSS implementation from: " + c.css.getClass().getName());
 
         this.body_box = null;
 
