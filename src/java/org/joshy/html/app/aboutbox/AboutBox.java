@@ -116,6 +116,7 @@ public class AboutBox extends JDialog implements Runnable {
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("About Box Test");
+        frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
         JButton launch = new JButton("Show About Box");
         frame.getContentPane().add(launch);
         frame.pack();
