@@ -319,8 +319,10 @@ public final class CSSName {
     /** Constant string for CSS2 property. */
     private final static List ALL_PROPERTY_NAMES;// static block at bottom of class
     /** Constant string for CSS2 property. */
-    private final static List ALL_INHERITABLE;// static block at bottom of class
+    private final static List DEFAULT_INHERITABLE;// static block at bottom of class
 
+    /** Map of property names to initial values, per property, as defined by CSS Spec. */
+    private final static Map  INITIAL_VALUE_MAP;
 
     /**
      * Iterator of ALL CSS 2 visual property names.
@@ -331,7 +333,6 @@ public final class CSSName {
         return ALL_PROPERTY_NAMES.iterator();
     }
 
-
     /**
      * Returns true if the named property inherits by default, according to the CSS2 spec.
      *
@@ -339,9 +340,23 @@ public final class CSSName {
      * @return          Returns
      */
     public final static boolean propertyInherits( String propName ) {
-        return ALL_INHERITABLE.contains( propName );
+        return DEFAULT_INHERITABLE.contains( propName );
     }
 
+    /**
+     * Returns the initial value of the named property, 
+     * according to the CSS2 spec, as a String. Casting
+     * must be taken care of by the caller, as there is too much
+     * variation in value-types.
+     *
+     * @param propName  PARAM
+     * @return          Returns
+     */
+    public final static String initialValue( String propName ) {
+        return (String)INITIAL_VALUE_MAP.get( propName );
+    }
+
+    
     static {
         ALL_PROPERTY_NAMES = new ArrayList();
         try {
@@ -357,112 +372,166 @@ public final class CSSName {
             ex.printStackTrace();
         }
 
-        ALL_INHERITABLE = new ArrayList();
-        Iterator iter = ALL_PROPERTY_NAMES.iterator();
+        DEFAULT_INHERITABLE = new ArrayList();
+        DEFAULT_INHERITABLE.add(BORDER_COLLAPSE);
+        DEFAULT_INHERITABLE.add(BORDER_SPACING);
+        DEFAULT_INHERITABLE.add(CAPTION_SIDE);
+        DEFAULT_INHERITABLE.add(COLOR);
+        DEFAULT_INHERITABLE.add(CURSOR);
+        DEFAULT_INHERITABLE.add(DIRECTION);
+        DEFAULT_INHERITABLE.add(EMPTY_CELLS);
+        DEFAULT_INHERITABLE.add(FONT_SHORTHAND);
+        DEFAULT_INHERITABLE.add(FONT_FAMILY);
+        DEFAULT_INHERITABLE.add(FONT_SIZE);
+        DEFAULT_INHERITABLE.add(FONT_SIZE_ADJUST);
+        DEFAULT_INHERITABLE.add(FONT_STRETCH);
+        DEFAULT_INHERITABLE.add(FONT_STYLE);
+        DEFAULT_INHERITABLE.add(FONT_VARIANT);
+        DEFAULT_INHERITABLE.add(FONT_WEIGHT);
+        DEFAULT_INHERITABLE.add(LETTER_SPACING);
+        DEFAULT_INHERITABLE.add(LINE_HEIGHT);
+        DEFAULT_INHERITABLE.add(LIST_STYLE_SHORTHAND);
+        DEFAULT_INHERITABLE.add(LIST_STYLE_IMAGE);
+        DEFAULT_INHERITABLE.add(LIST_STYLE_POSITION);
+        DEFAULT_INHERITABLE.add(LIST_STYLE_TYPE);
+        DEFAULT_INHERITABLE.add(ORPHANS);
+        DEFAULT_INHERITABLE.add(PAGE);
+        DEFAULT_INHERITABLE.add(PAGE_BREAK_INSIDE);
+        DEFAULT_INHERITABLE.add(POSITION);
+        DEFAULT_INHERITABLE.add(QUOTES);
+        DEFAULT_INHERITABLE.add(PAGE_BREAK_INSIDE);
+        DEFAULT_INHERITABLE.add(TEXT_ALIGN);
+        DEFAULT_INHERITABLE.add(TEXT_INDENT);
+        DEFAULT_INHERITABLE.add(TEXT_TRANSFORM);
+        DEFAULT_INHERITABLE.add(WHITE_SPACE);
+        DEFAULT_INHERITABLE.add(WIDOWS);
+        DEFAULT_INHERITABLE.add(WORD_SPACING);
 
-        // there has got to be a better way!
-        while ( iter.hasNext() ) {
-            String prop = (String)iter.next();
-            // margins, padding, border never inherit
-            if ( prop.startsWith( "margin" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "padding" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "border" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "display" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "position" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "top" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "right" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "bottom" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "left" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "float" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "clear" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "z-index" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "unicode-bidi" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "width" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "min-width" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "max-width" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "height" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "min-height" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "max-height" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "vertical-align" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "overflow" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "clip" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "visibility" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "content" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "counter-reset" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "counter-increment" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "marker-offset" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "background" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "text-decoration" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "text-shadow" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "table-layout" ) ) {
-                continue;
-            }
-            if ( prop.startsWith( "outline" ) ) {
-                continue;
-            }
+        INITIAL_VALUE_MAP = new HashMap();
+        INITIAL_VALUE_MAP.put(BACKGROUND_ATTACHMENT,   "scroll");
+        INITIAL_VALUE_MAP.put(BACKGROUND_COLOR,        "transparent");
+        INITIAL_VALUE_MAP.put(BACKGROUND_IMAGE,        "none");
+        INITIAL_VALUE_MAP.put(BACKGROUND_POSITION,     "0% 0%");
+        INITIAL_VALUE_MAP.put(BACKGROUND_REPEAT,       "repeat");
 
-            ALL_INHERITABLE.add( prop );
-        }
+        INITIAL_VALUE_MAP.put(BORDER_COLLAPSE,    "collapse");
+
+        INITIAL_VALUE_MAP.put(BORDER_COLOR_TOP,    "black");
+        INITIAL_VALUE_MAP.put(BORDER_COLOR_RIGHT,  "black");
+        INITIAL_VALUE_MAP.put(BORDER_COLOR_BOTTOM, "black");
+        INITIAL_VALUE_MAP.put(BORDER_COLOR_LEFT,   "black");
+
+        INITIAL_VALUE_MAP.put(BORDER_SPACING,      "0px");
+        
+        INITIAL_VALUE_MAP.put(BORDER_STYLE_SHORTHAND,   "none"); // CLEAN, normally don't assign value for shorthand but code for B.S. is not side-specific yet (PWW 24-08-04)
+
+        INITIAL_VALUE_MAP.put(BORDER_STYLE_TOP,    "none");
+        INITIAL_VALUE_MAP.put(BORDER_STYLE_RIGHT,  "none");
+        INITIAL_VALUE_MAP.put(BORDER_STYLE_BOTTOM, "none");
+        INITIAL_VALUE_MAP.put(BORDER_STYLE_LEFT,   "none");
+        
+        INITIAL_VALUE_MAP.put(BORDER_WIDTH_TOP,    "thin");
+        INITIAL_VALUE_MAP.put(BORDER_WIDTH_RIGHT,  "thin");
+        INITIAL_VALUE_MAP.put(BORDER_WIDTH_BOTTOM, "thin");
+        INITIAL_VALUE_MAP.put(BORDER_WIDTH_LEFT,   "thin");
+
+        INITIAL_VALUE_MAP.put(BOTTOM,    "auto");
+
+        INITIAL_VALUE_MAP.put(CAPTION_SIDE,    "top");
+        INITIAL_VALUE_MAP.put(CLEAR,    "none");
+        INITIAL_VALUE_MAP.put(CLIP,    "auto");
+
+        INITIAL_VALUE_MAP.put(COLOR,   "black"); // CLEAN: UA dependent
+
+        INITIAL_VALUE_MAP.put(CONTENT,   ""); 
+        
+        INITIAL_VALUE_MAP.put(COUNTER_INCREMENT,   "none");
+        INITIAL_VALUE_MAP.put(COUNTER_RESET,       "none");
+        
+        INITIAL_VALUE_MAP.put(CURSOR,       "auto");
+        
+        INITIAL_VALUE_MAP.put(DIRECTION,     "ltr");
+        
+        INITIAL_VALUE_MAP.put(DISPLAY,     "inline");
+        
+        INITIAL_VALUE_MAP.put(EMPTY_CELLS,     "show");
+        
+        INITIAL_VALUE_MAP.put(FLOAT,     "none");
+        
+        INITIAL_VALUE_MAP.put(FONT_FAMILY, "\"Times New Roman\"");
+        INITIAL_VALUE_MAP.put(FONT_SIZE, "medium");
+        INITIAL_VALUE_MAP.put(FONT_SIZE_ADJUST, "none");
+        INITIAL_VALUE_MAP.put(FONT_STRETCH, "normal");
+        INITIAL_VALUE_MAP.put(FONT_STYLE, "normal");
+        INITIAL_VALUE_MAP.put(FONT_VARIANT, "normal");
+        INITIAL_VALUE_MAP.put(FONT_WEIGHT, "normal");
+
+        INITIAL_VALUE_MAP.put(HEIGHT, "auto");
+
+        INITIAL_VALUE_MAP.put(LEFT, "auto");
+
+        INITIAL_VALUE_MAP.put(LETTER_SPACING, "normal");
+        INITIAL_VALUE_MAP.put(LINE_HEIGHT, "normal");
+
+        INITIAL_VALUE_MAP.put(LIST_STYLE_IMAGE, "none");
+        INITIAL_VALUE_MAP.put(LIST_STYLE_POSITION, "outside");
+        INITIAL_VALUE_MAP.put(LIST_STYLE_TYPE, "disc");
+
+        INITIAL_VALUE_MAP.put(MARGIN_TOP,    "0px");
+        INITIAL_VALUE_MAP.put(MARGIN_RIGHT,  "0px");
+        INITIAL_VALUE_MAP.put(MARGIN_BOTTOM, "0px");
+        INITIAL_VALUE_MAP.put(MARGIN_LEFT,   "0px");
+
+        INITIAL_VALUE_MAP.put(MARKER_OFFSET,   "auto");
+        INITIAL_VALUE_MAP.put(MARKS,   "none");
+
+        INITIAL_VALUE_MAP.put(MAX_HEIGHT,   "none");
+        INITIAL_VALUE_MAP.put(MIN_HEIGHT,   "0");
+        INITIAL_VALUE_MAP.put(MAX_WIDTH,   "none");
+        INITIAL_VALUE_MAP.put(MIN_WIDTH,   "0"); // CLEAN: UA dependent
+
+        INITIAL_VALUE_MAP.put(ORPHANS,   "2"); 
+        
+        INITIAL_VALUE_MAP.put(OUTLINE_COLOR,   "invert"); 
+        INITIAL_VALUE_MAP.put(OUTLINE_STYLE,   "none"); 
+        INITIAL_VALUE_MAP.put(OUTLINE_WIDTH,   "medium"); 
+        
+        INITIAL_VALUE_MAP.put(OVERFLOW,   "visible"); 
+
+        INITIAL_VALUE_MAP.put(PADDING_TOP,    "0px");
+        INITIAL_VALUE_MAP.put(PADDING_RIGHT,  "0px");
+        INITIAL_VALUE_MAP.put(PADDING_BOTTOM, "0px");
+        INITIAL_VALUE_MAP.put(PADDING_LEFT,   "0px");
+
+        INITIAL_VALUE_MAP.put(PAGE,                "auto");
+        INITIAL_VALUE_MAP.put(PAGE_BREAK_AFTER,    "auto");
+        INITIAL_VALUE_MAP.put(PAGE_BREAK_BEFORE,   "auto");
+        INITIAL_VALUE_MAP.put(PAGE_BREAK_INSIDE,   "auto");
+        
+        INITIAL_VALUE_MAP.put(POSITION,   "static");
+        INITIAL_VALUE_MAP.put(QUOTES,     "none"); // CLEAN: depends on UA
+
+        INITIAL_VALUE_MAP.put(RIGHT,   "auto");
+        INITIAL_VALUE_MAP.put(SIZE,    "auto");
+
+        INITIAL_VALUE_MAP.put(TABLE_LAYOUT,    "auto");
+        
+        INITIAL_VALUE_MAP.put(TEXT_ALIGN,       "left"); // CLEAN: depends on UA
+        INITIAL_VALUE_MAP.put(TEXT_DECORATION,  "none");
+        INITIAL_VALUE_MAP.put(TEXT_INDENT,      "0px");
+        INITIAL_VALUE_MAP.put(TEXT_SHADOW,      "none");
+        INITIAL_VALUE_MAP.put(TEXT_TRANSFORM,   "none");
+        
+        INITIAL_VALUE_MAP.put(UNICODE_BIDI,   "normal");
+        INITIAL_VALUE_MAP.put(VERTICAL_ALIGN,   "baseline");
+        
+        INITIAL_VALUE_MAP.put(VISIBILITY,   "inherit");
+
+        INITIAL_VALUE_MAP.put(WHITE_SPACE,   "normal");
+        INITIAL_VALUE_MAP.put(WIDOWS,   "2");
+        INITIAL_VALUE_MAP.put(WIDTH,   "auto");
+        INITIAL_VALUE_MAP.put(WORD_SPACING,   "normal");
+        INITIAL_VALUE_MAP.put(Z_INDEX,   "auto");
     }
 }
 
