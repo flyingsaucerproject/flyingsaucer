@@ -66,8 +66,8 @@
 
 rachel in town arrive 20th @ 7, leave 5th @ 7
 
-table crashes on tbody. skip tbody? 
-table crashes on empty tr
+//table crashes on tbody. skip tbody? 
+//table crashes on empty tr
 reimplement whitespace handling
 javadoc xhtmlpanel
 javadoc graphic2drenderer

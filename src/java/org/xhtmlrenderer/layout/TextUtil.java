@@ -76,66 +76,42 @@ public class TextUtil {
      * @return      Returns
      */
     public static String capitalizeWords( String text ) {
-
         //u.p("start = -"+text+"-");
-
         if ( text.length() == 0 ) {
-
             return text;
         }
 
-
         StringBuffer sb = new StringBuffer();
-
         //u.p("text = -" + text + "-");
 
-
         // do first letter
-
         //u.p("first = " + text.substring(0,1));
-
         /*
          * if(!text.substring(0,1).equals(" ")) {
          * sb.append(text.substring(0,1).toUpperCase());
          * }
          */
         boolean cap = true;
-
         for ( int i = 0; i < text.length(); i++ ) {
-
             String ch = text.substring( i, i + 1 );
-
             //u.p("ch = " + ch + " cap = " + cap);
 
 
             if ( cap ) {
-
                 sb.append( ch.toUpperCase() );
-
             } else {
-
                 sb.append( ch );
-
             }
-
             cap = false;
-
             if ( ch.equals( " " ) ) {
-
                 cap = true;
-
             }
         }
-
 
         //u.p("final = -"+sb.toString()+"-");
-
         if ( sb.toString().length() != text.length() ) {
-
             u.p( "error! to strings arent the same length = -" + sb.toString() + "-" + text + "-" );
-
         }
-
         return sb.toString();
     }
 
@@ -151,11 +127,8 @@ public class TextUtil {
 
 
         String white_space = c.css.getStringProperty( containing_block, "white-space" );
-
         // if doing preformatted whitespace
-
         if ( white_space != null && white_space.equals( "pre" ) ) {
-
             return;
         }
 
@@ -170,9 +143,7 @@ public class TextUtil {
         }
 
         String text = node.getNodeValue();
-
         //text = text.trim();
-
 
         /*
          * if(text.indexOf("\n") > 0) {
@@ -196,29 +167,16 @@ public class TextUtil {
         // spaces at the start of the string -> nothing
 
         text = text.replaceAll( "^\\s+", "" );
-
         // spaces at the start of lines -> ""
-
         //text = text.replaceAll("\n(\\s*)","");
-
         // all \n -> a single space
-
         text = text.replaceAll( "\n", " " );
-
         // all extra spaces -> single space
-
         text = text.replaceAll( "\\s+", " " );
-
-
         // add one space to the end
-
         //text = text+" ";
-
         //u.p(text);
-
-
         node.setNodeValue( text );
-
     }
 
 
@@ -228,6 +186,22 @@ public class TextUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/22 21:34:03  joshy
+ * created new whitespace handler.
+ * new whitespace routines only work if you set a special property. it's
+ * off by default.
+ *
+ * turned off fractional font metrics
+ *
+ * fixed some bugs in u and x
+ *
+ * - j
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/11/08 21:18:21  joshy
  * preliminary small-caps implementation
  *

@@ -72,7 +72,13 @@ public class u extends Util {
      */
     public static void pr( Object object ) {
         init();
-        util.print( object );
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter( sw );
+        utilAsString.setPrintWriter( pw );
+        utilAsString.print( object );// our log adds a newline
+        pw.flush();
+        XRLog.general( sw.getBuffer().toString() );
+        //util.print( object );
     }
 
     /**
@@ -121,6 +127,22 @@ public class u extends Util {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/22 21:34:05  joshy
+ * created new whitespace handler.
+ * new whitespace routines only work if you set a special property. it's
+ * off by default.
+ *
+ * turned off fractional font metrics
+ *
+ * fixed some bugs in u and x
+ *
+ * - j
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 14:06:57  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

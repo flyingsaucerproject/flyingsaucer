@@ -9,7 +9,9 @@ import org.xhtmlrenderer.extend.TextRenderer;
 
 public class Java2DTextRenderer implements TextRenderer {
     public void setupGraphics(Graphics2D graphics) {
-        graphics.setRenderingHint( RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+//        graphics.setRenderingHint( RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
+            RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
     }
     
     public void drawString(Graphics2D graphics, String string, float x, float y) {

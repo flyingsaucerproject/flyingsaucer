@@ -34,6 +34,7 @@ import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.Attr;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.ErrorHandler;
@@ -123,6 +124,7 @@ public class x {
      */
     public static Document loadDocument( InputStream in )
         throws Exception {
+        u.p("x.load document: " + in);
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         MyErrorHandler eh = new MyErrorHandler();
         builder.setErrorHandler( eh );
@@ -280,7 +282,7 @@ public class x {
         if ( node == null ) {
             return;
         }
-        printType(node,tab);
+        //printType(node,tab);
         if ( node.getNodeType() == node.ENTITY_NODE ) {
             u.p( tab + "entity node" );
         }
@@ -315,7 +317,7 @@ public class x {
             }
 
             if ( atts.getLength() == 1 ) {
-                u.pr( " " + atts.item( 0 ) );
+                u.p( tab + " " + atts.item(0).getNodeName() + "=" + atts.item( 0 ).getNodeValue() );
                 if ( c.getLength() == 0 ) {
                     u.p( "/>" );
                 } else {
@@ -325,9 +327,9 @@ public class x {
 
             if ( atts.getLength() > 1 ) {
                 // print the attributes
-                u.p( " " + atts.item( 0 ) );
+                p((Attr)atts.item(0),tab);
                 for ( int i = 1; i < atts.getLength(); i++ ) {
-                    u.p( tab + "  " + atts.item( i ) );
+                    p((Attr)atts.item(i),tab);
                 }
                 if ( c.getLength() == 0 ) {
                     u.p( tab + "/>" );
@@ -347,7 +349,9 @@ public class x {
             u.p( tab + "</" + node.getNodeName() + ">" );
         }
     }
-    
+    public static void p(Attr node, String tab) {
+        u.p( tab + " " + node.getNodeName() + "=\"" + node.getNodeValue() +"\"");
+    }
     public static void printType(Node node, String tab) {
         if(node.getNodeType() == node.ELEMENT_NODE) {
             u.p(tab + "node type = element");
@@ -831,6 +835,22 @@ class MyErrorHandler implements ErrorHandler {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/22 21:34:05  joshy
+ * created new whitespace handler.
+ * new whitespace routines only work if you set a special property. it's
+ * off by default.
+ *
+ * turned off fractional font metrics
+ *
+ * fixed some bugs in u and x
+ *
+ * - j
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/11/18 23:29:38  joshy
  * fixed xml bug
  * Issue number:

@@ -122,7 +122,7 @@ public class InlineBox extends Box {
      */
     public String toString() {
 
-        return "InlineBox text = \"" + getText() +
+        return "InlineBox text = \"" + getSubstring() +
                 "\" bnds = " + x + "," + y + " - " + width + "x" + height +
                 " start = " + this.start_index + " end = " + this.end_index +
                 " baseline = " + this.baseline + " vset = " + this.vset +
@@ -169,6 +169,19 @@ public class InlineBox extends Box {
      * @return   The substring value
      */
     public String getSubstring() {
+        // new code for whitepsace handling
+        if(master != null) {
+            if(start_index == -1 || end_index == -1) {
+                return master;
+            }
+            if(end_index < start_index) {
+                u.p("warning: end is less than start: " + end_index + " < " + start_index);
+                u.p("master = " + master);
+                return master;
+            }
+            return master.substring(start_index, end_index);
+        }
+        
         if(text == null) return "";
         String txt = text.substring( start_index, end_index );
         return txt;
@@ -178,6 +191,23 @@ public class InlineBox extends Box {
         start_index = 0;
         end_index = text.length();
     }
+    public void setSubstring(int start, int end) {
+        if(end < start) {
+            u.p("setting substring to: " + start + " " + end);
+            u.dump_stack();
+        }
+        start_index = start;
+        end_index = end;
+    }
+    private String master;
+    public void setMasterText(String master) {
+        //u.p("set master text to: \"" + master + "\"");
+        this.master = master;
+    }
+    public String getMasterText() {
+        return master;
+    }
+    public String whitespace = "normal";
 
 
     /**
@@ -225,6 +255,22 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/11/22 21:34:04  joshy
+ * created new whitespace handler.
+ * new whitespace routines only work if you set a special property. it's
+ * off by default.
+ *
+ * turned off fractional font metrics
+ *
+ * fixed some bugs in u and x
+ *
+ * - j
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.11  2004/11/18 14:12:44  joshy
  * added whitespace test
  * cleaned up some code, spacing, and comments

@@ -38,7 +38,10 @@ import org.xhtmlrenderer.css.value.*;
 import org.xhtmlrenderer.css.*;
 import org.xhtmlrenderer.util.InfiniteLoopError;
 import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.x;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.Configuration;
+
 /**
 * Description of the Class
 *
@@ -111,7 +114,9 @@ public class InlineLayout extends BoxLayout {
         
         // loop until no more nodes
         Node current_node = InlineUtil.nextTextNode( inline_node_list );
-        TextUtil.stripWhitespace( c, current_node, elem );
+        if(!Configuration.isTrue("xr.layout.whitespace.experimental",false)) {
+            TextUtil.stripWhitespace( c, current_node, elem );
+        }
         // adjust the first line for tabs
         
         remaining_width = FloatUtil.adjustForTab( c, prev_line, remaining_width );
@@ -145,9 +150,16 @@ public class InlineLayout extends BoxLayout {
                         break;
                     }
                     // if no more unused text in this node
-                    if ( prev_inline.end_index >= current_node.getNodeValue().length() ) {
-                        // then break
-                        break;
+                    // u.p("looking for skip to next node");
+                    if(Configuration.isTrue("xr.layout.whitespace.experimental",false)) {
+                        if ( prev_inline.end_index >= prev_inline.getMasterText().length()) {
+                            break;
+                        }
+                    } else {
+                        if ( prev_inline.end_index >= current_node.getNodeValue().length() ) {
+                            // then break
+                            break;
+                        }
                     }
                 }
                 
@@ -191,7 +203,7 @@ public class InlineLayout extends BoxLayout {
                 //line baseline if it's a floating inline.
                 if ( !LayoutUtil.isFloated( new_inline, c ) ) {
                     if ( !LayoutUtil.isFloatedBlock( new_inline.node, c ) ) {
-                        //u.p("calcing new height of line");
+                        // u.p("calcing new height of line");
                         if ( new_inline.height + new_inline.y > curr_line.height ) {
                             curr_line.height = new_inline.height + new_inline.y;
                         }
@@ -201,8 +213,6 @@ public class InlineLayout extends BoxLayout {
                     }
                 }
                 
-                //u.p("curr line: " + curr_line);
-                //u.p("parent = " + curr_line.getParent());
                 FloatUtil.handleFloated( c, new_inline, curr_line, bounds.width, elem );
                 // calc new width of the line
                 curr_line.width += new_inline.width;
@@ -210,7 +220,7 @@ public class InlineLayout extends BoxLayout {
                 remaining_width = remaining_width - new_inline.width;
                 // if the last inline was at the end of a line, then go to next line
                 if ( new_inline.break_after ) {
-                    // u.p("breaking after");
+                    //u.p("breaking after");
                     // then remaining_width = max_width
                     remaining_width = bounds.width;
                     // save the line
@@ -237,7 +247,9 @@ public class InlineLayout extends BoxLayout {
                 prev_inline = new_inline;
             }
             current_node = InlineUtil.nextTextNode( inline_node_list );
-            TextUtil.stripWhitespace( c, current_node, elem );
+            if(!Configuration.isTrue("xr.layout.whitespace.experimental",false)) {
+                TextUtil.stripWhitespace( c, current_node, elem );
+            }
         }
         saveLine( curr_line, prev_line, elem, bounds.width, bounds.x, c, block , true);
         bounds.height += curr_line.height;
@@ -281,11 +293,13 @@ public class InlineLayout extends BoxLayout {
         }
         // get the text of the node
         String text = node.getNodeValue();
+
         // transform the text if required (like converting to caps)
         // this must be done before any measuring since it might change the
         // size of the text
+        //u.p("text from the node = \"" + text + "\"");
         text = TextUtil.transformText( c, node, text );
-        
+
         // u.p("calculating inline: text = " + text);
         // u.p("avail space = " + avail + " max = " + max_width + "   start index = " + start);
 
@@ -310,6 +324,17 @@ public class InlineLayout extends BoxLayout {
             // u.p("is break");
             return LineBreaker.generateBreakInlineBox( node );
         }
+        
+        
+        // new whitespace code
+        if(Configuration.isTrue("xr.layout.whitespace.experimental",false)) {
+            WhitespaceStripper whitespace = new WhitespaceStripper();
+            // u.p("calling whitespace stripper on node: " + node);
+            // u.p(" prev = " + prev);
+            return whitespace.createInline(c, node, text, prev, avail, max_width, font);
+        } else {
+        
+        
         if ( LineBreaker.isWhitespace( c, containing_block ) ) {
             // u.p("is whitespace");
             return LineBreaker.generateWhitespaceInlineBox( c, node, start, prev, text, prev_align, font );
@@ -327,6 +352,8 @@ public class InlineLayout extends BoxLayout {
         // normal multiline break
         // u.p("normal multi line break");
         return LineBreaker.generateMultilineBreak( c, node, start, text, prev, prev_align, avail );
+        
+        }
     }
     
     
@@ -376,6 +403,22 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.28  2004/11/22 21:34:03  joshy
+* created new whitespace handler.
+* new whitespace routines only work if you set a special property. it's
+* off by default.
+*
+* turned off fractional font metrics
+*
+* fixed some bugs in u and x
+*
+* - j
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.27  2004/11/18 18:49:49  joshy
 * fixed the float issue.
 * commented out more dead code

@@ -646,10 +646,12 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
          * XRDocument xrDoc = XRDocumentFactory.loadDocument(null, url);
          * return xrDoc.getDOMDocument();
          */
+        //Document dom = x.loadDocument( url );
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = fact.newDocumentBuilder();
         builder.setErrorHandler( error_handler );
-        return builder.parse( url.openStream() );
+        Document doc =  builder.parse( url.openStream() );
+        return doc;
     }
 
     /**
@@ -764,6 +766,22 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/22 21:34:04  joshy
+ * created new whitespace handler.
+ * new whitespace routines only work if you set a special property. it's
+ * off by default.
+ *
+ * turned off fractional font metrics
+ *
+ * fixed some bugs in u and x
+ *
+ * - j
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/11/16 15:38:44  joshy
  * removed background printing which speeds it up considerably
  * added boolean in conf to turn off backgrounds for testing
