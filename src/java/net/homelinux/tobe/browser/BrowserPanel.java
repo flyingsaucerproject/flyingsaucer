@@ -277,9 +277,8 @@ public class BrowserPanel extends JPanel implements DocumentListener, UserAgentC
         } else {
             org.ccil.cowan.tagsoup.Parser tsp = new org.ccil.cowan.tagsoup.Parser();
             try{
-            System.out.println("namespaces feature is "+tsp.getFeature(tsp.namespacesFeature));
-            tsp.setFeature(tsp.namespacesFeature, false);
-            System.out.println("namespaces feature is now "+tsp.getFeature(tsp.namespacesFeature));
+                tsp.setFeature(tsp.namespacesFeature, false);
+                tsp.setFeature(tsp.namespacePrefixesFeature, true);
             }
             catch(org.xml.sax.SAXNotRecognizedException e) {
                 System.err.println(e);
@@ -288,6 +287,7 @@ public class BrowserPanel extends JPanel implements DocumentListener, UserAgentC
                 System.err.println(e);
             }
             doc = new XRDocument(this,tsp,is,uri);
+            //doc = new XRDocument(this,is,uri);
         }
         return doc;
     }

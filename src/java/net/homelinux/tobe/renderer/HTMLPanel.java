@@ -167,7 +167,8 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         
         //HACK: for now. Fix this properly via _userAgent
         try {
-            c.setBaseURL((new java.io.File(".")).toURI().resolve(doc.getURI()).toURL());
+            //c.setBaseURL((new java.io.File(".")).toURI().resolve(doc.getURI()).toURL());
+            c.setBaseURL(doc.getURI().toURL());
         }
         catch(java.net.MalformedURLException e) {
             e.printStackTrace();

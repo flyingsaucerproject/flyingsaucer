@@ -253,7 +253,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
                 try {
                     long st = System.currentTimeMillis();
                     java.net.URI uri = new java.net.URI(file);
-                    _doc = new XRDocument(HTMLTest.this, getInputStreamForURI(uri), uri);
+                    _doc = new XRDocument(HTMLTest.this, getInputStreamForURI(uri), resolveURI(uri));
                     
                     long el = System.currentTimeMillis() - st;
                     System.out.println("TIME: loadDocument(" + file + ")  " + el + "ms, render may take longer");
@@ -299,6 +299,10 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
                 //panel.repaint();
             }
         });
+    }
+    
+    public java.net.URI resolveURI(java.net.URI uri) {
+        return _baseURI.resolve(uri);
     }
     
     public java.io.InputStream getInputStreamForURI(java.net.URI uri) {

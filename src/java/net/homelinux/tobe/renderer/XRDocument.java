@@ -32,6 +32,13 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 import org.xml.sax.InputSource;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.Result;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.Transformer;
+
 import net.homelinux.tobe.renderer.builder.DocumentProcessor;
 
 /**
@@ -56,17 +63,28 @@ public class XRDocument implements net.homelinux.tobe.xhtmlrenderer.AttributeRes
         try{
             DocumentBuilder builder = fact.newDocumentBuilder();
             _doc = builder.newDocument();
-            XMLReader xmlReader = XMLReaderFactory.createXMLReader( "org.apache.crimson.parser.XMLReaderImpl" );
+            SAXSource source = new SAXSource(new InputSource(is));
+            Result result = new SAXResult(new DocumentProcessor(this));
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer t = tf.newTransformer();
+            t.transform(source, result);
+            /*XMLReader xmlReader = XMLReaderFactory.createXMLReader( "org.apache.crimson.parser.XMLReaderImpl" );
             xmlReader.setContentHandler(new DocumentProcessor(this));
-            xmlReader.parse(new InputSource(is));
+            xmlReader.parse(new InputSource(is));*/
         }
         catch(javax.xml.parsers.ParserConfigurationException e) {
             e.printStackTrace();
         }
-        catch(org.xml.sax.SAXException e) {
+        /*catch(org.xml.sax.SAXException e) {
+            e.printStackTrace();
+        }*/
+        /*catch(java.io.IOException e) {
+            e.printStackTrace();
+        }*/
+        catch(javax.xml.transform.TransformerConfigurationException e) {
             e.printStackTrace();
         }
-        catch(java.io.IOException e) {
+        catch(javax.xml.transform.TransformerException e) {
             e.printStackTrace();
         }
     }
@@ -82,16 +100,19 @@ public class XRDocument implements net.homelinux.tobe.xhtmlrenderer.AttributeRes
         try{
             DocumentBuilder builder = fact.newDocumentBuilder();
             _doc = builder.newDocument();
-            xmlReader.setContentHandler(new DocumentProcessor(this));
-            xmlReader.parse(new InputSource(is));
+            SAXSource source = new SAXSource(xmlReader, new InputSource(is));
+            Result result = new SAXResult(new DocumentProcessor(this));
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer t = tf.newTransformer();
+            t.transform(source, result);
         }
         catch(javax.xml.parsers.ParserConfigurationException e) {
             e.printStackTrace();
         }
-        catch(org.xml.sax.SAXException e) {
+        catch(javax.xml.transform.TransformerConfigurationException e) {
             e.printStackTrace();
         }
-        catch(java.io.IOException e) {
+        catch(javax.xml.transform.TransformerException e) {
             e.printStackTrace();
         }
     }

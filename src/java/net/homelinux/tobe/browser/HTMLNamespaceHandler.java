@@ -105,4 +105,52 @@ public class HTMLNamespaceHandler extends XhtmlNamespaceHandler {
         return title;
     }    
     
+    public String getInlineStyle(org.w3c.dom.Document doc) {
+        StringBuffer style = new StringBuffer();
+        try {
+            org.apache.xpath.objects.XObject xo = XPathAPI.eval(doc.getDocumentElement(), "//style[@type='text/css']");
+            org.w3c.dom.NodeList nl = xo.nodelist();
+            for ( int i=0, len=nl.getLength(); i < len; i++ ) {
+                org.w3c.dom.Node elem = nl.item(i);
+                org.w3c.dom.NodeList children = elem.getChildNodes();
+                for(int j=0; j < children.getLength(); j++) {
+                    org.w3c.dom.Node txt = children.item(j);
+                    if(txt.getNodeType() == org.w3c.dom.Node.TEXT_NODE) {
+                        style.append(txt.getNodeValue());
+                    }
+                }
+            }
+        } catch ( Exception ex ) {
+            ex.printStackTrace();   
+        }
+        
+        return style.toString();
+    }
+    
+    public java.net.URI[] getStylesheetURIs(org.w3c.dom.Document doc) {
+        java.util.List list = new java.util.ArrayList();
+        //get the processing-instructions (actually for XmlDocuments)
+        java.net.URI[] pis = super.getStylesheetURIs(doc);
+        list.addAll(java.util.Arrays.asList(pis));
+        //get the link elements
+        try {
+            //this namespace handling is horrible!
+            org.apache.xpath.objects.XObject xo = XPathAPI.eval(doc.getDocumentElement(), "//link[@type='text/css']/@href");
+            org.w3c.dom.NodeList nl = xo.nodelist();
+            for ( int i=0, len=nl.getLength(); i < len; i++ ) {
+                org.w3c.dom.Node hrefNode = nl.item(i);
+                String href = hrefNode.getNodeValue();
+                list.add(new java.net.URI(href));
+            }
+        } catch ( Exception ex ) {
+            ex.printStackTrace();   
+        }
+        
+        java.net.URI[] uris = new java.net.URI[list.size()];
+        for(int i=0; i<uris.length; i++) {
+            uris[i] = (java.net.URI) list.get(i);
+        }
+        return uris;
+    }
+    
 }
