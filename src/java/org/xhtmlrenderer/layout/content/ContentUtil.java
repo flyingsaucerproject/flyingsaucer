@@ -27,6 +27,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
+import org.xhtmlrenderer.layout.inline.WhitespaceStripper;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -42,8 +43,8 @@ public class ContentUtil {
     /**
      * Gets the inline content of a sequence of nodes
      *
-     * @param c      PARAM
-     * @param parent
+     * @param c      The current context. The current style in the context must correspond to that of the parent Content
+     * @param parent The parent Content to get the child content for
      * @return A list of content.
      */
     static List getChildContentList(Context c, Content parent) {
@@ -79,10 +80,12 @@ public class ContentUtil {
                 String content = ((CSSPrimitiveValue) before.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
                 if (!content.equals("")) {
                     inlineList.add(new StylePush(before));
+                    c.pushStyle(before);
                     textContent = new StringBuffer();
                     textContent.append(content.replaceAll("\\\\A", "\n"));
                     inlineList.add(new TextContent(parentElement, textContent.toString()));
                     textContent = null;
+                    c.popStyle();
                     inlineList.add(new StylePop());
                 }
                 //do not reset style here, because if this element is empty, we will not have changed context
@@ -106,8 +109,10 @@ public class ContentUtil {
 
             Element elem = (Element) curr;
             CascadedStyle style = c.css.getCascadedStyle(elem);
+            c.pushStyle(style);//just remember to pop it before continue
 
             if (isHidden(style)) {
+                c.popStyle();
                 continue;//at least for now, don't generate hidden content
             }
 
@@ -118,6 +123,7 @@ public class ContentUtil {
                     textContent = null;
                 }
                 inlineList.add(new InlineBlockContent((Element) curr, style));
+                c.popStyle();
                 continue;
             }
 
@@ -129,6 +135,7 @@ public class ContentUtil {
                     textContent = null;
                 }
                 inlineList.add(new FloatedBlockContent((Element) curr, style));
+                c.popStyle();
                 continue;
             }
 
@@ -139,6 +146,7 @@ public class ContentUtil {
                     textContent = null;
                 }
                 inlineList.add(new InlineBlockContent(elem, style));
+                c.popStyle();
                 continue;
             }
 
@@ -152,15 +160,16 @@ public class ContentUtil {
                     }
                     if (blockList == null) blockList = new LinkedList();
                     if (inlineList.size() != 0) {
-                        blockList.addAll(resolveRunInContent(inlineList, parentElement, parentStyle));
+                        blockList.addAll(resolveRunInContent(inlineList, parentElement, c));
                         inlineList = new LinkedList();
                     }
                     blockList.add(runIn);
-                    continue;
                 } else {
                     inlineList.add(runIn);
-                    continue;//resolve it when we can
+                    //resolve it when we can
                 }
+                c.popStyle();
+                continue;
             }
 
             if (isBlockLevel(style)) {
@@ -170,11 +179,12 @@ public class ContentUtil {
                 }
                 if (blockList == null) blockList = new LinkedList();
                 if (inlineList.size() != 0) {
-                    blockList.addAll(resolveRunInContent(inlineList, parentElement, parentStyle));
+                    blockList.addAll(resolveRunInContent(inlineList, parentElement, c));
                     inlineList = new LinkedList();
                 }
                 BlockContent block = new BlockContent(elem, style);
                 blockList.add(block);
+                c.popStyle();
                 continue;
             }
 
@@ -188,6 +198,7 @@ public class ContentUtil {
                     textContent = null;
                 }
                 inlineList.add(new InlineBlockContent((Element) curr, style));
+                c.popStyle();
                 continue;
             }
 
@@ -200,7 +211,9 @@ public class ContentUtil {
             List childList = inline.getChildContent(c);
             if (isBlockContent(childList)) {
                 //need to put current inlineList in front, with a StylePush appended
-                inlineList.add(new StylePush(style));
+                inlineList.add(new StylePush(style));//this is already pushed to context
+                //the child list represents the entire contents of an element,
+                //therefore we need not concern ourselves with style-changes, as they will even out
                 for (Iterator ci = childList.iterator(); ci.hasNext();) {
                     Object o = ci.next();
                     if (o instanceof BlockContent) break;
@@ -213,7 +226,7 @@ public class ContentUtil {
                 }
                 if (blockList == null) blockList = new LinkedList();
                 if (inlineList.size() != 0) {
-                    blockList.add(resolveRunInContent(inlineList, parentElement, parentStyle));
+                    blockList.add(resolveRunInContent(inlineList, parentElement, c));
                     inlineList = new LinkedList();
                 }
                 //extract any trailing AnonymousBlock and put it in the inlineList
@@ -225,12 +238,13 @@ public class ContentUtil {
                 //add the rest of the children
                 blockList.addAll(childList);
                 //append StylePop
-                inlineList.add(new StylePop());
+                inlineList.add(new StylePop());//pop from c below
             } else {
                 inlineList.add(new StylePush(style));
                 inlineList.addAll(childList);
-                inlineList.add(new StylePop());
+                inlineList.add(new StylePop());//pop from c below
             }
+            c.popStyle();
         }
 
         if (textContent != null) {
@@ -260,11 +274,13 @@ public class ContentUtil {
         //have to check if there were run-ins pending
         if (isBlockContent(inlineList)) {
             if (blockList == null) blockList = new LinkedList();
-            blockList.addAll(resolveRunInContent(inlineList, parentElement, parentStyle));
+            blockList.addAll(resolveRunInContent(inlineList, parentElement, c));
             inlineList = new LinkedList();
         }
 
         if (blockList == null) {
+            inlineList = WhitespaceStripper.stripInlineContent(c, inlineList);
+            if (inlineList.size() == 0) return inlineList;
             if (firstLetterStyle != null) {
                 inlineList.add(0, firstLetterStyle);
             }
@@ -273,6 +289,7 @@ public class ContentUtil {
             }
             return inlineList;
         } else {
+            inlineList = WhitespaceStripper.stripInlineContent(c, inlineList);
             if (inlineList.size() != 0) {
                 blockList.add(new AnonymousBlockContent(parentElement, inlineList));
             }
@@ -287,12 +304,13 @@ public class ContentUtil {
 
     }
 
-    static List resolveRunInContent(List pendingInlines, Element parentElement, CascadedStyle parentStyle) {
+    static List resolveRunInContent(List pendingInlines, Element parentElement, Context c) {
         List inline = new LinkedList();
         List block = new LinkedList();
         for (Iterator i = pendingInlines.iterator(); i.hasNext();) {
             Object o = i.next();
             if (o instanceof RunInContent) {
+                inline = WhitespaceStripper.stripInlineContent(c, inline);
                 if (inline.size() != 0) {
                     block.add(new AnonymousBlockContent(parentElement, inline));
                     inline = new LinkedList();
@@ -302,6 +320,7 @@ public class ContentUtil {
                 inline.add(o);
             }
         }
+        inline = WhitespaceStripper.stripInlineContent(c, inline);
         if (inline.size() != 0) {
             block.add(new AnonymousBlockContent(parentElement, inline));
         }
@@ -420,6 +439,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/12/12 19:12:25  tobega
+ * Stripping whitespace already in content-analysis. (Whitespace property does not apply to pseudos that are resolved later)
+ *
  * Revision 1.12  2004/12/12 18:06:51  tobega
  * Made simple layout (inline and box) a bit easier to understand
  *

@@ -1,13 +1,18 @@
 package org.xhtmlrenderer.layout.inline;
 
 
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.content.StylePop;
+import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.InlineBox;
 
 import java.awt.Font;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class WhitespaceStripper {
@@ -19,7 +24,9 @@ public class WhitespaceStripper {
     public static final Pattern tab_to_space = Pattern.compile("\\t");
     public static final Pattern space_collapse = Pattern.compile("( )+");
 
-
+    /**
+     * @deprecated whitespace should be stripped as early as possible
+     */
     public static InlineBox createInline(Context c, TextContent content, InlineBox prev, InlineBox prev_align, int avail, int max, Font font) {
         InlineBox inline = new InlineBox();
         inline.content = content;
@@ -49,6 +56,9 @@ public class WhitespaceStripper {
     // this function strips all whitespace from the text according to the
     // CSS 2.1 spec on whitespace handling. It accounts for the different
     // whitespace settings like normal, nowrap, pre, etc
+    /**
+     * @deprecated whitespace should be stripped already in the content list
+     */
     public static String stripWhitespace(CalculatedStyle style, InlineBox prev, String text) {
 
         String whitespace = getWhitespace(style);
@@ -105,6 +115,122 @@ public class WhitespaceStripper {
 
         //Uu.p("final text = \"" + text + "\"");
         return text;
+    }
+
+    /**
+     * Strips whitespace early in inline content generation.
+     * This can be done because "whitespage" does not ally to :first-line and :first-letter.
+     * For dynamic pseudo-classes we are allowed to choose which properties apply.
+     *
+     * @param c
+     * @param inlineContent
+     * @return a list cleaned of empty content and the thereby redundant style-changes
+     */
+    public static List stripInlineContent(Context c, List inlineContent) {
+        List stripped = new LinkedList();
+        List pendingStylePushes = new LinkedList();
+        boolean collapse = false;
+
+        for (Iterator i = inlineContent.iterator(); i.hasNext();) {
+            Object o = i.next();
+            if (o instanceof StylePush) {
+                pendingStylePushes.add(o);
+                c.pushStyle(((StylePush) o).getStyle());
+                continue;
+            }
+            if (o instanceof TextContent) {
+                TextContent tc = (TextContent) o;
+                boolean collapseNext = stripWhitespace(c.getCurrentStyle(), collapse, tc);
+                if (tc.getText().equals("")) {
+                    //ignore it, let the next collapse with the previous
+                    continue;
+                } else {
+                    stripped.addAll(pendingStylePushes);
+                    pendingStylePushes.clear();
+                    stripped.add(tc);
+                    collapse = collapseNext;
+                    continue;
+                }
+            }
+            if (o instanceof StylePop) {
+                c.popStyle();
+                if (pendingStylePushes.size() != 0) {
+                    //redundant style-change
+                    pendingStylePushes.remove(pendingStylePushes.size() - 1);
+                } else {
+                    stripped.add(o);
+                }
+                continue;
+            }
+            //Here we have some other object, just add it with preceding styles
+            stripped.addAll(pendingStylePushes);
+            pendingStylePushes.clear();
+            stripped.add(o);
+            collapse = false;//no collapsing of the next one
+        }
+
+        //there may be relevant StylePushes pending, e.g. if this is content of AnonymousBlock
+        stripped.addAll(pendingStylePushes);
+        return stripped;
+    }
+
+    /**
+     * this function strips all whitespace from the text according to the
+     * CSS 2.1 spec on whitespace handling. It accounts for the different
+     * whitespace settings like normal, nowrap, pre, etc
+     *
+     * @param style
+     * @param collapseLeading
+     * @param tc              the TextContent to strip. The text in it is modified.
+     * @return whether the next leading space should collapse or not.
+     */
+    static boolean stripWhitespace(CalculatedStyle style, boolean collapseLeading, TextContent tc) {
+
+        String whitespace = style.getStringProperty(CSSName.WHITE_SPACE);
+        String text = tc.getText();
+
+        // do step 1
+        if (whitespace.equals("normal") ||
+                whitespace.equals("nowrap") ||
+                whitespace.equals("pre-line")) {
+            text = linefeed_space_collapse.matcher(text).replaceAll(SPACE);
+        }
+
+        // do step 2
+        //todo: check this
+        // pull out pre's for breaking
+        // still not sure here
+
+
+        // do step 3
+        // convert line feeds to spaces
+        if (whitespace.equals("normal") ||
+                whitespace.equals("nowrap")) {
+            text = linefeed_to_space.matcher(text).replaceAll(SPACE);
+        }
+
+        // do step 4
+        if (whitespace.equals("normal") ||
+                whitespace.equals("nowrap") ||
+                whitespace.equals("pre-line")) {
+
+            text = tab_to_space.matcher(text).replaceAll(SPACE);
+            text = space_collapse.matcher(text).replaceAll(SPACE);
+
+            // collapse first space against prev inline
+            if (text.startsWith(SPACE) &&
+                    collapseLeading) {
+                text = text.substring(1, text.length());
+            }
+        }
+
+        boolean collapseNext = (text.endsWith(SPACE) &&
+                (whitespace.equals("normal") ||
+                whitespace.equals("nowrap") ||
+                whitespace.equals("pre-line")));
+
+        tc.setText(text);
+        return collapseNext;
     }
 
 
