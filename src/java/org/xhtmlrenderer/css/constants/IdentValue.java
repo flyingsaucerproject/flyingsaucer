@@ -5,14 +5,12 @@ import java.util.*;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 
-
 /**
- * An IdentValue represents a string that you can assign to a CSS property, where the string is
- * one of several enumerated values. For example, "whitespace" can take the values "nowrap", "pre"
- * and "normal". There is a static instance for all idents in the CSS 2 spec, which you can retrieve
- * using the {@link #getByIdentString(String)} method. The instance doesn't have any behavior: it's just
- * a marker so that you can retrieve an ident from a DerivedValue or CalculatedStyle, then compare
- * to the instance here. For example:
+ * An IdentValue represents a string that you can assign to a CSS property, where the string is one of several
+ * enumerated values. For example, "whitespace" can take the values "nowrap", "pre" and "normal". There is a static
+ * instance for all idents in the CSS 2 spec, which you can retrieve using the {@link #getByIdentString(String)} method.
+ * The instance doesn't have any behavior: it's just a marker so that you can retrieve an ident from a DerivedValue or
+ * CalculatedStyle, then compare to the instance here. For example:
  * <pre>
  * CalculatedStyle style = ...getstyle from somewhere
  * IdentValue whitespace = style.getIdent(CSSName.WHITESPACE);
@@ -24,8 +22,8 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  *      // preserve spacing
  * }
  * </pre>
- * All static instances are instantiated automatically, and are Singletons, so you can compare using
- * a simple Object comparison using <code>==</code>.
+ * All static instances are instantiated automatically, and are Singletons, so you can compare using a simple Object
+ * comparison using <code>==</code>.
  */
 public class IdentValue {
     private String ident;
@@ -37,14 +35,16 @@ public class IdentValue {
     public static final IdentValue ARMENIAN = addValue("armenian");
     public static final IdentValue AUTO = addValue("auto");
     public static final IdentValue BASELINE = addValue("baseline");
+    public static final IdentValue BLINK = addValue("blink");
+    public static final IdentValue BLOCK = addValue("block");
     public static final IdentValue BOLD = addValue("bold");
     public static final IdentValue BOLDER = addValue("bolder");
-    public static final IdentValue BLINK = addValue("blink");
     public static final IdentValue BOTTOM = addValue("bottom");
     public static final IdentValue CAPITALIZE = addValue("capitalize");
     public static final IdentValue CENTER = addValue("center");
     public static final IdentValue CIRCLE = addValue("circle");
     public static final IdentValue CJK_IDEOGRAPHIC = addValue("cjk-ideographic");
+    public static final IdentValue COMPACT = addValue("compact");
     public static final IdentValue DASHED = addValue("dashed");
     public static final IdentValue DECIMAL = addValue("decimal");
     public static final IdentValue DECIMAL_LEADING_ZERO = addValue("decimal-leading-zero");
@@ -67,19 +67,23 @@ public class IdentValue {
     public static final IdentValue HIDDEN = addValue("hidden");
     public static final IdentValue HIRAGANA = addValue("hiragana");
     public static final IdentValue HIRAGANA_IROHA = addValue("hiragana-iroha");
+    public static final IdentValue INLINE = addValue("inline");
+    public static final IdentValue INLINE_TABLE = addValue("inline-table");
     public static final IdentValue INSET = addValue("inset");
     public static final IdentValue ITALIC = addValue("italic");
-    public static final IdentValue LIGHTER = addValue("lighter");
     public static final IdentValue JUSTIFY = addValue("justify");
     public static final IdentValue KATAKANA = addValue("katakana");
     public static final IdentValue KATAKANA_IROHA = addValue("katakana-iroha");
     public static final IdentValue LEFT = addValue("left");
+    public static final IdentValue LIGHTER = addValue("lighter");
     public static final IdentValue LINE_THROUGH = addValue("line-through");
+    public static final IdentValue LIST_ITEM = addValue("list-item");
     public static final IdentValue LOWERCASE = addValue("lowercase");
     public static final IdentValue LOWER_ALPHA = addValue("lower-alpha");
     public static final IdentValue LOWER_GREEK = addValue("lower-greek");
     public static final IdentValue LOWER_LATIN = addValue("lower-latin");
     public static final IdentValue LOWER_ROMAN = addValue("lower-roman");
+    public static final IdentValue MARKER = addValue("marker");
     public static final IdentValue NONE = addValue("none");
     public static final IdentValue NORMAL = addValue("normal");
     public static final IdentValue NOWRAP = addValue("nowrap");
@@ -94,6 +98,7 @@ public class IdentValue {
     public static final IdentValue REPEAT_Y = addValue("repeat-y");
     public static final IdentValue RIDGE = addValue("ridge");
     public static final IdentValue RIGHT = addValue("right");
+    public static final IdentValue RUN_IN = addValue("run-in");
     public static final IdentValue SCROLL = addValue("scroll");
     public static final IdentValue SMALL_CAPS = addValue("small-caps");
     public static final IdentValue SOLID = addValue("solid");
@@ -101,6 +106,15 @@ public class IdentValue {
     public static final IdentValue STATIC = addValue("static");
     public static final IdentValue SUB = addValue("sub");
     public static final IdentValue SUPER = addValue("super");
+    public static final IdentValue TABLE = addValue("table");
+    public static final IdentValue TABLE_CAPTION = addValue("table-caption");
+    public static final IdentValue TABLE_CELL = addValue("table-cell");
+    public static final IdentValue TABLE_COLUMN = addValue("table-column");
+    public static final IdentValue TABLE_COLUMN_GROUP = addValue("table-column-group");
+    public static final IdentValue TABLE_FOOTER_GROUP = addValue("table-footer-group");
+    public static final IdentValue TABLE_HEADER_GROUP = addValue("table-header-group");
+    public static final IdentValue TABLE_ROW = addValue("table-row");
+    public static final IdentValue TABLE_ROW_GROUP = addValue("table-row-group");
     public static final IdentValue TEXT_BOTTOM = addValue("text-bottom");
     public static final IdentValue TEXT_TOP = addValue("text-top");
     public static final IdentValue TOP = addValue("top");
@@ -124,8 +138,8 @@ public class IdentValue {
     }
 
     /**
-     * Returns a string representation of the object, in this case, the ident as a string (as it
-     * appears in the CSS spec).
+     * Returns a string representation of the object, in this case, the ident as a string (as it appears in the CSS
+     * spec).
      *
      * @return a string representation of the object.
      */
@@ -134,10 +148,10 @@ public class IdentValue {
     }
 
     /**
-     * Returns the Singleton IdentValue that corresponds to the given string, e.g.
-     * for "normal" will return IdentValue.NORMAL. Use this when you have the string
-     * but need to look up the Singleton. If the string doesn't match an ident in the
-     * CSS spec, a runtime exception is thrown.
+     * Returns the Singleton IdentValue that corresponds to the given string, e.g. for "normal" will return
+     * IdentValue.NORMAL. Use this when you have the string but need to look up the Singleton. If the string doesn't
+     * match an ident in the CSS spec, a runtime exception is thrown.
+     *
      * @param ident The identifier to retrieve the Singleton IdentValue for.
      * @return see desc.
      */
