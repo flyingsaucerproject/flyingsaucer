@@ -4,10 +4,12 @@ package org.xhtmlrenderer.layout.inline;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.content.StylePop;
 import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.util.*;
 
 import java.awt.Font;
 import java.util.Iterator;
@@ -171,8 +173,35 @@ public class WhitespaceStripper {
 
         //there may be relevant StylePushes pending, e.g. if this is content of AnonymousBlock
         stripped.addAll(pendingStylePushes);
+        
+        //Uu.p("final stripped = " + stripped);
+        if(isAllWhitespace(stripped)) {
+            stripped.clear();
+        }
         return stripped;
     }
+    
+    
+    private static boolean isAllWhitespace(List list) {
+        for(int i=0; i<list.size(); i++) {
+            if(list.get(i) instanceof StylePush) {
+                continue;
+            }
+            if(list.get(i) instanceof StylePop) {
+                continue;
+            }
+            Content content = (Content)list.get(i);
+            if(!(content instanceof TextContent)) {
+                return false;
+            }
+            TextContent txt = (TextContent)content;
+            if(!txt.getText().trim().equals("")) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
 
     /**
      * this function strips all whitespace from the text according to the

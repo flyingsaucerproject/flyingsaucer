@@ -1,6 +1,6 @@
 /*
  * AnonymousBlockContent.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -22,6 +22,7 @@ package org.xhtmlrenderer.layout.content;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.util.Uu;
 
 import java.util.List;
 
