@@ -294,6 +294,7 @@ public class BorderPainter {
 
     private static void paintSolid(final Graphics g, final Rectangle bounds, final Border border, final BorderColor color, final int side) {
         Polygon poly;
+        // CLEAN: duplicate, except for color, with paintGoodBevel() for BOTTOM (PWW 25-01-05)
         if (side == TOP) {
             poly = new Polygon();
             poly.addPoint(bounds.x, bounds.y);
@@ -326,7 +327,7 @@ public class BorderPainter {
             g.fillPolygon(poly);
         }
 
-
+        // CLEAN: duplicate, except for color, with paintGoodBevel() for BOTTOM (PWW 25-01-05)
         if (side == LEFT) {
             poly = new Polygon();
             poly.addPoint(bounds.x, bounds.y);
@@ -344,6 +345,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/01/25 10:56:56  pdoubleya
+ * Added warning on possible duplicate code.
+ *
  * Revision 1.19  2005/01/25 10:55:15  pdoubleya
  * Added warning on possible duplicate code.
  *
