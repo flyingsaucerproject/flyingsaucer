@@ -20,7 +20,9 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -49,7 +51,6 @@ public class BackgroundPainter {
         if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
             return;
         }
-
 
         if (block.border == null) return;
         Rectangle box = new Rectangle(block.x + block.margin.left + block.border.left,
@@ -210,6 +211,15 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/12/14 02:28:49  joshy
+ * removed some comments
+ * some bugs with the backgrounds still
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/12/12 03:32:59  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

@@ -198,13 +198,11 @@ public class Context {
     private Stack styleStack;
 
     public void initializeStyles(EmptyStyle c) {
-        // Uu.p("empty style = " + c.hashCode() + " " + c);
         styleStack = new Stack();
         styleStack.push(c);
     }
 
     public void pushStyle(CascadedStyle s) {
-        // Uu.p("pushing style: " + s);
         CalculatedStyle parent = (CalculatedStyle) styleStack.peek();
         CalculatedStyle derived = css.getDerivedStyle(parent, s);
         styleStack.push(derived);
@@ -215,7 +213,6 @@ public class Context {
     }
 
     public CalculatedStyle getCurrentStyle() {
-        // Uu.p("style hash = " + styleStack.peek().hashCode() + " " + styleStack.peek());
         return (CalculatedStyle) styleStack.peek();
     }
 
@@ -827,6 +824,15 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2004/12/14 02:28:48  joshy
+ * removed some comments
+ * some bugs with the backgrounds still
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.33  2004/12/14 01:56:23  joshy
  * fixed layout width bugs
  * fixed extra border on document bug

@@ -10,6 +10,7 @@ import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.layout.LayoutUtil;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -148,6 +149,13 @@ public class BoxRenderer extends DefaultRenderer {
      */
     public void paintBackground(Context c, Box box) {
         Box block = box;
+
+        if(!LayoutUtil.shouldDrawBackground(block)) {
+            //Uu.p("skipping: " + block);
+            return;
+        }
+
+
         // cache the background color
         getBackgroundColor(c, block);
 

@@ -38,6 +38,16 @@ public class LayoutUtil {
         }
         return false;
     }
+    
+    public static boolean shouldDrawBackground(Box box) {
+        if(!isBlockOrInlineElementBox(box)) {
+            return false;
+        }
+        if(box.content instanceof AnonymousBlockContent) {
+            return false;
+        }
+        return true;
+    }
 
     public static boolean isBlockOrInlineElementBox(Box box) {
         //Uu.p("box = " + box);

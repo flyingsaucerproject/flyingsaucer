@@ -109,7 +109,6 @@ public class BoxLayout extends DefaultLayout {
             bfc.setWidth((int) c.getExtents().getWidth());
         }
 
-        //Uu.p("elem = " + block.node);
 
         // copy the extents
         Rectangle oe = c.getExtents();
@@ -139,9 +138,7 @@ public class BoxLayout extends DefaultLayout {
         int tx = block.totalLeftPadding();
         int ty = block.totalTopPadding();
         c.translate(tx, ty);
-        // Uu.p("before: " + block);
         layoutChildren(c, block);//when this is really an anonymous, InlineLayout.layoutChildren is called
-        // Uu.p("after: " + block);
         c.translate(-tx, -ty);
         c.setSubBlock(old_sub);
 
@@ -161,7 +158,6 @@ public class BoxLayout extends DefaultLayout {
         block.width = block.totalHorizontalPadding() + block.width;
         block.height = block.totalVerticalPadding() + block.height;
         
-        // Uu.p("final: " + block);
         //restore the extents
         c.setExtents(oe);
 
@@ -184,7 +180,6 @@ public class BoxLayout extends DefaultLayout {
         //and now, back to previous style
         if (pushed != null) c.popStyle();
 
-        // Uu.p("layout: " + block + " " + c);
         return block;
     }
 
@@ -220,12 +215,10 @@ public class BoxLayout extends DefaultLayout {
         }
         CalculatedStyle style = c.getCurrentStyle();
         if (style.hasProperty("height")) {
-            //float new_height = c.css.getFloatProperty(elem, "height", c.getExtents().height);
             float new_height = style.getFloatPropertyRelative("height", c.getExtents().height);
             c.getExtents().height = (int) new_height;
             block.height = (int) new_height;
             block.auto_height = false;
-            //Uu.p("set height to: " + block.height);
         }
     }
 
@@ -359,6 +352,15 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.49  2004/12/14 02:28:47  joshy
+ * removed some comments
+ * some bugs with the backgrounds still
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.48  2004/12/14 01:56:22  joshy
  * fixed layout width bugs
  * fixed extra border on document bug

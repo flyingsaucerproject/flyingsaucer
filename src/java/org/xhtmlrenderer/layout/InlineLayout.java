@@ -47,7 +47,6 @@ public class InlineLayout extends BoxLayout {
      * @return Returns
      */
     public Box layoutChildren(Context c, Box box) {
-        //Uu.p("starting to lay out the children");
         /* resolved by ContentUtil if (LayoutUtil.isHiddenNode(box.getElement(), c)) {
             return box;
         }*/
@@ -57,7 +56,6 @@ public class InlineLayout extends BoxLayout {
 
         BlockBox block = (BlockBox) box;//I think this should work - tobe 2004-12-11
 
-        // Uu.p("block content = " + ContentUtil.isBlockContent(contentList));
         if (ContentUtil.isBlockContent(contentList)) {//this should be block layed out
             //BoxLayout.layoutContent(c, box, contentList, block);
             super.layoutChildren(c, box);
@@ -417,6 +415,15 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.60  2004/12/14 02:28:48  joshy
+* removed some comments
+* some bugs with the backgrounds still
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.59  2004/12/14 02:18:30  tobega
 * house-cleaning
 *

@@ -95,7 +95,6 @@ public class DefaultLayout implements Layout {
      * @param c   PARAM
      */
     public void prepareBox(Context c, Box box) {
-        // Uu.p("prepareBox: " + box);
         getBorder(c, box);
         getPadding(c, box);
         getMargin(c, box);
@@ -119,8 +118,6 @@ public class DefaultLayout implements Layout {
      * @return The padding value
      */
     public static Border getPadding(Context c, Box box) {
-        //TODO: can this be removed?: if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
-        //if (box.isInlineElement() || !(box.content instanceof TextContent)) {
         if(LayoutUtil.isBlockOrInlineElementBox(box)) {
             if (box.padding == null) {
                 box.padding = c.getCurrentStyle().getPaddingWidth();
@@ -138,8 +135,6 @@ public class DefaultLayout implements Layout {
      * @return The margin value
      */
     public static Border getMargin(Context c, Box box) {
-        //TODO: can this be removed?: if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
-        // if (box.isInlineElement() || !(box.content instanceof TextContent)) {
         if(LayoutUtil.isBlockOrInlineElementBox(box)) {
             if (box.margin == null) {
                 box.margin = c.getCurrentStyle().getMarginWidth();
@@ -161,14 +156,11 @@ public class DefaultLayout implements Layout {
      * @return The backgroundColor value
      */
     public static Color getBackgroundColor(Context c, Box box) {
-        //TODO: can this be removed?: if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
-        // if (box.isInlineElement() || !(box.content instanceof TextContent)) {
         if (LayoutUtil.isBlockOrInlineElementBox(box)) {
             if (box.background_color == null) {
                 CalculatedStyle style = c.getCurrentStyle();
                 if (style.isIdentifier(CSSName.BACKGROUND_COLOR)) {
                     String value = style.getStringProperty("background-color");
-                    //Uu.p("got : " + obj);
                     if (value.equals("transparent")) {
                         box.background_color = new Color(0, 0, 0, 0);
                         return box.background_color;
@@ -187,6 +179,15 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2004/12/14 02:28:48  joshy
+ * removed some comments
+ * some bugs with the backgrounds still
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.35  2004/12/13 15:15:57  joshy
  * fixed bug where inlines would pick up parent styles when they aren't supposed to
  * fixed extra Xx's in printed text
