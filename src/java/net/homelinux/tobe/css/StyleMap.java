@@ -24,12 +24,12 @@ public class StyleMap {
             for(java.util.Iterator i = rulesets.iterator(); i.hasNext();) {
                 Ruleset r = (Ruleset) i.next();
                 //at this point all selectors in a ruleset must be on the descendant axis
-                descendantAxis.addAll(r.getSelectors());
+                axes.addAll(r.getSelectors());
             }
         }
 
         private Mapper(Mapper parent) {
-            descendantAxis.addAll(parent.descendantAxis);
+            /* do nothing! Add descendant selectors when iterating!*/
         }
 
         /** Maps the children of the given document */
@@ -39,6 +39,7 @@ public class StyleMap {
         }
 
         /** Maps the children of the given element */
+        //NB handling of immediate sibling requires child elements to be traversed in order
         private void mapChildren(org.w3c.dom.Element e) {
             org.w3c.dom.NodeList children = e.getChildNodes();
             mapElements(children);
@@ -53,47 +54,39 @@ public class StyleMap {
             }
         }
         
+        //should now preserve sort order of rules
         private void mapElement(org.w3c.dom.Element e) {
             Mapper childMapper = new Mapper(this);
-            if(immediateSiblingAxis != null) {
-                java.util.List tmp = immediateSiblingAxis;
-                immediateSiblingAxis = null;//clear immediately because it is only relevant for this element
-                for(java.util.Iterator i = tmp.iterator(); i.hasNext();) {
-                    match((Selector) i.next(), e, childMapper);
+            for(int i = 0; i < axes.size(); i++) {
+                Selector sel = (Selector) axes.get(i);
+                if(sel.getAxis() == Selector.DESCENDANT_AXIS) {
+                    childMapper.axes.add(sel);
+                } else if(sel.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
+                    //remove it from this mapper immediately
+                    //NB handling of immediate sibling requires child elements to be traversed in order
+                    axes.remove(i);
+                    i--;
                 }
-            }
-            for(java.util.Iterator i = childAxis.iterator(); i.hasNext();) {
-                match((Selector) i.next(), e, childMapper);
-            }
-            for(java.util.Iterator i = descendantAxis.iterator(); i.hasNext();) {
-                match((Selector) i.next(), e, childMapper);
+                if(!sel.matches(e, _attRes)) continue;
+                //TODO: if this selector has dynamic properties, we could note it in the child mapper, for easier handling
+                if(!sel.matchesDynamic(e, _attRes)) continue;
+                Selector chain = sel.getChainedSelector();
+                if(chain == null) {
+                    childMapper.mappedSelectors.add(sel);
+                } else if(chain.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
+                    //add it to this mapper!
+                    axes.add(i, chain);
+                    i++;
+                } else {
+                    childMapper.axes.add(chain);
+                }
             }
             link(e, childMapper);
             childMapper.mapChildren(e);
         }
         
-        private void match(Selector sel, org.w3c.dom.Element e, Mapper child) {
-            if(!sel.matches(e, _attRes)) return;
-            //TODO: if this selector has dynamic properties, we could note it in the child mapper, for easier handling
-            if(!sel.matchesDynamic(e, _attRes)) return;
-            Selector chain = sel.getChainedSelector();
-            if(chain == null) {
-                child.mappedSelectors.add(sel);
-            } else if(chain.getAxis() == Selector.CHILD_AXIS) {
-                child.childAxis.add(chain);
-            } else if(chain.getAxis() == Selector.DESCENDANT_AXIS) {
-                child.descendantAxis.add(chain);
-            } else if(chain.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
-                //add it to this mapper!
-                if(immediateSiblingAxis == null) immediateSiblingAxis = new java.util.LinkedList();
-                immediateSiblingAxis.add(chain);
-            }
-        }
+        java.util.List axes = new java.util.ArrayList();
         
-        java.util.List descendantAxis = new java.util.LinkedList();
-        java.util.List childAxis = new java.util.LinkedList();
-        java.util.List immediateSiblingAxis;
-
         java.util.List mappedSelectors = new java.util.LinkedList();
     }
     
