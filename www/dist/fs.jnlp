@@ -15,7 +15,8 @@
     </information>
     <resources>
         <j2se version="1.4+"/>
-        <jar href="FlyingSaucer.jar"/>
+        <jar href="core-renderer.jar"/>
+        <jar href="browser.jar"/>
         <jar href="joshy-common.jar"/>
         <jar href="ss_css2.jar"/>
     </resources>

@@ -26,7 +26,7 @@
     <target name="clean-compile" description="clean compile" depends="clean,compile">
     </target>
 
-    <target name="zip" description="zip file" depends="jar">
+    <target name="zip" description="zip file" depends="jars">
         <zip basedir="." zipfile="../flyingsaucer.zip">
         </zip>
     </target>
@@ -60,35 +60,32 @@
                     <include name="*.jar"/>
                 </fileset>
             </classpath>
+            <!--
             <exclude name="net/homelinux/**"/>
             <exclude name="**/TobeRuleBank**"/>
+            -->
         </javac>
     </target>
-
-    <target name="compile-tobe" description="compile tobe's stuff" depends="compile, init">
-        <javac
-            srcdir="src/java"
-            destdir="build/classes"
-            debug="on">
-            <classpath>
-                <fileset dir="lib">
-                    <include name="*.jar"/>
-                </fileset>
-            </classpath>
-            <include name="net/homelinux/**"/>
-        </javac>
-        <copy todir="build/classes/org/joshy/html/css" file="src/java/org/joshy/html/css/default.css"/>
+    
+    <target name="jars" depends="core-jar, browser-jar">
     </target>
-
-    <target name="jar" depends="compile" description="jar">
-        <jar
-            basedir="build/classes"
-            jarfile="build/${app-name}.jar"
-            compress="true"
+    
+    <target name="core-jar" depends="compile" description="build core jar">
+        <jar jarfile="build/core-renderer.jar" compress="true" >
+            <fileset dir="build/classes">
+                <include name="**/*.class"/>
+                <include name="org/joshy/html/css/default.css"/>
+                <exclude name="org/joshy/html/app"/>
+            </fileset>
+        </jar>
+    </target>
+    
+    <target name="browser-jar" depends="compile" description="build browser jar">
+        <jar jarfile="build/browser.jar" compress="true" 
             manifest="src/packaging/manifest"
-        >
-            <fileset dir="src/java">
-                <include name="*.class"/>
+            >
+            <fileset dir="build/classes">
+                <include name="org/joshy/html/app/**/*.class"/>
             </fileset>
             <fileset dir=".">
                 <include name="demos/*.xhtml"/>
@@ -99,13 +96,11 @@
         </jar>
     </target>
 
-
-    <target name="binary-dist" depends="jar" description="Play Binary Distro">
+    <target name="binary-dist" depends="jars" description="Play Binary Distro">
         <copy todir="build">
             <fileset dir=".">
                 <include name="demos/*.xhtml"/>
                 <include name="demos/splash/**"/>
-                <include name="image.png"/>
             </fileset>
             <fileset dir="lib">
                 <include name="*.jar"/>
@@ -115,7 +110,6 @@
             </fileset>
         </copy>
         <zip basedir="build" zipfile="build/${app-name}.zip">
-            <include name="${app-name}.jar"/>
             <include name="*.jar"/>
             <include name="demos/**"/>
         </zip>
@@ -132,7 +126,7 @@
         </zip>
     </target>
 
-    <target name="jnlp-dist" depends="init, jar" description="Build JNLP Distro">
+    <target name="jnlp-dist" depends="init, jars" description="Build JNLP Distro">
         <copy todir="build">
             <fileset dir="lib">
                 <include name="joshy-common.jar"/>
@@ -140,9 +134,11 @@
             </fileset>
             <fileset dir="src/packaging/"><include name="fs.jnlp"/></fileset>
         </copy>
-        <signjar jar="build/FlyingSaucer.jar" alias="tstkey" storepass="satans"/>
-        <signjar jar="build/joshy-common.jar" alias="tstkey" storepass="satans"/>
-        <signjar jar="build/ss_css2.jar" alias="tstkey" storepass="satans"/>
+        <signjar jar="build/core-renderer.jar" alias="joshy" storepass="password" keystore="teststore"/>
+        <signjar jar="build/browser.jar" alias="joshy" storepass="password" keystore="teststore"/>
+        <signjar jar="build/joshy-common.jar" alias="joshy" storepass="password" keystore="teststore"/>
+        <signjar jar="build/ss_css2.jar" alias="joshy" storepass="password" keystore="teststore"/>
+
     </target>
 
     <!-- =============  TESTS =================== -->
@@ -188,9 +184,12 @@
     </target>
 
 
-    <target name="browser" depends="compile, jar">
-        <java classname="org.joshy.html.app.browser.BrowserStartup" classpath="build/flyingsaucer.jar" fork="true">
-            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+    <target name="browser" depends="compile, jars">
+        <java classname="org.joshy.html.app.browser.BrowserStartup" fork="true">
+            <classpath>
+                <fileset dir="lib"><include name="*.jar"/></fileset>
+                <fileset dir="build"><include name="*.jar"/></fileset>
+            </classpath>
         </java>
     </target>
 
