@@ -39,7 +39,6 @@ import java.util.Map;
  * we still need to specify the particular layout here.
  *
  * @author jmarinacci
- * @created October 18, 2004
  */
 
 public class LayoutFactory {
@@ -93,12 +92,13 @@ public class LayoutFactory {
      * @return the correct layout for this node
      * @see org.xhtmlrenderer.layout.Layout
      */
-
+    /** @deprecated get layout based on content instead */
     public Layout getLayout(Context c, Node elem) {
         if (elem == null) return new NullLayout();//TODO: why?
-        //u.p("getting layout for node: " + elem);
+        //U.p("getting layout for node: " + elem);
         // we have to do the inputs manually since they don't depend on
         // the element name
+        //TODO: redo this to use NamespaceHandler
         if (elem.getNodeType() == Node.ELEMENT_NODE) {
             if (elem.getNodeName().equals("input")) {
                 Element el = (Element) elem;
@@ -140,9 +140,9 @@ public class LayoutFactory {
 
 
             // check for floats
-            CalculatedStyle style = c.css.getStyle(elem);
+            CalculatedStyle style = c.getCurrentStyle();
             if (LayoutUtil.isFloated(style)) {
-                //u.p("in layout factory, found a floated element. forcing display: block");
+                //U.p("in layout factory, found a floated element. forcing display: block");
                 return getCustomLayout("block");
             }
 
@@ -167,7 +167,7 @@ public class LayoutFactory {
         } else /*if (elem.getNodeType() == elem.COMMENT_NODE) */ {
             return new NullLayout();
         }
-        /*u.p("yo! got here w/ " + elem);
+        /*U.p("yo! got here w/ " + elem);
         XRLog.layout(Level.WARNING, "error! returning null! type = " + elem.getNodeType());
         XRLog.layout(Level.INFO, "error! returning null! type = " + elem.getNodeType());
         XRLog.layout(Level.INFO, "name = " + elem.getNodeName());
@@ -222,6 +222,7 @@ public class LayoutFactory {
         return node.getNodeName().equals("a");
     }
 
+    //TODO: redo this to use NamespaceHandler
     public boolean isReplaced(Node node) {
         // all images are replaced (because they have intrinsic sizes)
         if (node.getNodeName().equals("img")) {
@@ -277,7 +278,7 @@ public class LayoutFactory {
 
         //if (node instanceof Element) {
         //Element elem = (Element) node;
-        String display = c.css.getStyle(elem).getStringProperty("display");
+        String display = c.getCurrentStyle().getStringProperty("display");
         return getCustomLayout(display);
         //}
 
@@ -330,6 +331,9 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.24  2004/12/12 02:41:51  tobega
+* Making progress
+*
 * Revision 1.23  2004/12/10 06:51:02  tobega
 * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
 *

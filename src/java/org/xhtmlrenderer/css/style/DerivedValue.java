@@ -31,7 +31,7 @@ import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.util.ConversionUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.logging.Level;
 
 
@@ -249,14 +249,14 @@ public class DerivedValue {
                 // The exception is when �em� occurs in the value of
                 // the �font-size� property itself, in which case it refers
                 // to the font size of the parent element (spec: 4.3.2)
-                absVal = relVal * deriveFontSize(parentStyle, propName);
+                absVal = relVal * deriveFontSize(parentStyle);
                 _newPrimitiveValueType = CSSPrimitiveValue.CSS_PX;
 
                 break;
             case CSSPrimitiveValue.CSS_EXS:
-                // HACK: just to convert the value to something meaningful, using the height of the 'x' character
+                // HACK: just to convert the value to something meaningful, using the height of the 'X' character
                 // on the default system font.
-                // To convert EMS to pixels, we need the height of the lowercase 'x' character in the current
+                // To convert EMS to pixels, we need the height of the lowercase 'X' character in the current
                 // element...
                 float xHeight = parentStyle.propertyByName("font-size").computedValue().asFloat();
 
@@ -305,7 +305,7 @@ public class DerivedValue {
 
                 } else if (propName.equals(CSSName.FONT_SIZE)) {
                     // same as with EM
-                    base = deriveFontSize(parentStyle, propName);
+                    base = deriveFontSize(parentStyle);
                     _newPrimitiveValueType = CSSPrimitiveValue.CSS_PT;
                     newTypeSuffix = "pt";
                     _newPrimitiveValueType = CSSPrimitiveValue.CSS_PX;
@@ -551,11 +551,10 @@ public class DerivedValue {
     /**
      * See interface.
      *
-     * @param ownerElement PARAM
-     * @param propName     PARAM
+     * @param parentStyle PARAM
      * @return Returns
      */
-    private float deriveFontSize(CalculatedStyle parentStyle, String propName) {
+    private float deriveFontSize(CalculatedStyle parentStyle) {
         float fontSize = 0F;
         if (/*propName.equals( CSSName.FONT_SIZE ) &&*/ parentStyle != null) {
             //TODO: this is probably wrong
