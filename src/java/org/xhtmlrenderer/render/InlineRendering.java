@@ -21,6 +21,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
@@ -274,17 +275,17 @@ public class InlineRendering {
                         text).getWidth());
 
         // override based on settings
-        String text_decoration = c.getCurrentStyle().getStringProperty(CSSName.TEXT_DECORATION);
+        IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
 
-        if (text_decoration != null && text_decoration.equals("underline")) {
+        if ( decoration == IdentValue.UNDERLINE ) {
             float down = lm.getUnderlineOffset();
             float thick = lm.getUnderlineThickness();
             g.fillRect(ix, iy - (int) down, stringWidth, (int) thick);
-        } else if (text_decoration != null && text_decoration.equals("line-through")) {
+        } else if ( decoration == IdentValue.LINE_THROUGH ) {
             float down = lm.getStrikethroughOffset();
             float thick = lm.getStrikethroughThickness();
             g.fillRect(ix, iy + (int) down, stringWidth, (int) thick);
-        } else if (text_decoration != null && text_decoration.equals("overline")) {
+        } else if ( decoration == IdentValue.OVERLINE ) {
             float down = lm.getAscent();
             float thick = lm.getUnderlineThickness();
             g.fillRect(ix, iy - (int) down, stringWidth, (int) thick);

@@ -21,6 +21,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.util.ImageUtil;
@@ -46,16 +47,16 @@ public class ListItemPainter {
      */
     public static void paint(Context c, Box box) {
         CalculatedStyle style = c.getCurrentStyle();
-        String type = style.getStringProperty(CSSName.LIST_STYLE_TYPE);
+        IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
 
-        if (type.equals("none")) {
+        if ( listStyle == IdentValue.NONE ) {
             return;
         }
-        if (type.equals("lower-greek")) {
-            type = "decimal";
+        if ( listStyle == IdentValue.LOWER_GREEK ) {
+            listStyle = IdentValue.DECIMAL;
         }
-        if (type.equals("decimal-leading-zero")) {
-            type = "decimal";
+        if ( listStyle == IdentValue.DECIMAL_LEADING_ZERO ) {
+            listStyle = IdentValue.DECIMAL;
         }
 
         String image = style.getStringProperty(CSSName.LIST_STYLE_IMAGE);
@@ -92,15 +93,16 @@ public class ListItemPainter {
         rad = h / 3;
         int x = box.x - rad - rad / 2;
         int y = box.y + (h - rad / 2) / 2;
-        if (type.equals("disc")) {
+        if ( listStyle == IdentValue.DISC ) {
             c.getGraphics().fillOval(x, y, rad, rad);
             return;
         }
-        if (type.equals("square")) {
+        if ( listStyle == IdentValue.SQUARE ) {
             c.getGraphics().fillRect(x, y, rad, rad);
             return;
         }
-        if (type.equals("circle")) {
+        //if (type.equals("circle")) {
+        if ( listStyle == IdentValue.CIRCLE ) {
             c.getGraphics().drawOval(x, y, rad, rad);
             return;
         }
@@ -112,50 +114,54 @@ public class ListItemPainter {
 
 
         // calculations for text
-        if (type.equals("decimal")) {
-            drawText(c, box, type);
+        if ( listStyle == IdentValue.DECIMAL ) {
+            drawText(c, box, listStyle);
             return;
         }
 
-        if (type.equals("lower-latin")) {
-            drawText(c, box, type);
+        if ( listStyle == IdentValue.LOWER_LATIN ) {
+            drawText(c, box, listStyle);
             return;
         }
 
-        if (type.equals("upper-latin")) {
-            drawText(c, box, type);
+        if ( listStyle == IdentValue.UPPER_LATIN ) {
+            drawText(c, box, listStyle);
             return;
         }
 
-        if (type.equals("lower-roman")) {
-            drawText(c, box, type);
+        if ( listStyle == IdentValue.LOWER_ROMAN ) {
+            drawText(c, box, listStyle);
             return;
         }
 
-        if (type.equals("upper-roman")) {
-            drawText(c, box, type);
+        if ( listStyle == IdentValue.UPPER_ROMAN ) {
+            drawText(c, box, listStyle);
             return;
         }
     }
 
-    private static void drawText(Context c, Box box, String type) {
+    private static void drawText(Context c, Box box, IdentValue listStyle) {
         String text = "";
-        if (type.equals("decimal")) {
+        if ( listStyle == IdentValue.DECIMAL ) {
             text = box.list_count + ".";
         }
-        if (type.equals("lower-latin")) {
+        //if (ident.equals("lower-latin")) {
+        if ( listStyle == IdentValue.LOWER_LATIN ) {
             text = toLatin(box.list_count).toLowerCase() + ".";
         }
 
-        if (type.equals("upper-latin")) {
+        //if (ident.equals("upper-latin")) {
+        if ( listStyle == IdentValue.UPPER_LATIN ) {
             text = toLatin(box.list_count).toUpperCase() + ".";
         }
 
-        if (type.equals("lower-roman")) {
+        //if (ident.equals("lower-roman")) {
+        if ( listStyle == IdentValue.LOWER_ROMAN ) {
             text = toRoman(box.list_count).toLowerCase() + ".";
         }
 
-        if (type.equals("upper-roman")) {
+        //if (ident.equals("upper-roman")) {
+        if ( listStyle == IdentValue.UPPER_ROMAN ) {
             text = toRoman(box.list_count).toUpperCase() + ".";
         }
 
@@ -211,6 +217,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/01/24 22:46:42  pdoubleya
+ * Added support for ident-checks using IdentValue instead of string comparisons.
+ *
  * Revision 1.14  2005/01/24 19:01:03  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *

@@ -21,6 +21,7 @@ package org.xhtmlrenderer.render;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
@@ -197,11 +198,14 @@ public class Box {
     /**
      * Description of the Field
      */
-    public String repeat;
+    //public String repeat;
+    public IdentValue repeat;
     /**
      * Description of the Field
      */
-    public String attachment;
+    //public String attachment;
+    public IdentValue attachment;
+    
     /**
      * Description of the Field
      */
@@ -652,6 +656,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2005/01/24 22:46:42  pdoubleya
+ * Added support for ident-checks using IdentValue instead of string comparisons.
+ *
  * Revision 1.42  2005/01/24 19:01:03  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *

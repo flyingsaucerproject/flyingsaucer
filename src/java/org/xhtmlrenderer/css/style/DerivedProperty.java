@@ -24,6 +24,7 @@ package org.xhtmlrenderer.css.style;
 import org.w3c.dom.css.CSSValue;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 
 
 /**
@@ -97,6 +98,13 @@ public class DerivedProperty {
         return _cssName + "=" + _computedValue;
     }
 
+    public boolean isIdent(IdentValue val) {
+        return _computedValue.isIdent(val);
+    }
+
+    public IdentValue asIdentValue() {
+        return _computedValue.asIdentValue();
+    }
 }// end class
 
 /*
@@ -106,6 +114,9 @@ public class DerivedProperty {
  *
 
  * $Log$
+ * Revision 1.5  2005/01/24 22:46:43  pdoubleya
+ * Added support for ident-checks using IdentValue instead of string comparisons.
+ *
  * Revision 1.4  2005/01/24 19:01:05  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *

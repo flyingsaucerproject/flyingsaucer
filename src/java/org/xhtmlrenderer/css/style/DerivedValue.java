@@ -31,6 +31,7 @@ import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.constants.ValueConstants;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.util.ConversionUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -133,6 +134,7 @@ public class DerivedValue {
     private static final float PC__PER__PT = 12;
     private boolean _hasAbsCalculated;
     private Color _color;
+    private IdentValue _identVal;
 
     /**
      * @param cssName
@@ -543,6 +545,18 @@ public class DerivedValue {
         }
         System.out.println("[" + this.hashCode() + "]   background-position (absolute: " + _bgPosIsAbsolute + ") " + _orgText + " (" + _domCSSPrimitiveValue.getCssText() + ") x:" + pt.getX() + " y:" + pt.getY());
         return pt; */
+    }
+
+    public boolean isIdent(IdentValue val) {
+        IdentValue compareTo = asIdentValue();
+        return compareTo != null && compareTo == val;
+    }
+
+    public IdentValue asIdentValue() {
+        if ( _identVal == null ) {
+            _identVal = IdentValue.getByIdentString(asString());
+        }
+        return _identVal;
     }
 }// end class
 

@@ -21,6 +21,7 @@
 package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.util.Uu;
 
@@ -39,23 +40,19 @@ public class TextUtil {
      * @return Returns
      */
     public static String transformText(String text, CalculatedStyle style) {
-        String text_transform = style.getStringProperty(CSSName.TEXT_TRANSFORM);
-        if (text_transform != null) {
-            if (text_transform.equals("lowercase")) {
-                text = text.toLowerCase();
-            }
-            if (text_transform.equals("uppercase")) {
-                text = text.toUpperCase();
-            }
-            if (text_transform.equals("capitalize")) {
-                text = capitalizeWords(text);
-            }
+        IdentValue transform = style.getIdent(CSSName.TEXT_TRANSFORM);
+        if (transform == IdentValue.LOWERCASE) {
+            text = text.toLowerCase();
         }
-        String variant = style.getStringProperty(CSSName.FONT_VARIANT);
-        if (variant != null) {
-            if (variant.equals("small-caps")) {
-                text = text.toUpperCase();
-            }
+        if (transform == IdentValue.UPPERCASE) {
+            text = text.toUpperCase();
+        }
+        if (transform == IdentValue.CAPITALIZE) {
+            text = capitalizeWords(text);
+        }
+        IdentValue fontVariant = style.getIdent(CSSName.FONT_VARIANT);
+        if (fontVariant == IdentValue.SMALL_CAPS) {
+            text = text.toUpperCase();
         }
         return text;
     }
@@ -113,6 +110,9 @@ public class TextUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/01/24 22:46:43  pdoubleya
+ * Added support for ident-checks using IdentValue instead of string comparisons.
+ *
  * Revision 1.8  2004/12/12 03:32:59  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

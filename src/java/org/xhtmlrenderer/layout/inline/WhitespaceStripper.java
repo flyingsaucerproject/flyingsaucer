@@ -2,6 +2,7 @@ package org.xhtmlrenderer.layout.inline;
 
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
@@ -149,17 +150,11 @@ public class WhitespaceStripper {
      */
     static boolean stripWhitespace(CalculatedStyle style, boolean collapseLeading, TextContent tc) {
 
-        String whitespace = style.getStringProperty(CSSName.WHITE_SPACE);
-        if ( whitespace == null ) {
-            System.out.println("NO SUCH VALUE: WHITESPACE");
-            style.dumpProperties();
-        }
+        IdentValue whitespace = style.getIdent(CSSName.WHITE_SPACE);
         String text = tc.getText();
 
         // do step 1
-        if (whitespace.equals("normal") ||
-                whitespace.equals("nowrap") ||
-                whitespace.equals("pre-line")) {
+        if ( whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE ) {
             text = linefeed_space_collapse.matcher(text).replaceAll(EOL);
         }
 
@@ -171,16 +166,12 @@ public class WhitespaceStripper {
 
         // do step 3
         // convert line feeds to spaces
-        if (whitespace.equals("normal") ||
-                whitespace.equals("nowrap")) {
+        if ( whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP ) {
             text = linefeed_to_space.matcher(text).replaceAll(SPACE);
         }
 
         // do step 4
-        if (whitespace.equals("normal") ||
-                whitespace.equals("nowrap") ||
-                whitespace.equals("pre-line")) {
-
+        if ( whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE ) {
             text = tab_to_space.matcher(text).replaceAll(SPACE);
             text = space_collapse.matcher(text).replaceAll(SPACE);
 
@@ -192,17 +183,13 @@ public class WhitespaceStripper {
         }
 
         boolean collapseNext = (text.endsWith(SPACE) &&
-                (whitespace.equals("normal") ||
-                whitespace.equals("nowrap") ||
-                whitespace.equals("pre-line")));
+                ( whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE ));
 
         tc.setText(text);
         if (text.trim().equals("")) {
-            if (whitespace.equals("normal") ||
-                    whitespace.equals("nowrap")) {
+            if ( whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP ) {
                 tc.setRemovableWhitespace(true);
-            } else if (whitespace.equals("pre") ||
-                    whitespace.equals("pre-wrap")) {
+            } else if ( whitespace == IdentValue.PRE ) {
                 tc.setRemovableWhitespace(false);//actually unnecessary, is set to this by default
             } else if (text.indexOf(EOL) < 0) {//and whitespace.equals("pre-line"), the only one left
                 tc.setRemovableWhitespace(true);

@@ -21,6 +21,7 @@ package org.xhtmlrenderer.css;
 
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.css.constants.IdentValue;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -82,7 +83,7 @@ public class FontResolver {
      * @param style    PARAM
      * @return Returns
      */
-    public Font resolveFont(Context c, String[] families, float size, String weight, String style, String variant) {
+    public Font resolveFont(Context c, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         //Uu.p("familes = ");
         //Uu.p(families);
         // for each font family
@@ -118,14 +119,14 @@ public class FontResolver {
      * @param style     PARAM
      * @return Returns
      */
-    protected Font createFont(Context c, Font root_font, float size, String weight, String style, String variant) {
+    protected Font createFont(Context c, Font root_font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         //Uu.p("creating font: " + root_font + " size = " + size +
         //    " weight = " + weight + " style = " + style + " variant = " + variant);
         int font_const = Font.PLAIN;
-        if (weight != null && weight.equals("bold")) {
+        if (weight != null && weight == IdentValue.BOLD) {
             font_const = font_const | Font.BOLD;
         }
-        if (style != null && style.equals("italic")) {
+        if (style != null && style == IdentValue.ITALIC) {
             font_const = font_const | Font.ITALIC;
         }
         
@@ -138,7 +139,7 @@ public class FontResolver {
         size = size * dpiscale * scale;
         Font fnt = root_font.deriveFont(font_const, size);
         if (variant != null) {
-            if (variant.equals("small-caps")) {
+            if (variant == IdentValue.SMALL_CAPS) {
                 fnt = fnt.deriveFont((float) (((float) fnt.getSize()) * 0.6));
             }
         }
@@ -156,7 +157,7 @@ public class FontResolver {
      * @param style  PARAM
      * @return Returns
      */
-    protected Font resolveFont(Context c, String font, float size, String weight, String style, String variant) {
+    protected Font resolveFont(Context c, String font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         //Uu.p("here");
         // strip off the "s if they are there
         if (font.startsWith("\"")) {
@@ -226,7 +227,7 @@ public class FontResolver {
      * @param style  PARAM
      * @return The fontInstanceHashName value
      */
-    protected String getFontInstanceHashName(String name, float size, String weight, String style, String variant) {
+    protected String getFontInstanceHashName(String name, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         return name + "-" + size + "-" + weight + "-" + style + "-" + variant;
     }
 }
@@ -235,6 +236,9 @@ public class FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/01/24 22:46:45  pdoubleya
+ * Added support for ident-checks using IdentValue instead of string comparisons.
+ *
  * Revision 1.10  2005/01/05 01:10:13  tobega
  * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
  *

@@ -82,8 +82,6 @@ public class TableBoxing {
 
         c.pushStyle(content.getStyle());
         // set up the border spacing
-        // CLEAN
-        // float border_spacing = c.getCurrentStyle().getFloatProperty(CSSName.BORDER_SPACING);
         float border_spacing_x = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getWidth());
         float border_spacing_y = c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getHeight());
         table_box.spacing = new Point((int) border_spacing_x, (int) border_spacing_y);
@@ -287,6 +285,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.7  2005/01/24 22:46:46  pdoubleya
+   Added support for ident-checks using IdentValue instead of string comparisons.
+
    Revision 1.6  2005/01/24 19:01:09  pdoubleya
    Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
 

@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.layout.block;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
@@ -39,12 +40,11 @@ public class Absolute {
 
     public static void setupAbsolute(Box box, Context c) {
         CalculatedStyle style = c.getCurrentStyle();
-        String position = style.getStringProperty(CSSName.POSITION);
-        if (position.equals("absolute")) {
+        if ( style.isIdent(CSSName.POSITION, IdentValue.ABSOLUTE)) {
             if (style.hasProperty(CSSName.RIGHT)) {
                 //Uu.p("prop = " + c.css.getProperty(box.getRealElement(),"right",false));
                 if (style.isIdentifier(CSSName.RIGHT)) {
-                    if (style.getStringProperty(CSSName.RIGHT).equals("auto")) {
+                    if (style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
                         box.right_set = false;
                         //Uu.p("right set to auto");
                     }
@@ -57,7 +57,7 @@ public class Absolute {
             if (style.hasProperty(CSSName.LEFT)) {
                 // c.css.getProperty(box.getRealElement(),"left",false));
                 if (style.isIdentifier(CSSName.LEFT)) {
-                    if (style.getStringProperty(CSSName.LEFT).equals("auto")) {
+                    if (style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
                         box.left_set = false;
                         //Uu.p("left set to auto");
                     }

@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
@@ -108,12 +109,15 @@ public class FontUtil {
 
         float size = style.getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, c.getBlockFormattingContext().getHeight());
 
-        String weight = style.propertyByName(CSSName.FONT_WEIGHT).computedValue().asString();
+        //CLEANString weight = style.propertyByName(CSSName.FONT_WEIGHT).computedValue().asString();
+        IdentValue fontWeight = style.getIdent(CSSName.FONT_WEIGHT);
         String[] families = style.propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
 
-        String fstyle = style.propertyByName(CSSName.FONT_STYLE).computedValue().asString();
-        String variant = style.propertyByName(CSSName.FONT_VARIANT).computedValue().asString();
-        f = c.getFontResolver().resolveFont(c, families, size, weight, fstyle, variant);
+        //CLEAN String fstyle = style.propertyByName(CSSName.FONT_STYLE).computedValue().asString();
+        IdentValue fontStyle = style.getIdent(CSSName.FONT_STYLE);
+        //CLEAN String variant = style.propertyByName(CSSName.FONT_VARIANT).computedValue().asString();
+        IdentValue variant = style.getIdent(CSSName.FONT_VARIANT);
+        f = c.getFontResolver().resolveFont(c, families, size, fontWeight, fontStyle, variant);
 
         return f;
     }
@@ -145,6 +149,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/01/24 22:46:43  pdoubleya
+ * Added support for ident-checks using IdentValue instead of string comparisons.
+ *
  * Revision 1.28  2005/01/24 19:01:04  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *

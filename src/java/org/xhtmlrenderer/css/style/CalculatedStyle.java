@@ -26,6 +26,7 @@ import java.util.logging.*;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.Idents;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.value.BorderColor;
@@ -374,6 +375,13 @@ public class CalculatedStyle {
         return propertyByName(cssName).computedValue().asString();
     }
 
+    public boolean isIdent(CSSName cssName, IdentValue val) {
+        return propertyByName(cssName).isIdent(val);
+    }
+
+    public IdentValue getIdent(CSSName cssName) {
+        return propertyByName(cssName).asIdentValue();
+    }
     /**
      *
      * @param cssName
@@ -451,6 +459,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/01/24 22:46:43  pdoubleya
+ * Added support for ident-checks using IdentValue instead of string comparisons.
+ *
  * Revision 1.10  2005/01/24 19:01:05  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *

@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.block.Absolute;
@@ -81,8 +82,7 @@ public class Boxing {
         // this is to keep track of when we are inside of a form
         //TODO: rethink: saveForm(c, (Element) block.getNode());
 
-        String attachment = c.getCurrentStyle().getStringProperty(CSSName.BACKGROUND_ATTACHMENT);
-        if (attachment != null && attachment.equals("fixed")) {
+        if ( c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
             block.setChildrenExceedBounds(true);
         }
         // install a block formatting context for the body,
@@ -275,16 +275,7 @@ public class Boxing {
      * @return The backgroundColor value
      */
     public static Color getBackgroundColor(Context c, Box box) {
-        Color bgc = new Color(0, 0, 0, 0);
-        CalculatedStyle style = c.getCurrentStyle();
-        if (style.isIdentifier(CSSName.BACKGROUND_COLOR)) {
-            String value = style.getStringProperty(CSSName.BACKGROUND_COLOR);
-            if (value.equals("transparent")) {
-                return bgc;
-            }
-        }
-        bgc = style.getBackgroundColor();
-        return bgc;
+        return c.getCurrentStyle().getBackgroundColor();
     }
 }
 
@@ -292,6 +283,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/01/24 22:46:43  pdoubleya
+ * Added support for ident-checks using IdentValue instead of string comparisons.
+ *
  * Revision 1.8  2005/01/24 19:01:04  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *

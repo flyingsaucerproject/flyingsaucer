@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.layout.block;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 
@@ -27,10 +28,9 @@ public class Relative {
 
     public static void translateRelative(Context c) {
         CalculatedStyle style = c.getCurrentStyle();
-        String position = style.getStringProperty(CSSName.POSITION);
         int top = 0;
         int left = 0;
-        if (position.equals("relative")) {
+        if ( style.isIdent(CSSName.POSITION, IdentValue.RELATIVE)) {
             if (style.hasProperty(CSSName.RIGHT)) {
                 left = -(int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth());
             }
@@ -49,10 +49,9 @@ public class Relative {
 
     public static void untranslateRelative(Context c) {
         CalculatedStyle style = c.getCurrentStyle();
-        String position = style.getStringProperty(CSSName.POSITION);
         int top = 0;
         int left = 0;
-        if (position.equals("relative")) {
+        if ( style.isIdent(CSSName.POSITION, IdentValue.RELATIVE)) {
             if (style.hasProperty(CSSName.RIGHT)) {
                 left = -(int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth());
             }
@@ -70,12 +69,6 @@ public class Relative {
     }
 
     public static boolean isRelative(Context c) {
-        CalculatedStyle style = c.getCurrentStyle();
-        String position = style.getStringProperty(CSSName.POSITION);
-        if (position.equals("relative")) {
-            return true;
-        }
-        return false;
+        return c.getCurrentStyle().isIdent(CSSName.POSITION, IdentValue.RELATIVE);
     }
-
 }

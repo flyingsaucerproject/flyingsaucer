@@ -269,5 +269,5 @@ input, textarea, select {
 
 /* ================= primarily for breaks ============ */
 br:before       { content: "\A" }
-:before, :after { white-space: pre-line }
+:before, :after { white-space: pre }
 

@@ -21,6 +21,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.layout.Context;
@@ -59,43 +60,42 @@ public class BorderPainter {
                 box.y + margin.top,
                 box.width - margin.left - margin.right,
                 box.height - margin.top - margin.bottom);*/
+        IdentValue ident = null;
         if ((sides & TOP) == TOP) {
-            String border_style = ctx.getCurrentStyle().getStringProperty(CSSName.BORDER_STYLE_TOP);
-            if (!border_style.equals("none")) {
-                paintBorderSide(border, g, bounds, border_color, TOP, border_style);
+            ident = ctx.getCurrentStyle().getIdent(CSSName.BORDER_STYLE_TOP);
+            if ( ident != IdentValue.NONE ) {
+                paintBorderSide(border, g, bounds, border_color, TOP, ident);
             }
         }
         if ((sides & LEFT) == LEFT) {
-            String border_style = ctx.getCurrentStyle().getStringProperty(CSSName.BORDER_STYLE_LEFT);
-            if (!border_style.equals("none")) {
-                paintBorderSide(border, g, bounds, border_color, LEFT, border_style);
+            ident = ctx.getCurrentStyle().getIdent(CSSName.BORDER_STYLE_LEFT);
+            if ( ident != IdentValue.NONE ) {
+                paintBorderSide(border, g, bounds, border_color, LEFT, ident);
             }
         }
         if ((sides & BOTTOM) == BOTTOM) {
-            String border_style = ctx.getCurrentStyle().getStringProperty(CSSName.BORDER_STYLE_BOTTOM);
-            if (!border_style.equals("none")) {
-                paintBorderSide(border, g, bounds, border_color, BOTTOM, border_style);
+            ident = ctx.getCurrentStyle().getIdent(CSSName.BORDER_STYLE_BOTTOM);
+            if ( ident != IdentValue.NONE ) {
+                paintBorderSide(border, g, bounds, border_color, BOTTOM, ident);
             }
         }
         if ((sides & RIGHT) == RIGHT) {
-            String border_style = ctx.getCurrentStyle().getStringProperty(CSSName.BORDER_STYLE_RIGHT);
-            if (!border_style.equals("none")) {
-                paintBorderSide(border, g, bounds, border_color, RIGHT, border_style);
+            ident = ctx.getCurrentStyle().getIdent(CSSName.BORDER_STYLE_RIGHT);
+            if ( ident != IdentValue.NONE ) {
+                paintBorderSide(border, g, bounds, border_color, RIGHT, ident);
             }
         }
 
     }
 
-    private static void paintBorderSide(final Border border, final Graphics g, final Rectangle bounds, final BorderColor border_color, final int side, final String border_style) {
-        if (border_style.equals("ridge") ||
-                border_style.equals("groove")) {
+    private static void paintBorderSide(final Border border, final Graphics g, final Rectangle bounds, final BorderColor border_color, final int side, final IdentValue borderSideStyle) {
+        if ( borderSideStyle == IdentValue.RIDGE || borderSideStyle == IdentValue.GROOVE ) {
             Border bd2 = new Border();
             bd2.top = border.top / 2;
             bd2.bottom = border.bottom / 2;
             bd2.left = border.left / 2;
             bd2.right = border.right / 2;
-            //if (box.border_style.equals("ridge")) {
-            if (border_style.equals("ridge")) {
+            if ( borderSideStyle == IdentValue.RIDGE ) {
                 paintGoodBevel(g, bounds, border, border_color.darker(), border_color.brighter(), side);
                 paintGoodBevel(g, bounds, bd2, border_color.brighter(), border_color.darker(), side);
             } else {
@@ -106,29 +106,25 @@ public class BorderPainter {
         }
 
 
-//        if (box.border_style.equals("outset")) {
-        if (border_style.equals("outset")) {
+        if ( borderSideStyle == IdentValue.OUTSET ) {
             paintGoodBevel(g, bounds, border,
                     border_color.brighter(),
                     border_color.darker(), side);
             return;
         }
 
-//        if (box.border_style.equals("inset")) {
-        if (border_style.equals("inset")) {
+        if ( borderSideStyle == IdentValue.INSET ) {
             paintGoodBevel(g, bounds, border,
                     border_color.darker(),
                     border_color.brighter(), side);
             return;
         }
 
-//        if (box.border_style.equals("solid")) {
-        if (border_style.equals("solid")) {
+        if ( borderSideStyle == IdentValue.SOLID ) {
             paintSolid(g, bounds, border, border_color, side);
         }
 
-//        if (box.border_style.equals("double")) {
-        if (border_style.equals("double")) {
+        if ( borderSideStyle == IdentValue.DOUBLE ) {
             // this may need to be modified to account for rounding errors
             // create a new border only 1/3 the thickness
             Border outer = new Border();
@@ -185,15 +181,13 @@ public class BorderPainter {
             paintSolid((Graphics2D) g, b2, inner, border_color, side);
         }
 
-//        if (box.border_style.equals("dashed")) {
-        if (border_style.equals("dashed")) {
+        if ( borderSideStyle == IdentValue.DASHED ) {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
             paintPatternedRect(g2, bounds, border, border_color, new float[]{10.0f, 4.0f}, side);
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
-//        if (box.border_style.equals("dotted")) {
-        if (border_style.equals("dotted")) {
+        if ( borderSideStyle == IdentValue.DOTTED ) {
             Graphics2D g2 = (Graphics2D) g;
             // turn off anti-aliasing or the dots will be all blurry
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
@@ -348,6 +342,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/01/24 22:46:42  pdoubleya
+ * Added support for ident-checks using IdentValue instead of string comparisons.
+ *
  * Revision 1.17  2005/01/24 14:36:34  pdoubleya
  * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
  *

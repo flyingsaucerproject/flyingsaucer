@@ -239,8 +239,8 @@ public class BoxRendering {
         // get the css properties
         CalculatedStyle style = c.getCurrentStyle();
         String back_image = style.getStringProperty(CSSName.BACKGROUND_IMAGE);
-        block.repeat = style.getStringProperty(CSSName.BACKGROUND_REPEAT);
-        block.attachment = style.getStringProperty(CSSName.BACKGROUND_ATTACHMENT);
+        block.repeat = style.getIdent(CSSName.BACKGROUND_REPEAT);
+        block.attachment = style.getIdent(CSSName.BACKGROUND_ATTACHMENT);
         // handle image positioning issues
         // need to update this to support vert and horz, not just vert
         if (style.hasProperty(CSSName.BACKGROUND_POSITION)) {

@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.layout.inline;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
@@ -13,8 +14,9 @@ import java.util.List;
 
 public class TextAlignJustify {
     public static boolean isJustified(CalculatedStyle style) {
-        String text_align = style.getStringProperty(CSSName.TEXT_ALIGN);
-        if (text_align != null && text_align.equals("justify")) {
+        /*String text_align = style.getStringProperty(CSSName.TEXT_ALIGN);
+        if (text_align != null && text_align.equals("justify")) {*/
+        if ( style.isIdent(CSSName.TEXT_ALIGN, IdentValue.JUSTIFY)) {
             return true;
         }
         return false;

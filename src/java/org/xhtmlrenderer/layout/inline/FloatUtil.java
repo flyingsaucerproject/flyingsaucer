@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.layout.inline;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
@@ -9,6 +10,7 @@ import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.awt.Rectangle;
 
@@ -46,22 +48,18 @@ public class FloatUtil {
 
         //HACK: tobe 2004-12-22 - guessing here
         // calculate the float property
-        String float_val = c.getCurrentStyle().getStringProperty(CSSName.FLOAT);
-        if (float_val == null) {
-            float_val = "none";
-        }
-        if (float_val.equals("none")) {
-            throw new RuntimeException("Bad call of this method");
-        }
+        if ( c.getCurrentStyle().isIdent(CSSName.FLOAT, IdentValue.NONE))
+            throw new XRRuntimeException("Invalid call to  generateFloatedBlockInlineBox(); where float: none ");
 
         inline_block.floated = true;
 
-        if (float_val.equals("left")) {
+        IdentValue ident = c.getCurrentStyle().getIdent(CSSName.FLOAT);
+        if (  ident == IdentValue.LEFT ) {
             inline_block.x = 0;
         }
 
 
-        if (float_val.equals("right")) {
+        if (  ident == IdentValue.RIGHT ) {
             inline_block.x = oe.width - inline_block.width;
         }
         //HACK: tobe 2004-12-22 end

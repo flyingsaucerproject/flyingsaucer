@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.inline.WhitespaceStripper;
 import org.xhtmlrenderer.util.XRLog;
@@ -66,11 +67,10 @@ public class LineBox extends Box {
         if (getChildCount() == 0 && ib instanceof InlineTextBox) {//first box on line
             InlineTextBox child = (InlineTextBox) ib;
             if (child.getSubstring().startsWith(WhitespaceStripper.SPACE)) {
-                String whitespace = c.getCurrentStyle().getStringProperty(CSSName.WHITE_SPACE);
-                if (whitespace.equals("normal") ||
-                        whitespace.equals("nowrap") ||
-                        whitespace.equals("pre-line"))
+                IdentValue whitespace = c.getCurrentStyle().getIdent(CSSName.WHITE_SPACE);
+                if ( whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE ) {
                     child.setSubstring(child.start_index + 1, child.end_index);
+                }
             }
             if (child.getSubstring().equals("")) {
                 child.width = 0;
@@ -100,6 +100,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/01/24 22:46:42  pdoubleya
+ * Added support for ident-checks using IdentValue instead of string comparisons.
+ *
  * Revision 1.11  2005/01/10 01:58:37  tobega
  * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
  *

@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.layout.block;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
@@ -21,7 +22,8 @@ public class Fixed {
     }
 
     public static void setupFixed(Context c, Box box) {
-        if (c.getCurrentStyle().getStringProperty(CSSName.POSITION).equals("fixed")) {
+        //if (c.getCurrentStyle().getStringProperty(CSSName.POSITION).equals("fixed")) {
+        if ( c.getCurrentStyle().isIdent(CSSName.POSITION, IdentValue.FIXED)) {
             box.fixed = true;
             box.setChildrenExceedBounds(true);
             Rectangle rect = c.getFixedRectangle();

@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.layout.inline;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.render.InlineBox;
@@ -31,36 +32,31 @@ public class VerticalAlign {
             descent = 0;
         }
 
-        String vertical_align = c.getCurrentStyle().getStringProperty(CSSName.VERTICAL_ALIGN);
-
-        if (vertical_align == null) {
-            vertical_align = "baseline";
-        }
-
-        if (vertical_align.equals("baseline")) {
+        IdentValue vertical_align = c.getCurrentStyle().getIdent(CSSName.VERTICAL_ALIGN);
+        if ( vertical_align == IdentValue.BASELINE ) {
             baselineOffset = 0;
-        } else if (vertical_align.equals("super")) {
+        } else if ( vertical_align == IdentValue.SUPER ) {
             // works okay i think
             baselineOffset = (int) (-blockLineMetrics.getStrikethroughOffset() * 2.0);//up is negative in Java!
             //XRLog.render("baseline offset for super "+baselineOffset);
-        } else if (vertical_align.equals("sub")) {
+        } else if ( vertical_align == IdentValue.SUB) {
             // works okay i think
             baselineOffset = (int) blockLineMetrics.getStrikethroughOffset();//up is negative in Java!
             //XRLog.render("baseline offset for sub "+baselineOffset);
-        } else if (vertical_align.equals("text-top")) {
+        } else if ( vertical_align == IdentValue.TEXT_TOP ) {
             // the top of this text is equal to the top of the parent's text
             // so we take the parent's height above the baseline and subtract our
             // height above the baseline
             baselineOffset = (int) (blockLineMetrics.getAscent() - ascent);
             //XRLog.render("baseline offset for text-top"+baselineOffset);
-        } else if (vertical_align.equals("text-bottom")) {
+        } else if ( vertical_align == IdentValue.TEXT_BOTTOM ) {
             baselineOffset = -(int) (blockLineMetrics.getDescent() - descent);
             //XRLog.render("baseline offset for text-bottom"+baselineOffset);
-        } else if (vertical_align.equals("top")) {
+        } else if ( vertical_align == IdentValue.TOP ) {
             //oops, this will be difficult because we need to keep track of the element sub-tree!
             //HACK: for now, just align the top of this box with the top of the line
             baselineOffset = curr_line.getBaseline() - ascent;
-        } else if (vertical_align.equals("bottom")) {
+        } else if ( vertical_align == IdentValue.BOTTOM ) {
             //oops, this will be difficult because we need to keep track of the element sub-tree!
             //HACK: for now, just align the top of this box with the top of the line
             baselineOffset = descent - (curr_line.height - curr_line.getBaseline());
