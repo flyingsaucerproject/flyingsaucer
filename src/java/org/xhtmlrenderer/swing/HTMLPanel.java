@@ -34,7 +34,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.*;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
@@ -581,18 +580,18 @@ public class HTMLPanel extends JPanel implements ComponentListener {
                 URL stream = marker.getClass().getResource( defaultStyleSheetLocation );
                 String str = u.inputstream_to_string( stream.openStream() );
                 c.css.parse( new StringReader( str ),
-                            XRStyleSheet.USER_AGENT );
+                        XRStyleSheet.USER_AGENT );
             } else {
                 XRLog.exception(
-                            "Can't load default CSS from " + defaultStyleSheetLocation + "." +
-                            "This file must be on your CLASSPATH. Please check before continuing." );
+                        "Can't load default CSS from " + defaultStyleSheetLocation + "." +
+                        "This file must be on your CLASSPATH. Please check before continuing." );
             }
 
             c.css.parseDeclaredStylesheets( html );
             c.css.parseLinkedStyles( html );
             c.css.parseInlineStyles( html );
         } catch ( Exception ex ) {
-            XRLog.exception("Could not parse CSS in the XHTML source: declared, linked or inline.", ex);
+            XRLog.exception( "Could not parse CSS in the XHTML source: declared, linked or inline.", ex );
         }
 
         this.body_box = null;
@@ -650,7 +649,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         try {
             Element root = this.doc.getDocumentElement();
             Node node =
-                        (Node)XPathAPI.selectSingleNode( root, "//head/title/text()" );
+                    (Node)XPathAPI.selectSingleNode( root, "//head/title/text()" );
             if ( node == null ) {
                 XRLog.exception( "Apparently no title element for this document." );
                 title = "TITLE UNKNOWN";
@@ -769,6 +768,11 @@ public class HTMLPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/10/23 13:51:54  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
  * Revision 1.9  2004/10/18 12:12:26  pdoubleya
  * Changed to use XRLog for logging.
  *

@@ -1,84 +1,107 @@
-
-/* 
- * {{{ header & license 
- * Copyright (c) 2004 Joshua Marinacci 
- * 
- * This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU Lesser General Public License 
- * as published by the Free Software Foundation; either version 2.1 
- * of the License, or (at your option) any later version. 
- * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the 
- * GNU Lesser General Public License for more details. 
- * 
- * You should have received a copy of the GNU Lesser General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
- * }}} 
+/*
+ * {{{ header & license
+ * Copyright (c) 2004 Joshua Marinacci
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
  */
-
 package org.xhtmlrenderer.layout;
 
-import java.awt.MediaTracker;
-import java.util.ArrayList;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
-import javax.swing.ImageIcon;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
-import org.xhtmlrenderer.util.u;
-import org.xhtmlrenderer.util.x;
-import org.xhtmlrenderer.render.*;
-import org.xhtmlrenderer.css.*;
+import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.render.BackgroundPainter;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.BorderPainter;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.ListItemPainter;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
+import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.x;
 
+
+/**
+ * Description of the Class
+ *
+ * @author   empty
+ */
 public class BoxLayout extends DefaultLayout {
 
-    public BoxLayout() {
-    }
+    /** Constructor for the BoxLayout object */
+    public BoxLayout() { }
 
-    public Box createBox(Context c, Node node) {
+    /**
+     * Description of the Method
+     *
+     * @param c     PARAM
+     * @param node  PARAM
+     * @return      Returns
+     */
+    public Box createBox( Context c, Node node ) {
         BlockBox block = new BlockBox();
         block.node = node;
         return block;
     }
 
-    public void prepareBox(Box box, Context c) {
-        Border border = getBorder(c,box);
-        Border padding = getPadding(c,box);
-        Border margin = getMargin(c,box);
+    /**
+     * Description of the Method
+     *
+     * @param box  PARAM
+     * @param c    PARAM
+     */
+    public void prepareBox( Box box, Context c ) {
+        Border border = getBorder( c, box );
+        Border padding = getPadding( c, box );
+        Border margin = getMargin( c, box );
     }
 
-    public Box layout(Context c, Element elem) {
+    /**
+     * Description of the Method
+     *
+     * @param c     PARAM
+     * @param elem  PARAM
+     * @return      Returns
+     */
+    public Box layout( Context c, Element elem ) {
         // this is to keep track of when we are inside of a form
-        if(elem.getNodeName().equals("form")) {
-            if(elem.hasAttribute("name")) {
-                String name = elem.getAttribute("name");
-                String action = elem.getAttribute("action");
-                c.setForm(name,action);
+        if ( elem.getNodeName().equals( "form" ) ) {
+            if ( elem.hasAttribute( "name" ) ) {
+                String name = elem.getAttribute( "name" );
+                String action = elem.getAttribute( "action" );
+                c.setForm( name, action );
             }
         }
         //u.p("BoxLayout.layout() : " + elem);
         //u.p("box layout for: " + elem.getNodeName());
-        BlockBox block = (BlockBox)createBox(c,elem);
+        BlockBox block = (BlockBox)createBox( c, elem );
         Rectangle oe = c.getExtents();
-        c.setExtents(new Rectangle(oe));
-        adjustWidth(c, block);
-        adjustHeight(c, block);
+        c.setExtents( new Rectangle( oe ) );
+        adjustWidth( c, block );
+        adjustHeight( c, block );
         block.x = c.getExtents().x;
         block.y = c.getExtents().y;
 
-        prepareBox(block,c);
-        Border border = getBorder(c, block);
-        Border padding = getPadding(c, block);
-        Border margin = getMargin(c, block);
-        getBackgroundColor(c,block);
+        prepareBox( block, c );
+        Border border = getBorder( c, block );
+        Border padding = getPadding( c, block );
+        Border margin = getMargin( c, block );
+        getBackgroundColor( c, block );
         //u.p("margin on box block = " + block.margin);
         //u.p("border on box block = " + block.border);
         //u.p("padding on box block = " + block.padding);
@@ -87,9 +110,9 @@ public class BoxLayout extends DefaultLayout {
         // do children's layout
         //u.p("avail space = " + block.width);
         boolean old_sub = c.isSubBlock();
-        c.setSubBlock(false);
-        layoutChildren(c, block);
-        c.setSubBlock(old_sub);
+        c.setSubBlock( false );
+        layoutChildren( c, block );
+        c.setSubBlock( old_sub );
 
         // calculate the inner width
         block.width = margin.left + border.left + padding.left + block.width +
@@ -99,23 +122,23 @@ public class BoxLayout extends DefaultLayout {
         //u.p("final width = " + block.width);
 
         // if this is a fixed height, then set it explicitly
-        /*if (!block.auto_height) {
-            contents.height = block.height;
-        }
-        */
-
+        /*
+         * if (!block.auto_height) {
+         * contents.height = block.height;
+         * }
+         */
         //u.p("old extents = " + c.getExtents());
         //restore the extents
-        c.setExtents(oe);
+        c.setExtents( oe );
 
         // account for special positioning
-        setupRelative(c, block);
-        setupFixed(c, block);
+        setupRelative( c, block );
+        setupFixed( c, block );
 
         this.contents_height = block.height;
-        if(elem.getNodeName().equals("form")) {
-            if(elem.hasAttribute("name")) {
-                c.setForm(null,null);
+        if ( elem.getNodeName().equals( "form" ) ) {
+            if ( elem.hasAttribute( "name" ) ) {
+                c.setForm( null, null );
             }
         }
         return block;
@@ -123,16 +146,24 @@ public class BoxLayout extends DefaultLayout {
 
 
     // calculate the width based on css and available space
-    public void adjustWidth(Context c, BlockBox block) {
+    /**
+     * Description of the Method
+     *
+     * @param c      PARAM
+     * @param block  PARAM
+     */
+    public void adjustWidth( Context c, BlockBox block ) {
         //c.getExtents().width = 150;
         //u.p("current width = " + c.getExtents().width);
-        if(!block.isElement()) { return; }
+        if ( !block.isElement() ) {
+            return;
+        }
         Element elem = block.getElement();
-        if (c.css.hasProperty(elem, "width", false)) {
+        if ( c.css.hasProperty( elem, "width", false ) ) {
             // if it is a sub block then don't mess with the width
-            if(c.isSubBlock()) {
-                if(!elem.getNodeName().equals("td")) {
-                    u.p("ERRRRRRRRRRORRRR!!! in a sub block that's not a TD!!!!");
+            if ( c.isSubBlock() ) {
+                if ( !elem.getNodeName().equals( "td" ) ) {
+                    u.p( "ERRRRRRRRRRORRRR!!! in a sub block that's not a TD!!!!" );
                 }
                 //u.p("calling get width on: " + elem + " with parent width: " + c.getExtents().width);
                 //u.p("setting width: " + block.width);
@@ -140,146 +171,137 @@ public class BoxLayout extends DefaultLayout {
                 //u.p("parent box = " + block.getParent());
                 return;
             }
-            float new_width = c.css.getFloatProperty(elem, "width", c.getExtents().width, false);
-            c.getExtents().width = (int) new_width;
-            block.width = (int) new_width;
+            float new_width = c.css.getFloatProperty( elem, "width", c.getExtents().width, false );
+            c.getExtents().width = (int)new_width;
+            block.width = (int)new_width;
             block.auto_width = false;
         }
     }
 
     // calculate the height based on css and available space
-    public void adjustHeight(Context c, BlockBox block) {
-        if(!block.isElement()) { return; }
+    /**
+     * Description of the Method
+     *
+     * @param c      PARAM
+     * @param block  PARAM
+     */
+    public void adjustHeight( Context c, BlockBox block ) {
+        if ( !block.isElement() ) {
+            return;
+        }
         Element elem = block.getElement();
-        if (c.css.hasProperty(elem, "height")) {
-            float new_height = c.css.getFloatProperty(elem, "height", c.getExtents().height);
-            c.getExtents().height = (int) new_height;
-            block.height = (int) new_height;
+        if ( c.css.hasProperty( elem, "height" ) ) {
+            float new_height = c.css.getFloatProperty( elem, "height", c.getExtents().height );
+            c.getExtents().height = (int)new_height;
+            block.height = (int)new_height;
             block.auto_height = false;
         }
     }
 
 
-    public void setupFixed(Context c, Box box) {
-        if (isFixed(c, box)) {
-            //System.out.println("setting fixed for box: " + box);
-            box.fixed = true;
-            if (c.css.hasProperty(box.node, "right", false)) {
-                box.right = (int) c.css.getFloatProperty(box.node, "right", 0, false);
-                box.right_set = true;
-            }
-            if (c.css.hasProperty(box.node, "bottom", false)) {
-                box.bottom = (int) c.css.getFloatProperty(box.node, "bottom", 0, false);
-                box.bottom_set = true;
-            }
-        }
-    }
-
-
-
-    public static void setupRelative(Context c, Box box) {
-        String position = getPosition(c, box);
-        if (position.equals("relative")) {
-            if (c.css.hasProperty(box.node, "right", false)) {
-                box.left = -(int) c.css.getFloatProperty(box.node, "right", 0, false);
-            }
-            if (c.css.hasProperty(box.node, "bottom", false)) {
-                box.top = -(int) c.css.getFloatProperty(box.node, "bottom", 0, false);
-            }
-            if (c.css.hasProperty(box.node, "top", false)) {
-                box.top = (int) c.css.getFloatProperty(box.node, "top", 0, false);
-            }
-            if (c.css.hasProperty(box.node, "left", false)) {
-                box.left = (int) c.css.getFloatProperty(box.node, "left", 0, false);
-            }
-            box.relative = true;
-        }
-    }
-
-
-    public Box layoutChildren(Context c, Box box) {
+    /**
+     * Description of the Method
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     * @return     Returns
+     */
+    public Box layoutChildren( Context c, Box box ) {
         //u.p("BoxLayout.layoutChildren("+box+")");
         BlockBox block = (BlockBox)box;
-        c.shrinkExtents(block);
-        super.layoutChildren(c, block);
-        c.unshrinkExtents(block);
+        c.shrinkExtents( block );
+        super.layoutChildren( c, block );
+        c.unshrinkExtents( block );
         //u.p("BoxLayout.layoutChildren() returning children layout of: " + rt);
         return block;
     }
 
-    public boolean isListItem(Context c, Box box) {
-        String display = c.css.getStringProperty((Element)box.node,"display",false);
-        //u.p("display = " + display);
-        if(display.equals("list-item")) {
-            return true;
-        }
-        return false;
-    }
 
-
-    public void paint(Context c, Box box) {
+    /**
+     * Description of the Method
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     */
+    public void paint( Context c, Box box ) {
         //u.p("BoxLayout.paint " + box);//+box.getElement().getNodeName()+") " + block);
         BlockBox block = (BlockBox)box;
 
         // copy the bounds to we don't mess it up
-        Rectangle oldBounds = new Rectangle(c.getExtents());
+        Rectangle oldBounds = new Rectangle( c.getExtents() );
 
 
-
-        if (block.relative) {
-            paintRelative(c,block);
-        } else if (block.fixed) {
-            paintFixed(c,block);
+        if ( block.relative ) {
+            paintRelative( c, block );
+        } else if ( block.fixed ) {
+            paintFixed( c, block );
         } else {
-            paintNormal(c,block);
+            paintNormal( c, block );
         }
 
         //u.p("here it's : " + c.getListCounter());
-        if(isListItem(c,box)) {
-            paintListItem(c,box);
+        if ( isListItem( c, box ) ) {
+            paintListItem( c, box );
         }
 
         // move the origin down to account for the contents plus the margin, borders, and padding
         oldBounds.y = oldBounds.y + block.height;
-        c.setExtents(oldBounds);
+        c.setExtents( oldBounds );
 
-        if(c.debugDrawBoxes()) {
-            GraphicsUtil.drawBox(c.getGraphics(),block,Color.red);
+        if ( c.debugDrawBoxes() ) {
+            GraphicsUtil.drawBox( c.getGraphics(), block, Color.red );
         }
     }
 
 
+    /**
+     * Description of the Method
+     *
+     * @param c      PARAM
+     * @param block  PARAM
+     */
+    public void paintNormal( Context c, BlockBox block ) {
+        paintBackground( c, block );
 
-    public void paintNormal(Context c, BlockBox block) {
-        paintBackground(c, block);
+        c.translateInsets( block );
+        paintComponent( c, block );
+        paintChildren( c, block );
+        c.untranslateInsets( block );
 
-        c.translateInsets(block);
-        paintComponent(c, block);
-        paintChildren(c, block);
-        c.untranslateInsets(block);
-
-        paintBorder(c, block);
+        paintBorder( c, block );
     }
 
     // adjustments for relative painting
-    public void paintRelative(Context ctx, BlockBox block) {
-        ctx.getGraphics().translate(block.left, block.top);
-        paintNormal(ctx,block);
-        ctx.getGraphics().translate(-block.left, -block.top);
+    /**
+     * Description of the Method
+     *
+     * @param ctx    PARAM
+     * @param block  PARAM
+     */
+    public void paintRelative( Context ctx, BlockBox block ) {
+        ctx.getGraphics().translate( block.left, block.top );
+        paintNormal( ctx, block );
+        ctx.getGraphics().translate( -block.left, -block.top );
     }
 
     // adjustments for fixed painting
-    public void paintFixed(Context c, BlockBox block) {
+    /**
+     * Description of the Method
+     *
+     * @param c      PARAM
+     * @param block  PARAM
+     */
+    public void paintFixed( Context c, BlockBox block ) {
         int xoff = 0;
         int yoff = 0;
 
         xoff = c.canvas.getWidth();
         yoff = c.canvas.getHeight();
-        if (block.right_set) {
+        if ( block.right_set ) {
             xoff = xoff - block.width;
         }
 
-        if (block.bottom_set) {
+        if ( block.bottom_set ) {
             //joshy: this should really be block.height instead of bnds.y
             // need to fix the setting of block.height
             //joshy: need to do horizontal calcs too, inc scrolling
@@ -300,61 +322,79 @@ public class BoxLayout extends DefaultLayout {
             yoff = yoff - c.canvas.getLocation().y;
         }
 
-        c.translate(xoff, yoff);
+        c.translate( xoff, yoff );
 
-        paintNormal(c,block);
+        paintNormal( c, block );
 
-        c.translate(-xoff, -yoff);
+        c.translate( -xoff, -yoff );
     }
 
 
-    public void paintBackground(Context c, Box box) {
+    /**
+     * Description of the Method
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     */
+    public void paintBackground( Context c, Box box ) {
         Box block = box;
         // cache the background color
-        getBackgroundColor(c, block);
+        getBackgroundColor( c, block );
 
         // get the css properties
-        String back_image = c.css.getStringProperty(block.getElement(), "background-image", false);
-        block.repeat = c.css.getStringProperty(block.getElement(), "background-repeat");
-        block.attachment = c.css.getStringProperty(block.getElement(), "background-attachment",false);
+        String back_image = c.css.getStringProperty( block.getElement(), "background-image", false );
+        block.repeat = c.css.getStringProperty( block.getElement(), "background-repeat" );
+        block.attachment = c.css.getStringProperty( block.getElement(), "background-attachment", false );
         // handle image positioning issues
         // need to update this to support vert and horz, not just vert
-        if(c.css.hasProperty(block.getElement(),"background-position",false)) {
-            Point pt = c.css.getFloatPairProperty(block.getElement(),"background-position",false);
+        if ( c.css.hasProperty( block.getElement(), "background-position", false ) ) {
+            Point pt = c.css.getFloatPairProperty( block.getElement(), "background-position", false );
             block.background_position_horizontal = (int)pt.getX();
             block.background_position_vertical = (int)pt.getY();
         }
 
         // load the background image
         block.background_image = null;
-        if (back_image != null && !"none".equals(back_image)) {
+        if ( back_image != null && !"none".equals( back_image ) ) {
             try {
-                block.background_image = ImageUtil.loadImage(c,back_image);
-            } catch (Exception ex) {
+                block.background_image = ImageUtil.loadImage( c, back_image );
+            } catch ( Exception ex ) {
                 ex.printStackTrace();
-                u.p(ex);
+                u.p( ex );
             }
             /*
-            ImageIcon icon = new ImageIcon(back_image);
-            if(icon.getImageLoadStatus() == MediaTracker.COMPLETE) {
-                block.background_image = icon.getImage();
-            }
-            */
+             * ImageIcon icon = new ImageIcon(back_image);
+             * if(icon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+             * block.background_image = icon.getImage();
+             * }
+             */
         }
 
         // actually paint the background
-        BackgroundPainter.paint(c, block);
+        BackgroundPainter.paint( c, block );
     }
 
-    public void paintChildren(Context c, Box box) {
+    /**
+     * Description of the Method
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     */
+    public void paintChildren( Context c, Box box ) {
         BlockBox block = (BlockBox)box;
-        c.getGraphics().translate(block.x,block.y);
-        super.paintChildren(c, block);
-        c.getGraphics().translate(-block.x,-block.y);
+        c.getGraphics().translate( block.x, block.y );
+        super.paintChildren( c, block );
+        c.getGraphics().translate( -block.x, -block.y );
     }
 
 
-    public void paintBorder(Context c, Box box) {
+    /**
+     * Description of the Method
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     */
+    public void paintBorder( Context c, Box box ) {
         Box block = box;
         // get the border parts
 
@@ -363,60 +403,169 @@ public class BoxLayout extends DefaultLayout {
 
         // adjust to a fixed height, if necessary
         //if (!block.auto_height) {
-            //bnds.y = block.height - block.margin.top - block.margin.bottom;
+        //bnds.y = block.height - block.margin.top - block.margin.bottom;
         //}
 
-        bp.paint(c, block);
+        bp.paint( c, block );
     }
 
-    public void paintListItem(Context c, Box box) {
-        ListItemPainter.paint(c,box);
+    /**
+     * Description of the Method
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     */
+    public void paintListItem( Context c, Box box ) {
+        ListItemPainter.paint( c, box );
+    }
+
+
+    /**
+     * Description of the Method
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     */
+    public void setupFixed( Context c, Box box ) {
+        if ( isFixed( c, box ) ) {
+            //System.out.println("setting fixed for box: " + box);
+            box.fixed = true;
+            if ( c.css.hasProperty( box.node, "right", false ) ) {
+                box.right = (int)c.css.getFloatProperty( box.node, "right", 0, false );
+                box.right_set = true;
+            }
+            if ( c.css.hasProperty( box.node, "bottom", false ) ) {
+                box.bottom = (int)c.css.getFloatProperty( box.node, "bottom", 0, false );
+                box.bottom_set = true;
+            }
+        }
+    }
+
+    /**
+     * Gets the listItem attribute of the BoxLayout object
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     * @return     The listItem value
+     */
+    public boolean isListItem( Context c, Box box ) {
+        String display = c.css.getStringProperty( (Element)box.node, "display", false );
+        //u.p("display = " + display);
+        if ( display.equals( "list-item" ) ) {
+            return true;
+        }
+        return false;
     }
 
     // === caching accessors =========
 
-    public Border getBorder(Context c, Box box) {
-        if(box.isElement()) {
-            if(box.border == null) {
-                box.border = c.css.getBorderWidth(box.getElement());
+    /**
+     * Gets the border attribute of the BoxLayout object
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     * @return     The border value
+     */
+    public Border getBorder( Context c, Box box ) {
+        if ( box.isElement() ) {
+            if ( box.border == null ) {
+                box.border = c.css.getBorderWidth( box.getElement() );
             }
         }
         return box.border;
     }
 
 
-    public Border getPadding(Context c, Box box) {
-        if(box.isElement()) {
-            if(box.padding == null) {
-                box.padding = c.css.getPaddingWidth(box.getElement());
+    /**
+     * Gets the padding attribute of the BoxLayout object
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     * @return     The padding value
+     */
+    public Border getPadding( Context c, Box box ) {
+        if ( box.isElement() ) {
+            if ( box.padding == null ) {
+                box.padding = c.css.getPaddingWidth( box.getElement() );
             }
         }
         return box.padding;
     }
 
 
-    public Border getMargin(Context c, Box box) {
-        if(box.isElement()) {
-            if(box.margin == null) {
-                box.margin = c.css.getMarginWidth(box.getElement());
+    /**
+     * Gets the margin attribute of the BoxLayout object
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     * @return     The margin value
+     */
+    public Border getMargin( Context c, Box box ) {
+        if ( box.isElement() ) {
+            if ( box.margin == null ) {
+                box.margin = c.css.getMarginWidth( box.getElement() );
             }
         }
         return box.margin;
     }
 
-    private Color getBackgroundColor(Context c, Box box) {
-        if(box.background_color == null) {
-            Object obj = c.css.getProperty(box.getElement(),"background-color",false);
+    /**
+     * Gets the backgroundColor attribute of the BoxLayout object
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     * @return     The backgroundColor value
+     */
+    private Color getBackgroundColor( Context c, Box box ) {
+        if ( box.background_color == null ) {
+            Object obj = c.css.getProperty( box.getElement(), "background-color", false );
             //u.p("got : " + obj);
-            if(obj.toString().equals("transparent")) {
-                box.background_color = new Color(0,0,0,0);
+            if ( obj.toString().equals( "transparent" ) ) {
+                box.background_color = new Color( 0, 0, 0, 0 );
                 return box.background_color;
             }
-            box.background_color = c.css.getBackgroundColor(box.getElement());
+            box.background_color = c.css.getBackgroundColor( box.getElement() );
         }
         return box.background_color;
     }
 
+
+    /**
+     * Description of the Method
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     */
+    public static void setupRelative( Context c, Box box ) {
+        String position = getPosition( c, box );
+        if ( position.equals( "relative" ) ) {
+            if ( c.css.hasProperty( box.node, "right", false ) ) {
+                box.left = -(int)c.css.getFloatProperty( box.node, "right", 0, false );
+            }
+            if ( c.css.hasProperty( box.node, "bottom", false ) ) {
+                box.top = -(int)c.css.getFloatProperty( box.node, "bottom", 0, false );
+            }
+            if ( c.css.hasProperty( box.node, "top", false ) ) {
+                box.top = (int)c.css.getFloatProperty( box.node, "top", 0, false );
+            }
+            if ( c.css.hasProperty( box.node, "left", false ) ) {
+                box.left = (int)c.css.getFloatProperty( box.node, "left", 0, false );
+            }
+            box.relative = true;
+        }
+    }
+
 }
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.4  2004/10/23 13:46:46  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 
