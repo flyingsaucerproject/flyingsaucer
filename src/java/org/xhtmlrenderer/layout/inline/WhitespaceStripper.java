@@ -104,7 +104,7 @@ public class WhitespaceStripper {
         }
 
         breakText( c, inline, prev, prev_align, avail, max, font );
-        prepBox( c, inline, prev, font );
+        prepBox( c, inline, prev_align, font );
         // u.p("final inline = " + inline);
         return inline;
     }
@@ -246,8 +246,8 @@ public class WhitespaceStripper {
 
     
     public void prepBox(Context c, InlineBox box, InlineBox prev_align, Font font) {
-        // u.p("box = " + box);
-        // u.p("prev align = " + prev_align);
+        //u.p("box = " + box);
+        //u.p("prev align = " + prev_align);
 
 
         // prepare the font, colors, border, etc
@@ -278,7 +278,12 @@ public class WhitespaceStripper {
         // ============ set x
         // use the prev_align to calculate the x if not at start of
         // new line
-        if ( prev_align != null && !prev_align.break_after && !box.break_before ) {
+        if ( prev_align != null && 
+            !prev_align.break_after && 
+            !box.break_before
+            ) {
+            //u.p("prev align = " + prev_align);
+            //u.p("floated = " + LayoutUtil.isFloatedBlock( prev_align.node, c ) );
             box.x = prev_align.x + prev_align.width;
         } else {
             box.x = 0;

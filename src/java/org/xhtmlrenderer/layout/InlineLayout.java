@@ -241,8 +241,11 @@ public class InlineLayout extends BoxLayout {
                 // set the inline to use for left alignment
                 if ( !LayoutUtil.isFloated( new_inline, c ) ) {
                     prev_align_inline = new_inline;
+                    //u.p("prev = " + new_inline);
                 } else {
-                    prev_align_inline = prev_inline;
+                    //u.p("skipping floater: " + new_inline);
+                    //u.p("keeping old floater: " + prev_align_inline);
+                    //prev_align_inline = prev_inline;
                 }
                 prev_inline = new_inline;
             }
@@ -405,6 +408,15 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.32  2004/11/23 03:06:21  joshy
+* fixed floating support
+*
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.31  2004/11/23 02:41:59  joshy
 * fixed vertical-align support for first-letter pseudos
 * tested first-line w/ new breaking routines
