@@ -247,39 +247,10 @@ public class XRStyleReference implements StyleReference {
             while ( iter.hasNext() ) {
                 JStyle jStyle = ( (XRStyleRule)iter.next() ).asJStyle();
 
-                /*
-                 * CLEAN
-                 * for ( int i=0; i < jStyle.selector_list.getLength(); i++ ) {
-                 * System.out.println("*** adding selector: " + jStyle.selector_list.item(i));
-                 * }
-                 */
                 Ruleset rs = (Ruleset)_jStyleRuleSetMap.get( jStyle );
                 sortedRulesets.add( rs );
             }
 
-            /*
-             * HOLD: can use this to verify that all CSS properties have been defined in one or more CSS files...
-             * List definedNames = new ArrayList();
-             * iter = sortedXRRules.iterator();
-             * while ( iter.hasNext() ) {
-             * XRStyleRule rule = (XRStyleRule)iter.next();
-             * Iterator props = rule.listXRProperties();
-             * while ( props.hasNext() ) {
-             * XRProperty prop = (XRProperty)props.next();
-             * if ( !definedNames.contains( prop.propertyName() ) ) {
-             * definedNames.add( prop.propertyName() );
-             * }
-             * }
-             * }
-             * sDbgLogger.finest( "All defined: " + definedNames );
-             * Iterator allNames = CSSName.allCSS2PropertyNames();
-             * while ( allNames.hasNext() ) {
-             * String name = (String)allNames.next();
-             * if ( !definedNames.contains( name ) ) {
-             * sDbgLogger.finest( "X    " + name );
-             * }
-             * }
-             */
             _tbStyleMap = StyleMap.createMap( document, sortedRulesets, new StaticHtmlAttributeResolver() );
         }
 
@@ -430,6 +401,15 @@ public class XRStyleReference implements StyleReference {
     public XRElement getNodeXRElement( Node node ) {
         return (XRElement)_nodeXRElementMap.get( node );
     }
+    
+    /**
+     * Returns the XRProperty associated with the given Element.
+     *
+     */
+     public XRProperty getXRProperty(Element elem, String propName) {
+        XRElement xrElement = (XRElement)_nodeXRElementMap.get( elem );
+        return xrElement.derivedStyle().propertyByName( _context, propName );     
+     }
 
 
     /**
@@ -828,23 +808,15 @@ public class XRStyleReference implements StyleReference {
             xrElement = new XRElementImpl( elem, parent );
             _nodeXRElementMap.put( elem, xrElement );
         }
+
+        // StyleMap will return a List of JStyles matched to the element, 
+        // in the same sort order we originally passed in. We use the JStyles
+        // to look up our XRStyleRules and apply them as matches
         List styleList = _tbStyleMap.getMappedProperties( elem );
-
-        // ASK: is _tbStyleMap preserving the order of the styles as passed into it when on new StyleMap()? (PWW 13/08/04)
-        // BUG: seems that in current version it is not preserving the styles, hence, re-sort at this point (PWW 13/08/04)
-
-        List tempList = new ArrayList();
         Iterator iter = styleList.iterator();
         while ( iter.hasNext() ) {
             JStyle style = (JStyle)iter.next();
             XRStyleRule rule = (XRStyleRule)_jstyleXRStyleRuleMap.get( style );
-            tempList.add( rule );
-        }
-
-        Collections.sort( tempList, XRStyleRuleImpl.STYLE_RULE_COMPARATOR );
-        iter = tempList.iterator();
-        while ( iter.hasNext() ) {
-            XRStyleRule rule = (XRStyleRule)iter.next();
 
             xrElement.addMatchedStyle( rule );
         }
