@@ -167,7 +167,7 @@ public class InlineRenderer extends BoxRenderer {
 
     private void paintReplaced(Context c, InlineBox inline, LineBox line) {
         c.translate(line.x, line.y + (line.baseline - inline.height));
-        Renderer rend = new InlineRenderer();
+        Renderer rend = c.getRenderer(inline.content.getElement());
         rend.paint(c, inline);
         c.translate(-line.x, -(line.y + (line.baseline - inline.height)));
     }
@@ -182,7 +182,7 @@ public class InlineRenderer extends BoxRenderer {
         int yoff = 0;//line.y + ( line.baseline - inline.height );// + inline.y;
         // Uu.p("translating  by: " + xoff + " " + yoff);
         c.translate(xoff, yoff);
-        Renderer rend = new InlineRenderer();
+        Renderer rend = c.getRenderer(inline.content.getElement());
         rend.paint(c, inline);//.sub_block );
         c.translate(-xoff, -yoff);
         c.setExtents(oe);

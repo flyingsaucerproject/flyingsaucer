@@ -193,13 +193,13 @@ public class WhitespaceStripper {
         if (whitespace.equals("normal") ||
                 whitespace.equals("nowrap") ||
                 whitespace.equals("pre-line")) {
-            text = linefeed_space_collapse.matcher(text).replaceAll(SPACE);
+            text = linefeed_space_collapse.matcher(text).replaceAll(EOL);
         }
 
         // do step 2
-        //todo: check this
         // pull out pre's for breaking
-        // still not sure here
+        // OK: any spaces in a pre or pre-wrap are considered to be non-breaking
+        // resolve that later, the space-sequence may only be broken at the end!
 
 
         // do step 3

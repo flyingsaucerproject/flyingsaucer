@@ -159,9 +159,6 @@ public class InlineLayout extends BoxLayout {
                 InlineBox new_inline = calculateInline(c, currentContent, remaining_width, bounds.width,
                         prev_inline, prev_align_inline, isFirstLetter, block.firstLetterStyle, isFirstLine, block.firstLineStyle);
                 // Uu.p("got back inline: " + new_inline);
-                isFirstLetter = false;
-                new_inline.pushstyles = pendingPushStyles;
-                pendingPushStyles = null;
 
                 // if this inline needs to be on a new line
                 if (new_inline.break_before && !new_inline.floated) {
@@ -172,8 +169,12 @@ public class InlineLayout extends BoxLayout {
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line);
                     remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
+                    //continue;//have to discard it and recalculate, particularly if this was the first line
                 }
 
+                isFirstLetter = false;
+                new_inline.pushstyles = pendingPushStyles;
+                pendingPushStyles = null;
 
                 // save the new inline to the list
                 curr_line.addChild(new_inline);
@@ -336,7 +337,7 @@ public class InlineLayout extends BoxLayout {
 
             }
             // get the text of the node
-            String text = textContent.getText();
+            String text = textContent.getText().substring(start);
 
             // transform the text if required (like converting to caps)
             // this must be done before any measuring since it might change the
@@ -401,6 +402,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.52  2004/12/12 21:02:37  tobega
+* Images working again
+*
 * Revision 1.51  2004/12/12 18:06:51  tobega
 * Made simple layout (inline and box) a bit easier to understand
 *

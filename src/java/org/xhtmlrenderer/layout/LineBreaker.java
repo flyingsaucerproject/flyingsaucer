@@ -251,8 +251,6 @@ public class LineBreaker {
          * joshy: change this to just modify the existing block instead of creating
          * a  new one
          */
-        //TODO: is firstLineStyle needed? It should probably have been handled above
-        CascadedStyle firstLineStyle = c.css.getPseudoElementStyle(content.getElement(), "first-line");
         // create new inline (null text is safe!)
         //TODO: refactor styleBox, it is too overloaded, we know which type we want, right?
         InlineBox box = newBox(c, content, 0, 0, null, bounds, prev_align, font);
@@ -519,6 +517,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2004/12/12 21:02:37  tobega
+ * Images working again
+ *
  * Revision 1.36  2004/12/12 04:18:57  tobega
  * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
  *
