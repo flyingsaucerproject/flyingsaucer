@@ -177,6 +177,8 @@ public class InlineLayout extends BoxLayout {
                     //continue;//have to discard it and recalculate, particularly if this was the first line
                 }
 
+                if (new_inline.getSubstring().equals("")) break;
+
                 isFirstLetter = false;
                 new_inline.pushstyles = pendingPushStyles;
                 pendingPushStyles = null;
@@ -407,6 +409,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.54  2004/12/12 23:45:47  tobega
+* Discard inline boxes containing empty strings.
+*
 * Revision 1.53  2004/12/12 23:19:25  tobega
 * Tried to get hover working. Something happens, but not all that's supposed to happen.
 *
