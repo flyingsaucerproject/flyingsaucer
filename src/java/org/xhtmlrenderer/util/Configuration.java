@@ -49,11 +49,11 @@ import java.util.logging.*;
  * configuration file. Specifying a property name not in that file will have no
  * effect--the property will not be loaded or available for lookup.
  * Configuration is NOT used to control logging levels or output; see
- * LogStartupConfig.</p>
+ * LogStartupConfig.</p> <p>
  *
- * <p>There are convenience converstion method for all the primitive types, 
- * in methods like valueAsInt(). A default must always be provided for these
- * methods. The default is returned if the value is not found, or if the 
+ * There are convenience converstion method for all the primitive types, in
+ * methods like valueAsInt(). A default must always be provided for these
+ * methods. The default is returned if the value is not found, or if the
  * conversion from String fails. If the value is not present, or the conversion
  * fails, a warning message is written to the log.</p>
  *
@@ -63,36 +63,63 @@ public class Configuration {
     /** Our backing data store of properties. */
     private Properties properties;
 
-    /** The logger for messages on loading configuration. */
-    private final Logger logger;
-
     /** The Singleton instance of the class. */
     private static Configuration sInstance;
 
     /** The location of our default properties file; must be on the CLASSPATH. */
     private final static String SF_FILE_NAME = "resources/conf/xhtmlrenderer.conf";
+    
+    private Level logLevel;
 
     /** Default constructor. */
     private Configuration() {
-        // We need to create our logger with a separate ConsoleHandler
-        // because the regular one is initialized using the Configuration
-        // class--unfortunately, this means we can't control the output
-        // without recompiling.
-        logger = Logger.getLogger( "plumbing.init" );
-        Handler handler = new ConsoleHandler();
-
-        // Change this value if you want more detail about the
-        // Configuration load--e.g. FINER for details on what
-        // the properties are, what overrides are in place
-        handler.setLevel( Level.INFO );
-        logger.addHandler( handler );
-
+        // read logging level from System properties
+        String val = System.getProperty("show-config");
+        logLevel = Level.INFO;
+        if ( val != null ) {
+            if ( "ALL".equals(val)) logLevel = Level.ALL;
+            if ( "CONFIG".equals(val)) logLevel = Level.CONFIG;
+            if ( "FINE".equals(val)) logLevel = Level.FINE;
+            if ( "FINER".equals(val)) logLevel = Level.FINER;
+            if ( "FINEST".equals(val)) logLevel = Level.FINEST;
+            if ( "INFO".equals(val)) logLevel = Level.INFO;
+            if ( "OFF".equals(val)) logLevel = Level.OFF;
+            if ( "SEVERE".equals(val)) logLevel = Level.SEVERE;
+            if ( "WARNING".equals(val)) logLevel = Level.WARNING;
+        }
+            
         loadDefaultProperties();
         loadOverrideProperties();
         loadSystemProperties();
         logAfterLoad();
     }
+    
+    private void println(String msg) {
+        if ( logLevel != Level.OFF ) 
+            System.out.println("Configuration: " + msg);
+    }
 
+    private void info(String msg) {
+        if ( logLevel.intValue() <= Level.INFO.intValue() ) println(msg);
+    }
+
+    private void warning(String msg) {
+        if ( logLevel.intValue() <= Level.WARNING.intValue() ) println(msg);
+    }
+
+    private void warning(String msg, Throwable th) {
+        warning(msg);
+        th.printStackTrace();
+    }
+
+    private void fine(String msg) {
+        if ( logLevel.intValue() <= Level.FINE.intValue() ) println(msg);
+    }
+
+    private void finer(String msg) {
+        if ( logLevel.intValue() <= Level.FINER.intValue() ) println(msg);
+    }
+    
 
     /** Loads the default set of properties, which may be overridden. */
     private void loadDefaultProperties() {
@@ -112,7 +139,7 @@ public class Configuration {
                     "Could not load properties file for configuration.",
                     ex );
         }
-        logger.info( "Configuration loaded from " + SF_FILE_NAME );
+        info( "Configuration loaded from " + SF_FILE_NAME );
     }
 
     /**
@@ -120,35 +147,32 @@ public class Configuration {
      * is optional. See class documentation.
      */
     private void loadOverrideProperties() {
-        String override = System.getProperty( "xr-props" );
-        if ( override != null ) {
-            logger.fine( "Configuration override file specified as " + override + ", looking for it." );
-            InputStream readStream = GeneralUtil.openStreamFromClasspath( override );
-            if ( readStream == null ) {
-                logger.warning( "Could not find override properties file at " + override + ", using defaults." );
+        String overrideName = System.getProperty( "user.home" ) + File.separator + ".flyingsaucer/local.xhtmlrenderer.conf"; 
+        
+        File f = new File(overrideName);
+        if ( f.exists() ) {
+            fine("Found local config override file " + f.getAbsolutePath());
+            Properties temp = new Properties();
+            try {
+                InputStream readStream = new BufferedInputStream(new FileInputStream(f));
+                temp.load( readStream );
+            } catch ( IOException iex ) {
+                warning("Error while loading override properties file; skipping.", iex );
                 return;
-            } else {
-                Properties temp = new Properties();
-                try {
-                    temp.load( readStream );
-                } catch ( IOException iex ) {
-                    logger.log( Level.WARNING, "Error while loading override properties file; skipping.", iex );
-                    return;
-                }
-
-                Enumeration elem = this.properties.keys();
-                int cnt = 0;
-                while ( elem.hasMoreElements() ) {
-                    String key = (String)elem.nextElement();
-                    String val = temp.getProperty( key );
-                    if ( val != null ) {
-                        this.properties.setProperty( key, val );
-                        logger.finer( "  " + key + " -> " + val );
-                        cnt++;
-                    }
-                }
-                logger.finer( "Configuration: " + cnt + " properties overridden from override properties file." );
             }
+
+            Enumeration elem = this.properties.keys();
+            int cnt = 0;
+            while ( elem.hasMoreElements() ) {
+                String key = (String)elem.nextElement();
+                String val = temp.getProperty( key );
+                if ( val != null ) {
+                    this.properties.setProperty( key, val );
+                    finer( "  " + key + " -> " + val );
+                    cnt++;
+                }
+            }
+            finer( "Configuration: " + cnt + " properties overridden from override properties file." );
         }
     }
 
@@ -158,31 +182,33 @@ public class Configuration {
      */
     private void loadSystemProperties() {
         Enumeration elem = properties.keys();
-        logger.fine( "Overriding loaded configuration from System properties." );
+        fine( "Overriding loaded configuration from System properties." );
         int cnt = 0;
         while ( elem.hasMoreElements() ) {
             String key = (String)elem.nextElement();
+            if ( !key.startsWith("xr.")) continue;
+            
             String val = System.getProperty( key );
             if ( val != null ) {
                 properties.setProperty( key, val );
-                logger.finer( "  Overrode value for " + key );
+                finer( "  Overrode value for " + key );
                 cnt++;
             }
         }
-        logger.finer( "Configuration: " + cnt + " properties overridden from System properties." );
+        fine( "Configuration: " + cnt + " properties overridden from System properties." );
     }
 
     /** Writes a log of loaded properties to the plumbing.init Logger. */
     private void logAfterLoad() {
         Enumeration elem = properties.keys();
-        logger.finer( "Configuration contains " + properties.size() + " keys." );
-        logger.finer( "List of configuration properties, after override:" );
+        finer( "Configuration contains " + properties.size() + " keys." );
+        finer( "List of configuration properties, after override:" );
         while ( elem.hasMoreElements() ) {
             String key = (String)elem.nextElement();
             String val = properties.getProperty( key );
-            logger.finer( "  " + key + " = " + val );
+            finer( "  " + key + " = " + val );
         }
-        logger.finer( "Properties list complete." );
+        finer( "Properties list complete." );
     }
 
     /**
@@ -196,7 +222,7 @@ public class Configuration {
         Configuration conf = instance();
         String val = conf.properties.getProperty( key );
         if ( val == null ) {
-            conf.logger.warning( "CONFIGURATION: no value found for key " + key );
+            conf.warning( "CONFIGURATION: no value found for key " + key );
         }
         return val;
     }
@@ -377,9 +403,29 @@ public class Configuration {
         String val = conf.valueFor( key );
         val = ( val == null ? defaultVal : val );
         if ( val == null ) {
-            conf.logger.warning( "CONFIGURATION: no value found for key " + key + " and no default given." );
+            conf.warning( "CONFIGURATION: no value found for key " + key + " and no default given." );
         }
         return val;
+    }
+
+    /**
+     * Returns all configuration keys that start with prefix. Iterator
+     * will be empty if no such keys are found.
+     *
+     * @param prefix  Prefix to filter on. No regex.
+     * @return        Returns Iterator, see description.
+     */
+    public static Iterator keysByPrefix( String prefix ) {
+        Configuration conf = instance();
+        Iterator iter = conf.properties.keySet().iterator();
+        List l = new ArrayList();
+        while ( iter.hasNext() ) {
+            String key = (String)iter.next();
+            if ( key.startsWith( prefix ) ) {
+                l.add( key );
+            }
+        }
+        return l.iterator();
     }
 
 
@@ -456,6 +502,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/10/18 12:10:50  pdoubleya
+ * Added keysByPrefix(); local override file now read from user home directory; all logging now written to console instead of Logger because of Logger setup dependency issues (logger config depends on Configuration).
+ *
  * Revision 1.4  2004/10/14 15:06:27  pdoubleya
  * Added conversion methods for primitive datatypes, and testing in main().
  *
