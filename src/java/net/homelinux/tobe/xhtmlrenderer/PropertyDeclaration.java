@@ -1,27 +1,22 @@
 /*
- * {{{ header & license
+ *
  * PropertyDeclaration.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- * }}}
- */
-/*
- * DeclaredProperty.java
  *
- * Created on den 29 augusti 2004, 21:46
  */
 
 package net.homelinux.tobe.xhtmlrenderer;
@@ -31,6 +26,9 @@ package net.homelinux.tobe.xhtmlrenderer;
  * @author  Torbjörn Gannholm
  */
 public interface PropertyDeclaration {
+
+    /** ImportanceAndOrigin of stylesheet - user agent */
+    public final static int CSS_DEFAULT = 0;
 
     /** ImportanceAndOrigin of stylesheet - user agent */
     public final static int USER_AGENT = 1;
@@ -51,6 +49,7 @@ public interface PropertyDeclaration {
     
     public String getName();
     
+    /** the value should be a primitive value, no shorthand notations */
     public org.w3c.dom.css.CSSValue getValue();
     
 }

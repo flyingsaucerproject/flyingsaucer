@@ -1,7 +1,7 @@
 /*
  *
- * Matcher.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * CascadedStyle.java
+ * Copyright (c) 2004 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -21,22 +21,25 @@
 
 package net.homelinux.tobe.xhtmlrenderer;
 
-/**
- *
- * @author  Torbjörn Gannholm
- */
-public interface Matcher {
+public interface CascadedStyle {
+    /**
+     * Value of a single PropertyDeclaration, the one that the cascade has determined for this element, by name.
+     *
+     * @param propName  PARAM
+     * @return          Returns
+     */
+    PropertyDeclaration propertyByName( String propName );
+
+
+    /**
+     * Returns true if the named property was defined and has a value in this
+     * rule set.
+     *
+     * @param propName  PARAM
+     * @return          Returns
+     */
+    boolean hasProperty( String propName );
     
-    public void setAttributeResolver(AttributeResolver ar);
-    
-    public void setDocument(org.w3c.dom.Document doc);
-    
-    /** iterator should return objects of type Stylesheet in the correct order of declaration */
-    public void setStylesheets(java.util.Iterator i);
-    
-    /** If you wish to use ElementStyling, you must pass a StylesheetFactory to the matcher */
-    public void setStylesheetFactory(StylesheetFactory styleFactory);
-    
-    public CascadedStyle getCascadedStyle(org.w3c.dom.Element e);
-    
+    java.util.Iterator getPropertyDeclarations();
+
 }
