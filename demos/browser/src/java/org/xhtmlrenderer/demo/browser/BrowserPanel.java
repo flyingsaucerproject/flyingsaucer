@@ -149,8 +149,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         int text_width = 200;
         view.setPreferredSize(new Dimension(text_width, text_width));
         scroll = new JScrollPane(view);
-        scroll.setVerticalScrollBarPolicy(scroll.VERTICAL_SCROLLBAR_ALWAYS);
-        scroll.setHorizontalScrollBarPolicy(scroll.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setPreferredSize(new Dimension(text_width, text_width));
         scroll.getVerticalScrollBar().setBlockIncrement(100);
         scroll.getVerticalScrollBar().setUnitIncrement(15);
@@ -191,14 +191,14 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         add(font_dec);
 
         c.gridx++;
-        c.fill = c.HORIZONTAL;
+        c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 10.0;
         gbl.setConstraints(url, c);
         add(url);
 
         c.gridx = 0;
         c.gridy++;
-        c.fill = c.BOTH;
+        c.fill = GridBagConstraints.BOTH;
         c.gridwidth = 7;
         c.weightx = c.weighty = 10.0;
         gbl.setConstraints(scroll, c);
@@ -206,7 +206,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
         c.gridx = 0;
         c.gridy++;
-        c.fill = c.HORIZONTAL;
+        c.fill = GridBagConstraints.HORIZONTAL;
         c.weighty = 0.1;
         gbl.setConstraints(status, c);
         add(status);
@@ -502,6 +502,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/12/12 16:11:04  tobega
+ * Fixed bug concerning order of inline content. Added a demo for pseudo-elements.
+ *
  * Revision 1.14  2004/12/12 03:33:07  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

@@ -163,6 +163,7 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add(new LoadAction("Game Screen", "demo:demos/game/index.xhtml"));
         demos.add(new LoadAction("Financial Report", "demo:demos/report.xhtml"));
         demos.add(new LoadAction("Rollovers with :hover ", "demo:demos/hover.xhtml"));
+        demos.add(new LoadAction("Pseudo-elements ", "demo:demos/pseudo-elements.xhtml"));
         try {
             //demos.add(new LoadAction("File Listing (Win)","file:///c:"));
             //demos.add(new LoadAction("File Listing (Unix)","file:///"));
@@ -519,6 +520,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2004/12/12 16:11:04  tobega
+ * Fixed bug concerning order of inline content. Added a demo for pseudo-elements.
+ *
  * Revision 1.23  2004/12/12 03:33:06  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

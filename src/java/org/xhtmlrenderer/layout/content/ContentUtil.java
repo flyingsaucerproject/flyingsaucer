@@ -192,14 +192,14 @@ public class ContentUtil {
             }
 
             //if we get here, we have inline content, need to get into it.
+            if (textContent != null) {
+                inlineList.add(textContent);
+                textContent = null;
+            }
             Content inline = new InlineContent(elem, style);
             List childList = inline.getChildContent(c);
             if (isBlockContent(childList)) {
                 //need to put current inlineList in front, with a StylePush appended
-                if (textContent != null) {
-                    inlineList.add(textContent);
-                    textContent = null;
-                }
                 inlineList.add(new StylePush(style));
                 for (Iterator ci = childList.iterator(); ci.hasNext();) {
                     Object o = ci.next();
@@ -420,6 +420,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/12/12 16:11:03  tobega
+ * Fixed bug concerning order of inline content. Added a demo for pseudo-elements.
+ *
  * Revision 1.10  2004/12/12 06:05:29  tobega
  * Small improvement to value of :before and :after. Wonder why inline elements get floated out?
  *

@@ -189,6 +189,7 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
             //Object marker = new org.xhtmlrenderer.DefaultCSSMarker();
             
             //if(marker.getClass().getResourceAsStream("default.css") != null) {
+            //TODO: weakness: if no configuration found, it bombs out. Should we be so reliable on correct config? Maybe a warning will do?
             String defaultStyleSheetLocation = Configuration.valueFor("xr.css.user-agent-default-css");
             if (this.getClass().getResourceAsStream(defaultStyleSheetLocation) != null) {
 

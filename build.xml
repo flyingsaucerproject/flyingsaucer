@@ -2,8 +2,8 @@
 <project name="Flying Saucer Build File" default="help" basedir=".">
     <description>Checkout, build, test, and package the Flying Saucer project.</description>
 
-    <target name="build" depends="compile" />
-    <target name="build-clean" depends="clean-compile" />
+    <target name="build" depends="compile"/>
+    <target name="build-clean" depends="clean-compile"/>
     <target name="help">
         <echo message=" ant settings:       show all Ant properties to be used"/>
         <echo message=" ant clean:          clean up any compilation or distribution files made"/>
@@ -18,7 +18,7 @@
     <!-- =====================================================
          init and prefab settings
          ===================================================== -->
-    <property name="app.name" value="flyingsaucer" />
+    <property name="app.name" value="flyingsaucer"/>
     <property name="user.overrides"
         location="${user.home}/.${app.name}/${app.name}.build.properties"/>
     <property name="project.overrides" location="build.properties"/>
@@ -26,11 +26,11 @@
     <property file="${project.overrides}"/>
 
     <target name="properties">
-      <tstamp />
-      <available file="${user.overrides}" property="user.overrides.available"/>
-      <available file="${project.overrides}" property="project.overrides.available"/>
-      <echo message="Loading any properties found in '${user.overrides}'"/>
-      <echo message="Loading any properties found in '${project.overrides}'"/> 
+        <tstamp/>
+        <available file="${user.overrides}" property="user.overrides.available"/>
+        <available file="${project.overrides}" property="project.overrides.available"/>
+        <echo message="Loading any properties found in '${user.overrides}'"/>
+        <echo message="Loading any properties found in '${project.overrides}'"/>
     </target>
 
     <!-- 
@@ -43,89 +43,89 @@
       ${user.home}/.flyingsaucer/flyingsaucer.build.properties    
     -->
     <!-- Directories -->
-    <property name="libraries.dir" location="lib" />
-    <property name="src.dir" location="src" />
-    <property name="doc.dir" location="doc" />
-    <property name="src.junit-test.java.dir" location="${src.dir}/junit" />
-    <property name="src.browser.java.dir" location="demos/browser/src/java" />
-    <property name="src.about.java.dir" location="demos/about/src/java" />
-    <property name="src.photogallery.java.dir" location="demos/photogallery/src/java" />
-    <property name="src.filebrowser.java.dir" location="demos/filebrowser/src/java" />
-    <property name="dest.dir" location="build" />
-    <property name="dest.javadoc.full.dir" location="${doc.dir}/full/api" />
-    <property name="dest.javadoc.user.dir" location="${doc.dir}/user/api" />
-    <property name="dest.java2html.dir" location="${doc.dir}/full/code" />
-    <property name="src.java.dir" location="${src.dir}/java" />
-    <property name="dest.java.dir" location="${dest.dir}/classes" />
-    <property name="src.resources.css.dir" location="${src.dir}/css" />
-    <property name="dest.resources.css.dir" location="${dest.java.dir}/resources/css" />
-    <property name="src.resources.conf.dir" location="${src.dir}/conf" />
-    <property name="dest.resources.conf.dir" location="${dest.java.dir}/resources/conf" />
-    <property name="src.packaging.dir" location="${src.dir}/packaging" />
-    <property name="src.demo.xhtml.dir" location="demos/browser/xhtml" />
-    <property name="src.demo.splash.dir" location="demos/splash" />
-    <property name="src.about.xhtml.dir" location="demos/about/xhtml" />
+    <property name="libraries.dir" location="lib"/>
+    <property name="src.dir" location="src"/>
+    <property name="doc.dir" location="doc"/>
+    <property name="src.junit-test.java.dir" location="${src.dir}/junit"/>
+    <property name="src.browser.java.dir" location="demos/browser/src/java"/>
+    <property name="src.about.java.dir" location="demos/about/src/java"/>
+    <property name="src.photogallery.java.dir" location="demos/photogallery/src/java"/>
+    <property name="src.filebrowser.java.dir" location="demos/filebrowser/src/java"/>
+    <property name="dest.dir" location="build"/>
+    <property name="dest.javadoc.full.dir" location="${doc.dir}/full/api"/>
+    <property name="dest.javadoc.user.dir" location="${doc.dir}/user/api"/>
+    <property name="dest.java2html.dir" location="${doc.dir}/full/code"/>
+    <property name="src.java.dir" location="${src.dir}/java"/>
+    <property name="dest.java.dir" location="${dest.dir}/classes"/>
+    <property name="src.resources.css.dir" location="${src.dir}/css"/>
+    <property name="dest.resources.css.dir" location="${dest.java.dir}/resources/css"/>
+    <property name="src.resources.conf.dir" location="${src.dir}/conf"/>
+    <property name="dest.resources.conf.dir" location="${dest.java.dir}/resources/conf"/>
+    <property name="src.packaging.dir" location="${src.dir}/packaging"/>
+    <property name="src.demo.xhtml.dir" location="demos/browser/xhtml"/>
+    <property name="src.demo.splash.dir" location="demos/splash"/>
+    <property name="src.about.xhtml.dir" location="demos/about/xhtml"/>
 
     <!-- Compiler flags -->
     <!-- For details on each flag, see http://ant.apache.org/manual/CoreTasks/javac.html -->
-    <property name="build.compiler" value="modern" />
-    <property name="compiler.debug" value="true" />
+    <property name="build.compiler" value="modern"/>
+    <property name="compiler.debug" value="true"/>
     <property name="compiler.debuglevel" value="lines,vars,source"/>
-    <property name="compiler.deprecation" value="off" />
-    <property name="compiler.failonerror" value="true" />
-    <property name="compiler.fork" value="no" />
-    <property name="compiler.listfiles" value="no" />
-    <property name="compiler.nowarn" value="off" />
-    <property name="compiler.optimize" value="off" />
-    <property name="compiler.source" value="1.4" />
-    <property name="compiler.target" value="1.4" />
-    <property name="compiler.verbose" value="no" />
+    <property name="compiler.deprecation" value="off"/>
+    <property name="compiler.failonerror" value="true"/>
+    <property name="compiler.fork" value="no"/>
+    <property name="compiler.listfiles" value="no"/>
+    <property name="compiler.nowarn" value="off"/>
+    <property name="compiler.optimize" value="off"/>
+    <property name="compiler.source" value="1.4"/>
+    <property name="compiler.target" value="1.4"/>
+    <property name="compiler.verbose" value="no"/>
     
     <!-- Java.exe flags -->
-    <property name="java-exec.fork.tests" value="true" />    
+    <property name="java-exec.fork.tests" value="true"/>
 
     <!-- path reference for all JAR files in /lib -->
     <path id="libraries.all">
-      <fileset dir="${libraries.dir}">
-          <include name="*.jar"/>
-      </fileset>
+        <fileset dir="${libraries.dir}">
+            <include name="*.jar"/>
+        </fileset>
     </path>
         
     <!-- path reference for all JAR files in /lib, plus all our built jars -->
     <path id="libraries-and-dest.all">
-      <path refid="libraries.all" />
-      <fileset dir="${dest.dir}">
-          <include name="*.jar"/>
-      </fileset>
+        <path refid="libraries.all"/>
+        <fileset dir="${dest.dir}">
+            <include name="*.jar"/>
+        </fileset>
     </path>
 
     <patternset id="org-java-files">
-      <include name="org/xhtmlrenderer/**" />
+        <include name="org/xhtmlrenderer/**"/>
     </patternset>
 
     <patternset id="user-java-files">
-      <includesfile name="src/java/org/xhtmlrenderer/swing/HTMLPanel.java" />
-      <includesfile name="src/java/org/xhtmlrenderer/simple/*.java" />
+        <includesfile name="src/java/org/xhtmlrenderer/swing/HTMLPanel.java"/>
+        <includesfile name="src/java/org/xhtmlrenderer/simple/*.java"/>
     </patternset>
 
     <patternset id="xhtml-files">
-      <include name="*.xhtml"/>
-      <include name="*.gif"/>
-      <include name="*.png"/>
-      <include name="splash/**"/>
-      <include name="about/**"/>
-      <include name="alice/**"/>
-      <include name="game/**"/>
-      <include name="fonts/**"/>
+        <include name="*.xhtml"/>
+        <include name="*.gif"/>
+        <include name="*.png"/>
+        <include name="splash/**"/>
+        <include name="about/**"/>
+        <include name="alice/**"/>
+        <include name="game/**"/>
+        <include name="fonts/**"/>
     </patternset>
       
     <!-- zip file reference for all XHTML in the demos directory, and supporting files -->
     <zipfileset id="xhtml.demos" dir="${src.demo.xhtml.dir}" prefix="demos/">
-      <patternset refid="xhtml-files" />
+        <patternset refid="xhtml-files"/>
     </zipfileset>
-    
+
     <zipfileset id="xhtml.about.demos" dir="${src.about.xhtml.dir}" prefix="demos/">
-      <patternset refid="xhtml-files" />
+        <patternset refid="xhtml-files"/>
     </zipfileset>
 
     <!-- zip file reference for all splash XHTML in the demos directory, and supporting files -->
@@ -139,10 +139,10 @@
          properties. can be used for most uses of javac in this file.
     -->
     <presetdef name="javac-full">
-      <javac
+        <javac
             srcdir="${src.java.dir}"
             destdir="${dest.java.dir}"
-            
+
             debug="${compiler.debug}"
             debuglevel="${compiler.debuglevel}"
             deprecation="${compiler.deprecation}"
@@ -156,12 +156,12 @@
             verbose="${compiler.verbose}"
             encoding="iso-8859-1"
             >
-            <classpath refid="libraries.all" />
-      </javac>
+            <classpath refid="libraries.all"/>
+        </javac>
     </presetdef>
 
     <!-- General initialization, including properties. -->
-    <target name="init" depends="properties" >
+    <target name="init" depends="properties">
         <mkdir dir="${dest.dir}"/>
         <mkdir dir="${dest.java.dir}"/>
         <mkdir dir="${dest.resources.css.dir}"/>
@@ -194,23 +194,31 @@
     </target>
 
     <!-- Cleans all build files, then recompiles. -->
-    <target name="clean-compile" description="clean compile" depends="clean,compile" />
+    <target name="clean-compile" description="clean compile" depends="clean,compile"/>
 
     <!-- Cleans all build files, then recompiles. -->
-    <target name="demo-compile" description="clean compile" depends="clean-compile,compile.browser,compile.about,compile.photogallery" />
+    <target name="demo-compile" description="clean compile" depends="clean-compile,compile.browser,compile.about,compile.photogallery"/>
 
     <!-- Compiles application and copies resources to destination directory. -->
-    <target name="compile" description="compile" depends="init">
+    <target name="compile" description="compile" depends="init,resources.core">
         <javac-full>
             <include name="org/xhtmlrenderer/**"/>
         </javac-full>
+    </target>
+
+    <!-- copies core resources to destination directory. -->
+    <target name="resources.core" description="copy core resources to build directory" depends="init">
         <copy todir="${dest.resources.css.dir}" file="${src.resources.css.dir}/default.css"/>
         <copy todir="${dest.resources.conf.dir}" file="${src.resources.conf.dir}/xhtmlrenderer.conf"/>
     </target>
-    
+
     <!-- Compiles the Flying Saucer browser along with the main codebase -->
-    <target name="compile.browser" depends="compile">
-        <javac-full srcdir="${src.browser.java.dir}" />
+    <target name="compile.browser" depends="compile,resources.browser">
+        <javac-full srcdir="${src.browser.java.dir}"/>
+    </target>
+
+    <!-- Copies the resources needed to run the browser into the build tree -->
+    <target name="resources.browser" depends="compile">
         <mkdir dir="build/classes/demos"/>
         <copy todir="build/classes/demos">
             <fileset dir="demos/browser/xhtml">
@@ -224,7 +232,7 @@
     </target>
 
     <target name="compile.photogallery" depends="compile">
-        <javac-full srcdir="${src.photogallery.java.dir}" />
+        <javac-full srcdir="${src.photogallery.java.dir}"/>
         <mkdir dir="build/classes/demos"/>
         <copy todir="build/classes/demos">
             <fileset dir="demos/photogallery/xhtml">
@@ -234,9 +242,9 @@
             </fileset>
         </copy>
     </target>
-    
+
     <target name="compile.filebrowser" depends="compile">
-        <javac-full srcdir="${src.filebrowser.java.dir}" />
+        <javac-full srcdir="${src.filebrowser.java.dir}"/>
         <copy todir="build/classes/">
             <fileset dir="${src.filebrowser.java.dir}">
                 <include name="**/*.xhtml"/>
@@ -248,12 +256,12 @@
     
     <!-- Compiles the Help/About Box demo along with the main codebase -->
     <target name="compile.about" depends="compile">
-        <javac-full srcdir="${src.about.java.dir}" />
+        <javac-full srcdir="${src.about.java.dir}"/>
     </target>
 
     <!-- Compiles the JUnit tests along with the main codebase -->
     <target name="compile.junit" depends="compile">
-        <javac-full srcdir="${src.junit-test.java.dir}" />
+        <javac-full srcdir="${src.junit-test.java.dir}"/>
     </target>
 
     <!-- Compiles main codebase, browser and about box -->
@@ -266,33 +274,33 @@
     for properties antcall.dest.javadoc.dir and antcall.javadoc.file 
     -->
     <target name="_javadoc" description="internal use; use 'docs' instead. builds javadoc for all XR packages" depends="properties">
-      <javadoc 
-                access="public" 
-                author="true"
-                classpathref="libraries.all"
-                destdir="${antcall.dest.javadoc.dir}" 
-                nodeprecated="false" 
-                nodeprecatedlist="false"
-                noindex="false" 
-                nonavbar="false" 
-                notree="false"
-                source="1.4"
-                sourcefiles="${antcall.javadoc.file}"
-                sourcepath="${src.java.dir}"
-                splitindex="true"
-                use="true" 
-                encoding="iso-8859-1"
-                version="true">
-                
-        <packageset dir="${src.java.dir}">
-          <patternset refid="org-java-files" />
-        </packageset>
-        
-        <!-- NOTE: wanted to make this a property, but Ant was prepending the
-        base directory name to the URL when running this target through Antcall.
-        Odd. -->
-        <link offline="true" href="http://java.sun.com/j2se/1.4.2/docs/api" packagelistLoc="http://java.sun.com/j2se/1.4.2/docs/api"/>
-      </javadoc>
+        <javadoc
+            access="public"
+            author="true"
+            classpathref="libraries.all"
+            destdir="${antcall.dest.javadoc.dir}"
+            nodeprecated="false"
+            nodeprecatedlist="false"
+            noindex="false"
+            nonavbar="false"
+            notree="false"
+            source="1.4"
+            sourcefiles="${antcall.javadoc.file}"
+            sourcepath="${src.java.dir}"
+            splitindex="true"
+            use="true"
+            encoding="iso-8859-1"
+            version="true">
+
+            <packageset dir="${src.java.dir}">
+                <patternset refid="org-java-files"/>
+            </packageset>
+
+            <!-- NOTE: wanted to make this a property, but Ant was prepending the
+            base directory name to the URL when running this target through Antcall.
+            Odd. -->
+            <link offline="true" href="http://java.sun.com/j2se/1.4.2/docs/api" packagelistLoc="http://java.sun.com/j2se/1.4.2/docs/api"/>
+        </javadoc>
     </target>
     
     <!-- Builds core, browser and about box jars. -->
@@ -301,7 +309,7 @@
     
     <!-- Compiles main codebase, and builds jar for it -->
     <target name="core-jar" depends="compile" description="build core jar">
-        <jar jarfile="${dest.dir}/core-renderer.jar" compress="true" >
+        <jar jarfile="${dest.dir}/core-renderer.jar" compress="true">
             <fileset dir="${dest.java.dir}">
                 <include name="**/*.class"/>
                 <exclude name="org/joshy/html/app"/>
@@ -318,35 +326,35 @@
     
     <!-- Compiles browser and main codebase, and builds jar for browser -->
     <target name="browser-jar" depends="compile.browser" description="build browser jar">
-        <jar jarfile="${dest.dir}/browser.jar" compress="true" 
+        <jar jarfile="${dest.dir}/browser.jar" compress="true"
             manifest="${src.packaging.dir}/manifest"
             duplicate="preserve"
             >
             <fileset dir="${dest.java.dir}">
                 <include name="org/xhtmlrenderer/demo/browser/**"/>
             </fileset>
-            <zipfileset refid="xhtml.demos" />
-            <zipfileset refid="xhtml.splash" />
+            <zipfileset refid="xhtml.demos"/>
+            <zipfileset refid="xhtml.splash"/>
         </jar>
     </target>
     
     <!-- Compiles about box and main codebase, and builds jar for about box -->
     <target name="about-jar" depends="compile.about" description="build about jar">
-        <jar jarfile="${dest.dir}/about.jar" compress="true" 
+        <jar jarfile="${dest.dir}/about.jar" compress="true"
             manifest="${src.packaging.dir}/manifest"
             duplicate="preserve"
             >
             <fileset dir="${dest.java.dir}">
                 <include name="org/xhtmlrenderer/demo/aboutbox/**"/>
             </fileset>
-            <zipfileset refid="xhtml.about.demos" />
-            <zipfileset refid="xhtml.splash" />
+            <zipfileset refid="xhtml.about.demos"/>
+            <zipfileset refid="xhtml.splash"/>
         </jar>
     </target>
 
     <!-- Compiles photogallery and main codebase, and builds jar for photogallery -->
     <target name="photogallery-jar" depends="compile.photogallery" description="build photogallery jar">
-        <jar jarfile="${dest.dir}/photogallery.jar" compress="true" 
+        <jar jarfile="${dest.dir}/photogallery.jar" compress="true"
             manifest="${src.packaging.dir}/manifest"
             duplicate="preserve"
             >
@@ -358,7 +366,7 @@
 
     <!-- Compiles photogallery and main codebase, and builds jar for photogallery -->
     <target name="filebrowser-jar" depends="compile.filebrowser" description="build filebrowser jar">
-        <jar jarfile="${dest.dir}/filebrowser.jar" compress="true" 
+        <jar jarfile="${dest.dir}/filebrowser.jar" compress="true"
             manifest="${src.packaging.dir}/manifest"
             duplicate="preserve"
             >
@@ -386,7 +394,7 @@
 
     <!-- Builds a ZIP file of entire project from base directory. -->
     <target name="zip" description="zip file" depends="jars">
-        <zip basedir="${basedir}" zipfile="../flyingsaucer.zip" />
+        <zip basedir="${basedir}" zipfile="../flyingsaucer.zip"/>
     </target>
 
     <!-- Builds all jars and packages jars and 3rd party libraries into one jar -->
@@ -430,9 +438,15 @@
                 <include name="ss_css2.jar"/>
                 <include name="xalan.jar"/>
             </fileset>
-            <fileset dir="${src.packaging.dir}"><include name="fs.jnlp"/></fileset>
-            <fileset dir="${src.packaging.dir}"><include name="flyingsaucer.png"/></fileset>
-            <fileset dir="${src.packaging.dir}"><include name="aboutbox.jnlp"/></fileset>
+            <fileset dir="${src.packaging.dir}">
+                <include name="fs.jnlp"/>
+            </fileset>
+            <fileset dir="${src.packaging.dir}">
+                <include name="flyingsaucer.png"/>
+            </fileset>
+            <fileset dir="${src.packaging.dir}">
+                <include name="aboutbox.jnlp"/>
+            </fileset>
         </copy>
         <signjar jar="${dest.dir}/core-renderer.jar" alias="joshy" storepass="password" keystore="teststore"/>
         <signjar jar="${dest.dir}/browser.jar" alias="joshy" storepass="password" keystore="teststore"/>
@@ -453,11 +467,11 @@
             fork="${java-exec.fork.tests}"
             >
             <arg value="${file}"/>
-            <sysproperty key="show-config" value="${show-config}" />
+            <sysproperty key="show-config" value="${show-config}"/>
             <syspropertyset>
-              <propertyref prefix="xr." />
-            </syspropertyset> 
-            <classpath refid="libraries.all" />
+                <propertyref prefix="xr."/>
+            </syspropertyset>
+            <classpath refid="libraries.all"/>
         </java>
     </target>
 
@@ -467,136 +481,136 @@
 
     <!-- Runs a speed test after a compile -->
     <target name="test.css-speed" depends="compile">
-        <java classname="org.xhtmlrenderer.test.HamletSpeedTest" 
-              fork="${java-exec.fork.tests}">
-            <sysproperty key="show-config" value="${show-config}" />
+        <java classname="org.xhtmlrenderer.test.HamletSpeedTest"
+            fork="${java-exec.fork.tests}">
+            <sysproperty key="show-config" value="${show-config}"/>
             <syspropertyset>
-              <propertyref prefix="xr." />
-            </syspropertyset> 
+                <propertyref prefix="xr."/>
+            </syspropertyset>
             <classpath>
-              <pathelement path="${basedir}" />
-              <pathelement path="${dest.dir}" />
-              <pathelement path="${dest.java.dir}" />
-              <fileset dir="${libraries.dir}">
-                <include name="*.jar"/>
-              </fileset>
+                <pathelement path="${basedir}"/>
+                <pathelement path="${dest.dir}"/>
+                <pathelement path="${dest.java.dir}"/>
+                <fileset dir="${libraries.dir}">
+                    <include name="*.jar"/>
+                </fileset>
             </classpath>
         </java>
     </target>
 
     <!-- Runs a custom block test after a compile -->
     <target name="test.customblock" depends="compile">
-        <java classname="org.xhtmlrenderer.test.CustomBlockTest" 
-              classpath="${dest.java.dir}" 
-              fork="${java-exec.fork.tests}">
-            <sysproperty key="show-config" value="${show-config}" />
+        <java classname="org.xhtmlrenderer.test.CustomBlockTest"
+            classpath="${dest.java.dir}"
+            fork="${java-exec.fork.tests}">
+            <sysproperty key="show-config" value="${show-config}"/>
             <syspropertyset>
-              <propertyref prefix="xr." />
-            </syspropertyset> 
-            <classpath refid="libraries.all" />
+                <propertyref prefix="xr."/>
+            </syspropertyset>
+            <classpath refid="libraries.all"/>
         </java>
     </target>
 
     <!-- target just shows how a single test can be run -->
     <target name="test.junit.simple" depends="compile.junit">
-      <junit printsummary="withOutAndErr" 
-             timeout="60000"
-             filtertrace="on"
-             haltonerror="on" 
-             haltonfailure="on">
-             
-        <classpath>
-          <pathelement path="${basedir}" />
-          <pathelement path="${dest.dir}" />
-          <pathelement path="${dest.java.dir}" />
-          <fileset dir="${libraries.dir}">
-            <include name="*.jar"/>
-          </fileset>
-        </classpath>
-             
-        <formatter type="plain" usefile="false" />
+        <junit printsummary="withOutAndErr"
+            timeout="60000"
+            filtertrace="on"
+            haltonerror="on"
+            haltonfailure="on">
 
-        <!-- run a single test -->
-        <test name="tests.public_apis.SimpleTest" />
-      </junit>
+            <classpath>
+                <pathelement path="${basedir}"/>
+                <pathelement path="${dest.dir}"/>
+                <pathelement path="${dest.java.dir}"/>
+                <fileset dir="${libraries.dir}">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+
+            <formatter type="plain" usefile="false"/>
+
+            <!-- run a single test -->
+            <test name="tests.public_apis.SimpleTest"/>
+        </junit>
     </target>
 
     <target name="test.junit.public-apis" depends="compile.junit">
-      <junit printsummary="withOutAndErr" 
-             timeout="60000"
-             filtertrace="on"
-             haltonerror="on" 
-             haltonfailure="on">
-             
-        <sysproperty key="show-config" value="${show-config}" />
+        <junit printsummary="withOutAndErr"
+            timeout="60000"
+            filtertrace="on"
+            haltonerror="on"
+            haltonfailure="on">
 
-        <classpath>
-          <pathelement path="${basedir}" />
-          <pathelement path="${dest.dir}" />
-          <pathelement path="${dest.java.dir}" />
-          <fileset dir="${libraries.dir}">
-            <include name="*.jar"/>
-          </fileset>
-        </classpath>
-             
-        <formatter type="plain" usefile="false" />
+            <sysproperty key="show-config" value="${show-config}"/>
 
-        <!-- run all class files with Test in the name in the java dest directory -->
-        <batchtest fork="no">
-          <fileset dir="${dest.java.dir}">
-            <include name="tests/**/*Test*" />
-            <exclude name="tests/**/SimpleTest*" />
-            <exclude name="tests/**/FSCssTestCase*" />
-          </fileset>
-        </batchtest>        
-      </junit>
+            <classpath>
+                <pathelement path="${basedir}"/>
+                <pathelement path="${dest.dir}"/>
+                <pathelement path="${dest.java.dir}"/>
+                <fileset dir="${libraries.dir}">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+
+            <formatter type="plain" usefile="false"/>
+
+            <!-- run all class files with Test in the name in the java dest directory -->
+            <batchtest fork="no">
+                <fileset dir="${dest.java.dir}">
+                    <include name="tests/**/*Test*"/>
+                    <exclude name="tests/**/SimpleTest*"/>
+                    <exclude name="tests/**/FSCssTestCase*"/>
+                </fileset>
+            </batchtest>
+        </junit>
     </target>
 
     <!-- Builds and jars the browser demo, and runs it -->
     <target name="browser" depends="compile.browser, jars">
-        <java classname="org.xhtmlrenderer.demo.browser.BrowserStartup" 
-              fork="${java-exec.fork.tests}">
-            <classpath refid="libraries-and-dest.all" />
-            <sysproperty key="show-config" value="${show-config}" />
+        <java classname="org.xhtmlrenderer.demo.browser.BrowserStartup"
+            fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all"/>
+            <sysproperty key="show-config" value="${show-config}"/>
             <syspropertyset>
-              <propertyref prefix="xr." />
-            </syspropertyset> 
+                <propertyref prefix="xr."/>
+            </syspropertyset>
             <sysproperty key="sun.java2D.opengl" value="false"/>
         </java>
     </target>
 
     <!-- Builds and jars the about box demo, and runs it -->
     <target name="aboutbox" depends="jars">
-        <java classname="org.xhtmlrenderer.demo.aboutbox.AboutBox" 
-              fork="${java-exec.fork.tests}">
-            <classpath refid="libraries-and-dest.all" />
-            <sysproperty key="show-config" value="${show-config}" />
+        <java classname="org.xhtmlrenderer.demo.aboutbox.AboutBox"
+            fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all"/>
+            <sysproperty key="show-config" value="${show-config}"/>
             <syspropertyset>
-              <propertyref prefix="xr." />
-            </syspropertyset> 
+                <propertyref prefix="xr."/>
+            </syspropertyset>
         </java>
     </target>
 
     <!-- Builds and jars the about box demo, and runs it -->
     <target name="photogallery" depends="jars">
-        <java classname="org.xhtmlrenderer.demo.photogallery.PhotoGallery" 
-              fork="${java-exec.fork.tests}">
-            <classpath refid="libraries-and-dest.all" />
-            <sysproperty key="show-config" value="${show-config}" />
+        <java classname="org.xhtmlrenderer.demo.photogallery.PhotoGallery"
+            fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all"/>
+            <sysproperty key="show-config" value="${show-config}"/>
             <syspropertyset>
-              <propertyref prefix="xr." />
-            </syspropertyset> 
+                <propertyref prefix="xr."/>
+            </syspropertyset>
         </java>
     </target>
 
     <target name="filebrowser" depends="core-jar, filebrowser-jar">
-        <java classname="org.xhtmlrenderer.demo.filebrowser.FileBrowser" 
-              fork="${java-exec.fork.tests}">
-            <classpath refid="libraries-and-dest.all" />
-            <sysproperty key="show-config" value="${show-config}" />
+        <java classname="org.xhtmlrenderer.demo.filebrowser.FileBrowser"
+            fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all"/>
+            <sysproperty key="show-config" value="${show-config}"/>
             <syspropertyset>
-              <propertyref prefix="xr." />
-            </syspropertyset> 
+                <propertyref prefix="xr."/>
+            </syspropertyset>
         </java>
     </target>
 
@@ -607,11 +621,11 @@
             classpath="${dest.java.dir};${dest.dir}"
             fork="${java-exec.fork.tests}"
             >
-            <sysproperty key="show-config" value="${show-config}" />
+            <sysproperty key="show-config" value="${show-config}"/>
             <syspropertyset>
-              <propertyref prefix="xr." />
-            </syspropertyset> 
-            <classpath refid="libraries.all" />
+                <propertyref prefix="xr."/>
+            </syspropertyset>
+            <classpath refid="libraries.all"/>
         </java>
     </target>
 
@@ -622,13 +636,13 @@
 
     <!-- Builds the core jar and runs diff tests -->
     <target name="diff-tests" depends="core-jar">
-        <java classname="org.xhtmlrenderer.test.DocumentDiffTest" 
-              fork="${java-exec.fork.tests}">
-            <classpath refid="libraries-and-dest.all" />
-            <sysproperty key="show-config" value="${show-config}" />
+        <java classname="org.xhtmlrenderer.test.DocumentDiffTest"
+            fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all"/>
+            <sysproperty key="show-config" value="${show-config}"/>
             <syspropertyset>
-              <propertyref prefix="xr." />
-            </syspropertyset> 
+                <propertyref prefix="xr."/>
+            </syspropertyset>
         </java>
     </target>
 
@@ -657,7 +671,7 @@
             classname="de.java2html.anttasks.Java2HtmlTask"
             classpath="lib/java2html.jar"
             />
-        
+
         <java2html
             srcdir="${src.java.dir}"
             destdir="${dest.java2html.dir}"
@@ -668,13 +682,13 @@
             showTableBorder="true"
             />
         <antcall target="_javadoc">
-          <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.full.dir}" />
-          <param name="antcall.javadoc.file" value="" />
+            <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.full.dir}"/>
+            <param name="antcall.javadoc.file" value=""/>
         </antcall>
         <antcall target="_javadoc">
-          <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.user.dir}" />
-          <param name="antcall.javadoc.file" value="src/java/org/xhtmlrenderer/swing/HTMLPanel.java" />
-          <reference refid="user-java-files" torefid="org-java-files" />
+            <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.user.dir}"/>
+            <param name="antcall.javadoc.file" value="src/java/org/xhtmlrenderer/swing/HTMLPanel.java"/>
+            <reference refid="user-java-files" torefid="org-java-files"/>
         </antcall>
         <copy todir="${dest.dir}/docs" file="${dest.javadoc.full.dir}/index.html"/>
     </target>
@@ -693,76 +707,76 @@
     <!-- =======================================
          General
          ======================================= -->
-  <target name="settings" depends="properties">
+    <target name="settings" depends="properties">
 
-    <echo message="******************************************"/>
-    <echo message="App Settings"/>
-    <echo message="******************************************"/>
-    <echo message=""/>
-    <echo message="app.name                                ${app.name}"/>
-    <echo message=""/>
-                 
-    <echo message=""/>
-    <echo message="******************************************"/>
-    <echo message="Directory Settings"/>
-    <echo message="******************************************"/>
-    <echo message="" />
-    <echo message="basedir                                 ${basedir}" />
-    <echo message="libraries.dir                           ${libraries.dir}" />
-    <echo message="src.dir                                 ${src.dir}" />
-    <echo message="doc.dir                                 ${doc.dir}" />
-    <echo message="dest.dir                                ${dest.dir}" />
-    <echo message="src.java.dir                            ${src.java.dir}" />
-    <echo message="dest.javadoc.full.dir                   ${dest.javadoc.full.dir}" />
-    <echo message="dest.javadoc.user.dir                   ${dest.javadoc.user.dir}" />
-    <echo message="dest.java2html.dir                      ${dest.java2html.dir}" />
-    <echo message="dest.java.dir                           ${dest.java.dir}" />
-    <echo message="src.about.java.dir                      ${src.about.java.dir}" />
-    <echo message="src.browser.java.dir                    ${src.browser.java.dir}" />
-    <echo message="src.resources.css.dir                   ${src.resources.css.dir}" />
-    <echo message="dest.resources.css.dir                  ${dest.resources.css.dir}" />
-    <echo message="src.resources.conf.dir                  ${src.resources.conf.dir}" />
-    <echo message="dest.resources.conf.dir                 ${dest.resources.conf.dir}" />
-    <echo message="src.packaging.dir                       ${src.packaging.dir}" />
-    <echo message="src.demo.xhtml.dir                      ${src.demo.xhtml.dir}" />
-    <echo message="src.demo.splash.dir                     ${src.demo.splash.dir}" />
-    <echo message="src.about.xhtml.dir                     ${src.about.xhtml.dir}" />
-    <echo message=""/>
-    
-    <echo message=""/>
-    <echo message="******************************************"/>
-    <echo message="Compiler Settings"/>
-    <echo message="******************************************"/>
-    <echo message=""/>
-    <echo message="build.compiler                          ${build.compiler}" />
-    <echo message="compiler.debug                          ${compiler.debug}" />
-    <echo message="compiler.deprecation                    ${compiler.deprecation}" />
-    <echo message="compiler.failonerror                    ${compiler.failonerror}" />
-    <echo message="compiler.fork                           ${compiler.fork}" />
-    <echo message="compiler.listfiles                      ${compiler.listfiles}" />
-    <echo message="compiler.nowarn                         ${compiler.nowarn}" />
-    <echo message="compiler.optimize                       ${compiler.optimize}" />
-    <echo message="compiler.source                         ${compiler.source}" />
-    <echo message="compiler.target                         ${compiler.target}" />
-    <echo message="compiler.verbose                        ${compiler.verbose}" />
-    <echo message=""/>
+        <echo message="******************************************"/>
+        <echo message="App Settings"/>
+        <echo message="******************************************"/>
+        <echo message=""/>
+        <echo message="app.name                                ${app.name}"/>
+        <echo message=""/>
 
-    <echo message=""/>
-    <echo message="******************************************"/>
-    <echo message="Java Executable Settings"/>
-    <echo message="******************************************"/>
-    <echo message=""/>
-    <echo message="java-exec.fork.tests                    ${java-exec.fork.tests}" />
-    <echo message=""/>
-    
-    <!--
-    <echo message=""/>
-    <echo message="******************************************"/>
-    <echo message="Other Settings"/>
-    <echo message="******************************************"/>
-    <echo message=""/>
-    -->
-  </target>    
+        <echo message=""/>
+        <echo message="******************************************"/>
+        <echo message="Directory Settings"/>
+        <echo message="******************************************"/>
+        <echo message=""/>
+        <echo message="basedir                                 ${basedir}"/>
+        <echo message="libraries.dir                           ${libraries.dir}"/>
+        <echo message="src.dir                                 ${src.dir}"/>
+        <echo message="doc.dir                                 ${doc.dir}"/>
+        <echo message="dest.dir                                ${dest.dir}"/>
+        <echo message="src.java.dir                            ${src.java.dir}"/>
+        <echo message="dest.javadoc.full.dir                   ${dest.javadoc.full.dir}"/>
+        <echo message="dest.javadoc.user.dir                   ${dest.javadoc.user.dir}"/>
+        <echo message="dest.java2html.dir                      ${dest.java2html.dir}"/>
+        <echo message="dest.java.dir                           ${dest.java.dir}"/>
+        <echo message="src.about.java.dir                      ${src.about.java.dir}"/>
+        <echo message="src.browser.java.dir                    ${src.browser.java.dir}"/>
+        <echo message="src.resources.css.dir                   ${src.resources.css.dir}"/>
+        <echo message="dest.resources.css.dir                  ${dest.resources.css.dir}"/>
+        <echo message="src.resources.conf.dir                  ${src.resources.conf.dir}"/>
+        <echo message="dest.resources.conf.dir                 ${dest.resources.conf.dir}"/>
+        <echo message="src.packaging.dir                       ${src.packaging.dir}"/>
+        <echo message="src.demo.xhtml.dir                      ${src.demo.xhtml.dir}"/>
+        <echo message="src.demo.splash.dir                     ${src.demo.splash.dir}"/>
+        <echo message="src.about.xhtml.dir                     ${src.about.xhtml.dir}"/>
+        <echo message=""/>
+
+        <echo message=""/>
+        <echo message="******************************************"/>
+        <echo message="Compiler Settings"/>
+        <echo message="******************************************"/>
+        <echo message=""/>
+        <echo message="build.compiler                          ${build.compiler}"/>
+        <echo message="compiler.debug                          ${compiler.debug}"/>
+        <echo message="compiler.deprecation                    ${compiler.deprecation}"/>
+        <echo message="compiler.failonerror                    ${compiler.failonerror}"/>
+        <echo message="compiler.fork                           ${compiler.fork}"/>
+        <echo message="compiler.listfiles                      ${compiler.listfiles}"/>
+        <echo message="compiler.nowarn                         ${compiler.nowarn}"/>
+        <echo message="compiler.optimize                       ${compiler.optimize}"/>
+        <echo message="compiler.source                         ${compiler.source}"/>
+        <echo message="compiler.target                         ${compiler.target}"/>
+        <echo message="compiler.verbose                        ${compiler.verbose}"/>
+        <echo message=""/>
+
+        <echo message=""/>
+        <echo message="******************************************"/>
+        <echo message="Java Executable Settings"/>
+        <echo message="******************************************"/>
+        <echo message=""/>
+        <echo message="java-exec.fork.tests                    ${java-exec.fork.tests}"/>
+        <echo message=""/>
+
+        <!--
+        <echo message=""/>
+        <echo message="******************************************"/>
+        <echo message="Other Settings"/>
+        <echo message="******************************************"/>
+        <echo message=""/>
+        -->
+    </target>
 </project>
 
 <!-- ========== this is the CVS log. Don't delete! ========== -->
@@ -771,6 +785,9 @@
 $Id$
 
 $Log$
+Revision 1.80  2004/12/12 16:11:04  tobega
+Fixed bug concerning order of inline content. Added a demo for pseudo-elements.
+
 Revision 1.79  2004/12/09 18:03:10  joshy
 added game screen to browser
 Issue number:
