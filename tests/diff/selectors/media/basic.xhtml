@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Test : Selectors : Pseudo : first-letter</title>
+        <style type="text/css">
+           p { border: 1px solid black;}
+           @media print {
+               p.printify { 
+                font-size: 200%;
+                }
+            }
+        </style>
+    </head>
+    
+    <body>
+        <p>This is a paragraph</p>
+        <p class="printify">This paragraph is big only when printed</p>
+    </body>
+
+</html>

@@ -543,17 +543,17 @@ public class TBStyleReference implements StyleReference {
         infos.addAll(Arrays.asList(refs));
 
         String baseUri = _context.getRenderingContext().getBaseURL().toString();
-        uri = _context.media + "?-fs-media-?" + baseUri;
+        uri = _context.getMedia() + "?-fs-media-?" + baseUri;
         info = new StylesheetInfo();
         info.setUri(baseUri);
         info.setType("text/css");
         info.setOrigin(StylesheetInfo.AUTHOR);
-        info.setMedia(_context.media);
+        info.setMedia(_context.getMedia());
         Stylesheet sheet = null;
         if (_stylesheetFactory.containsStylesheet(uri)) {
             sheet = _stylesheetFactory.getCachedStylesheet(uri);
         } else {
-            String inlineStyle = _nsh.getInlineStyle(_doc, _context.media);
+            String inlineStyle = _nsh.getInlineStyle(_doc, _context.getMedia());
             if (inlineStyle != null) {
                 reader = new java.io.StringReader(inlineStyle);
                 sheet = _stylesheetFactory.parse(reader, info);
@@ -589,8 +589,8 @@ public class TBStyleReference implements StyleReference {
         try {
 
             XRLog.match("No of stylesheets = " + infos.size());
-
-            _tbStyleMap = new org.xhtmlrenderer.css.newmatch.Matcher(_doc, _attRes, _stylesheetFactory, infos.iterator(), _context.media);
+            System.out.println("media = " + _context.getMedia());
+            _tbStyleMap = new org.xhtmlrenderer.css.newmatch.Matcher(_doc, _attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
 
             // now we have a match-map, apply against our entire Document....restyleTree() is recursive
             Element root = _doc.getDocumentElement();
@@ -650,6 +650,16 @@ public class TBStyleReference implements StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/12/01 14:02:51  joshy
+ * modified media to use the value from the rendering context
+ * added the inline-block box
+ * - j
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.17  2004/11/30 23:47:56  tobega
  * At-media rules should now work (not tested). Also fixed at-import rules, which got broken at previous modification.
  *

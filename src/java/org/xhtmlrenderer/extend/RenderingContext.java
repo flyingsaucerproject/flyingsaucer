@@ -24,6 +24,7 @@ public class RenderingContext {
      *  Constructor for the RenderingContext object
      */
     public RenderingContext() {
+        setMedia("screen");
         setContext(new Context());
         getContext().ctx = this;
         getContext().css = new TBStyleReference(new NaiveUserAgent());
@@ -281,7 +282,8 @@ public class RenderingContext {
     
      /** The member variable which holds the currently
      * media setting.*/
-     protected String media = "screen";
+     protected String media;// = "screen";
+     
      /** <p>Set the current media type. This is usually something
      like <i>screen</i> or <i>print</i>. See the
      <a href="http://www.w3.org/TR/CSS21/media.html">media section</a>
@@ -290,9 +292,10 @@ public class RenderingContext {
      public void setMedia(String media) {
          this.media = media;
      }
-     public String getMedia(String media) {
+     public String getMedia() {
          return this.media;
      }
+     
      /** Returns true if the currently set media type is paged. Currently
      returns true only for <i>print</i>, <i>projection</i>, and
      <i>embossed</i>, <i>handheld</i>, and <i>tv</i>. 

@@ -74,10 +74,8 @@
 //test first line pseudo
 //test first char pseudo
 
-
 //remove isPrinting(). check the graphics instanceof printablegraphics
 //show current resources in browser
-
 
 //can we separate inline and box more? maybe do that later?    
 //cache linemetrics and ascend/dscend more
@@ -111,6 +109,7 @@ demos:
     realtime resize panel (on photo gallery?)
     codify the demo filebrowser
     codify the demo html editor
+    codify the photo gallery demo
     make all demos webstartable
     game screen
         menu

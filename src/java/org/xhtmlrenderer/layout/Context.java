@@ -48,7 +48,9 @@ public class Context {
     /**
      * The media for this context
      */
-    public String media = "screen";
+    public String getMedia() {
+         return ctx.getMedia();
+    }
 
     /**
      * Description of the Field
@@ -780,6 +782,16 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2004/12/01 14:02:52  joshy
+ * modified media to use the value from the rendering context
+ * added the inline-block box
+ * - j
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.24  2004/11/30 20:28:27  joshy
  * support for multiple floats on a single line.
  *

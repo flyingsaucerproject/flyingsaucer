@@ -236,6 +236,7 @@ public class HTMLTest extends JFrame {
      */
     public static void main(String[] args)
             throws Exception {
+                
 
         final JFrame frame = new HTMLTest(args);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -496,6 +497,16 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2004/12/01 14:02:53  joshy
+ * modified media to use the value from the rendering context
+ * added the inline-block box
+ * - j
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.22  2004/11/16 03:44:15  joshy
  * removed printing from html test
  * Issue number:
