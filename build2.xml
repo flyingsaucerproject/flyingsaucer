@@ -13,31 +13,7 @@
         <echo message=" ant test:           build run the test app"/>
         <echo message=" ant about:          build run the about box demo"/>
     </target>
-        
-    <presetdef name="javac-full">
-      <javac
-            srcdir="${src.java.dir}"
-            destdir="${dest.java.dir}"
-            
-            debug="${compiler.debug}"
-            deprecation="${compiler.deprecation}"
-            failonerror="${compiler.failonerror}"
-            fork="${compiler.fork}"
-            listfiles="${compiler.listfiles}"
-            nowarn="${compiler.nowarn}"
-            optimize="${compiler.optimize}"
-            source="${compiler.source}"
-            target="${compiler.target}"
-            verbose="${compiler.verbose}"
-            >
-            <classpath>
-              <fileset dir="${libraries.dir}">
-                  <include name="*.jar"/>
-              </fileset>
-            </classpath>
-      </javac>
-    </presetdef>
-
+    
     <property name="app.name" value="flyingsaucer" />
 
     <property name="user.overrides"
@@ -106,6 +82,52 @@
     <!-- Java.exe flags -->
     <property name="java-exec.fork.tests" value="true" />    
 
+    <path id="libraries.all">
+      <fileset dir="${libraries.dir}">
+          <include name="*.jar"/>
+      </fileset>
+    </path>
+        
+    <path id="libraries-and-dest.all">
+      <path refid="libraries.all" />
+      <fileset dir="${dest.dir}">
+          <include name="*.jar"/>
+      </fileset>
+    </path>
+
+    <zipfileset id="xhtml.demos" dir="${src.demo.xhtml.dir}" prefix="demos/">
+      <include name="*.xhtml"/>
+      <include name="*.gif"/>
+      <include name="*.png"/>
+      <include name="splash/**"/>
+      <include name="about/**"/>
+    </zipfileset>
+    
+    <zipfileset id="xhtml.splash" dir="${src.demo.splash.dir}" prefix="demos/splash">
+        <include name="*.html"/>
+        <include name="images/**"/>
+    </zipfileset>
+
+    <presetdef name="javac-full">
+      <javac
+            srcdir="${src.java.dir}"
+            destdir="${dest.java.dir}"
+            
+            debug="${compiler.debug}"
+            deprecation="${compiler.deprecation}"
+            failonerror="${compiler.failonerror}"
+            fork="${compiler.fork}"
+            listfiles="${compiler.listfiles}"
+            nowarn="${compiler.nowarn}"
+            optimize="${compiler.optimize}"
+            source="${compiler.source}"
+            target="${compiler.target}"
+            verbose="${compiler.verbose}"
+            >
+            <classpath refid="libraries.all" />
+      </javac>
+    </presetdef>
+
     <!-- General initialization, including properties. -->
     <target name="init" depends="properties" >
         <mkdir dir="${dest.dir}"/>
@@ -118,20 +140,18 @@
     <target name="clean" description="clean" depends="properties">
         <delete dir="${dest.dir}"/>
         <delete>
-            <fileset dir=".">
+            <fileset dir="${basedir}">
                 <include name="**/*~"/>
             </fileset>
         </delete>
     </target>
 
     <!-- Cleans all build files, then recompiles. -->
-    <target name="clean-compile" description="clean compile" depends="clean,compile">
-    </target>
+    <target name="clean-compile" description="clean compile" depends="clean,compile" />
 
     <!-- Builds a ZIP file of entire project from base directory. -->
     <target name="zip" description="zip file" depends="jars">
-        <zip basedir="${basedir}" zipfile="../flyingsaucer.zip">
-        </zip>
+        <zip basedir="${basedir}" zipfile="../flyingsaucer.zip" />
     </target>
 
     <!-- Compiles application and copies resources to destination directory. -->
@@ -183,17 +203,8 @@
             <fileset dir="${dest.java.dir}">
                 <include name="org/xhtmlrenderer/demo/browser/**"/>
             </fileset>
-            <zipfileset dir="${src.demo.xhtml.dir}" prefix="demos/">
-                <include name="*.xhtml"/>
-                <include name="*.gif"/>
-                <include name="*.png"/>
-                <include name="splash/**"/>
-                <include name="about/**"/>
-            </zipfileset>
-            <zipfileset dir="${src.demo.splash.dir}" prefix="demos/splash">
-                <include name="*.html"/>
-                <include name="images/**"/>
-            </zipfileset>
+            <zipfileset refid="xhtml.demos" />
+            <zipfileset refid="xhtml.splash" />
         </jar>
     </target>
     
@@ -205,17 +216,8 @@
             <fileset dir="${dest.java.dir}">
                 <include name="org/xhtmlrenderer/demo/aboutbox/**"/>
             </fileset>
-            <zipfileset dir="${src.about.xhtml.dir}" prefix="demos/">
-                <include name="*.xhtml"/>
-                <include name="*.gif"/>
-                <include name="*.png"/>
-                <include name="splash/**"/>
-                <include name="about/**"/>
-            </zipfileset>
-            <zipfileset dir="${src.demo.splash.dir}" prefix="demos/splash">
-                <include name="*.html"/>
-                <include name="images/**"/>
-            </zipfileset>
+            <zipfileset refid="xhtml.demos" />
+            <zipfileset refid="xhtml.splash" />
         </jar>
     </target>
 
@@ -286,11 +288,7 @@
             <syspropertyset>
               <propertyref prefix="xr." />
             </syspropertyset> 
-            <classpath>
-              <fileset dir="${libraries.dir}">
-                <include name="*.jar"/>
-              </fileset>
-            </classpath>
+            <classpath refid="libraries.all" />
         </java>
     </target>
 
@@ -326,11 +324,7 @@
             <syspropertyset>
               <propertyref prefix="xr." />
             </syspropertyset> 
-            <classpath>
-              <fileset dir="${libraries.dir}">
-                <include name="*.jar"/>
-              </fileset>
-            </classpath>
+            <classpath refid="libraries.all" />
         </java>
     </target>
 
@@ -338,10 +332,7 @@
     <target name="browser" depends="compile.browser, jars">
         <java classname="org.xhtmlrenderer.demo.browser.BrowserStartup" 
               fork="${java-exec.fork.tests}">
-            <classpath>
-                <fileset dir="${libraries.dir}"><include name="*.jar"/></fileset>
-                <fileset dir="${dest.dir}"><include name="*.jar"/></fileset>
-            </classpath>
+            <classpath refid="libraries-and-dest.all" />
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
@@ -354,14 +345,11 @@
     <target name="aboutbox" depends="jars">
         <java classname="org.xhtmlrenderer.demo.aboutbox.AboutBox" 
               fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all" />
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
             </syspropertyset> 
-            <classpath>
-                <fileset dir="${libraries.dir}"><include name="*.jar"/></fileset>
-                <fileset dir="${dest.dir}"><include name="*.jar"/></fileset>
-            </classpath>
         </java>
     </target>
 
@@ -373,14 +361,11 @@
     <target name="diff-tests" depends="core-jar">
         <java classname="org.xhtmlrenderer.test.DocumentDiffTest" 
               fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all" />
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
             </syspropertyset> 
-            <classpath>
-                <fileset dir="${libraries.dir}"><include name="*.jar"/></fileset>
-                <fileset dir="${dest.dir}"><include name="*.jar"/></fileset>
-            </classpath>
         </java>
     </target>
 
@@ -388,14 +373,11 @@
     <target name="generate-diff-tests" depends="core-jar">
         <java classname="org.xhtmlrenderer.test.DocumentDiffGenerate" 
               fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all" />
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
             </syspropertyset> 
-            <classpath>
-                <fileset dir="${libraries.dir}"><include name="*.jar"/></fileset>
-                <fileset dir="${dest.dir}"><include name="*.jar"/></fileset>
-            </classpath>
         </java>
     </target>
     
@@ -478,6 +460,9 @@
 $Id$
 
 $Log$
+Revision 1.6  2004/10/19 13:41:46  pdoubleya
+Externalized additional classpath elements to use by refid.
+
 Revision 1.5  2004/10/18 17:05:06  pdoubleya
 include resources in core jar, adjust classpath for test-css-speed
 
