@@ -192,5 +192,18 @@ public class TobeRuleBank implements RuleBank {
             if(cond != null) addConditions(s, cond);
             if(nextSelector != null) addChainedSelector(s,nextSelector);
     }
+
+    public void addStyleRule(JStyle rule) {
+        // TODO
+    }    
+    
+    public void elementWasParsed(org.w3c.dom.Element elem) {
+        // TODO
+    }
+    
+    public boolean wasElementParsed(org.w3c.dom.Element elem) {
+        // TODO
+        return false;
+    }
     
 }
