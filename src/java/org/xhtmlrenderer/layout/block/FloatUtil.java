@@ -37,10 +37,14 @@ public class FloatUtil {
             box.floated = true;
             if (float_val.equals("left")) {
                 positionBoxLeft(c,box);
+                c.getBlockFormattingContext().pushDownLeft(box);
+                // u.p("final box = " + box);
                 c.getBlockFormattingContext().addLeftFloat(box);
             }
             if (float_val.equals("right")) {
                 positionBoxRight(c,box);
+                c.getBlockFormattingContext().pushDownRight(box);
+                // u.p("final box = " + box);
                 c.getBlockFormattingContext().addRightFloat(box);
             }
             // u.p("box = " + box);

@@ -163,6 +163,13 @@ public class Box {
         this( true );
     }
 
+    /** Description of the Field */
+    public boolean auto_width = true;
+
+    /** Description of the Field */
+    public boolean auto_height = true;
+
+
     /**
      * Constructor for the Box object
      *
@@ -596,6 +603,14 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/12/01 01:57:02  joshy
+ * more updates for float support.
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.16  2004/11/18 16:45:13  joshy
  * improved the float code a bit.
  * now floats are automatically forced to be blocks

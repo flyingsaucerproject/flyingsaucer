@@ -163,6 +163,35 @@ public class BlockFormattingContext {
         }
         return null;
     }
+    public Box pushDownLeft(Box box) {
+        // make sure the box doesn't overlap any floats
+        // u.p("pushing down box: " + box);
+        for(int i=0; i<left_floats.size(); i++) {
+            Box floater = (Box)left_floats.get(i);
+            // u.p("testing against: " + floater);
+            if(floater.y >= box.y && (box.x >= floater.x && 
+                box.x < floater.x + floater.width)) {
+                // u.p("pushing down " + box);
+                box.y = floater.y + floater.height;
+            }
+        }
+        return box;
+    }
+    public Box pushDownRight(Box box) {
+        // make sure the box doesn't overlap any floats
+        // u.p("pushing down box: " + box);
+        for(int i=0; i<right_floats.size(); i++) {
+            Box floater = (Box)right_floats.get(i);
+            // u.p("testing against: " + floater);
+            if(floater.y >= box.y && (box.x >= floater.x && 
+                box.x < floater.x + floater.width)) {
+                // u.p("pushing down " + box);
+                box.y = floater.y + floater.height;
+            }
+        }
+        return box;
+    }
+    
     public Box getRightFloatX(Box box) {
         // count backwards through the floats
         int x = 0;

@@ -78,14 +78,17 @@ public class BoxLayout extends DefaultLayout {
      * @return Returns
      */
     public Box layout(Context c, Element elem) {
+        BlockBox block = (BlockBox) createBox(c, elem);
+        return layout(c,block);
+    }
+    
+    public Box layout(Context c, Box block) {
+        // this is to keep track of when we are inside of a form
+        saveForm(c,(Element)block.node);
+
         // install a block formatting context for the body,
         // ie. if it's null.
         
-        // this is to keep track of when we are inside of a form
-        saveForm(c,elem);
-
-        BlockBox block = (BlockBox) createBox(c, elem);
-
         // set up the outtermost bfc
         boolean set_bfc = false;
         if (c.getBlockFormattingContext() == null) {
@@ -95,6 +98,7 @@ public class BoxLayout extends DefaultLayout {
             bfc.setWidth((int) c.getExtents().getWidth());
         }
 
+        //u.p("elem = " + block.node);
 
         // copy the extents
         Rectangle oe = c.getExtents();
@@ -155,7 +159,7 @@ public class BoxLayout extends DefaultLayout {
     }
     
     // calculate the width based on css and available space
-    private void adjustWidth(Context c, BlockBox block) {
+    private void adjustWidth(Context c, Box block) {
         if (!block.isElement()) {
             return;
         }
@@ -180,7 +184,7 @@ public class BoxLayout extends DefaultLayout {
     }
 
     // calculate the height based on css and available space
-    private void adjustHeight(Context c, BlockBox block) {
+    private void adjustHeight(Context c, Box block) {
         if (!block.isElement()) {
             return;
         }
@@ -337,6 +341,14 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2004/12/01 01:57:00  joshy
+ * more updates for float support.
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.29  2004/11/30 20:38:49  joshy
  * cleaned up the float and absolute interfaces a bit
  *

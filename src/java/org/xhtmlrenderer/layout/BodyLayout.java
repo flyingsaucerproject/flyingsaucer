@@ -24,7 +24,7 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BodyRenderer;
 import org.xhtmlrenderer.render.Renderer;
-
+import org.xhtmlrenderer.util.u;
 
 /**
  * Description of the Class
@@ -40,11 +40,14 @@ public class BodyLayout extends InlineLayout {
      * @param elem  PARAM
      * @return      Returns
      */
-     /*
+     
     public Box layout( Context c, Element elem ) {
-        return super.layout( c, elem );
+        Box box = super.layout( c, elem );
+        // u.p("done laying it all out");
+        // u.p("\n=====================\n\n\n");
+        return box;
     }
-    */
+    
     
     public Renderer getRenderer() {
         return new BodyRenderer();
@@ -56,6 +59,14 @@ public class BodyLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/12/01 01:57:00  joshy
+ * more updates for float support.
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.7  2004/11/27 15:46:38  joshy
  * lots of cleanup to make the code clearer
  *

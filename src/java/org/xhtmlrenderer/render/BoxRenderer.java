@@ -14,7 +14,7 @@ public class BoxRenderer extends DefaultRenderer {
      * @param box  PARAM
      */
     public void paint( Context c, Box box ) {
-        //u.p("BoxLayout.paint " + box);
+        //u.p("BoxRenderer.paint " + box);
         Box block = (Box)box;
 
         // copy the bounds to we don't mess it up

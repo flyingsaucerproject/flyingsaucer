@@ -355,15 +355,18 @@ public class LineBreaker {
      * @return            Returns
      */
     public static InlineBox newBox( Context c, Node node, int start, int end, InlineBox prev, String text, Rectangle bounds, InlineBox prev_align, Font font ) {
+        InlineBox box = new InlineBox();
+        return newBox(c,node,start,end,prev,text,bounds,prev_align,font,box);
+    }
+    public static InlineBox newBox( Context c, Node node, int start, int end, InlineBox prev, String text, Rectangle bounds, InlineBox prev_align, Font font, InlineBox box ) {
         //u.p("newBox node = " + node.getNodeName() + " start = " + start + " end = " + end +
         //" prev = " + prev + " text = " + text + " bounds = " + bounds + " prev_align = " + prev_align);
         //u.p("Making box for: "  + node);
         //u.p("prev = " + prev);
-        if ( prev_align != prev ) {
+        // if ( prev_align != prev ) {
             //u.p("prev = " + prev);
             //u.p("prev align inline = " + prev_align);
-        }
-        InlineBox box = new InlineBox();
+        // }
         box.node = node;
         box.start_index = start;
         box.end_index = end;
@@ -550,6 +553,14 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2004/12/01 01:57:01  joshy
+ * more updates for float support.
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.25  2004/11/27 15:46:39  joshy
  * lots of cleanup to make the code clearer
  *

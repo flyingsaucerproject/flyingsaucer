@@ -69,7 +69,7 @@ public class InlineLayout extends BoxLayout {
         }
         
         // calculate the initial position and dimensions
-        BlockBox block = (BlockBox)box;
+        Box block = (Box)box;
         Rectangle bounds = new Rectangle();
         bounds.width = c.getExtents().width;
         bounds.width -= box.margin.left + box.border.left + box.padding.left +
@@ -142,7 +142,7 @@ public class InlineLayout extends BoxLayout {
                 // break off the longest section that will fit
                 InlineBox new_inline = calculateInline( c, current_node, remaining_width, bounds.width,
                     curr_line, prev_inline, elem, prev_align_inline );
-                //u.p("got back inline: " + new_inline);
+                // u.p("got back inline: " + new_inline);
 
 
                 // if this inline needs to be on a new line
@@ -170,7 +170,7 @@ public class InlineLayout extends BoxLayout {
                 }
                 
                 // handle float
-                FloatUtil.handleFloated( c, new_inline, curr_line, bounds.width, elem );
+                //FloatUtil.handleFloated( c, new_inline, curr_line, bounds.width, elem );
                 
                 // calc new width of the line
                 curr_line.width += new_inline.width;
@@ -390,7 +390,7 @@ public class InlineLayout extends BoxLayout {
     * @param block             PARAM
     */
     private void saveLine( LineBox line_to_save, LineBox prev_line, Element containing_block, int width, int x,
-            Context c, BlockBox block, boolean last ) {
+            Context c, Box block, boolean last ) {
         c.setFirstLine(false);
         // account for text-align
         TextAlign.adjustTextAlignment(c,line_to_save, containing_block, width, x, last);
@@ -424,6 +424,14 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.34  2004/12/01 01:57:00  joshy
+* more updates for float support.
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.33  2004/11/27 15:46:38  joshy
 * lots of cleanup to make the code clearer
 *

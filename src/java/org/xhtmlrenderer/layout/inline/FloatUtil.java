@@ -14,6 +14,7 @@ public class FloatUtil {
          BlockFormattingContext bfc = c.getBlockFormattingContext();
          remaining_width -= bfc.getLeftFloatDistance(prev_line);
          remaining_width -= bfc.getRightFloatDistance(prev_line);
+         // u.p("adjusting the line by: " + remaining_width);
          return remaining_width;
      }
      
@@ -30,7 +31,7 @@ public class FloatUtil {
      */
     public static void handleFloated( Context c, InlineBox inline, LineBox line,
                                       int full_width, Element enclosing_block ) {
-                                          
+        u.p("handleFloated called on a box: " + inline);
         /* NOTE: this code may be dead now because there's no such thing as an inline floated box.
         All floats must become block boxes. JMM 11/17 */
         /* NOTE: nevermind. it's the other one. JMM 11/17 */
@@ -117,31 +118,55 @@ public class FloatUtil {
      * @return            Returns
      */
     public static InlineBox generateFloatedBlockInlineBox( Context c, Node node, int avail, InlineBox prev, String text, InlineBox prev_align, Font font ) {
+        // u.p("generate floated block inline box: avail = " + avail);
         /*
           joshy: change this to just modify the existing block instead of creating
           a  new one. is that possible?
         */
         //u.p("generate floated block inline box");
-        Layout layout = c.getLayout( node ); //
+        BoxLayout layout = (BoxLayout)c.getLayout( node ); //
         Rectangle oe = c.getExtents(); // copy the extents for safety
         c.setExtents( new Rectangle( oe ) );
-        BlockBox block = (BlockBox)layout.layout( c, (Element)node );
+        
+
+        //BlockBox block = (BlockBox)layout.layout( c, (Element)node );
+        InlineBlockBox inline_block = new InlineBlockBox();
+        inline_block.node = node;
+        layout.layout( c, inline_block);
+
         //u.p("got a block box from the sub layout: " + block);
-        Rectangle bounds = new Rectangle( block.x, block.y, block.width, block.height );
+        Rectangle bounds = new Rectangle( inline_block.x, inline_block.y, 
+            inline_block.width, inline_block.height );
         c.setExtents( oe );
         
-        InlineBox box = LineBreaker.newBox( c, node, 0, 0, prev, text, bounds, prev_align, font );
-        box.sub_block = block;
-        block.setParent( box );
-        box.width = bounds.width;
-        box.height = bounds.height;
-        box.break_after = false;
-        box.floated = true;
-        if ( box.width > avail ) {
-            box.break_before = true;
-            box.x = 0;
+        //InlineBox box = 
+        // u.p("before newbox block = " + inline_block);
+        int x = inline_block.x;
+        int y = inline_block.y;
+        LineBreaker.newBox( c, node, 0, 0, prev, text, bounds, prev_align, font, inline_block );
+        inline_block.x = x;
+        inline_block.y = y;
+        // u.p("after newbox = " + inline_block);
+        //box.sub_block = block;
+        //block.setParent( box );
+        inline_block.width = bounds.width;
+        inline_block.height = bounds.height;
+        inline_block.break_after = false;
+        inline_block.floated = true;
+        // u.p("width = " + inline_block.width);
+        // u.p("avail = " + avail);
+        if ( inline_block.width > avail ) {
+            inline_block.break_before = true;
+            //inline_block.x = 0;
         }
-        return box;
+        
+        //inline_block.floated = true;
+        //inline_block.x = bfc.getLeftFloatDistance(line) - inline.width - inline.width;
+        //inline_block.x = 0;
+        //inline_block.y = 0;
+
+        // u.p("final inline block = " + inline_block);
+        return inline_block;
     }
 
 }

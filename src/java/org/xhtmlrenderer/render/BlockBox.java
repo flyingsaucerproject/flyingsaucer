@@ -28,28 +28,6 @@ package org.xhtmlrenderer.render;
  */
 public class BlockBox extends Box {
 
-    /** Description of the Field */
-    public boolean auto_width = true;
-
-    /** Description of the Field */
-    public boolean auto_height = true;
-
-    //public boolean inline = false;
-
-    /** Description of the Field */
-    //public boolean display_block = true;
-
-    /** Description of the Field */
-    //public boolean display_inline_block = false;
-
-    /*
-     * public boolean isInline() {
-     * return inline;
-     * }
-     * public boolean isBlock() {
-     * return !inline;
-     * }
-     */
      
     /** Constructor for the BlockBox object */
     public BlockBox() {
@@ -96,6 +74,14 @@ public class BlockBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/12/01 01:57:02  joshy
+ * more updates for float support.
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/11/18 16:45:12  joshy
  * improved the float code a bit.
  * now floats are automatically forced to be blocks

@@ -249,6 +249,8 @@ public class LayoutFactory {
     }
 
     public boolean isForm(Element elem) {
+        if(elem == null) { return false; }
+        
         if ( elem.getNodeName().equals( "form" ) ) {
             return true;
         }
@@ -329,6 +331,14 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.17  2004/12/01 01:57:00  joshy
+* more updates for float support.
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.16  2004/11/19 14:27:37  joshy
 * removed hard coded element names
 * added support for tbody, or tbody missing

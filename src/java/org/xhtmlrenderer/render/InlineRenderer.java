@@ -50,15 +50,15 @@ public class InlineRenderer extends BoxRenderer {
     * individually.
     */
     private void paintInlineContext( Context c, Box box ) {
-        BlockBox block = (BlockBox)box;
+        //BlockBox block = (BlockBox)box;
         // translate into local coords
         // account for the origin of the containing box
         c.translate( box.x, box.y );
         // for each line box
 
-        for ( int i = 0; i < block.getChildCount(); i++ ) {
+        for ( int i = 0; i < box.getChildCount(); i++ ) {
             // get the line box
-            paintLine( c, (LineBox)block.getChild( i ) );
+            paintLine( c, (LineBox)box.getChild( i ) );
         }
 
         // translate back to parent coords
@@ -151,13 +151,16 @@ public class InlineRenderer extends BoxRenderer {
 
     
     private void paintFloat(Context c, InlineBox inline, LineBox line) {
+        // u.p("painting a float: " + inline);
         Rectangle oe = c.getExtents();
         c.setExtents( new Rectangle( oe.x, 0, oe.width, oe.height ) );
-        int xoff = line.x + inline.x;
-        int yoff = line.y + ( line.baseline - inline.height ) + inline.y;
+        //int xoff = line.x + inline.x;
+        int xoff = 0;
+        int yoff = 0;//line.y + ( line.baseline - inline.height );// + inline.y;
+        // u.p("translating  by: " + xoff + " " + yoff);
         c.translate( xoff, yoff );
         Renderer rend = c.getRenderer( inline.node );
-        rend.paint( c, inline.sub_block );
+        rend.paint( c, inline);//.sub_block );
         c.translate( -xoff, -yoff );
         c.setExtents( oe );
     }

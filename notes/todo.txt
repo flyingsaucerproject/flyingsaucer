@@ -85,23 +85,28 @@
 //check for multiple calls to fontutil stuff 
 //get a performance testing tool.
 
-AA the bullets
-fix n test space collapsing w/ images
-fix n test tab alignment
 //javadoc xhtmlpanel
 //javadoc graphic2drenderer
 //test docs uploaded
-make graphic2drenderer not use basicpanel
 //fix float bugs w/ more than one float on a line
+//fix bugs in unit tests and get them all to run properly
+
+AA the bullets
+fix n test space collapsing w/ images
+fix n test tab alignment
 implement media support for printing and test it
     make financial table demo print differently
-fix bugs in unit tests and get them all to run properly
-make demo w/ fixed pos (menu w/ hovers?)
 make hover work on parents and children
+
+//make inlineblockbox and make floats use it
+//fix more bugs w/ multi floats on one line
+
+make graphic2drenderer not use basicpanel
 
 demos:
     better financial table
-    chapter of something else w/ pictures
+    demo w/ fix pos and hovers
+
     photo gallery that uses all floats
     realtime resize panel (on photo gallery?)
     codify the demo filebrowser

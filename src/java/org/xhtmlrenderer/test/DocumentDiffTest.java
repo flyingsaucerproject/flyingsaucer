@@ -39,7 +39,7 @@ import java.util.logging.*;
  * @author   empty
  */
 public class DocumentDiffTest {
-    public static final int width = 200;
+    public static final int width = 500;
     public static final int height = 500;
     /**
      * Description of the Method
@@ -219,6 +219,14 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/12/01 01:57:02  joshy
+ * more updates for float support.
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.9  2004/11/30 21:23:18  joshy
  * updated the unit tests
  *

@@ -209,6 +209,7 @@ public class VerticalAlign {
      * @param box   PARAM
      */
     public static void setupVerticalAlign( Context c, Node node, LineBox box ) {
+        // u.p("setting up vertical align for a line: " + box);
         // get the parent node for styling
         Node parent = node.getParentNode();
         Element elem = null;
@@ -259,7 +260,10 @@ public class VerticalAlign {
         for ( int i = 0; i < box.getChildCount(); i++ ) {
             InlineBox inline = (InlineBox)box.getChild( i );
             if ( inline.floated ) {
-                inline.y = -box.baseline + inline.height;
+                // u.p("adjusting floated inline:");
+                // u.p("inline = " + inline);
+                //inline.y = inline.y;// - box.baseline + inline.height;
+                // u.p("inline = " + inline);
             } else {
                 if ( !inline.vset ) {
                     inline.vset = true;
