@@ -39,7 +39,7 @@ public class XRSimpleLogFormatter extends Formatter {
     
     static {
         msgFmt = Configuration.valueFor("xr.simple-log-format", "{1}:\n  {5}\n").trim() + "\n";
-        exmsgFmt = Configuration.valueFor("xr.simple-exception-log-format", "{1}:\n  {5}\n{8}").trim() + "\n";
+        exmsgFmt = Configuration.valueFor("xr.simple-log-format-throwable", "{1}:\n  {5}\n{8}").trim() + "\n";
     }
     
     public XRSimpleLogFormatter() {
@@ -124,6 +124,9 @@ public class XRSimpleLogFormatter extends Formatter {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/10/18 12:08:37  pdoubleya
+ * Incorrect Configuration key fixed.
+ *
  * Revision 1.2  2004/10/14 12:53:26  pdoubleya
  * Added handling for exception messages with stack trace and separate message format.
  *
