@@ -28,9 +28,8 @@
 //move more of context into rendering context
 //fix fixed background clipping error (set clip rect to whole viewport?)
 //fixed pos support
+//support getMinimumSize() on headless interface
 
-
-support getMinimumSize() on headless interface
 build hover demo
     show a hovered block
     show a hover style change on a parent element [possible?]
