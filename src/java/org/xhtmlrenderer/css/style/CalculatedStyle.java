@@ -161,8 +161,12 @@ public class CalculatedStyle {
         StringBuffer out = new StringBuffer();
         for ( int i = 0; i < _derivedPropertiesById.length; i++ ) {
             DerivedProperty derivedProperty = _derivedPropertiesById[i];
-            String s = derivedProperty.propertyName();
-            out.append( "  " + s + " = " + derivedProperty.computedValue().asString() + "\n" );
+            if ( derivedProperty == null ) {
+                out.append("There is an UNEXPECTED null derived property in this CalculatedStyle.\n");
+            } else {
+                String s = derivedProperty.propertyName();
+                out.append( "  " + s + " = " + derivedProperty.computedValue().asString() + "\n" );
+            }
         }
         System.out.println( out );
     }
@@ -456,6 +460,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/02/03 23:15:50  pdoubleya
+ * .
+ *
  * Revision 1.13  2005/01/29 20:22:20  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
