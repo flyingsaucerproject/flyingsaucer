@@ -17,10 +17,12 @@ public class HoverListener extends MouseInputAdapter {
     }
     public void mouseMoved( MouseEvent evt ) {
         InlineBox ib = findInlineBox(evt);
+        if ( ib == null ) return;
         restyle(ib);
     }
     public void mouseEntered( MouseEvent evt ) {
         InlineBox ib = findInlineBox(evt);
+        if ( ib == null ) return;
         panel.hovered_element = ib.getRealElement();
         XRLog.general("Element "+panel.hovered_element+" entered");
         restyle(ib);
@@ -77,6 +79,7 @@ public class HoverListener extends MouseInputAdapter {
     }
     private InlineBox findInlineBox(MouseEvent evt) {
         Box box = panel.findBox( evt.getX(), evt.getY() );
+        if ( box == null ) return null;
         if(box instanceof InlineBox) {
             InlineBox ib = (InlineBox)box;
             return ib;
