@@ -73,7 +73,7 @@ public class BrowserMenuBar extends JMenuBar {
         add(go);
         
         // CLEAN
-        //demos.add(new LoadAction("Bad Page","demo:demos/allclasses-noframe.xhtml"));
+        demos.add(new LoadAction("Inheritance","demo:demos/inherit.xhtml"));
         demos.add(new LoadAction("Borders","demo:demos/border.xhtml"));
         demos.add(new LoadAction("Backgrounds","demo:demos/background.xhtml"));
         demos.add(new LoadAction("Paragraph","demo:demos/paragraph.xhtml"));
