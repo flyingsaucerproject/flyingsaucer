@@ -265,6 +265,9 @@ public class CSSBank extends CSSAccessor {
     }
 
     
+    public void parseDeclaredStylesheets( Element root ) {
+        u.p("parsing declared stylesheets is unsupported with the CSSBank");
+    }
 
     
 

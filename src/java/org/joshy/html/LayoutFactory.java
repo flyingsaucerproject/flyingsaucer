@@ -97,6 +97,8 @@ public class LayoutFactory {
                 if(type.equals("submit")) { return new InputButton(); }
                 if(type.equals("text")) { return new InputText(); }
             }
+            if(elem.getNodeName().equals("body")) { return new InlineLayout(); }
+            if(elem.getNodeName().equals("head")) { return new InlineLayout(); }
         }
 
         // skip whitespace only nodes

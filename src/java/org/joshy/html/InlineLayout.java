@@ -130,12 +130,12 @@ public Box layoutChildren(Context c, Box box) {
                     break;
                 }
             }
-            if(bounds.width < 100) {
-                //u.p("warning. width < 0 " + bounds.width);
+            if(bounds.width < 10) {
+                u.p("warning. width < 10 " + bounds.width);
             }
             debug_counter++;
-            final int limit = 20;
-            if(debug_counter > limit) {
+            final int limit = 140;
+            if(debug_counter > limit && bounds.width < 10) {
                 u.on();
                 u.p("previous inline = " + prev_inline);
                 u.p("current line = " + curr_line);
@@ -144,7 +144,7 @@ public Box layoutChildren(Context c, Box box) {
                 u.p("current node = " + current_node + " text= " + current_node.getNodeValue());
                 u.p("rem width = " + remaining_width + " width " + bounds.width);
             }
-            if(debug_counter > limit) {
+            if(debug_counter > limit+3 && bounds.width < 10) {
                 u.p("element = " + elem);
                 org.joshy.x.p(elem);
                 u.p("previous inline = " + prev_inline);
