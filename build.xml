@@ -2,9 +2,6 @@
 <project name="Flying Saucer Build File" default="help" basedir=".">
     <description>Checkout, build, test, and package the Flying Saucer project.</description>
 
-<!--    <property name="java.util.logging.config.class" value="org.xhtmlrenderer.util.LogStartupConfig" />
--->
-    
     <target name="build" depends="compile" />
     <target name="build-clean" depends="clean-compile" />
     <target name="help">
@@ -21,37 +18,13 @@
     <!-- =====================================================
          init and prefab settings
          ===================================================== -->
-    <presetdef name="javac-full">
-      <javac
-            srcdir="${src.java.dir}"
-            destdir="${dest.java.dir}"
-            
-            debug="${compiler.debug}"
-            deprecation="${compiler.deprecation}"
-            failonerror="${compiler.failonerror}"
-            fork="${compiler.fork}"
-            listfiles="${compiler.listfiles}"
-            nowarn="${compiler.nowarn}"
-            optimize="${compiler.optimize}"
-            source="${compiler.source}"
-            target="${compiler.target}"
-            verbose="${compiler.verbose}"
-            >
-            <classpath>
-              <fileset dir="${libraries.dir}">
-                  <include name="*.jar"/>
-              </fileset>
-            </classpath>
-      </javac>
-    </presetdef>
-
     <property name="app.name" value="flyingsaucer" />
-    <property name="user.overrides" 
+    <property name="user.overrides"
         location="${user.home}/.${app.name}/${app.name}.build.properties"/>
     <property name="project.overrides" location="build.properties"/>
     <property file="${user.overrides}"/>
     <property file="${project.overrides}"/>
-    
+
     <target name="properties">
       <tstamp />
       <available file="${user.overrides}" property="user.overrides.available"/>
@@ -72,9 +45,13 @@
     <!-- Directories -->
     <property name="libraries.dir" location="lib" />
     <property name="src.dir" location="src" />
+    <property name="doc.dir" location="doc" />
     <property name="src.browser.java.dir" location="demos/browser/src/java" />
     <property name="src.about.java.dir" location="demos/about/src/java" />
     <property name="dest.dir" location="build" />
+    <property name="dest.javadoc.full.dir" location="${doc.dir}/full/api" />
+    <property name="dest.javadoc.user.dir" location="${doc.dir}/user/api" />
+    <property name="dest.java2html.dir" location="${doc.dir}/full/code" />
     <property name="src.java.dir" location="${src.dir}/java" />
     <property name="dest.java.dir" location="${dest.dir}/classes" />
     <property name="src.resources.css.dir" location="${src.dir}/css" />
@@ -85,7 +62,7 @@
     <property name="src.demo.xhtml.dir" location="demos/browser/xhtml" />
     <property name="src.demo.splash.dir" location="demos/splash" />
     <property name="src.about.xhtml.dir" location="demos/about/xhtml" />
-    
+
     <!-- Compiler flags -->
     <!-- For details on each flag, see http://ant.apache.org/manual/CoreTasks/javac.html -->
     <property name="build.compiler" value="modern" />
@@ -103,6 +80,76 @@
     <!-- Java.exe flags -->
     <property name="java-exec.fork.tests" value="true" />    
 
+    <!-- path reference for all JAR files in /lib -->
+    <path id="libraries.all">
+      <fileset dir="${libraries.dir}">
+          <include name="*.jar"/>
+      </fileset>
+    </path>
+        
+    <!-- path reference for all JAR files in /lib, plus all our built jars -->
+    <path id="libraries-and-dest.all">
+      <path refid="libraries.all" />
+      <fileset dir="${dest.dir}">
+          <include name="*.jar"/>
+      </fileset>
+    </path>
+
+    <patternset id="org-java-files">
+      <include name="org/xhtmlrenderer/**" />
+    </patternset>
+
+    <patternset id="user-java-files">
+      <includesfile name="src/java/org/xhtmlrenderer/swing/HTMLPanel.java" />
+    </patternset>
+
+    <patternset id="xhtml-files">
+      <include name="*.xhtml"/>
+      <include name="*.gif"/>
+      <include name="*.png"/>
+      <include name="splash/**"/>
+      <include name="about/**"/>
+    </patternset>
+      
+    <!-- zip file reference for all XHTML in the demos directory, and supporting files -->
+    <zipfileset id="xhtml.demos" dir="${src.demo.xhtml.dir}" prefix="demos/">
+      <patternset refid="xhtml-files" />
+    </zipfileset>
+    
+    <zipfileset id="xhtml.about.demos" dir="${src.about.xhtml.dir}" prefix="demos/">
+      <patternset refid="xhtml-files" />
+    </zipfileset>
+
+    <!-- zip file reference for all splash XHTML in the demos directory, and supporting files -->
+    <zipfileset id="xhtml.splash" dir="${src.demo.splash.dir}" prefix="demos/splash">
+        <include name="*.html"/>
+        <include name="images/**"/>
+    </zipfileset>
+
+    <!-- 
+         definition of a javac task with all compiler parameters read from
+         properties. can be used for most uses of javac in this file.
+    -->
+    <presetdef name="javac-full">
+      <javac
+            srcdir="${src.java.dir}"
+            destdir="${dest.java.dir}"
+            
+            debug="${compiler.debug}"
+            deprecation="${compiler.deprecation}"
+            failonerror="${compiler.failonerror}"
+            fork="${compiler.fork}"
+            listfiles="${compiler.listfiles}"
+            nowarn="${compiler.nowarn}"
+            optimize="${compiler.optimize}"
+            source="${compiler.source}"
+            target="${compiler.target}"
+            verbose="${compiler.verbose}"
+            >
+            <classpath refid="libraries.all" />
+      </javac>
+    </presetdef>
+
     <!-- General initialization, including properties. -->
     <target name="init" depends="properties" >
         <mkdir dir="${dest.dir}"/>
@@ -111,32 +158,33 @@
         <mkdir dir="${dest.resources.conf.dir}"/>
     </target>
 
-
-
-    
-    
-    
     <!-- =====================================================
          Compile, Jar, and Clean
          ===================================================== -->
 
-         
-       
-         
-         
     <!-- Deletes all files from destination directory tree. -->
     <target name="clean" description="clean" depends="properties">
         <delete dir="${dest.dir}"/>
         <delete>
-            <fileset dir=".">
+            <fileset dir="${basedir}">
                 <include name="**/*~"/>
             </fileset>
         </delete>
     </target>
-    
-    <!-- Cleans all build files, then recompiles. -->
-    <target name="clean-compile" description="clean compile" depends="clean,compile">
+
+    <!-- cleans all javadoc/api files -->
+    <target name="clean-javadoc" description="clean project javadoc files" depends="properties">
+        <delete dir="${dest.javadoc.full.dir}"/>
+        <delete dir="${dest.javadoc.user.dir}"/>
     </target>
+
+    <!-- cleans all java2html files -->
+    <target name="clean-java2html" description="clean project java2html files" depends="properties">
+        <delete dir="${dest.java2html.dir}"/>
+    </target>
+
+    <!-- Cleans all build files, then recompiles. -->
+    <target name="clean-compile" description="clean compile" depends="clean,compile" />
 
     <!-- Compiles application and copies resources to destination directory. -->
     <target name="compile" description="compile" depends="init">
@@ -156,9 +204,39 @@
     <target name="compile.about" depends="compile">
         <javac-full srcdir="${src.about.java.dir}" />
     </target>
-    
+
     <!-- Compiles main codebase, browser and about box -->
     <target name="compile.all" depends="compile, compile.browser, compile.about">
+    </target>
+    
+    <!-- builds JavaDoc for all code -->
+    <target name="javadoc" description="builds javadoc for all XR packages" depends="properties">
+      <javadoc 
+                access="public" 
+                author="true"
+                classpathref="libraries.all"
+                destdir="${antcall.dest.javadoc.dir}" 
+                nodeprecated="false" 
+                nodeprecatedlist="false"
+                noindex="false" 
+                nonavbar="false" 
+                notree="false"
+                source="1.4"
+                sourcefiles="${antcall.javadoc.file}"
+                sourcepath="${src.java.dir}"
+                splitindex="true"
+                use="true" 
+                version="true">
+                
+        <packageset dir="${src.java.dir}">
+          <patternset refid="org-java-files" />
+        </packageset>
+        
+        <!-- NOTE: wanted to make this a property, but Ant was prepending the
+        base directory name to the URL when running this target through Antcall.
+        Odd. -->
+        <link offline="true" href="http://java.sun.com/j2se/1.4.2/docs/api" packagelistLoc="http://java.sun.com/j2se/1.4.2/docs/api"/>
+      </javadoc>
     </target>
     
     <!-- Builds core, browser and about box jars. -->
@@ -187,15 +265,8 @@
             <fileset dir="${dest.java.dir}">
                 <include name="org/xhtmlrenderer/demo/browser/**"/>
             </fileset>
-            <zipfileset dir="${src.demo.xhtml.dir}" prefix="demos/">
-                <include name="*.xhtml"/>
-                <include name="*.gif"/>
-                <include name="*.png"/>
-            </zipfileset>
-            <zipfileset dir="${src.demo.splash.dir}" prefix="demos/splash">
-                <include name="*.html"/>
-                <include name="images/**"/>
-            </zipfileset>
+            <zipfileset refid="xhtml.demos" />
+            <zipfileset refid="xhtml.splash" />
         </jar>
     </target>
     
@@ -207,26 +278,11 @@
             <fileset dir="${dest.java.dir}">
                 <include name="org/xhtmlrenderer/demo/aboutbox/**"/>
             </fileset>
-            <zipfileset dir="${src.about.xhtml.dir}" prefix="demos/">
-                <include name="*.xhtml"/>
-                <include name="*.gif"/>
-                <include name="*.png"/>
-                <include name="splash/**"/>
-                <include name="about/**"/>
-            </zipfileset>
-            <zipfileset dir="${src.demo.splash.dir}" prefix="demos/splash">
-                <include name="*.html"/>
-                <include name="images/**"/>
-            </zipfileset>
+            <zipfileset refid="xhtml.about.demos" />
+            <zipfileset refid="xhtml.splash" />
         </jar>
     </target>
 
-    
-    
-    
-    
-    
-    
     <!-- =====================================================
          Build the various distributions
          ===================================================== -->
@@ -245,10 +301,9 @@
 
     <!-- Builds a ZIP file of entire project from base directory. -->
     <target name="zip" description="zip file" depends="jars">
-        <zip basedir="${basedir}" zipfile="../flyingsaucer.zip">
-        </zip>
+        <zip basedir="${basedir}" zipfile="../flyingsaucer.zip" />
     </target>
-         
+
     <!-- Builds all jars and packages jars and 3rd party libraries into one jar -->
     <target name="binary-dist" depends="jars" description="Play Binary Distro">
         <copy todir="${dest.dir}">
@@ -282,7 +337,7 @@
             <zipfileset dir="${src.packaging.dir}" includes="readme.txt" fullpath="readme.txt"/>
         </zip>
     </target>
-    
+
     <!-- Build the JNLP distribution -->
     <target name="jnlp-dist" depends="init, jars" description="Build JNLP Distro">
         <copy todir="${dest.dir}">
@@ -299,7 +354,6 @@
         <signjar jar="${dest.dir}/ss_css2.jar" alias="joshy" storepass="password" keystore="teststore"/>
         <signjar jar="${dest.dir}/xalan.jar" alias="joshy" storepass="password" keystore="teststore"/>
         <signjar jar="${dest.dir}/about.jar" alias="joshy" storepass="password" keystore="teststore"/>
-
     </target>
     
     <!-- =================================================
@@ -318,11 +372,7 @@
             <syspropertyset>
               <propertyref prefix="xr." />
             </syspropertyset> 
-            <classpath>
-              <fileset dir="${libraries.dir}">
-                <include name="*.jar"/>
-              </fileset>
-            </classpath>
+            <classpath refid="libraries.all" />
         </java>
     </target>
 
@@ -358,11 +408,7 @@
             <syspropertyset>
               <propertyref prefix="xr." />
             </syspropertyset> 
-            <classpath>
-              <fileset dir="${libraries.dir}">
-                <include name="*.jar"/>
-              </fileset>
-            </classpath>
+            <classpath refid="libraries.all" />
         </java>
     </target>
 
@@ -370,10 +416,7 @@
     <target name="browser" depends="compile.browser, jars">
         <java classname="org.xhtmlrenderer.demo.browser.BrowserStartup" 
               fork="${java-exec.fork.tests}">
-            <classpath>
-                <fileset dir="${libraries.dir}"><include name="*.jar"/></fileset>
-                <fileset dir="${dest.dir}"><include name="*.jar"/></fileset>
-            </classpath>
+            <classpath refid="libraries-and-dest.all" />
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
@@ -386,14 +429,11 @@
     <target name="aboutbox" depends="jars">
         <java classname="org.xhtmlrenderer.demo.aboutbox.AboutBox" 
               fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all" />
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
             </syspropertyset> 
-            <classpath>
-                <fileset dir="${libraries.dir}"><include name="*.jar"/></fileset>
-                <fileset dir="${dest.dir}"><include name="*.jar"/></fileset>
-            </classpath>
         </java>
     </target>
 
@@ -405,14 +445,11 @@
     <target name="diff-tests" depends="core-jar">
         <java classname="org.xhtmlrenderer.test.DocumentDiffTest" 
               fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all" />
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
             </syspropertyset> 
-            <classpath>
-                <fileset dir="${libraries.dir}"><include name="*.jar"/></fileset>
-                <fileset dir="${dest.dir}"><include name="*.jar"/></fileset>
-            </classpath>
         </java>
     </target>
 
@@ -420,51 +457,45 @@
     <target name="generate-diff-tests" depends="core-jar">
         <java classname="org.xhtmlrenderer.test.DocumentDiffGenerate" 
               fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all" />
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
             </syspropertyset> 
-            <classpath>
-                <fileset dir="${libraries.dir}"><include name="*.jar"/></fileset>
-                <fileset dir="${dest.dir}"><include name="*.jar"/></fileset>
-            </classpath>
         </java>
     </target>
-
-
-
 
     <!-- =================================================
          Documentation
          ================================================= -->
 
-    <target name="docs">
+    <target name="docs" depends="clean-java2html, clean-javadoc">
         <taskdef name="java2html"
             classname="de.java2html.anttasks.Java2HtmlTask"
             classpath="lib/java2html.jar"
             />
+        
         <java2html
-            srcdir="src/java"
-            destdir="${dest.dir}/docs/full/code"
+            srcdir="${src.java.dir}"
+            destdir="${dest.java2html.dir}"
             includes="**/*.java"
             style="eclipse"
             showLineNumbers="true"
             showFileName="true"
             showTableBorder="true"
             />
-        <javadoc destdir="${dest.dir}/docs/full/api">
-            <fileset dir="src/java">
-                <include name="**/*.java"/>
-            </fileset>
-        </javadoc>
-        <javadoc destdir="${dest.dir}/docs/user/api">
-            <fileset dir="src/java">
-                <include name="org/xhtmlrenderer/swing/HTMLPanel.java"/>
-            </fileset>
-        </javadoc>
-        <copy todir="${dest.dir}/docs" file="src/docs/index.html"/>
-        
+        <antcall target="javadoc">
+          <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.full.dir}" />
+          <param name="antcall.javadoc.file" value="" />
+        </antcall>
+        <antcall target="javadoc">
+          <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.user.dir}" />
+          <param name="antcall.javadoc.file" value="src/java/org/xhtmlrenderer/swing/HTMLPanel.java" />
+          <reference refid="user-java-files" torefid="org-java-files" />
+        </antcall>
+        <copy todir="${dest.dir}/docs" file="${dest.javadoc.full.dir}/index.html"/>
     </target>
+
     <target name="docs-upload">
         <scp todir="${docs.upload.username}:${docs.upload.password}@${docs.upload.hostname}:${docs.upload.path}">
             <fileset dir="${dest.dir}">
@@ -472,8 +503,6 @@
             </fileset>
         </scp>
     </target>
-    
-    
     
     <!-- =======================================
          General
@@ -495,8 +524,12 @@
     <echo message="basedir                                 ${basedir}" />
     <echo message="libraries.dir                           ${libraries.dir}" />
     <echo message="src.dir                                 ${src.dir}" />
+    <echo message="doc.dir                                 ${doc.dir}" />
     <echo message="dest.dir                                ${dest.dir}" />
     <echo message="src.java.dir                            ${src.java.dir}" />
+    <echo message="dest.javadoc.full.dir                   ${dest.javadoc.full.dir}" />
+    <echo message="dest.javadoc.user.dir                   ${dest.javadoc.user.dir}" />
+    <echo message="dest.java2html.dir                      ${dest.java2html.dir}" />
     <echo message="dest.java.dir                           ${dest.java.dir}" />
     <echo message="src.about.java.dir                      ${src.about.java.dir}" />
     <echo message="src.browser.java.dir                    ${src.browser.java.dir}" />
@@ -544,8 +577,6 @@
     <echo message=""/>
     -->
   </target>    
-
-    
 </project>
 
 <!-- ========== this is the CVS log. Don't delete! ========== -->
@@ -554,6 +585,9 @@
 $Id$
 
 $Log$
+Revision 1.48  2004/10/19 18:11:07  pdoubleya
+Synchronized with test build file. CLASSPATH and other paths are now externalized in set references (fileset, patternset). Docs now uses build file javadoc target to run javadoc routine.
+
 Revision 1.47  2004/10/19 15:00:51  joshy
 updated the build file
 removed some extraneous files
