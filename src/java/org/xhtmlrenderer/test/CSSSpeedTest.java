@@ -53,7 +53,7 @@ import org.xhtmlrenderer.css.*;
 
 import java.io.*;
 
-import com.pdoubleya.xhtmlrenderer.css.bridge.XRStyleReference;
+import org.xhtmlrenderer.css.bridge.XRStyleReference;
 
 
 public class CSSSpeedTest {

@@ -21,7 +21,7 @@
 
 package org.xhtmlrenderer.demo.browser;
 
-import com.pdoubleya.xhtmlrenderer.css.bridge.XRStyleReference;
+import org.xhtmlrenderer.css.bridge.XRStyleReference;
 import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.css.*;
 import org.xhtmlrenderer.render.*;

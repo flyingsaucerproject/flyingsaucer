@@ -32,7 +32,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.css.CSSStyleSheet;
 import org.w3c.dom.css.CSSValue;
 
-import com.pdoubleya.xhtmlrenderer.css.value.BorderColor;
+import org.xhtmlrenderer.css.value.BorderColor;
 
 
 /**
@@ -357,7 +357,7 @@ public interface StyleReference {
      *      information.
      * @param origin           The origin of the enclosed style information--an
      *      int constant from XRStyleSheet, e.g. {@link
-     *      com.pdoubleya.xhtmlrenderer.css.XRStyleSheet#AUTHOR}. Used to
+     *      org.xhtmlrenderer.css.XRStyleSheet#AUTHOR}. Used to
      *      determine precedence of rules derived from the parse sheet.
      * @exception IOException  Throws
      */

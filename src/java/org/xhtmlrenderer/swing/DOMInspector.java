@@ -37,9 +37,9 @@ import java.awt.Toolkit;
 import javax.swing.table.*;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.layout.*;
-import com.pdoubleya.xhtmlrenderer.css.*;
-import com.pdoubleya.xhtmlrenderer.css.constants.*;
-import com.pdoubleya.xhtmlrenderer.css.bridge.*;
+import org.xhtmlrenderer.css.*;
+import org.xhtmlrenderer.css.constants.*;
+import org.xhtmlrenderer.css.bridge.*;
 import java.awt.event.*;
 
 public class DOMInspector extends JPanel {

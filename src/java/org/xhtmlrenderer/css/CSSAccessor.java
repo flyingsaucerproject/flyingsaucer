@@ -28,7 +28,7 @@ import org.w3c.dom.css.*;
 
 import org.joshy.u;
 import org.joshy.x;
-import com.pdoubleya.xhtmlrenderer.css.value.BorderColor;
+import org.xhtmlrenderer.css.value.BorderColor;
 /**
 * 
 */

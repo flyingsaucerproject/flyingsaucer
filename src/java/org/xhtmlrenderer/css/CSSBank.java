@@ -54,7 +54,7 @@ import org.joshy.u;
 import org.joshy.x;
 
 // CLEAN
-import com.pdoubleya.xhtmlrenderer.css.XRStyleSheet;
+import org.xhtmlrenderer.css.XRStyleSheet;
 import java.net.*;
 import org.apache.xpath.XPathAPI;
 

@@ -95,9 +95,9 @@ import org.apache.xpath.XPathAPI;
 
 import org.xhtmlrenderer.forms.*;
 
-import com.pdoubleya.xhtmlrenderer.css.bridge.XRStyleReference;
+import org.xhtmlrenderer.css.bridge.XRStyleReference;
 
-import com.pdoubleya.xhtmlrenderer.css.XRStyleSheet;
+import org.xhtmlrenderer.css.XRStyleSheet;
 
 import org.xhtmlrenderer.css.StyleReference;
 

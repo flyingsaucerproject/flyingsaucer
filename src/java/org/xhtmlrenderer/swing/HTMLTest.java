@@ -33,7 +33,7 @@ import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.css.*;
 import org.xhtmlrenderer.render.Box;
-import com.pdoubleya.xhtmlrenderer.css.bridge.XRStyleReference;
+import org.xhtmlrenderer.css.bridge.XRStyleReference;
 
 public class HTMLTest extends JFrame {
     public static final int text_width = 600;
