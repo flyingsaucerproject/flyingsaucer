@@ -47,20 +47,35 @@
             span.double-em {
                 font-size: 2em;
                 }
+            .fonttest1 { font-family: Arial; }
+            .fonttest2 { font-family: "Times New Roman"; }
+            .fonttest3 { font-family: Arial; font-size: 30pt; }
+            .fonttest4 { font-family: imaginary, "Times New Roman"; }
+            .fonttest5 { font-family: imaginary, madeup; }
         </style>
     </head>
     <body>
     
-    <p class="test">LineBreakMeasurer is constructed with an iterator over styled text.
+<!--
+     <p class="test">LineBreakMeasurer is constructed with an iterator over styled text.
     The iterator's range should be a single paragraph in the text. 
     LineBreakMeasurer maintains a position in the text for the start 
     of the next text segment. Initially, this position is the start 
     of text.</p>
-    
+    -->
+    <!--
     <p class="serif">Text Sample: Serif</p>
     <p class="sans-serif">Text Sample: Sans Serif</p>
     <p class="monospace">Text Sample: Monospaced</p>
-
+    <p class="fonttest1">Arial font</p>
+    -->
+    <p class="fonttest2">Times New Roman font</p>
+    <!--
+    <p class="fonttest3">Arial larger font</p>
+    -->
+    <p class="fonttest4">imaginary, Times New Roman (should default to times)</p>
+    <p class="fonttest5">imaginary, madeup (should default to sans)</p>
+<!--
     <p>this ismysuperdupercrazyasshugelylongwordofawordohasdfasdfasdfasdfasdfasdfasdfas end</p>
     
     <p>text <tt>tt</tt> and <b>b</b> and <i>i</i> and <big>big</big> and <small>small</small></p>
@@ -81,6 +96,6 @@
     <p class="size">normal text <span class="double-percent">200%</span> and
         <span class="double-em">2em</span> normal text</p>
         
-    
+    -->
     </body>
 </html>

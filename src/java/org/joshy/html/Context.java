@@ -1,6 +1,7 @@
 package org.joshy.html;
 
 import org.joshy.html.css.FontResolver;
+import org.joshy.html.css.FontResolverTest;
 import java.util.Stack;
 import javax.swing.JComponent;
 import java.awt.Color;
@@ -165,7 +166,7 @@ public class Context {
     }
     
     public Context() {
-        font_resolver = new FontResolver();
+        font_resolver = new FontResolverTest();
     }
     
     public String toString() {
