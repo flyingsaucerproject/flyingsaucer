@@ -9,20 +9,33 @@ import java.awt.event.ActionEvent;
 public class FontSizeAction extends AbstractAction {
 
     protected BrowserStartup root;
-    protected float scale;
+    public static final int DECREMENT = 0;
+    public static final int INCREMENT = 1;
+    public static final int RESET     = 2;
+    private int whichDirection;
 
-    public FontSizeAction(BrowserStartup root, float scale) {
+    public FontSizeAction(BrowserStartup root, int which) {
         super("FontSize");
         this.root = root;
-        this.scale = scale;
+        this.whichDirection = which;
+    }
+
+    public FontSizeAction(BrowserStartup root, float scale, int which) {
+        this(root, which);
+        this.root.panel.view.setFontScalingFactor(scale);
     }
 
     public void actionPerformed(ActionEvent evt) {
-        RenderingContext rc = root.panel.view.getRenderingContext();
-        rc.getTextRenderer().setFontScale(rc.getTextRenderer().getFontScale() * scale);
-        //Uu.p("new font scale = " + rc.getTextRenderer().getFontScale());
-        root.panel.view.relayout();
-        root.panel.view.repaint();
+        switch ( whichDirection ) {
+            case INCREMENT:
+                root.panel.view.incrementFontSize();
+                break;
+            case RESET:
+                root.panel.view.resetFontSize();
+                break;
+            case DECREMENT:
+                root.panel.view.decrementFontSize();
+                break;
+        }
     }
-
 }
