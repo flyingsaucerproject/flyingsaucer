@@ -326,6 +326,7 @@ public final class Idents {
         COLOR_MAP.put( "teal", "#008080" );
         COLOR_MAP.put( "navy", "#000080" );
         COLOR_MAP.put( "purple", "#800080" );
+        COLOR_MAP.put( "orange", "#FFA500" );
         COLOR_MAP.put( "transparent", "transparent" );
 
         FONT_SIZES = new HashMap();
@@ -450,6 +451,9 @@ public final class Idents {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/03/17 20:22:32  pdoubleya
+ * Added orange (Kevin).
+ *
  * Revision 1.4  2005/01/29 20:21:09  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
