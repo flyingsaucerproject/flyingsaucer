@@ -1,5 +1,6 @@
 package org.joshy.html.app.browser;
 
+import com.pdoubleya.xhtmlrenderer.css.bridge.XRStyleReference;
 import org.joshy.u;
 import java.awt.*;
 import javax.swing.*;
@@ -28,19 +29,28 @@ public class BrowserMenuBar extends JMenuBar {
     
     public void init() {
         file = new JMenu("File");
+        file.setMnemonic('F');
         
         debug = new JMenu("Debug");
+        debug.setMnemonic('B');
+
         demos = new JMenu("Demos");
+        demos.setMnemonic('D');
         
         edit = new JMenu("Edit");
+        edit.setMnemonic('E');
         
         view = new JMenu("View");
+        view.setMnemonic('V');
+        
         view_source = new JMenuItem("Page Source");
         view_source.setEnabled(false);
         view.add(root.actions.stop);
+        view.add(root.actions.refresh);
         view.add(root.actions.reload);
         
         go = new JMenu("Go");
+        go.setMnemonic('G');
     }
     
     
@@ -62,6 +72,8 @@ public class BrowserMenuBar extends JMenuBar {
 
         add(go);
         
+        // CLEAN
+        demos.add(new LoadAction("Bad Page","demo:demos/allclasses-noframe.xhtml"));
         demos.add(new LoadAction("Borders","demo:demos/border.xhtml"));
         demos.add(new LoadAction("Backgrounds","demo:demos/background.xhtml"));
         demos.add(new LoadAction("Paragraph","demo:demos/paragraph.xhtml"));
@@ -81,28 +93,16 @@ public class BrowserMenuBar extends JMenuBar {
             
         add(demos);
         
-        debug.add(new AbstractAction("draw boxes") {
-            public void actionPerformed(ActionEvent evt) {
-                root.panel.view.c.debug_draw_boxes = !root.panel.view.c.debug_draw_boxes;
-                root.panel.view.repaint();
-            }
-        });
+        JMenu debugShow = new JMenu("Show");
+        debug.add(debugShow);
+        debugShow.setMnemonic('S');
         
-        debug.add(new AbstractAction("draw line boxes") {
-            public void actionPerformed(ActionEvent evt) {
-                root.panel.view.c.debug_draw_line_boxes = !root.panel.view.c.debug_draw_line_boxes;
-                root.panel.view.repaint();
-            }
-        });
-        
-        debug.add(new AbstractAction("draw inline boxes") {
-            public void actionPerformed(ActionEvent evt) {
-                root.panel.view.c.debug_draw_inline_boxes = !root.panel.view.c.debug_draw_inline_boxes;
-                root.panel.view.repaint();
-            }
-        });
-        
-        debug.add(new AbstractAction("DOM tree inspector") {
+        debugShow.add(new JCheckBoxMenuItem(new BoxOutlinesAction()));
+        debugShow.add(new JCheckBoxMenuItem(new LineBoxOutlinesAction()));
+        debugShow.add(new JCheckBoxMenuItem(new InlineBoxesAction()));
+
+        /* 
+         debug.add(new AbstractAction("DOM tree inspector") {
             public void actionPerformed(ActionEvent evt) {
                 JFrame frame = new JFrame();
                 frame.getContentPane().add(new DOMInspector(root.panel.view.doc));
@@ -111,6 +111,8 @@ public class BrowserMenuBar extends JMenuBar {
                 frame.show();
             }
         });
+         **/
+        debug.add(new ShowDOMInspectorAction());
         debug.add(new AbstractAction("Validation Console") {
             public void actionPerformed(ActionEvent evt) {
                 if(root.validation_console == null) {
@@ -139,6 +141,78 @@ public class BrowserMenuBar extends JMenuBar {
         
         
         add(debug);
+    }
+    
+    class ShowDOMInspectorAction extends AbstractAction {
+        private DOMInspector inspector;
+        private JFrame inspectorFrame;
+        ShowDOMInspectorAction() {
+            super("DOM Tree Inspector");
+            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_D));
+        }
+        
+        public void actionPerformed(ActionEvent evt) {
+            if ( inspectorFrame == null ) {
+                inspectorFrame = new JFrame("DOM Tree Inspector");
+            }
+            if ( inspector == null ) {
+                // inspectorFrame = new JFrame("DOM Tree Inspector");
+                
+                // CLEAN: this is more complicated than it needs to be
+                // DOM Tree Inspector needs to work with either CSSBank
+                // or XRStyleReference--implementations are not perfectly
+                // so we have different constructors
+                if ( root.panel.view.c.css instanceof CSSBank )
+                    inspector = new DOMInspector(root.panel.view.doc);     
+                else 
+                    inspector = new DOMInspector(root.panel.view.doc, root.panel.view.c, (XRStyleReference)root.panel.view.c.css);
+                    
+                inspectorFrame.getContentPane().add(inspector);
+                    
+                inspectorFrame.pack();
+                inspectorFrame.setSize(500,600);
+                inspectorFrame.show();
+            } else {
+                if ( root.panel.view.c.css instanceof CSSBank )
+                    inspector.setForDocument(root.panel.view.doc);     
+                else 
+                    inspector.setForDocument(root.panel.view.doc, root.panel.view.c, (XRStyleReference)root.panel.view.c.css);
+            }
+            inspectorFrame.show();
+        }
+    }
+    
+    class BoxOutlinesAction extends AbstractAction {
+        BoxOutlinesAction() {
+            super("Show Box Outlines");
+            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_B));
+        }
+        public void actionPerformed(ActionEvent evt) {
+            root.panel.view.c.debug_draw_boxes = !root.panel.view.c.debug_draw_boxes;
+            root.panel.view.repaint();
+        }
+    }
+
+    class LineBoxOutlinesAction extends AbstractAction {
+        LineBoxOutlinesAction() {
+            super("Show Line Box Outlines");
+            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_L));
+        }
+        public void actionPerformed(ActionEvent evt) {
+            root.panel.view.c.debug_draw_line_boxes = !root.panel.view.c.debug_draw_line_boxes;
+            root.panel.view.repaint();
+        }
+    }
+
+    class InlineBoxesAction extends AbstractAction {
+        InlineBoxesAction() {
+            super("Show Inline Boxes");
+            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_I));
+        }
+        public void actionPerformed(ActionEvent evt) {
+            root.panel.view.c.debug_draw_inline_boxes = !root.panel.view.c.debug_draw_inline_boxes;
+            root.panel.view.repaint();
+        }
     }
     
     public void createActions() {
