@@ -46,7 +46,7 @@ public class RuleNormalizer {
             expandBackgroundPosition(rule);
         }
         if(prop.equals("border")) {
-            u.p("normalizing: " + prop);
+            //u.p("normalizing: " + prop);
             expandBorder(rule);
         }
     }
@@ -177,7 +177,7 @@ public class RuleNormalizer {
         if(color_map.containsKey(test)) {
             return true;
         }
-        u.p("test = " + test);
+        //u.p("test = " + test);
         if(test.indexOf("rgb") >=0) {
             return true;
         }

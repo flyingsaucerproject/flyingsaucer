@@ -18,25 +18,16 @@ public class BackgroundPainter {
                 block.width - block.margin.left - block.margin.right - block.border.left - block.border.right,
                 block.height - block.margin.top - block.border.top - block.border.bottom - block.margin.bottom
                 );
-        /*
-        u.off();
-        if(block.node.getNodeName().equals("img")) {
-            u.on();
-        }
-        u.p("-------------");
-        u.p("BackgroundPainter.paint(" + block + " bounds = " + box);
-        u.p("bg color = " + block.background_color);
-        u.p("canvas = " + c.canvas);
-        */
         // paint the background
         if(block.background_color != null) {
-            u.p("filling background: " + block.background_color + " " + block);
+            //u.p("filling background: " + block.background_color + " " + block);
             c.getGraphics().setColor(block.background_color);
             c.getGraphics().fillRect(box.x,box.y,box.width,box.height);
         }
         
         int xoff = 0;
         int yoff = 0;
+        
         if(block.attachment != null && block.attachment.equals("fixed")) {
             //u.p("fixed: offset = " + c.canvas.getLocation());
             yoff = c.canvas.getLocation().y;
@@ -62,15 +53,23 @@ public class BackgroundPainter {
             }
             */
         }
-        
+        //u.p("block = " + block + " back img = " + block.background_image);
         if(block.background_image != null) {
             //u.p("back image");
+            //u.p("box = " + box);
             int left_insets = box.x;
             int top_insets  = box.y;
             int back_width = box.width;
             int back_height = box.height;
-            Shape oldclip = c.getGraphics().getClip();
-            c.getGraphics().setClip(left_insets, top_insets, back_width, back_height);
+            Rectangle oldclip = (Rectangle)c.getGraphics().getClip();
+            //u.p("old clip = " + c.getGraphics().getClip());
+            //c.getGraphics().drawRect(left_insets, top_insets, back_width, back_height);
+            Rectangle new_clip = new Rectangle(left_insets, top_insets, back_width, back_height);
+            //u.p("new clip = " + new_clip);
+            //c.getGraphics().setClip(left_insets, top_insets, back_width, back_height);
+            //u.p("new clip = " + c.getGraphics().getClip());
+            //u.p("union = " + oldclip.createIntersection(new_clip));
+            c.getGraphics().setClip(oldclip.createIntersection(new_clip));
             
             // calculate repeat indecies
             int repeatx = 1;
@@ -137,48 +136,18 @@ public class BackgroundPainter {
                 tileFill(c.getGraphics(), block.background_image, 
                     new Rectangle( left_insets, top_insets, back_width, back_height ),
                     0, -yoff, horiz, vert);
-                /*
-                for(int i=startx; i<=endx; i++) {
-                    for(int j=starty; j<=endy; j++) {
-                        int fx = iw * i;
-                        //u.p("yoff = " + yoff);
-                        int fy = block.background_image.getHeight(null) * j - yoff;
-                        //u.p("drawing at: " + fx + " " + fy + " " +
-                        //    img.getWidth(null) + " " + img.getHeight(null));
-                        c.graphics.drawImage(
-                            block.background_image,
-                            fx-block.background_image.getWidth(null),
-                            fy-block.background_image.getHeight(null),null);
-                        //c.graphics.fillRect(fx-img.getWidth(null),fy-img.getHeight(null),
-                        //                  img.getWidth(null),img.getHeight(null));
-                    }
-                }
-                */
             } else {
             // do normal tile image
             //u.p("normal looping");
-            
                 tileFill(c.getGraphics(), block.background_image, 
                     new Rectangle( left_insets, top_insets, back_width, back_height ),
                     0, -yoff, horiz, vert);
-                /*
-                for(int i=0; i<repeatx; i+=block.background_image.getWidth(null)) {
-                    for(int j=0; j<repeaty; j+=block.background_image.getHeight(null)) {
-                        //u.p("width = " + block.background_image.getWidth(null));
-                        int fx = left_insets+i;
-                        int fy = top_insets+j-yoff;
-                        //u.p("fx = " + fx + " fy = " + fy);
-                        c.graphics.drawImage(block.background_image,fx,fy,null);
-                        //c.getGraphics().drawImage(img,fx,fy,null);
-                    }
-                }
-                */
                 //u.p("finished loop");
             }
             c.getGraphics().setClip(oldclip);
         }
         
-        u.off();
+        //u.off();
 
     }
     
