@@ -26,12 +26,9 @@ import org.xhtmlrenderer.forms.*;
 import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.table.TableCellLayout;
 import org.xhtmlrenderer.table.TableLayout2;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.u;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * Returns the appropriate layout for a given node. Currently this hard codes
@@ -139,38 +136,36 @@ public class LayoutFactory {
                     return new InputText();
                 }
             }
+
+
+            // check for floats
+            CalculatedStyle style = c.css.getStyle(elem);
+            if (LayoutUtil.isFloated(style)) {
+                //u.p("in layout factory, found a floated element. forcing display: block");
+                return getCustomLayout("block");
+            }
+
+            // do normal layout resolution next
+            Layout lyt = getCustomLayout(c, (Element) elem);
+            if (lyt != null) {
+                return lyt;
+            }
+
         }
-
-
-        // check for floats
-        CalculatedStyle style = c.css.getStyle(elem);
-        if (LayoutUtil.isFloated(style)) {
-            //u.p("in layout factory, found a floated element. forcing display: block");
-            return getCustomLayout(c, elem, "block");
-        }
-
-        // do normal layout resolution next
-        Layout lyt = getCustomLayout(c, elem);
-        if (lyt != null) {
-            return lyt;
-        }
-
 
         // skip whitespace only nodes
-        if (elem.getNodeType() == elem.TEXT_NODE) {
+        else if (elem.getNodeType() == elem.TEXT_NODE) {
             if (elem.getNodeValue().trim().equals("")) {
                 return new NullLayout();
             }
-        }
+            //}
 
-        if (elem.getNodeType() == elem.TEXT_NODE) {
+            //if (elem.getNodeType() == elem.TEXT_NODE) {
             return new AnonymousBoxLayout();
-        }
-
-        if (elem.getNodeType() == elem.COMMENT_NODE) {
+        } else /*if (elem.getNodeType() == elem.COMMENT_NODE) */ {
             return new NullLayout();
         }
-        u.p("yo! got here w/ " + elem);
+        /*u.p("yo! got here w/ " + elem);
         XRLog.layout(Level.WARNING, "error! returning null! type = " + elem.getNodeType());
         XRLog.layout(Level.INFO, "error! returning null! type = " + elem.getNodeType());
         XRLog.layout(Level.INFO, "name = " + elem.getNodeName());
@@ -188,7 +183,8 @@ public class LayoutFactory {
         XRLog.layout(Level.INFO, "notation = " + elem.NOTATION_NODE);
         XRLog.layout(Level.INFO, "processing inst = " + elem.PROCESSING_INSTRUCTION_NODE);
         XRLog.layout(Level.INFO, "text node = " + elem.TEXT_NODE);
-        return new InlineLayout();//inline is the CSS default, I guess we should never get here?
+        return new InlineLayout();//inline is the CSS default, I guess we should never get here? */
+        throw new RuntimeException("Bad node into getLayout");//fail fast, crash hard
     }
 
 
@@ -270,22 +266,23 @@ public class LayoutFactory {
      * @return The customLayout value
      */
 
-    private Layout getCustomLayout(Context c, Node node) {
+    private Layout getCustomLayout(Context c, Element elem) {
 
-        if (element_map.containsKey(node.getNodeName())) {
-            return (Layout) element_map.get(node.getNodeName());
+        //TODO: this should really call the NamespaceHandler and ask for a (what? JComponent? Layout?) + DOMEventHandler?
+        if (element_map.containsKey(elem.getNodeName())) {
+            return (Layout) element_map.get(elem.getNodeName());
         }
 
-        if (node instanceof Element) {
-            Element elem = (Element) node;
-            String display = c.css.getStyle(elem).getStringProperty("display");
-            return getCustomLayout(c, node, display);
-        }
+        //if (node instanceof Element) {
+        //Element elem = (Element) node;
+        String display = c.css.getStyle(elem).getStringProperty("display");
+        return getCustomLayout(display);
+        //}
 
-        return null;
+        //return null;
     }
 
-    private Layout getCustomLayout(Context c, Node node, String display) {
+    private Layout getCustomLayout(String display) {
         if (display_map.containsKey(display)) {
             return (Layout) display_map.get(display);
         }
@@ -331,6 +328,9 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.20  2004/12/06 23:41:14  tobega
+* More cleaning of use of Node, more preparation for Content-based inline generation.
+*
 * Revision 1.19  2004/12/06 02:55:43  tobega
 * More cleaning of use of Node, more preparation for Content-based inline generation.
 *

@@ -92,12 +92,14 @@ public class InlineUtil {
             // handle the current node
             // skip if the node is the element
             handling: if (curr != elem) {
-                if (curr.getNodeType() == curr.TEXT_NODE) {
+                if (curr.getNodeType() == Node.TEXT_NODE) {
                     // u.p("adding text: " + curr);
                     list.add(curr);
                     //root = curr;
                     break handling;
                 }
+
+                if (curr.getNodeType() != Node.ELEMENT_NODE) break handling;
 
                 if (LayoutUtil.isReplaced(c, curr)) {
                     // u.p("adding replaced: " + curr);
@@ -217,13 +219,15 @@ public class InlineUtil {
             // handle the nodes
             // skip first time if root was the element
             handling: if (curr != elem) {
-                if (curr.getNodeType() == curr.TEXT_NODE) {
+                if (curr.getNodeType() == Node.TEXT_NODE) {
                     // u.p("adding textContent: " + curr);
                     String text = curr.getNodeValue();
                     if (textContent == null) textContent = new TextContent((Element) curr.getParentNode(), style);
                     textContent.append(text);
                     break handling;
                 }
+
+                if (curr.getNodeType() != Node.ELEMENT_NODE) break handling;
 
                 //TODO: what if a replaced element has :before and/or :after content?
                 if (LayoutUtil.isReplaced(c, curr)) {
@@ -237,7 +241,7 @@ public class InlineUtil {
                     break handling;
                 }
 
-                //TODO: what if a floated block has :before and/or :after content?
+                //TODO: check CSS-spec 9.7 for computing values for floats
                 if (LayoutUtil.isFloatedBlock(curr, c)) {
                     // u.p("adding floated block: " + curr);
                     if (textContent != null) {
@@ -259,24 +263,31 @@ public class InlineUtil {
             }
 
             if (curr.getNodeType() == Node.ELEMENT_NODE) {
-                //put in a marker if there is first-line styling
-                CascadedStyle firstLine = c.css.getPseudoElementStyle(curr, "first-line");
-                if (firstLine != null) {
-                    if (textContent != null) {
-                        contentList.add(textContent);
-                        textContent = null;
+                CalculatedStyle elStyle = c.css.getStyle(curr);
+                if (mayHaveFirstLine(elStyle)) {
+                    //put in a marker if there is first-line styling
+                    CascadedStyle firstLine = c.css.getPseudoElementStyle(curr, "first-line");
+                    if (firstLine != null) {
+                        if (textContent != null) {
+                            contentList.add(textContent);
+                            textContent = null;
+                        }
+                        contentList.add(new FirstLineStyle(firstLine));
                     }
-                    contentList.add(new FirstLineStyle(firstLine));
                 }
-                //put in a marker if there is first-letter styling
-                CascadedStyle firstLetter = c.css.getPseudoElementStyle(curr, "first-letter");
-                if (firstLetter != null) {
-                    if (textContent != null) {
-                        contentList.add(textContent);
-                        textContent = null;
+                if (mayHaveFirstLetter(elStyle)) {
+                    //put in a marker if there is first-letter styling
+                    CascadedStyle firstLetter = c.css.getPseudoElementStyle(curr, "first-letter");
+                    if (firstLetter != null) {
+                        if (textContent != null) {
+                            contentList.add(textContent);
+                            textContent = null;
+                        }
+                        contentList.add(new FirstLetterStyle(firstLetter));
                     }
-                    contentList.add(new FirstLetterStyle(firstLetter));
                 }
+                //TODO: handle block content
+                //TODO: before and after may be block!
                 //<br/> handling should be done by :before content
                 CascadedStyle before = c.css.getPseudoElementStyle(curr, "before");
                 if (before != null) {
@@ -408,12 +419,37 @@ public class InlineUtil {
 
     }
 
+    public static boolean mayHaveFirstLetter(CalculatedStyle style) {
+        String display = style.getStringProperty(CSSName.DISPLAY);
+        if (display.equals("block")) return true;
+        if (display.equals("list-item")) return true;
+        if (display.equals("table-cell")) return true;
+        if (display.equals("table-caption")) return true;
+        if (display.equals("inline-block")) return true;
+        return false;
+    }
+
+    public static boolean mayHaveFirstLine(CalculatedStyle style) {
+        String display = style.getStringProperty(CSSName.DISPLAY);
+        if (display.equals("block")) return true;
+        if (display.equals("list-item")) return true;
+        if (display.equals("run-in")) return true;
+        if (display.equals("table")) return true;
+        if (display.equals("table-cell")) return true;
+        if (display.equals("table-caption")) return true;
+        if (display.equals("inline-block")) return true;
+        return false;
+    }
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2004/12/06 23:41:14  tobega
+ * More cleaning of use of Node, more preparation for Content-based inline generation.
+ *
  * Revision 1.19  2004/12/06 02:55:43  tobega
  * More cleaning of use of Node, more preparation for Content-based inline generation.
  *

@@ -19,36 +19,36 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Point;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BodyRenderer;
+import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Renderer;
-import org.xhtmlrenderer.util.u;
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
-public class BodyLayout extends InlineLayout {
+//public class BodyLayout extends InlineLayout {
+//BoxLayout seems to work better. Tobe 2004-12-06
+public class BodyLayout extends BoxLayout {//treat document element as if it is block
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return Returns
      */
-     
-    public Box layout( Context c, Element elem ) {
-        Box box = super.layout( c, elem );
+
+    public Box layout(Context c, Element elem) {
+        Box box = super.layout(c, elem);
         // u.p("done laying it all out");
         // u.p("\n=====================\n\n\n");
         return box;
     }
-    
-    
+
+
     public Renderer getRenderer() {
         return new BodyRenderer();
     }
@@ -59,6 +59,9 @@ public class BodyLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/12/06 23:41:13  tobega
+ * More cleaning of use of Node, more preparation for Content-based inline generation.
+ *
  * Revision 1.8  2004/12/01 01:57:00  joshy
  * more updates for float support.
  *

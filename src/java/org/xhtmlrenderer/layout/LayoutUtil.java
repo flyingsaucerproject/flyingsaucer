@@ -79,6 +79,12 @@ public class LayoutUtil {
                 //u.p("this layout is block");
                 return true;
             }
+            //grandchildren could be block! Tobe 2004-12-06
+            if (child.getNodeType() == Node.ELEMENT_NODE) {
+                if (isBlockLayout((Element) child, c)) {
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -147,15 +153,6 @@ public class LayoutUtil {
                     display.equals("table") ||
                     display.equals("table-cell"))
             ) {
-                /*que? if (isFloated(style)) {
-                    return true;
-                }
-                if (!isFloated(style)) {
-                    //u.p(child.getNodeName() + " is a block");
-                    return true;
-                } else {
-                    // u.p("isBlockNode() found a floated block");
-                }*/
                 return true;
             }
         }
@@ -198,7 +195,7 @@ public class LayoutUtil {
      * @return The floatedBlock value
      */
     public static boolean isFloatedBlock(Node node, Context c) {
-        if (node.getNodeType() != node.ELEMENT_NODE) {
+        if (node.getNodeType() != Node.ELEMENT_NODE) {
             return false;
         }
 

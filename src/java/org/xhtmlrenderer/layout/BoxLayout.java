@@ -132,7 +132,7 @@ public class BoxLayout extends DefaultLayout {
         c.setSubBlock(old_sub);
 
         // restore height incase fixed height
-        if(block.auto_height == false) {
+        if (block.auto_height == false) {
             u.p("restoring original height");
             block.height = original_height;
         }
@@ -268,6 +268,7 @@ public class BoxLayout extends DefaultLayout {
                 // create anonymous block box
                 // prepare the node list of the text children
                 // call layout
+                //TODO: these casts seem risky (or at least, very non-encapsulated). Refactor.
                 child_box = ((AnonymousBoxLayout) layout).layout(c, elem, child);
 
                 // skip text children if the prev_child == anonymous block box
@@ -323,7 +324,7 @@ public class BoxLayout extends DefaultLayout {
         c.setListCounter(old_counter);
 
         c.unshrinkExtents(block);
-        
+
         return block;
     }
 
@@ -356,6 +357,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2004/12/06 23:41:14  tobega
+ * More cleaning of use of Node, more preparation for Content-based inline generation.
+ *
  * Revision 1.32  2004/12/05 05:00:39  joshy
  * fixed bug that prevented explict box heights from working.
  *
