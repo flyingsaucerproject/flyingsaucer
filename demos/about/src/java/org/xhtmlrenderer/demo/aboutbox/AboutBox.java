@@ -24,14 +24,14 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URL;
+import javax.xml.parsers.DocumentBuilder;
+import org.xhtmlrenderer.resource.XMLResource;
 
 
 /**
@@ -109,10 +109,6 @@ public class AboutBox extends JDialog implements Runnable {
      */
     public void loadPage(String url_text, XHTMLPanel panel)
             throws Exception {
-        DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
-        fact.setValidating(true);
-        DocumentBuilder builder = fact.newDocumentBuilder();
-        //builder.setErrorHandler(root.error_handler);
         Document doc = null;
 
         URL ref = null;
@@ -128,12 +124,14 @@ public class AboutBox extends JDialog implements Runnable {
             Uu.p("short url = " + short_url);
             ref = marker.getClass().getResource(short_url);
             Uu.p("ref = " + ref);
-            doc = builder.parse(marker.getClass().getResourceAsStream(short_url));
+            doc = XMLResource.load(marker.getClass().getResourceAsStream(short_url)).getDocument();
         } else if (url_text.startsWith("http")) {
-            doc = builder.parse(url_text);
+            doc = XMLResource.load(new URL(url_text)).getDocument();
+
             ref = new File(url_text).toURL();
         } else {
-            doc = builder.parse(url_text);
+            doc = XMLResource.load(new URL(url_text)).getDocument();
+            
             ref = new File(url_text).toURL();
         }
         Uu.p("ref = " + ref);
@@ -203,6 +201,9 @@ public class AboutBox extends JDialog implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/02/05 17:21:02  pdoubleya
+ * Use XMLResource for loading XML.
+ *
  * Revision 1.5  2004/12/12 05:51:47  tobega
  * Now things run. But there is a lot to do before it looks as nice as it did. At least we now have :before and :after content and handling of breaks by css.
  *

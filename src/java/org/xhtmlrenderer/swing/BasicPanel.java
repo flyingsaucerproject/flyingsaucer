@@ -753,11 +753,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      */
     protected Document loadDocument( final URL url )
     throws Exception {
-        DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = fact.newDocumentBuilder();
-        builder.setErrorHandler( error_handler );
-        Document doc = builder.parse( url.openStream() );
-        return doc;
+        return XMLResource.load(url).getDocument();
     }
     
     /**
@@ -877,6 +873,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2005/02/05 17:20:10  pdoubleya
+ * Use XMLResource for loading XML.
+ *
  * Revision 1.39  2005/02/05 11:33:49  pdoubleya
  * Load pages directly from XMLResource.
  *
