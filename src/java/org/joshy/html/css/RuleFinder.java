@@ -2,6 +2,7 @@ package org.joshy.html.css;
 
 import org.joshy.u;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import org.w3c.dom.*;
 import org.w3c.dom.css.*;
@@ -10,11 +11,17 @@ import com.steadystate.css.*;
 import com.steadystate.css.parser.*;
 
 /* ============ CSS searching and cascading code ================ */
-public class RuleFinder {
+public class RuleFinder implements RuleBank {
     List styles;
-    public RuleFinder(List styles) {
-        this.styles = styles;
+    public RuleFinder() {
+        styles = new ArrayList();
     }
+    
+    public void addRule(JStyle rule) {
+        styles.add(rule);
+    }
+    
+    
     
     
     
@@ -50,7 +57,7 @@ public class RuleFinder {
     
     
     
-    public boolean match(String selector, Node node) {
+    private boolean match(String selector, Node node) {
         try {
             CSSOMParser parser = new CSSOMParser();
             SelectorList list = parser.parseSelectors(new InputSource(new StringReader(selector)));

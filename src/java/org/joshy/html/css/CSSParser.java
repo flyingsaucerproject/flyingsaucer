@@ -89,7 +89,7 @@ public class CSSParser {
                 SelectorList list = parser.parseSelectors(new InputSource(new StringReader(selector)));
                 style_holder.selector_list = list;
                 style_holder.declaration = style_rule.getStyle();
-                bank.styles.add(style_holder);
+                bank.rule_bank.addRule(style_holder);
             }
         }
     }

@@ -22,6 +22,7 @@ public class CSSBank extends CSSAccessor {
     public List style_nodes;
     public List styles;
     CSSParser parser;
+    public RuleBank rule_bank;
     
 
     public CSSBank() {
@@ -29,6 +30,7 @@ public class CSSBank extends CSSAccessor {
         style_nodes = new ArrayList();
         styles = new ArrayList();
         parser = new CSSParser(this);
+        rule_bank = new RuleFinder();
     }
     
     
@@ -62,8 +64,8 @@ public class CSSBank extends CSSAccessor {
     
     public CSSValue getProperty(Element elem, String prop, boolean inherit) {
         //u.p("looking at: " + elem.getNodeName() + " prop = " + prop + " inherit " + inherit);
-        RuleFinder rf = new RuleFinder(this.styles);
-        CSSStyleDeclaration style_dec = rf.findRule(elem,prop,inherit);
+        //RuleFinder rf = new RuleFinder(this.styles);
+        CSSStyleDeclaration style_dec = rule_bank.findRule(elem,prop,inherit);
         //u.p("got style: " + style_dec);
         if(style_dec == null) {
             //u.p("print there is no style declaration at all for: " + elem.getNodeName());

@@ -9,8 +9,8 @@ public class GraphicsUtil {
     public static void drawBox(Graphics g, Box box, Color color) {
         Color oc = g.getColor();
         g.setColor(color);
-        g.drawLine(-5,-5,5,5);
-        g.drawLine(-5,5,5,-5);
+        //g.drawLine(-5,-5,5,5);
+        //g.drawLine(-5,5,5,-5);
         g.drawRect(box.x,box.y,box.width,box.height);
         g.setColor(oc);
     }
