@@ -66,8 +66,9 @@
     <!-- Compiler flags -->
     <!-- For details on each flag, see http://ant.apache.org/manual/CoreTasks/javac.html -->
     <property name="build.compiler" value="modern" />
-    <property name="compiler.debug" value="on" />
-    <property name="compiler.deprecation" value="off" />
+    <property name="compiler.debug" value="true" />
+    <property name="compiler.debuglevel" value="lines,vars,source"/>
+    <property name="compiler.deprecation" value="on" />
     <property name="compiler.failonerror" value="true" />
     <property name="compiler.fork" value="no" />
     <property name="compiler.listfiles" value="no" />
@@ -136,6 +137,7 @@
             destdir="${dest.java.dir}"
             
             debug="${compiler.debug}"
+            debuglevel="${compiler.debuglevel}"
             deprecation="${compiler.deprecation}"
             failonerror="${compiler.failonerror}"
             fork="${compiler.fork}"
@@ -590,6 +592,14 @@
 $Id$
 
 $Log$
+Revision 1.52  2004/10/28 01:34:22  joshy
+moved more painting code into the renderers
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.51  2004/10/26 00:13:13  joshy
 added threaded layout support to the HTMLPanel
 

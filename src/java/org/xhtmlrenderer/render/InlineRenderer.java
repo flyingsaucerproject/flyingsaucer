@@ -2,7 +2,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.*;
 
-public class InlineRenderer extends InlineLayout {
+public class InlineRenderer extends BoxRenderer {
 
     /**
     * Description of the Method

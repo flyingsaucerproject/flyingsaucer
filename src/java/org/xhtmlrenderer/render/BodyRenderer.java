@@ -4,7 +4,7 @@ import java.awt.Image;
 import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.css.*;
 
-public class BodyRenderer extends BodyLayout {
+public class BodyRenderer extends BoxRenderer {
     
     
     /**

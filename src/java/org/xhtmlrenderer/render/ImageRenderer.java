@@ -5,7 +5,7 @@ import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.css.*;
 
 
-public class ImageRenderer extends ImageLayout {
+public class ImageRenderer extends BoxRenderer {
 
     /**
     * Description of the Method
@@ -48,7 +48,7 @@ public class ImageRenderer extends ImageLayout {
     * @param box  PARAM
     */
     public void paintComponent( Context c, Box box ) {
-        Image img = getImage( c, box.node );
+        Image img = ImageLayout.getImage( c, box.node );
         if ( img != null ) {
             c.getGraphics().drawImage( img, box.x, box.y, null );
         }

@@ -244,6 +244,9 @@ public class DefaultLayout implements Layout {
             if ( child.isAnonymous() ) {
                 renderer = LayoutFactory.getAnonymousRenderer();//new InlineLayout();
             } else {
+                if(child.node == null) {
+                    u.p("null node of child: " + child);
+                }
                 renderer = LayoutFactory.getRenderer( child.node );
             }
             paintChild( c, child, renderer );
@@ -474,6 +477,14 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/10/28 01:34:23  joshy
+ * moved more painting code into the renderers
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/10/27 14:03:37  joshy
  * added initial viewport repainting support
  *

@@ -44,6 +44,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.Layout;
 import org.xhtmlrenderer.layout.LayoutFactory;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.*;
 
 
 /**
@@ -410,6 +411,10 @@ public class TableLayout2
 
         return box;
     }
+    
+    public Renderer getRenderer() {
+        return new TableRenderer();
+    }
 
 }
 
@@ -444,6 +449,14 @@ public class TableLayout2
 /*
    $Id$
    $Log$
+   Revision 1.4  2004/10/28 01:34:26  joshy
+   moved more painting code into the renderers
+
+   Issue number:
+   Obtained from:
+   Submitted by:
+   Reviewed by:
+
    Revision 1.3  2004/10/23 13:59:18  pdoubleya
    Re-formatted using JavaStyle tool.
    Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

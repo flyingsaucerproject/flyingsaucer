@@ -165,7 +165,7 @@ public class ImageLayout extends BoxLayout {
      * @param node  PARAM
      * @return      The image value
      */
-    protected Image getImage( Context c, Node node ) {
+    public static Image getImage( Context c, Node node ) {
 
         if ( node.getNodeType() != node.ELEMENT_NODE ) {
 
@@ -205,6 +205,14 @@ public class ImageLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/10/28 01:34:23  joshy
+ * moved more painting code into the renderers
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/10/27 13:39:56  joshy
  * moved more rendering code out of the layouts
  *

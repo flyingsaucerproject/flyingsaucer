@@ -173,7 +173,7 @@ public class LayoutFactory {
     }
 
     public static Renderer getAnonymousRenderer() {
-        return new InlineLayout();
+        return new AnonymousBoxLayout().getRenderer();
     }
 
     /**
@@ -257,6 +257,14 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.8  2004/10/28 01:34:24  joshy
+* moved more painting code into the renderers
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.7  2004/10/27 13:17:01  joshy
 * beginning to split out rendering code
 * Issue number:
