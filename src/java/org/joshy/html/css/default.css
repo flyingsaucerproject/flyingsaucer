@@ -85,7 +85,9 @@
     list-style-image: none;
 }
 
-
+head {
+    display: none;
+}
 
 body {
 
