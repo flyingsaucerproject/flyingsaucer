@@ -124,7 +124,12 @@ public class FontResolver {
         //Uu.p("creating font: " + root_font + " size = " + size +
         //    " weight = " + weight + " style = " + style + " variant = " + variant);
         int font_const = Font.PLAIN;
-        if ( weight != null && weight == IdentValue.BOLD ) {
+        if ( weight != null && 
+            ( weight == IdentValue.BOLD || 
+              weight == IdentValue.FONT_WEIGHT_700 ||
+              weight == IdentValue.FONT_WEIGHT_800 ||
+              weight == IdentValue.FONT_WEIGHT_900 )) {
+                  
             font_const = font_const | Font.BOLD;
         }
         if ( style != null && style == IdentValue.ITALIC ) {
@@ -239,6 +244,9 @@ public class FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/02/02 11:32:29  pdoubleya
+ * Fixed error in font-weight; now checks for 700, 800, 900 or BOLD.
+ *
  * Revision 1.12  2005/01/29 20:21:10  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
