@@ -262,14 +262,14 @@ class BrowserPanel extends JPanel {
     
     public void goForward() {
        root.history.goNext();
-       view.setDocument(root.history.getCurrentDocument());
+       view.setDocument(root.history.getCurrentDocument(),root.history.getCurrentURL());
        //root.history.dumpHistory();
        updateButtons();
     }
     
     public void goBack() throws Exception {
        root.history.goPrevious();
-       view.setDocument(root.history.getCurrentDocument());
+       view.setDocument(root.history.getCurrentDocument(),root.history.getCurrentURL());
        //root.history.dumpHistory();
        updateButtons();
     }
@@ -349,8 +349,8 @@ class BrowserPanel extends JPanel {
        }
     }
     
-    public void loadPage(Document doc) throws Exception {
-        view.setDocument(doc);
+    public void loadPage(Document doc, URL url) throws Exception {
+        view.setDocument(doc,url);
         root.history.goNewDocument(doc);
         updateButtons();
     }
@@ -385,7 +385,7 @@ class BrowserPanel extends JPanel {
         } else {
             doc = builder.parse(url_text);
         }
-        loadPage(doc);
+        loadPage(doc,new File(url_text).toURL());
         
         setStatus("Successfully loaded: " + url_text);
     }

@@ -5,7 +5,7 @@
     <target name="help">
         <echo message=" ant clean:     	clean up any compilation or distribution files made"/>
         <echo message=" ant compile:   	compile the source"/>
-        <echo message=" ant test:            run the unit tests"/>
+        <echo message=" ant browser:    run the browser"/>
     </target>
 
     <target name="clean" description="clean">
@@ -19,6 +19,7 @@
 
     <target name="init">
         <mkdir dir="build/classes"/>
+        <property name="app-name" value="flyingsaucer"/>
     </target>
 
     <target name="clean-compile" description="clean compile" depends="clean,compile">
@@ -53,7 +54,7 @@
     </target>
 
 
-    <target name="beta-dist" depends="jar" description="Play Distro">
+    <target name="binary-dist" depends="jar" description="Play Binary Distro">
         <copy todir="build">
             <fileset dir=".">
                 <include name="demos/*.xhtml"/>
@@ -66,10 +67,21 @@
                 <include name="readme.txt"/>
             </fileset>
         </copy>
-        <zip basedir="build" zipfile="build/htmlrender.zip">
+        <zip basedir="build" zipfile="build/${app-name}.zip">
             <include name="htmlrender.jar"/>
             <include name="*.jar"/>
             <include name="demos/**"/>
+        </zip>
+    </target>
+    
+    
+    <target name="src-dist" depends="init" description="Play Src Distro">
+        <zip basedir="." zipfile="build/${app-name}.src.zip">
+            <include name="build.xml"/>
+            <include name="lib/**"/>
+            <include name="src/**"/>
+            <include name="demos/**"/>
+            <zipfileset dir="src/packaging" includes="readme.txt" fullpath="readme.txt"/>
         </zip>
     </target>
     

@@ -1,35 +1,37 @@
-HTMLRenderer Version 0.03
+Flying Saucer Version 0.02
+http://xhtmlrenderer.dev.java.net/
 
 
-This is a demonstration of the 100% Java HTML Renderer
-written by Joshua Marinacci (joshy@joshy.org)
+This is a demonstration of Flying Saucer, the 100% Java HTML Renderer
+written by Joshua Marinacci (joshy@joshy.org) and others at Java.net
 
-To start just double click on the icon for htmlrender.jar
+To start just double click on the icon for flyingsaucer.jar
 or type this on the command line:
 
-    java -jar htmlrender.jar
+    java -jar flyingsaucer.jar
     
-Select a test from the 'Test' menu to see different features.
+Select a test from the 'Demo' menu to see different features.
 
-This renderer does not support general HTML from the web.
-It only supports XHTML Strict with CSS1/2 for styling.
+If this is the source distro, type 'ant help' to see the available options
+for compiling.
 
-It currently supports most basic html contstructs, including tables, lists, and
-images. It supports normal, relative, floated, and a little absolute and fixed
-positioning. Almost any form of DIV positioning is possible. Most textual CSS is
-supported (font sizes, underlines, sub & super, text transformations, horizontal
-and vertical alignment. see the 'general styled text', 'line breaking', and
-'text alignment' for examples). There is mostly complete support for the box
-model (padding, margins, border with styles).
+For more information see the project website at java.net
+http://xhtmlrenderer.dev.java.net/
+and join the mailing list.
 
+Thanks,
+    Joshua  (joshy@joshy.org)
+    
+    
+Changes:
 
-One big thing it's missing is tables with cells that span rows and columns.
-
-The code is pretty damn slow, but it will hopefully get better. I'm looking
-for people to start using it and come up with crazy new ways to use it. Anyone
-writing an rss reader, chat client or music store?  I'd also like to see
-someone write a JTidy wrapper and webbrowser out of it.
-
-Please send feedback to joshy@joshy.org
-
-
+    V.02   July 10th 2004
+        added preliminary forms support
+        created a new browser application with
+            history 
+            forward / back / reload
+            status bar
+        started using java.util.logging
+        fixed image loading bug that caused the browser to hang
+        implemented new font resolver (should speed it up)
+        
