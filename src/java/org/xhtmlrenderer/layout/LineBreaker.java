@@ -49,7 +49,21 @@ public class LineBreaker {
      * @return Returns
      */
     public static InlineBox generateReplacedInlineBox(Context c, Content content, int avail, InlineBox prev_align, LineBox curr_line) {
-        //Uu.p("generating replaced Inline Box");
+        InlineBlockBox box = new InlineBlockBox();
+        box.element = content.getElement();
+        CalculatedStyle style = c.getCurrentStyle();
+        // use the prev_align to calculate the x
+        if (prev_align != null && !prev_align.break_after) {
+            box.x = prev_align.x + prev_align.width;
+        } else {
+            box.x = 0;
+        }
+
+        box.y = 0;// it's relative to the line
+        // do vertical alignment
+        VerticalAlign.setupVerticalAlign(c, style, box);
+        c.translate(box.x + curr_line.x, box.y + curr_line.y);
+        c.translateInsets(box);
         Rectangle bounds = null;
         BlockBox block = null;
         JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c);
@@ -61,35 +75,6 @@ public class LineBreaker {
             bounds = new Rectangle(block.x, block.y, block.width, block.height);
             //Uu.p("bounds = " + bounds);
         }
-        /*
-         * joshy: change this to just modify the existing block instead of creating
-         * a  new one
-         */
-        // create new inline (null text is safe!)
-        InlineBlockBox box = new InlineBlockBox();
-        box.element = content.getElement();
-        //box.width = bounds.width;
-        //box.height = bounds.height;
-        CalculatedStyle style = c.getCurrentStyle();
-        // use the prev_align to calculate the Xx
-        if (prev_align != null && !prev_align.break_after) {
-            box.x = prev_align.x + prev_align.width;
-        } else {
-            box.x = 0;
-        }
-
-        box.y = 0;// it's relative to the line
-        box.break_after = true;
-
-        // do vertical alignment
-        VerticalAlign.setupVerticalAlign(c, style, box);
-        // adjust width based on borders and padding
-        //box.width += box.totalHorizontalPadding(c.getCurrentStyle());
-        //box.height += box.totalVerticalPadding();
-
-        box = box;
-        //joshy: activate this: box.block = block
-        //Uu.p("created a new inline box");
         //box.replaced = true;
         box.sub_block = block;
         if (block != null) block.setParent(box);
@@ -101,21 +86,18 @@ public class LineBreaker {
         box.break_after = false;
 
         // if it won't fit on this line, then put it on the next one
+        // the box will be discarded and recalculated
         if (box.width > avail && prev_align != null && !prev_align.break_after) {
             box.break_before = true;
             box.x = 0;
         }
-        c.translate(box.x, box.y);
-        c.translateInsets(box);
-        if (cc != null) {
+        if (cc != null && !box.break_before) {//It will be discarded if break_before is true!
             Point origin = c.getOriginOffset();
-            cc.setLocation((int) origin.getX(), (int) origin.getY() + curr_line.y);
+            cc.setLocation((int) origin.getX(), (int) origin.getY());
             c.getCanvas().add(cc);
         }
         c.untranslateInsets(box);
-        c.translate(-box.x, -box.y);
-        // return
-        //Uu.p("last replaced = " + box);
+        c.translate(-box.x - curr_line.x, -box.y - curr_line.y);
         return box;
     }
 
@@ -125,6 +107,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.53  2005/01/07 13:29:03  tobega
+ * Fixed the image demo
+ *
  * Revision 1.52  2005/01/07 12:42:08  tobega
  * Hacked improved support for custom components (read forms). Creates trouble with the image demo. Anyway, components work and are usually in the right place.
  *

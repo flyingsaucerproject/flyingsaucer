@@ -52,10 +52,11 @@ public class BlockRendering {
             }
         } else*/
         if (box.component != null) {
+            //HACK: the positions during layout are still not perfect, reset here - tobe 2005-01-07
+            //TODO: fix the translates during layout to handle this directly instead
             Point origin = c.getOriginOffset();
             box.component.setLocation((int) origin.getX(), (int) origin.getY());
-            //c.getCanvas().add(cc);
-            box.component.paint(c.getGraphics());
+            //box.component.paint(c.getGraphics());
         } else
             for (int i = 0; i < box.getChildCount(); i++) {
                 Box child = (Box) box.getChild(i);
