@@ -120,6 +120,7 @@ public class FloatUtil {
           a  new one. is that possible?
         */
         //u.p("generate floated block inline box");
+        //TODO: this might be dangerous
         BoxLayout layout = (BoxLayout) c.getLayout(content.getElement()); //
         Rectangle oe = c.getExtents(); // copy the extents for safety
         c.setExtents(new Rectangle(oe));
@@ -127,8 +128,7 @@ public class FloatUtil {
 
         //BlockBox block = (BlockBox)layout.layout( c, (Element)node );
         InlineBlockBox inline_block = new InlineBlockBox();
-        inline_block.setNode(content.getElement());
-        inline_block.setContent(content);
+        inline_block.content = content;
         layout.layout(c, inline_block);
 
         //u.p("got a block box from the sub layout: " + block);
@@ -144,7 +144,7 @@ public class FloatUtil {
         CascadedStyle firstLineStyle = c.css.getPseudoElementStyle(content.getElement(), "first-line");
         //TODO: refactor styleBox
         //for now, null is safe
-        LineBreaker.styleBox(c, content.getElement(), 0, 0, null, bounds, prev_align, font, inline_block, firstLineStyle);
+        LineBreaker.styleBox(c, content.getElement(), 0, 0, null, bounds, prev_align, font, inline_block);
         inline_block.x = x;
         inline_block.y = y;
         // u.p("after newbox = " + inline_block);

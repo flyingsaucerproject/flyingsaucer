@@ -19,30 +19,31 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Font;
-import java.awt.font.LineMetrics;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xhtmlrenderer.util.u;
+
 import java.awt.*;
-import java.awt.geom.*;
-import org.xhtmlrenderer.util.*;
-import org.xhtmlrenderer.layout.*;
-import java.awt.FontMetrics;
-import org.xhtmlrenderer.css.style.*;
+import java.awt.font.LineMetrics;
+import java.awt.geom.Rectangle2D;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class InlineBox extends Box {
-    
+
     public InlineBox() {
     }
+
     public InlineBox(InlineBox box) {
         super(box);
         sub_block = box.sub_block;
         font = box.font;
-        text = box.text;
+        //TODO: do we need to set the master text here? text = box.text;
         underline = box.underline;
         overline = box.overline;
         strikethrough = box.strikethrough;
@@ -52,77 +53,91 @@ public class InlineBox extends Box {
 
     // the reference to the real block inside
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public BlockBox sub_block = null;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean replaced = false;
 
 
     // line breaking stuff
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean break_after = false;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean break_before = false;
 
 
     // decoration stuff
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean underline = false;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean strikethrough = false;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean overline = false;
 
 
     // vertical alignment stuff
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int baseline;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int lineheight;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean vset = false;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean top_align = false;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean bottom_align = false;
-
-    /** Description of the Field */
-    private boolean is_break = false;
-    public void setBreak(boolean is_break) {
-        this.is_break = is_break;
-    }
-    public boolean isBreak() {
-        return this.is_break;
-    }
-
 
     // text stuff
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int start_index = -1;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int end_index = -1;
-
-    /** Description of the Field */
-    private String text;
-
 
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
 
@@ -130,19 +145,21 @@ public class InlineBox extends Box {
                 "\" bnds = " + x + "," + y + " - " + width + "x" + height +
                 " start = " + this.start_index + " end = " + this.end_index +
                 " baseline = " + this.baseline + " vset = " + this.vset +
-        // CLN: (PWW 13/08/04)
+                // CLN: (PWW 13/08/04)
                 " color: " + color + " background-color: " + background_color +
                 " font: " + font;
     }
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Font font;
 
 
     /**
      * Gets the font attribute of the InlineBox object
      *
-     * @return   The font value
+     * @return The font value
      */
     public Font getFont() {
         return font;
@@ -151,152 +168,135 @@ public class InlineBox extends Box {
     /**
      * Sets the font attribute of the InlineBox object
      *
-     * @param font  The new font value
+     * @param font The new font value
      */
-    public void setFont( Font font ) {
+    public void setFont(Font font) {
         this.font = font;
     }
 
     /**
-     * Sets the text attribute of the InlineBox object
-     *
-     * @param text  The new text value
-     */
-    public void setText( String text ) {
-        this.text = text;
-    }
-
-
-    /**
      * Gets the substring attribute of the InlineBox object
      *
-     * @return   The substring value
+     * @return The substring value
      */
     public String getSubstring() {
         // new code for whitepsace handling
-        if(master != null) {
-            if(start_index == -1 || end_index == -1) {
+        if (master != null) {
+            if (start_index == -1 || end_index == -1) {
                 return master;
             }
-            if(end_index < start_index) {
+            if (end_index < start_index) {
                 u.p("warning: end is less than start: " + end_index + " < " + start_index);
                 u.p("master = " + master);
                 return master;
             }
             return master.substring(start_index, end_index);
+        } else {
+            throw new NullPointerException("Fail fast, no master text set!");
         }
-        
-        if(text == null) return "";
-        String txt = text.substring( start_index, end_index );
-        return txt;
+
     }
+
     public void setSubstring(String text) {
-        this.text = text;
+        this.master = text;
         start_index = 0;
         end_index = text.length();
     }
+
     public void setSubstring(int start, int end) {
-        if(end < start) {
+        if (end < start) {
             u.p("setting substring to: " + start + " " + end);
             throw new XRRuntimeException("set substring length too long: " + this);
         }
         start_index = start;
         end_index = end;
     }
-    
+
     public void setSubstringLength(int len) {
         end_index = start_index + len;
-        if(end_index > master.length()) {
+        if (end_index > master.length()) {
             u.p("just set substring length to : " + len);
             u.p("so indexes = " + start_index + " -> " + end_index);
             u.p("longer than master: " + master);
             throw new XRRuntimeException("set substring length too long: " + this);
         }
     }
-    
+
     private String master;
+
     public void setMasterText(String master) {
         //u.p("set master text to: \"" + master + "\"");
         this.master = master;
     }
+
     public String getMasterText() {
         return master;
     }
+
     public String whitespace = "normal";
 
-
-    /**
-     * Gets the text attribute of the InlineBox object
-     *
-     * @return   The text value
-     */
-    public String getText() {
-        return this.text;
-    }
-
-    
     public int getTextIndex(Context ctx, int x) {
         Font font = getFont();
         String str = getSubstring();
         char[] chars = new char[str.length()];
-        getSubstring().getChars(0,str.length(),chars,0);
+        getSubstring().getChars(0, str.length(), chars, 0);
         FontMetrics fm = ctx.getGraphics().getFontMetrics(font);
 
-        for(int i=0; i<chars.length; i++) {
-            
-            if(fm.charsWidth(chars,0,i) >= x) {
+        for (int i = 0; i < chars.length; i++) {
+
+            if (fm.charsWidth(chars, 0, i) >= x) {
                 return i;
             }
         }
 
         return 0;
     }
-    
+
     public int getAdvance(Context ctx, int x) {
         Font font = getFont();
         String str = getSubstring();
-        str = str.substring(0,x);
+        str = str.substring(0, x);
         //u.p("substring = " + str);
         char[] chars = new char[str.length()];
-        getSubstring().getChars(0,str.length(),chars,0);
+        getSubstring().getChars(0, str.length(), chars, 0);
         FontMetrics fm = ctx.getGraphics().getFontMetrics(font);
         //u.p("getting advance: " + x + " chars = " + chars);
-        return fm.charsWidth(chars,0,x);
+        return fm.charsWidth(chars, 0, x);
     }
-    
-    
+
+
     public LineMetrics line_metrics;
     public Rectangle2D text_bounds;
 
     private CalculatedStyle style;
+
     public void setStyle(CalculatedStyle style) {
         this.style = style;
     }
+
     public CalculatedStyle getStyle() {
         return this.style;
     }
-    public CalculatedStyle getStyle(Context c) {
-        if(this.style == null) {
-            setStyle(c.css.getStyle(getRealElement()));
-        }
-        return getStyle();
-    }
-    
-    
+
+    //TODO: check what is going on here
     public boolean isInlineElement() {
+        /* just to get it to compile, for now
         if(this.getRealElement() == this.getParent().getParent().getRealElement()) {
             return false;
-        }
+        }*/
         return true;
     }
 
-    
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/12/11 23:36:49  tobega
+ * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
+ *
  * Revision 1.16  2004/12/09 18:00:05  joshy
  * fixed hover bugs
  * fixed li's not being blocks bug

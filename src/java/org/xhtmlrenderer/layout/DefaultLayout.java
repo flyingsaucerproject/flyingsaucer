@@ -78,7 +78,7 @@ public class DefaultLayout implements Layout {
 
     public void restyle(Context ctx, Box box) {
         box.color = ctx.css.getStyle(box.getRealElement()).getColor();
-        box.setBorderColor(ctx.css.getStyle(box.getRealElement()).getBorderColor());
+        box.border_color = ctx.css.getStyle(box.getRealElement()).getBorderColor();
         box.border_style = ctx.css.getStyle(box.getRealElement()).getStringProperty("border-top-style");
         box.background_color = ctx.css.getStyle(box.getRealElement()).getBackgroundColor();
         restyleChildren(ctx, box);
@@ -140,11 +140,11 @@ public class DefaultLayout implements Layout {
      * @return The padding value
      */
     public static Border getPadding(Context c, Box box) {
-        if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
-            if (box.padding == null) {
-                box.padding = box.getContent().getStyle().getPaddingWidth();
-            }
+        //TODO: can this be removed?: if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
+        if (box.padding == null) {
+            box.padding = c.getCurrentStyle().getPaddingWidth();
         }
+        //}
         return box.padding;
     }
 
@@ -157,11 +157,11 @@ public class DefaultLayout implements Layout {
      * @return The margin value
      */
     public static Border getMargin(Context c, Box box) {
-        if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
-            if (box.margin == null) {
-                box.margin = box.getContent().getStyle().getMarginWidth();
-            }
+        //TODO: can this be removed?: if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
+        if (box.margin == null) {
+            box.margin = c.getCurrentStyle().getMarginWidth();
         }
+        //}
         return box.margin;
     }
 
@@ -178,20 +178,20 @@ public class DefaultLayout implements Layout {
      * @return The backgroundColor value
      */
     public static Color getBackgroundColor(Context c, Box box) {
-        if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
-            if (box.background_color == null) {
-                CalculatedStyle style = box.getContent().getStyle();
-                if (style.isIdentifier(CSSName.BACKGROUND_COLOR)) {
-                    String value = style.getStringProperty("background-color");
-                    //u.p("got : " + obj);
-                    if (value.equals("transparent")) {
-                        box.background_color = new Color(0, 0, 0, 0);
-                        return box.background_color;
-                    }
+        //TODO: can this be removed?: if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
+        if (box.background_color == null) {
+            CalculatedStyle style = c.getCurrentStyle();
+            if (style.isIdentifier(CSSName.BACKGROUND_COLOR)) {
+                String value = style.getStringProperty("background-color");
+                //u.p("got : " + obj);
+                if (value.equals("transparent")) {
+                    box.background_color = new Color(0, 0, 0, 0);
+                    return box.background_color;
                 }
-                box.background_color = style.getBackgroundColor();
             }
+            box.background_color = style.getBackgroundColor();
         }
+        //}
         return box.background_color;
     }
 
@@ -202,6 +202,9 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2004/12/11 23:36:48  tobega
+ * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
+ *
  * Revision 1.31  2004/12/11 18:18:11  tobega
  * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
  *

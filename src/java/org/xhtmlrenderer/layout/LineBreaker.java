@@ -254,7 +254,7 @@ public class LineBreaker {
         CascadedStyle firstLineStyle = c.css.getPseudoElementStyle(content.getElement(), "first-line");
         // create new inline (null text is safe!)
         //TODO: refactor styleBox, it is too overloaded, we know which type we want, right?
-        InlineBox box = newBox(c, content, 0, 0, null, bounds, prev_align, font, firstLineStyle);
+        InlineBox box = newBox(c, content, 0, 0, null, bounds, prev_align, font);
         //joshy: activate this: box.block = block
         //u.p("created a new inline box");
         box.replaced = true;
@@ -327,18 +327,17 @@ public class LineBreaker {
     /**
      * Description of the Method
      *
-     * @param c              PARAM
+     * @param c          PARAM
      * @param content
-     * @param start          PARAM
-     * @param end            PARAM
-     * @param text           PARAM
-     * @param prev_align     PARAM
-     * @param font           PARAM
-     * @param firstLineStyle
+     * @param start      PARAM
+     * @param end        PARAM
+     * @param text       PARAM
+     * @param prev_align PARAM
+     * @param font       PARAM
      * @return Returns
      */
-    public static InlineBox newBox(Context c, Content content, int start, int end, String text, InlineBox prev_align, Font font, CascadedStyle firstLineStyle) {
-        return newBox(c, content, start, end, text, null, prev_align, font, firstLineStyle);
+    public static InlineBox newBox(Context c, Content content, int start, int end, String text, InlineBox prev_align, Font font) {
+        return newBox(c, content, start, end, text, null, prev_align, font);
     }
 
 // this function by itself takes up fully 29% of the complete program's
@@ -346,25 +345,24 @@ public class LineBreaker {
     /**
      * Description of the Method
      *
-     * @param c              PARAM
+     * @param c          PARAM
      * @param content
-     * @param start          PARAM
-     * @param end            PARAM
-     * @param text           PARAM
-     * @param bounds         PARAM
-     * @param prev_align     PARAM
-     * @param font           PARAM
-     * @param firstLineStyle
+     * @param start      PARAM
+     * @param end        PARAM
+     * @param text       PARAM
+     * @param bounds     PARAM
+     * @param prev_align PARAM
+     * @param font       PARAM
      * @return Returns
      */
-    public static InlineBox newBox(Context c, Content content, int start, int end, String text, Rectangle bounds, InlineBox prev_align, Font font, CascadedStyle firstLineStyle) {
+    public static InlineBox newBox(Context c, Content content, int start, int end, String text, Rectangle bounds, InlineBox prev_align, Font font) {
         InlineBox box = new InlineBox();
-        box.setContent(content);
-        //TODO: refactor styleBox.
-        return styleBox(c, content.getElement(), start, end, text, bounds, prev_align, font, box, firstLineStyle);
+        box.content = content;
+        return styleBox(c, content.getElement(), start, end, text, bounds, prev_align, font, box);
     }
 
-    public static InlineBox styleBox(Context c, Node node, int start, int end, String text, Rectangle bounds, InlineBox prev_align, Font font, InlineBox box, CascadedStyle firstLineStyle) {
+    //TODO: refactor styleBox.
+    public static InlineBox styleBox(Context c, Node node, int start, int end, String text, Rectangle bounds, InlineBox prev_align, Font font, InlineBox box) {
         //u.p("styleBox node = " + node.getNodeName() + " start = " + start + " end = " + end +
         //" prev = " + prev + " text = " + text + " bounds = " + bounds + " prev_align = " + prev_align);
         //u.p("Making box for: "  + node);
@@ -373,9 +371,8 @@ public class LineBreaker {
         //u.p("prev = " + prev);
         //u.p("prev align inline = " + prev_align);
         // }
-        Content content = box.getContent();
-        CalculatedStyle style = content.getStyle();
-        box.setNode(node);
+        Content content = box.content;
+        CalculatedStyle style = c.getCurrentStyle();
         box.start_index = start;
         box.end_index = end;
 
@@ -420,13 +417,14 @@ public class LineBreaker {
 
         box.break_after = true;
 
-        box.setText(text);
         box.setMasterText(text);
 
         if (!(content instanceof InlineBlockContent)) {
             if (!(content instanceof FloatedBlockContent)) {
                 TextDecoration.setupTextDecoration(box);
-                if (box.getText() == null) {
+                //TODO: don't understand the reasoning behind this:
+                //was: if (box.getText() == null) {
+                if (box.getMasterText() == null) {
                     return box;
                 }
             }
@@ -443,13 +441,14 @@ public class LineBreaker {
         //CalculatedStyle style = box.getStyle(c);//c.css.getStyle(elem);
         VerticalAlign.setupVerticalAlign(c, style, box);
         box.setFont(font);//FontUtil.getFont(c,node));
-        box.color = c.css.getStyle(node).getColor();
+        box.color = style.getColor();
         Relative.setupRelative(box);
 
         
         
-        // if first line then do extra setup        
-        if (c.isFirstLine()) {
+        // if first line then do extra setup
+        //this should be taken care of already - tobe 2004-12-11
+        /*if (c.isFirstLine()) {
             //u.p("node = " + node);
             //u.p("block elem = " + getNearestBlockElement(node,c));
             // if there is a first line firstLineStyle class
@@ -458,7 +457,7 @@ public class LineBreaker {
                 CalculatedStyle merged = c.css.getDerivedStyle(style, firstLineStyle);
                 styleInlineBox(c, merged, box);
             }
-        }
+        }*/
         
         
 
@@ -481,30 +480,8 @@ public class LineBreaker {
     }*/
 
 
-    public static boolean isFirstLetter(Context c, Node node, int start) {
-        //u.p("looking at node: " + node);
-        //u.p("start = " + start);
-        if (start > 0) {
-            return false;
-        }
-        if (node == null) {
-            return false;
-        }
-        //u.p("parent's first child = " + node.getParentNode().getFirstChild());
-        if (node.getParentNode().getFirstChild() != node) {
-            return false;
-        }
-        //u.p("it's the first child");
-        CascadedStyle cs = c.css.getPseudoElementStyle(node, "first-letter");
-        if (cs != null) {
-            return true;
-            //return false;
-        }
-        return false;
-    }
-
     public static InlineBox generateFirstLetterInlineBox(Context c, int start, String text,
-                                                         InlineBox prev_align, TextContent content, CascadedStyle firstLetterStyle, CascadedStyle firstLineStyle) {
+                                                         InlineBox prev_align, TextContent content, CascadedStyle firstLetterStyle) {
         // u.p("gen first letter box");
         // u.p("node = " + node);
         // u.p("start = " + start);
@@ -513,22 +490,16 @@ public class LineBreaker {
         // u.p("prev = " + prev);
         // u.p("prev align = " + prev_align);
         // u.p("avail = " + avail);
-        
-        CalculatedStyle style = content.getStyle();
+        c.pushStyle(firstLetterStyle);
+
+        CalculatedStyle style = c.getCurrentStyle();
         Font font = FontUtil.getFont(c, style);
-        //TODO: refactor styleBox, far too overloaded. Temporary hack here. Does box already have content set?
-        InlineBox box = newBox(c, content, start, end, text, prev_align, font, firstLineStyle);
-        //not used: int len = FontUtil.len(c, text.substring(start, end), font);
-        CalculatedStyle cs = null;
-        if (firstLetterStyle != null) {
-            cs = c.css.getDerivedStyle(style, firstLetterStyle);
-        } else {
-            cs = style;
-        }
+        InlineBox box = newBox(c, content, start, end, text, prev_align, font);
         // u.p("style = " + cs);
-        styleInlineBox(c, cs, box);
+        styleInlineBox(c, style, box);
         box.break_after = false;
         //u.p("generated a first letter inline: " + box);
+        c.popStyle();
         return box;
     }
 
@@ -547,6 +518,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2004/12/11 23:36:49  tobega
+ * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
+ *
  * Revision 1.32  2004/12/11 21:14:48  tobega
  * Prepared for handling run-in content (OK, I know, a side-track). Still broken, won't even compile at the moment. Working hard to fix it, though.
  *

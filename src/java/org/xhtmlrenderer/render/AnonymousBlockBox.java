@@ -37,19 +37,7 @@ public class AnonymousBlockBox extends BlockBox {
     public AnonymousBlockBox(Content content) {
 
         super();
-        setContent(content);
-        setNode(content.getElement());
-
-        /*
-         * while(true) {
-         * Node sibling = startNode.getNextSibling();
-         * if(sibling == null) { break; }
-         * if(Layout.isBlockNode(sibling,c)) { break; }
-         * u.p("adding sibiling: " + sibling);
-         * node_list.add(sibling);
-         * startNode = sibling;
-         * }
-         */
+        //will need this, I think: setContent(content);
 
     }
 
@@ -88,6 +76,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/12/11 23:36:49  tobega
+ * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
+ *
  * Revision 1.7  2004/12/10 06:51:04  tobega
  * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
  *

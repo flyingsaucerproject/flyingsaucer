@@ -19,14 +19,15 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Fixed;
 import org.xhtmlrenderer.layout.block.FloatUtil;
 import org.xhtmlrenderer.layout.block.Relative;
-import org.xhtmlrenderer.layout.content.*;
+import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
+import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.layout.content.FirstLetterStyle;
+import org.xhtmlrenderer.layout.content.FirstLineStyle;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BoxRenderer;
@@ -64,10 +65,9 @@ public class BoxLayout extends DefaultLayout {
      */
     public Box createBox(Context c, Content content) {
         BlockBox block = new BlockBox();
-        block.setNode(content.getElement());
-        block.setContent(content);
+        block.content = content;
         //String attachment = c.css.getStringProperty(block.getRealElement(), "background-attachment", false);
-        String attachment = c.css.getStyle(block.getRealElement()).propertyByName("background-attachment").computedValue().asString();
+        String attachment = c.getCurrentStyle().getStringProperty("background-attachment");
         if (attachment != null && attachment.equals("fixed")) {
             block.setChildrenExceedBounds(true);
         }
@@ -88,8 +88,10 @@ public class BoxLayout extends DefaultLayout {
     }
 
     public Box layout(Context c, Box block) {
+        //OK, first set up the current style. All depends on this...
+        c.pushStyle(block.content.getStyle());
         // this is to keep track of when we are inside of a form
-        saveForm(c, (Element) block.getNode());
+        //TODO: rethink: saveForm(c, (Element) block.getNode());
 
         // install a block formatting context for the body,
         // ie. if it's null.
@@ -163,7 +165,7 @@ public class BoxLayout extends DefaultLayout {
         Absolute.setupAbsolute(block);
         Fixed.setupFixed(c, block);
         FloatUtil.setupFloat(c, block);
-        setupForm(c, block);
+        //TODO: rethink: setupForm(c, block);
         this.contents_height = block.height;
         
         // remove the outtermost bfc
@@ -172,25 +174,27 @@ public class BoxLayout extends DefaultLayout {
             c.popBFC();
         }
 
+        //and now, back to previous style
+        c.popStyle();
+
         return block;
     }
 
     // calculate the width based on css and available space
     private void adjustWidth(Context c, Box block) {
-        if (!(block.getContent() instanceof BlockContent)) {//then it must be anonymous
+        if (block.content instanceof AnonymousBlockContent) {
             return;
         }
         // initalize the width to all the available space
         //block.width = c.getExtents().width;
-        Element elem = block.getElement();
-        CalculatedStyle style = block.getContent().getStyle();
+        CalculatedStyle style = c.getCurrentStyle();
         //if (c.css.hasProperty(elem, "width", false)) {
         if (style.hasProperty("width")) {
             // if it is a sub block then don't mess with the width
             if (c.isSubBlock()) {
-                if (!elem.getNodeName().equals("td")) {
+                /*if (!elem.getNodeName().equals("td")) {
                     u.p("ERRRRRRRRRRORRRR!!! in a sub block that's not a TD!!!!");
-                }
+                }*/
                 return;
             }
             //float new_width = c.css.getFloatProperty(elem, "width", c.getExtents().width, false);
@@ -203,11 +207,10 @@ public class BoxLayout extends DefaultLayout {
 
     // calculate the height based on css and available space
     private void adjustHeight(Context c, Box block) {
-        if (!(block.getContent() instanceof BlockContent)) {//then it must be anonymous
+        if (block.content instanceof AnonymousBlockContent) {
             return;
         }
-        Element elem = block.getElement();
-        CalculatedStyle style = block.getContent().getStyle();
+        CalculatedStyle style = c.getCurrentStyle();
         if (style.hasProperty("height")) {
             //float new_height = c.css.getFloatProperty(elem, "height", c.getExtents().height);
             float new_height = style.getFloatPropertyRelative("height", c.getExtents().height);
@@ -238,23 +241,18 @@ public class BoxLayout extends DefaultLayout {
         int old_counter = c.getListCounter();
         c.setListCounter(0);
 
-        java.util.List contentList = box.getContent().getChildContent(c);
-        if (contentList.size() == 0) return box;//we can do this if there is no content, right?
+        java.util.List contentList = block.content.getChildContent(c);
+        if (contentList.size() == 0) return block;//we can do this if there is no content, right?
         Iterator contentIterator = contentList.iterator();
-
-        //TODO: how to pass these on to first child?
-        CascadedStyle firstLineStyle = null;
-        CascadedStyle firstLetterStyle = null;
 
         while (contentIterator.hasNext()) {
             Object o = contentIterator.next();
-            //TODO: can we do this? contentIterator.remove();//chop it off, no need to keep it?
             if (o instanceof FirstLineStyle) {//can actually only be the first object in list
-                firstLineStyle = ((FirstLineStyle) o).getStyle();
+                block.firstLineStyle = ((FirstLineStyle) o).getStyle();
                 continue;
             }
             if (o instanceof FirstLetterStyle) {//can actually only be the first or second object in list
-                firstLetterStyle = ((FirstLetterStyle) o).getStyle();
+                block.firstLetterStyle = ((FirstLetterStyle) o).getStyle();
                 continue;
             }
             Content currentContent = (Content) o;
@@ -292,7 +290,7 @@ public class BoxLayout extends DefaultLayout {
                 Fixed.positionFixedChild(c, child_box);
             }
 
-            if (child_box.isAbsolute()) {
+            if (child_box.absolute) {
                 Absolute.positionAbsoluteChild(c, child_box);
             }
             
@@ -319,8 +317,8 @@ public class BoxLayout extends DefaultLayout {
         return block;
     }
 
-
-    private void saveForm(Context c, Element elem) {
+    //TODO: look over form handling. Should be handled through NamespaceHandler and DOM-events, I think
+    /*private void saveForm(Context c, Element elem) {
         if (c.getRenderingContext().getLayoutFactory().isForm(elem)) {
             if (elem.hasAttribute("name")) {
                 String name = elem.getAttribute("name");
@@ -336,7 +334,7 @@ public class BoxLayout extends DefaultLayout {
                 c.setForm(null, null);
             }
         }
-    }
+    }*/
 
 
     public Renderer getRenderer() {
@@ -348,6 +346,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2004/12/11 23:36:48  tobega
+ * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
+ *
  * Revision 1.39  2004/12/11 21:14:48  tobega
  * Prepared for handling run-in content (OK, I know, a side-track). Still broken, won't even compile at the moment. Working hard to fix it, though.
  *

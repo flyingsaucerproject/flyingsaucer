@@ -76,7 +76,7 @@ public class Absolute {
                 box.top = (int) style.getFloatPropertyRelative("top", 0);
                 box.top_set = true;
             }
-            box.setAbsolute(true);
+            box.absolute = true;
             
             // if right and left are set calculate width
             if (box.right_set && box.left_set) {

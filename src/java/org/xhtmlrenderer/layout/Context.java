@@ -24,6 +24,9 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CurrentBoxStyle;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
@@ -187,31 +190,29 @@ public class Context {
      */
     public Context() {
         font_resolver = new FontResolver();
-        /*
-        // set up text rendering code
-        TextRendererFactory text_renderer_factory = TextRendererFactory.newOversamplingInstance();
-        text_renderer = text_renderer_factory.newTextRenderer();
-
-        String text_renderer_quality = System.getProperty("org.xhtmlrenderer.minium.quality");
-        if (null == text_renderer_quality) {
-            text_renderer_quality = "lowest";
-        }
-
-        Map defaultHints;
-        if ("low".equals(text_renderer_quality)) {
-            defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_LOW;
-        } else if ("medium".equals(text_renderer_quality)) {
-            defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_MEDIUM;
-        } else if ("high".equals(text_renderer_quality)) {
-            defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGH;
-        } else if ("highest".equals(text_renderer_quality)) {
-            defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGHEST;
-        } else {
-            defaultHints = TextRenderingHints.DEFAULT_HINTS_FASTEST;
-        }
-        text_renderer.setTextRenderingHints(defaultHints);
-        */
         bfc_stack = new Stack();
+    }
+
+    //Style-handling stuff
+    private Stack styleStack;
+
+    public void initializeStyles(CurrentBoxStyle c) {
+        styleStack = new Stack();
+        styleStack.push(c);
+    }
+
+    public void pushStyle(CascadedStyle s) {
+        CalculatedStyle parent = (CalculatedStyle) styleStack.peek();
+        CalculatedStyle derived = css.getDerivedStyle(parent, s);
+        styleStack.push(derived);
+    }
+
+    public void popStyle() {
+        styleStack.pop();
+    }
+
+    public CalculatedStyle getCurrentStyle() {
+        return (CalculatedStyle) styleStack.peek();
     }
 
     /**
@@ -819,6 +820,9 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2004/12/11 23:36:48  tobega
+ * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
+ *
  * Revision 1.29  2004/12/11 18:18:10  tobega
  * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
  *

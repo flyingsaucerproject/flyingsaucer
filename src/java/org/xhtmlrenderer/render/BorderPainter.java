@@ -49,8 +49,8 @@ public class BorderPainter {
         // TODO: color is per-side ((PWW 13/08/04))
         //u.p("border = " + ctx.css.getBorderColor(box.getRealElement()).bottomColor);
         box.border_color = ctx.css.getStyle(box.getRealElement()).getBorderColor().topColor;
-        if (box.getBorderColor() == null) {
-            box.setBorderColor(ctx.css.getStyle(box.getRealElement()).getBorderColor());
+        if (box.getBorderColor() == null) {//TODO: why do we need this? Shouldn't t be set already?
+            box.border_color = ctx.css.getStyle(box.getRealElement()).getBorderColor();
         }
         //u.p("set the border colors to: " + box.getBorderColor());
 
@@ -413,6 +413,9 @@ public void paintSimpleBorder( Graphics2D g, Rectangle bounds, Border border, Bo
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/12/11 23:36:49  tobega
+ * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
+ *
  * Revision 1.8  2004/12/05 00:48:58  tobega
  * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
  *

@@ -19,13 +19,9 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
-import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.util.u;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -38,29 +34,56 @@ import java.util.List;
  * @author empty
  */
 public class Box {
+    /**
+     * Constructor for the Box object
+     */
+    public Box() {
+        this(true);
+    }
+
     public Box(Box box) {
         this();
         x = box.x;
         y = box.y;
         width = box.width;
         height = box.height;
-        setNode(box.getNode());
-        setContent(box.getContent());
         border = box.border;
         margin = box.margin;
         padding = box.padding;
         color = box.color;
+        content = box.content;
     }
 
-    public Content getContent() {
-        return content;
+    /**
+     * Constructor for the Box object
+     *
+     * @param create_substyles PARAM
+     */
+    public Box(boolean create_substyles) {
+        boxes = new ArrayList();
+        if (create_substyles) {
+            this.click_styles = new Box(false);
+        }
     }
 
-    public void setContent(Content content) {
-        this.content = content;
+    /**
+     * Constructor for the Box object
+     *
+     * @param x      PARAM
+     * @param y      PARAM
+     * @param width  PARAM
+     * @param height PARAM
+     */
+    public Box(int x, int y, int width, int height) {
+        this();
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
     }
 
-    private Content content;
+    public Content content;
+
     // dimensions stuff
     /**
      * Description of the Field
@@ -79,44 +102,13 @@ public class Box {
      */
     public int height;
 
-    // element stuff
-    /**
-     * Description of the Field
-     */
-    private Node node;
-
-    // display stuff
-    /**
-     * Description of the Field
-     */
-    //TODO: why is display not used anywhere (getDisplay() and setDisplay() are never called!)
-    private String display = CSSName.initialValue(CSSName.DISPLAY);//have to get the correct CSS default
-
-    public String getDisplay() {
-        return display;
-    }
-
-    public void setDisplay(String display) {
-        u.p("display set to: " + display);
-        u.dump_stack();
-        this.display = display;
-    }
-
     // position stuff
     /**
      * Description of the Field
      */
     public boolean relative = false;
     public boolean fixed = false;
-    private boolean absolute = false;
-
-    public void setAbsolute(boolean abs) {
-        this.absolute = abs;
-    }
-
-    public boolean isAbsolute() {
-        return absolute;
-    }
+    public boolean absolute = false;
 
     public boolean floated = false;
 
@@ -152,15 +144,11 @@ public class Box {
     /**
      * Description of the Field
      */
-    public Color border_color;
-    private BorderColor bd_color;
+    public BorderColor border_color;
 
-    public void setBorderColor(BorderColor bd_color) {
-        this.bd_color = bd_color;
-    }
-
+    //TODO: get rid of this
     public BorderColor getBorderColor() {
-        return bd_color;
+        return border_color;
     }
 
     /**
@@ -237,14 +225,7 @@ public class Box {
      */
     private List boxes;
 
-    // printing stuff and constructor
-    /**
-     * Constructor for the Box object
-     */
-    public Box() {
-        this(true);
-    }
-
+    // printing stuff
     /**
      * Description of the Field
      */
@@ -255,34 +236,6 @@ public class Box {
      */
     public boolean auto_height = true;
 
-
-    /**
-     * Constructor for the Box object
-     *
-     * @param create_substyles PARAM
-     */
-    public Box(boolean create_substyles) {
-        boxes = new ArrayList();
-        if (create_substyles) {
-            this.click_styles = new Box(false);
-        }
-    }
-
-    /**
-     * Constructor for the Box object
-     *
-     * @param x      PARAM
-     * @param y      PARAM
-     * @param width  PARAM
-     * @param height PARAM
-     */
-    public Box(int x, int y, int width, int height) {
-        this();
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-    }
 
     /**
      * Return true if the target coordinates are inside of this box. The target
@@ -425,11 +378,11 @@ public class Box {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Box: ");
-        if (getContent() == null) {
+        /*if (getContent() == null) {
             sb.append(" null content, ");
         } else {
             sb.append(getContent().getClass().getName() + " (" + getContent().hashCode() + ")");
-        }
+        }*/
         sb.append(" (" + x + "," + y + ")->(" + width + " x " + height + ")");
         // CLN: (PWW 13/08/04)
         sb.append(" color: " + color + " background-color: " + background_color + " ");
@@ -504,74 +457,13 @@ public class Box {
         boxes.clear();
     }
 
-
-    // element stuff
-    /**
-     * Gets the element attribute of the Box object
-     *
-     * @return The element value
-     * @deprecated
-     */
-    public Element getElement() {
-        if (this.node == null) {
-            return null;
-        }
-        return getContent().getElement();
-    }
-
-    /**
-     * @return
-     * @deprecated
-     */
-    public Element getRealElement() {
-        /*if (isElement()) {
-            return getElement();
-        }*/
-        if (this.node == null) {
-            return null;
-        }
-        /*return (Element) getNode().getParentNode();*/
-        return getContent().getElement();
-    }
-
-    /**
-     * Gets the closestNode attribute of the Box object
-     *
-     * @return The closestNode value
-     * @deprecated
-     */
-    public Node getClosestNode() {
-        if (getNode() != null) {
-            return getNode();
-        }
-        return getParent().getClosestNode();
-    }
-
-    /**
-     * Gets the element attribute of the Box object
-     *
-     * @return The element value
-     * @deprecated
-     */
-    //TODO: this ALWAYS returns true now
-    public boolean isElement() {
-        /*if (this.node == null) {
-            return false;
-        }
-        if (getNode().getNodeType() == Node.ELEMENT_NODE) {
-            return true;
-        }
-        return false;*/
-        return true;
-    }
-
     /**
      * Gets the anonymous attribute of the Box object
      *
      * @return The anonymous value
      */
     public boolean isAnonymous() {
-        return false;//TODO: could be achieved by checking content
+        return false;
     }
 
     /**
@@ -639,7 +531,7 @@ public class Box {
         }
 
         // element
-        sb.append("-content:" + this.getContent());
+        //sb.append("-content:" + this.getContent());
 
         // dimensions and location
         sb.append("-box(" + x + "," + y + ")-(" + width + "x" + height + ")");
@@ -658,7 +550,7 @@ public class Box {
 
         // colors and insets
         sb.append("-colors(for" + getColorTestString(color));
-        sb.append("-bor" + getColorTestString(border_color));
+        //sb.append("-bor" + getColorTestString(border_color));
         sb.append("-bak" + getColorTestString(background_color) + ")");
         sb.append("-style(" + border_style + ")");
         sb.append("-insets(mar" + getBorderTestString(margin));
@@ -672,7 +564,7 @@ public class Box {
         sb.append("-" + background_position_vertical);
         sb.append("-" + background_position_horizontal + ")");
 
-        sb.append("-value:" + this.getClosestNode().getNodeValue());
+        //sb.append("-value:" + this.getClosestNode().getNodeValue());
         return sb.toString();
     }
 
@@ -703,30 +595,6 @@ public class Box {
     }
 
     /**
-     * @deprecated
-     */
-    public Node getNode() {
-        if (node == null) throw new NullPointerException("Node has not been set in box");
-        return node;
-    }
-
-    /**
-     * @deprecated
-     */
-    public void setNode(Node node) {
-        if (node == null) throw new NullPointerException("Trying to set a null node to box");
-        this.node = node;
-    }
-
-    public boolean hasContent() {
-        if (getContent() == null) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
      * If this box represents the text of an inline element then returns true.
      * Thus, the text "<i>some text</i>" if the following example would be an inline element:
      * <pre>
@@ -751,6 +619,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2004/12/11 23:36:49  tobega
+ * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
+ *
  * Revision 1.24  2004/12/11 18:18:11  tobega
  * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
  *

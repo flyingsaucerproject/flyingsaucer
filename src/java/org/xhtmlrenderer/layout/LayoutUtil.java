@@ -27,7 +27,7 @@ public class LayoutUtil {
         if (box.fixed) {
             return true;
         }
-        if (box.isAbsolute()) {
+        if (box.absolute) {
             //u.p("box is abs: " + box);
             return true;
         }
