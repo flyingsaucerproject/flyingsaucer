@@ -21,11 +21,10 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.BodyRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Renderer;
-
-import java.util.List;
 
 /**
  * Description of the Class
@@ -46,14 +45,16 @@ public class BodyLayout extends InlineLayout {
     public Box layout(Context c, Content content) {
         //set the current style
         c.initializeStyles(new EmptyStyle());
-        Box bodybox = createBox(c, content);
-        List children = content.getChildContent(c);
+        //Box bodybox = createBox(c, content);
+        BlockBox block = (BlockBox) createBox(c, content);
+        return layout(c, block);
+        /*List children = content.getChildContent(c);
         //TODO: fix this properly
         Box childbox = (new InlineLayout()).layout(c, (Content) children.get(0));
         bodybox.addChild(childbox);
         // Uu.p("done laying it all out");
         // Uu.p("\n=====================\n\n\n");
-        return bodybox;
+        return bodybox;*/
     }
 
 
@@ -67,6 +68,9 @@ public class BodyLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/12/13 01:29:40  tobega
+ * Got the scrollbars back (by accident), and now we should be able to display DocumentFragments as well as Documents, if someone finds that useful.
+ *
  * Revision 1.13  2004/12/12 05:51:48  tobega
  * Now things run. But there is a lot to do before it looks as nice as it did. At least we now have :before and :after content and handling of breaks by css.
  *

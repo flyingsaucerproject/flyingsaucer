@@ -226,7 +226,7 @@ public class ContentUtil {
                 }
                 if (blockList == null) blockList = new LinkedList();
                 if (inlineList.size() != 0) {
-                    blockList.add(resolveRunInContent(inlineList, parentElement, c));
+                    blockList.addAll(resolveRunInContent(inlineList, parentElement, c));
                     inlineList = new LinkedList();
                 }
                 //extract any trailing AnonymousBlock and put it in the inlineList
@@ -454,6 +454,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/12/13 01:29:39  tobega
+ * Got the scrollbars back (by accident), and now we should be able to display DocumentFragments as well as Documents, if someone finds that useful.
+ *
  * Revision 1.15  2004/12/13 00:04:55  tobega
  * Inserted a hack to make firstLine-styling of first anonymous block work. Should be replaced by better mechanism later.
  *

@@ -35,14 +35,4 @@ public class EmptyStyle extends CalculatedStyle {
     public EmptyStyle() {
     }
 
-    /**
-     * Returns true if property has been defined in this style.
-     *
-     * @param propName PARAM
-     * @return Returns
-     */
-    public boolean hasProperty(String propName) {
-        return true;
-    }
-
 }

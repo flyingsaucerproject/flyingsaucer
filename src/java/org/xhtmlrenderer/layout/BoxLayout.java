@@ -355,6 +355,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.46  2004/12/13 01:29:40  tobega
+ * Got the scrollbars back (by accident), and now we should be able to display DocumentFragments as well as Documents, if someone finds that useful.
+ *
  * Revision 1.45  2004/12/12 18:06:51  tobega
  * Made simple layout (inline and box) a bit easier to understand
  *
