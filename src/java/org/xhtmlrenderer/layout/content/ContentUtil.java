@@ -402,6 +402,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2004/12/29 10:39:30  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.23  2004/12/29 07:35:37  tobega
  * Prepared for cloned Context instances by encapsulating fields
  *

@@ -20,7 +20,7 @@
 package org.xhtmlrenderer.forms;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.SharedContext;
 
 import javax.swing.*;
 import java.util.List;
@@ -46,7 +46,7 @@ public class InputRadio extends FormItemLayout {
      * @param elem PARAM
      * @return Returns
      */
-    public JComponent createComponent(Context c, Element elem) {
+    public JComponent createComponent(SharedContext c, Element elem) {
         JRadioButton comp = new JRadioButton();
         comp.setText("");
         comp.setOpaque(false);
@@ -61,7 +61,7 @@ public class InputRadio extends FormItemLayout {
             List other_comps = c.getInputFieldComponents(c.getForm(), name);
             if (other_comps.size() > 0) {
                 for (int i = 0; i < other_comps.size(); i++) {
-                    Context.FormComponent other_comp = (Context.FormComponent) other_comps.get(i);
+                    SharedContext.FormComponent other_comp = (SharedContext.FormComponent) other_comps.get(i);
                     if (other_comp.component instanceof JRadioButton) {
                         JRadioButton other_radio = (JRadioButton) other_comp.component;
                         //Uu.p("found a matching component: " + other_radio);
@@ -78,6 +78,9 @@ public class InputRadio extends FormItemLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/29 10:39:28  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.5  2004/12/12 03:32:55  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

@@ -20,12 +20,12 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
@@ -274,12 +274,12 @@ public class InlineBox extends Box {
 
     public String whitespace = "normal";
 
-    public int getTextIndex(Context ctx, int x) {
+    public int getTextIndex(int x, Graphics g) {
         Font font = getFont();
         String str = getSubstring();
         char[] chars = new char[str.length()];
         getSubstring().getChars(0, str.length(), chars, 0);
-        FontMetrics fm = ctx.getGraphics().getFontMetrics(font);
+        FontMetrics fm = g.getFontMetrics(font);
 
         for (int i = 0; i < chars.length; i++) {
 
@@ -291,14 +291,14 @@ public class InlineBox extends Box {
         return 0;
     }
 
-    public int getAdvance(Context ctx, int x) {
+    public int getAdvance(int x, Graphics g) {
         Font font = getFont();
         String str = getSubstring();
         str = str.substring(0, x);
         //Uu.p("substring = " + str);
         char[] chars = new char[str.length()];
         getSubstring().getChars(0, str.length(), chars, 0);
-        FontMetrics fm = ctx.getGraphics().getFontMetrics(font);
+        FontMetrics fm = g.getFontMetrics(font);
         //Uu.p("getting advance: " + Xx + " chars = " + chars);
         return fm.charsWidth(chars, 0, x);
     }
@@ -339,6 +339,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2004/12/29 10:39:35  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.26  2004/12/28 02:15:19  tobega
  * More cleaning.
  *

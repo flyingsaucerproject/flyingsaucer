@@ -515,6 +515,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2004/12/29 10:39:33  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.41  2004/12/28 02:15:18  tobega
  * More cleaning.
  *

@@ -19,43 +19,45 @@
  */
 package org.xhtmlrenderer.forms;
 
+import org.w3c.dom.Element;
+import org.xhtmlrenderer.layout.SharedContext;
+
+import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.Insets;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.layout.Context;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class InputImage extends InputButton {
 
-    /** Constructor for the InputImage object */
-    public InputImage() { }
+    /**
+     * Constructor for the InputImage object
+     */
+    public InputImage() {
+    }
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return Returns
      */
-    public JComponent createComponent( Context c, Element elem ) {
-        JButton comp = (JButton)super.createComponent( c, elem );
+    public JComponent createComponent(SharedContext c, Element elem) {
+        JButton comp = (JButton) super.createComponent(c, elem);
 
-        if ( elem.hasAttribute( "src" ) ) {
-            String src = elem.getAttribute( "src" );
-            comp.setIcon( new ImageIcon( src ) );
-            comp.setText( null );
-            comp.setBorderPainted( false );
-            comp.setMargin( new Insets( 0, 0, 0, 0 ) );
-            comp.setPreferredSize( new Dimension( comp.getIcon().getIconHeight(),
-                    comp.getIcon().getIconHeight() ) );
+        if (elem.hasAttribute("src")) {
+            String src = elem.getAttribute("src");
+            comp.setIcon(new ImageIcon(src));
+            comp.setText(null);
+            comp.setBorderPainted(false);
+            comp.setMargin(new Insets(0, 0, 0, 0));
+            comp.setPreferredSize(new Dimension(comp.getIcon().getIconHeight(),
+                    comp.getIcon().getIconHeight()));
 
         }
         return comp;
@@ -67,6 +69,9 @@ public class InputImage extends InputButton {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/12/29 10:39:28  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.3  2004/10/23 13:40:28  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

@@ -28,6 +28,7 @@ import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
 import org.xhtmlrenderer.layout.BodyLayout;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.BodyRenderer;
 import org.xhtmlrenderer.render.Box;
@@ -632,7 +633,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
      *
      * @return The context value
      */
-    public Context getContext() {
+    public SharedContext getContext() {
         return getRenderingContext().getContext();
     }
 
@@ -802,13 +803,13 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         //c.canvas_graphics = g.create();
         //c.setExtents(new Rectangle(0,0,this.getWidth(),this.getHeight()));
         //XRLog.layout( Level.FINEST, "viewport size = " + viewport.getSize());
-        
+        Rectangle extents;
         if (enclosingScrollPane != null) {
             Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
-            getContext().setExtents(new Rectangle(0, 0, bnds.width, bnds.height));
+            extents = new Rectangle(0, 0, bnds.width, bnds.height);
             // Uu.p("bnds = " + bnds);
         } else {
-            getContext().setExtents(new Rectangle(getWidth(), getHeight()));//200, 200 ) );
+            extents = new Rectangle(getWidth(), getHeight());//200, 200 ) );
         }
 
         // CLEAN
@@ -821,7 +822,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         
         getContext().setMaxWidth(0);
         XRLog.layout(Level.FINEST, "new context end");
-        return getContext();
+        return getContext().newContextInstance(extents);
     }
 
     /**
@@ -872,6 +873,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2004/12/29 10:39:35  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.21  2004/12/29 07:35:39  tobega
  * Prepared for cloned Context instances by encapsulating fields
  *

@@ -20,53 +20,47 @@
  */
 package org.xhtmlrenderer.css.impl;
 
-import java.util.*;
-import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSStyleRule;
-import org.w3c.dom.css.CSSValue;
+import org.w3c.dom.css.*;
 import org.xhtmlrenderer.css.RuleNormalizer;
-import org.xhtmlrenderer.css.XRElement;
 import org.xhtmlrenderer.css.XRProperty;
 import org.xhtmlrenderer.css.XRValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.ValueConstants;
-import org.xhtmlrenderer.css.factory.BackgroundPropertyFactory;
-import org.xhtmlrenderer.css.factory.BorderColorPropertyFactory;
-import org.xhtmlrenderer.css.factory.BorderPropertyFactory;
-import org.xhtmlrenderer.css.factory.BorderSidePropertyFactory;
-import org.xhtmlrenderer.css.factory.BorderStylePropertyFactory;
-import org.xhtmlrenderer.css.factory.BorderWidthPropertyFactory;
-import org.xhtmlrenderer.css.factory.FontPropertyFactory;
-import org.xhtmlrenderer.css.factory.ListStylePropertyFactory;
-import org.xhtmlrenderer.css.factory.MarginPropertyFactory;
-import org.xhtmlrenderer.css.factory.OutlinePropertyFactory;
-import org.xhtmlrenderer.css.factory.PaddingPropertyFactory;
-import org.xhtmlrenderer.css.factory.PropertyFactory;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.css.factory.*;
+
+import java.util.*;
 
 
 /**
  * Default XRProperty implementation.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class XRPropertyImpl implements XRProperty {
 
-    /** Property's text name, e.g. "margin-top" */
+    /**
+     * Property's text name, e.g. "margin-top"
+     */
     private String _propName;
 
-    /** Sequence in which this property was found in declaration, 0-based. */
+    /**
+     * Sequence in which this property was found in declaration, 0-based.
+     */
     private int _sequence;
 
-    /** The value as specified in the declaration */
+    /**
+     * The value as specified in the declaration
+     */
     private XRValue _specifiedValue;
 
-    /** Relative value as computed for the current context */
+    /**
+     * Relative value as computed for the current context
+     */
     private XRValue _computedValue;
 
-    /** Computed value as restricted for the current environment */
+    /**
+     * Computed value as restricted for the current environment
+     */
     private XRValue _actualValue;
 
     /**
@@ -82,59 +76,61 @@ public class XRPropertyImpl implements XRProperty {
      */
     private final static Map PRP_FACTORIES;
 
-    /** Static RuleNormalizer for cleaning property values. */
+    /**
+     * Static RuleNormalizer for cleaning property values.
+     */
     private final static RuleNormalizer RULE_NORMALIZER;
 
     // seq = 0;
     /**
      * Constructor for the XRPropertyImpl object
      *
-     * @param style     PARAM
-     * @param propName  PARAM
+     * @param style    PARAM
+     * @param propName PARAM
      */
-    public XRPropertyImpl( CSSStyleDeclaration style, String propName ) {
-        this( style, propName, 0 );
+    public XRPropertyImpl(CSSStyleDeclaration style, String propName) {
+        this(style, propName, 0);
     }
 
 
     /**
      * Constructor for the XRPropertyImpl object
      *
-     * @param style     PARAM
-     * @param propName  PARAM
-     * @param sequence  PARAM
+     * @param style    PARAM
+     * @param propName PARAM
+     * @param sequence PARAM
      */
-    public XRPropertyImpl( CSSStyleDeclaration style, String propName, int sequence ) {
-        this ( propName, 
-               sequence, 
-               new XRValueImpl( (CSSPrimitiveValue)style.getPropertyCSSValue( propName ),
-                                 style.getPropertyPriority( propName ) ) );
+    public XRPropertyImpl(CSSStyleDeclaration style, String propName, int sequence) {
+        this(propName,
+                sequence,
+                new XRValueImpl((CSSPrimitiveValue) style.getPropertyCSSValue(propName),
+                        style.getPropertyPriority(propName)));
     }
 
 
     /**
      * Constructor for the XRPropertyImpl object
      *
-     * @param propName  PARAM
-     * @param sequence  PARAM
-     * @param value     PARAM
+     * @param propName PARAM
+     * @param sequence PARAM
+     * @param value    PARAM
      */
-    public XRPropertyImpl( String propName, int sequence, XRValue value ) {
+    public XRPropertyImpl(String propName, int sequence, XRValue value) {
         _propName = propName;
         _sequence = sequence;
         _specifiedValue = value;
         _isResolved = !_specifiedValue.forcedInherit() &&
-                ValueConstants.isAbsoluteUnit( _specifiedValue.cssValue() );
+                ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue());
     }
 
     /**
      * Deep copy operation. However, any contained SAC instances are not
      * deep-copied.
      *
-     * @return   Returns
+     * @return Returns
      */
     public XRProperty copyOf() {
-        return new XRPropertyImpl( _propName, _sequence, _specifiedValue.copyOf() );
+        return new XRPropertyImpl(_propName, _sequence, _specifiedValue.copyOf());
     }
 
     /**
@@ -144,10 +140,10 @@ public class XRPropertyImpl implements XRProperty {
      * value is same as parent's computed 3) actual value is same as parent's
      * actual value. Any contained SAC instances are not deep-copied.
      *
-     * @return   See desc
+     * @return See desc
      */
     public XRProperty copyForInherit() {
-        XRPropertyImpl newProp = (XRPropertyImpl)this.copyOf();
+        XRPropertyImpl newProp = (XRPropertyImpl) this.copyOf();
         newProp._computedValue = _computedValue;
         newProp._actualValue = _actualValue;
         newProp._isResolved = true;
@@ -157,7 +153,7 @@ public class XRPropertyImpl implements XRProperty {
     /**
      * The value as specified in the sheet.
      *
-     * @return   Returns
+     * @return Returns
      */
     public XRValue specifiedValue() {
         return _specifiedValue;
@@ -167,27 +163,27 @@ public class XRPropertyImpl implements XRProperty {
     /**
      * The computed value, if the specified value is relative.
      *
-     * @return   Returns
+     * @return Returns
      */
     public XRValue computedValue() {
-        return ( _computedValue == null ? _specifiedValue : _computedValue );
+        return (_computedValue == null ? _specifiedValue : _computedValue);
     }
 
     /**
      * The computed value, with any modifications forced by the presentation
      * environment e.g. limitation in color range.
      *
-     * @return   Returns
+     * @return Returns
      */
     public XRValue actualValue() {
-        return ( _actualValue == null ? _specifiedValue : _actualValue );
+        return (_actualValue == null ? _specifiedValue : _actualValue);
     }
 
 
     /**
      * The plain-text property name, should be CSS2 valid.
      *
-     * @return   Returns
+     * @return Returns
      */
     public String propertyName() {
         return _propName;
@@ -197,7 +193,7 @@ public class XRPropertyImpl implements XRProperty {
     /**
      * ...
      *
-     * @return   Returns
+     * @return Returns
      */
     public String toString() {
         return _propName + "=" + _specifiedValue;
@@ -269,22 +265,22 @@ public class XRPropertyImpl implements XRProperty {
      * Returns true if the property has an absolute value, or a relative value
      * that has been correctly computed.
      *
-     * @return   The resolved value
+     * @return The resolved value
      */
     public boolean isResolved() {
-        return ValueConstants.isAbsoluteUnit( _specifiedValue.cssValue() ) || _isResolved;
+        return ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()) || _isResolved;
     }
 
 
     /**
      * Gets the resolvable attribute of the XRPropertyImpl object
      *
-     * @return   The resolvable value
+     * @return The resolvable value
      */
     public boolean isResolvable() {
         return _specifiedValue.forcedInherit() ||
-                ( _specifiedValue.isPrimitiveType() &&
-                !ValueConstants.isAbsoluteUnit( _specifiedValue.cssValue() ) );
+                (_specifiedValue.isPrimitiveType() &&
+                !ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()));
     }
 
     /**
@@ -292,53 +288,53 @@ public class XRPropertyImpl implements XRProperty {
      * rule/declaration. Returns an iterator of the instantiated properties--the
      * are not attached to the declaration or otherwise stored.
      *
-     * @param cssRule   PARAM
-     * @param style     PARAM
-     * @param propName  PARAM
-     * @param sequence  PARAM
-     * @return          Returns
+     * @param cssRule  PARAM
+     * @param style    PARAM
+     * @param propName PARAM
+     * @param sequence PARAM
+     * @return Returns
      */
-    public static Iterator fromCSSPropertyDecl( CSSRule cssRule, CSSStyleDeclaration style, String propName, int sequence ) {
+    public static Iterator fromCSSPropertyDecl(CSSRule cssRule, CSSStyleDeclaration style, String propName, int sequence) {
         // HACK: special cases for RuleNormalizer...need to work this out cleanly
-        PropertyFactory factory = (PropertyFactory)PRP_FACTORIES.get( propName );
+        PropertyFactory factory = (PropertyFactory) PRP_FACTORIES.get(propName);
 
-        if ( /*( factory == null && cssRule.getType() == CSSRule.STYLE_RULE ) ||*/
-                propName.indexOf( "color" ) >= 0 /*&& !propName.equals( "border" )*/ ) {
-            RULE_NORMALIZER.normalize( (CSSStyleRule)cssRule );
-            style = ( (CSSStyleRule)cssRule ).getStyle();
+        if (/*( factory == null && cssRule.getType() == CSSRule.STYLE_RULE ) ||*/
+                propName.indexOf("color") >= 0 /*&& !propName.equals( "border" )*/) {
+            RULE_NORMALIZER.normalize((CSSStyleRule) cssRule);
+            style = ((CSSStyleRule) cssRule).getStyle();
         }
 
         List list = new ArrayList();
-        switch ( style.getPropertyCSSValue( propName ).getCssValueType() ) {
+        switch (style.getPropertyCSSValue(propName).getCssValueType()) {
             case CSSValue.CSS_PRIMITIVE_VALUE:
-                if ( factory == null ) {
-                    XRProperty prop = new XRPropertyImpl( style, propName, sequence );
-                    list.add( prop );
+                if (factory == null) {
+                    XRProperty prop = new XRPropertyImpl(style, propName, sequence);
+                    list.add(prop);
                 } else {
-                    Iterator iter = factory.explodeProperties( style, propName, sequence );
-                    while ( iter.hasNext() ) {
-                        list.add( iter.next() );
+                    Iterator iter = factory.explodeProperties(style, propName, sequence);
+                    while (iter.hasNext()) {
+                        list.add(iter.next());
                     }
                 }
                 break;
             case CSSValue.CSS_VALUE_LIST:
-                if ( factory == null ) {
-                    XRProperty prop = new XRPropertyImpl( style, propName, sequence );
-                    list.add( prop );
+                if (factory == null) {
+                    XRProperty prop = new XRPropertyImpl(style, propName, sequence);
+                    list.add(prop);
 
                     // HACK--right now, BP is allowed to not have a factory
-                    if ( !propName.equals( CSSName.BACKGROUND_POSITION ) && !propName.equals( CSSName.FONT_FAMILY ) ) {
-                        System.err.println( "! Property '" + propName + "' was assigned multiple values but no factory is assigned to it." );
+                    if (!propName.equals(CSSName.BACKGROUND_POSITION) && !propName.equals(CSSName.FONT_FAMILY)) {
+                        System.err.println("! Property '" + propName + "' was assigned multiple values but no factory is assigned to it.");
                     }
                 } else {
-                    Iterator iter = factory.explodeProperties( style, propName, sequence );
-                    while ( iter.hasNext() ) {
-                        list.add( iter.next() );
+                    Iterator iter = factory.explodeProperties(style, propName, sequence);
+                    while (iter.hasNext()) {
+                        list.add(iter.next());
                     }
                 }
                 break;
             default:
-                System.err.println( "Property '" + propName + "' is neither primitive nor value list, can't handle." );
+                System.err.println("Property '" + propName + "' is neither primitive nor value list, can't handle.");
                 break;
         }
 
@@ -350,28 +346,28 @@ public class XRPropertyImpl implements XRProperty {
 
         PRP_FACTORIES = new HashMap();
 
-        PRP_FACTORIES.put( CSSName.MARGIN_SHORTHAND, MarginPropertyFactory.instance() );
+        PRP_FACTORIES.put(CSSName.MARGIN_SHORTHAND, MarginPropertyFactory.instance());
 
-        PRP_FACTORIES.put( CSSName.PADDING_SHORTHAND, PaddingPropertyFactory.instance() );
+        PRP_FACTORIES.put(CSSName.PADDING_SHORTHAND, PaddingPropertyFactory.instance());
 
-        PRP_FACTORIES.put( CSSName.BORDER_SHORTHAND, BorderPropertyFactory.instance() );
+        PRP_FACTORIES.put(CSSName.BORDER_SHORTHAND, BorderPropertyFactory.instance());
 
-        PRP_FACTORIES.put( CSSName.BORDER_WIDTH_SHORTHAND, BorderWidthPropertyFactory.instance() );
-        PRP_FACTORIES.put( CSSName.BORDER_COLOR_SHORTHAND, BorderColorPropertyFactory.instance() );
-        PRP_FACTORIES.put( CSSName.BORDER_STYLE_SHORTHAND, BorderStylePropertyFactory.instance() );
+        PRP_FACTORIES.put(CSSName.BORDER_WIDTH_SHORTHAND, BorderWidthPropertyFactory.instance());
+        PRP_FACTORIES.put(CSSName.BORDER_COLOR_SHORTHAND, BorderColorPropertyFactory.instance());
+        PRP_FACTORIES.put(CSSName.BORDER_STYLE_SHORTHAND, BorderStylePropertyFactory.instance());
 
-        PRP_FACTORIES.put( CSSName.BORDER_TOP_SHORTHAND, BorderSidePropertyFactory.instance() );
-        PRP_FACTORIES.put( CSSName.BORDER_RIGHT_SHORTHAND, BorderSidePropertyFactory.instance() );
-        PRP_FACTORIES.put( CSSName.BORDER_BOTTOM_SHORTHAND, BorderSidePropertyFactory.instance() );
-        PRP_FACTORIES.put( CSSName.BORDER_LEFT_SHORTHAND, BorderSidePropertyFactory.instance() );
+        PRP_FACTORIES.put(CSSName.BORDER_TOP_SHORTHAND, BorderSidePropertyFactory.instance());
+        PRP_FACTORIES.put(CSSName.BORDER_RIGHT_SHORTHAND, BorderSidePropertyFactory.instance());
+        PRP_FACTORIES.put(CSSName.BORDER_BOTTOM_SHORTHAND, BorderSidePropertyFactory.instance());
+        PRP_FACTORIES.put(CSSName.BORDER_LEFT_SHORTHAND, BorderSidePropertyFactory.instance());
 
-        PRP_FACTORIES.put( CSSName.BACKGROUND_SHORTHAND, BackgroundPropertyFactory.instance() );
+        PRP_FACTORIES.put(CSSName.BACKGROUND_SHORTHAND, BackgroundPropertyFactory.instance());
 
-        PRP_FACTORIES.put( CSSName.LIST_STYLE_SHORTHAND, ListStylePropertyFactory.instance() );
+        PRP_FACTORIES.put(CSSName.LIST_STYLE_SHORTHAND, ListStylePropertyFactory.instance());
 
-        PRP_FACTORIES.put( CSSName.OUTLINE_SHORTHAND, OutlinePropertyFactory.instance() );
+        PRP_FACTORIES.put(CSSName.OUTLINE_SHORTHAND, OutlinePropertyFactory.instance());
 
-        PRP_FACTORIES.put( CSSName.FONT_SHORTHAND, FontPropertyFactory.instance() );
+        PRP_FACTORIES.put(CSSName.FONT_SHORTHAND, FontPropertyFactory.instance());
     }
 }// end class
 
@@ -379,6 +375,9 @@ public class XRPropertyImpl implements XRProperty {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/12/29 10:39:26  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.6  2004/11/15 12:42:22  pdoubleya
  * Across this checkin (all may not apply to this particular file)
  * Changed default/package-access members to private.

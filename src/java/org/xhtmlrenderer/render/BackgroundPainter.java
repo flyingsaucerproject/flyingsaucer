@@ -215,6 +215,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/12/29 10:39:34  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.12  2004/12/29 07:35:38  tobega
  * Prepared for cloned Context instances by encapsulating fields
  *

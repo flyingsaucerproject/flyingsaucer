@@ -37,7 +37,7 @@ public class NullLayout extends DefaultLayout {
      * @param content PARAM
      * @return Returns
      */
-    public Box layout(Context c, Content content) {
+    public Box layout(SharedContext c, Content content) {
 
         return new Box(0, 0, 0, 0);
     }
@@ -57,6 +57,9 @@ public class NullLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/29 10:39:33  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.5  2004/12/09 00:11:52  tobega
  * Almost ready for Content-based inline generation.
  *

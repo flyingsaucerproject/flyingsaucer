@@ -3,6 +3,7 @@ package org.xhtmlrenderer.table;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BoxRenderer;
 import org.xhtmlrenderer.render.Renderer;
@@ -71,7 +72,7 @@ public class TableRenderer extends BoxRenderer {
      * @param c   PARAM
      * @param box PARAM
      */
-    public void paintChildren(Context c, Box box) {
+    public void paintChildren(SharedContext c, Box box) {
     }
 
     /**

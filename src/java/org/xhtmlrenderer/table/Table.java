@@ -223,7 +223,7 @@ public class Table {
      */
     public Cell addCell(Context c, Node node, int x, int y) {
         //Uu.p("addCell("+node+","+Xx+","+y+")");
-        if (node.getNodeType() != node.ELEMENT_NODE) {
+        if (node.getNodeType() != Node.ELEMENT_NODE) {
             throw new Error("this isn't an element" + node);
         }
         Element cell = (Element) node;
@@ -377,6 +377,9 @@ public class Table {
 /*
    $Id$
    $Log$
+   Revision 1.12  2004/12/29 10:39:36  tobega
+   Separated current state Context into ContextImpl and the rest into SharedContext.
+
    Revision 1.11  2004/12/29 07:35:39  tobega
    Prepared for cloned Context instances by encapsulating fields
 

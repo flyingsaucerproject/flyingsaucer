@@ -428,6 +428,9 @@ public void paintSimpleBorder( Graphics2D g, Rectangle bounds, Border border, Bo
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/12/29 10:39:34  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.14  2004/12/27 09:40:48  tobega
  * Moved more styling to render stage. Now inlines have backgrounds and borders again.
  *

@@ -173,7 +173,7 @@ public class AnonymousBoxLayout extends InlineLayout {
      * @param content
      * @return Returns
      */
-    public Box createBox(Context c, Content content) {
+    public Box createBox(SharedContext c, Content content) {
 
         AnonymousBlockBox block = new AnonymousBlockBox(content);
 
@@ -237,6 +237,9 @@ public class AnonymousBoxLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/12/29 10:39:32  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.13  2004/12/28 01:48:23  tobega
  * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
  *

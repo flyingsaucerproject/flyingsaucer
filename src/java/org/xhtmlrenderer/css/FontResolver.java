@@ -234,6 +234,9 @@ public class FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/12/29 10:39:26  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.8  2004/12/12 03:32:55  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

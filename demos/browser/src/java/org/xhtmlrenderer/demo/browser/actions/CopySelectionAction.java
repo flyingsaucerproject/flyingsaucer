@@ -1,7 +1,7 @@
 package org.xhtmlrenderer.demo.browser.actions;
 
 import org.xhtmlrenderer.demo.browser.BrowserStartup;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
@@ -34,7 +34,7 @@ public class CopySelectionAction extends AbstractAction {
         clip.setContents(new StringSelection(sb.toString()), null);
     }
 
-    public boolean collectSelection(Context ctx, Box root, Box current, Box last, StringBuffer sb, boolean in_selection) {
+    public boolean collectSelection(SharedContext ctx, Box root, Box current, Box last, StringBuffer sb, boolean in_selection) {
 
         if (root == current) {
             in_selection = true;
@@ -48,10 +48,10 @@ public class CopySelectionAction extends AbstractAction {
                 int start = 0;
                 int end = ib.getSubstring().length();
                 if (ib == current) {
-                    start = ib.getTextIndex(ctx, ctx.getSelectionStartX());
+                    start = ib.getTextIndex(ctx.getSelectionStartX(), ctx.getGraphics());
                 }
                 if (ib == last) {
-                    end = ib.getTextIndex(ctx, ctx.getSelectionEndX());
+                    end = ib.getTextIndex(ctx.getSelectionEndX(), ctx.getGraphics());
                 }
                 String st = ib.getSubstring().substring(Math.max(0, start - 1), end);
                 sb.append(st);

@@ -87,6 +87,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/29 10:39:35  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.5  2004/12/15 00:53:40  tobega
  * Started playing a bit with inline box, provoked a few nasties, probably created some, seems to work now
  *

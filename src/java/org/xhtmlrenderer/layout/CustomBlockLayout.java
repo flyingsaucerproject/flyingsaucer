@@ -41,7 +41,7 @@ public class CustomBlockLayout extends BoxLayout {
      * @param content
      * @return Returns
      */
-    public Box createBox(Context c, Content content) {
+    public Box createBox(SharedContext c, Content content) {
         BlockBox box = new BlockBox();
         box.content = content;
         return box;
@@ -98,6 +98,9 @@ public class CustomBlockLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/12/29 10:39:32  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.8  2004/12/12 04:18:56  tobega
  * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
  *

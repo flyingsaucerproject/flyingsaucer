@@ -210,6 +210,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/12/29 10:39:35  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.11  2004/12/28 02:15:19  tobega
  * More cleaning.
  *

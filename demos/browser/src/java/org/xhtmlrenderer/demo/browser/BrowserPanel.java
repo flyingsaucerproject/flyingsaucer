@@ -22,7 +22,7 @@ package org.xhtmlrenderer.demo.browser;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.RenderingContext;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Uu;
 
@@ -399,7 +399,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      */
     public void setupSubmitActions() {
         //Uu.p("setup submit actions");
-        Context cx = view.getContext();
+        SharedContext cx = view.getContext();
         Map forms = cx.getForms();
         //Uu.p("forms = " + forms);
         Iterator form_it = forms.keySet().iterator();
@@ -415,7 +415,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
                 ButtonGroup bg = new ButtonGroup();
                 for (int i = 0; i < field_list.size(); i++) {
-                    Context.FormComponent comp = (Context.FormComponent) field_list.get(i);
+                    SharedContext.FormComponent comp = (SharedContext.FormComponent) field_list.get(i);
                     //Uu.p("got component: " + comp);
 
                     // bind radio buttons together
@@ -431,12 +431,12 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                                 public void actionPerformed(ActionEvent evt) {
                                     Uu.p("reset button hit");
 
-                                    Context ctx = view.getContext();
+                                    SharedContext ctx = view.getContext();
                                     Iterator fields = ctx.getInputFieldComponents(form_name);
                                     while (fields.hasNext()) {
                                         List field_list = (List) fields.next();
                                         for (int i = 0; i < field_list.size(); i++) {
-                                            Context.FormComponent comp = (Context.FormComponent) field_list.get(i);
+                                            SharedContext.FormComponent comp = (SharedContext.FormComponent) field_list.get(i);
                                             comp.reset();
                                         }
                                     }
@@ -450,12 +450,12 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                                     Uu.p("submit button hit");
                                     StringBuffer query = new StringBuffer();
                                     query.append("?");
-                                    Context ctx = view.getContext();
+                                    SharedContext ctx = view.getContext();
                                     Iterator fields = ctx.getInputFieldComponents(form_name);
                                     while (fields.hasNext()) {
                                         List field = (List) fields.next();
                                         for (int i = 0; i < field.size(); i++) {
-                                            Context.FormComponent comp = (Context.FormComponent) field.get(i);
+                                            SharedContext.FormComponent comp = (SharedContext.FormComponent) field.get(i);
                                             if (comp.element.hasAttribute("value")) {
                                                 query.append(comp.element.getAttribute("name"));
                                                 query.append("=");
@@ -502,6 +502,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/12/29 10:39:38  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.15  2004/12/12 16:11:04  tobega
  * Fixed bug concerning order of inline content. Added a demo for pseudo-elements.
  *

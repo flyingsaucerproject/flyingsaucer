@@ -1,8 +1,8 @@
 package org.xhtmlrenderer.extend;
 
 import org.xhtmlrenderer.css.StyleReference;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutFactory;
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
@@ -24,7 +24,7 @@ public class RenderingContext {
      */
     public RenderingContext() {
         setMedia("screen");
-        setContext(new Context());
+        setContext(new SharedContext());
         getContext().setCtx(this);
         getContext().setCss(new StyleReference(new NaiveUserAgent()));
         XRLog.render("Using CSS implementation from: " + getContext().getCss().getClass().getName());
@@ -36,7 +36,7 @@ public class RenderingContext {
     /**
      * Description of the Field
      */
-    protected Context ctx;
+    protected SharedContext ctx;
 
 
     /**
@@ -44,7 +44,7 @@ public class RenderingContext {
      *
      * @return The context value
      */
-    public Context getContext() {
+    public SharedContext getContext() {
         return ctx;
     }
 
@@ -54,7 +54,7 @@ public class RenderingContext {
      *
      * @param ctx The new context value
      */
-    public void setContext(Context ctx) {
+    public void setContext(SharedContext ctx) {
         this.ctx = ctx;
     }
 

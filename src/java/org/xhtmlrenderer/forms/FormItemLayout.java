@@ -24,6 +24,7 @@ import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.CustomBlockLayout;
 import org.xhtmlrenderer.layout.LayoutUtil;
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
@@ -54,7 +55,7 @@ public abstract class FormItemLayout extends CustomBlockLayout {
      * @param elem PARAM
      * @return Returns
      */
-    public abstract JComponent createComponent(Context c, Element elem);
+    public abstract JComponent createComponent(SharedContext c, Element elem);
 
     /**
      * Description of the Method
@@ -63,7 +64,7 @@ public abstract class FormItemLayout extends CustomBlockLayout {
      * @param content
      * @return Returns
      */
-    public Box createBox(Context c, Content content) {
+    public Box createBox(SharedContext c, Content content) {
         Element elem = content.getElement();
         comp = createComponent(c, elem);
         c.getCanvas().add(comp);
@@ -179,6 +180,9 @@ public abstract class FormItemLayout extends CustomBlockLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/12/29 10:39:28  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.13  2004/12/29 07:35:37  tobega
  * Prepared for cloned Context instances by encapsulating fields
  *

@@ -347,7 +347,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getContext().setDebug_draw_boxes(!root.panel.view.getContext().isDebug_draw_boxes());
+            root.panel.view.getContext().setDebug_draw_boxes(!root.panel.view.getContext().debugDrawBoxes());
             root.panel.view.repaint();
         }
     }
@@ -372,7 +372,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getContext().setDebug_draw_line_boxes(!root.panel.view.getContext().isDebug_draw_line_boxes());
+            root.panel.view.getContext().setDebug_draw_line_boxes(!root.panel.view.getContext().debugDrawLineBoxes());
             root.panel.view.repaint();
         }
     }
@@ -397,7 +397,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getContext().setDebug_draw_inline_boxes(!root.panel.view.getContext().isDebug_draw_inline_boxes());
+            root.panel.view.getContext().setDebug_draw_inline_boxes(!root.panel.view.getContext().debugDrawInlineBoxes());
             root.panel.view.repaint();
         }
     }
@@ -417,7 +417,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getContext().setDebug_draw_font_metrics(!root.panel.view.getContext().isDebug_draw_font_metrics());
+            root.panel.view.getContext().setDebug_draw_font_metrics(!root.panel.view.getContext().debugDrawFontMetrics());
             root.panel.view.repaint();
         }
     }
@@ -520,6 +520,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2004/12/29 10:39:38  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.25  2004/12/29 07:35:40  tobega
  * Prepared for cloned Context instances by encapsulating fields
  *

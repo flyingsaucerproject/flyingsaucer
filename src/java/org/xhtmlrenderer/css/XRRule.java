@@ -20,8 +20,9 @@
  */
 package org.xhtmlrenderer.css;
 
-import java.util.*;
 import org.xhtmlrenderer.layout.Context;
+
+import java.util.Iterator;
 
 
 /**
@@ -29,13 +30,13 @@ import org.xhtmlrenderer.layout.Context;
  * CSSRule. Rules have a sequence which is the order they were found within
  * their stylesheet.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public interface XRRule {
     /**
      * An iterator of all XRProperties in this rule.
      *
-     * @return   Returns
+     * @return Returns
      */
     Iterator listXRProperties();
 
@@ -43,21 +44,21 @@ public interface XRRule {
     /**
      * Value of a single XRProperty, by name.
      *
-     * @param context   PARAM
-     * @param propName  PARAM
-     * @return          Returns
+     * @param context  PARAM
+     * @param propName PARAM
+     * @return Returns
      */
-    XRProperty propertyByName( Context context, String propName );
+    XRProperty propertyByName(Context context, String propName);
 
 
     /**
      * Returns true if the named property was defined and has a value in this
      * rule set.
      *
-     * @param propName  PARAM
-     * @return          Returns
+     * @param propName PARAM
+     * @return Returns
      */
-    boolean hasProperty( String propName );
+    boolean hasProperty(String propName);
 
 
     /**
@@ -66,15 +67,18 @@ public interface XRRule {
      * the same selector. Any properties with the same name in fromRuleSet will
      * replace existing properties with that name in this XRRule.
      *
-     * @param fromRuleSet  PARAM
+     * @param fromRuleSet PARAM
      */
-    void mergeProperties( XRRule fromRuleSet );
+    void mergeProperties(XRRule fromRuleSet);
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/12/29 10:39:27  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.2  2004/10/23 13:03:46  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

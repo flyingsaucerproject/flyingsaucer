@@ -20,31 +20,35 @@
  */
 package org.xhtmlrenderer.css;
 
-import java.awt.Color;
 import org.w3c.dom.css.CSSValue;
-import org.xhtmlrenderer.layout.Context;
+
+import java.awt.Color;
 
 
 /**
  * A CSSValue as parsed from a stylesheet.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 // HACK: need to sort out conceptual confusion betw. CSSValue and CSSPrimitive value. Many of these methods
 // are single-value specific but for just a couple of cases it is nice to store the value list as we read it...
 // for now, am punting.
 public interface XRValue extends CSSValue {
-    /** Constant for CSS2 value of "important" */
+    /**
+     * Constant for CSS2 value of "important"
+     */
     String IMPORTANT = "important";
 
-    /** Constant for CSS2 value of "inherit" */
+    /**
+     * Constant for CSS2 value of "inherit"
+     */
     String INHERIT = "inherit";
 
 
     /**
      * True if this value specifically marked as inherited.
      *
-     * @return   Returns
+     * @return Returns
      */
     boolean forcedInherit();
 
@@ -52,7 +56,7 @@ public interface XRValue extends CSSValue {
     /**
      * True if the value declaration marked as important.
      *
-     * @return   The important value
+     * @return The important value
      */
     boolean isImportant();
 
@@ -62,7 +66,7 @@ public interface XRValue extends CSSValue {
      * changes to the properties should be made through the XRProperty and
      * XRValue classes.
      *
-     * @return   Returns
+     * @return Returns
      */
     CSSValue cssValue();
 
@@ -70,7 +74,7 @@ public interface XRValue extends CSSValue {
     /**
      * The value as a float; if conversion fails, returns .MIN_VALUE
      *
-     * @return   Returns
+     * @return Returns
      */
     float asFloat();
 
@@ -78,7 +82,7 @@ public interface XRValue extends CSSValue {
     /**
      * The value as specified in the CSS
      *
-     * @return   Returns
+     * @return Returns
      */
     String asString();
 
@@ -86,7 +90,7 @@ public interface XRValue extends CSSValue {
     /**
      * The value as specified in the CSS
      *
-     * @return   Returns
+     * @return Returns
      */
     String[] asStringArray();
 
@@ -94,7 +98,7 @@ public interface XRValue extends CSSValue {
     /**
      * Gets the primitiveType attribute of the XRValue object
      *
-     * @return   The primitiveType value
+     * @return The primitiveType value
      */
     boolean isPrimitiveType();
 
@@ -102,7 +106,7 @@ public interface XRValue extends CSSValue {
     /**
      * Gets the valueList attribute of the XRValue object
      *
-     * @return   The valueList value
+     * @return The valueList value
      */
     boolean isValueList();
 
@@ -110,7 +114,7 @@ public interface XRValue extends CSSValue {
     /**
      * HACK: this only works if the value is actually a primitve
      *
-     * @return   The rGBColorValue value
+     * @return The rGBColorValue value
      */
     Color asColor();
 
@@ -119,7 +123,7 @@ public interface XRValue extends CSSValue {
      * Returns true if this is a relative unit (e.g. percentage) whose value has
      * been computed as an absolute computed value.
      *
-     * @return   The relativeUnitComputed value
+     * @return The relativeUnitComputed value
      */
     boolean requiresComputation();
 
@@ -139,7 +143,7 @@ public interface XRValue extends CSSValue {
      * Deep copy operation. However, any contained SAC instances are not
      * deep-copied.
      *
-     * @return   Returns
+     * @return Returns
      */
     XRValue copyOf();
 }// end interface
@@ -148,6 +152,9 @@ public interface XRValue extends CSSValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/12/29 10:39:27  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.3  2004/11/10 04:42:22  tobega
  * no message
  *

@@ -19,61 +19,63 @@
  */
 package org.xhtmlrenderer.forms;
 
-import javax.swing.JComponent;
-import javax.swing.JTextField;
+import org.w3c.dom.Element;
+import org.xhtmlrenderer.layout.SharedContext;
+
+import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.layout.Context;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class InputText extends FormItemLayout {
 
-    /** Constructor for the InputText object */
-    public InputText() { }
+    /**
+     * Constructor for the InputText object
+     */
+    public InputText() {
+    }
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return Returns
      */
-    public JComponent createComponent( Context c, Element elem ) {
+    public JComponent createComponent(SharedContext c, Element elem) {
         JTextField comp = _createComponent();
-        commonPrep( comp, elem );
-        if ( elem.hasAttribute( "value" ) ) {
-            comp.setText( elem.getAttribute( "value" ) );
+        commonPrep(comp, elem);
+        if (elem.hasAttribute("value")) {
+            comp.setText(elem.getAttribute("value"));
         }
-        if ( elem.hasAttribute( "size" ) ) {
-            comp.setColumns( Integer.parseInt( elem.getAttribute( "size" ) ) );
+        if (elem.hasAttribute("size")) {
+            comp.setColumns(Integer.parseInt(elem.getAttribute("size")));
         } else {
-            comp.setColumns( 15 );
+            comp.setColumns(15);
         }
-        if ( elem.hasAttribute( "maxlength" ) ) {
-            final int maxlength = Integer.parseInt( elem.getAttribute( "maxlength" ) );
-            comp.setDocument(
-                        new PlainDocument() {
-                            public void insertString( int offset, String str, AttributeSet attr )
-                                throws BadLocationException {
-                                if ( str == null ) {
-                                    return;
-                                }
-                                if ( ( getLength() + str.length() ) <= maxlength ) {
-                                    super.insertString( offset, str, attr );
-                                }
-                            }
-                        } );
+        if (elem.hasAttribute("maxlength")) {
+            final int maxlength = Integer.parseInt(elem.getAttribute("maxlength"));
+            comp.setDocument(new PlainDocument() {
+                public void insertString(int offset, String str, AttributeSet attr)
+                        throws BadLocationException {
+                    if (str == null) {
+                        return;
+                    }
+                    if ((getLength() + str.length()) <= maxlength) {
+                        super.insertString(offset, str, attr);
+                    }
+                }
+            });
         }
-        if ( elem.hasAttribute( "readonly" ) &&
-                elem.getAttribute( "readonly" ).equals( "readonly" ) ) {
-            comp.setEditable( false );
+        if (elem.hasAttribute("readonly") &&
+                elem.getAttribute("readonly").equals("readonly")) {
+            comp.setEditable(false);
         }
         return comp;
     }
@@ -81,7 +83,7 @@ public class InputText extends FormItemLayout {
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     protected JTextField _createComponent() {
         return new JTextField();
@@ -93,6 +95,9 @@ public class InputText extends FormItemLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/12/29 10:39:28  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.3  2004/10/23 13:40:29  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

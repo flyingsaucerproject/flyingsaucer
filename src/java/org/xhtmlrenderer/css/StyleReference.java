@@ -31,7 +31,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.AttributeResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -47,7 +47,7 @@ public class StyleReference {
     /**
      * The Context this StyleReference operates in; used for property resolution.
      */
-    private Context _context;
+    private SharedContext _context;
 
     /**
      * Description of the Field
@@ -119,7 +119,7 @@ public class StyleReference {
      * @param ar      The new documentContext value
      * @param doc     The new documentContext value
      */
-    public void setDocumentContext(Context context, NamespaceHandler nsh, AttributeResolver ar, Document doc) {
+    public void setDocumentContext(SharedContext context, NamespaceHandler nsh, AttributeResolver ar, Document doc) {
         _context = context;
         _nsh = nsh;
         _doc = doc;
@@ -292,6 +292,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/12/29 10:39:27  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.14  2004/12/28 01:48:22  tobega
  * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
  *

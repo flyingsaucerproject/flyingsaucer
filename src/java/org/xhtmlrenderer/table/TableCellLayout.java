@@ -20,10 +20,7 @@
 
 package org.xhtmlrenderer.table;
 
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.InlineLayout;
-import org.xhtmlrenderer.render.Box;
-
 
 
 /**
@@ -32,13 +29,10 @@ import org.xhtmlrenderer.render.Box;
  * height. (hopefully this will change to be less clunky and more explict when I
  * redesign it all to use a separate Box pass.
  *
- * @author   empty
+ * @author empty
  */
 
 public class TableCellLayout extends InlineLayout {
-
-
-
 
 
 }
@@ -46,6 +40,9 @@ public class TableCellLayout extends InlineLayout {
 /*
    $Id$
    $Log$
+   Revision 1.5  2004/12/29 10:39:36  tobega
+   Separated current state Context into ContextImpl and the rest into SharedContext.
+
    Revision 1.4  2004/10/28 02:13:43  joshy
    finished moving the painting code into the renderers
 

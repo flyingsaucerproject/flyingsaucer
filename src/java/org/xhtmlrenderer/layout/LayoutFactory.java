@@ -333,6 +333,9 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.28  2004/12/29 10:39:33  tobega
+* Separated current state Context into ContextImpl and the rest into SharedContext.
+*
 * Revision 1.27  2004/12/29 07:35:38  tobega
 * Prepared for cloned Context instances by encapsulating fields
 *

@@ -82,6 +82,9 @@ public interface Renderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/12/29 10:39:35  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.3  2004/12/12 03:33:01  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

@@ -19,47 +19,50 @@
  */
 package org.xhtmlrenderer.forms;
 
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.SharedContext;
+
+import javax.swing.*;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class InputSelect extends FormItemLayout {
 
-    /** Constructor for the InputSelect object */
-    public InputSelect() { }
+    /**
+     * Constructor for the InputSelect object
+     */
+    public InputSelect() {
+    }
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param elem PARAM
+     * @return Returns
      */
-    public JComponent createComponent( Context c, Element elem ) {
+    public JComponent createComponent(SharedContext c, Element elem) {
         JComboBox comp = new JComboBox();
-        commonPrep( comp, elem );
+        commonPrep(comp, elem);
 
-        NodeList options = elem.getElementsByTagName( "option" );
+        NodeList options = elem.getElementsByTagName("option");
         int selected = -1;
-        for ( int i = 0; i < options.getLength(); i++ ) {
-            Element value = (Element)options.item( i );
+        for (int i = 0; i < options.getLength(); i++) {
+            Element value = (Element) options.item(i);
             String svalue = value.getFirstChild().getNodeValue();
-            comp.addItem( svalue );
-            if ( value.hasAttribute( "selected" ) && value.getAttribute( "selected" ).equals( "selected" ) ) {
+            comp.addItem(svalue);
+            if (value.hasAttribute("selected") && value.getAttribute("selected").equals("selected")) {
                 selected = i;
             }
         }
 
-        if ( selected != -1 ) {
-            comp.setSelectedIndex( selected );
+        if (selected != -1) {
+            comp.setSelectedIndex(selected);
         }
         return comp;
     }
@@ -70,6 +73,9 @@ public class InputSelect extends FormItemLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/12/29 10:39:28  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.3  2004/10/23 13:40:29  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

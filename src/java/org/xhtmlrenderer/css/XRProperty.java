@@ -20,8 +20,6 @@
  */
 package org.xhtmlrenderer.css;
 
-import org.xhtmlrenderer.layout.Context;
-
 
 /**
  * A property read from a CSS2 style declaration. The property gives you access
@@ -32,7 +30,7 @@ import org.xhtmlrenderer.layout.Context;
  * specified by the user in the CSS using {@link #specifiedValue()}, or the
  * value as resolved for the current environment using {@link #actualValue()}.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 // ASK: should Properties have a reference back to their rules?
 // ASK: should Properties have a reference back to their stylesheets?
@@ -41,7 +39,7 @@ public interface XRProperty {
      * The name of this property--as supplied in stylesheet, should also be a
      * valid property name in CSSName
      *
-     * @return   See desc.
+     * @return See desc.
      */
     String propertyName();
 
@@ -52,7 +50,7 @@ public interface XRProperty {
      * with the relative, not computed, value. Generally this is only useful for
      * debugging.
      *
-     * @return   See desc.
+     * @return See desc.
      */
     XRValue specifiedValue();
 
@@ -60,17 +58,17 @@ public interface XRProperty {
      * The specified value, if absolute, or the relative value as absolute, if
      * relative :).
      *
-     * @return   See desc.
+     * @return See desc.
      */
     XRValue computedValue();
 
     /**
      * The actual value--the computed value when limited by the current
-     * presentation environment. (CSS2 6.1.3) 
+     * presentation environment. (CSS2 6.1.3)
      *
-     * @return   See desc.
+     * @return See desc.
      */
-     // TODO: need Context and possibly current Element to determine proportional values (PWW 12-11-04)
+    // TODO: need Context and possibly current Element to determine proportional values (PWW 12-11-04)
     XRValue actualValue();
 
 
@@ -78,7 +76,7 @@ public interface XRProperty {
      * Deep copy operation. However, any contained SAC instances are not
      * deep-copied.
      *
-     * @return   A copy of this <code>XRProperty</code>.
+     * @return A copy of this <code>XRProperty</code>.
      */
     XRProperty copyOf();
 
@@ -90,7 +88,7 @@ public interface XRProperty {
      * value is same as parent's computed 3) actual value is same as parent's
      * actual value. Any contained SAC instances are not deep-copied.
      *
-     * @return   See desc
+     * @return See desc
      */
     XRProperty copyForInherit();
 }// end interface
@@ -99,6 +97,9 @@ public interface XRProperty {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/29 10:39:27  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.4  2004/11/15 12:42:21  pdoubleya
  * Across this checkin (all may not apply to this particular file)
  * Changed default/package-access members to private.

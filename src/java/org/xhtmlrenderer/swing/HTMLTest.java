@@ -261,7 +261,7 @@ public class HTMLTest extends JFrame {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            panel.getRenderingContext().getContext().setDebug_draw_boxes(!panel.getRenderingContext().getContext().isDebug_draw_boxes());
+            panel.getRenderingContext().getContext().setDebug_draw_boxes(!panel.getRenderingContext().getContext().debugDrawBoxes());
             panel.repaint();
         }
     }
@@ -286,7 +286,7 @@ public class HTMLTest extends JFrame {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            panel.getRenderingContext().getContext().setDebug_draw_line_boxes(!panel.getRenderingContext().getContext().isDebug_draw_line_boxes());
+            panel.getRenderingContext().getContext().setDebug_draw_line_boxes(!panel.getRenderingContext().getContext().debugDrawLineBoxes());
             panel.repaint();
         }
     }
@@ -311,7 +311,7 @@ public class HTMLTest extends JFrame {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            panel.getRenderingContext().getContext().setDebug_draw_inline_boxes(!panel.getRenderingContext().getContext().isDebug_draw_inline_boxes());
+            panel.getRenderingContext().getContext().setDebug_draw_inline_boxes(!panel.getRenderingContext().getContext().debugDrawInlineBoxes());
             panel.repaint();
         }
     }
@@ -331,7 +331,7 @@ public class HTMLTest extends JFrame {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            panel.getRenderingContext().getContext().setDebug_draw_font_metrics(!panel.getRenderingContext().getContext().isDebug_draw_font_metrics());
+            panel.getRenderingContext().getContext().setDebug_draw_font_metrics(!panel.getRenderingContext().getContext().debugDrawFontMetrics());
             panel.repaint();
         }
     }
@@ -467,6 +467,9 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2004/12/29 10:39:35  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.25  2004/12/29 07:35:39  tobega
  * Prepared for cloned Context instances by encapsulating fields
  *

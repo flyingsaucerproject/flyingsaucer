@@ -26,7 +26,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.constants.ValueConstants;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.SharedContext;
 
 import javax.swing.*;
 import javax.swing.event.TreeModelListener;
@@ -60,7 +60,7 @@ public class DOMInspector extends JPanel {
     /**
      * Description of the Field
      */
-    Context context;
+    SharedContext context;
     /**
      * Description of the Field
      */
@@ -107,14 +107,14 @@ public class DOMInspector extends JPanel {
      *
      * @param doc     PARAM
      * @param context PARAM
-     * @param xsr     PARAM
+     * @param sr      PARAM
      */
-    public DOMInspector(Document doc, Context context, StyleReference sr) {
+    public DOMInspector(Document doc, SharedContext context, StyleReference sr) {
         super();
 
         this.setLayout(new java.awt.BorderLayout());
 
-        JPanel treePanel = new JPanel();
+        //JPanel treePanel = new JPanel();
         this.tree = new JTree();
         this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         this.scroll = new JScrollPane(tree);
@@ -171,9 +171,9 @@ public class DOMInspector extends JPanel {
      *
      * @param doc     The new forDocument value
      * @param context The new forDocument value
-     * @param xsr     The new forDocument value
+     * @param sr      The new forDocument value
      */
-    public void setForDocument(Document doc, Context context, StyleReference sr) {
+    public void setForDocument(Document doc, SharedContext context, StyleReference sr) {
         this.doc = doc;
         this.styleReference = sr;
         this.context = context;
@@ -208,7 +208,7 @@ public class DOMInspector extends JPanel {
             if (elementPropPanel != null) {
                 splitPane.remove(elementPropPanel);
             }
-            elementPropPanel = new ElementPropertiesPanel(context, styleReference);
+            elementPropPanel = new ElementPropertiesPanel(styleReference);
             splitPane.setRightComponent(elementPropPanel);
 
             tree.removeTreeSelectionListener(nodeSelectionListener);
@@ -232,7 +232,7 @@ class ElementPropertiesPanel extends JPanel {
     /**
      * Description of the Field
      */
-    private Context _context;
+    //private SharedContext _context;
     /**
      * Description of the Field
      */
@@ -249,12 +249,11 @@ class ElementPropertiesPanel extends JPanel {
     /**
      * Constructor for the ElementPropertiesPanel object
      *
-     * @param context PARAM
-     * @param xsr     PARAM
+     * @param sr PARAM
      */
-    ElementPropertiesPanel(Context context, StyleReference sr) {
+    ElementPropertiesPanel(StyleReference sr) {
         super();
-        this._context = context;
+        //this._context = context;
         this._sr = sr;
 
         this._properties = new PropertiesJTable();
@@ -370,7 +369,7 @@ class ElementPropertiesPanel extends JPanel {
         /**
          * Constructor for the PropertiesTableModel object
          *
-         * @param xrProperties PARAM
+         * @param cssProperties PARAM
          */
         PropertiesTableModel(Map cssProperties) {
             _properties = cssProperties;
@@ -478,7 +477,6 @@ class DOMSelectionListener implements TreeSelectionListener {
      * Constructor for the DOMSelectionListener object
      *
      * @param tree  PARAM
-     * @param xsr   PARAM
      * @param panel PARAM
      */
     //DOMSelectionListener( JTree tree, StyleReference sr, ElementPropertiesPanel panel ) {
@@ -750,7 +748,7 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
 
         Node node = (Node) value;
 
-        if (node.getNodeType() == node.ELEMENT_NODE) {
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
 
             String cls = "";
             if (node.hasAttributes()) {
@@ -763,14 +761,14 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
 
         }
 
-        if (node.getNodeType() == node.TEXT_NODE) {
+        if (node.getNodeType() == Node.TEXT_NODE) {
 
             if (node.getNodeValue().trim().length() > 0) {
                 value = "\"" + node.getNodeValue() + "\"";
             }
         }
 
-        if (node.getNodeType() == node.COMMENT_NODE) {
+        if (node.getNodeType() == Node.COMMENT_NODE) {
 
             value = "<!-- " + node.getNodeValue() + " -->";
 
@@ -784,6 +782,9 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/12/29 10:39:35  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.8  2004/12/12 04:18:58  tobega
  * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
  *

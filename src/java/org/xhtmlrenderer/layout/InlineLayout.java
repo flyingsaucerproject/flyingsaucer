@@ -489,6 +489,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.74  2004/12/29 10:39:33  tobega
+* Separated current state Context into ContextImpl and the rest into SharedContext.
+*
 * Revision 1.73  2004/12/28 01:48:24  tobega
 * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
 *

@@ -20,7 +20,7 @@
 package org.xhtmlrenderer.forms;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.SharedContext;
 
 import javax.swing.*;
 
@@ -45,7 +45,7 @@ public class InputTextArea extends FormItemLayout {
      * @param elem PARAM
      * @return Returns
      */
-    public JComponent createComponent(Context c, Element elem) {
+    public JComponent createComponent(SharedContext c, Element elem) {
         //Uu.p("created a TextArea");
         int rows = 4;
         int cols = 10;
@@ -75,6 +75,9 @@ public class InputTextArea extends FormItemLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/29 10:39:28  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.5  2004/12/12 03:32:55  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

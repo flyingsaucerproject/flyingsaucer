@@ -293,6 +293,9 @@ public class TableLayout2 extends TableLayout {
 /*
    $Id$
    $Log$
+   Revision 1.15  2004/12/29 10:39:36  tobega
+   Separated current state Context into ContextImpl and the rest into SharedContext.
+
    Revision 1.14  2004/12/29 07:35:40  tobega
    Prepared for cloned Context instances by encapsulating fields
 

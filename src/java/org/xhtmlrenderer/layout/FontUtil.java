@@ -159,6 +159,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2004/12/29 10:39:32  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.21  2004/12/14 00:32:20  tobega
  * Cleaned and fixed line breaking. Renamed BodyContent to DomToplevelNode
  *

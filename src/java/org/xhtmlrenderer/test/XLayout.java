@@ -73,6 +73,9 @@ public class XLayout extends CustomBlockLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/29 10:39:37  tobega
+ * Separated current state Context into ContextImpl and the rest into SharedContext.
+ *
  * Revision 1.5  2004/12/27 07:43:34  tobega
  * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
  *

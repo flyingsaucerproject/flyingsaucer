@@ -22,7 +22,6 @@ package org.xhtmlrenderer.layout.content;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.util.Uu;
 
 import java.util.List;
 
