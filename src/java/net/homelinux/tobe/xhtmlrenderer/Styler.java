@@ -29,6 +29,8 @@ public interface Styler {
     
     public void setMatcher(Matcher m);
     
+    public void restyleTree( org.w3c.dom.Element elem );
+    
     public CalculatedStyle getCalculatedStyle(org.w3c.dom.Element e);
     
 }

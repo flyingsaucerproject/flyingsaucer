@@ -42,6 +42,6 @@ public interface Stylesheet {
 
     public int getOrigin();
     
-    /** Objects returned should be of type Ruleset */
+    /** Objects returned should be of type Ruleset, in the order they were declared */
     public java.util.Iterator getRulesets();
 }

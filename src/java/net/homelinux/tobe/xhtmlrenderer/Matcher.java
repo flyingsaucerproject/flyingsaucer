@@ -39,7 +39,7 @@ public interface Matcher {
     /** iterator should return objects of type Stylesheet in the correct order of declaration */
     public void setStylesheets(java.util.Iterator i);
     
-    /** Contract: Objects in iterator are of type MatchedPropertyDeclaration and are given in order of rising specificity of the matching selector */
+    /** Contract: Objects in iterator are of type PropertyDeclaration and are given in order of rising specificity of the matching selector, subordered by order of declaration */
     public java.util.Iterator getMatchedPropertyDeclarations(org.w3c.dom.Element e);
     
 }
