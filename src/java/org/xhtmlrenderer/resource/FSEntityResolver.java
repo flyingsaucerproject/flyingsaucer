@@ -66,6 +66,51 @@ public class FSEntityResolver implements EntityResolver {
         this.addMapping( "-//W3C//DTD XHTML 1.0 Transitional//EN", "resources/dtd/xhtml1-transitional.dtd" );
         this.addMapping( "-//W3C//DTD XHTML 1.0 Frameset//EN", "resources/dtd/xhtml1-frameset.dtd" );
 
+        // The XHMTL 1.1 DTD
+        this.addMapping( "-//W3C//DTD XHTML 1.1//EN", "resources/dtd/xhtml11.dtd" );
+
+        // The XHTML 1.1 element sets
+        this.addMapping( "-//W3C//ELEMENTS XHTML Inline Style 1.0//EN", "resources/element/xhtml-inlstyle-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Text 1.0//EN", "resources/element/xhtml-text-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Inline Structural 1.0//EN", "resources/element/xhtml-inlstruct-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Inline Phrasal 1.0//EN", "resources/element/xhtml-inlphras-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Block Structural 1.0//EN", "resources/element/xhtml-blkstruct-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Block Phrasal 1.0//EN", "resources/element/xhtml-blkphras-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Hypertext 1.0//EN", "resources/element/xhtml-hypertext-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Lists 1.0//EN", "resources/element/xhtml-list-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Editing Elements 1.0//EN", "resources/element/xhtml-edit-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML BIDI Override Element 1.0//EN", "resources/element/xhtml-bdo-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Ruby 1.0//EN", "resources/element/xhtml-ruby-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Presentation 1.0//EN", "resources/element/xhtml-pres-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Inline Presentation 1.0//EN", "resources/element/xhtml-inlpres-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Block Presentation 1.0//EN", "resources/element/xhtml-inlpres-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Link Element 1.0//EN", "resources/element/xhtml-link-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Metainformation 1.0//EN", "resources/element/xhtml-meta-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Base Element 1.0//EN", "resources/element/xhtml-base-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Scripting 1.0//EN", "resources/element/xhtml-script-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Style Sheets 1.0//EN", "resources/element/xhtml-style-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Images 1.0//EN", "resources/element/xhtml-image-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Client-side Image Maps 1.0//EN", "resources/element/xhtml-csismap-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Server-side Image Maps 1.0//EN", "resources/element/xhtml-ssismap-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Param Element 1.0//EN", "resources/element/xhtml-param-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Embedded Object 1.0//EN", "resources/element/xhtml-object-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Tables 1.0//EN", "resources/element/xhtml-table-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Forms 1.0//EN", "resources/element/xhtml-form-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Document Structure 1.0//EN", "resources/element/xhtml-struct-1.mod" );
+        this.addMapping( "-//W3C//ELEMENTS XHTML Legacy Markup 1.0//EN", "resources/element/xhtml-legacy-1.mod" );
+
+        // The XHTML 1.1. entity sets
+        this.addMapping( "-//W3C//ENTITIES XHTML Modular Framework 1.0//EN", "resources/entity/xhtml-framework-1.mod" );
+        this.addMapping( "-//W3C//ENTITIES XHTML Datatypes 1.0//EN", "resources/entity/xhtml-datatypes-1.mod" );
+        this.addMapping( "-//W3C//ENTITIES XHTML Qualified Names 1.0//EN", "resources/entity/xhtml-qname-1.mod" );
+        this.addMapping( "-//W3C//ENTITIES XHTML Intrinsic Events 1.0//EN", "resources/entity/xhtml-events-1.mod" );
+        this.addMapping( "-//W3C//ENTITIES XHTML Common Attributes 1.0//EN", "resources/entity/xhtml-attribs-1.mod" );
+        this.addMapping( "-//W3C//ENTITIES XHTML 1.1 Document Model 1.0//EN", "resources/entity/xhtml11-model-1.mod" );
+        this.addMapping( "-//W3C//ENTITIES XHTML Character Entities 1.0//EN", "resources/entity/xhtml-charent-1.mod" );
+
+        // The XHTML 1.1 notation sets
+        this.addMapping( "-//W3C//NOTATIONS XHTML Notations 1.0//EN", "resources/notation/xhtml-notations-1.mod" );
+
         // The HTML 4 entity sets
         this.addMapping( "-//W3C//ENTITIES Latin 1//EN//HTML", "resources/entity/html-lat1.ent" );
         this.addMapping( "-//W3C//ENTITIES Symbols//EN//HTML", "resources/entity/html-symbol.ent" );
@@ -139,6 +184,9 @@ public class FSEntityResolver implements EntityResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/03/21 09:13:50  pdoubleya
+ * Added XHTML 1.1 references (Kevin).
+ *
  * Revision 1.1  2005/02/03 20:39:34  pdoubleya
  * Added to CVS.
  *
