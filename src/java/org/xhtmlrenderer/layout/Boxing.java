@@ -52,24 +52,6 @@ public class Boxing {
     private Boxing() {
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c       PARAM
-     * @param content
-     * @return Returns
-     */
-    public static Box createBox(Context c, Content content) {
-        BlockBox block = new BlockBox();
-        block.content = content;
-        //String attachment = c.css.getStringProperty(block.getRealElement(), "background-attachment", false);
-        String attachment = c.getCurrentStyle().getStringProperty("background-attachment");
-        if (attachment != null && attachment.equals("fixed")) {
-            block.setChildrenExceedBounds(true);
-        }
-        return block;
-    }
-
 
     /**
      * Description of the Method
@@ -206,7 +188,7 @@ public class Boxing {
             float new_width = style.getFloatPropertyRelative("width", c.getExtents().width);
             c.getExtents().width = (int) new_width;
             block.width = (int) new_width;
-            block.auto_width = false;
+            //block.auto_width = false;
         }
     }
 
@@ -300,6 +282,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/01/05 01:10:14  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.2  2005/01/02 12:22:16  tobega
  * Cleaned out old layout code
  *

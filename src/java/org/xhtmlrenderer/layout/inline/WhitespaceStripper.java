@@ -9,7 +9,6 @@ import org.xhtmlrenderer.layout.content.StylePop;
 import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.content.TextContent;
 
-import java.awt.Font;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -217,23 +216,25 @@ public class WhitespaceStripper {
         return whitespace;
     }
 
-    public static void df(Context c, String text, Font f) {
-        /*
-        Uu.p("-------------------------");
-        ((Graphics2D)c.getGraphics()).setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
-            RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
-            
-        ((Graphics2D)c.getGraphics()).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-            RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-        FontMetrics fm = c.getGraphics().getFontMetrics();
-        Uu.p("graphics = " + c.getGraphics());
-        Uu.p("fm = " + fm);
-        Uu.p("text = -" + text + "-");
-        Uu.p("real len = " + fm.stringWidth(text));
-        Uu.p("real height = " + fm.getHeight());
-        Uu.p("-------------------------");
-        */
-    }
+// --Commented out by Inspection START (2005-01-05 01:05):
+//    public static void df(Context c, String text, Font f) {
+//        /*
+//        Uu.p("-------------------------");
+//        ((Graphics2D)c.getGraphics()).setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
+//            RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+//
+//        ((Graphics2D)c.getGraphics()).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+//            RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+//        FontMetrics fm = c.getGraphics().getFontMetrics();
+//        Uu.p("graphics = " + c.getGraphics());
+//        Uu.p("fm = " + fm);
+//        Uu.p("text = -" + text + "-");
+//        Uu.p("real len = " + fm.stringWidth(text));
+//        Uu.p("real height = " + fm.getHeight());
+//        Uu.p("-------------------------");
+//        */
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:05)
 
 }
 

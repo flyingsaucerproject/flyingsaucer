@@ -59,15 +59,17 @@ public class AnonymousBlockBox extends BlockBox {
     }
 
 
-    /**
-     * Gets the anonymous attribute of the AnonymousBlockBox object
-     *
-     * @return The anonymous value
-     */
-    public boolean isAnonymous() {
-
-        return true;
-    }
+// --Commented out by Inspection START (2005-01-05 01:06):
+//    /**
+//     * Gets the anonymous attribute of the AnonymousBlockBox object
+//     *
+//     * @return The anonymous value
+//     */
+//    public boolean isAnonymous() {
+//
+//        return true;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:06)
 
 
 }
@@ -76,6 +78,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/01/05 01:10:15  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.9  2004/12/12 03:32:59  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

@@ -20,10 +20,6 @@
  */
 package org.xhtmlrenderer.css;
 
-import org.xhtmlrenderer.layout.Context;
-
-import java.util.Iterator;
-
 
 /**
  * Interface for CSS rules (@ rules, style rules). An XRRule is also a DOM
@@ -33,49 +29,60 @@ import java.util.Iterator;
  * @author Patrick Wright
  */
 public interface XRRule {
-    /**
-     * An iterator of all XRProperties in this rule.
-     *
-     * @return Returns
-     */
-    Iterator listXRProperties();
+// --Commented out by Inspection START (2005-01-05 00:30):
+//    /**
+//     * An iterator of all XRProperties in this rule.
+//     *
+//     * @return Returns
+//     */
+//    Iterator listXRProperties();
+// --Commented out by Inspection STOP (2005-01-05 00:30)
 
 
-    /**
-     * Value of a single XRProperty, by name.
-     *
-     * @param context  PARAM
-     * @param propName PARAM
-     * @return Returns
-     */
-    XRProperty propertyByName(Context context, String propName);
+// --Commented out by Inspection START (2005-01-05 00:31):
+//    /**
+//     * Value of a single XRProperty, by name.
+//     *
+//     * @param context  PARAM
+//     * @param propName PARAM
+//     * @return Returns
+//     */
+//    XRProperty propertyByName(Context context, String propName);
+// --Commented out by Inspection STOP (2005-01-05 00:31)
 
 
-    /**
-     * Returns true if the named property was defined and has a value in this
-     * rule set.
-     *
-     * @param propName PARAM
-     * @return Returns
-     */
-    boolean hasProperty(String propName);
+// --Commented out by Inspection START (2005-01-05 00:30):
+//    /**
+//     * Returns true if the named property was defined and has a value in this
+//     * rule set.
+//     *
+//     * @param propName PARAM
+//     * @return Returns
+//     */
+//    boolean hasProperty(String propName);
+// --Commented out by Inspection STOP (2005-01-05 00:30)
 
 
-    /**
-     * Merges two XRRules, combining all properties. This is not used for
-     * cascading, rather for two rules defined separately in the same sheet with
-     * the same selector. Any properties with the same name in fromRuleSet will
-     * replace existing properties with that name in this XRRule.
-     *
-     * @param fromRuleSet PARAM
-     */
-    void mergeProperties(XRRule fromRuleSet);
+// --Commented out by Inspection START (2005-01-05 00:30):
+//    /**
+//     * Merges two XRRules, combining all properties. This is not used for
+//     * cascading, rather for two rules defined separately in the same sheet with
+//     * the same selector. Any properties with the same name in fromRuleSet will
+//     * replace existing properties with that name in this XRRule.
+//     *
+//     * @param fromRuleSet PARAM
+//     */
+//    void mergeProperties(XRRule fromRuleSet);
+// --Commented out by Inspection STOP (2005-01-05 00:30)
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/05 01:10:13  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.3  2004/12/29 10:39:27  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

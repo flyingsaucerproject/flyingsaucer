@@ -22,16 +22,17 @@ package org.xhtmlrenderer.css;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
+import java.awt.*;
 import java.util.HashMap;
 
 
 public class FontResolver {
-    /**
-     * Description of the Field
-     */
-    String[] available_fonts;
+// --Commented out by Inspection START (2005-01-05 00:24):
+//    /**
+//     * Description of the Field
+//     */
+//    String[] available_fonts;
+// --Commented out by Inspection STOP (2005-01-05 00:24)
     /**
      * Description of the Field
      */
@@ -234,6 +235,9 @@ public class FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/01/05 01:10:13  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.9  2004/12/29 10:39:26  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

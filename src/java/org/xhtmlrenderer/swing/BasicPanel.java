@@ -97,10 +97,12 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
      */
     protected URL url;
 
-    /**
-     * Description of the Field
-     */
-    boolean inside = false;
+// --Commented out by Inspection START (2005-01-05 01:10):
+//    /**
+//     * Description of the Field
+//     */
+//    boolean inside = false;
+// --Commented out by Inspection STOP (2005-01-05 01:10)
 
     /**
      * Description of the Field
@@ -866,6 +868,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/01/05 01:10:16  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.27  2005/01/03 00:35:03  tobega
  * Cleaned out old forms code
  *

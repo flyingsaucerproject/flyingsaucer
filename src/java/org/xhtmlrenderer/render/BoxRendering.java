@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Boxing;
@@ -298,21 +297,27 @@ public class BoxRendering {
         ListItemPainter.paint(c, box);
     }
 
-    public static Border getBorder(Context c, Box box) {
-        return Boxing.getBorder(c, box);
-    }
+// --Commented out by Inspection START (2005-01-05 01:06):
+//    public static Border getBorder(Context c, Box box) {
+//        return Boxing.getBorder(c, box);
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:06)
 
-    public static Border getPadding(Context c, Box box) {
-        return Boxing.getPadding(c, box);
-    }
+// --Commented out by Inspection START (2005-01-05 01:06):
+//    public static Border getPadding(Context c, Box box) {
+//        return Boxing.getPadding(c, box);
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:06)
 
     public static Color getBackgroundColor(Context c, Box box) {
         return Boxing.getBackgroundColor(c, box);
     }
 
-    public static Border getMargin(Context c, Box box) {
-        return Boxing.getMargin(c, box);
-    }
+// --Commented out by Inspection START (2005-01-05 01:06):
+//    public static Border getMargin(Context c, Box box) {
+//        return Boxing.getMargin(c, box);
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:06)
 
 
     public static void restyle(Context ctx, Box box) {
@@ -327,17 +332,19 @@ public class BoxRendering {
     }
 
 
-    //TODO: check the logic here
-    public static boolean isBlockLayedOut(Box box) {
-        if (box.getChildCount() == 0) return false;//have to return something, it shouldn't matter
-        for (int i = 0; i < box.getChildCount(); i++) {
-            Box child = box.getChild(i);
-            if (child instanceof LineBox) return false;
-            if (child instanceof InlineBox) return false;
-            if (child instanceof InlineBlockBox) return false;
-        }
-        return true;
-    }
+// --Commented out by Inspection START (2005-01-05 01:06):
+//    //TODO: check the logic here
+//    public static boolean isBlockLayedOut(Box box) {
+//        if (box.getChildCount() == 0) return false;//have to return something, it shouldn't matter
+//        for (int i = 0; i < box.getChildCount(); i++) {
+//            Box child = box.getChild(i);
+//            if (child instanceof LineBox) return false;
+//            if (child instanceof InlineBox) return false;
+//            if (child instanceof InlineBlockBox) return false;
+//        }
+//        return true;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:06)
 
     //TODO: check the logic here
     public static boolean isInlineLayedOut(Box box) {

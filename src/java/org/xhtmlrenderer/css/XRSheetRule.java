@@ -29,37 +29,43 @@ import org.w3c.dom.css.CSSRule;
  * their stylesheet. A rule belongs to a CSS stylesheet, and is marked important
  * iff it contains only properties marked !important
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public interface XRSheetRule extends CSSRule, XRRule {
 
-    /**
-     * Returns the stylesheet for this rule...rules always exist in the context
-     * of a sheet.
-     *
-     * @return   The styleSheet value
-     */
-    XRStyleSheet getStyleSheet();
+// --Commented out by Inspection START (2005-01-05 00:31):
+//    /**
+//     * Returns the stylesheet for this rule...rules always exist in the context
+//     * of a sheet.
+//     *
+//     * @return   The styleSheet value
+//     */
+//    XRStyleSheet getStyleSheet();
+// --Commented out by Inspection STOP (2005-01-05 00:31)
 
 
-    /**
-     * Returns true if this rule is restricted to properties marked
-     * "!important". Normally "!important" properties may be mixed freely with
-     * non-important ones; however, in XR we separate these out to facilitate
-     * the cascade logic, effectively making two rules with the same selector,
-     * one important (higher priority) and one not.
-     *
-     * @return   The important value
-     */
-    boolean isImportant();
+// --Commented out by Inspection START (2005-01-05 00:31):
+//    /**
+//     * Returns true if this rule is restricted to properties marked
+//     * "!important". Normally "!important" properties may be mixed freely with
+//     * non-important ones; however, in XR we separate these out to facilitate
+//     * the cascade logic, effectively making two rules with the same selector,
+//     * one important (higher priority) and one not.
+//     *
+//     * @return   The important value
+//     */
+//    boolean isImportant();
+// --Commented out by Inspection STOP (2005-01-05 00:31)
 
 
-    /**
-     * The numeric sequence in which this rule was found in the stylesheet.
-     *
-     * @return   Returns
-     */
-    int sequenceInStyleSheet();
+// --Commented out by Inspection START (2005-01-05 00:31):
+//    /**
+//     * The numeric sequence in which this rule was found in the stylesheet.
+//     *
+//     * @return   Returns
+//     */
+//    int sequenceInStyleSheet();
+// --Commented out by Inspection STOP (2005-01-05 00:31)
 
 }
 
@@ -67,6 +73,9 @@ public interface XRSheetRule extends CSSRule, XRRule {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/01/05 01:10:14  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.2  2004/10/23 13:03:47  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

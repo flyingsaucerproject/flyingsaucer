@@ -22,8 +22,6 @@ package org.xhtmlrenderer.css;
 
 import org.w3c.dom.css.CSSValue;
 
-import java.awt.Color;
-
 
 /**
  * A CSSValue as parsed from a stylesheet.
@@ -53,12 +51,14 @@ public interface XRValue extends CSSValue {
     boolean forcedInherit();
 
 
-    /**
-     * True if the value declaration marked as important.
-     *
-     * @return The important value
-     */
-    boolean isImportant();
+// --Commented out by Inspection START (2005-01-05 00:32):
+//    /**
+//     * True if the value declaration marked as important.
+//     *
+//     * @return The important value
+//     */
+//    boolean isImportant();
+// --Commented out by Inspection STOP (2005-01-05 00:32)
 
 
     /**
@@ -71,28 +71,34 @@ public interface XRValue extends CSSValue {
     CSSValue cssValue();
 
 
-    /**
-     * The value as a float; if conversion fails, returns .MIN_VALUE
-     *
-     * @return Returns
-     */
-    float asFloat();
+// --Commented out by Inspection START (2005-01-05 00:32):
+//    /**
+//     * The value as a float; if conversion fails, returns .MIN_VALUE
+//     *
+//     * @return Returns
+//     */
+//    float asFloat();
+// --Commented out by Inspection STOP (2005-01-05 00:32)
 
 
-    /**
-     * The value as specified in the CSS
-     *
-     * @return Returns
-     */
-    String asString();
+// --Commented out by Inspection START (2005-01-05 00:32):
+//    /**
+//     * The value as specified in the CSS
+//     *
+//     * @return Returns
+//     */
+//    String asString();
+// --Commented out by Inspection STOP (2005-01-05 00:32)
 
 
-    /**
-     * The value as specified in the CSS
-     *
-     * @return Returns
-     */
-    String[] asStringArray();
+// --Commented out by Inspection START (2005-01-05 00:32):
+//    /**
+//     * The value as specified in the CSS
+//     *
+//     * @return Returns
+//     */
+//    String[] asStringArray();
+// --Commented out by Inspection STOP (2005-01-05 00:32)
 
 
     /**
@@ -103,29 +109,35 @@ public interface XRValue extends CSSValue {
     boolean isPrimitiveType();
 
 
-    /**
-     * Gets the valueList attribute of the XRValue object
-     *
-     * @return The valueList value
-     */
-    boolean isValueList();
+// --Commented out by Inspection START (2005-01-05 00:33):
+//    /**
+//     * Gets the valueList attribute of the XRValue object
+//     *
+//     * @return The valueList value
+//     */
+//    boolean isValueList();
+// --Commented out by Inspection STOP (2005-01-05 00:33)
 
 
-    /**
-     * HACK: this only works if the value is actually a primitve
-     *
-     * @return The rGBColorValue value
-     */
-    Color asColor();
+// --Commented out by Inspection START (2005-01-05 00:32):
+//    /**
+//     * HACK: this only works if the value is actually a primitve
+//     *
+//     * @return The rGBColorValue value
+//     */
+//    Color asColor();
+// --Commented out by Inspection STOP (2005-01-05 00:32)
 
 
-    /**
-     * Returns true if this is a relative unit (e.g. percentage) whose value has
-     * been computed as an absolute computed value.
-     *
-     * @return The relativeUnitComputed value
-     */
-    boolean requiresComputation();
+// --Commented out by Inspection START (2005-01-05 00:33):
+//    /**
+//     * Returns true if this is a relative unit (e.g. percentage) whose value has
+//     * been computed as an absolute computed value.
+//     *
+//     * @return The relativeUnitComputed value
+//     */
+//    boolean requiresComputation();
+// --Commented out by Inspection STOP (2005-01-05 00:33)
 
 
     /**
@@ -152,6 +164,9 @@ public interface XRValue extends CSSValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/01/05 01:10:14  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.4  2004/12/29 10:39:27  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

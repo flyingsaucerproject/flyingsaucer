@@ -4,9 +4,7 @@ import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.util.Uu;
 
 public class LayoutUtil {
 
@@ -36,59 +34,6 @@ public class LayoutUtil {
             return true;
         }
         return false;
-    }
-
-    public static boolean shouldDrawBackground(Box box) {
-        if (!isBlockOrInlineElementBox(box)) {
-            return false;
-        }
-        if (box.content instanceof AnonymousBlockContent) {
-            return false;
-        }
-        return true;
-    }
-
-    //TODO: move this to Box
-    public static boolean isBlockOrInlineElementBox(Box box) {
-        //Uu.p("box = " + box);
-        if (box.content instanceof BlockContent) {
-            //Uu.p("box is a block or element");
-            return true;
-        }
-        if (box.content instanceof DomToplevelNode) {
-            //Uu.p("box is a block or element");
-            return true;
-        }
-        if (box.content instanceof AnonymousBlockContent) {
-            //Uu.p("box is a block or element");
-            return true;
-        }
-
-        if (box.content instanceof TextContent) {
-            // Uu.p("box is not a block or inline element");
-            return false;
-        }
-
-        if (box.content instanceof InlineBlockContent) {
-            return true;
-        }
-
-        if (box.content instanceof AbsolutelyPositionedContent) {
-            return true;
-        }
-
-        if (box.content instanceof FloatedBlockContent) {
-            return true;
-        }
-        
-        // if (box.content instanceof BlockContent ||
-        //     (box.isInlineElement() && !(box.content instanceof TextContent))) {
-        //     Uu.p("box is a block or element");
-        //     return true;
-        // }
-        
-        Uu.p("fall through!" + box);
-        return true;
     }
 
     //TODO: move this to Box

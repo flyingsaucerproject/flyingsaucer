@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
@@ -33,11 +32,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.swing.*;
 import java.awt.*;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Level;
 
@@ -93,13 +88,11 @@ public class ContextImpl implements Context {
         return sharedContext.inSelection(box);
     }
 
-    public SharedContext.FormComponent addInputField(String name, Element element, JComponent comp) {
-        return sharedContext.addInputField(name, element, comp);
-    }
-
-    public void setMaxWidth(int max_width) {
-        sharedContext.setMaxWidth(max_width);
-    }
+// --Commented out by Inspection START (2005-01-05 00:56):
+//    public void setMaxWidth(int max_width) {
+//        sharedContext.setMaxWidth(max_width);
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:56)
 
     public void setSelectionStart(Box box, int x) {
         sharedContext.setSelectionStart(box, x);
@@ -109,17 +102,15 @@ public class ContextImpl implements Context {
         sharedContext.setSelectionEnd(box, x);
     }
 
-    public void setForm(String form_name, String action) {
-        sharedContext.setForm(form_name, action);
-    }
-
     public Graphics2D getGraphics() {
         return sharedContext.getGraphics();
     }
 
-    public int getMaxWidth() {
-        return sharedContext.getMaxWidth();
-    }
+// --Commented out by Inspection START (2005-01-05 00:56):
+//    public int getMaxWidth() {
+//        return sharedContext.getMaxWidth();
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:56)
 
     public FontResolver getFontResolver() {
         return sharedContext.getFontResolver();
@@ -143,26 +134,6 @@ public class ContextImpl implements Context {
 
     public int getSelectionEndX() {
         return sharedContext.getSelectionEndX();
-    }
-
-    public String getForm() {
-        return sharedContext.getForm();
-    }
-
-    public Iterator getInputFieldComponents(String form_name) {
-        return sharedContext.getInputFieldComponents(form_name);
-    }
-
-    public List getInputFieldComponents(String form_name, String field_name) {
-        return sharedContext.getInputFieldComponents(form_name, field_name);
-    }
-
-    public String getFormAction(String form_name) {
-        return sharedContext.getFormAction(form_name);
-    }
-
-    public Map getForms() {
-        return sharedContext.getForms();
     }
 
     public StyleReference getCss() {
@@ -195,26 +166,6 @@ public class ContextImpl implements Context {
 
     public void setCanvas(BasicPanel canvas) {
         sharedContext.setCanvas(canvas);
-    }
-
-    public String getForm_name() {
-        return sharedContext.getForm_name();
-    }
-
-    public void setForm_name(String form_name) {
-        sharedContext.setForm_name(form_name);
-    }
-
-    public void setForms(Map forms) {
-        sharedContext.setForms(forms);
-    }
-
-    public Map getActions() {
-        return sharedContext.getActions();
-    }
-
-    public void setActions(Map actions) {
-        sharedContext.setActions(actions);
     }
 
     public RenderingContext getCtx() {

@@ -23,9 +23,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
@@ -74,10 +72,12 @@ public class InlineBox extends Box {
      */
     public BlockBox sub_block = null;
 
-    /**
-     * Description of the Field
-     */
-    public boolean replaced = false;
+// --Commented out by Inspection START (2005-01-05 01:07):
+//    /**
+//     * Description of the Field
+//     */
+//    public boolean replaced = false;
+// --Commented out by Inspection STOP (2005-01-05 01:07)
 
 
     // line breaking stuff
@@ -118,10 +118,12 @@ public class InlineBox extends Box {
      */
     public int baseline;
 
-    /**
-     * Description of the Field
-     */
-    public int lineheight;
+// --Commented out by Inspection START (2005-01-05 01:07):
+//    /**
+//     * Description of the Field
+//     */
+//    public int lineheight;
+// --Commented out by Inspection STOP (2005-01-05 01:07)
 
     /**
      * Description of the Field
@@ -219,26 +221,34 @@ public class InlineBox extends Box {
 
     }
 
-    /* not used: public void setSubstring(String text) {
-        this.master = text;
-        start_index = 0;
-        end_index = text.length();
-    }*/
-    public int getStart_index() {
-        return start_index;
-    }
+// --Commented out by Inspection START (2005-01-05 01:07):
+//    /* not used: public void setSubstring(String text) {
+//        this.master = text;
+//        start_index = 0;
+//        end_index = text.length();
+//    }*/
+//    public int getStart_index() {
+//        return start_index;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:07)
 
-    public void setStart_index(int start_index) {
-        this.start_index = start_index;
-    }
+// --Commented out by Inspection START (2005-01-05 01:07):
+//    public void setStart_index(int start_index) {
+//        this.start_index = start_index;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:07)
 
-    public int getEnd_index() {
-        return end_index;
-    }
+// --Commented out by Inspection START (2005-01-05 01:07):
+//    public int getEnd_index() {
+//        return end_index;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:07)
 
-    public void setEnd_index(int end_index) {
-        this.end_index = end_index;
-    }
+// --Commented out by Inspection START (2005-01-05 01:07):
+//    public void setEnd_index(int end_index) {
+//        this.end_index = end_index;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:07)
 
     public void setSubstring(int start, int end) {
         if (end < start) {
@@ -251,15 +261,17 @@ public class InlineBox extends Box {
         end_index = end;
     }
 
-    public void setSubstringLength(int len) {
-        end_index = start_index + len;
-        if (end_index > getMasterText().length()) {
-            Uu.p("just set substring length to : " + len);
-            Uu.p("so indexes = " + start_index + " -> " + end_index);
-            Uu.p("longer than master: " + getMasterText());
-            throw new RuntimeException("set substring length too long: " + this);
-        }
-    }
+// --Commented out by Inspection START (2005-01-05 01:07):
+//    public void setSubstringLength(int len) {
+//        end_index = start_index + len;
+//        if (end_index > getMasterText().length()) {
+//            Uu.p("just set substring length to : " + len);
+//            Uu.p("so indexes = " + start_index + " -> " + end_index);
+//            Uu.p("longer than master: " + getMasterText());
+//            throw new RuntimeException("set substring length too long: " + this);
+//        }
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:07)
 
     private String master;
 
@@ -313,9 +325,11 @@ public class InlineBox extends Box {
         this.style = style;
     }
 
-    public CalculatedStyle getStyle() {
-        return this.style;
-    }
+// --Commented out by Inspection START (2005-01-05 01:07):
+//    public CalculatedStyle getStyle() {
+//        return this.style;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:07)
 
     public boolean isInlineElement() {
         /* just to get it to compile, for now
@@ -339,6 +353,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/01/05 01:10:16  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.27  2004/12/29 10:39:35  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

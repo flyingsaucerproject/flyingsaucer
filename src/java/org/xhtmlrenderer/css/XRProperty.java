@@ -54,49 +54,60 @@ public interface XRProperty {
      */
     XRValue specifiedValue();
 
-    /**
-     * The specified value, if absolute, or the relative value as absolute, if
-     * relative :).
-     *
-     * @return See desc.
-     */
-    XRValue computedValue();
+// --Commented out by Inspection START (2005-01-05 00:30):
+//    /**
+//     * The specified value, if absolute, or the relative value as absolute, if
+//     * relative :).
+//     *
+//     * @return See desc.
+//     */
+//    XRValue computedValue();
+// --Commented out by Inspection STOP (2005-01-05 00:30)
 
-    /**
-     * The actual value--the computed value when limited by the current
-     * presentation environment. (CSS2 6.1.3)
-     *
-     * @return See desc.
-     */
-    // TODO: need Context and possibly current Element to determine proportional values (PWW 12-11-04)
-    XRValue actualValue();
-
-
-    /**
-     * Deep copy operation. However, any contained SAC instances are not
-     * deep-copied.
-     *
-     * @return A copy of this <code>XRProperty</code>.
-     */
-    XRProperty copyOf();
+// --Commented out by Inspection START (2005-01-05 00:30):
+//    /**
+//     * The actual value--the computed value when limited by the current
+//     * presentation environment. (CSS2 6.1.3)
+//     *
+//     * @return See desc.
+//     */
+//    // TODO: need Context and possibly current Element to determine proportional values (PWW 12-11-04)
+//    XRValue actualValue();
+// --Commented out by Inspection STOP (2005-01-05 00:30)
 
 
-    /**
-     * Deep copy operation for the purposes of inheriting a computed value. Used
-     * when a child element needs the parent element's computed value for a
-     * property. The following is true of the copy: 1) is resolved 2) computed
-     * value is same as parent's computed 3) actual value is same as parent's
-     * actual value. Any contained SAC instances are not deep-copied.
-     *
-     * @return See desc
-     */
-    XRProperty copyForInherit();
+// --Commented out by Inspection START (2005-01-05 00:30):
+//    /**
+//     * Deep copy operation. However, any contained SAC instances are not
+//     * deep-copied.
+//     *
+//     * @return A copy of this <code>XRProperty</code>.
+//     */
+//    XRProperty copyOf();
+// --Commented out by Inspection STOP (2005-01-05 00:30)
+
+
+// --Commented out by Inspection START (2005-01-05 00:30):
+//    /**
+//     * Deep copy operation for the purposes of inheriting a computed value. Used
+//     * when a child element needs the parent element's computed value for a
+//     * property. The following is true of the copy: 1) is resolved 2) computed
+//     * value is same as parent's computed 3) actual value is same as parent's
+//     * actual value. Any contained SAC instances are not deep-copied.
+//     *
+//     * @return See desc
+//     */
+//    XRProperty copyForInherit();
+// --Commented out by Inspection STOP (2005-01-05 00:30)
 }// end interface
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/01/05 01:10:13  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.5  2004/12/29 10:39:27  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

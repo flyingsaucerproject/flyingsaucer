@@ -21,12 +21,10 @@
 package org.xhtmlrenderer.css.impl;
 
 import org.w3c.dom.DOMException;
-import org.w3c.dom.css.*;
+import org.w3c.dom.css.CSSPrimitiveValue;
+import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.XRValue;
 import org.xhtmlrenderer.css.constants.ValueConstants;
-import org.xhtmlrenderer.css.util.ConversionUtil;
-
-import java.awt.Color;
 
 
 /**
@@ -74,10 +72,12 @@ public class XRValueImpl implements XRValue {
      */
     private boolean _requiresComputation;
 
-    /**
-     * String array, if there is one to split from value
-     */
-    private String[] _stringAsArray;
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * String array, if there is one to split from value
+//     */
+//    private String[] _stringAsArray;
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
     /**
      * Constructor for the XRValueImpl object
@@ -115,55 +115,61 @@ public class XRValueImpl implements XRValue {
     }
 
 
-    /**
-     * The value as a float; returns Float.MIN_VALUE (as float) if there is an
-     * error.
-     *
-     * @return Returns
-     */
-    public float asFloat() {
-        float f = new Float(Float.MIN_VALUE).floatValue();
-        try {
-            f = _asFloat;
-        } catch (Exception ex) {
-            System.err.println("Value '" + _domValueTextClean + "' is not a valid float.");
-        }
-        return f;
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * The value as a float; returns Float.MIN_VALUE (as float) if there is an
+//     * error.
+//     *
+//     * @return Returns
+//     */
+//    public float asFloat() {
+//        float f = new Float(Float.MIN_VALUE).floatValue();
+//        try {
+//            f = _asFloat;
+//        } catch (Exception ex) {
+//            System.err.println("Value '" + _domValueTextClean + "' is not a valid float.");
+//        }
+//        return f;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
-    /**
-     * value as a string...same as getStringValue() but kept for parallel with
-     * other as <type>... methods
-     *
-     * @return Returns
-     */
-    public String asString() {
-        return getStringValue();
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * value as a string...same as getStringValue() but kept for parallel with
+//     * other as <type>... methods
+//     *
+//     * @return Returns
+//     */
+//    public String asString() {
+//        return getStringValue();
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
-    /**
-     * Returns the value as assigned, split into a string array on comma.
-     *
-     * @return Returns
-     */
-    public String[] asStringArray() {
-        if (_stringAsArray == null) {
-            if (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE) {
-                String str = getStringValue();
-                _stringAsArray = (str == null ? new String[0] : str.split(","));
-            } else if (getCssValueType() == CSSValue.CSS_VALUE_LIST) {
-                CSSValueList list = (CSSValueList) _domCSSValue;
-                int len = list.getLength();
-                _stringAsArray = new String[len];
-                for (int i = 0; i < len; i++) {
-                    _stringAsArray[i] = ((CSSValue) list.item(i)).getCssText();
-                }
-            }
-        }
-        return _stringAsArray;
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * Returns the value as assigned, split into a string array on comma.
+//     *
+//     * @return Returns
+//     */
+//    public String[] asStringArray() {
+//        if (_stringAsArray == null) {
+//            if (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE) {
+//                String str = getStringValue();
+//                _stringAsArray = (str == null ? new String[0] : str.split(","));
+//            } else if (getCssValueType() == CSSValue.CSS_VALUE_LIST) {
+//                CSSValueList list = (CSSValueList) _domCSSValue;
+//                int len = list.getLength();
+//                _stringAsArray = new String[len];
+//                for (int i = 0; i < len; i++) {
+//                    _stringAsArray[i] = ((CSSValue) list.item(i)).getCssText();
+//                }
+//            }
+//        }
+//        return _stringAsArray;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
     /**
@@ -310,56 +316,64 @@ public class XRValueImpl implements XRValue {
     }*/
 
 
-    /**
-     * HACK: this only works if the value is actually a primitve
-     *
-     * @return The rGBColorValue value
-     */
-    public Color asColor() {
-        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
-        String str = getCssText();
-        if ("transparent".equals(str)) {
-            return new Color(0, 0, 0, 0);
-        } else {
-            return ConversionUtil.rgbToColor(((CSSPrimitiveValue) _domCSSValue).getRGBColorValue());
-        }
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * HACK: this only works if the value is actually a primitve
+//     *
+//     * @return The rGBColorValue value
+//     */
+//    public Color asColor() {
+//        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+//        String str = getCssText();
+//        if ("transparent".equals(str)) {
+//            return new Color(0, 0, 0, 0);
+//        } else {
+//            return ConversionUtil.rgbToColor(((CSSPrimitiveValue) _domCSSValue).getRGBColorValue());
+//        }
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
-    /**
-     * Returns true if this is a relative unit (e.g. percentage) whose value has
-     * been computed as an absolute computed value, or if by chance this is an
-     * absolute unit.
-     *
-     * @return The relativeUnitComputed value
-     */
-    public boolean requiresComputation() {
-        return _requiresComputation;
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * Returns true if this is a relative unit (e.g. percentage) whose value has
+//     * been computed as an absolute computed value, or if by chance this is an
+//     * absolute unit.
+//     *
+//     * @return The relativeUnitComputed value
+//     */
+//    public boolean requiresComputation() {
+//        return _requiresComputation;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
-    /**
-     * See interface.
-     *
-     * @param index The new stringValue value
-     * @param s     The new stringValue value
-     */
-    public void setStringValue(short index, String s) {
-        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
-        ((CSSPrimitiveValue) _domCSSValue).setStringValue(index, s);
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * See interface.
+//     *
+//     * @param index The new stringValue value
+//     * @param s     The new stringValue value
+//     */
+//    public void setStringValue(short index, String s) {
+//        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+//        ((CSSPrimitiveValue) _domCSSValue).setStringValue(index, s);
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
-    /**
-     * See interface.
-     *
-     * @param unitType The new floatValue value
-     * @param val      The new floatValue value
-     */
-    public void setFloatValue(short unitType, float val) {
-        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
-        ((CSSPrimitiveValue) _domCSSValue).setFloatValue(unitType, val);
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * See interface.
+//     *
+//     * @param unitType The new floatValue value
+//     * @param val      The new floatValue value
+//     */
+//    public void setFloatValue(short unitType, float val) {
+//        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+//        ((CSSPrimitiveValue) _domCSSValue).setFloatValue(unitType, val);
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
     /**
@@ -374,69 +388,79 @@ public class XRValueImpl implements XRValue {
     }
 
 
-    /**
-     * See interface.
-     *
-     * @return Returns
-     */
-    public short getPrimitiveType() {
-        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
-        return ((CSSPrimitiveValue) _domCSSValue).getPrimitiveType();
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * See interface.
+//     *
+//     * @return Returns
+//     */
+//    public short getPrimitiveType() {
+//        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+//        return ((CSSPrimitiveValue) _domCSSValue).getPrimitiveType();
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
-    /**
-     * See interface.
-     *
-     * @return Returns
-     */
-    public String getStringValue() {
-        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
-
-        switch (getPrimitiveType()) {
-            case CSSPrimitiveValue.CSS_IDENT:
-                return _domCSSValue.getCssText();
-            case CSSPrimitiveValue.CSS_STRING:// fall-thru
-            case CSSPrimitiveValue.CSS_URI:
-                return ((CSSPrimitiveValue) _domCSSValue).getStringValue();
-            default:
-                return "NOT-A-STRING";
-        }
-    }
-
-
-    /**
-     * See interface.
-     *
-     * @param unitType PARAM
-     * @return Returns
-     */
-    public float getFloatValue(short unitType) {
-        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
-        return ((CSSPrimitiveValue) _domCSSValue).getFloatValue(unitType);
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * See interface.
+//     *
+//     * @return Returns
+//     */
+//    public String getStringValue() {
+//        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+//
+//        switch (getPrimitiveType()) {
+//            case CSSPrimitiveValue.CSS_IDENT:
+//                return _domCSSValue.getCssText();
+//            case CSSPrimitiveValue.CSS_STRING:// fall-thru
+//            case CSSPrimitiveValue.CSS_URI:
+//                return ((CSSPrimitiveValue) _domCSSValue).getStringValue();
+//            default:
+//                return "NOT-A-STRING";
+//        }
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
-    /**
-     * See interface.
-     *
-     * @return Returns
-     */
-    public Counter getCounterValue() {
-        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
-        return ((CSSPrimitiveValue) _domCSSValue).getCounterValue();
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * See interface.
+//     *
+//     * @param unitType PARAM
+//     * @return Returns
+//     */
+//    public float getFloatValue(short unitType) {
+//        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+//        return ((CSSPrimitiveValue) _domCSSValue).getFloatValue(unitType);
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
-    /**
-     * See interface.
-     *
-     * @return Returns
-     */
-    public Rect getRectValue() {
-        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
-        return ((CSSPrimitiveValue) _domCSSValue).getRectValue();
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * See interface.
+//     *
+//     * @return Returns
+//     */
+//    public Counter getCounterValue() {
+//        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+//        return ((CSSPrimitiveValue) _domCSSValue).getCounterValue();
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
+
+
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * See interface.
+//     *
+//     * @return Returns
+//     */
+//    public Rect getRectValue() {
+//        assert (getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE);
+//        return ((CSSPrimitiveValue) _domCSSValue).getRectValue();
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
     /**
@@ -449,14 +473,16 @@ public class XRValueImpl implements XRValue {
     }
 
 
-    /**
-     * Gets the valueList attribute of the XRValueImpl object
-     *
-     * @return The valueList value
-     */
-    public boolean isValueList() {
-        return getCssValueType() == CSSValue.CSS_VALUE_LIST;
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * Gets the valueList attribute of the XRValueImpl object
+//     *
+//     * @return The valueList value
+//     */
+//    public boolean isValueList() {
+//        return getCssValueType() == CSSValue.CSS_VALUE_LIST;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
     /**
@@ -638,6 +664,9 @@ public class XRValueImpl implements XRValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/01/05 01:10:12  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.7  2004/12/12 03:32:53  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

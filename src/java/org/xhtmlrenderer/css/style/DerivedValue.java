@@ -31,7 +31,7 @@ import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.util.ConversionUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.logging.Level;
 
 
@@ -46,10 +46,12 @@ import java.util.logging.Level;
  * @author Patrick Wright
  */
 public class DerivedValue {
-    /**
-     * Constant for CSS2 value of "important"
-     */
-    String IMPORTANT = "important";
+// --Commented out by Inspection START (2005-01-05 00:38):
+//    /**
+//     * Constant for CSS2 value of "important"
+//     */
+//    String IMPORTANT = "important";
+// --Commented out by Inspection STOP (2005-01-05 00:38)
 
     /**
      * Constant for CSS2 value of "inherit"

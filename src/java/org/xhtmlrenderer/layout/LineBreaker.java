@@ -261,7 +261,7 @@ public class LineBreaker {
         InlineBox box = newBox(c, content, 0, 0, bounds, prev_align, font);
         //joshy: activate this: box.block = block
         //Uu.p("created a new inline box");
-        box.replaced = true;
+        //box.replaced = true;
         box.sub_block = block;
         if (block != null) block.setParent(box);
         box.component = cc;
@@ -523,6 +523,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2005/01/05 01:10:15  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.44  2005/01/02 12:22:19  tobega
  * Cleaned out old layout code
  *

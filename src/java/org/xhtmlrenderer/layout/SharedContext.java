@@ -34,8 +34,9 @@ import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Description of the Class
@@ -290,33 +291,6 @@ public class SharedContext {
     }
 
     /**
-     * Adds a feature to the InputField attribute of the Context object
-     *
-     * @param name    The feature to be added to the InputField attribute
-     * @param element The feature to be added to the InputField attribute
-     * @param comp    The feature to be added to the InputField attribute
-     * @return Returns
-     */
-    public FormComponent addInputField(String name, Element element, JComponent comp) {
-        if (getForm() == null) {
-            Uu.p("warning! attempted to add input field: '" + name + "' to a form without a 'name' attribute");
-            return null;
-        }
-        Map fields = (Map) getForms().get(getForm());
-        List field_list = new ArrayList();
-        if (fields.containsKey(name)) {
-            field_list = (List) fields.get(name);
-        }
-        FormComponent fc = new FormComponent();
-        fc.name = element.getAttribute("name");
-        fc.element = element;
-        fc.component = comp;
-        field_list.add(fc);
-        fields.put(name, field_list);
-        return fc;
-    }
-
-    /**
      * Sets the maxWidth attribute of the Context object
      *
      * @param max_width The new maxWidth value
@@ -475,22 +449,6 @@ public class SharedContext {
     }
 
     /**
-     * Gets the inputFieldComponents attribute of the Context object
-     *
-     * @param form_name  PARAM
-     * @param field_name PARAM
-     * @return The inputFieldComponents value
-     */
-    public List getInputFieldComponents(String form_name, String field_name) {
-        Map fields = (Map) getForms().get(form_name);
-        List field_list = (List) fields.get(field_name);
-        if (field_list == null) {
-            return new ArrayList();
-        }
-        return field_list;
-    }
-
-    /**
      * Gets the formAction attribute of the Context object
      *
      * @param form_name PARAM
@@ -563,19 +521,11 @@ public class SharedContext {
         /**
          * Description of the Field
          */
-        public String name;
-        /**
-         * Description of the Field
-         */
         public JComponent component;
         /**
          * Description of the Field
          */
         public Element element;
-        /**
-         * Description of the Field
-         */
-        public ButtonGroup group;
 
         /**
          * Description of the Method
@@ -629,6 +579,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/01/05 01:10:15  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.4  2005/01/02 12:22:19  tobega
  * Cleaned out old layout code
  *

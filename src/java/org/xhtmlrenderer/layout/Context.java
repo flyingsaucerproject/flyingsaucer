@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -31,11 +30,7 @@ import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
 
-import javax.swing.*;
 import java.awt.*;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -91,11 +86,9 @@ public interface Context {
 
     boolean inSelection(Box box);
 
-    SharedContext.FormComponent addInputField(String name, Element element, JComponent comp);
-
     void setExtents(Rectangle rect);
 
-    void setMaxWidth(int max_width);
+    // --Commented out by Inspection (2005-01-05 00:55): void setMaxWidth(int max_width);
 
     void setSelectionStart(Box box, int x);
 
@@ -103,15 +96,13 @@ public interface Context {
 
     void setListCounter(int counter);
 
-    void setForm(String form_name, String action);
-
     void setSubBlock(boolean sub_block);
 
     Graphics2D getGraphics();
 
     Rectangle getExtents();
 
-    int getMaxWidth();
+    // --Commented out by Inspection (2005-01-05 00:53): int getMaxWidth();
 
     FontResolver getFontResolver();
 
@@ -126,16 +117,6 @@ public interface Context {
     int getSelectionEndX();
 
     int getListCounter();
-
-    String getForm();
-
-    Iterator getInputFieldComponents(String form_name);
-
-    List getInputFieldComponents(String form_name, String field_name);
-
-    String getFormAction(String form_name);
-
-    Map getForms();
 
     StyleReference getCss();
 
@@ -156,16 +137,6 @@ public interface Context {
     int getList_counter();
 
     void setList_counter(int list_counter);
-
-    String getForm_name();
-
-    void setForm_name(String form_name);
-
-    void setForms(Map forms);
-
-    Map getActions();
-
-    void setActions(Map actions);
 
     RenderingContext getCtx();
 

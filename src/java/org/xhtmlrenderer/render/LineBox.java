@@ -37,10 +37,12 @@ public class LineBox extends Box {
 
     //public List inlines = new ArrayList();
 
-    /**
-     * Description of the Field
-     */
-    public int lineheight;// relative to Xx,y
+// --Commented out by Inspection START (2005-01-05 01:07):
+//    /**
+//     * Description of the Field
+//     */
+//    public int lineheight;// relative to Xx,y
+// --Commented out by Inspection STOP (2005-01-05 01:07)
 
     /**
      * Description of the Field
@@ -87,6 +89,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/01/05 01:10:16  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.6  2004/12/29 10:39:35  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

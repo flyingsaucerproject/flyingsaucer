@@ -53,15 +53,19 @@ public class XRPropertyImpl implements XRProperty {
      */
     private XRValue _specifiedValue;
 
-    /**
-     * Relative value as computed for the current context
-     */
-    private XRValue _computedValue;
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * Relative value as computed for the current context
+//     */
+//    private XRValue _computedValue;
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
-    /**
-     * Computed value as restricted for the current environment
-     */
-    private XRValue _actualValue;
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * Computed value as restricted for the current environment
+//     */
+//    private XRValue _actualValue;
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
     /**
      * Whether the property has been resolved relative to the current
@@ -82,15 +86,17 @@ public class XRPropertyImpl implements XRProperty {
     private final static RuleNormalizer RULE_NORMALIZER;
 
     // seq = 0;
-    /**
-     * Constructor for the XRPropertyImpl object
-     *
-     * @param style    PARAM
-     * @param propName PARAM
-     */
-    public XRPropertyImpl(CSSStyleDeclaration style, String propName) {
-        this(style, propName, 0);
-    }
+// --Commented out by Inspection START (2005-01-05 00:35):
+//    /**
+//     * Constructor for the XRPropertyImpl object
+//     *
+//     * @param style    PARAM
+//     * @param propName PARAM
+//     */
+//    public XRPropertyImpl(CSSStyleDeclaration style, String propName) {
+//        this(style, propName, 0);
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:35)
 
 
     /**
@@ -123,32 +129,36 @@ public class XRPropertyImpl implements XRProperty {
                 ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue());
     }
 
-    /**
-     * Deep copy operation. However, any contained SAC instances are not
-     * deep-copied.
-     *
-     * @return Returns
-     */
-    public XRProperty copyOf() {
-        return new XRPropertyImpl(_propName, _sequence, _specifiedValue.copyOf());
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * Deep copy operation. However, any contained SAC instances are not
+//     * deep-copied.
+//     *
+//     * @return Returns
+//     */
+//    public XRProperty copyOf() {
+//        return new XRPropertyImpl(_propName, _sequence, _specifiedValue.copyOf());
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
-    /**
-     * Deep copy operation for the purposes of inheriting a computed value. Used
-     * when a child element needs the parent element's computed value for a
-     * property. The following is true of the copy: 1) is resolved 2) computed
-     * value is same as parent's computed 3) actual value is same as parent's
-     * actual value. Any contained SAC instances are not deep-copied.
-     *
-     * @return See desc
-     */
-    public XRProperty copyForInherit() {
-        XRPropertyImpl newProp = (XRPropertyImpl) this.copyOf();
-        newProp._computedValue = _computedValue;
-        newProp._actualValue = _actualValue;
-        newProp._isResolved = true;
-        return newProp;
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * Deep copy operation for the purposes of inheriting a computed value. Used
+//     * when a child element needs the parent element's computed value for a
+//     * property. The following is true of the copy: 1) is resolved 2) computed
+//     * value is same as parent's computed 3) actual value is same as parent's
+//     * actual value. Any contained SAC instances are not deep-copied.
+//     *
+//     * @return See desc
+//     */
+//    public XRProperty copyForInherit() {
+//        XRPropertyImpl newProp = (XRPropertyImpl) this.copyOf();
+//        newProp._computedValue = _computedValue;
+//        newProp._actualValue = _actualValue;
+//        newProp._isResolved = true;
+//        return newProp;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
     /**
      * The value as specified in the sheet.
@@ -160,24 +170,28 @@ public class XRPropertyImpl implements XRProperty {
     }
 
 
-    /**
-     * The computed value, if the specified value is relative.
-     *
-     * @return Returns
-     */
-    public XRValue computedValue() {
-        return (_computedValue == null ? _specifiedValue : _computedValue);
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * The computed value, if the specified value is relative.
+//     *
+//     * @return Returns
+//     */
+//    public XRValue computedValue() {
+//        return (_computedValue == null ? _specifiedValue : _computedValue);
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
-    /**
-     * The computed value, with any modifications forced by the presentation
-     * environment e.g. limitation in color range.
-     *
-     * @return Returns
-     */
-    public XRValue actualValue() {
-        return (_actualValue == null ? _specifiedValue : _actualValue);
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * The computed value, with any modifications forced by the presentation
+//     * environment e.g. limitation in color range.
+//     *
+//     * @return Returns
+//     */
+//    public XRValue actualValue() {
+//        return (_actualValue == null ? _specifiedValue : _actualValue);
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
     /**
@@ -261,27 +275,31 @@ public class XRPropertyImpl implements XRProperty {
     }*/
 
 
-    /**
-     * Returns true if the property has an absolute value, or a relative value
-     * that has been correctly computed.
-     *
-     * @return The resolved value
-     */
-    public boolean isResolved() {
-        return ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()) || _isResolved;
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * Returns true if the property has an absolute value, or a relative value
+//     * that has been correctly computed.
+//     *
+//     * @return The resolved value
+//     */
+//    public boolean isResolved() {
+//        return ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()) || _isResolved;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
 
-    /**
-     * Gets the resolvable attribute of the XRPropertyImpl object
-     *
-     * @return The resolvable value
-     */
-    public boolean isResolvable() {
-        return _specifiedValue.forcedInherit() ||
-                (_specifiedValue.isPrimitiveType() &&
-                !ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()));
-    }
+// --Commented out by Inspection START (2005-01-05 00:36):
+//    /**
+//     * Gets the resolvable attribute of the XRPropertyImpl object
+//     *
+//     * @return The resolvable value
+//     */
+//    public boolean isResolvable() {
+//        return _specifiedValue.forcedInherit() ||
+//                (_specifiedValue.isPrimitiveType() &&
+//                !ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()));
+//    }
+// --Commented out by Inspection STOP (2005-01-05 00:36)
 
     /**
      * Utility method to instantiate a group of XRProperties out of a style
@@ -375,6 +393,9 @@ public class XRPropertyImpl implements XRProperty {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/01/05 01:10:12  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.7  2004/12/29 10:39:26  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

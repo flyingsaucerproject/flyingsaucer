@@ -61,7 +61,7 @@ public class LinkListener extends MouseInputAdapter {
     }
 
     public void linkClicked(Box box, MouseEvent evt) {
-        box.clicked = true;
+        //box.clicked = true;
         panel.repaint();
         try {
             Element elem = box.content.getElement();

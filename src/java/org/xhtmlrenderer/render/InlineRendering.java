@@ -31,17 +31,19 @@ import java.util.Iterator;
 
 public class InlineRendering {
 
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
-    public static void paintComponent(Context c, Box box) {
-        if (box.getBlockFormattingContext() != null) c.pushBFC(box.getBlockFormattingContext());
-        paintInlineContext(c, box);
-        if (box.getBlockFormattingContext() != null) c.popBFC();
-    }
+// --Commented out by Inspection START (2005-01-05 01:07):
+//    /**
+//     * Description of the Method
+//     *
+//     * @param c   PARAM
+//     * @param box PARAM
+//     */
+//    public static void paintComponent(Context c, Box box) {
+//        if (box.getBlockFormattingContext() != null) c.pushBFC(box.getBlockFormattingContext());
+//        paintInlineContext(c, box);
+//        if (box.getBlockFormattingContext() != null) c.popBFC();
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:07)
 
     /**
      * Paint all of the inlines in this box. It recurses through

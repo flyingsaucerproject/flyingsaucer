@@ -209,10 +209,12 @@ public class Box {
      * Description of the Field
      */
     public int background_position_horizontal = 0;
-    /**
-     * Description of the Field
-     */
-    public boolean clicked = false;
+// --Commented out by Inspection START (2005-01-05 01:06):
+//    /**
+//     * Description of the Field
+//     */
+//    public boolean clicked = false;
+// --Commented out by Inspection STOP (2005-01-05 01:06)
 
     // list stuff
     /**
@@ -231,10 +233,12 @@ public class Box {
     private List boxes;
 
     // printing stuff
-    /**
-     * Description of the Field
-     */
-    public boolean auto_width = true;
+// --Commented out by Inspection START (2005-01-05 01:05):
+//    /**
+//     * Description of the Field
+//     */
+//    public boolean auto_width = true;
+// --Commented out by Inspection STOP (2005-01-05 01:05)
 
     /**
      * Description of the Field
@@ -487,14 +491,16 @@ public class Box {
         boxes.clear();
     }
 
-    /**
-     * Gets the anonymous attribute of the Box object
-     *
-     * @return The anonymous value
-     */
-    public boolean isAnonymous() {
-        return false;
-    }
+// --Commented out by Inspection START (2005-01-05 01:06):
+//    /**
+//     * Gets the anonymous attribute of the Box object
+//     *
+//     * @return The anonymous value
+//     */
+//    public boolean isAnonymous() {
+//        return false;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:06)
 
     private boolean children_exceeds;
 
@@ -587,31 +593,35 @@ public class Box {
         return sb.toString();
     }
 
-    /**
-     * Gets the colorTestString attribute of the Box object
-     *
-     * @param c PARAM
-     * @return The colorTestString value
-     */
-    public String getColorTestString(Color c) {
-        if (c == null) {
-            return "[null]";
-        }
-        return "#" + Integer.toHexString(c.getRGB());
-    }
+// --Commented out by Inspection START (2005-01-05 01:06):
+//    /**
+//     * Gets the colorTestString attribute of the Box object
+//     *
+//     * @param c PARAM
+//     * @return The colorTestString value
+//     */
+//    public String getColorTestString(Color c) {
+//        if (c == null) {
+//            return "[null]";
+//        }
+//        return "#" + Integer.toHexString(c.getRGB());
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:06)
 
-    /**
-     * Gets the borderTestString attribute of the Box object
-     *
-     * @param b PARAM
-     * @return The borderTestString value
-     */
-    public String getBorderTestString(Border b) {
-        if (b == null) {
-            return "[null]";
-        }
-        return "(" + b.top + "," + b.right + "," + b.bottom + "," + b.left + ")";
-    }
+// --Commented out by Inspection START (2005-01-05 01:06):
+//    /**
+//     * Gets the borderTestString attribute of the Box object
+//     *
+//     * @param b PARAM
+//     * @return The borderTestString value
+//     */
+//    public String getBorderTestString(Border b) {
+//        if (b == null) {
+//            return "[null]";
+//        }
+//        return "(" + b.top + "," + b.right + "," + b.bottom + "," + b.left + ")";
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:06)
 
     /**
      * If this box represents the text of an inline element then returns true.
@@ -639,6 +649,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2005/01/05 01:10:15  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.35  2005/01/02 01:00:09  tobega
  * Started sketching in code for handling replaced elements in the NamespaceHandler
  *

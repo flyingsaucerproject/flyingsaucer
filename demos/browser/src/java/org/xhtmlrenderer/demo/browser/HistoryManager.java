@@ -91,15 +91,6 @@ public class HistoryManager {
      * Description of the Method
      *
      * @param doc PARAM
-     */
-    public void goNewDocument(Document doc) {
-        goNewDocument(doc, null);
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param doc PARAM
      * @param url PARAM
      */
     public void goNewDocument(Document doc, URL url) {
@@ -188,6 +179,9 @@ public class HistoryManager {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/01/05 01:10:12  tobega
+ * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
+ *
  * Revision 1.6  2004/12/12 03:33:07  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

@@ -74,9 +74,11 @@ public class TextAlignJustify {
         return words;
     }
 
-    private static int wordCount(InlineBox box) {
-        String text = box.getSubstring();
-        String[] words = text.split("\\s");
-        return words.length;
-    }
+// --Commented out by Inspection START (2005-01-05 01:05):
+//    private static int wordCount(InlineBox box) {
+//        String text = box.getSubstring();
+//        String[] words = text.split("\\s");
+//        return words.length;
+//    }
+// --Commented out by Inspection STOP (2005-01-05 01:05)
 }
