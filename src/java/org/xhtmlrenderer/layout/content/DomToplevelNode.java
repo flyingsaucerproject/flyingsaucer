@@ -1,5 +1,5 @@
 /*
- * BodyContent.java
+ * DomToplevelNode.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -31,10 +31,10 @@ import java.util.List;
  * This is the starting point, the content object that should be created by anyone using the content model.
  * Don't forget to set the EmptyStyle to the Context.
  */
-public class BodyContent implements Content {
+public class DomToplevelNode implements Content {
     private Node _node;
 
-    public BodyContent(Node node) {
+    public DomToplevelNode(Node node) {
         _node = node;
     }
 

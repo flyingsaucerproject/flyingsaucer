@@ -100,7 +100,6 @@ public class InlineLayout extends BoxLayout {
 
         CalculatedStyle currentStyle = parentStyle;
         boolean isFirstLetter = true;
-        boolean isFirstLine = true;
 
         List pendingPushStyles = null;
         // loop until no more nodes
@@ -126,8 +125,10 @@ public class InlineLayout extends BoxLayout {
                 if (pendingPushStyles != null && pendingPushStyles.size() != 0) {
                     pendingPushStyles.remove(pendingPushStyles.size() - 1);//was a redundant one
                 } else {
-                    if (prev_inline.popstyles == null) prev_inline.popstyles = new LinkedList();
-                    prev_inline.popstyles.add(o);
+                    if (prev_inline != null) {
+                        if (prev_inline.popstyles == null) prev_inline.popstyles = new LinkedList();
+                        prev_inline.popstyles.add(o);
+                    }
                 }
                 continue;
             }
@@ -162,19 +163,27 @@ public class InlineLayout extends BoxLayout {
                 // look at current inline
                 // break off the longest section that will fit
                 InlineBox new_inline = calculateInline(c, currentContent, remaining_width, bounds.width,
-                        prev_inline, prev_align_inline, isFirstLetter, block.firstLetterStyle, isFirstLine, block.firstLineStyle);
+                        prev_inline, prev_align_inline, isFirstLetter, block.firstLetterStyle, block.firstLineStyle);
                 // Uu.p("got back inline: " + new_inline);
+                if (!(currentContent instanceof InlineBlockContent)) {
+                    if (!(currentContent instanceof FloatedBlockContent)) {
+                        if (new_inline.getSubstring().equals("")) break;
+                    }
+                }
+
+                isFirstLetter = false;
 
                 // if this inline needs to be on a new line
                 if (new_inline.break_before && !new_inline.floated) {
                     remaining_width = bounds.width;
                     saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, block, false);
-                    isFirstLine = false;
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line);
                     remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
-                    //continue;//have to discard it and recalculate, particularly if this was the first line
+                    //have to discard it and recalculate, particularly if this was the first line
+                    new_inline = calculateInline(c, currentContent, remaining_width, bounds.width,
+                            prev_inline, prev_align_inline, isFirstLetter, block.firstLetterStyle, block.firstLineStyle);
                 }
 
                 if (!(currentContent instanceof InlineBlockContent)) {
@@ -214,7 +223,6 @@ public class InlineLayout extends BoxLayout {
                     remaining_width = bounds.width;
                     // save the line
                     saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, block, false);
-                    isFirstLine = false;
                     // increase bounds height to account for the new line
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
@@ -313,14 +321,13 @@ public class InlineLayout extends BoxLayout {
      * @param prev_align       PARAM
      * @param isFirstLetter
      * @param firstLetterStyle
-     * @param isFirstLine
      * @param firstLineStyle
      * @return Returns
      */
     private static InlineBox calculateInline(Context c, Content content, int avail, int max_width,
-                                             InlineBox prev, InlineBox prev_align, boolean isFirstLetter, CascadedStyle firstLetterStyle, boolean isFirstLine, CascadedStyle firstLineStyle) {
+                                             InlineBox prev, InlineBox prev_align, boolean isFirstLetter, CascadedStyle firstLetterStyle, CascadedStyle firstLineStyle) {
 
-        if (isFirstLine && firstLineStyle != null) c.pushStyle(firstLineStyle);
+        if (c.isFirstLine() && firstLineStyle != null) c.pushStyle(firstLineStyle);
 
         CalculatedStyle style = c.getCurrentStyle();
         // get the current font. required for sizing
@@ -367,7 +374,7 @@ public class InlineLayout extends BoxLayout {
                 result = WhitespaceStripper.createInline(c, textContent, prev, prev_align, avail, max_width, font);
             }
         }
-        if (isFirstLine && firstLineStyle != null) c.popStyle();
+        if (c.isFirstLine() && firstLineStyle != null) c.popStyle();
         return result;
     }
 
@@ -413,6 +420,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.56  2004/12/14 00:32:20  tobega
+* Cleaned and fixed line breaking. Renamed BodyContent to DomToplevelNode
+*
 * Revision 1.55  2004/12/13 00:13:11  tobega
 * Oops, happened to remove images as well as empty text, fixed.
 *

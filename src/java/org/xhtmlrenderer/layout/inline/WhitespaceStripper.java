@@ -47,7 +47,7 @@ public class WhitespaceStripper {
             inline.setSubstring(prev.end_index, text.length());
         }
 
-        Breaker.breakText(c, inline, prev, prev_align, avail, max, font);
+        Breaker.breakText(c, inline, prev_align, avail, max, font);
         BoxBuilder.prepBox(c, inline, prev_align, font);
         return inline;
     }

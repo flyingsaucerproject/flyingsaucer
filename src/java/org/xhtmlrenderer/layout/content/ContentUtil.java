@@ -93,7 +93,7 @@ public class ContentUtil {
         }
 
         Node node = parentElement;
-        if (node == null) node = ((BodyContent) parent).getNode();
+        if (node == null) node = ((DomToplevelNode) parent).getNode();
         NodeList children = node.getChildNodes();
         //each child node can result in only one addition to content
         for (int i = 0; i < children.getLength(); i++) {
@@ -344,7 +344,7 @@ public class ContentUtil {
 
     //TODO: following methods should not need to be public
     public static boolean mayHaveFirstLetter(CascadedStyle style) {
-        if (style == null) return false;//for BodyContent
+        if (style == null) return false;//for DomToplevelNode
         if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
         String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
         if (display.equals("block")) return true;
@@ -356,7 +356,7 @@ public class ContentUtil {
     }
 
     public static boolean mayHaveFirstLine(CascadedStyle style) {
-        //if(style == null) return false;//for BodyContent
+        //if(style == null) return false;//for DomToplevelNode
         if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
         String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
         if (display.equals("block")) return true;
@@ -454,6 +454,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/12/14 00:32:19  tobega
+ * Cleaned and fixed line breaking. Renamed BodyContent to DomToplevelNode
+ *
  * Revision 1.16  2004/12/13 01:29:39  tobega
  * Got the scrollbars back (by accident), and now we should be able to display DocumentFragments as well as Documents, if someone finds that useful.
  *

@@ -47,7 +47,7 @@ public class FontUtil {
      * @param c    PARAM
      * @param str  PARAM
      * @param font PARAM
-     * @return Returns
+     * @return Returns the length of the string in graphics units
      */
     public static int len(Context c, String str, Font font) {
         //return c.getGraphics().getFontMetrics( font ).stringWidth( str );
@@ -159,6 +159,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2004/12/14 00:32:20  tobega
+ * Cleaned and fixed line breaking. Renamed BodyContent to DomToplevelNode
+ *
  * Revision 1.20  2004/12/12 04:18:56  tobega
  * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
  *

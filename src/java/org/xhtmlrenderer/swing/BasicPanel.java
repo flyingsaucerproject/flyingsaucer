@@ -28,13 +28,13 @@ import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
 import org.xhtmlrenderer.layout.BodyLayout;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.content.BodyContent;
+import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.BodyRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.util.Xx;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.Xx;
 import org.xml.sax.ErrorHandler;
 
 import javax.swing.*;
@@ -240,7 +240,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         getRenderingContext().getTextRenderer().setupGraphics(getContext().getGraphics());
         //TODO: maybe temporary hack
         Context c = getContext();
-        body_box = layout.layout(getContext(), new BodyContent(doc));
+        body_box = layout.layout(getContext(), new DomToplevelNode(doc));
 
         XRLog.layout(Level.FINEST, "is a fixed child: " + body_box.isChildrenExceedBounds());
         
@@ -868,6 +868,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/12/14 00:32:21  tobega
+ * Cleaned and fixed line breaking. Renamed BodyContent to DomToplevelNode
+ *
  * Revision 1.15  2004/12/12 03:33:02  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *
