@@ -65,7 +65,16 @@ public class Box {
 
     // display stuff
     /** Description of the Field */
-    public boolean display_none = false;
+    private boolean display_none = false;
+    private String display = "none";
+    public String getDisplay() {
+        return display;
+    }
+    public void setDisplay(String display) {
+        u.p("display set to: " + display);
+        u.dump_stack();
+        this.display = display;
+    }
 
     // position stuff
     /** Description of the Field */
@@ -587,6 +596,16 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/11/18 16:45:13  joshy
+ * improved the float code a bit.
+ * now floats are automatically forced to be blocks
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.15  2004/11/17 00:44:54  joshy
  * fixed bug in the history manager
  * added cursor support to the link listener

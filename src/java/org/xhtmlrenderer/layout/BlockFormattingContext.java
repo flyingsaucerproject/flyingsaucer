@@ -57,6 +57,8 @@ public class BlockFormattingContext {
     /* ====== float stuff ========= */
 
     public void addLeftFloat(Box block) {
+        //u.p("adding a left float: " + block);
+        //u.dump_stack();
         left_floats.add(block);
         offset_map.put(block,getOffset());
     }
@@ -94,6 +96,14 @@ public class BlockFormattingContext {
         // u.p("last float = " + last_float);
         // u.p("last float parent = " + last_float.getParent());
         // u.p("line parent = " + line.getParent());
+        if(line.getParent() == null) {
+            u.p("WARNING. In the BFC there is a line w/o a parent yet");
+            return 0;
+        }
+        if(last_float.getParent() == null) {
+            u.p("WARNING. In the BFC there is a last_float w/o a parent yet");
+            return 0;
+        }
         
         if(line.getParent() != last_float.getParent().getParent()) {
             //u.p("last float = " + last_float);

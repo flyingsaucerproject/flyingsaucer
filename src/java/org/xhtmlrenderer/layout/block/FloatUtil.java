@@ -7,7 +7,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 public class FloatUtil {
 
     public static void setupFloat(Context c, Box box) {
-        if (LayoutUtil.isFloated(box.node, c)) {
+        if (LayoutUtil.isFloated(c, box.node)) {
             String float_val = c.css.getStringProperty(box.node, CSSName.FLOAT, false);
             if (float_val == null) {
                 float_val = "none";

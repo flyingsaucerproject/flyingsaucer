@@ -93,9 +93,9 @@ public class InlineUtil {
      * @param stop_at_blocks  PARAM
      * @return                The inlineNodeList value
      */
-    public static List getInlineNodeList( Node node, Element elem, Context c, boolean stop_at_blocks ) {
+    public static List getInlineNodeList( Node root, Element elem, Context c, boolean stop_at_blocks ) {
         List list = new ArrayList();
-        if ( node == null ) {
+        if ( root == null ) {
             return list;
         }
         if ( elem == null ) {
@@ -106,97 +106,112 @@ public class InlineUtil {
             return list;
         }
 
-        //u.p("starting at: " + node);
-        Node curr = node;
+        // u.p("starting at: " + root);
+        Node curr = root;
         while ( true ) {
-            //u.p("now list = " + list);
+            // u.p("now list = " + list);
+            
             // skip the first time through
-            if ( curr != node ) {
+            if ( curr != root ) {
                 if ( curr.getNodeType() == curr.TEXT_NODE ) {
-                    //u.p("adding: " + curr);
+                    // u.p("adding text: " + curr);
                     list.add( curr );
-                    node = curr;
+                    root = curr;
                     continue;
-                    //return curr;
                 }
 
                 if ( LayoutUtil.isReplaced(c, curr ) ) {
-                    //u.p("adding: " + curr);
+                    // u.p("adding replaced: " + curr);
                     list.add( curr );
-                    node = curr;
+                    root = curr;
                     continue;
-                    //return curr;
                 }
 
                 if ( LayoutUtil.isFloatedBlock( curr, c ) ) {
-                    //u.p("adding: " + curr);
+                    // u.p("adding floated block: " + curr);
                     list.add( curr );
-                    node = curr;
+                    root = curr;
                     continue;
-                    //return curr;
                 }
 
                 if ( c.getRenderingContext().getLayoutFactory().isBreak( curr ) ) {
-                    //u.p("adding: " + curr);
+                    // u.p("adding break: " + curr);
                     list.add( curr );
-                    node = curr;
+                    root = curr;
                     continue;
-                    //return curr;
                 }
 
                 if ( stop_at_blocks ) {
                     if ( LayoutUtil.isBlockNode( curr, c ) ) {
-                        //u.p("at block boundary");
+                        u.p("at block boundary");
                         return list;
                     }
                 }
+            } else {
+                // check for float on the first time through
+                /*
+                u.p("first time through");
+                
+                if(curr instanceof Element) {
+                    Element e = (Element)curr;
+                    if(LayoutUtil.isFloated(c,e)) {
+                        u.p("adding floated block: " + curr);
+                        //list.add( curr );
+                        //node = curr;
+                        //continue;
+                    }
+                }
+                */
+                
             }
 
+
             if ( curr.hasChildNodes() ) {
-                //u.p("about to test: " + curr);
+                // u.p("about to test: " + curr);
                 // if it's a floating block we don't want to recurse
                 if ( !LayoutUtil.isFloatedBlock( curr, c ) &&
                         !LayoutUtil.isReplaced(c, curr ) ) {
                     curr = curr.getFirstChild();
-                    //u.p("going to first child " + curr);
+                    // u.p("going to first child " + curr);
                     continue;
                 }
 
                 // it's okay to recurse if it's the root that's the float,
                 // not the node being examined. this only matters when we
                 // start the loop at the root of a floated block
-                if ( LayoutUtil.isFloatedBlock( node, c ) ) {
-                    if ( node == elem ) {
+                
+                if ( LayoutUtil.isFloatedBlock( root, c ) ) {
+                    if ( root == elem ) {
                         curr = curr.getFirstChild();
                         continue;
                     }
                 }
+                
             }
 
             if ( curr.getNextSibling() != null ) {
                 curr = curr.getNextSibling();
-                //u.p("going to next sibling: " + curr);
+                // u.p("going to next sibling: " + curr);
                 continue;
             }
 
             // keep going up until we get another sibling
             // or we are at elem.
-
             while ( true ) {
                 curr = curr.getParentNode();
-                //u.p("going to parent: " + curr);
+                // u.p("going to parent: " + curr);
                 // if we are at the top then return null
                 if ( curr == elem ) {
-                    //u.p("at the top again. returning null");
-                    //u.p("returning the list");
-                    //u.p(list);
+                    // u.p("at the top again. returning null");
+                    // u.p("returning the list");
+                    // u.p(list);
                     return list;
                     //return null;
                 }
 
                 if ( curr.getNextSibling() != null ) {
                     curr = curr.getNextSibling();
-                    //u.p("going to next sibling: " + curr);
+                    // u.p("going to next sibling: " + curr);
                     break;
                 }
 
@@ -212,6 +227,16 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/11/18 16:45:11  joshy
+ * improved the float code a bit.
+ * now floats are automatically forced to be blocks
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.12  2004/11/18 14:26:22  joshy
  * more code cleanup
  *

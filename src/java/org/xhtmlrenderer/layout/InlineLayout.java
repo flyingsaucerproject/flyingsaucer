@@ -59,6 +59,7 @@ public class InlineLayout extends BoxLayout {
         }
         if ( !box.isAnonymous() ) {
             if ( LayoutUtil.isBlockLayout( box.getElement(), c ) ) {
+                //u.p("doing up block for: " + box);
                 return super.layoutChildren( c, box );
             }
         }
@@ -288,11 +289,12 @@ public class InlineLayout extends BoxLayout {
         
         // handle each case
         if ( LayoutUtil.isReplaced(c, node ) ) {
-            // u.p("is replaced");
+            //u.p("is replaced");
             return LineBreaker.generateReplacedInlineBox( c, node, avail, prev, text, prev_align, font );
         }
+        //u.p("calc inline on node : " + node);
         if ( LayoutUtil.isFloatedBlock( node, c ) ) {
-            // u.p("is floated block");
+            //u.p("calcinline: is floated block");
             return FloatUtil.generateFloatedBlockInlineBox( c, node, avail, prev, text, prev_align, font );
         }
         if ( LineBreaker.isFirstLetter( c, node, start ) ) {
@@ -369,6 +371,16 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.26  2004/11/18 16:45:11  joshy
+* improved the float code a bit.
+* now floats are automatically forced to be blocks
+*
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.25  2004/11/18 02:37:26  joshy
 * moved most of default layout into layout util or box layout
 *

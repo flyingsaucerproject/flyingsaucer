@@ -2,6 +2,7 @@ package org.xhtmlrenderer.layout.inline;
 
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.layout.*;
+import org.xhtmlrenderer.util.*;
 import org.w3c.dom.*;
 import java.util.*;
 import java.awt.*;
@@ -29,8 +30,13 @@ public class FloatUtil {
      */
     public static void handleFloated( Context c, InlineBox inline, LineBox line,
                                       int full_width, Element enclosing_block ) {
-        BlockFormattingContext bfc = c.getBlockFormattingContext();
+                                          
+        /* NOTE: this code may be dead now because there's no such thing as an inline floated box.
+        All floats must become block boxes. JMM 11/17 */
+        /* NOTE: nevermind. it's the other one. JMM 11/17 */
         
+        BlockFormattingContext bfc = c.getBlockFormattingContext();
+        //u.p("testing inline box: " + inline);
         // joshy: ??? i don't know what this is for. nesting?
         if ( inline.node == enclosing_block ) {
             return;
@@ -39,7 +45,9 @@ public class FloatUtil {
         // we must make sure not to grab the float from the containing
         // block incase it is floated.
         if ( inline.node.getNodeType() == inline.node.TEXT_NODE ) {
+            //u.p("is text node");
             if ( inline.node.getParentNode() == enclosing_block ) {
+                //u.p("parent match: " + inline);
                 return;
             }
         }
@@ -54,6 +62,7 @@ public class FloatUtil {
             return;
         }
         
+        //u.p("got a floated inline");
         
         // mark as floated
         inline.floated = true;
@@ -101,14 +110,22 @@ public class FloatUtil {
      * @return            Returns
      */
     public static InlineBox generateFloatedBlockInlineBox( Context c, Node node, int avail, InlineBox prev, String text, InlineBox prev_align, Font font ) {
-        Layout layout = c.getLayout( node );
-        Rectangle oe = c.getExtents();
+        /*
+          joshy: change this to just modify the existing block instead of creating
+          a  new one. is that possible?
+        */
+        //u.p("generate floated block inline box");
+        Layout layout = c.getLayout( node ); //
+        Rectangle oe = c.getExtents(); // copy the extents for safety
         c.setExtents( new Rectangle( oe ) );
         BlockBox block = (BlockBox)layout.layout( c, (Element)node );
+        //u.p("got a block box from the sub layout: " + block);
         Rectangle bounds = new Rectangle( block.x, block.y, block.width, block.height );
         c.setExtents( oe );
+        
         InlineBox box = LineBreaker.newBox( c, node, 0, 0, prev, text, bounds, prev_align, font );
         box.sub_block = block;
+        block.setParent( box );
         box.width = bounds.width;
         box.height = bounds.height;
         box.break_after = false;

@@ -37,10 +37,10 @@ public class BlockBox extends Box {
     //public boolean inline = false;
 
     /** Description of the Field */
-    public boolean display_block = true;
+    //public boolean display_block = true;
 
     /** Description of the Field */
-    public boolean display_inline_block = false;
+    //public boolean display_inline_block = false;
 
     /*
      * public boolean isInline() {
@@ -50,11 +50,10 @@ public class BlockBox extends Box {
      * return !inline;
      * }
      */
+     
     /** Constructor for the BlockBox object */
     public BlockBox() {
-
         super();
-
     }
 
     /**
@@ -66,9 +65,7 @@ public class BlockBox extends Box {
      * @param h  PARAM
      */
     public BlockBox( int x, int y, int w, int h ) {
-
         super( x, y, w, h );
-
     }
 
 
@@ -78,29 +75,18 @@ public class BlockBox extends Box {
      * @return   A string representation of the object.
      */
     public String toString() {
-
         StringBuffer sb = new StringBuffer();
-
         sb.append( "BlockBox:" );
-
         sb.append( super.toString() );
 
         if ( this.fixed ) {
-
             sb.append( " position: fixed" );
-
         }
-
         if ( this.right_set ) {
-
             sb.append( " right = " + this.right );
-
         }
-
         //+ " right = " + this.right;
-
         // + " width = " + auto_width + " height = " + auto_height;
-
         return sb.toString();
     }
 
@@ -110,6 +96,16 @@ public class BlockBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/11/18 16:45:12  joshy
+ * improved the float code a bit.
+ * now floats are automatically forced to be blocks
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.2  2004/10/23 13:50:26  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

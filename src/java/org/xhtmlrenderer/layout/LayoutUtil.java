@@ -3,11 +3,26 @@ package org.xhtmlrenderer.layout;
 import org.w3c.dom.*;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.css.*;
+import org.xhtmlrenderer.util.*;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 
 public class LayoutUtil {
 
+    public static String getDisplay(Context c, Element e) {
+        // u.p("checking: " + child);
+        String display = c.css.getStringProperty( e, "display", false );
+        // u.p("display = " + display);
+        
+        // override for floated
+        if(isFloated(c,e)) {
+            return "block";
+        }
+        
+        return display;
+    }
+        
+    
     public static boolean isOutsideNormalFlow(Box box) {
         if(box.fixed) {
             return true;
@@ -88,7 +103,7 @@ public class LayoutUtil {
      * @return        The floated value
      */
     public static boolean isFloated( Box inline, Context c ) {
-        return isFloated( inline.node, c );
+        return isFloated( c, inline.node);
     }
 
     /**
@@ -98,7 +113,7 @@ public class LayoutUtil {
      * @param c     PARAM
      * @return      The floated value
      */
-    public static boolean isFloated( Node node, Context c ) {
+    public static boolean isFloated( Context c, Node node ) {
         String float_val = c.css.getStringProperty( node, "float" );
         if ( float_val == null ) {
             return false;
@@ -121,18 +136,15 @@ public class LayoutUtil {
      */
     public static boolean isBlockNode( Node child, Context c ) {
         if ( child instanceof Element ) {
-            // u.p("checking: " + child);
-            Element el = (Element)child;
-            String display = c.css.getStringProperty( el, "display", false );
-            // u.p("display = " + display);
+            String display = getDisplay(c,(Element)child);
             if ( display != null && 
                 (display.equals( "block" ) ||
                  display.equals( "table-cell" ))
                ) {
-                if(isFloated(el,c)) {
+                if(isFloated(c,(Element)child)) {
                     return true;
                 }
-                if ( !isFloated( el, c ) ) {
+                if ( !isFloated( c,(Element)child ) ) {
                     //u.p(child.getNodeName() + " is a block");
                     return true;
                 } else {
@@ -153,8 +165,7 @@ public class LayoutUtil {
     public static boolean isHiddenNode( Node child, Context c ) {
         if ( child instanceof Element ) {
             Element el = (Element)child;
-            String display = c.css.getStringProperty( el, "display", false );
-            //u.p("display = " + display);
+            String display = getDisplay(c,el);//c.css.getStringProperty( el, "display", false );
             if ( display != null && display.equals( "none" ) ) {
                 return true;
             }
@@ -185,13 +196,9 @@ public class LayoutUtil {
         }
 
         Element el = (Element)node;
-        String display = c.css.getStringProperty( el, "display", false );
-        //u.p("display = " + display);
-        if ( display != null && display.equals( "block" ) ) {
-            if ( isFloated( node, c ) ) {
-                //u.p("it's a floated block");
-                return true;
-            }
+        String display = getDisplay(c,el);
+        if ( isFloated( c, node ) ) {
+            return true;
         }
         return false;
     }
@@ -226,7 +233,7 @@ public class LayoutUtil {
     
     
     public static boolean isListItem(Context c, Box box) {
-        String display = c.css.getStringProperty((Element) box.node, "display", false);
+        String display = getDisplay(c,(Element) box.node);
         if (display.equals("list-item")) {
             return true;
         }

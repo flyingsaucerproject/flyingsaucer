@@ -140,6 +140,11 @@ public class LayoutFactory {
         }
 
 
+        // check for floats
+        if(LayoutUtil.isFloated(c,elem)) {
+            //u.p("in layout factory, found a floated element. forcing display: block");
+            return getCustomLayout(c,elem,"block");
+        }
 
         // do normal layout resolution next
         Layout lyt = getCustomLayout(c, elem );
@@ -268,14 +273,19 @@ public class LayoutFactory {
         if(node instanceof Element) {
             Element elem =  (Element)node;
             String display = c.css.getStringProperty( elem, "display", false);
-            if ( display_map.containsKey( display ) ) {
-                return (Layout)display_map.get( display );
-            }
+            return getCustomLayout(c,node,display);
         }
 
         return null;
     }
 
+    private Layout getCustomLayout(Context c, Node node, String display) {
+        if ( display_map.containsKey( display ) ) {
+            return (Layout)display_map.get( display );
+        }
+        return null;
+    }
+    
     /**
      * Initialize the standard layouts. Called by a static initializer.
      */
@@ -312,6 +322,16 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.13  2004/11/18 16:45:11  joshy
+* improved the float code a bit.
+* now floats are automatically forced to be blocks
+*
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.12  2004/11/14 16:40:58  joshy
 * refactored layout factory
 *
