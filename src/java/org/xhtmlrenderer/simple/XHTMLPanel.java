@@ -149,7 +149,7 @@ public class XHTMLPanel extends BasicPanel {
      *
      * @param doc The document to render.
      */
-    public void setDocument( Document doc ) {
+    public void setDocument( Document doc ) throws MalformedURLException {
         setDocument( doc, new File( "." ).toURL() );
     }
 
@@ -158,7 +158,7 @@ public class XHTMLPanel extends BasicPanel {
      *
      * @param url            The URL for the Document.
      */
-    public void setDocument( URL url ) {
+    public void setDocument( URL url ) throws Exception {
         setDocument( loadDocument( url ), url );
     }
 
@@ -279,6 +279,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/03/22 13:55:29  pdoubleya
+ * Fixed missing throws declarations.
+ *
  * Revision 1.14  2005/03/22 12:28:14  pdoubleya
  * Updated JavaDocs.
  *
