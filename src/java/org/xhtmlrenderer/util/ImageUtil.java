@@ -66,31 +66,6 @@ public class ImageUtil {
 
         img = c.getCtx().getUac().getImage(src);
 
-        /*if (src.startsWith("http")) {
-
-            img = new ImageIcon(new URL(src)).getImage();
-
-        } else {
-
-            //Uu.p("src = " + src);
-
-            URL base = c.getRenderingContext().getBaseURL();
-
-            if (base != null) {
-
-                URL image_url = new URL(base, src);
-
-                //Uu.p("image url = " + image_url);
-
-                img = new ImageIcon(image_url).getImage();
-
-            } else {
-
-                img = new ImageIcon(src).getImage();
-
-            }
-
-        }*/
         if (img != null && img.getWidth(null) == -1) {
 
             return null;
@@ -105,6 +80,9 @@ public class ImageUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/02/02 12:14:27  pdoubleya
+ * .
+ *
  * Revision 1.10  2005/01/29 20:21:08  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

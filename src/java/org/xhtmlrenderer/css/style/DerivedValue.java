@@ -31,6 +31,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.util.ConversionUtil;
+import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -585,7 +586,7 @@ public class DerivedValue {
             //TODO: this is probably wrong
             fontSize = _inheritedStyle.getFloatPropertyProportionalHeight( CSSName.FONT_SIZE, parentHeight );
         } else {
-            System.err.println( "ERROR: Trying to derive font size wrongly in " + this.getClass().getName() );
+            throw new XRRuntimeException( "ERROR: Trying to derive font size incorrectly in " + GeneralUtil.classNameOnly(this) );
         }
         return fontSize;
     }

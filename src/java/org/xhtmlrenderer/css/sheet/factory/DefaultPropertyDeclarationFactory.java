@@ -69,11 +69,6 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
                     " CSS style information is not primitive--is a list of values." +
                     " Should be handled by a shorthand property factory." );
         }
-        /*
-         * if ( propName.equals(CSSName.WHITE_SPACE)){
-         * System.out.println("!!! got white space " + primVals[0]);
-         * }
-         */
         FSCssValue fsCssValue = new FSCssValue( cssName, primVals[0] );
         List declarations = new ArrayList( 1 );
         declarations.add( newPropertyDeclaration( cssName, fsCssValue, origin, important ) );
@@ -97,6 +92,9 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/02/02 12:12:25  pdoubleya
+ * .
+ *
  * Revision 1.4  2005/01/29 20:21:04  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
