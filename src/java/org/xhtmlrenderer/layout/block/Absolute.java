@@ -6,6 +6,29 @@ import org.xhtmlrenderer.util.*;
 
 public class Absolute {
     
+    public static void preChildrenLayout(Context c, Box block) {
+        if (isAbsolute(c, block)) {
+            BlockFormattingContext bfc = new BlockFormattingContext(block);
+            bfc.setWidth(block.width);
+            c.pushBFC(bfc);
+        }
+    }
+    
+    public static void postChildrenLayout(Context c, Box block) {
+        if (isAbsolute(c, block)) {
+            c.getBlockFormattingContext().doFinalAdjustments();
+            c.popBFC();
+        }
+    }
+
+    private static boolean isAbsolute(Context c, Box box) {
+        String position = LayoutUtil.getPosition(c, box);
+        if (position.equals("absolute")) {
+            return true;
+        }
+        return false;
+    }
+    
     public static void setupAbsolute(Context c, Box box) {
         String position = LayoutUtil.getPosition(c, box);
         if (position.equals("absolute")) {

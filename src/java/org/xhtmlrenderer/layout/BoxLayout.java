@@ -86,15 +86,12 @@ public class BoxLayout extends DefaultLayout {
 
         BlockBox block = (BlockBox) createBox(c, elem);
 
-        // set up the bfc
-        //BlockFormattingContext old_bfc = null;
+        // set up the outtermost bfc
         boolean set_bfc = false;
         if (c.getBlockFormattingContext() == null) {
             BlockFormattingContext bfc = new BlockFormattingContext(block);
-            //c.setBlockFormattingContext(bfc);
             c.pushBFC(bfc);
             set_bfc = true;
-            //old_bfc = null;
             bfc.setWidth((int) c.getExtents().getWidth());
         }
 
@@ -112,19 +109,10 @@ public class BoxLayout extends DefaultLayout {
         // prepare the box w/ styles
         prepareBox(c, block);
 
-        //BlockFormattingContext old_bfc_float = null;
-        boolean set_bfc_float = false;
-        // start a new bfc if it's floated
-        if (LayoutUtil.isFloated(c, block.node)) {
-            // u.p("starting a new bfc for a float");
-            // old_bfc_float = c.getBlockFormattingContext();
-            BlockFormattingContext bfc = new BlockFormattingContext(block);
-            c.pushBFC(bfc);
-            //c.setBlockFormattingContext(bfc);
-            set_bfc_float = true;
-            bfc.setWidth(block.width);
-        }
-
+        // set up a float bfc
+        FloatUtil.preChildrenLayout(c, block);
+        // set up an absolute bfc
+        Absolute.preChildrenLayout(c, block);
         // do children's layout
         boolean old_sub = c.isSubBlock();
         c.setSubBlock(false);
@@ -135,12 +123,11 @@ public class BoxLayout extends DefaultLayout {
         c.translate(-tx, -ty);
         c.setSubBlock(old_sub);
 
-        if (set_bfc_float) {
-            c.getBlockFormattingContext().doFinalAdjustments();
-            //c.setBlockFormattingContext(old_bfc_float);
-            c.popBFC();
-        }
-
+        // remove the float bfc
+        FloatUtil.postChildrenLayout(c,block);
+        // remove the absolute bfc
+        Absolute.postChildrenLayout(c,block);
+        
         // calculate the total outer width
         block.width = block.totalHorizontalPadding() + block.width;
         block.height = block.totalVerticalPadding() + block.height;
@@ -149,20 +136,21 @@ public class BoxLayout extends DefaultLayout {
         c.setExtents(oe);
 
         // account for special positioning
+        // need to add bfc/unbfc code for absolutes
         Relative.setupRelative(c, block);
+        // need to add bfc/unbfc code for absolutes
         Absolute.setupAbsolute(c, block);
         Fixed.setupFixed(c, block);
         FloatUtil.setupFloat(c, block);
         setupForm(c, block);
         this.contents_height = block.height;
         
+        // remove the outtermost bfc
         if (set_bfc) {
             c.getBlockFormattingContext().doFinalAdjustments();
-            //c.setBlockFormattingContext(old_bfc);
             c.popBFC();
         }
         
-        // u.p("final block = " + block);
         return block;
     }
     
@@ -349,6 +337,14 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2004/11/30 20:38:49  joshy
+ * cleaned up the float and absolute interfaces a bit
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.28  2004/11/30 20:28:27  joshy
  * support for multiple floats on a single line.
  *

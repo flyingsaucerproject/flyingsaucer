@@ -6,6 +6,23 @@ import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.css.constants.CSSName;
 
 public class FloatUtil {
+    
+    public static void preChildrenLayout(Context c, Box block) {
+        //boolean set_bfc_float = false;
+        if (LayoutUtil.isFloated(c, block.node)) {
+            BlockFormattingContext bfc = new BlockFormattingContext(block);
+            //set_bfc_float = true;
+            bfc.setWidth(block.width);
+            c.pushBFC(bfc);
+        }
+    }
+    
+    public static void postChildrenLayout(Context c, Box block) {
+        if (LayoutUtil.isFloated(c, block.node)) {
+            c.getBlockFormattingContext().doFinalAdjustments();
+            c.popBFC();
+        }
+    }
 
     public static void setupFloat(Context c, Box box) {
         if (LayoutUtil.isFloated(c, box.node)) {
