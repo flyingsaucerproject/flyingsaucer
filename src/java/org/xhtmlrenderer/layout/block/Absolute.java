@@ -14,22 +14,21 @@ import java.awt.*;
 public class Absolute {
 
     public static void preChildrenLayout(Context c, Box block) {
-        if (isAbsolute(block)) {
-            BlockFormattingContext bfc = new BlockFormattingContext(block);
-            bfc.setWidth(block.width);
-            c.pushBFC(bfc);
-        }
+        //if (isAbsolute(content.getStyle())) {
+        BlockFormattingContext bfc = new BlockFormattingContext(block);
+        bfc.setWidth(block.width);
+        c.pushBFC(bfc);
+        //}
     }
 
     public static void postChildrenLayout(Context c, Box block) {
-        if (isAbsolute(block)) {
-            c.getBlockFormattingContext().doFinalAdjustments();
-            c.popBFC();
-        }
+        //if (isAbsolute(content.getStyle())) {
+        c.getBlockFormattingContext().doFinalAdjustments();
+        c.popBFC();
+        //}
     }
 
-    private static boolean isAbsolute(Box box) {
-        CascadedStyle style = box.content.getStyle();
+    public static boolean isAbsolute(CascadedStyle style) {
         if (style == null) return false;
         if (!style.hasProperty(CSSName.POSITION)) return false;//default is inline
         String position = style.propertyByName(CSSName.POSITION).getValue().getCssText();

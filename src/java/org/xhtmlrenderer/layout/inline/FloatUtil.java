@@ -127,7 +127,7 @@ public class FloatUtil {
         //BlockBox block = (BlockBox)layout.layout( c, (Element)node );
         InlineBlockBox inline_block = new InlineBlockBox();
         inline_block.content = content;
-        Boxing.layout(c, inline_block);
+        Boxing.layout(c, inline_block, content);
 
         //HACK: tobe 2004-12-22 - guessing here
         // calculate the float property
@@ -160,7 +160,9 @@ public class FloatUtil {
         // Uu.p("before newbox block = " + inline_block);
         int x = inline_block.x;
         int y = inline_block.y;
-        LineBreaker.styleBox(c, content.getElement(), 0, 0, bounds, prev_align, font, inline_block);
+        inline_block.width = bounds.width;
+        inline_block.height = bounds.height;
+        LineBreaker.styleBox(c, prev_align, inline_block);
         inline_block.x = x;
         inline_block.y = y;
         // Uu.p("after newbox = " + inline_block);

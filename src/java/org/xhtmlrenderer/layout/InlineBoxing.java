@@ -347,7 +347,7 @@ public class InlineBoxing {
         // handle each case
         if (content instanceof InlineBlockContent) {
             //Uu.p("is replaced");
-            result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align, font);
+            result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align);
         } else if (content instanceof FloatedBlockContent) {
             //Uu.p("calcinline: is floated block");
             result = FloatUtil.generateFloatedBlockInlineBox(c, content, avail, prev_align, font);
@@ -453,6 +453,9 @@ public class InlineBoxing {
 * $Id$
 *
 * $Log$
+* Revision 1.3  2005/01/06 00:58:41  tobega
+* Cleanup of code. Aiming to get rid of references to Content in boxes
+*
 * Revision 1.2  2005/01/03 00:25:33  tobega
 * Managed to add some form support
 *

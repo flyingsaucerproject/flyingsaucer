@@ -4,9 +4,6 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
-import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.layout.content.FloatedBlockContent;
-import org.xhtmlrenderer.layout.content.InlineBlockContent;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
@@ -18,21 +15,14 @@ public class VerticalAlign {
 
     public static void setupVerticalAlign(Context c, CalculatedStyle style, InlineBox box) {
         // Uu.p("setup vert align: " + box);
-        Content content = box.content;
+        //Content content = box.content;
 
         //not used: CalculatedStyle parent_style = c.css.getStyle(LineBreaker.getElement(parent));
         Font parent_font = FontUtil.getFont(c, style);
         LineMetrics parent_metrics = null;
-        if (!(content instanceof InlineBlockContent)) {
-            if (!(content instanceof FloatedBlockContent) &&
-                    !(content instanceof AbsolutelyPositionedContent)) {
-                parent_metrics = parent_font.getLineMetrics(box.getSubstring(), ((Graphics2D) c.getGraphics()).getFontRenderContext());
-            } else {
-                parent_metrics = parent_font.getLineMetrics("Test", ((Graphics2D) c.getGraphics()).getFontRenderContext());
-            }
-        } else {
-            parent_metrics = parent_font.getLineMetrics("Test", ((Graphics2D) c.getGraphics()).getFontRenderContext());
-        }
+        String sample = "Test";
+        if (box.getSubstring() != null && !box.getSubstring().equals("")) sample = box.getSubstring();
+        parent_metrics = parent_font.getLineMetrics(sample, ((Graphics2D) c.getGraphics()).getFontRenderContext());
 
         // the height of the font
         float parent_height = parent_metrics.getHeight();
@@ -40,10 +30,10 @@ public class VerticalAlign {
         String vertical_align = style.propertyByName("vertical-align").computedValue().asString();
 
         // set the height of the box to the height of the font
-        if (!(content instanceof InlineBlockContent) &&
+        /*Already done if (!(content instanceof InlineBlockContent) &&
                 !(content instanceof AbsolutelyPositionedContent)) {
             box.height = FontUtil.lineHeight(c, box);
-        }
+        }*/
 
         if (vertical_align == null) {
             vertical_align = "baseline";

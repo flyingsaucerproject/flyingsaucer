@@ -4,29 +4,28 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.render.Box;
 
 public class FloatUtil {
 
     public static void preChildrenLayout(Context c, Box block) {
-        CascadedStyle style = block.content.getStyle();
+        //CascadedStyle style = block.content.getStyle();
         //boolean set_bfc_float = false;
-        if (LayoutUtil.isFloated(style)) {
-            BlockFormattingContext bfc = new BlockFormattingContext(block);
-            //set_bfc_float = true;
-            bfc.setWidth(block.width);
-            c.pushBFC(bfc);
-        }
+        //if (LayoutUtil.isFloated(style)) {
+        BlockFormattingContext bfc = new BlockFormattingContext(block);
+        //set_bfc_float = true;
+        bfc.setWidth(block.width);
+        c.pushBFC(bfc);
+        //}
     }
 
     public static void postChildrenLayout(Context c, Box block) {
-        CascadedStyle style = block.content.getStyle();
-        if (LayoutUtil.isFloated(style)) {
-            c.getBlockFormattingContext().doFinalAdjustments();
-            c.popBFC();
-        }
+        //CascadedStyle style = block.content.getStyle();
+        //if (LayoutUtil.isFloated(style)) {
+        c.getBlockFormattingContext().doFinalAdjustments();
+        c.popBFC();
+        //}
     }
 
     public static void setupFloat(Context c, Box box) {

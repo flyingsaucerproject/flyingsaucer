@@ -88,8 +88,7 @@ public class LinkListener extends MouseInputAdapter {
             return;
         }
 
-        //TODO: this is namespace-specific. Do it via NamespaceHandler
-        if (box.content.getElement().getNodeName().equals("a")) {
+        if (panel.getContext().getAttributeResolver().isLink(box.content.getElement())) {
             if (!panel.getCursor().equals(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))) {
                 panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             }

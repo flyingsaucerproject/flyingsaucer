@@ -30,6 +30,7 @@ import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.layout.content.TableContent;
+import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.table.TableBoxing;
@@ -70,12 +71,12 @@ public class Boxing {
             block = new BlockBox();
         }
         block.content = content;
-        return layout(c, block);
+        return layout(c, block, content);
     }
 
-    public static Box layout(Context c, Box block) {
+    public static Box layout(Context c, Box block, Content content) {
         //OK, first set up the current style. All depends on this...
-        CascadedStyle pushed = block.content.getStyle();
+        CascadedStyle pushed = content.getStyle();
         if (pushed != null) c.pushStyle(pushed);
         // this is to keep track of when we are inside of a form
         //TODO: rethink: saveForm(c, (Element) block.getNode());
@@ -107,12 +108,16 @@ public class Boxing {
         block.x = c.getExtents().x;
         block.y = c.getExtents().y;
 
-        // set up a float bfc
-        FloatUtil.preChildrenLayout(c, block);
-        
-        // set up an absolute bfc
-        Absolute.preChildrenLayout(c, block);
-        
+        if (ContentUtil.isFloated(content.getStyle())) {
+            // set up a float bfc
+            FloatUtil.preChildrenLayout(c, block);
+        }
+
+        if (Absolute.isAbsolute(content.getStyle())) {
+            // set up an absolute bfc
+            Absolute.preChildrenLayout(c, block);
+        }
+
         // save height incase fixed height
         int original_height = block.height;
 
@@ -122,7 +127,7 @@ public class Boxing {
         int tx = block.totalLeftPadding(c.getCurrentStyle());
         int ty = block.totalTopPadding(c.getCurrentStyle());
         c.translate(tx, ty);
-        layoutChildren(c, block);//when this is really an anonymous, InlineLayout.layoutChildren is called
+        layoutChildren(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
         c.translate(-tx, -ty);
         c.setSubBlock(old_sub);
 
@@ -132,12 +137,16 @@ public class Boxing {
             block.height = original_height;
         }
 
-        // remove the float bfc
-        FloatUtil.postChildrenLayout(c, block);
-        
-        // remove the absolute bfc
-        Absolute.postChildrenLayout(c, block);
-        
+        if (ContentUtil.isFloated(content.getStyle())) {
+            // remove the float bfc
+            FloatUtil.postChildrenLayout(c, block);
+        }
+
+        if (Absolute.isAbsolute(content.getStyle())) {
+            // remove the absolute bfc
+            Absolute.postChildrenLayout(c, block);
+        }
+
         // calculate the total outer width
         block.width = block.totalHorizontalPadding(c.getCurrentStyle()) + block.width;
         block.height = block.totalVerticalPadding(c.getCurrentStyle()) + block.height;
@@ -169,7 +178,7 @@ public class Boxing {
 
     // calculate the width based on css and available space
     private static void adjustWidth(Context c, Box block) {
-        if (block.content instanceof AnonymousBlockContent) {
+        if (block instanceof AnonymousBlockBox) {
             return;
         }
         // initalize the width to all the available space
@@ -194,7 +203,7 @@ public class Boxing {
 
     // calculate the height based on css and available space
     private static void adjustHeight(Context c, Box block) {
-        if (block.content instanceof AnonymousBlockContent) {
+        if (block instanceof AnonymousBlockBox) {
             return;
         }
         CalculatedStyle style = c.getCurrentStyle();
@@ -210,12 +219,13 @@ public class Boxing {
     /**
      * Description of the Method
      *
-     * @param c   PARAM
-     * @param box PARAM
+     * @param c           PARAM
+     * @param box         PARAM
+     * @param contentList
      * @return Returns
      */
-    public static Box layoutChildren(Context c, Box box) {
-        List contentList = box.content.getChildContent(c);
+    public static Box layoutChildren(Context c, Box box, List contentList) {
+        //List contentList = box.content.getChildContent(c);
         if (contentList == null) return box;
         if (contentList.size() == 0) return box;//we can do this if there is no content, right?
 
@@ -282,6 +292,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/06 00:58:41  tobega
+ * Cleanup of code. Aiming to get rid of references to Content in boxes
+ *
  * Revision 1.3  2005/01/05 01:10:14  tobega
  * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
  *
