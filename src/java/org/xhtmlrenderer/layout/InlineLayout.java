@@ -260,16 +260,6 @@ public class InlineLayout extends BoxLayout {
         return block;
     }
 
-
-    /**
-    * Description of the Method
-    *
-     * @param c                PARAM
-     * @param prev_line        PARAM
-     * @param remaining_width  PARAM
-     * @return                 Returns
-     */
-     
      
     /**
     * Get the longest inline possible.
@@ -347,7 +337,7 @@ public class InlineLayout extends BoxLayout {
             Context c, BlockBox block, boolean last ) {
         c.setFirstLine(false);
         // account for text-align
-        adjustTextAlignment(c,line_to_save, containing_block, width, x, last);
+        TextAlign.adjustTextAlignment(c,line_to_save, containing_block, width, x, last);
         // set the y
         line_to_save.y = prev_line.y + prev_line.height;
         
@@ -357,24 +347,6 @@ public class InlineLayout extends BoxLayout {
         
         VerticalAlign.setupVerticalAlign( c, containing_block, line_to_save );
         block.addChild( line_to_save );
-    }
-
-    private static void adjustTextAlignment(Context c, LineBox line_to_save, Element containing_block, int width, int x, boolean last) {
-        String text_align = c.css.getStringProperty( containing_block, "text-align", true );
-        if(text_align == null) {
-            return;
-        }
-        if ( text_align.equals( "right" ) ) {
-            line_to_save.x = x + width - line_to_save.width;
-        }
-        if ( text_align.equals( "center" ) ) {
-            line_to_save.x = x + ( width - line_to_save.width ) / 2;
-        }
-        if(TextAlignJustify.isJustified(c,containing_block)) {
-            if(!last) {            
-                TextAlignJustify.justifyLine(c,line_to_save,containing_block,width);
-            }
-        }
     }
     
     
@@ -389,6 +361,13 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.20  2004/11/09 16:41:33  joshy
+* moved text alignment code
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.19  2004/11/09 16:24:29  joshy
 * moved float code into separate class
 *
