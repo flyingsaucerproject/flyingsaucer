@@ -24,7 +24,7 @@ public class RenderingContext {
      *  Constructor for the RenderingContext object
      */
     public RenderingContext() {
-        setMedia("screen");
+        setMedia("print");
         setContext(new Context());
         getContext().ctx = this;
         getContext().css = new TBStyleReference(new NaiveUserAgent());

@@ -49,6 +49,7 @@ public class Context {
      * The media for this context
      */
     public String getMedia() {
+         u.p("media = " + ctx.getMedia());
          return ctx.getMedia();
     }
 
@@ -782,6 +783,13 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2004/12/02 15:50:58  joshy
+ * added debugging
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.25  2004/12/01 14:02:52  joshy
  * modified media to use the value from the rendering context
  * added the inline-block box

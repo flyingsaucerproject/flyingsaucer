@@ -88,41 +88,30 @@
 //test docs uploaded
 //fix float bugs w/ more than one float on a line
 //fix bugs in unit tests and get them all to run properly
-
-AA the bullets
-fix n test space collapsing w/ images
-fix n test tab alignment
-implement media support for printing and test it
-    make financial table demo print differently
-make hover work on parents and children
-
 //make inlineblockbox and make floats use it
 //fix more bugs w/ multi floats on one line
 
+//photo gallery that uses all floats
+//realtime resize panel (on photo gallery?)
+//codify the demo filebrowser
+//codify the photo gallery demo
+
+
+AA the bullets
+fix explict height bug (in photo gallery)
+unit test space collapsing w/ images
+implement tab alignment for pres
+unit test tab alignment
+implement media support for printing and test it
+    make financial table demo print differently
+make hover work on parents and children
 make graphic2drenderer not use basicpanel
-
-demos:
-    better financial table
-    demo w/ fix pos and hovers
-
-    photo gallery that uses all floats
-    realtime resize panel (on photo gallery?)
-    codify the demo filebrowser
-    codify the demo html editor
-    codify the photo gallery demo
-    make all demos webstartable
-    game screen
-        menu
-            new game
-            instructions
-            high score
-            quit
-        cool font
-        cool tiled background
-        centered background splash image (flyingsaucer?)
-        dark colors w/ highlight rollovers
-
-
+spruce up photo background
+build demo w/ fixed pos menu, hovers, and scrolling
+make all demos webstartable
+codify the demo html editor
+build game screen demo
+jtable -> report -> printed doc demo
 
 
 rachel in town arrive 20th @ 7, leave 5th @ 7
@@ -132,5 +121,22 @@ rachel in town arrive 20th @ 7, leave 5th @ 7
 --styles on each border side
 --font family resolution
 --bottom border resolution
+
+
+game screen
+    menu
+        new game
+        instructions
+        high score
+        quit
+    cool font
+    cool tiled background
+    centered background splash image (flyingsaucer?)
+    dark colors w/ highlight rollovers
+    several images w/ transparency
+
+
+
+
     
 
