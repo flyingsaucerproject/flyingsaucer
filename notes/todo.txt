@@ -10,20 +10,22 @@
 //small caps
 //move text up to baseline
 //match up baselines of text w/ baseline vertical alignment
+//justified text
+//build calendar demo
+
 boolean to turn off layout threading
 easier headless interface
 fix fixed background clipping error
 fix list item vertical positioning
-floated divs work, but not floated spans. span should turn into a block
-        when floated.
-justified text
+floated divs work, but not floated spans. span should turn into a block when floated.
 make layoutfactory use display for generating layouts
 build table demo
-build calendar demo
 left-right-top w/ static pos
 fixed pos
 fix crash on width = 0
 
+table crashes on tbody
+table crashes on empty tr
 --crash w/ width = 50%
 --% width for absolute layout
 --styles on each border side

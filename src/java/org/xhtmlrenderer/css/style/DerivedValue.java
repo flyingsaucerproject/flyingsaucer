@@ -397,7 +397,14 @@ public class DerivedValue {
      */
     public String getStringValue() {
         assert( getCssValueType(_domCSSValue) == CSSValue.CSS_PRIMITIVE_VALUE );
-        return ( (CSSPrimitiveValue)_domCSSValue ).getStringValue();
+        try {
+            return ( (CSSPrimitiveValue)_domCSSValue ).getStringValue();
+        } catch (Throwable thr) {
+            System.out.println("ack!!!");
+            XRLog.general(Level.WARNING,"exception: " + thr);
+            XRLog.general(Level.WARNING,"value = " +_domCSSValue);
+            throw(new Error(thr));
+        }
     }
 
 

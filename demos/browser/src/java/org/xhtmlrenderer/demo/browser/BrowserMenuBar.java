@@ -140,6 +140,7 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add( new LoadAction( "Tables", "demo:demos/table.xhtml"));
         demos.add( new LoadAction( "Hamlet", "demo:demos/hamlet.xhtml"));
         demos.add( new LoadAction( "Alice", "demo:demos/alice/alice.xhtml"));
+        demos.add( new LoadAction( "Financial Report", "demo:demos/report.xhtml"));
         try {
             //demos.add(new LoadAction("File Listing (Win)","file:///c:"));
             //demos.add(new LoadAction("File Listing (Unix)","file:///"));
@@ -419,6 +420,14 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/09 03:52:25  joshy
+ * added financial report demo
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.9  2004/11/09 00:36:07  joshy
  * fixed more text alignment
  * added menu item to show font metrics
