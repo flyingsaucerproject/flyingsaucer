@@ -1,6 +1,6 @@
 /*
  * StyleReference.java
- * Copyright (c) 2004 Torbjï¿½rn Gannholm
+ * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -39,10 +39,11 @@ import org.xhtmlrenderer.util.XRLog;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
 
 /**
- * @author empty
+ * @author Torbjörn Gannholm
  */
 public class StyleReference {
     /**
@@ -76,6 +77,7 @@ public class StyleReference {
      */
     private org.xhtmlrenderer.css.style.Styler _styler;
 
+    /** */
     private UserAgentCallback _uac;
 
     /**
@@ -132,7 +134,9 @@ public class StyleReference {
         CascadedStyle cs = _matcher.getCascadedStyle(e, false);//this is only for debug, I think
         java.util.LinkedHashMap props = new java.util.LinkedHashMap();
         for (java.util.Iterator i = cs.getMatchedPropertyDeclarations(); i.hasNext();) {
-            String propName = (String) i.next();
+            PropertyDeclaration pd = (PropertyDeclaration)i.next();
+            
+            String propName = pd.getPropertyName();
             CSSName cssName = CSSName.getByPropertyName(propName);
             props.put(propName, cs.propertyByName(cssName).getValue());
         }
@@ -226,57 +230,22 @@ public class StyleReference {
         info.setStylesheet(sheet);//add it here because matcher cannot look it up, uri:s are in a twist
         infos.add(info);
 
-        //here we should also get user stylesheet from userAgent
+        // TODO: here we should also get user stylesheet from userAgent
 
         long el = System.currentTimeMillis() - st;
         XRLog.load("TIME: parse stylesheets  " + el + "ms");
 
         return infos;
     }
-
-    /**
-     * <p/>
-     * <p/>
-     * Attempts to match any styles loaded to Elements in the supplied Document,
-     * using CSS2 matching guidelines re: selection to prepare internal lookup
-     * routines for property lookup methods. This should be called after all stylesheets and
-     * styles are found, but before any properties are retrieved. </p>
-     * The linked stylesheets are lazy-loaded by the matcher if needed
-     *
-     * @param infos the list of StylesheetInfos. Any needed stylesheets not in cache will be loaded by matcher
-     */
-/*    private void matchStyles(List infos) {
-        long st = System.currentTimeMillis();
-        try {
-
-            XRLog.match("No of stylesheets = " + infos.size());
-            System.out.println("media = " + _context.getMedia());
-            _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(_doc, _attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
-
-            // now we have a match-map, apply against our entire Document....restyleTree() is recursive
-            Element root = _doc.getDocumentElement();
-            _styler = new org.xhtmlrenderer.css.style.Styler();
-            _styler.setMatcher(_matcher);
-            _styler.styleTree(root);
-        } catch (RuntimeException re) {
-            throw new XRRuntimeException("Failed on matchStyles(), unknown RuntimeException.", re);
-        } catch (Exception e) {
-            throw new XRRuntimeException("Failed on matchStyles(), unknown Exception.", e);
-        }
-        long el = System.currentTimeMillis() - st;
-        XRLog.match("TIME: match styles  " + el + "ms");
-    }
-=======
->>>>>>> 1.19*/
 }
 
-/*
- * :folding=java:collapseFolds=1:noTabs=true:tabSize=4:indentSize=4:
- */
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/01/29 12:49:24  pdoubleya
+ * Fixed cast on get...PropertiesMap().
+ *
  * Revision 1.22  2005/01/24 19:01:09  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *
