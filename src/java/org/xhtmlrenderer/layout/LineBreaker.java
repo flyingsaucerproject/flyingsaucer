@@ -457,11 +457,26 @@ public class LineBreaker {
             //u.p("block elem = " + getNearestBlockElement(node,c));
             // if there is a first line pseudo class
             CascadedStyle pseudo = c.css.getPseudoElementStyle(getNearestBlockElement(node,c),"first-line");
+<<<<<<< LineBreaker.java
+            CalculatedStyle normal = c.css.getStyle(box.getRealElement());
+            CalculatedStyle merged = null;
+            if(pseudo != null) {
+                merged = new CalculatedStyle(normal,pseudo);
+            } else {
+                merged = normal;
+            }
+            //CalculatedStyle cs = c.css.getPseudoElementStyle(getNearestBlockElement(node,c),"first-line");
+            //u.p("cs = " + cs);
+            //u.p("weight = " + cs.propertyByName("font-weight").computedValue().asString());
+            //u.p("===========");
+            styleInlineBox(c,merged,box);
+=======
             if(pseudo != null) {
                 CalculatedStyle normal = c.css.getStyle(box.getRealElement());
                 CalculatedStyle merged = new CalculatedStyle(normal,pseudo);
                 styleInlineBox(c,merged,box);
             }
+>>>>>>> 1.12
         }
         
 
@@ -529,7 +544,12 @@ public class LineBreaker {
         Element elem = getElement(node);
         CascadedStyle ps = c.css.getPseudoElementStyle(elem,"first-letter");
         CalculatedStyle parent = c.css.getStyle(elem);
-        CalculatedStyle cs = new CalculatedStyle(parent, ps);
+        CalculatedStyle cs = null;
+        if(ps != null) {
+            cs = new CalculatedStyle(parent, ps);
+        } else {
+            cs = parent;
+        }
         //u.p("style = " + cs);
         styleInlineBox(c, cs, box);
         box.break_after = false;
@@ -551,6 +571,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/11/09 00:36:54  tobega
+ * Fixed some NPEs
+ *
  * Revision 1.12  2004/11/09 00:36:08  joshy
  * fixed more text alignment
  * added menu item to show font metrics

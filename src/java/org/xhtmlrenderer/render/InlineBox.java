@@ -139,6 +139,7 @@ public class InlineBox extends Box {
      * @return   The substring value
      */
     public String getSubstring() {
+        if(text == null) return "";
         String txt = text.substring( start_index, end_index );
         return txt;
     }
@@ -168,6 +169,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/09 00:36:54  tobega
+ * Fixed some NPEs
+ *
  * Revision 1.4  2004/11/08 16:56:52  joshy
  * added first-line pseudo-class support
  *
