@@ -59,9 +59,13 @@ public interface XRProperty {
      */
     XRValue specifiedValue();
 
-    // TODO: think we still need the computed value--
-    // according to the spec, that is used for relative values
-    // that depend on parent element values--can't use actual value (PWW 15/08/04)
+    /**
+     * The specified value, if absolute, or the relative value as 
+     * absolute, if relative :).
+     *
+     * @return   See desc.
+     */
+    XRValue computedValue();
 
     /**
      * The actual value--the computed value when limited by the current
@@ -98,6 +102,19 @@ public interface XRProperty {
      * @return   A copy of this <code>XRProperty</code>.
      */
     XRProperty copyOf();
+
+
+    /**
+     * Deep copy operation for the purposes of inheriting a computed value.
+     * Used when a child element needs the parent element's computed value
+     * for a property. The following is true of the copy: 1) is resolved
+     * 2) computed value is same as parent's computed 3) actual value
+     * is same as parent's actual value. Any contained SAC instances are not
+     * deep-copied.
+     *
+     * @return   See desc
+     */
+    XRProperty copyForInherit();
 }// end interface
 
 
