@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jnlp codebase="https://xhtmlrenderer.dev.java.net/dist/">
     <information>
-        <title>Browser Demo</title>
+        <title>XHTML Browser Demo</title>
         <vendor>Flying Saucer</vendor>
         <offline-allowed/>
         <homepage href="http://xhtmlrenderer.dev.java.net/"/>
@@ -10,6 +10,7 @@
         renderer. This demo is a simple webbrowser that can load xhtml from the
         web or it's internal demo files.</description>
         <description kind="tooltip">FS Demo</description>
+        <icon href="https://xhtmlrenderer.dev.java.net/images/flyingsaucer.jpg"/>
     </information>
     <resources>
         <j2se version="1.4+"/>

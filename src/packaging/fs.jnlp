@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="https://xhtmlrenderer.dev.java.net/files/documents/1821/5842/fs.jnlp">
+<jnlp codebase="https://xhtmlrenderer.dev.java.net/dist/">
     <information>
-        <title>Browser Demo</title>
+        <title>XHTML Browser Demo</title>
         <vendor>Flying Saucer</vendor>
         <offline-allowed/>
         <homepage href="http://xhtmlrenderer.dev.java.net/"/>
@@ -10,12 +10,13 @@
         renderer. This demo is a simple webbrowser that can load xhtml from the
         web or it's internal demo files.</description>
         <description kind="tooltip">FS Demo</description>
+        <icon href="https://xhtmlrenderer.dev.java.net/images/flyingsaucer.jpg"/>
     </information>
     <resources>
         <j2se version="1.4+"/>
-        <jar href="https://xhtmlrenderer.dev.java.net/files/documents/1821/5843/FlyingSaucer.jar"/>
-        <jar href="https://xhtmlrenderer.dev.java.net/files/documents/1821/5844/joshy-common.jar"/>
-        <jar href="https://xhtmlrenderer.dev.java.net/files/documents/1821/5845/ss_css2.jar"/>
+        <jar href="FlyingSaucer.jar"/>
+        <jar href="joshy-common.jar"/>
+        <jar href="ss_css2.jar"/>
     </resources>
     <application-desc main-class="org.joshy.html.app.browser.BrowserStartup"/>
     <security>
