@@ -53,14 +53,6 @@ public class Stylesheet {
     }
 
     /**
-     * @param m a single media identifier
-     * @return true if the stylesheet referenced applies to the medium
-     */
-    public boolean appliesToMedia(String m) {
-        return _info.appliesToMedia(m);
-    }
-
-    /**
      * Gets the origin attribute of the Stylesheet object
      *
      * @return The origin value
@@ -97,7 +89,7 @@ public class Stylesheet {
     /**
      * Set the imported stylesheet Rulesets to this stylesheet. Should usually only be called by StylesheetFactory.
      */
-    void addStylesheet(Stylesheet s) {
+    void addStylesheet(StylesheetInfo s) {
         _rulesets.add(s);
     }
 } // end class
@@ -106,6 +98,9 @@ public class Stylesheet {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/29 23:25:39  tobega
+ * Had to redo thinking about Stylesheets and StylesheetInfos. Now StylesheetInfos are passed around instead of Stylesheets because any Stylesheet should only be linked to its URI. Bonus: the external sheets get lazy-loaded only if needed for the medium.
+ *
  * Revision 1.6  2004/11/28 23:29:02  tobega
  * Now handles media on Stylesheets, still need to handle at-media-rules. The media-type should be set in Context.media (set by default to "screen") before calling setContext on TBStyleReference.
  *

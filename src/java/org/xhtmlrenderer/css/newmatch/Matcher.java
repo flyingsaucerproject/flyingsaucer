@@ -22,8 +22,12 @@
 package org.xhtmlrenderer.css.newmatch;
 
 import org.xhtmlrenderer.css.sheet.Stylesheet;
+import org.xhtmlrenderer.css.sheet.StylesheetFactory;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+import org.xhtmlrenderer.extend.AttributeResolver;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -138,10 +142,11 @@ public class Matcher {
     /**
      * creates a new matcher for the combination of parameters
      */
-    public Matcher(org.w3c.dom.Document doc, org.xhtmlrenderer.extend.AttributeResolver ar, java.util.Iterator stylesheets, String media) {
+    public Matcher(org.w3c.dom.Document doc, AttributeResolver ar, StylesheetFactory factory, Iterator stylesheets, String media) {
         newMaps();
         _doc = doc;
         _attRes = ar;
+        _styleFactory = factory;
         docMapper = createDocumentMapper(stylesheets, media);
     }
 
@@ -165,18 +170,20 @@ public class Matcher {
         int count = 0;
         java.util.TreeMap sorter = new java.util.TreeMap();
         while (stylesheets.hasNext()) {
-            count = appendStylesheet((Stylesheet) stylesheets.next(), count, sorter, media);
+            count = appendStylesheet((StylesheetInfo) stylesheets.next(), count, sorter, media);
         }
         XRLog.match("Matcher created with " + sorter.size() + " selectors");
         return new Mapper(sorter.values(), _doc);
     }
 
-    private int appendStylesheet(Stylesheet ss, int count, java.util.TreeMap sorter, String media) {
-        if (!ss.appliesToMedia(media)) return count;
+    private int appendStylesheet(StylesheetInfo si, int count, java.util.TreeMap sorter, String media) {
+        if (!si.appliesToMedia(media)) return count;
+        Stylesheet ss = _styleFactory.getStylesheet(si);
+        if (ss == null) return count;//couldn't load it
         for (java.util.Iterator rulesets = ss.getRulesets(); rulesets.hasNext();) {
             Object obj = rulesets.next();
-            if (obj instanceof Stylesheet) {
-                count = appendStylesheet((Stylesheet) obj, count, sorter, media);
+            if (obj instanceof StylesheetInfo) {
+                count = appendStylesheet((StylesheetInfo) obj, count, sorter, media);
             } else {
                 org.xhtmlrenderer.css.sheet.Ruleset r = (org.xhtmlrenderer.css.sheet.Ruleset) obj;
                 //at this point all selectors in a ruleset must be placed on the descendant axis
@@ -514,13 +521,6 @@ public class Matcher {
             _elStyle.put(e, rs);
         }
         return rs;
-    }
-
-    /**
-     * StylesheetFactory needs to be set if Element styling is to be used
-     */
-    public void setStylesheetFactory(org.xhtmlrenderer.css.sheet.StylesheetFactory styleFactory) {
-        _styleFactory = styleFactory;
     }
 
     private org.w3c.dom.Document _doc;

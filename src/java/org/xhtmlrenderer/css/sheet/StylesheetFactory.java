@@ -131,17 +131,12 @@ public class StylesheetFactory {
                 String uri = null;
                 try {
                     uri = new java.net.URL(new URL(stylesheet.getURI()), href).toString();
-                    Stylesheet imported = getStylesheet(uri);
-                    if (imported == null) {
-                        StylesheetInfo info = new StylesheetInfo();
-                        info.setOrigin(stylesheet.getOrigin());
-                        info.setUri(uri);
-                        info.setMedia(media.getMediaText());
-                        info.setType("text/css");
-                        imported = parse(info);
-                        if (imported != null) putStylesheet(uri, imported);
-                    }
-                    if (imported != null) stylesheet.addStylesheet(imported);
+                    StylesheetInfo info = new StylesheetInfo();
+                    info.setOrigin(stylesheet.getOrigin());
+                    info.setUri(uri);
+                    info.setMedia(media.getMediaText());
+                    info.setType("text/css");
+                    stylesheet.addStylesheet(info);
                 } catch (java.net.MalformedURLException e) {
                     XRLog.exception("bad URL for imported stylesheet", e);
                 }
@@ -187,8 +182,31 @@ public class StylesheetFactory {
      * @param key The key for this sheet; same as key passed to putStylesheet();
      * @return The stylesheet
      */
-    public Stylesheet getStylesheet(Object key) {
+    public Stylesheet getCachedStylesheet(Object key) {
         return (Stylesheet) _cache.get(key);
+    }
+
+    /**
+     * Returns a cached sheet by its key; loads and caches it if not in cache; null if not able to load
+     *
+     * @param info The StylesheetInfo for this sheet
+     * @return The stylesheet
+     */
+    public Stylesheet getStylesheet(StylesheetInfo info) {
+        Stylesheet s = getCachedStylesheet(info.getUri());
+        if (s == null && !containsStylesheet(info.getUri())) {
+            s = parse(info);
+            putStylesheet(info.getUri(), s);
+        }
+        return s;
+    }
+
+    /**
+     * @param key
+     * @return true if a Stylesheet with this key has been put in the cache. Note that the Stylesheet may be null.
+     */
+    public boolean containsStylesheet(Object key) {
+        return _cache.containsKey(key);
     }
 }
 
@@ -196,6 +214,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/29 23:25:40  tobega
+ * Had to redo thinking about Stylesheets and StylesheetInfos. Now StylesheetInfos are passed around instead of Stylesheets because any Stylesheet should only be linked to its URI. Bonus: the external sheets get lazy-loaded only if needed for the medium.
+ *
  * Revision 1.7  2004/11/28 23:29:02  tobega
  * Now handles media on Stylesheets, still need to handle at-media-rules. The media-type should be set in Context.media (set by default to "screen") before calling setContext on TBStyleReference.
  *

@@ -42,8 +42,7 @@ import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -94,11 +93,6 @@ public class TBStyleReference implements StyleReference {
      * Description of the Field
      */
     private org.xhtmlrenderer.css.style.Styler _styler;
-
-    /**
-     * used for caching Stylesheet instances, wonder why...
-     */
-    private List _stylesheets;
 
     /**
      * Default constructor for initializing members.
@@ -184,8 +178,8 @@ public class TBStyleReference implements StyleReference {
         _doc = doc;
         _attRes = ar;
 
-        parseStylesheets();
-        matchStyles();
+        List infos = getStylesheets();
+        matchStyles(infos);
     }
 
 
@@ -510,33 +504,29 @@ public class TBStyleReference implements StyleReference {
     }
 
     /**
-     * Loads all stylesheets and inline styles associated with the current
-     * document. Default (user agent) stylesheet is loaded as well. Sheets are
-     * loaded into _stylesheets List, and cached in the StyleSheetFactory by
-     * URI.
+     * Gets StylesheetInfos for all stylesheets and inline styles associated with the current
+     * document. Default (user agent) stylesheet and the inline style for the current media
+     * are loaded and cached in the StyleSheetFactory by URI.
      */
-    private void parseStylesheets() {
+    private List getStylesheets() {
         java.io.Reader reader;
-        _stylesheets = new LinkedList();
+        List infos = new LinkedList();
         long st = System.currentTimeMillis();
 
         String uri = _nsh.getNamespace();
-        Stylesheet sheet = (Stylesheet) _stylesheetFactory.getStylesheet(uri);
-        if (sheet == null) {
+        StylesheetInfo info = new StylesheetInfo();
+        info.setUri(_nsh.getNamespace());
+        info.setOrigin(StylesheetInfo.USER_AGENT);
+        info.setMedia("all");
+        info.setType("text/css");
+        if (!_stylesheetFactory.containsStylesheet(uri)) {
             reader = _nsh.getDefaultStylesheet();
-            StylesheetInfo info = new StylesheetInfo();
-            info.setUri(_nsh.getNamespace());
-            info.setOrigin(StylesheetInfo.USER_AGENT);
-            info.setMedia("all");
-            info.setType("text/css");
             if (reader != null) {
-                sheet = _stylesheetFactory.parse(reader, info);
+                Stylesheet sheet = _stylesheetFactory.parse(reader, info);
                 _stylesheetFactory.putStylesheet(uri, sheet);
             }
         }
-        if (sheet != null) {
-            _stylesheets.add(sheet);
-        }
+        infos.add(info);
 
         StylesheetInfo[] refs = _nsh.getStylesheetLinks(_doc);
         if (refs != null) {
@@ -544,47 +534,37 @@ public class TBStyleReference implements StyleReference {
                 java.net.URL baseUrl = _context.getRenderingContext().getBaseURL();
                 try {
                     uri = new java.net.URL(baseUrl, refs[i].getUri()).toString();
-                    sheet = _stylesheetFactory.getStylesheet(uri);
-                    if (sheet == null) {
-                        reader = _userAgent.getReaderForURI(uri);
-                        if (reader != null) {
-                            sheet = _stylesheetFactory.parse(reader, refs[i]);
-                            _stylesheetFactory.putStylesheet(uri, sheet);
-                        }
-                    }
-                    if (sheet != null) {
-                        _stylesheets.add(sheet);
-                    }
+                    refs[i].setUri(uri);
                 } catch (java.net.MalformedURLException e) {
                     XRLog.exception("bad URL for associated stylesheet", e);
                 }
             }
         }
+        infos.addAll(Arrays.asList(refs));
 
         String baseUri = _context.getRenderingContext().getBaseURL().toString();
         uri = baseUri + "?-fs-media-?" + _context.media;
-        sheet = _stylesheetFactory.getStylesheet(uri);
-        if (sheet == null) {
+        info = new StylesheetInfo();
+        info.setUri(uri);
+        info.setType("text/css");
+        info.setOrigin(StylesheetInfo.AUTHOR);
+        info.setMedia(_context.media);
+        if (!_stylesheetFactory.containsStylesheet(uri)) {
             String inlineStyle = _nsh.getInlineStyle(_doc, _context.media);
             if (inlineStyle != null) {
                 reader = new java.io.StringReader(inlineStyle);
-                StylesheetInfo info = new StylesheetInfo();
-                info.setUri(baseUri);
-                info.setType("text/css");
-                info.setOrigin(StylesheetInfo.AUTHOR);
-                info.setMedia(_context.media);
-                sheet = _stylesheetFactory.parse(reader, info);
+                Stylesheet sheet = _stylesheetFactory.parse(reader, info);
                 _stylesheetFactory.putStylesheet(uri, sheet);
             }
         }
-        if (sheet != null) {
-            _stylesheets.add(sheet);
-        }
+        infos.add(info);
 
         //here we should also get user stylesheet from userAgent
 
         long el = System.currentTimeMillis() - st;
         XRLog.load("TIME: parse stylesheets  " + el + "ms");
+
+        return infos;
     }
 
 
@@ -595,18 +575,18 @@ public class TBStyleReference implements StyleReference {
      * using CSS2 matching guidelines re: selection to prepare internal lookup
      * routines for property lookup methods (e.g. {@link #getProperty(Element,
             * String, boolean)}). This should be called after all stylesheets and
-     * styles are loaded, but before any properties are retrieved. </p>
+     * styles are found, but before any properties are retrieved. </p>
+     * The linked stylesheets are lazy-loaded by the matcher if needed
+     *
+     * @param infos the list of StylesheetInfos. Any needed stylesheets not in cache will be loaded by matcher
      */
-    private void matchStyles() {
+    private void matchStyles(List infos) {
         long st = System.currentTimeMillis();
         try {
 
-            XRLog.match("No of stylesheets = " + _stylesheets.size());
-            List sortedXRRules = new ArrayList();
-            Iterator iter = _stylesheets.iterator();
+            XRLog.match("No of stylesheets = " + infos.size());
 
-            _tbStyleMap = new org.xhtmlrenderer.css.newmatch.Matcher(_doc, _attRes, _stylesheets.iterator(), _context.media);
-            _tbStyleMap.setStylesheetFactory(_stylesheetFactory);
+            _tbStyleMap = new org.xhtmlrenderer.css.newmatch.Matcher(_doc, _attRes, _stylesheetFactory, infos.iterator(), _context.media);
 
             // now we have a match-map, apply against our entire Document....restyleTree() is recursive
             Element root = _doc.getDocumentElement();
@@ -666,6 +646,9 @@ public class TBStyleReference implements StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/11/29 23:25:37  tobega
+ * Had to redo thinking about Stylesheets and StylesheetInfos. Now StylesheetInfos are passed around instead of Stylesheets because any Stylesheet should only be linked to its URI. Bonus: the external sheets get lazy-loaded only if needed for the medium.
+ *
  * Revision 1.15  2004/11/28 23:29:00  tobega
  * Now handles media on Stylesheets, still need to handle at-media-rules. The media-type should be set in Context.media (set by default to "screen") before calling setContext on TBStyleReference.
  *
