@@ -216,27 +216,32 @@ public class BoxRendering {
         String back_image = style.getStringProperty( CSSName.BACKGROUND_IMAGE );
         block.repeat = style.getIdent( CSSName.BACKGROUND_REPEAT );
         block.attachment = style.getIdent( CSSName.BACKGROUND_ATTACHMENT );
+
+        // load the background image
+        block.background_image = null;
+        int backImageWidth = 0;
+        int backImageHeight = 0;
+        if ( back_image != null && !"none".equals( back_image ) ) {
+            try {
+                block.background_image = ImageUtil.loadImage( c, back_image );
+                block.background_uri = back_image;
+                backImageWidth = block.background_image.getWidth( null );
+                backImageHeight = block.background_image.getHeight( null );
+            } catch ( Exception ex ) {
+                ex.printStackTrace();
+                Uu.p( ex );
+            }
+        }
+
         // handle image positioning issues
         // need to update this to support vert and horz, not just vert
         if ( style.hasProperty( CSSName.BACKGROUND_POSITION ) ) {
             float width = c.getBlockFormattingContext().getWidth();
             float height = c.getBlockFormattingContext().getHeight();
 
-            Point pt = style.getBackgroundPosition( width, height );
+            Point pt = style.getBackgroundPosition( width - backImageWidth, height - backImageHeight );
             block.background_position_horizontal = (int)pt.getX();
             block.background_position_vertical = (int)pt.getY();
-        }
-
-        // load the background image
-        block.background_image = null;
-        if ( back_image != null && !"none".equals( back_image ) ) {
-            try {
-                block.background_image = ImageUtil.loadImage( c, back_image );
-                block.background_uri = back_image;
-            } catch ( Exception ex ) {
-                ex.printStackTrace();
-                Uu.p( ex );
-            }
         }
 
         // actually paint the background

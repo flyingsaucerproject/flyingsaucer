@@ -83,6 +83,31 @@ public class DerivedValue {
      */
     private Point _asPoint;
 
+    /**
+     * Indicates if the background position is absolute.
+     */
+    private boolean _bgPosIsAbsolute;
+
+    /**
+     * The x-position value of the background.
+     */
+    private float _bgPosXValue;
+
+    /**
+     * The type of the x-position value, i.e. it's unit.
+     */
+    private short _bgPosXType;
+
+    /**
+     * The y-position value of the background.
+     */
+    private float _bgPosYValue;
+
+    /**
+     * The type of the y-position value, i.e. it's unit.
+     */
+    private short _bgPosYType;
+
     /** */
     private String _lengthAsString;
 
@@ -113,7 +138,7 @@ public class DerivedValue {
      * and <code>group(2)</code> returns the suffix. Suffix is optional in the
      * pattern, so check if <code>group(2)</code> is null before using.
      */
-    private final static Pattern CSS_LENGTH_PATTERN = Pattern.compile( "(-?\\d{1,10}(\\.?\\d{0,10})?)((em)|(ex)|(px)|(%)|(in)|(cm)|(mm)|(pt)|(pc))" );
+    private final static Pattern CSS_LENGTH_PATTERN = Pattern.compile( "(-?\\d{1,10}(\\.?\\d{0,10})?)((em)|(ex)|(px)|(%)|(in)|(cm)|(mm)|(pt)|(pc))?" );
 
     /** */
     private final static Color COLOR_TRANSPARENT = new Color( 0, 0, 0, 0 );
@@ -267,24 +292,24 @@ public class DerivedValue {
      * @return
      */
     public Point asPoint( float parentWidth, float parentHeight ) {
-        return _asPoint;
-        /*
-         * // KEEP: this was a version where bgpos was calculated relative to containing size
-         * // however in BackgroundPainter, the value is requested as a percentage...not sure that
-         * // is always valid, but...(PWW 24-01-05)
-         * Point pt = null;
-         * if (_bgPosIsAbsolute) {
-         * assert (_asPoint != null);
-         * pt = _asPoint;
-         * } else {
-         * pt = new Point();
-         * float xF = calcFloatProportionalValue(_bgPosXValue, _bgPosXType, parentWidth);
-         * float yF = calcFloatProportionalValue(_bgPosYValue, _bgPosYType, parentHeight);
-         * pt.setLocation(xF, yF);
-         * }
-         * System.out.println("[" + this.hashCode() + "]   background-position (absolute: " + _bgPosIsAbsolute + ") " + _orgText + " (" + _domCSSPrimitiveValue.getCssText() + ") x:" + pt.getX() + " y:" + pt.getY());
-         * return pt;
-         */
+        Point pt = null;
+        if (_bgPosIsAbsolute) {
+            // It's an absolute value, so only calculate it once
+            if ( _asPoint == null ) {
+                _asPoint = new Point();
+                float xF = calcFloatProportionalValue(_bgPosXValue, _bgPosXType, parentWidth);
+                float yF = calcFloatProportionalValue(_bgPosYValue, _bgPosYType, parentHeight);
+                _asPoint.setLocation(xF, yF);
+            }
+            pt = _asPoint;
+        } else {
+            pt = new Point();
+            float xF = calcFloatProportionalValue(_bgPosXValue, _bgPosXType, parentWidth);
+            float yF = calcFloatProportionalValue(_bgPosYValue, _bgPosYType, parentHeight);
+            pt.setLocation(xF, yF);
+        }
+        // System.out.println("[" + this.hashCode() + "]   background-position (absolute: " + _bgPosIsAbsolute + ") " + " (" + _domCSSPrimitiveValue.getCssText() + ") x:" + pt.getX() + " y:" + pt.getY());
+        return pt;
     }
 
     /**
@@ -406,14 +431,20 @@ public class DerivedValue {
             Matcher m = CSS_LENGTH_PATTERN.matcher( pos[0] );
             m.matches();
             String xAsString = m.group( 1 );
-            float x = new Float( xAsString ).floatValue();
+            _bgPosXValue = new Float( xAsString ).floatValue();
+            _bgPosXType = ValueConstants.sacPrimitiveTypeForString( m.group( 3 ) );
 
             m = CSS_LENGTH_PATTERN.matcher( pos[1] );
             m.matches();
             String yAsString = m.group( 1 );
-            float y = new Float( yAsString ).floatValue();
-            _asPoint = new Point();
-            _asPoint.setLocation( x, y );
+            _bgPosYValue = new Float( yAsString ).floatValue();
+            _bgPosYType = ValueConstants.sacPrimitiveTypeForString( m.group( 3 ) );
+
+            if ( ValueConstants.isAbsoluteUnit( _bgPosXType ) && ValueConstants.isAbsoluteUnit( _bgPosYType ) ) {
+                _bgPosIsAbsolute = true;
+            } else {
+                _bgPosIsAbsolute = false;
+            }
         } catch ( Exception ex ) {
             StringBuffer msg = new StringBuffer();
             msg.append( "background-position: failed to convert '" + cssText + "' into a Point. " );

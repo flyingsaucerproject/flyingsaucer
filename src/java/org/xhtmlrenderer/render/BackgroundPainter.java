@@ -25,6 +25,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
 
@@ -78,7 +79,7 @@ public class BackgroundPainter {
         int xoff = 0;
         int yoff = 0;
 
-        if ( block.attachment != null && block.attachment.equals( "fixed" ) ) {
+        if ( block.attachment == IdentValue.FIXED ) {
             yoff = c.getCanvas().getLocation().y;
             //TODO. make conf controlled Uu.p("setting the clip rect for fixed background");
             c.getGraphics().setClip( c.getCanvas().getVisibleRect() );
@@ -93,23 +94,8 @@ public class BackgroundPainter {
             Rectangle new_clip = new Rectangle( left_insets, top_insets, back_width, back_height );
             c.getGraphics().setClip( oldclip.createIntersection( new_clip ) );
 
-            int iw = block.background_image.getWidth( null );
-            int ih = block.background_image.getHeight( null );
-
-            // handle image position offsets
-            /*
-             * KEEP JMM (11/16)
-             * xoff = block width - image width * pos
-             * pos = 0
-             * block width = 300
-             * image width = 100
-             * if pos = 0 then
-             * xoff = 0
-             * if pos = 1 then
-             * xoff = 200
-             */
-            xoff += (int)( (double)( back_width - iw ) * (double)( (double)block.background_position_horizontal / (double)100 ) );
-            yoff -= (int)( (double)( back_height - ih ) * (double)( (double)block.background_position_vertical / (double)100 ) );
+            xoff += block.background_position_horizontal;
+            yoff -= block.background_position_vertical;
 
             // tile the image as appropriate
             // do fixed tile image
@@ -194,6 +180,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/03/16 19:27:26  pdoubleya
+ * Patches from Kevin: fix parsing for background-position property, allowing for 0 values with no using and percentage values. Fixes apply to rendering bg images as well.
+ *
  * Revision 1.19  2005/01/29 20:24:23  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
