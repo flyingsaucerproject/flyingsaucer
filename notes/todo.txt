@@ -88,8 +88,8 @@
 AA the bullets
 fix n test space collapsing w/ images
 fix n test tab alignment
-javadoc xhtmlpanel
-javadoc graphic2drenderer
+//javadoc xhtmlpanel
+//javadoc graphic2drenderer
 test docs uploaded
 make graphic2drenderer not use basicpanel
 fix float bugs w/ more than one float on a line

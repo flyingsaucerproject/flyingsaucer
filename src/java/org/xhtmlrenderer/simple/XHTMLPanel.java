@@ -14,31 +14,31 @@ import org.w3c.dom.Document;
  * XHTML content in a Java program.  It is scrolling aware so you can
  * safely drop it into a JScrollPane.  The most common usage is to stuff a URL
  * into it and then add it to your JFrame. Ex:</p>
- * <p/>
  * <pre>
  * import org.xhtmlrenderer.simple.*;
  * .....
- * <p/>
+ *
  * public static void main(String[] args) {
- * <p/>
- * // set up the xhtml panel
- * XHTMLPanel xhtml = new XHTMLPanel();
- * xhtml.setDocument(new URL("http://myserver.com/page.xhtml"));
- * <p/>
- * JScrollPane scroll = new JScrollPane(xhtml);
- * JFrame frame = new JFrame("Demo");
- * frame.getContentPane().add(scroll);
- * frame.pack();
- * frame.setSize(500,600);
- * frame.show();
+ *
+ *   // set up the xhtml panel
+ *   XHTMLPanel xhtml = new XHTMLPanel();
+ *   xhtml.setDocument(new URL("http://myserver.com/page.xhtml"));
+ *
+ *   JScrollPane scroll = new JScrollPane(xhtml);
+ *   JFrame frame = new JFrame("Demo");
+ *   frame.getContentPane().add(scroll);
+ *   frame.pack();
+ *   frame.setSize(500,600);
+ *   frame.show();
  * }
  * </pre>
- * <p/>
+ *
  * <p>XHTMLPanel also lets you make simple changes with simple methods
  * like setFontScale() and setMediaType(). If you want to make other changes
  * you will need to get the rendering context (getRenderingContext()) and
  * call methods on that.  Ex:
- * <p/>
+ * </p>
+ *
  * <pre>
  * XHTMLPanel xhtml = new XHTMLPanel();
  * RenderingContext ctx = xhtml.getRenderingContext();

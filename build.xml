@@ -103,6 +103,7 @@
 
     <patternset id="user-java-files">
       <includesfile name="src/java/org/xhtmlrenderer/swing/HTMLPanel.java" />
+      <includesfile name="src/java/org/xhtmlrenderer/simple/*.java" />
     </patternset>
 
     <patternset id="xhtml-files">
@@ -695,6 +696,13 @@
 $Id$
 
 $Log$
+Revision 1.75  2004/11/30 00:37:20  joshy
+modified docs
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.74  2004/11/27 15:46:37  joshy
 lots of cleanup to make the code clearer
 
