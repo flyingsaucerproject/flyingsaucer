@@ -6,6 +6,7 @@ import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.util.u;
 
 public class LayoutUtil {
 
@@ -39,9 +40,12 @@ public class LayoutUtil {
 
     public static Border getBorder(Context c, Box box) {
         if (isBlockOrInlineElementBox(c, box)) {
+            // u.p("setting border for: " + box);
             if (box.border == null) {
                 box.border = c.css.getStyle(box.getRealElement()).getBorderWidth();
             }
+        } else {
+            // u.p("skipping border for: " + box);
         }
         return box.border;
     }
@@ -146,6 +150,9 @@ public class LayoutUtil {
      * @return The blockNode value
      */
     public static boolean isBlockNode(Node child, Context c) {
+        //need this as a sensible default
+        if (child == child.getOwnerDocument().getDocumentElement()) return true;
+        
         if (child instanceof Element) {
             CalculatedStyle style = c.css.getStyle(child);
             String display = getDisplay(style);
@@ -153,8 +160,8 @@ public class LayoutUtil {
                     (display.equals("block") ||
                     display.equals("table") ||
                     //TODO:table cell should not be block according to spec. What did I miss? tobe
-                    display.equals("table-cell"))
-            //TODO: list-item should be block. What did I miss? tobe
+                    display.equals("table-cell") ||
+                    display.equals("list-item"))
             ) {
                 return true;
             }
@@ -212,15 +219,18 @@ public class LayoutUtil {
 
 
     public static boolean isBlockOrInlineElementBox(Context c, Box box) {
-        if ((box.getNode().getNodeType() == Node.TEXT_NODE &&
-                !LayoutUtil.isBlockNode(box.getRealElement(), c)) ||
-                box.isElement()) {
-            // u.p("box = " + box);
-            // u.p("node type = " + box.node.getNodeType());
-            // u.p("text node == " + Node.TEXT_NODE);
-            // u.p("real element = " + box.getRealElement());
-            // u.p("is block node = " + DefaultLayout.isBlockNode(box.getRealElement(),c));
-            // u.p("is element = " + box.isElement());
+        if(box.isElement()) {
+            return true;
+        }
+        if (  box.getNode().getNodeType() == Node.TEXT_NODE &&
+              !LayoutUtil.isBlockNode(box.getRealElement(), c)
+            ) {
+             // u.p("box = " + box);
+             // u.p("node type = " + box.getNode().getNodeType());
+             // u.p("text node == " + Node.TEXT_NODE);
+             // u.p("real element = " + box.getRealElement());
+             // u.p("is block node = " + isBlockNode(box.getRealElement(),c));
+             // u.p("is element = " + box.isElement());
             return true;
         }
         return false;

@@ -27,6 +27,7 @@ import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.DefaultRenderer;
 import org.xhtmlrenderer.render.Renderer;
+import org.xhtmlrenderer.util.u;
 
 import java.awt.*;
 
@@ -81,6 +82,21 @@ public class DefaultLayout implements Layout {
         box.setBorderColor(ctx.css.getStyle(box.getRealElement()).getBorderColor());
         box.border_style = ctx.css.getStyle(box.getRealElement()).getStringProperty("border-top-style");
         box.background_color = ctx.css.getStyle(box.getRealElement()).getBackgroundColor();
+        restyleChildren(ctx,box);
+    }
+    
+    private void restyleChildren(Context ctx, Box box) {
+        for(int i=0; i<box.getChildCount(); i++) {
+            Box child = box.getChild(i);
+            if(child.hasNode()) {
+                Layout lt = ctx.getLayout(child.getRealElement());
+                if (lt instanceof InlineLayout) {
+                    //u.p("restyling: " + child);
+                    ((InlineLayout) lt).restyle(ctx, child);
+                }
+            }
+            restyleChildren(ctx,child);
+        }
     }
     
     
@@ -186,6 +202,15 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2004/12/09 18:00:04  joshy
+ * fixed hover bugs
+ * fixed li's not being blocks bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.27  2004/12/09 00:11:51  tobega
  * Almost ready for Content-based inline generation.
  *

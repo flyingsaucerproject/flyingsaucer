@@ -99,6 +99,7 @@
 //AA the bullets
 //fix new NPEs
 //fix explict height bug (in photo gallery)
+
 unit test space collapsing w/ images
 implement tab alignment for pres
 unit test tab alignment
@@ -110,12 +111,24 @@ spruce up photo background
 build demo w/ fixed pos menu, hovers, and scrolling
 make all demos webstartable
 codify the demo html editor
-build game screen demo
+//build game screen demo
 jtable -> report -> printed doc demo
 
+if width set on body abs still goes relative to viewport width, not
+body width.  the default block formatting context should be at the top most block's size, not at the viewport size.
+
+some issues with hover when the cursor is in the padding of an inline and only hits part of the hovered styles
+
+//text inside a list-item pick up borders even if they are not inline //elements
+
+//anonymous text inlines get hover instead of real box
+
+//inlines inside of a hovered block don't get restyled when the block does
+
+inlines are picking up parent block's background when they shouldn't
+line-height isn't working for Alice dropcap
 
 rachel in town arrive 20th @ 7, leave 5th @ 7
-
 
 --crash w/ width = 50%
 --% width for absolute layout

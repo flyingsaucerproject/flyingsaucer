@@ -694,12 +694,40 @@ public class Box {
             return true;
         }
     }
+    
+    /** 
+    <p>
+    If this box represents the text of an inline element then returns true.
+    Thus, the text "<i>some text</i>" if the following example would be an inline element:
+    <pre>
+        &lt;p&gt; text &lt;b&gt;some text&lt;/b&gt; text &lt;/p&gt;
+    </pre>
+    The text "<i>some text</i>" in the next example <b>would not</b> be an inline element,
+    because it is merely the text child of a block element
+    
+    <pre>
+        &lt;p&gt; some text &lt;/p&gt;
+    </pre>
+    </p>
+    */
+    public boolean isInlineElement() {
+        return false;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2004/12/09 18:00:05  joshy
+ * fixed hover bugs
+ * fixed li's not being blocks bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.20  2004/12/05 05:22:36  joshy
  * fixed NPEs in selection listener
  * Issue number:

@@ -8,6 +8,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.LineBreaker;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.util.u;
 
 import java.awt.*;
 
@@ -31,6 +32,7 @@ public class BoxBuilder {
         box.setFont(font);
         BoxLayout.getBackgroundColor(c, box);
         BoxLayout.getBorder(c, box);
+        //u.p("set border on inline box: " + box);
         BoxLayout.getMargin(c, box);
         BoxLayout.getPadding(c, box);
 

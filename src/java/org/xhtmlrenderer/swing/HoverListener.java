@@ -4,7 +4,9 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.InlineLayout;
 import org.xhtmlrenderer.layout.Layout;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.util.u;
 
 import javax.swing.event.MouseInputAdapter;
 import java.awt.event.MouseEvent;
@@ -33,6 +35,7 @@ public class HoverListener extends MouseInputAdapter {
     }
 
     private void restyle(Box ib) {
+        // u.p("under cursor = " + ib);
         if (prev == ib) {
             return;
         }
@@ -53,6 +56,7 @@ public class HoverListener extends MouseInputAdapter {
             if (restyled) {
                 Layout lt = panel.getContext().getLayout(prev.getRealElement());
                 if (lt instanceof InlineLayout) {
+                    //u.p("unstyling: " + prev);
                     ((InlineLayout) lt).restyle(panel.getContext(), prev);
                     panel.repaint();
                 }
@@ -65,24 +69,37 @@ public class HoverListener extends MouseInputAdapter {
             return;
         }
 
-        boolean restyled = panel.getContext().css.wasHoverRestyled(ib.getRealElement());
-        //u.p("was styled = " + restyled);
-        
-        CalculatedStyle style = panel.getContext().css.getStyle(ib.getRealElement());
-        //u.p("color = " + style.getColor());
-
-        // if the block has a hover style then restyle it
-        if (restyled) {
-            Layout lt = panel.getContext().getLayout(ib.getRealElement());
-            if (lt instanceof InlineLayout) {
-                ((InlineLayout) lt).restyle(panel.getContext(), ib);
-                panel.repaint();
+        /* 
+            if the box is an inline box
+             and if it is a text only box, meaning it
+             does not have it's own element but is merely a child
+             of an enclosing box.
+             is inline element
+        */
+        // u.p("real element = " + ib.getRealElement());
+        // skip it if it's just a text child of a block. we should
+        // do the block instead
+        if(ib.isInlineElement() || !(ib instanceof InlineBox)) {
+            boolean restyled = panel.getContext().css.wasHoverRestyled(ib.getRealElement());
+            //u.p("was styled = " + ib);
+            
+            CalculatedStyle style = panel.getContext().css.getStyle(ib.getRealElement());
+            //u.p("color = " + style.getColor());
+    
+            // if the block has a hover style then restyle it
+            if (restyled) {
+                Layout lt = panel.getContext().getLayout(ib.getRealElement());
+                if (lt instanceof InlineLayout) {
+                    //u.p("restyling: " + ib);
+                    ((InlineLayout) lt).restyle(panel.getContext(), ib);
+                    panel.repaint();
+                }
             }
         }
     }
 
     private Box findBox(MouseEvent evt) {
-        Box box = panel.findBox(evt.getX(), evt.getY());
+        Box box = panel.findElementBox(evt.getX(), evt.getY());
         if (box == null) return null;
         if (box instanceof LineBox) return null;
         return box;

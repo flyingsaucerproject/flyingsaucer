@@ -33,6 +33,8 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.x;
+import org.xhtmlrenderer.util.u;
 import org.xml.sax.ErrorHandler;
 
 import javax.swing.*;
@@ -300,6 +302,10 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         return findBox(this.body_box, x, y);
     }
 
+    public Box findElementBox( int x, int y ) {
+        return findElementBox( this.body_box, x, y );
+    }
+
     /**
      * Description of the Method
      *
@@ -347,6 +353,63 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         return null;
     }
 
+    public Box findElementBox( Box box, int x, int y ) {
+
+        if ( box == null ) {
+            return null;
+        }
+        
+        Iterator it = box.getChildIterator();
+        while ( it.hasNext() ) {
+            Box bx = (Box)it.next();
+            int tx = x;
+            int ty = y;
+            tx -= bx.x;
+            tx -= bx.totalLeftPadding();
+            ty -= bx.y;
+            ty -= bx.totalTopPadding();
+
+            // test the contents
+            Box retbox = null;
+            retbox = findElementBox( bx, tx, ty );
+            if ( retbox != null ) {
+                return retbox;
+            }
+
+            // test the box itself
+            
+            // skip if it's text only so that we can
+            // hit the parent instead
+            if(bx instanceof InlineBox) {
+                if(!bx.isInlineElement()) {
+                    continue;
+                }
+            }
+            
+            // skip line boxes
+            if(bx instanceof LineBox) {
+                continue;
+            }
+            
+            int tty = y;
+            if ( bx instanceof InlineBox ) {
+                InlineBox ibx = (InlineBox)bx;
+                LineBox lbx = (LineBox)box;
+                int off = lbx.baseline + ibx.y - ibx.height;
+                tty -= off;
+            }
+
+            // u.p("bx = " + bx);
+            // u.p("tx = " + tx + " ty = " + ty);
+            if ( bx.contains( x - bx.x, tty - bx.y ) ) {
+                // u.p("matches box: " + bx);
+                return bx;
+            }
+            
+        }
+
+        return null;
+    }
 
     /**
      * Description of the Method
@@ -811,6 +874,15 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/12/09 18:00:06  joshy
+ * fixed hover bugs
+ * fixed li's not being blocks bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.12  2004/12/09 00:11:52  tobega
  * Almost ready for Content-based inline generation.
  *

@@ -282,12 +282,30 @@ public class InlineBox extends Box {
         return getStyle();
     }
     
+    
+    public boolean isInlineElement() {
+        if(this.getRealElement() == this.getParent().getParent().getRealElement()) {
+            return false;
+        }
+        return true;
+    }
+
+    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/12/09 18:00:05  joshy
+ * fixed hover bugs
+ * fixed li's not being blocks bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.15  2004/11/27 15:46:40  joshy
  * lots of cleanup to make the code clearer
  *

@@ -3,6 +3,7 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.util.GraphicsUtil;
+import org.xhtmlrenderer.util.u;
 
 import java.awt.*;
 import java.awt.font.LineMetrics;
@@ -252,6 +253,7 @@ public class InlineRenderer extends BoxRenderer {
     }
 
     public void paintPadding(Context c, LineBox line, InlineBox inline) {
+        //u.p("painting border: " + inline.border);
         // paint the background
         int padding_xoff = 0;
         int padding_yoff = inline.totalTopPadding();
