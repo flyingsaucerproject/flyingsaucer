@@ -82,7 +82,7 @@ import org.xhtmlrenderer.util.u;
  *
  * Implementation of {@link org.xhtmlrenderer.css.StyleReference} which uses the
  * output of a SAC CSS parser to parse stylesheets, uses the {@link
- * net.homelinux.tobe.css.StyleMap} and related classes as a CSS-DOM matcher,
+ * org.xhtmlrenderer.css.match.StyleMap} and related classes as a CSS-DOM matcher,
  * and a {@link org.xhtmlrenderer.layout.Context} instance for property
  * resolution where neeeded. Idiomatic use is </p>
  * <ul>
@@ -1193,6 +1193,9 @@ public class XRStyleReference implements StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/05 23:53:59  tobega
+ * no message
+ *
  * Revision 1.8  2004/11/04 21:50:37  tobega
  * Preparation for new matching/styling code
  *

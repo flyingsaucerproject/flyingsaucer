@@ -32,6 +32,10 @@ import org.w3c.dom.css.CSSStyleSheet;
 import org.w3c.dom.css.CSSValue;
 import org.apache.xpath.XPathAPI;
 import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.XRLog;
+
+import org.xhtmlrenderer.DefaultCSSMarker;
+import org.xhtmlrenderer.util.Configuration;
 
 
 /**
@@ -98,7 +102,7 @@ public class CSSBank extends CSSAccessor {
      * @param reader           PARAM
      * @exception IOException  Throws
      */
-    public void parse( Reader reader )
+    private void parse( Reader reader )
         throws IOException {
 
         parser.parse( reader );
@@ -114,7 +118,7 @@ public class CSSBank extends CSSAccessor {
      * @param origin           PARAM
      * @exception IOException  Throws
      */
-    public void parse( Reader reader, int origin )
+    private void parse( Reader reader, int origin )
         throws IOException {
 
         parser.parse( reader );
@@ -127,7 +131,7 @@ public class CSSBank extends CSSAccessor {
      * @param reader           PARAM
      * @exception IOException  Throws
      */
-    public void parse( String reader )
+    private void parse( String reader )
         throws IOException {
 
         parser.parse( reader );
@@ -143,7 +147,7 @@ public class CSSBank extends CSSAccessor {
      */
     // HACK: origin flag is new feature in XRStyleReference, added here for
     // common interface, though it is ignored in CSSBank
-    public void parse( String source, int origin )
+    private void parse( String source, int origin )
         throws IOException {
         parse( source );
     }
@@ -157,7 +161,7 @@ public class CSSBank extends CSSAccessor {
      *      tags.
      * @exception IOException  Throws
      */
-    public void parseLinkedStyles( Element root )
+    private void parseLinkedStyles( Element root )
         throws IOException {
         try {
             NodeList nl = XPathAPI.selectNodeList( root, "//link[@type='text/css']/@href" );
@@ -183,7 +187,7 @@ public class CSSBank extends CSSAccessor {
      * @param elem             PARAM
      * @exception IOException  Throws
      */
-    public void parseInlineStyles( Element elem )
+    private void parseInlineStyles( Element elem )
         throws IOException {
 
         parser.parseInlineStyles( elem );
@@ -198,7 +202,7 @@ public class CSSBank extends CSSAccessor {
      * @param elem             The Element from which to pull a style attribute.
      * @exception IOException  Throws
      */
-    public void parseElementStyling( Element elem )
+    private void parseElementStyling( Element elem )
         throws IOException {
 
         // TODO: code parsing for Element style attribute
@@ -215,7 +219,7 @@ public class CSSBank extends CSSAccessor {
      *
      * @param document  PARAM
      */
-    public void matchStyles( Document document ) {
+    private void matchStyles( Document document ) {
         System.out.println( "!! CSSBank does not currently implement anything in matchStyles()." );
     }
 
@@ -225,7 +229,7 @@ public class CSSBank extends CSSAccessor {
      *
      * @param root  PARAM
      */
-    public void parseDeclaredStylesheets( Element root ) {
+    private void parseDeclaredStylesheets( Element root ) {
         u.p( "parsing declared stylesheets is unsupported with the CSSBank" );
     }
 
@@ -309,12 +313,42 @@ public class CSSBank extends CSSAccessor {
 
         return null;
     }
+    
+    public void setDocumentContext(org.xhtmlrenderer.layout.Context context, org.xhtmlrenderer.extend.NamespaceHandler nsh, org.xhtmlrenderer.extend.AttributeResolver ar, Document doc) {
+        Element html = (Element)doc.getDocumentElement();
+
+        try {
+            Object marker = new DefaultCSSMarker();
+
+            String defaultStyleSheetLocation = Configuration.valueFor( "xr.css.user-agent-default-css" );
+            if ( marker.getClass().getResourceAsStream( defaultStyleSheetLocation ) != null ) {
+                URL stream = marker.getClass().getResource( defaultStyleSheetLocation );
+                String str = u.inputstream_to_string( stream.openStream() );
+                parse( new StringReader( str ),
+                        XRStyleSheet.USER_AGENT );
+            } else {
+                XRLog.exception(
+                        "Can't load default CSS from " + defaultStyleSheetLocation + "." +
+                        "This file must be on your CLASSPATH. Please check before continuing." );
+            }
+
+            parseDeclaredStylesheets( html );
+            parseLinkedStyles( html );
+            parseInlineStyles( html );
+        } catch ( Exception ex ) {
+            XRLog.exception( "Could not parse CSS in the XHTML source: declared, linked or inline.", ex );
+        }
+    }
+    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/05 23:56:41  tobega
+ * no message
+ *
  * Revision 1.5  2004/10/28 13:39:46  joshy
  * removed dead code
  *
