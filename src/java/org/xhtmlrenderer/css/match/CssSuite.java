@@ -39,8 +39,8 @@ public class CssSuite extends TestCase {
      */
     public static Test suite() {
         TestSuite suite = new TestSuite("CssSuite");
-        suite.addTest(net.homelinux.tobe.css.StyleMapTest.suite());
-        suite.addTest(net.homelinux.tobe.css.RulesetSelectorTest.suite());
+        suite.addTest(StyleMapTest.suite());
+        suite.addTest(RulesetSelectorTest.suite());
         return suite;
     }
     
