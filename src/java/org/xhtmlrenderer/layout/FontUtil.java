@@ -69,21 +69,11 @@ public class FontUtil {
     public static int lineHeight(Context c) {
         CalculatedStyle style = c.getCurrentStyle();
         int val = (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont(c), "Test").getHeight());
-        //TODO: line-height should probably be resolved by CalculatedStyle (possibly with input of used font-size)
-        if (!style.propertyByName(CSSName.LINE_HEIGHT).computedValue().cssValue().getCssText().equals("normal")) {
+        if ( !style.isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL) ) {
             val = (int) style.getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, c.getBlockFormattingContext().getHeight());
         }
         return val;
     }
-
-    /*public static int lineHeight(Context c, InlineBox box) {
-        if (box.line_metrics != null) {
-            return (int) box.line_metrics.getHeight();
-        } else {
-            CalculatedStyle style = c.getCurrentStyle();
-            return lineHeight(c, style);
-        }
-    }*/
 
     /**
      * PWW ADDED 14/08/04 Should be used to resolve ex properly
@@ -146,6 +136,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/01/25 15:47:19  pdoubleya
+ * Now uses IdentValue to check for LINE_HEIGHT.
+ *
  * Revision 1.30  2005/01/25 14:45:56  pdoubleya
  * Added support for IdentValue mapping on property declarations. On both CascadedStyle and PropertyDeclaration you can now request the value as an IdentValue, for object-object comparisons. Updated 99% of references that used to get the string value of PD to return the IdentValue instead; remaining cases are for pseudo-elements where the PD content needs to be manipulated as a String.
  *
