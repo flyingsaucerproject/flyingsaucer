@@ -1,3 +1,22 @@
+/*
+ * {{{ header & license
+ * Copyright (c) 2004 Joshua Marinacci, Torbjšrn Gannholm
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
+ */
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.Border;
@@ -8,6 +27,8 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.layout.inline.TextDecoration;
+import org.xhtmlrenderer.table.TableBox;
+import org.xhtmlrenderer.table.TableRendering;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
@@ -90,7 +111,9 @@ public class BoxRendering {
         if (!(block instanceof AnonymousBlockBox)) c.translateInsets(block);
         //paintComponent(c, block);
         //paintChildren(c, block);
-        if (DefaultRenderer.isInlineLayedOut(block)) {
+        if (block instanceof TableBox) {
+            TableRendering.paintTable(c, (TableBox) block);
+        } else if (DefaultRenderer.isInlineLayedOut(block)) {
             InlineRendering.paintInlineContext(c, block);
         } else {
             BlockRendering.paintBlockContext(c, block);
@@ -303,4 +326,26 @@ public class BoxRendering {
         }
     }
 
+
+    //TODO: check the logic here
+    public static boolean isBlockLayedOut(Box box) {
+        if (box.getChildCount() == 0) return false;//have to return something, it shouldn't matter
+        for (int i = 0; i < box.getChildCount(); i++) {
+            Box child = box.getChild(i);
+            if (child instanceof LineBox) return false;
+            if (child instanceof InlineBox) return false;
+            if (child instanceof InlineBlockBox) return false;
+        }
+        return true;
+    }
+
+    //TODO: check the logic here
+    public static boolean isInlineLayedOut(Box box) {
+        if (box.getChildCount() == 0) return false;//have to return something, it shouldn't matter
+        for (int i = 0; i < box.getChildCount(); i++) {
+            Box child = box.getChild(i);
+            if (child instanceof LineBox) return true;
+        }
+        return false;
+    }
 }

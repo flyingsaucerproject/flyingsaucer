@@ -24,17 +24,15 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Fixed;
 import org.xhtmlrenderer.layout.block.FloatUtil;
-import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
-import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.layout.content.FirstLetterStyle;
-import org.xhtmlrenderer.layout.content.FirstLineStyle;
+import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BoxRenderer;
 import org.xhtmlrenderer.render.Renderer;
+import org.xhtmlrenderer.table.TableLayout2;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 
@@ -285,7 +283,9 @@ public class BoxLayout extends DefaultLayout {
                 child_box = layout.layout(c, anonymous);
             } */
             Layout layout;
-            if (!(currentContent instanceof AnonymousBlockContent)) {
+            if (currentContent instanceof TableContent) {
+                layout = new TableLayout2();
+            } else if (!(currentContent instanceof AnonymousBlockContent)) {
                 //TODO:handle run-ins. For now, treat them as blocks
                 layout = c.getLayout(currentContent.getElement());
             } else { //AnonymousBlockContent, fail fast if not
@@ -371,6 +371,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.59  2005/01/01 22:37:43  tobega
+ * Started adding in the table support.
+ *
  * Revision 1.58  2004/12/29 10:39:32  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

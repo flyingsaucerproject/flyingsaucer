@@ -1,3 +1,22 @@
+/*
+ * {{{ header & license
+ * Copyright (c) 2004 Joshua Marinacci, Torbjšrn Gannholm
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
+ */
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.Context;
@@ -64,7 +83,7 @@ public class BlockRendering extends DefaultRenderer {
 
     public static void paintChild(Context c, Box box, Renderer layout) {
         if (box.isChildrenExceedBounds()) {
-            layout.paint(c, box);
+            BoxRendering.paint(c, box);
             return;
         }
 
@@ -75,14 +94,13 @@ public class BlockRendering extends DefaultRenderer {
                 //TODO: handle floated content. HACK: descend into anonymous boxes, won't work for deeper nesting
                 if (oldclip.intersects(box_rect) || (box instanceof AnonymousBlockBox)) {
                     BoxRendering.paint(c, box);
-                    //layout.paint(c, box);
                 }
                 return;
             }
         }
 
 
-        layout.paint(c, box);
+        BoxRendering.paint(c, box);
     }
 
 }

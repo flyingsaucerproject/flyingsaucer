@@ -160,6 +160,19 @@ public class ContentUtil {
                 continue;
             }
 
+            if (isTable(style)) {
+                if (textContent != null) {
+                    inlineList.add(new TextContent(parentElement, textContent.toString()));
+                    textContent = null;
+                }
+                TableContent table = new TableContent(elem, style);
+                inlineList.add(table);
+                c.popStyle();
+                continue;
+            }
+
+            //TODO:list-items, anonymous tables, inline tables, etc.
+
             if (isBlockLevel(style)) {
                 if (textContent != null) {
                     inlineList.add(new TextContent(parentElement, textContent.toString()));
@@ -170,8 +183,6 @@ public class ContentUtil {
                 c.popStyle();
                 continue;
             }
-
-            //TODO:list-items, tables, etc.
 
             //TODO: this replaced thing is Namespace-dependent
             if (LayoutUtil.isReplaced(c, curr)) {
@@ -380,15 +391,17 @@ public class ContentUtil {
         // Uu.p("checking block content: " + childContent);
         if (childContent.size() == 0) return false;
         Object o = childContent.get(childContent.size() - 1);
+        if (o instanceof TableContent) return true;
         if (o instanceof BlockContent) return true;
         if (o instanceof AnonymousBlockContent) return true;
         if (o instanceof RunInContent) return true;//if it has run-ins, it will be block, one way or another
         return false;
     }
 
-    private static boolean hasBlockContent(List childContent) {
+    public static boolean hasBlockContent(List childContent) {
         for (Iterator i = childContent.iterator(); i.hasNext();) {
             Object o = i.next();
+            if (o instanceof TableContent) return true;
             if (o instanceof BlockContent) return true;
             if (o instanceof AnonymousBlockContent) return true;
             if (o instanceof RunInContent) return true;//if it has run-ins, it will be block, one way or another
@@ -402,6 +415,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/01/01 22:37:43  tobega
+ * Started adding in the table support.
+ *
  * Revision 1.24  2004/12/29 10:39:30  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

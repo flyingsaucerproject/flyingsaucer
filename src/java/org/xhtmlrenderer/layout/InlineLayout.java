@@ -30,8 +30,7 @@ import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Font;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -60,7 +59,7 @@ public class InlineLayout extends BoxLayout {
         //Box block = box;//I think this should work - tobe 2004-12-11
 
         // Uu.p("testing block content: " + box);
-        if (ContentUtil.isBlockContent(contentList)) {//this should be block layed out
+        if (ContentUtil.hasBlockContent(contentList)) {//this should be block layed out
             BoxLayout.layoutContent(c, box, contentList, box);
             //super.layoutChildren(c, box);
         } else {
@@ -489,6 +488,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.75  2005/01/01 22:37:43  tobega
+* Started adding in the table support.
+*
 * Revision 1.74  2004/12/29 10:39:33  tobega
 * Separated current state Context into ContextImpl and the rest into SharedContext.
 *
