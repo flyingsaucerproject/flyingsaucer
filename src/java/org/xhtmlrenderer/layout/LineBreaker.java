@@ -23,6 +23,7 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.layout.inline.*;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -440,7 +441,7 @@ public class LineBreaker {
         }
 
         // do vertical alignment
-        FontUtil.setupVerticalAlign( c, node, box );
+        VerticalAlign.setupVerticalAlign( c, node, box );
         box.setFont( font );//FontUtil.getFont(c,node));
         if ( node.getNodeType() == node.TEXT_NODE ) {
             box.color = c.css.getColor( (Element)node.getParentNode(), true );
@@ -560,6 +561,14 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/11/09 16:07:57  joshy
+ * moved vertical align code
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.15  2004/11/09 15:53:49  joshy
  * initial support for hover (currently disabled)
  * moved justification code into it's own class in a new subpackage for inline

@@ -367,7 +367,7 @@ public class InlineLayout extends BoxLayout {
         line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(line_to_save);
         
         
-        FontUtil.setupVerticalAlign( c, containing_block, line_to_save );
+        VerticalAlign.setupVerticalAlign( c, containing_block, line_to_save );
         block.addChild( line_to_save );
     }
 
@@ -401,6 +401,14 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.18  2004/11/09 16:07:57  joshy
+* moved vertical align code
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.17  2004/11/09 15:53:48  joshy
 * initial support for hover (currently disabled)
 * moved justification code into it's own class in a new subpackage for inline
