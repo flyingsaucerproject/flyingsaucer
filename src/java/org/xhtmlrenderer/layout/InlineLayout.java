@@ -309,6 +309,9 @@ public class InlineLayout extends BoxLayout {
         if ( isFloatedBlock( node, c ) ) {
             return LineBreaker.generateFloatedBlockInlineBox( c, node, avail, prev, text, prev_align, font );
         }
+        if ( LineBreaker.isFirstLetter( c, node, start ) ) {
+            return LineBreaker.generateFirstLetterInlineBox( c, node, start, text, prev, prev_align, avail);
+        }
         if ( LayoutFactory.isBreak( node ) ) {
             return LineBreaker.generateBreakInlineBox( node );
         }
@@ -374,6 +377,15 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.13  2004/11/08 15:10:10  joshy
+* added support for styling :first-letter inline boxes
+* updated the absolute positioning tests
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.12  2004/11/06 22:51:57  joshy
 * removed dead code
 * Issue number:

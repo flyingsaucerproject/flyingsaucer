@@ -24,6 +24,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.css.*;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.render.BackgroundPainter;
 import org.xhtmlrenderer.render.BlockBox;
@@ -178,7 +179,6 @@ public class BoxLayout extends DefaultLayout {
         }
         // initalize the width to all the available space
         //block.width = c.getExtents().width;
-        
         Element elem = block.getElement();
         if ( c.css.hasProperty( elem, "width", false ) ) {
             // if it is a sub block then don't mess with the width
@@ -188,10 +188,14 @@ public class BoxLayout extends DefaultLayout {
                 }
                 return;
             }
+            //u.p("block = " + block);
+            //u.p("extents = " + c.getExtents());
             float new_width = c.css.getFloatProperty( elem, "width", c.getExtents().width, false );
+            //u.p("new width = " + new_width);
             c.getExtents().width = (int)new_width;
             block.width = (int)new_width;
             block.auto_width = false;
+            //u.p("adjusdt width: = " + block);
         }
     }
 
@@ -400,24 +404,65 @@ public class BoxLayout extends DefaultLayout {
             box.relative = true;
         }
     }
+
+    public static boolean hasIdent(Context c, Element elem, String property, boolean inherit) {
+        CSSValue prop = c.css.getProperty(elem,property,inherit);
+        CSSPrimitiveValue pval = (CSSPrimitiveValue)prop;
+        //u.p("prim type = " + pval.getPrimitiveType());
+        if ( pval.getPrimitiveType() == pval.CSS_IDENT) {
+            return true;
+        }
+        return false;
+    }
     
     public static void setupAbsolute( Context c, Box box ) {
         String position = getPosition( c, box );
         if ( position.equals( "absolute" ) ) {
             if ( c.css.hasProperty( box.node, "right", false ) ) {
-                box.left = (int)c.css.getFloatProperty( box.node, "right", 0, false );
-                box.right_set = true;
+                //u.p("prop = " + c.css.getProperty(box.getRealElement(),"right",false));
+                if(hasIdent(c,box.getRealElement(),"right",false)) {
+                    if(c.css.getStringProperty(box.node,"right",false).equals("auto")) {
+                        box.right_set = false;
+                        u.p("right set to auto");
+                    }
+                } else {
+                    box.right = (int)c.css.getFloatProperty( box.node, "right", 0, false );
+                    box.right_set = true;
+                    u.p("right set to : " + box.right);
+                }
             }
+            if ( c.css.hasProperty( box.node, "left", false ) ) {
+                //u.p("prop = " + c.css.getProperty(box.getRealElement(),"left",false));
+                if(hasIdent(c,box.getRealElement(),"left",false)) {
+                    if(c.css.getStringProperty(box.node,"left",false).equals("auto")) {
+                        box.left_set = false;
+                        u.p("left set to auto");
+                    }
+                } else {
+                    box.left = (int)c.css.getFloatProperty( box.node, "left", 0, false );
+                    box.left_set = true;
+                    u.p("left set to : " + box.left);
+                }
+            }
+            /*
+            if ( c.css.hasProperty( box.node, "left", false ) ) {
+                box.left = (int)c.css.getFloatProperty( box.node, "left", 0, false );
+                box.left_set = true;
+            }
+            */
+            
             if ( c.css.hasProperty( box.node, "bottom", false ) ) {
                 box.top = -(int)c.css.getFloatProperty( box.node, "bottom", 0, false );
             }
             if ( c.css.hasProperty( box.node, "top", false ) ) {
                 box.top = (int)c.css.getFloatProperty( box.node, "top", 0, false );
             }
-            if ( c.css.hasProperty( box.node, "left", false ) ) {
-                box.left = (int)c.css.getFloatProperty( box.node, "left", 0, false );
-            }
             box.absolute = true;
+            
+            // if right and left are set calculate width
+            if(box.right_set && box.left_set) {
+                box.width = box.width - box.right - box.left;
+            }
         }
     }
 
@@ -430,6 +475,15 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/11/08 15:10:10  joshy
+ * added support for styling :first-letter inline boxes
+ * updated the absolute positioning tests
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.13  2004/11/07 13:39:17  joshy
  * fixed missing borders on the table
  * changed td and th to display:table-cell

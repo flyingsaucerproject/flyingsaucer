@@ -24,6 +24,7 @@ import java.awt.Rectangle;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.css.style.*;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.util.InfiniteLoopError;
 import org.xhtmlrenderer.util.u;
@@ -460,12 +461,85 @@ public class LineBreaker {
         return box;
     }
 
+    public static boolean isFirstLetter(Context c, Node node, int start) {
+        //u.p("looking at node: " + node);
+        //u.p("start = " + start);
+        if(start > 0) {
+            return false;
+        }
+        if(node == null) {
+            return false;
+        }
+        if(node.getParentNode().getFirstChild() != node) {
+            return false;
+        }
+        //u.p("it's the first child");
+        Element elem = getElement(node);
+        //u.p("elem = " + elem);
+        CalculatedStyle cs = c.css.getPseudoElementStyle(elem,"first-letter");
+        //u.p("cs = " + cs);
+        if(cs != null) {
+            //u.p("there is a pseudo");
+            return true;
+        }
+        return false;
+    }
+    
+    private static Element getElement(Node node) {
+        Element elem = null;
+        if(node instanceof Element) {
+            elem = (Element)node;
+        } else {
+            elem = (Element)node.getParentNode();
+        }
+        return elem;
+    }
+    public static InlineBox generateFirstLetterInlineBox( Context c, Node node, int start, String text,
+                                                            InlineBox prev, InlineBox prev_align, int avail ) {
+        // u.p("gen first letter box");
+        // u.p("node = " + node);
+        // u.p("start = " + start);
+        int end = start + 1;
+        // u.p("text = " + text);
+        // u.p("prev = " + prev);
+        // u.p("prev align = " + prev_align);
+        // u.p("avail = " + avail);
+        
+        Font font = FontUtil.getFont(c, node);
+        int len = FontUtil.len( c, node, text.substring(start,end), font);
+        InlineBox box = newBox( c, node, start, end, prev, text, prev_align, font );
+        Element elem = getElement(node);
+        CalculatedStyle cs = c.css.getPseudoElementStyle(elem,"first-letter");
+        //u.p("style = " + cs);
+        styleInlineBox(c, cs, box);
+        box.break_after = false;
+        return box;
+    }
+    
+    private static void styleInlineBox(Context c, CalculatedStyle style, InlineBox box) {
+        box.color = style.getColor();
+        FontUtil.setupTextDecoration( style, box.node, box );
+        Font font = FontUtil.getFont( c, style, box.node);
+        box.setFont( font );
+        box.width = FontUtil.len( c, box.getSubstring(), font );
+        box.height = FontUtil.lineHeight( c, style, box );
+        //FontUtil.setupVerticalAlign( c, box );
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/08 15:10:10  joshy
+ * added support for styling :first-letter inline boxes
+ * updated the absolute positioning tests
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/11/06 22:49:52  joshy
  * cleaned up alice
  * initial support for inline borders and backgrounds

@@ -27,6 +27,7 @@ import java.awt.font.LineMetrics;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.css.style.*;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.u;
@@ -54,6 +55,9 @@ public class FontUtil {
     public static int len( Context c, Node node, String str, Font font ) {
         return c.getGraphics().getFontMetrics( font ).stringWidth( str );
     }
+    public static int len( Context c, String str, Font font ) {
+        return c.getGraphics().getFontMetrics( font ).stringWidth( str );
+    }
 
     /**
      * Description of the Method
@@ -76,6 +80,14 @@ public class FontUtil {
             //u.p("val = " + val);
         }
         return val;
+    }
+    
+    public static int lineHeight(Context c, CalculatedStyle style, InlineBox box) {
+        if(style.hasProperty("line-height")) {
+            return (int)style.propertyByName("line-height").computedValue().asFloat();
+        } else {
+            return c.getGraphics().getFontMetrics( box.getFont() ).getHeight();
+        }
     }
 
     /**
@@ -134,6 +146,28 @@ public class FontUtil {
         }
         if ( text_decoration != null && text_decoration.equals( "overline" ) ) {
             box.overline = true;
+        }
+    }
+    public static void setupTextDecoration( CalculatedStyle style, Node node, InlineBox box ) {
+        Element el = null;
+        if ( node instanceof Element ) {
+            el = (Element)node;
+        } else {
+            el = (Element)node.getParentNode();
+        }
+        if(style.hasProperty("text-decoration")) {
+            DerivedProperty text_decoration = style.propertyByName("text-decoration");
+            DerivedValue dv = text_decoration.computedValue();
+            String td = dv.asString();
+            if ( td != null && td.equals( "underline" ) ) {
+                box.underline = true;
+            }
+            if ( td != null && td.equals( "line-through" ) ) {
+                box.strikethrough = true;
+            }
+            if ( td != null && td.equals( "overline" ) ) {
+                box.overline = true;
+            }
         }
     }
 
@@ -341,6 +375,22 @@ public class FontUtil {
         u.p( "big error in getFont(). Got a node that is neither txt nor element" );
         return null;
     }
+    public static Font getFont( Context c, CalculatedStyle style, Node e ) {
+        // if plain text then get the styling from the parent node
+        if ( e.getNodeType() == e.TEXT_NODE ) {
+            //u.p("it's a node");
+            Element el = (Element)e.getParentNode();
+            return getElementFont( c, style, el );
+        }
+
+        if ( e.getNodeType() == e.ELEMENT_NODE ) {
+            Element el = (Element)e;
+            return getElementFont( c, style, el );
+        }
+
+        u.p( "big error in getFont(). Got a node that is neither txt nor element" );
+        return null;
+    }
 
     /**
      * Gets the elementFont attribute of the FontUtil class
@@ -364,7 +414,6 @@ public class FontUtil {
             return c.getGraphics().getFont().deriveFont( (float)10 );
         }
 
-
         // calculate the font size
         // look up the parent and use it's font size to scale against
         // joshy: this will fail if the parent also has a relative size
@@ -377,24 +426,48 @@ public class FontUtil {
         String weight = c.css.getStringProperty( el, "font-weight" );
         String[] families = c.css.getStringArrayProperty( el, "font-family" );
 
-        /*
-         * u.p("families");
-         * u.p(families);
-         * u.p("");
-         */
-        /*
-         * if(!family[0].equals("sans-serif")) {
-         * //u.p("family = ");
-         * //u.p(family);
-         * //u.p("");
-         * }
-         */
         String style = c.css.getStringProperty( el, "font-style" );
-        // CLEAN System.out.println("family=" + family + ", size=" + size + ", weight=" + weight + ", style=" + style);
         f = c.getFontResolver().resolveFont( c, families, size, weight, style );
 
         // calculate the font color
         c.getGraphics().setColor( c.css.getColor( el ) );
+        return f;
+    }
+
+    public static Font getElementFont( Context c, CalculatedStyle style, Element el ) {
+        // TODO: need to discuss what sort of caching should be going on here, because relative
+        // datatypes like EM and EX depend in part on the 'current' font for an element (PWW 14/08/04)
+        //u.p("testing node: " + e);
+        Font f = c.getGraphics().getFont();
+        if ( quick ) {
+            return f;
+        }
+
+        if ( el.getParentNode().getNodeType() == el.DOCUMENT_NODE ) {
+            //u.p("ended up at the top somehow!: ");
+            return c.getGraphics().getFont().deriveFont( (float)10 );
+        }
+
+        // calculate the font size
+        // look up the parent and use it's font size to scale against
+        // joshy: this will fail if the parent also has a relative size
+        //  need to fix this by passing down the enclosing block's font size
+        //  in the context
+        Element par = (Element)el.getParentNode();
+        //float parent_size = c.css.getFloatProperty( par, "font-size", true );
+        //float size = c.css.getFloatProperty( el, "font-size", parent_size, true );
+        float size = style.propertyByName("font-size").computedValue().asFloat();
+
+        //String weight = c.css.getStringProperty( el, "font-weight" );
+        String weight = style.propertyByName("font-weight").computedValue().asString();
+        String[] families = c.css.getStringArrayProperty( el, "font-family" );
+        
+        //String fstyle = c.css.getStringProperty( el, "font-style" );
+        String fstyle = style.propertyByName("font-style").computedValue().asString();
+        f = c.getFontResolver().resolveFont( c, families, size, weight, fstyle );
+
+        // calculate the font color
+        //joshy: this shouldn't matter. c.getGraphics().setColor( c.css.getColor( el ) );
         return f;
     }
 }
@@ -403,6 +476,15 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/08 15:10:10  joshy
+ * added support for styling :first-letter inline boxes
+ * updated the absolute positioning tests
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/11/06 01:50:40  joshy
  * support for line-height
  * cleaned up the alice demo

@@ -73,6 +73,7 @@ public class Box {
     public boolean bottom_set = false;
     /** Description of the Field */
     public int left = 0;
+    public boolean left_set = false;
     /** Description of the Field */
     public boolean floated = false;
 
@@ -549,6 +550,15 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/08 15:10:10  joshy
+ * added support for styling :first-letter inline boxes
+ * updated the absolute positioning tests
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.9  2004/11/07 16:23:18  joshy
  * added support for lighten and darken to bordercolor
  * added support for different colored sides
