@@ -30,12 +30,21 @@ public class CSSSpeedTest {
         
         
         // create context
+        u.p("RuleFinder");
         Context c = new Context();
         c.css = new CSSBank();
         runLoopTest(c,g,html);
+        u.p("");
+        u.p("MozRuleBank");
         c = new Context();
         c.css = new CSSBank();
         c.css.setRuleBank(new MozRuleBank());
+        runLoopTest(c,g,html);
+        u.p("");
+        u.p("TobeRuleBank");
+        c = new Context();
+        c.css = new CSSBank();
+        c.css.setRuleBank(new TobeRuleBank());
         runLoopTest(c,g,html);
     }
     

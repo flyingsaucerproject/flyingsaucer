@@ -2,7 +2,6 @@ package org.joshy.html.css;
 
 import java.awt.*;
 import org.joshy.html.Context;
-import org.joshy.u;
 import java.util.HashMap;
 
 public class FontResolverTest extends FontResolver {
@@ -117,7 +116,7 @@ public class FontResolverTest extends FontResolver {
         //u.p("subbing in base sans : " + fnt);
         return fnt;
         } catch (Exception ex) {
-            u.p("exception: " + ex);
+            org.joshy.u.p("exception: " + ex);
             return c.getGraphics().getFont();
         }
 

@@ -2,11 +2,13 @@ package org.joshy.html.css;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import org.joshy.u;
 import org.joshy.html.Border;
 import java.awt.Color;
 import org.w3c.dom.*;
 import org.w3c.dom.css.*;
+
+import org.joshy.u;
+import org.joshy.x;
 
 public abstract class CSSAccessor {
     public abstract CSSValue getProperty(Element elem, String prop, boolean inherit);

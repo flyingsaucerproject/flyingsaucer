@@ -7,7 +7,6 @@ import org.w3c.dom.css.*;
 import org.w3c.css.sac.*;
 import java.util.*;
 import java.util.logging.*;
-import org.joshy.u;
 
 /**
 

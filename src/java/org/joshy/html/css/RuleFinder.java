@@ -1,6 +1,5 @@
 package org.joshy.html.css;
 
-import org.joshy.u;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +71,7 @@ public class RuleFinder implements RuleBank {
                 }
             }
         } catch (Exception ex) {
-            u.p(ex);
+            org.joshy.u.p(ex);
         }
         return false;
     }
@@ -91,7 +90,7 @@ public class RuleFinder implements RuleBank {
             DescendantSelector desc_sel = (DescendantSelector)selector;
             return matchDescendant(desc_sel,node);
         }
-        u.p("unrecognized selector type: " + selector + " node = " + node.getNodeName());
+        org.joshy.u.p("unrecognized selector type: " + selector + " node = " + node.getNodeName());
         return false;
     }
     

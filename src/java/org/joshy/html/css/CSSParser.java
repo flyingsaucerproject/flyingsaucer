@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.*;
 import java.awt.Color;
-import org.joshy.u;
-import org.joshy.x;
 import org.joshy.html.*;
 
 import com.steadystate.css.*;
@@ -52,7 +50,7 @@ public class CSSParser {
             if(!bank.style_nodes.contains(elem)) {
                 // import the style
                 CSSOMParser parser = new CSSOMParser();
-                CSSStyleSheet style = parser.parseStyleSheet(new InputSource(new StringReader(x.text(elem))));
+                CSSStyleSheet style = parser.parseStyleSheet(new InputSource(new StringReader(org.joshy.x.text(elem))));
                 // save the new style to the list
                 bank.sheets.add(style);
                 //u.p("parsed: " + style);
