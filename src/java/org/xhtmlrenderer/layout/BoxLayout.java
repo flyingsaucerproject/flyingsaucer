@@ -98,9 +98,12 @@ public class BoxLayout extends DefaultLayout {
         BlockFormattingContext old_bfc = null;
         boolean set_bfc = false;
         if(c.getBlockFormattingContext() == null) {
-            c.setBlockFormattingContext(new BlockFormattingContext(block));
+            BlockFormattingContext bfc = new BlockFormattingContext(block);
+            c.setBlockFormattingContext(bfc);
             set_bfc = true;
             old_bfc = null;
+            u.p("extents here = " + c.getExtents());
+            bfc.setWidth((int)c.getExtents().getWidth());
         }
         Rectangle oe = c.getExtents();
         c.setExtents( new Rectangle( oe ) );
@@ -127,10 +130,12 @@ public class BoxLayout extends DefaultLayout {
         c.setSubBlock( old_sub );
 
         // calculate the inner width
+        
         block.width = margin.left + border.left + padding.left + block.width +
                 padding.right + border.right + margin.right;
         block.height = margin.top + border.top + padding.top + block.height +
                 padding.bottom + border.bottom + margin.bottom;
+                
 
         // if this is a fixed height, then set it explicitly
         /*
@@ -166,10 +171,13 @@ public class BoxLayout extends DefaultLayout {
      * @param c      PARAM
      * @param block  PARAM
      */
-    public void adjustWidth( Context c, BlockBox block ) {
+    private void adjustWidth( Context c, BlockBox block ) {
         if ( !block.isElement() ) {
             return;
         }
+        // initalize the width to all the available space
+        //block.width = c.getExtents().width;
+        
         Element elem = block.getElement();
         if ( c.css.hasProperty( elem, "width", false ) ) {
             // if it is a sub block then don't mess with the width
@@ -193,7 +201,7 @@ public class BoxLayout extends DefaultLayout {
      * @param c      PARAM
      * @param block  PARAM
      */
-    public void adjustHeight( Context c, BlockBox block ) {
+    private void adjustHeight( Context c, BlockBox block ) {
         if ( !block.isElement() ) {
             return;
         }
@@ -388,6 +396,18 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/03 23:54:33  joshy
+ * added hamlet and tables to the browser
+ * more support for absolute layout
+ * added absolute layout unit tests
+ * removed more dead code and moved code into layout factory
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/11/03 15:17:04  joshy
  * added intial support for absolute positioning
  *

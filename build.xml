@@ -387,7 +387,7 @@
             classpath="${dest.java.dir};${dest.dir}"
             fork="${java-exec.fork.tests}"
             >
-            <arg value="tests/diff/box/absolute/01.xhtml"/>
+            <arg value="tests/diff/box/absolute/02.xhtml"/>
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
@@ -608,6 +608,18 @@
 $Id$
 
 $Log$
+Revision 1.57  2004/11/03 23:54:32  joshy
+added hamlet and tables to the browser
+more support for absolute layout
+added absolute layout unit tests
+removed more dead code and moved code into layout factory
+
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.56  2004/11/03 15:17:03  joshy
 added intial support for absolute positioning
 

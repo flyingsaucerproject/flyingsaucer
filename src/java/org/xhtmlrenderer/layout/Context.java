@@ -250,7 +250,7 @@ public class Context {
      *
      * @param block  PARAM
      */
-    public void shrinkExtents( BlockBox block ) {
+    public void shrinkExtents( Box block ) {
 
         extents_stack.push( getExtents() );
 
@@ -277,7 +277,7 @@ public class Context {
      *
      * @param block  PARAM
      */
-    public void unshrinkExtents( BlockBox block ) {
+    public void unshrinkExtents( Box block ) {
 
         setExtents( (Rectangle)extents_stack.pop() );
 
@@ -835,6 +835,18 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/03 23:54:33  joshy
+ * added hamlet and tables to the browser
+ * more support for absolute layout
+ * added absolute layout unit tests
+ * removed more dead code and moved code into layout factory
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/11/03 15:17:04  joshy
  * added intial support for absolute positioning
  *

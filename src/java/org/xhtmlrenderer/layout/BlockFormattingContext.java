@@ -6,9 +6,12 @@ import org.xhtmlrenderer.util.*;
 public class BlockFormattingContext {
     private Box master = null;
     private int x, y = 0;
+    private int width;
     public BlockFormattingContext(Box master) {
         this.master = master;
-        u.p("new bfc: " + master);
+    }
+    public Box getMaster() {
+        return master;
     }
     public void addLeftFloat(BlockBox block) {
     }
@@ -20,8 +23,12 @@ public class BlockFormattingContext {
     public int getY() {
         return master.y + y;
     }
+    public void setWidth(int width) {
+        this.width = width;
+    }
     public int getWidth() {
-        return master.width;
+        return this.width;
+        //return master.width - master.totalHorizontalPadding();
     }
     public int getHeight() {
         return master.height;

@@ -137,7 +137,8 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add( new LoadAction( "Selectors", "demo:demos/selectors.xhtml" ) );
         demos.add( new LoadAction( "Images", "demo:demos/image.xhtml" ) );
         demos.add( new LoadAction( "Lists", "demo:demos/list.xhtml" ) );
-        //demos.add(new LoadAction("Tables","demo:demos/table.xhtml"));
+        demos.add( new LoadAction( "Tables", "demo:demos/table.xhtml"));
+        demos.add( new LoadAction( "Hamlet", "demo:demos/hamlet.xhtml"));
         try {
             //demos.add(new LoadAction("File Listing (Win)","file:///c:"));
             //demos.add(new LoadAction("File Listing (Unix)","file:///"));
@@ -397,6 +398,18 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/03 23:54:32  joshy
+ * added hamlet and tables to the browser
+ * more support for absolute layout
+ * added absolute layout unit tests
+ * removed more dead code and moved code into layout factory
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/10/28 14:18:22  joshy
  * cleaned up the htmlpanel and made more of the variables protected
  * fixed the bug where the body is too small for the viewport

@@ -268,6 +268,19 @@ public class Box {
         }
         return pd;
     }
+    public int totalRightPadding() {
+        int pd = 0;
+        if ( this.margin != null ) {
+            pd += this.margin.right;
+        }
+        if ( this.padding != null ) {
+            pd += this.padding.right;
+        }
+        if ( this.border != null ) {
+            pd += this.border.right;
+        }
+        return pd;
+    }
 
 
     /**
@@ -521,6 +534,18 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/03 23:54:34  joshy
+ * added hamlet and tables to the browser
+ * more support for absolute layout
+ * added absolute layout unit tests
+ * removed more dead code and moved code into layout factory
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/11/03 15:17:05  joshy
  * added intial support for absolute positioning
  *

@@ -212,16 +212,17 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         }
 
         Element html = (Element)doc.getDocumentElement();
-        Element body = x.child( html, "body" );
-        body = html;
+        //Element body = x.child( html, "body" );
+        //body = html;
 
-        newContext( g );
         // set up CSS
+        newContext( g );
         c.setMaxWidth( 0 );
-        long start_time = new java.util.Date().getTime();
-        
-        body_box = layout.layout( c, body );
-        long end_time = new java.util.Date().getTime();
+        //long start_time = new java.util.Date().getTime();
+        //u.p("layout = " + layout);
+        body_box = layout.layout( c, html );
+        //u.p("after layout: " + body_box);
+        //long end_time = new java.util.Date().getTime();
 
         if ( enclosingScrollPane != null ) {
             if ( this.body_box != null ) {
@@ -636,7 +637,8 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         //c.setExtents(new Rectangle(0,0,this.getWidth(),this.getHeight()));
         //u.p("viewport size = " + viewport.getSize());
         if ( enclosingScrollPane != null ) {
-            c.setExtents( new Rectangle( enclosingScrollPane.getViewportBorderBounds() ) );
+            Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
+            c.setExtents( new Rectangle( 0,0, bnds.width, bnds.height) );
         } else {
             c.setExtents( new Rectangle( 200, 200 ) );
         }
@@ -646,6 +648,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         c.cursor = last;
         c.setMaxWidth( 0 );
         //u.p("new context end");
+        //u.p("c = " + c);
     }
 
     /**
@@ -749,7 +752,7 @@ class LayoutThread implements Runnable {
         g.setColor(Color.black);
         if(this.isLayoutDone()) {
             if(panel.body_box != null) {
-                //u.p("really painting");
+                //u.p("really painting: " + panel.body_box);
                 try {
                     // u.p("context = " + panel.c);
                     panel.layout.getRenderer().paint( panel.c, panel.body_box );
@@ -774,6 +777,18 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/11/03 23:54:34  joshy
+ * added hamlet and tables to the browser
+ * more support for absolute layout
+ * added absolute layout unit tests
+ * removed more dead code and moved code into layout factory
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.17  2004/11/01 14:24:19  joshy
  * added a boolean for turning off threading
  * fixed the diff tests

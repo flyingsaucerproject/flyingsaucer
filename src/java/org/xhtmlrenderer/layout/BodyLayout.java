@@ -31,7 +31,7 @@ import org.xhtmlrenderer.render.Renderer;
  *
  * @author   empty
  */
-public class BodyLayout extends BoxLayout {
+public class BodyLayout extends InlineLayout {
 
     /**
      * Description of the Method
@@ -62,6 +62,18 @@ public class BodyLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/03 23:54:33  joshy
+ * added hamlet and tables to the browser
+ * more support for absolute layout
+ * added absolute layout unit tests
+ * removed more dead code and moved code into layout factory
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/10/27 13:39:56  joshy
  * moved more rendering code out of the layouts
  *

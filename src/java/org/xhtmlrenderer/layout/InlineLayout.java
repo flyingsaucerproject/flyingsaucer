@@ -66,6 +66,8 @@ public class InlineLayout extends BoxLayout {
         bounds.x = 0;
         bounds.y = 0;
         bounds.height = 0;
+        //block.width = bounds.width;
+        //u.p("child layout: " + block);
         int remaining_width = bounds.width;
         // account for text-indent
         LineBox curr_line = new LineBox();
@@ -345,6 +347,18 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.8  2004/11/03 23:54:33  joshy
+* added hamlet and tables to the browser
+* more support for absolute layout
+* added absolute layout unit tests
+* removed more dead code and moved code into layout factory
+*
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.7  2004/11/02 20:44:56  joshy
 * put in some prep work for float support
 * removed some dead debugging code

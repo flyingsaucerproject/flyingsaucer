@@ -170,6 +170,7 @@ public class DefaultLayout implements Layout {
 
             // increase the final layout width if the child was greater
             if ( child_box.width > box.width ) {
+                u.p("upping: " + box.width + " -> " + child_box.width);
                 box.width = child_box.width;
             }
 
@@ -204,18 +205,24 @@ public class DefaultLayout implements Layout {
     }
     
     public void positionAbsoluteChild(Context c, Box child_box) {
-        u.p("modifying it");
+        //u.p("modifying it");
         BlockFormattingContext bfc = c.getBlockFormattingContext();
-        u.p("bfc = " + bfc);
-        u.p("child = " + child_box);
-        u.p("parent = " + child_box.getParent());
-        u.p("width = " + bfc.getWidth());
-        child_box.y = bfc.getY() + child_box.top;
+        // u.p("bfc = " + bfc);
+        // u.p("child = " + child_box);
+        // u.p("parent = " + child_box.getParent());
+        // u.p("width = " + bfc.getWidth());
+        // handle the left and right
         if(child_box.right_set) {
-            child_box.x = bfc.getX() + bfc.getWidth() - child_box.left - child_box.width;
+            // joshy: this doesn't seem right. shouldn't there be a call
+            // to bfc.getX() when doing the right positioning?
+            child_box.x = -bfc.getX() + bfc.getWidth() - child_box.right - child_box.width
+             - bfc.getMaster().totalRightPadding();
+            ;
         } else {
             child_box.x = bfc.getX() + child_box.left;
         }
+        // handle the top
+        child_box.y = bfc.getY() + child_box.top;
     }
 
 
@@ -398,6 +405,18 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/03 23:54:33  joshy
+ * added hamlet and tables to the browser
+ * more support for absolute layout
+ * added absolute layout unit tests
+ * removed more dead code and moved code into layout factory
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/11/03 15:17:04  joshy
  * added intial support for absolute positioning
  *

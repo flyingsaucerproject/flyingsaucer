@@ -34,8 +34,21 @@ tests:
 ------------------
 plan for abs
 create new bfc if none there (put in block layout())
-two divs. one normal one abs pos 100 x 100 w/ at top left
-two divs. one normal one abs pos 100 x 100 w/ at top right
+
+//abs dif in upper left
+//abs div in upper right
+//abs div 10px from left
+//abs div 10px from right
+//abs div down 10 px
+//abs pos centered w/ both sides auto?
+//abs div with 50% width
+
+abs pos centered vert w/ both sides auto?
+abs with height 50%;
+abs div 10px above bottom
+abs span (turns into block?)
+nested blocks and inline content inside abs div
+abs div left inside abs div right
 
 ------------------
 
