@@ -142,11 +142,7 @@ public class LinkListener extends MouseInputAdapter {
      * @param box  The new cursor value
      */
     private void setCursor( Box box ) {
-        if ( prev == box || box == null ) {
-            return;
-        }
-
-        if ( box.element == null ) {
+        if ( prev == box || box == null || box.element == null ) {
             return;
         }
 
