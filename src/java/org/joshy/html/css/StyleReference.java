@@ -366,6 +366,16 @@ public interface StyleReference {
         throws IOException;
 
     /**
+     * Parses the CSS style information from a <?xml-stylesheet?> PI
+     *  and loads these rules into the associated RuleBank.
+     *
+     * @param root             Root of the document for which to search for link tags.
+     * @exception IOException  Throws
+     */
+    public void parseDeclaredStylesheets( Element root )
+    throws IOException;
+
+    /**
      * Parses the CSS style information from a "<link>" Element (for example in
      * XHTML), and loads these rules into the associated RuleBank.
      *
