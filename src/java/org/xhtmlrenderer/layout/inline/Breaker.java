@@ -81,7 +81,7 @@ public class Breaker {
         }
 
         //check if it all fits on this line
-        if ( FontUtil.len( c, inline.getSubstring(), font ) < avail ) {
+        if ( FontUtil.len( c, inline.getSubstring(), font ) <= avail ) {
             return;
         }
 
@@ -92,9 +92,9 @@ public class Breaker {
         int n = currentString.length();
         int possibleWrap;
         do {
-            possibleWrap = n;
-            n = currentString.lastIndexOf( WhitespaceStripper.SPACE, possibleWrap - 1 );
-        } while ( n > 0 && FontUtil.len( c, currentString.substring( 0, n ), font ) >= avail );
+           possibleWrap = n;
+           n = currentString.lastIndexOf( WhitespaceStripper.SPACE, possibleWrap - 1 );
+        } while ( n > 0 && FontUtil.len( c, currentString.substring( 0, n ), font ) > avail );
 
         // (0 is a boundary condition when the first was a space)
         if ( n <= 0 ) {//unbreakable string
