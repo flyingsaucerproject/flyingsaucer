@@ -318,7 +318,7 @@ public class DerivedValue {
 
     /**
      * The value as a CSSPrimitiveValue; changes to the CSSPrimitiveValue are not tracked. Any changes to the properties
-     * should be made through the XRProperty and XRValue classes.
+     * should be made through the DerivedProperty and DerivedValue classes.
      *
      * @return Returns
      */

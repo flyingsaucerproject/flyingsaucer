@@ -43,7 +43,7 @@ public interface PropertyDeclarationFactory {
      *
      * @param style     The {@link org.w3c.dom.css.CSSStyleDeclaration} from the SAC parser.
      * @param propName  The String property name for the property to explode.
-     * @return          Iterator of one or more XRProperty instances
+     * @return          Iterator of one or more PropertyDeclaration instances
      *      representing the exploded values.
      */
     Iterator buildDeclarations( CSSStyleDeclaration style, 
@@ -55,6 +55,9 @@ public interface PropertyDeclarationFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 14:54:53  pdoubleya
+ * Comments referred to old class.
+ *
  * Revision 1.1  2005/01/24 14:25:36  pdoubleya
  * Added to CVS.
  *
