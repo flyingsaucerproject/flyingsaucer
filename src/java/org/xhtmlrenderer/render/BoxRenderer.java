@@ -69,9 +69,9 @@ public class BoxRenderer extends DefaultRenderer {
      * @param block  PARAM
      */
     public void paintRelative( Context ctx, Box block ) {
-        ctx.getGraphics().translate( block.left, block.top );
+        ctx.translate( block.left, block.top );
         paintNormal( ctx, block );
-        ctx.getGraphics().translate( -block.left, -block.top );
+        ctx.translate( -block.left, -block.top );
     }
 
     // adjustments for fixed painting
@@ -171,10 +171,9 @@ public class BoxRenderer extends DefaultRenderer {
      * @param box  PARAM
      */
     public void paintChildren( Context c, Box box ) {
-        BlockBox block = (BlockBox)box;
-        c.getGraphics().translate( block.x, block.y );
-        super.paintChildren( c, block );
-        c.getGraphics().translate( -block.x, -block.y );
+        c.translate( box.x, box.y );
+        super.paintChildren( c, box );
+        c.translate( -box.x, -box.y );
     }
 
 

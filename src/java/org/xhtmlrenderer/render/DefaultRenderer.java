@@ -61,13 +61,13 @@ public class DefaultRenderer implements Renderer {
      */
     public void paintChildren( Context c, Box box ) {
         //u.p("Layout.paintChildren(): " + box);
-        //u.p("child count = " + box.boxes.size());
+        //u.p("child count = " + box.getChildCount());
         for ( int i = 0; i < box.getChildCount(); i++ ) {
             Box child = (Box)box.getChild( i );
             //u.p("child = " + child);
             Renderer renderer = null;
             if ( child.isAnonymous() ) {
-                renderer = LayoutFactory.getAnonymousRenderer();//new InlineLayout();
+                renderer = LayoutFactory.getAnonymousRenderer();
             } else {
                 if(child.node == null) {
                     u.p("null node of child: " + child);
@@ -87,14 +87,16 @@ public class DefaultRenderer implements Renderer {
      */
     public void paintChild( Context c, Box box, Renderer layout ) {
         if(Configuration.isTrue("xr.renderer.viewport-repaint",false)) {
-            Rectangle oldclip = (Rectangle)c.getGraphics().getClip();
-            Rectangle box_rect = new Rectangle(box.x,box.y,box.width,box.height);
-            if(oldclip.intersects(box_rect)) {
-                layout.paint( c, box );
+            if(c.getGraphics().getClip() != null) {
+                Rectangle oldclip = (Rectangle)c.getGraphics().getClip();
+                Rectangle box_rect = new Rectangle(box.x,box.y,box.width,box.height);
+                if(oldclip.intersects(box_rect)) {
+                    layout.paint( c, box );
+                }
+                return;
             }
-        } else {
-            layout.paint( c, box );
         }
+        layout.paint( c, box );
     }
 }
 

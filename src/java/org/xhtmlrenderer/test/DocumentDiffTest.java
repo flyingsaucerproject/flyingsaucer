@@ -124,8 +124,10 @@ public class DocumentDiffTest {
         panel.setSize( width, height );
         BufferedImage buff = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
         Graphics g = buff.getGraphics();
+        panel.setThreadedLayout(false);
         panel.paintComponent( g );
         StringBuffer sb = new StringBuffer();
+        // u.p("root box = " + panel.getRootBox());
         getDiff( sb, panel.getRootBox(), "" );
         return sb.toString();
     }
@@ -151,6 +153,12 @@ public class DocumentDiffTest {
         if ( tin.equals( din ) ) {
             return true;
         }
+        u.p("warning not equals");
+        File dfile = new File("correct.diff");
+        File tfile = new File("test.diff");
+        u.p("writing to " + dfile + " and " + tfile);
+        u.string_to_file(tin,tfile);
+        u.string_to_file(din,dfile);
         return false;
     }
 
@@ -190,6 +198,16 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/01 14:24:20  joshy
+ * added a boolean for turning off threading
+ * fixed the diff tests
+ * removed some dead code
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 14:01:42  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

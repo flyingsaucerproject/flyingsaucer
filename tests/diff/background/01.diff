@@ -1,4 +1,4 @@
-box:-element:html-box(0,0)-(200x52)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-none-scroll-0-0)-value:null
+box:-element:html-box(0,0)-(200x52)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#ffffffff)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-none-scroll-0-0)-value:null
  box:-element:head-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-repeat-scroll-0-0)-value:null
  box:-element:body-box(0,0)-(200x52)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#ffffffff)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
   box:-element:p-box(0,0)-(194x46)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(solid)-insets(mar(0,0,0,0)-bor(1,1,1,1)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null

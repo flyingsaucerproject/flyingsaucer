@@ -102,6 +102,10 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         setLayout( new AbsoluteLayoutManager() );
         documentListeners = new HashMap();
     }
+    
+    public void setThreadedLayout(boolean threaded) {
+        layout_thread.setThreadedLayout(threaded);
+    }
 
     /**
      * Adds the specified Document listener to receive Document events from this
@@ -226,14 +230,18 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         }
 
         intrinsic_size = new Dimension( c.getMaxWidth(), layout.contents_height );
-        int view_height = this.enclosingScrollPane.getViewport().getHeight();
+        if(enclosingScrollPane != null) {
+            //u.p("enclosing scroll pane = " + this.enclosingScrollPane);
+            int view_height = this.enclosingScrollPane.getViewport().getHeight();
         
-        // resize the outter most box incase it is too small for the viewport
-        if(intrinsic_size.getHeight() < view_height) {
-            if(body_box != null) {
-                body_box.height = view_height;
+            // resize the outter most box incase it is too small for the viewport
+            if(intrinsic_size.getHeight() < view_height) {
+                if(body_box != null) {
+                    body_box.height = view_height;
+                }
             }
         }
+        
         
         if ( !intrinsic_size.equals( this.getSize() ) ) {
             this.setPreferredSize( intrinsic_size );
@@ -689,10 +697,16 @@ class LayoutThread implements Runnable {
     private boolean done;
     private Graphics graphics;
     private HTMLPanel panel;
+    private boolean threaded;
     public LayoutThread(HTMLPanel panel) {
         this.panel = panel;
         done = true;
         graphics = null;
+        threaded = true;
+    }
+    
+    public void setThreadedLayout(boolean threaded) {
+        this.threaded = threaded;
     }
     
     public synchronized void startLayout(Graphics g) {
@@ -700,25 +714,30 @@ class LayoutThread implements Runnable {
             //u.p("really starting new thread");
             done = false;
             graphics = g;
-            new Thread(this).start();
+            if(threaded) {
+                new Thread(this).start();
+            } else {
+                run();
+            }
         } else {
             //u.p("layout already in progress. skipping layout");
         }
     }
     
     public void run() {
-        //u.p("layout thread starting");
-        //u.p("graphics = " + graphics);
+        // u.p("layout thread starting");
+        // u.p("graphics = " + graphics);
         panel.startLayout(graphics);
         this.completeLayout();
     }
     
     // skip for now
     private synchronized void completeLayout() {
-        //u.p("layout thread ending");
+        // u.p("layout thread ending");
         done = true;
         graphics = null;
         panel.repaint();
+        // u.p("body box = " + panel.body_box );
     }
     
     // always done because not really threaded yet
@@ -732,6 +751,7 @@ class LayoutThread implements Runnable {
             if(panel.body_box != null) {
                 //u.p("really painting");
                 try {
+                    // u.p("context = " + panel.c);
                     panel.layout.getRenderer().paint( panel.c, panel.body_box );
                 } catch (Throwable thr) {
                     u.p("current thread = " + Thread.currentThread());
@@ -754,6 +774,16 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/11/01 14:24:19  joshy
+ * added a boolean for turning off threading
+ * fixed the diff tests
+ * removed some dead code
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.16  2004/10/28 14:18:23  joshy
  * cleaned up the htmlpanel and made more of the variables protected
  * fixed the bug where the body is too small for the viewport
