@@ -47,6 +47,7 @@ import org.apache.xpath.XPathAPI;
 import org.xhtmlrenderer.css.CSSBank;
 import org.xhtmlrenderer.css.XRStyleSheet;
 import org.xhtmlrenderer.css.bridge.XRStyleReference;
+import org.xhtmlrenderer.css.bridge.TBStyleReference;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
 import org.xhtmlrenderer.layout.BodyLayout;
@@ -99,10 +100,10 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         if ( true ) {
             // NOTE: currently context is externalized from StyleReference even
             // though it original design they had an ownership relationship (PWW 14/08/04)
-            c.css = new XRStyleReference( c );
-        } /*else {
+            //c.css = new XRStyleReference( c );
+        //} else {
             c.css = new TBStyleReference(new NaiveUserAgent());
-        }*/
+        }
         XRLog.render( "Using CSS implementation from: " + c.css.getClass().getName() );
 
         layout = new BodyLayout();
@@ -494,8 +495,8 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         //have to do this first
         c.setBaseURL( url );
         
-        //c.css.setDocumentContext(c, new XhtmlNamespaceHandler(), new StaticXhtmlAttributeResolver(), doc);
-        c.css.setDocumentContext(c, null, null, doc);
+        c.css.setDocumentContext(c, new XhtmlNamespaceHandler(), new StaticXhtmlAttributeResolver(), doc);
+        //c.css.setDocumentContext(c, null, null, doc);
 
         calcLayout();
         repaint();
@@ -756,6 +757,9 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2004/11/05 23:59:10  tobega
+ * "New" matching and styling
+ *
  * Revision 1.19  2004/11/04 21:51:17  tobega
  * Preparation for new matching/styling code
  *
