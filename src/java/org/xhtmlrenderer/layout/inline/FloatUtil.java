@@ -1,10 +1,10 @@
 package org.xhtmlrenderer.layout.inline;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.LineBreaker;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
@@ -160,9 +160,25 @@ public class FloatUtil {
         // Uu.p("before newbox block = " + inline_block);
         int x = inline_block.x;
         int y = inline_block.y;
-        inline_block.width = bounds.width;
-        inline_block.height = bounds.height;
-        LineBreaker.styleBox(c, prev_align, inline_block);
+        //inline_block.width = bounds.width;
+        //inline_block.height = bounds.height;
+        CalculatedStyle style = c.getCurrentStyle();
+        // use the prev_align to calculate the Xx
+        /*if (prev_align != null && !prev_align.break_after) {
+            inline_block.x = prev_align.x + prev_align.width;
+        } else {
+            inline_block.x = 0;
+        }*/
+
+        //inline_block.y = 0;// it's relative to the line
+        //inline_block.break_after = true;
+
+        // do vertical alignment
+        VerticalAlign.setupVerticalAlign(c, style, inline_block);
+        // adjust width based on borders and padding
+        //inline_block.width += inline_block.totalHorizontalPadding(c.getCurrentStyle());
+        //box.height += box.totalVerticalPadding();
+
         inline_block.x = x;
         inline_block.y = y;
         // Uu.p("after newbox = " + inline_block);

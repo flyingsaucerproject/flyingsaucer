@@ -66,9 +66,26 @@ public class LineBreaker {
         // create new inline (null text is safe!)
         InlineBox box = new InlineBox();
         box.content = content;
-        box.width = bounds.width;
-        box.height = bounds.height;
-        box = styleBox(c, prev_align, box);
+        //box.width = bounds.width;
+        //box.height = bounds.height;
+        CalculatedStyle style = c.getCurrentStyle();
+        // use the prev_align to calculate the Xx
+        if (prev_align != null && !prev_align.break_after) {
+            box.x = prev_align.x + prev_align.width;
+        } else {
+            box.x = 0;
+        }
+
+        box.y = 0;// it's relative to the line
+        box.break_after = true;
+
+        // do vertical alignment
+        VerticalAlign.setupVerticalAlign(c, style, box);
+        // adjust width based on borders and padding
+        //box.width += box.totalHorizontalPadding(c.getCurrentStyle());
+        //box.height += box.totalVerticalPadding();
+
+        box = box;
         //joshy: activate this: box.block = block
         //Uu.p("created a new inline box");
         //box.replaced = true;
@@ -92,34 +109,15 @@ public class LineBreaker {
         return box;
     }
 
-    //Only called for FloatedBlock and InlineBlock!
-    public static InlineBox styleBox(Context c, InlineBox prev_align, InlineBox box) {
-        CalculatedStyle style = c.getCurrentStyle();
-        // use the prev_align to calculate the Xx
-        if (prev_align != null && !prev_align.break_after) {
-            box.x = prev_align.x + prev_align.width;
-        } else {
-            box.x = 0;
-        }
-
-        box.y = 0;// it's relative to the line
-        box.break_after = true;
-
-        // do vertical alignment
-        VerticalAlign.setupVerticalAlign(c, style, box);
-        // adjust width based on borders and padding
-        box.width += box.totalHorizontalPadding(c.getCurrentStyle());
-        //box.height += box.totalVerticalPadding();
-        
-        return box;
-    }
-
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.48  2005/01/06 01:26:00  tobega
+ * More cleanup
+ *
  * Revision 1.47  2005/01/06 00:58:41  tobega
  * Cleanup of code. Aiming to get rid of references to Content in boxes
  *
