@@ -26,6 +26,7 @@ import java.awt.*;
 import java.awt.event.*;
 import org.xhtmlrenderer.util.x;
 import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.XRLog;
 import org.w3c.dom.*;
 import java.io.File;
 import org.xhtmlrenderer.layout.*;
@@ -246,7 +247,7 @@ public class HTMLTest extends JFrame {
                     panel.setDocument(file);
 
                     long el = System.currentTimeMillis() - st;
-                    System.out.println("TIME: loadDocument(" + file + ")  " + el + "ms, render may take longer");
+                    XRLog.general("loadDocument(" + file + ") in " + el + "ms, render may take longer");
                     HTMLTest.this.setTitle(BASE_TITLE + "-  " +
                                   panel.getDocumentTitle() + "  " +
                                   "(" + file + ")");

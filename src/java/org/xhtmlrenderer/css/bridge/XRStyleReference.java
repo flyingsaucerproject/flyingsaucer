@@ -69,6 +69,7 @@ import com.steadystate.css.parser.CSSOMParser;
 import org.xhtmlrenderer.css.match.AttributeResolver;
 import org.xhtmlrenderer.css.match.Ruleset;
 import org.xhtmlrenderer.css.match.StyleMap;
+import org.xhtmlrenderer.util.*;
 
 import org.apache.xpath.XPathAPI;
 
@@ -102,9 +103,6 @@ import org.apache.xpath.XPathAPI;
  * @author   Patrick Wright
  */
 public class XRStyleReference implements StyleReference {
-    /** Internal Logger used for debug output. */
-    private final static Logger sDbgLogger = LoggerUtil.getDebugLogger( XRStyleReference.class );
-
     /** The Context this StyleReference operates in; used for property resolution. */
     private Context _context;
 
@@ -157,7 +155,6 @@ public class XRStyleReference implements StyleReference {
     public XRStyleReference( Context context ) {
         this();
         _context = context;
-        sDbgLogger.setLevel(Level.OFF);
     }
 
     /** Default constructor for initializing members. */
@@ -660,7 +657,7 @@ public class XRStyleReference implements StyleReference {
 
             return pt;
         } else {
-            sDbgLogger.warning( "Property : " + xrProp + " is not a value list " + xrProp.actualValue().cssValue().getClass().getName() );
+            XRLog.cascade( Level.WARNING, "Property : " + xrProp + " is not a value list " + xrProp.actualValue().cssValue().getClass().getName() );
         }
         return null;
     }
@@ -774,7 +771,7 @@ public class XRStyleReference implements StyleReference {
         if ( !_matchedSinceLastParse ) {
             matchStyles( elem.getOwnerDocument() );
         }
-        sDbgLogger.finest( "getPaddingWidth() on Element: " + elem.hashCode() );
+        XRLog.cascade( Level.FINEST, "getPaddingWidth() on Element: " + elem.hashCode() );
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( elem );
         return xrElement.derivedStyle().getPaddingWidth( _context );
     }

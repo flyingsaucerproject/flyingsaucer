@@ -36,7 +36,7 @@ import org.xhtmlrenderer.css.XRValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.util.ConversionUtil;
-import org.xhtmlrenderer.util.LoggerUtil;
+import org.xhtmlrenderer.util.XRLog;
 
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
@@ -54,9 +54,6 @@ import org.xhtmlrenderer.layout.FontUtil;
  *
  */
 public class XRValueImpl implements XRValue {
-    /** Logger instance used for debug messages from this class. */
-    private final static Logger sDbgLogger = LoggerUtil.getDebugLogger( XRValueImpl.class );
-
     // ASK: need to clarify if this class is for both List and Primitives, or just primitives...
 
     /** The DOM CSSValue we are given from the Parse */
@@ -87,7 +84,6 @@ public class XRValueImpl implements XRValue {
      * @param domPriority  PARAM
      */
     public XRValueImpl( CSSValue domCSSValue, String domPriority ) {
-        sDbgLogger.setLevel(Level.OFF);
         _domCSSValue = domCSSValue;
         _domValueTextClean = getCssTextClean();
         _domPriority = domPriority;
@@ -215,7 +211,7 @@ public class XRValueImpl implements XRValue {
      */
     public void computeRelativeUnit( Context context, XRElement ownerElement, String propName ) {
         if ( ValueConstants.isAbsoluteUnit(cssValue()) ) {
-            sDbgLogger.info( "Was asked to convert a relative value, but value is absolute. Call isAbsolute() first." );
+            XRLog.cascade( "Was asked to convert a relative value, but value is absolute. Call isAbsolute() first." );
             return;
         }
 
@@ -298,7 +294,7 @@ public class XRValueImpl implements XRValue {
                 System.err.println( "Asked to convert value from relative to absolute, don't recognize the datatype " + toString() );
         }
         assert( new Float( absVal ).intValue() > 0 );
-        sDbgLogger.finer( "Converted '" + propName + "' relative value of " + relVal + " (" + _domCSSValue.getCssText() + ") to absolute value of " + absVal );
+        XRLog.cascade( Level.FINEST, "Converted '" + propName + "' relative value of " + relVal + " (" + _domCSSValue.getCssText() + ") to absolute value of " + absVal );
         
         // round down
         double d = Math.floor((double)absVal);

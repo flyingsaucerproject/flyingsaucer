@@ -38,7 +38,7 @@ import org.xhtmlrenderer.css.XRStyleRule;
 import org.xhtmlrenderer.css.XRValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.value.BorderColor;
-import org.xhtmlrenderer.util.LoggerUtil;
+import org.xhtmlrenderer.util.XRLog;
 
 
 /**
@@ -48,10 +48,6 @@ import org.xhtmlrenderer.util.LoggerUtil;
  *
  */
 public class XRDerivedStyleImpl implements XRDerivedStyle {
-
-    /** Logger instance used for debug messages in this class. */
-    private final static Logger sDbgLogger = LoggerUtil.getDebugLogger( XRDerivedStyleImpl.class );
-
     /** The XRElement we are a derived style for. */
     private XRElement _xrElement;
 
@@ -88,7 +84,6 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
      */
     public XRDerivedStyleImpl( XRElement forElement, Iterator iter ) {
         this();
-        sDbgLogger.setLevel(Level.OFF);
 
         _xrElement = forElement;
 
@@ -128,7 +123,7 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
 
     /** Prints deriver prop information to stdout. */
     public void dump() {
-        sDbgLogger.info( "Derivation complete: " + _derivedPropertiesByName );
+        XRLog.cascade( Level.FINER, "Derivation complete: " + _derivedPropertiesByName );
     }
 
 
@@ -290,7 +285,7 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
     public Color getBackgroundColor( Context context ) {
         if ( _drvBackgroundColor == null ) {
             _drvBackgroundColor = propertyByName( context, CSSName.BACKGROUND_COLOR ).actualValue().asColor();
-            sDbgLogger.finest( "Background color: " + _drvBackgroundColor );
+            XRLog.cascade( Level.FINEST, "Background color: " + _drvBackgroundColor );
         }
         return _drvBackgroundColor;
     }
@@ -328,7 +323,7 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
     public Color getColor( Context context ) {
         if ( _drvColor == null ) {
             _drvColor = propertyByName( context, CSSName.COLOR ).actualValue().asColor();
-            sDbgLogger.finest( "Color: " + _drvColor );
+            XRLog.cascade( Level.FINEST, "Color: " + _drvColor );
         }
         return _drvColor;
     }

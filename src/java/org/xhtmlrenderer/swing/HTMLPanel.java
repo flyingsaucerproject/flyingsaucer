@@ -93,8 +93,6 @@ public class HTMLPanel extends JPanel implements ComponentListener {
 
     /** Description of the Field */
     private boolean anti_aliased = true;
-    /** Description of the Field */
-    public static Logger logger = Logger.getLogger( "app.browser" );
 
     /** Constructor for the HTMLPanel object */
     public HTMLPanel() {
@@ -499,7 +497,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         throws Exception {
         if ( c != null && ( !filename.startsWith( "http" ) ) ) {
             URL base = new URL( c.getBaseURL(), filename );
-            u.p( "loading url " + base );
+            XRLog.load( "Loading URL " + base );
             Document dom = x.loadDocument( base );
             //URL base = new File(filename).toURL();
             setDocument( dom, base );
@@ -571,23 +569,19 @@ public class HTMLPanel extends JPanel implements ComponentListener {
             // though it original design they had an ownership relationship (PWW 14/08/04)
             c.css = new XRStyleReference( c );
         }
-        System.out.println( "Using CSS implementation from: " + c.css.getClass().getName() );
+        XRLog.render( "Using CSS implementation from: " + c.css.getClass().getName() );
 
         c.setBaseURL( url );
 
         try {
-            //c.css.parse(new FileReader("second.css"));
             Object marker = new DefaultCSSMarker();
-            //u.p("getting: " + marker.getClass().getResource("default.css"));
 
             String defaultStyleSheetLocation = Configuration.valueFor( "xr.css.user-agent-default-css" );
             if ( marker.getClass().getResourceAsStream( defaultStyleSheetLocation ) != null ) {
                 URL stream = marker.getClass().getResource( defaultStyleSheetLocation );
-                //u.p("loading the url: " + stream);
                 String str = u.inputstream_to_string( stream.openStream() );
-                //u.p("loaded: " + str);
                 c.css.parse( new StringReader( str ),
-                            XRStyleSheet.USER_AGENT );//BufferInputStream(str));
+                            XRStyleSheet.USER_AGENT );
             } else {
                 XRLog.exception(
                             "Can't load default CSS from " + defaultStyleSheetLocation + "." +
@@ -598,8 +592,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
             c.css.parseLinkedStyles( html );
             c.css.parseInlineStyles( html );
         } catch ( Exception ex ) {
-            u.p( "error parsing CSS: " + ex );
-            u.p( ex );
+            XRLog.exception("Could not parse CSS in the XHTML source: declared, linked or inline.", ex);
         }
 
         this.body_box = null;
@@ -659,13 +652,13 @@ public class HTMLPanel extends JPanel implements ComponentListener {
             Node node =
                         (Node)XPathAPI.selectSingleNode( root, "//head/title/text()" );
             if ( node == null ) {
-                System.err.println( "Apparently no title element for this document." );
+                XRLog.exception( "Apparently no title element for this document." );
                 title = "TITLE UNKNOWN";
             } else {
                 title = node.getNodeValue();
             }
         } catch ( Exception ex ) {
-            System.err.println( "Error retrieving document title. " + ex.getMessage() );
+            XRLog.exception( "Error retrieving document title. " + ex.getMessage() );
             title = "";
         }
         return title;
@@ -776,6 +769,9 @@ public class HTMLPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/10/18 12:12:26  pdoubleya
+ * Changed to use XRLog for logging.
+ *
  * Revision 1.8  2004/10/14 15:45:22  pdoubleya
  * Reformatted.
  *
