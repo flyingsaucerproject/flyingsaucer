@@ -1,8 +1,63 @@
 <html>
   <head>
-    <title>Default Project Content</title>
+    <title>Flying Saucer: a 100% Java XHTML + CSS renderer</title>
   </head>
-  <body>
-    This is the default project content.
-  </body>
+  
+<body> 
+
+<p>Flying Saucer is a 100% Java strictly compliant XHTML + CSS1/2/3
+renderer. We are focusing on strict compliance with the complete CSS
+standard (the W3C's 2.1 standard initially), mainly for thick clients
+like the iTunes Music Store, chat programs, help viewers, splashscreens, and
+any other place where html is useful inside an application.</p>
+
+<p>Flying Saucer is not a general purpose webbrowser. This means legacy
+/non-compliant pages (ie, the general internet) will be supported through
+compatibility libraries rather than modifying the core renderer. We aim to be
+the definitive open 100% Java renderer for HTML content.</p>
+
+
+<h3>We need help!</h3>
+
+<p><b>If you want to contribute</b> or just see what's going on then please
+join the mailing list! [ed: link]. We need developers, beta testers, doc
+writers, evangelists, and users. Even if you are just curious please join
+in. </p>
+
+<p> This is a *very challenging project* and we need some top flight people
+to work on it. In particular we want module owners for the following: 
+
+<ul>
+
+<li> Rendering compliance (research the latest standards, build it, test it)</li>
+<li> CSS (parsing, converting, optimizing, rendering new features)</li>
+<li> HTML-&gt;XHTML converter (support for HTML 3/4.0 pages)</li>
+<li> Browser component (a standalone webbrowser based on Flying Saucer)</li>
+<li> Javascript support (how do we plug in rhino?)</li>
+<li> I18N efforts (how do we make sure the whole thing is i18n-able)</li>
+<li> forms (input, select, text area, etc)</li>
+<li> object and plugin support (SVG, xforms, flash, pdf)</li>
+<li> printing module (we can't print anything yet!)</li>
+<li> network module (ssl, redirects, image loading, etc.)</li>
+<li> performance and memory optimization (how do we make the whole thing as fast and light as possible)</li>
+
+</ul>
+
+</p>
+
+<h3>Current Status</h3>
+
+<p>The code currently supports most of the CSS 2.0 spec. There are still parts
+missing with tables (row spanning and the alternative layout algorithm), floating
+(inter context floats don't work properly), and there's still a bit of wonkiness
+with absolute vs relative boxes. There is also no support for forms yet.  The main
+limitation is that it's very very slow (the line breaking algorithm uses regexs)
+and does a lot of unnecessary recalculations.
+</p>
+
+
+
+
+</body>
+
 </html>
