@@ -41,9 +41,14 @@ list item styles have disappeared
 close button on the dom inspector
 
 test for linked styles
+
+scroll doesn't reset on reload : HTMLPane
+
+
+-------
 -------------------
 
-
+http://www.mlsb.com/mls/property_morephotos.cfm?ClientID=384&LIST_NUMB=40033129&list=2&ht=1&type=SFR
 todo.txt
 
 checklist for the 0.03 release

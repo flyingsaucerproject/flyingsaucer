@@ -219,9 +219,14 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
     }
 
     
-
+    public void resetScrollPosition() {
+        if(this.viewport != null) {
+            this.viewport.getVerticalScrollBar().setValue(0);
+        }
+    }
+    
     public void setDocument(Document doc, URL url) {
-
+        resetScrollPosition();
         this.doc = doc;
 
         Element html = (Element)doc.getDocumentElement();
