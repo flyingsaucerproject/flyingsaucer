@@ -78,9 +78,56 @@ public class BackgroundPropertyFactory extends AbstractPropertyFactory {
             // attachment, position in any order; so loop whatever's 
             // provided and sniff for the value-type
             CSSPrimitiveValue primitive = null;
+            CSSPrimitiveValue bgPosPrimitive = null;
+            StringBuffer bgPos = null; 
             for ( int i = 0, len = vList.getLength(); i < len; i++ ) {
                 primitive = (CSSPrimitiveValue)vList.item( i );
-                addPrimitive(style, primitive, priority, sequence, list);
+
+                String val = primitive.getCssText().trim();
+                String expPropName = "";
+                if ( RuleNormalizer.looksLikeAColor( val ) ) {
+                    expPropName = CSSName.BACKGROUND_COLOR;
+                } else if ( RuleNormalizer.looksLikeAURI( val ) || "none".equals(val) ) {
+                    expPropName = CSSName.BACKGROUND_IMAGE;
+                } else if ( RuleNormalizer.looksLikeABGRepeat( val ) ) {
+                    expPropName = CSSName.BACKGROUND_REPEAT;
+                } else if ( RuleNormalizer.looksLikeABGAttachment( val ) ) {
+                    expPropName = CSSName.BACKGROUND_ATTACHMENT;
+                } else {
+                    // HACK: BG-pos is a hassle to test for because of the variations
+                    // but bailing out at this pt means that garbage prop entries
+                    // will not be flagged--so will defer proper BG-pos sniffing
+                    // for later (PWW 24-08-04)
+                    if ( bgPos == null ) {
+                        bgPos = new StringBuffer(val);
+                        bgPosPrimitive = primitive;
+                    } else {
+                        bgPos.append(" " + val);
+                    }
+                    continue;
+                }
+                list.add( 
+                    newProperty( 
+                        expPropName, 
+                        primitive, 
+                        priority, 
+                        style, 
+                        sequence 
+                    ) 
+                );
+            }
+            if ( bgPos != null ) {
+                String val = RuleNormalizer.convertIdent(CSSName.BACKGROUND_POSITION,bgPos.toString());
+                bgPosPrimitive.setCssText(val);
+                list.add( 
+                    newProperty( 
+                        CSSName.BACKGROUND_POSITION, 
+                        bgPosPrimitive, 
+                        priority, 
+                        style, 
+                        sequence 
+                    ) 
+                );
             }
         }// is a value list
         return list.iterator();
