@@ -27,6 +27,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
+import org.w3c.dom.css.CSSValueList;
 import org.w3c.dom.css.Counter;
 import org.w3c.dom.css.Rect;
 
@@ -150,8 +151,17 @@ public class XRValueImpl implements XRValue {
      */
     public String[] asStringArray() {
         if ( _stringAsArray == null ) {
-            String str = getStringValue();
-            _stringAsArray = ( str == null ? new String[0] : str.split( "," ));
+            if ( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
+                String str = getStringValue();
+                _stringAsArray = ( str == null ? new String[0] : str.split( "," ));
+            } else if ( getCssValueType() == CSSValue.CSS_VALUE_LIST ) {
+                CSSValueList list = (CSSValueList)_domCSSValue;
+                int len=list.getLength();
+                _stringAsArray = new String[len];
+                for ( int i=0; i < len; i++ ) {
+                    _stringAsArray[i] = ((CSSValue)list.item(i)).getCssText();
+                }
+            }
         }
         return _stringAsArray;
     }
