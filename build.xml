@@ -63,6 +63,8 @@
     <property name="src.demo.xhtml.dir" location="demos/browser/xhtml"/>
     <property name="src.demo.splash.dir" location="demos/splash"/>
     <property name="src.about.xhtml.dir" location="demos/about/xhtml"/>
+    
+    <property name="nb_profile" location="nb_profile"/>
 
     <!-- Compiler flags -->
     <!-- For details on each flag, see http://ant.apache.org/manual/CoreTasks/javac.html -->
@@ -182,6 +184,37 @@
 
     <target name="clean-for-core-debug" depends="clean,resources.core"/>
 
+    <target name="nb-profile" description="creates nb_profile directory with current source, for NB 4.0 profiling" depends="properties">
+        <mkdir dir="${nb_profile}" />
+    
+        <delete dir="${nb_profile}/demos"/>
+        <delete dir="${nb_profile}/lib"/>
+        <delete dir="${nb_profile}/src"/>
+        
+        <copy todir="${nb_profile}/src/java">
+            <fileset dir="${src.java.dir}">
+                <include name="**"/>
+                <exclude name="**/net/**"/>
+            </fileset>
+        </copy>
+        <copy todir="${nb_profile}/src/conf">
+            <fileset dir="${src.resources.conf.dir}">
+                <include name="*.*"/>
+            </fileset>
+        </copy>
+        <copy todir="${nb_profile}/src/css">
+            <fileset dir="${src.resources.css.dir}">
+                <include name="*.*"/>
+            </fileset>
+        </copy>
+        <copy todir="${nb_profile}/lib">
+            <fileset dir="${libraries.dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+
+    
     <!-- cleans all javadoc/api files -->
     <target name="clean-javadoc" description="clean project javadoc files" depends="properties">
         <delete dir="${dest.javadoc.full.dir}"/>
@@ -581,8 +614,29 @@
             <sysproperty key="sun.java2D.opengl" value="false"/>
         </java>
     </target>
+    
+    <target name="profile-single" depends="compile, jars" description="Profile File">
+      <fail unless="netbeans.home">This target can only run inside the NetBeans IDE.</fail>
+      <nbprofile classname="org.xhtmlrenderer.test.SimplePageTest">
+        <classpath refid="libraries-and-dest.all"/>
+      </nbprofile>
+    </target>    
 
-    <!-- Builds and jars the about box demo, and runs it -->
+    <!-- Builds and jars the browser demo, and runs it -->
+    <target name="simple-page" depends="compile, jars">
+        <java 
+            classname="org.xhtmlrenderer.test.SimplePageTest"
+            fork="${java-exec.fork.tests}">
+            <classpath refid="libraries-and-dest.all"/>
+            <sysproperty key="show-config" value="${show-config}"/>
+            <syspropertyset>
+                <propertyref prefix="xr."/>
+            </syspropertyset>
+            <sysproperty key="sun.java2D.opengl" value="false"/>
+        </java>
+    </target>
+
+        <!-- Builds and jars the about box demo, and runs it -->
     <target name="aboutbox" depends="jars">
         <java classname="org.xhtmlrenderer.demo.aboutbox.AboutBox"
             fork="${java-exec.fork.tests}">
@@ -788,6 +842,9 @@
 $Id$
 
 $Log$
+Revision 1.84  2005/01/29 10:07:27  pdoubleya
+Added task to sync nb_profile directory, and for running the SimplePageTest class.
+
 Revision 1.83  2005/01/24 14:58:05  pdoubleya
 Modified public-api test settings.
 
