@@ -1,322 +1,165 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-
 <project name="JoshyHTML" default="help" basedir=".">
-
     <description>checkout, build, test, and package the SPPM project.</description>
-
     <target name="build" depends="compile" />
     <target name="build-clean" depends="clean-compile" />
-
     <target name="help">
-
         <echo message=" ant clean:     	clean up any compilation or distribution files made"/>
-
         <echo message=" ant compile:   	compile the source"/>
-
         <echo message=" ant browser:    run the browser"/>
-
     </target>
-
-
 
     <target name="clean" description="clean">
-
         <delete dir="build"/>
-
         <delete>
-
             <fileset dir=".">
-
                 <include name="**/*~"/>
-
             </fileset>
-
         </delete>
-
     </target>
-
-
 
     <target name="init">
-
         <mkdir dir="build/classes"/>
-
         <property name="app-name" value="flyingsaucer"/>
-
     </target>
-
-
 
     <target name="clean-compile" description="clean compile" depends="clean,compile">
-
     </target>
-
-
 
     <target name="zip" description="zip file" depends="jar">
-
         <zip basedir="." zipfile="../flyingsaucer.zip">
-
         </zip>
-
     </target>
-
-
 
     <target name="compile" description="compile" depends="init">
-
         <javac
-
             srcdir="src/java"
-
             destdir="build/classes"
-
             debug="on"
-
             source="1.4">
-
             <classpath>
-
                 <fileset dir="lib">
-
                     <include name="*.jar"/>
-
                 </fileset>
-
             </classpath>
-
             <exclude name="net/homelinux/**"/>
-
             <exclude name="**/TobeRuleBank**"/>
-
             <exclude name="**/test/**"/>
-
         </javac>
-
         <copy todir="build/classes/org/joshy/html/css" file="src/java/org/joshy/html/css/default.css"/>
-
     </target>
-
-    
 
     <target name="compile-test" depends="compile">
-
         <javac
-
             srcdir="src/java"
-
             destdir="build/classes"
-
             debug="on"
-
             source="1.4">
-
             <classpath>
-
                 <fileset dir="lib">
-
                     <include name="*.jar"/>
-
                 </fileset>
-
             </classpath>
-
             <exclude name="net/homelinux/**"/>
-
             <exclude name="**/TobeRuleBank**"/>
-
         </javac>
-
     </target>
-
-
 
     <target name="compile-tobe" description="compile tobe's stuff" depends="compile, init">
-
         <javac
-
             srcdir="src/java"
-
             destdir="build/classes"
-
             debug="on">
-
             <classpath>
-
                 <fileset dir="lib">
-
                     <include name="*.jar"/>
-
                 </fileset>
-
             </classpath>
-
             <include name="net/homelinux/**"/>
-
         </javac>
-
         <copy todir="build/classes/org/joshy/html/css" file="src/java/org/joshy/html/css/default.css"/>
-
     </target>
-
-    
 
     <target name="jar" depends="compile" description="jar">
-
         <jar
-
             basedir="build/classes"
-
             jarfile="build/${app-name}.jar"
-
             compress="true"
-
             manifest="src/packaging/manifest"
-
         >
-
             <fileset dir="src/java">
-
                 <include name="*.class"/>
-
             </fileset>
-
             <fileset dir=".">
-
                 <include name="demos/*.xhtml"/>
-
                 <include name="demos/*.gif"/>
-
                 <include name="demos/*.png"/>
-
+                <include name="demos/splash/**"/>
             </fileset>
-
         </jar>
-
     </target>
-
-
-
 
 
     <target name="binary-dist" depends="jar" description="Play Binary Distro">
-
         <copy todir="build">
-
             <fileset dir=".">
-
                 <include name="demos/*.xhtml"/>
-
+                <include name="demos/splash/**"/>
                 <include name="image.png"/>
-
             </fileset>
-
             <fileset dir="lib">
-
                 <include name="*.jar"/>
-
             </fileset>
-
             <fileset dir="src/packaging">
-
                 <include name="readme.txt"/>
-
             </fileset>
-
         </copy>
-
         <zip basedir="build" zipfile="build/${app-name}.zip">
-
             <include name="${app-name}.jar"/>
-
             <include name="*.jar"/>
-
             <include name="demos/**"/>
-
         </zip>
-
     </target>
 
-    
-
-    
 
     <target name="src-dist" depends="init" description="Play Src Distro">
-
         <zip basedir="." zipfile="build/${app-name}.src.zip">
-
             <include name="build.xml"/>
-
             <include name="lib/**"/>
-
             <include name="src/**"/>
-
             <include name="demos/**"/>
-
             <zipfileset dir="src/packaging" includes="readme.txt" fullpath="readme.txt"/>
-
         </zip>
-
     </target>
-
-    
 
     <target name="jnlp-dist" depends="init, jar" description="Build JNLP Distro">
-
         <copy todir="build">
-
             <fileset dir="lib">
-
                 <include name="joshy-common.jar"/>
-
                 <include name="ss_css2.jar"/>
-
             </fileset>
-
             <fileset dir="src/packaging/"><include name="fs.jnlp"/></fileset>
-
         </copy>
-
         <signjar jar="build/FlyingSaucer.jar" alias="tstkey" storepass="satans"/>
-
         <signjar jar="build/joshy-common.jar" alias="tstkey" storepass="satans"/>
-
         <signjar jar="build/ss_css2.jar" alias="tstkey" storepass="satans"/>
-
     </target>
-
-    
 
     <!-- =============  TESTS =================== -->
 
-    
-
     <target name="test" depends="compile" description="Test">
-
         <java
-
             classname="org.joshy.html.HTMLTest"
-
             classpath="build/classes"
-
             fork="true"
-
             >
-
             <arg value="demos/paragraph.xhtml"/>
-
             <classpath>
-
                 <fileset dir="lib">
-
                     <include name="*.jar"/>
-
                 </fileset>
-
             </classpath>
-
         </java>
-
     </target>
 
 
@@ -325,113 +168,56 @@
 
 
 
- 
 
 
-
-
-
-
-
-
-
-
-
-    
 
     <target name="test-speed" depends="test-css-speed">
-
     </target>
-
-    
 
     <target name="test-css-speed" depends="compile-test">
-
         <java classname="org.joshy.html.test.CSSSpeedTest" classpath="build/classes" fork="true">
-
             <!--<jvmarg value="-prof"/>-->
-
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
-
         </java>
-
     </target>
-
-    
 
     <target name="test-customblock" depends="compile">
-
         <java classname="org.joshy.html.test.CustomBlockTest" classpath="build/classes" fork="true">
-
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
-
         </java>
-
     </target>
 
-    
-
-    
 
     <target name="browser" depends="compile, jar">
-
         <java classname="org.joshy.html.app.browser.BrowserStartup" classpath="build/flyingsaucer.jar" fork="true">
-
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
-
         </java>
-
     </target>
 
-
-
-    
 
     <target name="test-moz-css" depends="compile">
-
         <java classname="org.joshy.html.app.browser.BrowserStartup" classpath="build/classes" fork="true">
-
             <arg value="demos/simple.xhtml"/>
-
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
-
         </java>
-
     </target>
-
-    
 
     <target name="test-about" depends="compile">
-
         <java classname="org.joshy.html.app.aboutbox.AboutBox" classpath="build/classes" fork="true">
-
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
-
         </java>
-
     </target>
-
-    
 
     <target name="test-test" depends="compile">
-
         <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
-
-            <arg value="para.xhtml"/>
-
+            <arg value="demos/splash/splash.html"/>
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
-
         </java>
-
     </target>
-
     <target name="demo-test" depends="compile">
         <java classname="org.joshy.html.PanelTest" classpath="build/classes" fork="true">
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
         </java>
     </target>
 
-    
-
 </project>
-

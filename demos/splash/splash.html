@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<!DOCTYPE html
+
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    -->
+<html>
+    <head>
+        <title>Flying Saucer</title>
+        <style type="text/css">
+        
+body { text-align: center; background: #4784FF; }
+
+/* bug work around */
+* { background-color: transparent; }
+div { background-color: transparent; }
+
+
+/* styles for rounded boxes */
+div { border: 0px solid red; padding: 0px; margin: 0px;}
+.section { background: url(images/body-r.gif) no-repeat bottom right; background-position: 100% 100%; }
+.section { padding: 0px; }
+.top { background: url(images/head-r.gif) no-repeat; background-position: 100% 0%; }
+.content { background: url(images/body-l.gif) no-repeat bottom left; background-position: 0% 100%; }
+.top div { background: url(images/head-l.gif) no-repeat top left; } 
+.content { padding-bottom: 2em; }
+
+
+#splash, .section {
+	border: 0px solid black;
+	text-align: left;
+	background-color: red;
+	margin-bottom: 20px;
+	margin-left: 50px;
+	margin-right: 50px;
+/*
+    margin-left: 10%;
+	margin-right: 10%;
+*/
+	}
+
+
+    
+    
+
+/* splash specific formatting */
+#splash { text-align: center; }
+#splash h1 {
+	font-family: "Century Gothic", Arial, sans-serif;
+	font-size: 50pt;
+	font-style: normal;
+	font-weight: normal;
+	padding: 0px 30px 0px 30px;
+	margin: 0px;
+    text-align: center;
+}
+#splash h2 {
+	font-family:"Century Gothic", Arial, sans-serif;
+	font-size: 24pt;
+	font-style: italic;
+	font-weight: normal;
+    text-align: center;
+	padding: 0px 30px 0px 30px;
+	}
+
+
+    
+    
+    
+.section p, .section ul, .section img {
+	font-family: "Century Gothic", Arial, sans-serif;
+	text-align: left;
+	padding: 10px 30px 15px 50px;
+	border: 0px solid black;
+	font-size: 16pt;
+    font-weight: bold;
+	margin: 0px;
+	}
+.section ul {
+	padding-left: 4em;
+	}
+.section ul li {
+    font-size: 16pt;
+    }
+    
+    
+    
+    
+    
+    
+/* the side bars */
+/*
+p.sidebar {
+	font-family:Georgia, "Times New Roman", Times, serif;
+	border: medium dotted #FFFF33;
+	background-color:#FFFF99;
+	color: black;
+	float:right;
+	width: 100px;
+	margin: 20px;
+	padding: 10px;
+	font-size: small;
+	margin-right: 50px;
+}
+.sidebar q {
+	font-family:Arial, Helvetica, sans-serif;
+	font-size: 2em;
+	display: block;
+	text-align: center;
+}
+*/
+
+
+
+#thanks {
+	text-align: right;
+	}
+
+</style>
+    </head>
+    <body>
+
+        <div class="section" id="splash">
+            <div class="top">
+                <div>.<br/>.</div>
+            </div>
+            <div class="content">
+                <h1>Flying Saucer</h1>
+                <img src="images/flyingsaucer.jpg" width="377"/>
+                <h2>The 100% Java XHTML/CSS2 Renderer</h2>
+            </div>
+        </div>
+    
+        <div class="section">
+            
+            <div class="top">
+                <div>.<br/>
+                <br/>.</div>
+            </div>
+            <div class="content">
+                <p>Flying Saucer is a Java library which lets you embed XHTML inside of your
+                    application. Anywhere you use styled text you can use Flying Saucer.</p>
+                    <!--
+                <p class="sidebar">Rolling Stone says: 
+                    <q>It's a number one smash hit!</q>
+                </p>
+                    -->
+                <p>We don't have complete CSS2 support but we've got a lot. Select the demo
+                        menu to try out some examples. </p>
+                <p>You can use Flying Saucer inside all sorts of programs like:</p>
+                <ul>
+                    <li>an ebook reader</li>
+                    <li> blog post preview</li>
+                    <li> an RSS reader</li>
+                    <li> an About Box for your program</li>
+                    <li> blah</li>
+                    <li> blah</li>
+                </ul>
+                <p id="thanks">thanks From the Flying Saucer Team</p>
+
+            </div>
+            
+            
+        </div>
+        
+    </body>
+</html>

@@ -88,6 +88,8 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
      */
     public XRDerivedStyleImpl( XRElement forElement, Iterator iter ) {
         this();
+        sDbgLogger.setLevel(Level.OFF);
+
         _xrElement = forElement;
 
         while ( iter.hasNext() ) {

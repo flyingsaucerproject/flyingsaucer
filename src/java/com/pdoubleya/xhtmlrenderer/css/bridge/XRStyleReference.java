@@ -158,6 +158,7 @@ public class XRStyleReference implements StyleReference {
     public XRStyleReference( Context context ) {
         this();
         _context = context;
+        sDbgLogger.setLevel(Level.OFF);
     }
 
     /** Default constructor for initializing members. */

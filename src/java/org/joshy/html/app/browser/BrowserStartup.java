@@ -66,6 +66,12 @@ public class BrowserStartup {
         menu.init();
         menu.createLayout();
         menu.createActions();
+        
+        try {
+            panel.loadPage("demo:demos/splash/splash.html");
+        } catch (Exception ex) {
+            u.p(ex);
+        }
     }
     
     public static void main(String[] args) throws Exception { 
