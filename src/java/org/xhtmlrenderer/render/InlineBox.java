@@ -115,10 +115,6 @@ public class InlineBox extends Box {
     private String text;
 
 
-    /** Description of the Field */
-    private Font font;
-
-
     /**
      * Converts to a String representation of the object.
      *
@@ -133,6 +129,19 @@ public class InlineBox extends Box {
         // CLN: (PWW 13/08/04)
                 " color: " + color + " background-color: " + background_color +
                 " font: " + font;
+    }
+
+    /** Description of the Field */
+    private Font font;
+
+
+    /**
+     * Gets the font attribute of the InlineBox object
+     *
+     * @return   The font value
+     */
+    public Font getFont() {
+        return font;
     }
 
     /**
@@ -168,15 +177,6 @@ public class InlineBox extends Box {
         this.text = text;
         start_index = 0;
         end_index = text.length();
-    }
-
-    /**
-     * Gets the font attribute of the InlineBox object
-     *
-     * @return   The font value
-     */
-    public Font getFont() {
-        return font;
     }
 
 
@@ -225,6 +225,16 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/11/18 14:12:44  joshy
+ * added whitespace test
+ * cleaned up some code, spacing, and comments
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.10  2004/11/12 22:02:01  joshy
  * initial support for mouse copy selection
  * Issue number:

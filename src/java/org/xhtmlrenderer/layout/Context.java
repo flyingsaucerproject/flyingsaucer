@@ -544,6 +544,7 @@ public class Context {
         return this.max_width;
     }
 
+    /* =========== Font stuff ============== */
 
     /**
      * Gets the fontResolver attribute of the Context object
@@ -559,6 +560,11 @@ public class Context {
     }
 
 
+    
+    
+    /* =========== Selection Management ============== */
+    
+    
     /**
      * Gets the selectionStart attribute of the Context object
      *
@@ -595,6 +601,10 @@ public class Context {
         return selection_end_x;
     }
 
+    
+    
+    /* =========== List stuff ============== */
+
     /**
      * Gets the listCounter attribute of the Context object
      *
@@ -603,6 +613,10 @@ public class Context {
     public int getListCounter() {
         return list_counter;
     }
+
+    
+    
+    /* =========== Form Stuff ============== */
 
     /**
      * Gets the form attribute of the Context object
@@ -660,15 +674,6 @@ public class Context {
     }
 
     /**
-     * Gets the subBlock attribute of the Context object
-     *
-     * @return The subBlock value
-     */
-    public boolean isSubBlock() {
-        return sub_block;
-    }
-
-    /**
      * Description of the Class
      *
      * @author empty
@@ -708,12 +713,25 @@ public class Context {
         }
     }
 
+
     public BlockFormattingContext getBlockFormattingContext() {
         return bfc;
     }
 
     public void setBlockFormattingContext(BlockFormattingContext bfc) {
         this.bfc = bfc;
+    }
+
+    
+    
+    /* ================== Extra Utility Funtions ============== */
+    /**
+     * Gets the subBlock attribute of the Context object
+     *
+     * @return The subBlock value
+     */
+    public boolean isSubBlock() {
+        return sub_block;
     }
 
     private boolean first_line = false;
@@ -748,6 +766,16 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2004/11/18 14:12:44  joshy
+ * added whitespace test
+ * cleaned up some code, spacing, and comments
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.21  2004/11/18 02:58:06  joshy
  * collapsed the font resolver and font resolver test into one class, and removed
  * the other

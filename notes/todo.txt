@@ -74,7 +74,7 @@ bugs:
 layout cleanups
     cache linemetrics and ascend/dscend more
     take out redundant functions
-    collapse fontresolver and fontresolvertest
+    //collapse fontresolver and fontresolvertest
     //move defaultlayout into boxlayout and get it all to compile
     //make layoututil w/ util functions from defaultlayout
     //create preloadbox in layout interface
