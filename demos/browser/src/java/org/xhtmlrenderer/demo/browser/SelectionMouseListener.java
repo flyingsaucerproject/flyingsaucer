@@ -67,11 +67,6 @@ public class SelectionMouseListener implements MouseListener, MouseMotionListene
      */
     public void mouseReleased( MouseEvent e ) {
         if ( panel != null ) {
-            Box start = panel.getContext().getSelectionStart();
-            Box end = panel.getContext().getSelectionEnd();
-            StringBuffer sb = new StringBuffer();
-            collectSelection(panel.getContext(), panel.getRootBox(), start, end, sb, false);
-            u.p("selection = " + sb);
             panel.repaint();
         }
     }
@@ -106,37 +101,6 @@ public class SelectionMouseListener implements MouseListener, MouseMotionListene
      */
     public void mouseMoved( MouseEvent e ) { }
     
-    
-    public boolean collectSelection(Context ctx, Box root, Box current, Box last, StringBuffer sb, boolean in_selection) {
-        
-        if(root == current) {
-            in_selection = true;
-        }
-        if(in_selection) {
-            if(root instanceof InlineBox) {
-                InlineBox ib = (InlineBox)root;
-                int start = 0;
-                int end = ib.getSubstring().length();
-                if(ib == current) {
-                    start = ib.getTextIndex(ctx,ctx.getSelectionStartX());
-                }
-                if(ib == last) {
-                    end = ib.getTextIndex(ctx,ctx.getSelectionEndX());
-                }
-                String st = ib.getSubstring().substring(Math.max(0,start-1),end);
-                sb.append(st);
-            }
-        }
-        if(root == last) {
-            in_selection = false;
-        }
-        for(int i=0; i<root.getChildCount(); i++) {
-            Box child = root.getChild(i);
-            in_selection = collectSelection(ctx, child,current,last,sb,in_selection);
-        }
-        
-        return in_selection;
-    }
     
     
 }

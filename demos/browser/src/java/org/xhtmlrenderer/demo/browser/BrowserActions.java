@@ -33,7 +33,9 @@ import javax.swing.KeyStroke;
 import javax.swing.JOptionPane;
 import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.test.*;
-
+import org.xhtmlrenderer.swing.*;
+import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.layout.*;
 
 /**
  * Description of the Class
@@ -98,8 +100,53 @@ public class BrowserActions {
         cut = new EmptyAction( "Cut", KeyEvent.VK_X );
         cut.setEnabled( false );
         setMnemonic( cut, new Integer( KeyEvent.VK_T ) );
-        copy = new EmptyAction( "Copy", KeyEvent.VK_C );
-        copy.setEnabled( false );
+        copy = new EmptyAction( "Copy", KeyEvent.VK_C ) {
+            
+            public void actionPerformed( ActionEvent evt ) {
+                System.out.println("copy");
+                HTMLPanel panel = root.panel.view;
+                Box start = panel.getContext().getSelectionStart();
+                Box end = panel.getContext().getSelectionEnd();
+                StringBuffer sb = new StringBuffer();
+                collectSelection(panel.getContext(), panel.getRootBox(), start, end, sb, false);
+                u.p("selection = " + sb);
+            }
+            
+            public boolean collectSelection(Context ctx, Box root, Box current, Box last, StringBuffer sb, boolean in_selection) {
+                
+                if(root == current) {
+                    in_selection = true;
+                }
+                if(in_selection) {
+                    if(root instanceof LineBox) {
+                        sb.append("\n");
+                    }
+                    if(root instanceof InlineBox) {
+                        InlineBox ib = (InlineBox)root;
+                        int start = 0;
+                        int end = ib.getSubstring().length();
+                        if(ib == current) {
+                            start = ib.getTextIndex(ctx,ctx.getSelectionStartX());
+                        }
+                        if(ib == last) {
+                            end = ib.getTextIndex(ctx,ctx.getSelectionEndX());
+                        }
+                        String st = ib.getSubstring().substring(Math.max(0,start-1),end);
+                        sb.append(st);
+                    }
+                }
+                if(root == last) {
+                    in_selection = false;
+                }
+                for(int i=0; i<root.getChildCount(); i++) {
+                    Box child = root.getChild(i);
+                    in_selection = collectSelection(ctx, child,current,last,sb,in_selection);
+                }
+                
+                return in_selection;
+            }
+        };
+        copy.setEnabled( true );
         setMnemonic( copy, new Integer( KeyEvent.VK_C ) );
         paste = new EmptyAction( "Paste", KeyEvent.VK_V );
         paste.setEnabled( false );
@@ -253,6 +300,13 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/13 00:09:14  joshy
+ * added copy support
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/11/07 23:24:18  joshy
  * added menu item to generate diffs
  * added diffs for multi-colored borders and inline borders
