@@ -148,6 +148,7 @@ public class Matcher implements net.homelinux.tobe.xhtmlrenderer.Matcher {
                     }
                 }
             }
+System.err.println("Matcher called with "+sorter.size()+" selectors");
         docMapper = new Mapper(sorter.values());
         clearMaps();
     }
@@ -175,7 +176,7 @@ public class Matcher implements net.homelinux.tobe.xhtmlrenderer.Matcher {
                 s = addSelector(pos, rs, ( (org.w3c.css.sac.ConditionalSelector)selector ).getSimpleSelector());
                 addConditions( s, cond );
             } else if ( selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR ) {
-                s = new Selector(pos, rs, net.homelinux.tobe.css.Selector.DESCENDANT_AXIS, ( (org.w3c.css.sac.ElementSelector)selector ).getLocalName() );
+                s = new Selector(pos, rs, Selector.DESCENDANT_AXIS, ( (org.w3c.css.sac.ElementSelector)selector ).getLocalName() );
             } else System.err.println("bad selector in addSelector");
 
             return s;
@@ -193,15 +194,15 @@ public class Matcher implements net.homelinux.tobe.xhtmlrenderer.Matcher {
         org.w3c.css.sac.SimpleSelector simple = null;
         switch ( selector.getSelectorType() ) {
             case org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR:
-                axis = net.homelinux.tobe.css.Selector.IMMEDIATE_SIBLING_AXIS;
+                axis = Selector.IMMEDIATE_SIBLING_AXIS;
                 simple = ( (org.w3c.css.sac.SiblingSelector)selector ).getSiblingSelector();
                 break;
             case org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR:
-                axis = net.homelinux.tobe.css.Selector.CHILD_AXIS;
+                axis = Selector.CHILD_AXIS;
                 simple = ( (org.w3c.css.sac.DescendantSelector)selector ).getSimpleSelector();
                 break;
             case org.w3c.css.sac.Selector.SAC_DESCENDANT_SELECTOR:
-                axis = net.homelinux.tobe.css.Selector.DESCENDANT_AXIS;
+                axis = Selector.DESCENDANT_AXIS;
                 simple = ( (org.w3c.css.sac.DescendantSelector)selector ).getSimpleSelector();
                 break;
             default:
