@@ -85,23 +85,6 @@ public class InlineLayout extends BoxLayout {
         prev_line.y = bounds.y;
         prev_line.height = 0;
         InlineBox prev_inline = null;
-
-        /*
-        // prep the tab stuff
-        // reduce the tab left by the current distance down
-        if ( c.getLeftTab().y > 0 ) {
-            c.getLeftTab().y -= c.placement_point.y;
-        }
-        if ( c.getRightTab().y > 0 ) {
-            c.getRightTab().y -= c.placement_point.y;
-        }
-        if ( c.getRightTab().y < 0 ) {
-            c.getRightTab().y = 0;
-        }
-        if ( c.getLeftTab().y < 0 ) {
-            c.getLeftTab().y = 0;
-        }
-        */
         
         InlineBox prev_align_inline = null;
         List inline_node_list = null;
@@ -116,9 +99,7 @@ public class InlineLayout extends BoxLayout {
         TextUtil.stripWhitespace( c, current_node, elem );
         // adjust the first line for tabs
         
-        //u.p("remaining width before = " + remaining_width);
         remaining_width = adjustForTab( c, prev_line, remaining_width );
-        //u.p("remaining width after = " + remaining_width);
         while ( current_node != null ) {
             // loop until no more text in this node
             while ( true ) {
@@ -290,18 +271,6 @@ public class InlineLayout extends BoxLayout {
          remaining_width -= bfc.getRightFloatDistance(prev_line);
          return remaining_width;
      }
-     /*  the old way of doing floats
-     private int adjustForTab( Context c, LineBox prev_line, int remaining_width ) {
-        if ( prev_line.y < c.getLeftTab().y ) {
-            remaining_width -= c.getLeftTab().x;
-        }
-        if ( prev_line.y + prev_line.height < c.getRightTab().y ) {
-            remaining_width -= c.getRightTab().x;
-        }
-        return remaining_width;
-     }
-     */
-
      
     /**
     * Get the longest inline possible.
@@ -387,14 +356,6 @@ public class InlineLayout extends BoxLayout {
         // set the y
         line_to_save.y = prev_line.y + prev_line.height;
         
-        
-        /* old float code
-        if ( line_to_save.y < c.getLeftTab().y ) {
-            line_to_save.x += c.getLeftTab().x;
-        }
-        if ( c.getRightTab().y > 0 ) {
-        }
-        */
         // new float code
         line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(line_to_save);
         
@@ -413,6 +374,13 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.12  2004/11/06 22:51:57  joshy
+* removed dead code
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.11  2004/11/06 22:49:52  joshy
 * cleaned up alice
 * initial support for inline borders and backgrounds
