@@ -53,29 +53,8 @@ public class Context {
     /** Description of the Field */
     public Graphics graphics;
 
-
-    /*
-     * public Point origin;
-     * public Point getOrigin() {
-     * return origin;
-     * }
-     * public Rectangle bounds;
-     * public Rectangle getBounds() {
-     * return bounds;
-     * }
-     */
-
     /** Description of the Field */
     public Point cursor;
-
-
-    /** Description of the Field */
-    public Color color;
-
-
-    /** Description of the Field */
-    public Color background_color;
-
 
     // CLN: (PWW 13/08/04)
     // replace with StyleReference so we can swap in different interface implementations
@@ -110,10 +89,7 @@ public class Context {
     public Point placement_point;
 
     /** Description of the Field */
-    public Box parent_box;
-
-
-
+    //public Box parent_box;
 
     /*
      * selection management code
@@ -145,34 +121,20 @@ public class Context {
     /** the current block formatting context */
     protected BlockFormattingContext bfc;
 
-
     /** Description of the Field */
     Stack extents_stack = new Stack();
 
-
     /** Description of the Field */
-    FontResolver font_resolver;
-
+    private FontResolver font_resolver;
 
     /** Description of the Field */
     private Rectangle extents;
-
-
 
     /** Description of the Field */
     private int xoff = 0;
 
     /** Description of the Field */
     private int yoff = 0;
-
-
-    /** Description of the Field */
-    private Point left_tab = new Point( 0, 0 );
-
-    /** Description of the Field */
-    private Point right_tab = new Point( 0, 0 );
-
-
 
     /** Description of the Field */
     private URL base_url;
@@ -447,27 +409,6 @@ public class Context {
 
     }
 
-    /**
-     * Sets the leftTab attribute of the Context object
-     *
-     * @param pt  The new leftTab value
-     */
-    public void setLeftTab( Point pt ) {
-
-        this.left_tab = pt;
-
-    }
-
-    /**
-     * Sets the rightTab attribute of the Context object
-     *
-     * @param pt  The new rightTab value
-     */
-    public void setRightTab( Point pt ) {
-
-        this.right_tab = pt;
-
-    }
 
     /**
      * Sets the baseURL attribute of the Context object
@@ -531,9 +472,7 @@ public class Context {
      * @param x  The new selectionEndX value
      */
     public void setSelectionEndX( int x ) {
-
         selection_end_x = x;
-
     }
 
     /**
@@ -542,9 +481,7 @@ public class Context {
      * @param counter  The new listCounter value
      */
     public void setListCounter( int counter ) {
-
         this.list_counter = counter;
-
     }
 
     /**
@@ -554,7 +491,6 @@ public class Context {
      * @param action     The new form value
      */
     public void setForm( String form_name, String action ) {
-        //u.p("set form to: " + form_name);
         this.form_name = form_name;
         if ( form_name != null ) {
             forms.put( form_name, new HashMap() );
@@ -581,7 +517,6 @@ public class Context {
      * @return   The graphics value
      */
     public Graphics getGraphics() {
-
         return graphics;
     }
 
@@ -591,7 +526,6 @@ public class Context {
      * @return   The extents value
      */
     public Rectangle getExtents() {
-
         return this.extents;
     }
 
@@ -601,28 +535,7 @@ public class Context {
      * @return   The cursor value
      */
     public Point getCursor() {
-
         return cursor;
-    }
-
-    /**
-     * Gets the color attribute of the Context object
-     *
-     * @return   The color value
-     */
-    public Color getColor() {
-
-        return color;
-    }
-
-    /**
-     * Gets the backgroundColor attribute of the Context object
-     *
-     * @return   The backgroundColor value
-     */
-    public Color getBackgroundColor() {
-
-        return background_color;
     }
 
     /**
@@ -631,7 +544,6 @@ public class Context {
      * @return   The viewport value
      */
     public JComponent getViewport() {
-
         return this.viewport;
     }
 
@@ -641,7 +553,6 @@ public class Context {
      * @return   The xoff value
      */
     public int getXoff() {
-
         return this.xoff;
     }
 
@@ -656,32 +567,11 @@ public class Context {
     }
 
     /**
-     * Gets the leftTab attribute of the Context object
-     *
-     * @return   The leftTab value
-     */
-    public Point getLeftTab() {
-
-        return this.left_tab;
-    }
-
-    /**
-     * Gets the rightTab attribute of the Context object
-     *
-     * @return   The rightTab value
-     */
-    public Point getRightTab() {
-
-        return this.right_tab;
-    }
-
-    /**
      * Gets the baseURL attribute of the Context object
      *
      * @return   The baseURL value
      */
     public URL getBaseURL() {
-
         return this.base_url;
     }
 
@@ -691,7 +581,6 @@ public class Context {
      * @return   The maxWidth value
      */
     public int getMaxWidth() {
-
         return this.max_width;
     }
 
@@ -702,7 +591,6 @@ public class Context {
      * @return   The fontResolver value
      */
     public FontResolver getFontResolver() {
-
         return font_resolver;
     }
 
@@ -713,7 +601,6 @@ public class Context {
      * @return   The selectionStart value
      */
     public Box getSelectionStart() {
-
         return selection_start;
     }
 
@@ -723,7 +610,6 @@ public class Context {
      * @return   The selectionEnd value
      */
     public Box getSelectionEnd() {
-
         return selection_end;
     }
 
@@ -733,7 +619,6 @@ public class Context {
      * @return   The selectionStartX value
      */
     public int getSelectionStartX() {
-
         return selection_start_x;
     }
 
@@ -743,7 +628,6 @@ public class Context {
      * @return   The selectionEndX value
      */
     public int getSelectionEndX() {
-
         return selection_end_x;
     }
 
@@ -753,7 +637,6 @@ public class Context {
      * @return   The listCounter value
      */
     public int getListCounter() {
-
         return list_counter;
     }
 
@@ -858,12 +741,12 @@ public class Context {
         this.bfc = bfc;
     }
     
-    public void setFirstLine(boolean first_line) {
-        this.first_line = first_line;
-    }
     private boolean first_line = false;
     public boolean isFirstLine() {
         return first_line;
+    }
+    public void setFirstLine(boolean first_line) {
+        this.first_line = first_line;
     }
 }
 
@@ -871,6 +754,13 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/12 02:42:19  joshy
+ * context cleanup
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.9  2004/11/10 17:28:54  joshy
  * initial support for anti-aliased text w/ minium
  *

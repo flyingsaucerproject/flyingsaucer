@@ -18,23 +18,29 @@
 //fix list items
 //fix list item vertical positioning
 //build table demo
-
 //implement rendering context and xhtmlpanel
 //comment out all extra stuff
 //hook rendering context into context
 //easier headless interface
-
 //implement defineFontMapping
-fix fixed background clipping error (set clip rect to whole viewport?)
 //test hover again and make a hard coded hack
 //finish up hover support
 
 
+fix fixed background clipping error (set clip rect to whole viewport?)
 floated divs work, but not floated spans. span should turn into a block when floated
 make layoutfactory use display for generating layouts
 left-right-top w/ static pos
-fixed pos
+fixed pos support
 fix crash on width = 0
+fix threading/loop issue with hamlet
+move more of context into rendering context
+support getMinimumSize() on headless interface
+build hover demo
+    show a hovered block
+    show a hover style change on a parent element [possible?]
+    show a menu with bg, text, and border changes
+    show body text w/ hovered links. bgimage ?
 
 table crashes on tbody
 table crashes on empty tr

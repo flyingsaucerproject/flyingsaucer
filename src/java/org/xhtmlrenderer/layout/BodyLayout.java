@@ -41,16 +41,8 @@ public class BodyLayout extends InlineLayout {
      * @return      Returns
      */
     public Box layout( Context c, Element elem ) {
-
-        //u.p("---------------------------------\nstarting the body layout");
-
-        c.setLeftTab( new Point( 0, 0 ) );
-
-        c.setRightTab( new Point( 0, 0 ) );
-
         return super.layout( c, elem );
     }
-
     
     public Renderer getRenderer() {
         return new BodyRenderer();
@@ -62,6 +54,13 @@ public class BodyLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/12 02:42:18  joshy
+ * context cleanup
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/11/03 23:54:33  joshy
  * added hamlet and tables to the browser
  * more support for absolute layout

@@ -121,7 +121,7 @@ public class DefaultLayout implements Layout {
 
                 Element child_elem = (Element)child;
                 // execute the layout and get the return bounds
-                c.parent_box = box;
+                //c.parent_box = box;
                 c.placement_point = new Point( 0, box.height );
                 c.getBlockFormattingContext().translate(0,box.height);
                 //u.p("default doing layout on" + child_elem);
@@ -469,6 +469,13 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/11/12 02:42:19  joshy
+ * context cleanup
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.16  2004/11/12 00:20:29  tobega
  * Set up the HoverListener to work properly. Colors are changing!
  *
