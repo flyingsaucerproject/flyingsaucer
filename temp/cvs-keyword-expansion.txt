@@ -1,0 +1,33 @@
+# test file for keyword expansion.
+#
+# keyword list from Version Management with CVS - the CVS manual
+# 
+# $Author$
+# $CVSHeader
+# $Date$
+# $Header$
+# $Id$
+# $Name$
+# $Locker$
+# $Log$
+# Revision 1.1  2004/10/14 13:03:11  pdoubleya
+# Added to CVS.
+#
+# $Revision$
+# $Source$
+# $State$
+
+$Author$
+$CVSHeader
+$Date$
+$Header$
+$Id$
+$Name$
+$Locker$
+$Log$
+Revision 1.1  2004/10/14 13:03:11  pdoubleya
+Added to CVS.
+
+$Revision$
+$Source$
+$State$
