@@ -567,9 +567,9 @@ public class Matcher {
     private org.xhtmlrenderer.css.sheet.Ruleset getElementStyle(org.w3c.dom.Element e) {
         if (_attRes == null || _styleFactory == null) return null;
         org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) _elStyle.get(e);
-        String style = _attRes.getElementStyling(e);
-        if (style == null || style.equals("")) return null;
         if (rs == null) {
+            String style = _attRes.getElementStyling(e);
+            if (style == null || style.equals("")) return null;
             rs = _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
             _elStyle.put(e, rs);
         }
