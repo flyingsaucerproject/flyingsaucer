@@ -107,7 +107,7 @@ public class XMLResource extends AbstractResource {
     }
     
     public static final XMLReader newXMLReader() {
-        XMLReader saxParser = null;
+        XMLReader xmlReader = null;
         String xmlReaderClass = Configuration.valueFor("xr.load.xml-reader");
         
         //TODO: if it doesn't find the parser, note that in a static boolean--otherwise
@@ -127,7 +127,7 @@ public class XMLResource extends AbstractResource {
                             "FS configuration if necessary. Will now try JDK default.");
                 }
                 if ( XMLResource.useConfiguredParser ) {
-                    saxParser = XMLReaderFactory.createXMLReader( xmlReaderClass );
+                    xmlReader = XMLReaderFactory.createXMLReader( xmlReaderClass );
                 }
             }
         } catch ( Exception ex ) {
@@ -136,7 +136,7 @@ public class XMLResource extends AbstractResource {
                     + xmlReaderClass +". Please check classpath. Use value 'default' in " +
                     "FS configuration if necessary. Will now try JDK default.", ex);
         }
-        if ( saxParser == null ) {
+        if ( xmlReader == null ) {
             try {
                 // JDK default
                 // HACK: if 
@@ -145,19 +145,19 @@ public class XMLResource extends AbstractResource {
                      XRLog.load(Level.WARNING,
                     "No value for system property 'org.xml.sax.driver'.");
                 }
-                saxParser = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+                xmlReader = XMLReaderFactory.createXMLReader(); 
                 xmlReaderClass = "{JDK default}";
             } catch ( Exception ex ) {
                 XRLog.general(ex.getMessage());
             }
         }
-        if ( saxParser == null ) {
+        if ( xmlReader == null ) {
             throw new XRRuntimeException("Could not instantiate any SAX 2 parser, including JDK default. " +
                     "The name of the class to use should have been read from the org.xml.sax.driver System " +
                     "property, which is set to: " + System.getProperty("org.xml.sax.driver"));
         }
-        XRLog.load( "SAX XMLReader in use (parser): " + saxParser.getClass().getName() );
-        return saxParser;
+        XRLog.load( "SAX XMLReader in use (parser): " + xmlReader.getClass().getName() );
+        return xmlReader;
     }
     
     private static class XMLResourceBuilder {
@@ -166,16 +166,16 @@ public class XMLResource extends AbstractResource {
             DOMResult output = null;
             TransformerFactory xformFactory = null;
             Transformer idTransform = null;
-            XMLReader saxParser = null;
+            XMLReader xmlReader = null;
             long st = 0L;
             
-            saxParser = XMLResource.newXMLReader();
-            addHandlers(saxParser);
-            setParserFeatures(saxParser);
+            xmlReader = XMLResource.newXMLReader();
+            addHandlers(xmlReader);
+            setParserFeatures(xmlReader);
             
             st = System.currentTimeMillis();
             try {
-                input = new SAXSource( saxParser, target.getResourceInputSource());
+                input = new SAXSource( xmlReader, target.getResourceInputSource());
                 output = new DOMResult();
                 xformFactory = TransformerFactory.newInstance();
                 idTransform = xformFactory.newTransformer();
@@ -202,11 +202,11 @@ public class XMLResource extends AbstractResource {
         /**
          * Adds the default EntityResolved and ErrorHandler for the SAX parser.
          */
-        private void addHandlers(XMLReader saxParser) {
+        private void addHandlers(XMLReader xmlReader) {
             try {
                 // add our own entity resolver
-                saxParser.setEntityResolver(FSEntityResolver.instance());
-                saxParser.setErrorHandler(
+                xmlReader.setEntityResolver(FSEntityResolver.instance());
+                xmlReader.setErrorHandler(
                         new ErrorHandler() {
                     
                     public void error( SAXParseException ex ) {
@@ -229,35 +229,35 @@ public class XMLResource extends AbstractResource {
         /**
          * Sets all standard features for SAX parser, using values from Configuration.
          */
-        private void setParserFeatures(XMLReader saxParser) {
+        private void setParserFeatures(XMLReader xmlReader) {
             if ( Configuration.isFalse("xr.load.configure-features", false)) {
                 XRLog.load( Level.FINE, "SAX Parser: by request, not changing any parser features.");
                 return;
             }
             
             // perf: validation off
-            setFeature(saxParser, "http://xml.org/sax/features/validation","xr.load.validation");
+            setFeature(xmlReader, "http://xml.org/sax/features/validation","xr.load.validation");
             
             // mem: intern strings
-            setFeature(saxParser, "http://xml.org/sax/features/string-interning", "xr.load.string-interning");
+            setFeature(xmlReader, "http://xml.org/sax/features/string-interning", "xr.load.string-interning");
             
             // perf: namespaces
-            setFeature(saxParser, "http://xml.org/sax/features/namespaces", "xr.load.namespaces");
-            setFeature(saxParser, "http://xml.org/sax/features/namespace-prefixes", "xr.load.namespace-prefixes");
+            setFeature(xmlReader, "http://xml.org/sax/features/namespaces", "xr.load.namespaces");
+            setFeature(xmlReader, "http://xml.org/sax/features/namespace-prefixes", "xr.load.namespace-prefixes");
         }
         
         /**
          * Attempts to set requested feature on the parser; logs exception if not supported
          * or not recognized.
          */
-        private void setFeature(XMLReader saxParser, String featureUri, String configName) {
+        private void setFeature(XMLReader xmlReader, String featureUri, String configName) {
             try {
-                saxParser.setFeature( featureUri, Configuration.isTrue(configName, false));
+                xmlReader.setFeature( featureUri, Configuration.isTrue(configName, false));
                 
                 XRLog.load(Level.FINE, "SAX Parser feature: " +
                         featureUri.substring(featureUri.lastIndexOf("/")) +
                         " set to " +
-                        saxParser.getFeature(featureUri));
+                        xmlReader.getFeature(featureUri));
             } catch ( SAXNotSupportedException ex ) {
                 XRLog.load( Level.WARNING, "SAX feature not supported on this XMLReader: " + featureUri);
             } catch ( SAXNotRecognizedException ex ) {
@@ -272,6 +272,9 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/03/22 15:34:23  pdoubleya
+ * Changed to use XMLReaderFactory, appears to solve namespaces issue (thanks to Elliot Rusty Harold, again!).
+ *
  * Revision 1.5  2005/03/16 19:26:31  pdoubleya
  * Fixed to use proper javax.xml.transform instantiation for parser, and only try to load custom parser once, so that you don't get exceptions on each page.
  *
