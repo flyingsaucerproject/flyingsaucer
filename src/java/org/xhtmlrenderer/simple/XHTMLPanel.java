@@ -62,7 +62,10 @@ public class XHTMLPanel extends HTMLPanel {
     
     public XHTMLPanel() {
         ctx = new RenderingContext();
+        //ctx.setTextRenderer(new MiniumTextRenderer());
+        //ctx.getTextRenderer().setSmoothingLevel(TextRenderer.HIGH);
     }
+    
     public XHTMLPanel(URL url) throws Exception {
         this();
         setDocument(url);

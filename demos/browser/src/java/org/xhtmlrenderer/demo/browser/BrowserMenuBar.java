@@ -24,10 +24,12 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.*;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -36,11 +38,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+
 import org.xhtmlrenderer.swing.DOMInspector;
 import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.util.u;
-import org.sektor37.minium.*;
-import java.util.Map;
+import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.extend.*;
+import org.xhtmlrenderer.render.*;
 
 /**
  * Description of the Class
@@ -160,13 +164,41 @@ public class BrowserMenuBar extends JMenuBar {
         debugShow.add( new JCheckBoxMenuItem( new InlineBoxesAction() ) );
         debugShow.add( new JCheckBoxMenuItem( new FontMetricsAction() ) );
 
-        JMenu anti = new JMenu("Minium Anti Aliasing");
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Lowest (Default)",TextRenderingHints.DEFAULT_HINTS_FASTEST) ) );
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Low",TextRenderingHints.DEFAULT_HINTS_QUALITY_LOW) ) );
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Medium",TextRenderingHints.DEFAULT_HINTS_QUALITY_MEDIUM) ) );
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("High",TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGH) ) );
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Highest",TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGHEST) ) );
-        debug.add(anti);
+        JMenu anti = new JMenu("Anti Aliasing");
+        ButtonGroup implementation = new ButtonGroup();
+        JRadioButtonMenuItem java2d = new  JRadioButtonMenuItem( new AbstractAction("Java2D Implementation") {
+            public void actionPerformed(ActionEvent evt) {
+                RenderingContext rc = root.panel.view.getRenderingContext();
+                int level = rc.getTextRenderer().getSmoothingLevel();
+                rc.setTextRenderer(new Java2DTextRenderer());
+                rc.getTextRenderer().setSmoothingLevel(level);
+                root.panel.view.repaint();
+            }
+        });
+        java2d.setSelected(true);
+        implementation.add(java2d);
+        anti.add(java2d);
+        
+        JRadioButtonMenuItem minium = new  JRadioButtonMenuItem( new AbstractAction("Minium Implementation") {
+            public void actionPerformed(ActionEvent evt) {
+                RenderingContext rc = root.panel.view.getRenderingContext();
+                int level = rc.getTextRenderer().getSmoothingLevel();
+                rc.setTextRenderer(new MiniumTextRenderer());
+                rc.getTextRenderer().setSmoothingLevel(level);
+                root.panel.view.repaint();
+            }
+        });
+        implementation.add(minium);
+        anti.add(minium);
+        
+        anti.add(new JSeparator());
+        
+        ButtonGroup anti_level = new ButtonGroup();
+        addLevel(anti,anti_level,"None",TextRenderer.NONE);
+        addLevel(anti,anti_level,"Low",TextRenderer.LOW).setSelected(true);
+        addLevel(anti,anti_level,"Medium",TextRenderer.MEDIUM);
+        addLevel(anti,anti_level,"High",TextRenderer.HIGH);
+        debug.add( anti );
         
         
         debug.add( new ShowDOMInspectorAction() );
@@ -200,6 +232,14 @@ public class BrowserMenuBar extends JMenuBar {
         debug.add(root.actions.generate_diff);
         add( debug );
     }
+    
+    private JRadioButtonMenuItem addLevel(JMenu menu, ButtonGroup group, String title, int level) {
+        JRadioButtonMenuItem item = new JRadioButtonMenuItem( new AntiAliasedAction(title, level) );
+        group.add(item);
+        menu.add(item);
+        return item;
+    }
+
 
     /** Description of the Method */
     public void createActions() {
@@ -379,23 +419,14 @@ public class BrowserMenuBar extends JMenuBar {
     }
 
     class AntiAliasedAction extends AbstractAction {
-        boolean anti = false;
-        Map hint;
-        AntiAliasedAction(String text, Map hint) {
+        int hint;
+        AntiAliasedAction(String text, int hint) {
             super( text );
-            anti = false;
             this.hint = hint;
         }
-    
+
         public void actionPerformed( ActionEvent evt ) {
-            anti = !anti;
-            Map hints = null;
-            if(anti) {
-                hints = hint;
-            } else {
-                hints = TextRenderingHints.DEFAULT_HINTS_FASTEST;
-            }
-            root.panel.view.getContext().getTextRenderer().setTextRenderingHints(hints);
+            root.panel.view.getRenderingContext().getTextRenderer().setSmoothingLevel(hint);
             root.panel.view.repaint();
         }
     }
@@ -446,6 +477,13 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/11/14 21:33:46  joshy
+ * new font rendering interface support
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.14  2004/11/12 20:25:16  joshy
  * added hover support to the browser
  * created hover demo

@@ -44,10 +44,10 @@ import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.layout.LayoutFactory;
 import org.xhtmlrenderer.layout.Layout;
 import org.xhtmlrenderer.layout.InlineLayout;
+import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.u;
 import java.io.*;
-import org.sektor37.minium.*;
 
 
 /**
@@ -143,13 +143,12 @@ public class HTMLTest extends JFrame {
         debugShow.add( new JCheckBoxMenuItem( new FontMetricsAction() ) );
         
         
-        JMenu anti = new JMenu("Minium Anti Aliasing");
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Lowest (Default)",TextRenderingHints.DEFAULT_HINTS_FASTEST) ) );
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Low",TextRenderingHints.DEFAULT_HINTS_QUALITY_LOW) ) );
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Medium",TextRenderingHints.DEFAULT_HINTS_QUALITY_MEDIUM) ) );
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("High",TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGH) ) );
-        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Highest",TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGHEST) ) );
-        debug.add(anti);
+        JMenu anti = new JMenu("Anti Aliasing");
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("None", TextRenderer.NONE) ) );
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Low (Default)", TextRenderer.LOW) ) );
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Medium", TextRenderer.MEDIUM) ) );
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Highest", TextRenderer.HIGH) ) );
+        debug.add( anti );
 
         debug.add( new ShowDOMInspectorAction() );
 /*
@@ -332,23 +331,14 @@ public class HTMLTest extends JFrame {
     }
     
     class AntiAliasedAction extends AbstractAction {
-        boolean anti = false;
-        Map hint;
-        AntiAliasedAction(String text, Map hint) {
+        int hint;
+        AntiAliasedAction(String text, int hint) {
             super( text );
-            anti = false;
             this.hint = hint;
         }
 
         public void actionPerformed( ActionEvent evt ) {
-            anti = !anti;
-            Map hints = null;
-            if(anti) {
-                hints = hint;
-            } else {
-                hints = TextRenderingHints.DEFAULT_HINTS_FASTEST;
-            }
-            panel.getRenderingContext().getContext().getTextRenderer().setTextRenderingHints(hints);
+            panel.getRenderingContext().getTextRenderer().setSmoothingLevel(hint);
             panel.repaint();
         }
     }
@@ -459,6 +449,13 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/11/14 21:33:49  joshy
+ * new font rendering interface support
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.17  2004/11/12 02:23:59  joshy
  * added new APIs for rendering context, xhtmlpanel, and graphics2drenderer.
  * initial support for font mapping additions

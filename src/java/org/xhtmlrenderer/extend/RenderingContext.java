@@ -9,11 +9,9 @@ import org.xhtmlrenderer.css.bridge.TBStyleReference;
 import org.xhtmlrenderer.swing.*;
 import org.xhtmlrenderer.util.*;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.layout.LayoutFactory;
 import java.net.*;
-
-/* should all of these properties be here? should some only be specified by the
-conf/props files? */
 
 public class RenderingContext {
     public RenderingContext() {
@@ -22,6 +20,7 @@ public class RenderingContext {
         getContext().css = new TBStyleReference(new NaiveUserAgent());
         XRLog.render( "Using CSS implementation from: " + getContext().css.getClass().getName() );
         layout_factory = new LayoutFactory();
+        setTextRenderer(new Java2DTextRenderer());
     }
     protected Context ctx;
     public Context getContext() {
@@ -39,12 +38,67 @@ public class RenderingContext {
     public Box getRootBox() {
         return root_box;
     }
-    /* utility methods */
-    /* you will need to re-layout the document after you call these
-     method. */
-     /*
-    public void setFontScale(float scale) {
+
+
+    /* should this happen here or lower down? */
+    protected AttributeResolver attr_res;
+    public void setAttributeResolver(AttributeResolver attribute_resolver) {
+        this.attr_res = attribute_resolver;
     }
+
+
+    /* add a new font mapping, or replace an existing one */
+    public void setFontMapping(String name, Font font) {
+        getContext().getFontResolver().setFontMapping(name, font);
+    }
+    
+
+    protected URL base_url;
+    public URL getBaseURL() {
+        return base_url;
+    }
+    public void setBaseURL(URL url) {
+        base_url = url;
+    }
+
+    protected LayoutFactory layout_factory;
+    public LayoutFactory getLayoutFactory() {
+        return layout_factory;
+    }
+    public void setLayoutFactory(LayoutFactory layout_factory) {
+        this.layout_factory = layout_factory;
+    }
+    
+    /* used to adjust fonts, ems, points, into screen resolution */
+    /* uses system default by default (can we get that?) */
+    /* this should fix the reason firefox looks different */
+    
+    private float dpi = 72;
+    
+    public void setDPI(float dpi) {
+        this.dpi = dpi;
+    }
+    
+    public float getDPI() {
+        return this.dpi;
+    }
+
+    /* is this really a property of the component that uses
+    this rendering context ?? */
+    protected boolean threaded_layout;
+    public void setThreadedLayout(boolean threaded) { 
+        threaded_layout = threaded;
+    }
+
+    protected TextRenderer text_renderer;
+    public TextRenderer getTextRenderer() {
+        return text_renderer;
+    }
+    public void setTextRenderer(TextRenderer text_renderer) {
+        this.text_renderer = text_renderer;
+    }
+    
+    /*
     public void incrementFontScale() {
     }
     public void decrementFontScale() {
@@ -52,8 +106,13 @@ public class RenderingContext {
     public void setFontIncrementStepValue(float inc) {
     }
     */
+
     
-    /* what type should this take?*/
+    /* utility methods */
+    /* you will need to re-layout the document after you call these
+     method. */
+
+     /* what type should this take?*/
     /*
     public void addUserCSS(File file) {
     }
@@ -78,11 +137,6 @@ public class RenderingContext {
     */
     
     
-    /* should this happen here or lower down? */
-    protected AttributeResolver attr_res;
-    public void setAttributeResolver(AttributeResolver attribute_resolver) {
-        this.attr_res = attribute_resolver;
-    }
     
     /* other features.
         set antialiasing
@@ -90,28 +144,6 @@ public class RenderingContext {
         callbacks for validation
         callbacks for resource provider
     */
-    
-    /* add a new font mapping, or replace an existing one */
-    public void setFontMapping(String name, Font font) {
-        getContext().getFontResolver().setFontMapping(name, font);
-    }
-    
-
-    protected URL base_url;
-    public URL getBaseURL() {
-        return base_url;
-    }
-    public void setBaseURL(URL url) {
-        base_url = url;
-    }
-
-    protected LayoutFactory layout_factory;
-    public LayoutFactory getLayoutFactory() {
-        return layout_factory;
-    }
-    public void setLayoutFactory(LayoutFactory layout_factory) {
-        this.layout_factory = layout_factory;
-    }
     
     
     /* turn on validation */
@@ -136,27 +168,6 @@ public class RenderingContext {
     /*
     public void setLogging(boolean logging) { }
     */
-    
-    
-    
-    /* ??? do we need a new interface for font renderer */
-    /* public void setFontRenderer(FontRenderer fr) { } */
-    /* set to -1 for no antialiasing. set to 0 for all antialising.
-    else, set to the threshold font size. does not take font scaling
-    into account. */
-    
-    /*
-    public void setAntiAliasedSizeThreshold(float fontsize) { }
-    */
-    
-    
-    /* used to adjust fonts, ems, points, into screen resolution */
-    /* uses system default by default (can we get that?) */
-    /* this should fix the reason firefox looks different */
-    /*
-    public void setDPI() { }
-    */
-    
     
     
     /* the default is browser, but you could change it to
@@ -188,11 +199,4 @@ public class RenderingContext {
     
     
     
-    /* is this really a property of the component that uses
-    this rendering context ?? */
-    protected boolean threaded_layout;
-    public void setThreadedLayout(boolean threaded) { 
-        threaded_layout = threaded;
-    }
-
 }

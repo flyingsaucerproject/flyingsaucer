@@ -163,7 +163,7 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
      */
     public void paintComponent( Graphics g ) {
         if ( anti_aliased ) {
-            ( (Graphics2D)g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+            //( (Graphics2D)g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         }
 
         if ( doc == null ) {
@@ -175,7 +175,7 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
             calcLayout( g );
         }
 
-        newContext( g );
+        newContext( (Graphics2D) g );
         layout_thread.startRender(g);
     }
 
@@ -220,10 +220,11 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
         //body = html;
 
         // set up CSS
-        newContext( g );
+        newContext( (Graphics2D)g );
         getContext().setMaxWidth( 0 );
         //long start_time = new java.util.Date().getTime();
         //u.p("layout = " + layout);
+        getRenderingContext().getTextRenderer().setupGraphics(getContext().getGraphics());
         body_box = layout.layout( getContext(), html );
         //u.p("is a fixed child: " + body_box.isChildrenExceedBounds());
         // if there is a fixed child then we need to set opaque to false
@@ -596,7 +597,7 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
      *
      * @param g  PARAM
      */
-    private void newContext( Graphics g ) {
+    private void newContext( Graphics2D g ) {
         //u.p("new context begin");
         //Point origin = new Point( 0, 0 );
         //Point last = new Point( 0, 0 );
@@ -675,6 +676,13 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2004/11/14 21:33:49  joshy
+ * new font rendering interface support
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.32  2004/11/12 20:54:08  joshy
  * fixed bug where setOpaque would become false for a page with fixed content and then never
  * become true again on another normal page

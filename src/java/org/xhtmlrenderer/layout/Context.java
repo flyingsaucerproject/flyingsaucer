@@ -20,7 +20,7 @@
 package org.xhtmlrenderer.layout;
 
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.net.URL;
@@ -48,7 +48,6 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.extend.*;
-import org.sektor37.minium.*;
 
 /**
  * Description of the Class
@@ -58,7 +57,7 @@ import org.sektor37.minium.*;
 public class Context {
 
     /** Description of the Field */
-    public Graphics graphics;
+    public Graphics2D graphics;
 
     /** Description of the Field */
     public StyleReference css;
@@ -137,15 +136,14 @@ public class Context {
         return ctx;
     }
     
-    private TextRenderer text_renderer;
     public TextRenderer getTextRenderer() {
-        return text_renderer;
+        return ctx.getTextRenderer();
     }
 
     /** Constructor for the Context object */
     public Context() {
         font_resolver = new FontResolverTest();
-        
+        /*
         // set up text rendering code
         TextRendererFactory text_renderer_factory = TextRendererFactory.newOversamplingInstance();
         text_renderer = text_renderer_factory.newTextRenderer();
@@ -168,6 +166,7 @@ public class Context {
             defaultHints = TextRenderingHints.DEFAULT_HINTS_FASTEST;
         }
         text_renderer.setTextRenderingHints(defaultHints);
+        */
     }
 
     /**
@@ -459,7 +458,7 @@ public class Context {
      *
      * @return   The graphics value
      */
-    public Graphics getGraphics() {
+    public Graphics2D getGraphics() {
         return graphics;
     }
 
@@ -694,6 +693,13 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/11/14 21:33:47  joshy
+ * new font rendering interface support
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.17  2004/11/14 16:40:58  joshy
  * refactored layout factory
  *
