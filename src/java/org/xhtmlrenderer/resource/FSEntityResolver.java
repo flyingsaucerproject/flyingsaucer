@@ -140,7 +140,7 @@ public class FSEntityResolver implements EntityResolver {
             InputStream is = GeneralUtil.openStreamFromClasspath( this, url );
             
             if ( is == null ) {
-                XRLog.load( Level.WARNING,
+                XRLog.xmlEntities( Level.WARNING,
                         "Can't find a local reference for Entity for public ID: " + publicID +
                         " and expected to. The local URL should be: " + url + ". Not finding " +
                         "this probably means a CLASSPATH configuration problem; this resource " +
@@ -149,10 +149,10 @@ public class FSEntityResolver implements EntityResolver {
                         "this case." );
             }
             local = new InputSource( is );
-            XRLog.load(Level.FINE, "Entity public: " + publicID + " -> " + url +
+            XRLog.xmlEntities(Level.FINE, "Entity public: " + publicID + " -> " + url +
             (local == null ? ", NOT FOUND" : " (local)"));
         } else {
-            XRLog.load("Entity public: " + publicID + ", no local mapping. Parser will probably pull from network.");
+            XRLog.xmlEntities("Entity public: " + publicID + ", no local mapping. Parser will probably pull from network.");
         }
         return local;
     }
@@ -184,6 +184,9 @@ public class FSEntityResolver implements EntityResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/03/27 18:36:26  pdoubleya
+ * Added separate logging for entity resolution.
+ *
  * Revision 1.2  2005/03/21 09:13:50  pdoubleya
  * Added XHTML 1.1 references (Kevin).
  *

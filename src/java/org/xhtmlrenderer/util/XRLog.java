@@ -46,6 +46,8 @@ public class XRLog {
     /** Description of the Field */
     private final static String CASCADE = "plumbing.cascade";
     /** Description of the Field */
+    private final static String XML_ENTITIES = "plumbing.load.xml-entities";
+    /** Description of the Field */
     private final static String CSS_PARSE = "plumbing.css-parse";
     /** Description of the Field */
     private final static String LAYOUT = "plumbing.layout";
@@ -81,6 +83,37 @@ public class XRLog {
     public static void cssParse( Level level, String msg, Throwable th ) {
         log( CSS_PARSE, level, msg, th );
     }
+
+    /**
+     * Description of the Method
+     *
+     * @param msg  PARAM
+     */
+    public static void xmlEntities( String msg ) {
+        xmlEntities( Level.INFO, msg );
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param level  PARAM
+     * @param msg    PARAM
+     */
+    public static void xmlEntities( Level level, String msg ) {
+        log( XML_ENTITIES, level, msg );
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param level  PARAM
+     * @param msg    PARAM
+     * @param th     PARAM
+     */
+    public static void xmlEntities( Level level, String msg, Throwable th ) {
+        log( XML_ENTITIES, level, msg, th );
+    }
+
     /**
      * Description of the Method
      *
@@ -416,6 +449,9 @@ public class XRLog {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/03/27 18:36:26  pdoubleya
+ * Added separate logging for entity resolution.
+ *
  * Revision 1.7  2005/01/29 20:18:38  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
