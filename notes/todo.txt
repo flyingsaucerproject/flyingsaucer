@@ -1,6 +1,7 @@
 fixed bugs
     table and table cell widths don't work with percentages
     table cells previously were sized twice, which breaks with relative sizing.
+changed contains to indexOf()>=0 since contains is a 1.5 addition
     
 known bugs
 table cell and table widths don't work with percentages.
@@ -25,7 +26,21 @@ text not defaulting to times
 
 second inf loop bug
 
-test cm, inches, etc
+test cm, inches, etc needs DPI setting ?
+
+single pixel dotted border not working (borders.xhtml)
+
+font not defaulting to times, paragraph.xhtml
+
+bold-talic doesn't look right, paragraph.xhtml
+
+borders on nested divs. nested.xhtml
+
+list item styles have disappeared
+
+close button on the dom inspector
+
+test for linked styles
 -------------------
 
 

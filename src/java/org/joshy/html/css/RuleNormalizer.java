@@ -185,7 +185,7 @@ public class RuleNormalizer {
             } else {
                 val = ident;
             }
-        } else if ( propName.contains("color")) {
+        } else if ( propName.indexOf("color") >= 0) {
             val = getColorHex(ident);
         } else {
             val = ident;
