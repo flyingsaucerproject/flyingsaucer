@@ -35,6 +35,10 @@ public class CSSBank extends CSSAccessor {
     public void parse(Reader reader) throws IOException {
         parser.parse(reader);
     }
+    public void parse(String reader) throws IOException {
+        parser.parse(reader);
+    }
+    
     public void parseInlineStyles(Element elem) throws IOException {
         parser.parseInlineStyles(elem);
     }

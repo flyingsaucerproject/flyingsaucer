@@ -34,6 +34,14 @@ public class CSSParser {
         bank.sheets.add(style);
         this.pullOutStyles(style);
     }
+    public void parse(String reader) throws IOException {
+        CSSOMParser parser = new CSSOMParser();
+        InputSource is = new InputSource(reader);
+        CSSStyleSheet style = parser.parseStyleSheet(is);
+        //u.p("got style sheet: " + style);
+        bank.sheets.add(style);
+        this.pullOutStyles(style);
+    }
     
     
     public void parseInlineStyles(Element elem) throws IOException {

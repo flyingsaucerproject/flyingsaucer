@@ -57,7 +57,7 @@ public abstract class CSSAccessor {
         //u.p("potential float value = " + val);
         if(val == null) {
             //u.dump_stack();
-            u.p("elem " + elem.getNodeName() + " doesn't have the property: " + prop);
+            //u.p("elem " + elem.getNodeName() + " doesn't have the property: " + prop);
             return -1;
         }
 
@@ -88,7 +88,7 @@ public abstract class CSSAccessor {
         CSSValue val = getProperty(elem,prop,inherit);
         //u.p("potential float value = " + val);
         if(val == null) {
-            u.p("elem " + elem.getNodeName() + " doesn't have the property: " + prop);
+            //u.p("elem " + elem.getNodeName() + " doesn't have the property: " + prop);
             return -1;
         }
         if(val.getCssValueType() != val.CSS_PRIMITIVE_VALUE) {
@@ -193,6 +193,7 @@ public abstract class CSSAccessor {
     public Color getColor(Element elem, boolean inherit) {
         //u.p("CSSBank.getColor("+elem.getNodeName() + ")");
         CSSValue val = getProperty(elem,"color",inherit);
+        //u.p("val = " + val);
         if(val.getCssValueType() == val.CSS_PRIMITIVE_VALUE) {
             CSSPrimitiveValue pval = (CSSPrimitiveValue)val;
             if(pval.getPrimitiveType() == pval.CSS_RGBCOLOR) {

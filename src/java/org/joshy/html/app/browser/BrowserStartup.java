@@ -85,16 +85,15 @@ class BrowserMenuBar extends JMenuBar {
         view.add(view_source);
         add(view);
         
-        demos.add(new LoadAction("Borders","demos/border.xhtml"));
-        demos.add(new LoadAction("Backgrounds","demos/background.xhtml"));
-        demos.add(new LoadAction("Paragraph","demos/paragraph.xhtml"));
-        demos.add(new LoadAction("Line Breaking","demos/breaking.xhtml"));
-        demos.add(new LoadAction("Forms","demos/forms.xhtml"));
-        demos.add(new LoadAction("Headers","demos/header.xhtml"));
-        demos.add(new LoadAction("Nested Divs","demos/nested.xhtml"));
-        demos.add(new LoadAction("Selectors","demos/selectors.xhtml"));
-        demos.add(new LoadAction("Images","demos/image.xhtml"));
-        demos.add(new LoadAction("Forms","demos/forms.xhtml"));
+        demos.add(new LoadAction("Borders","demo:demos/border.xhtml"));
+        demos.add(new LoadAction("Backgrounds","demo:demos/background.xhtml"));
+        demos.add(new LoadAction("Paragraph","demo:demos/paragraph.xhtml"));
+        demos.add(new LoadAction("Line Breaking","demo:demos/breaking.xhtml"));
+        demos.add(new LoadAction("Forms","demo:demos/forms.xhtml"));
+        demos.add(new LoadAction("Headers","demo:demos/header.xhtml"));
+        demos.add(new LoadAction("Nested Divs","demo:demos/nested.xhtml"));
+        demos.add(new LoadAction("Selectors","demo:demos/selectors.xhtml"));
+        demos.add(new LoadAction("Images","demo:demos/image.xhtml"));
             
         add(demos);
         
@@ -359,6 +358,7 @@ class BrowserPanel extends JPanel {
         logger.info("Loading Page: " + url_text);
         current_url = url_text;
         
+        
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = fact.newDocumentBuilder();
         builder.setErrorHandler(new ErrorHandler() {
@@ -380,13 +380,26 @@ class BrowserPanel extends JPanel {
         Document doc = null;
         
         
-        URL toLoad = null;
-        if(url_text.startsWith("http")) {
+        URL ref = null;
+        
+        if(url_text.startsWith("demo:")) {
+            DemoMarker marker = new DemoMarker();
+            u.p("marker = " + marker);
+            String short_url = url_text.substring(5);
+            u.p("sub = " + short_url);
+            if(!short_url.startsWith("/")) {
+                short_url = "/" + short_url;
+            }
+            doc = builder.parse(marker.getClass().getResourceAsStream(short_url));
+            ref = marker.getClass().getResource(short_url);
+        } else if(url_text.startsWith("http")) {
             doc = builder.parse(url_text);
+            ref = new File(url_text).toURL();
         } else {
             doc = builder.parse(url_text);
+            ref = new File(url_text).toURL();
         }
-        loadPage(doc,new File(url_text).toURL());
+        loadPage(doc,ref);
         
         setStatus("Successfully loaded: " + url_text);
     }

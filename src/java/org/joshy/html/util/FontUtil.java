@@ -67,11 +67,15 @@ public static Font getElementFont(Context c, Element el) {
 
     String weight = c.css.getStringProperty(el,"font-weight");
     String[] family = c.css.getStringArrayProperty(el,"font-family");
+    //u.p("families");
+    //u.p(family);
+    /*
     if(!family[0].equals("sans-serif")) {
         //u.p("family = ");
         //u.p(family);
         //u.p("");
     }
+    */
     String style = c.css.getStringProperty(el,"font-style");
 
     f = c.getFontResolver().resolveFont(c,family,size,weight,style);

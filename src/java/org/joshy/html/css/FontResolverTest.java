@@ -27,8 +27,9 @@ public class FontResolverTest extends FontResolver {
         
         // preload sans, serif, and monospace into the available font hash
         available_fonts_hash.put("Serif",new Font("Serif",Font.PLAIN,1));
-        available_fonts_hash.put("Serif",new Font("SansSerif",Font.PLAIN,1));
-        available_fonts_hash.put("Serif",new Font("Monospaced",Font.PLAIN,1));
+        available_fonts_hash.put("SansSerif",new Font("SansSerif",Font.PLAIN,1));
+        //u.p("put in sans serif");
+        available_fonts_hash.put("Monospaced",new Font("Monospaced",Font.PLAIN,1));
     }
     
     protected Font createFont(Font root_font, float size, String weight, String style) {
@@ -101,16 +102,24 @@ public class FontResolverTest extends FontResolver {
     public Font resolveFont(Context c, String[] families, float size, String weight, String style) {
         
         // for each font family
-        for(int i=0; i<families.length; i++) {
-            Font font = resolveFont(c,families[i],size,weight,style);
-            if(font != null) { return font; }
+        if(families != null) {
+            for(int i=0; i<families.length; i++) {
+                Font font = resolveFont(c,families[i],size,weight,style);
+                if(font != null) { return font; }
+            }
         }
         
         // if we get here then no font worked, so just return default sans
+        //u.p("pulling out: -" + available_fonts_hash.get("SansSerif") + "-");
+        try {
         Font fnt = createFont((Font)available_fonts_hash.get("SansSerif"),size,weight,style);
         instance_hash.put(getFontInstanceHashName("SansSerif",size,weight,style),fnt);
         //u.p("subbing in base sans : " + fnt);
         return fnt;
+        } catch (Exception ex) {
+            u.p("exception: " + ex);
+            return c.getGraphics().getFont();
+        }
 
     }
 }

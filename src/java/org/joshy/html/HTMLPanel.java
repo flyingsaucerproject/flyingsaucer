@@ -1,5 +1,6 @@
 package org.joshy.html;
 
+import java.io.*;
 import java.util.Iterator;
 import javax.swing.JScrollPane;
 import java.awt.Color;
@@ -74,8 +75,15 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
             //c.css.parse(new FileReader("second.css"));
             Object marker = new DefaultCSSMarker();
             //u.p("getting: " + marker.getClass().getResource("default.css"));
-            InputStream stream = marker.getClass().getResourceAsStream("default.css");
-            c.css.parse(new InputStreamReader(stream));
+            if(marker.getClass().getResourceAsStream("default.css") != null) {
+                URL stream = marker.getClass().getResource("default.css");
+                //u.p("loading the url: " + stream);
+                String str = u.inputstream_to_string(stream.openStream());
+                //u.p("loaded: " + str);
+                c.css.parse(new StringReader(str));//BufferInputStream(str));
+            } else {
+                u.p("can't load default css");
+            }
             c.css.parseInlineStyles(html);
         } catch (Exception ex) {
             u.p("error parsing CSS: " + ex);
