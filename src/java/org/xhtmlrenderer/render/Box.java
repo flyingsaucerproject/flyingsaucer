@@ -415,6 +415,7 @@ public class Box {
         if(isElement()) {
             return getElement();
         }
+        if(node == null) { return null; }
         return (Element)node.getParentNode();
     }
 
@@ -437,7 +438,6 @@ public class Box {
      */
     public boolean isElement() {
         if(node == null) {
-            u.p("this = " + this);
             return false;
         }
         if ( node.getNodeType() == node.ELEMENT_NODE ) {
@@ -587,6 +587,16 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/11/17 00:44:54  joshy
+ * fixed bug in the history manager
+ * added cursor support to the link listener
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.14  2004/11/15 15:20:39  joshy
  * fixes for absolute layout
  *

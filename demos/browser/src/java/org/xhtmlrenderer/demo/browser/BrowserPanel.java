@@ -258,8 +258,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     public void goBack()
             throws Exception {
         root.history.goPrevious();
-        view.setDocument(root.history.getCurrentDocument(), root.history.getCurrentURL());
         //root.history.dumpHistory();
+        view.setDocument(root.history.getCurrentDocument(), root.history.getCurrentURL());
         updateButtons();
     }
 
@@ -283,11 +283,10 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * @param url PARAM
      * @throws Exception Throws
      */
-    public void loadPage(Document doc, URL url)
-            throws Exception {
+    public void loadPage(Document doc, URL url) throws Exception {
         view.setDocument(doc, url);
         view.addDocumentListener(this);
-        root.history.goNewDocument(doc);
+        root.history.goNewDocument(doc, url);
         updateButtons();
     }
 
@@ -320,6 +319,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
             }
             doc = builder.parse(marker.getClass().getResourceAsStream(short_url));
             ref = marker.getClass().getResource(short_url);
+            u.p("doc = " + doc);
+            u.p("ref = " + ref);
         } else if (url_text.startsWith("http")) {
             doc = builder.parse(url_text);
             ref = new File(url_text).toURL();
@@ -337,6 +338,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
             doc = builder.parse(url_text);
             ref = new File(url_text).toURL();
         }
+
+        u.p("going to load a page: " + doc + " " + ref);
         loadPage(doc, ref);
 
         setStatus("Successfully loaded: " + url_text);
@@ -472,6 +475,16 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/17 00:44:54  joshy
+ * fixed bug in the history manager
+ * added cursor support to the link listener
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/11/16 07:25:20  tobega
  * Renamed HTMLPanel to BasicPanel
  *

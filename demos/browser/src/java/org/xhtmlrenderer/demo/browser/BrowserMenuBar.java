@@ -41,6 +41,7 @@ import javax.swing.KeyStroke;
 
 import org.xhtmlrenderer.swing.DOMInspector;
 import org.xhtmlrenderer.swing.HoverListener;
+import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.*;
@@ -245,14 +246,21 @@ public class BrowserMenuBar extends JMenuBar {
 
     /** Description of the Method */
     public void createActions() {
+        
         SelectionMouseListener ma = new SelectionMouseListener();
         root.panel.view.addMouseListener( ma );
         root.panel.view.addMouseMotionListener( ma );
         logger.info( "added mouse selection listener: " + ma );
+        
         HoverListener hl = new HoverListener(root.panel.view);
         root.panel.view.addMouseListener(hl);
         root.panel.view.addMouseMotionListener(hl);
-        logger.info( "added hover listener:" + hl);
+        logger.info( "added hover listener:" + hl );
+
+        LinkListener ll = new LinkListener(root.panel.view);
+        root.panel.view.addMouseListener(ll);
+        root.panel.view.addMouseMotionListener(ll);
+        logger.info( "added link listener: " + ll) ;
     }
 
     /**
@@ -480,6 +488,16 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2004/11/17 00:44:54  joshy
+ * fixed bug in the history manager
+ * added cursor support to the link listener
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.18  2004/11/16 03:43:25  joshy
  * first pass at printing support
  * Issue number:

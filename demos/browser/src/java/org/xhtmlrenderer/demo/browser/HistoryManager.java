@@ -94,6 +94,8 @@ public class HistoryManager {
      * @param url  PARAM
      */
     public void goNewDocument( Document doc, URL url ) {
+        //u.p("going to a new document: " + doc + " " + url);
+        //u.dump_stack();
         Entry entry = new Entry();
         entry.doc = doc;
         entry.url = url;
@@ -111,6 +113,7 @@ public class HistoryManager {
 
     /** Description of the Method */
     public void dumpHistory() {
+        u.p("history:");
         u.p( entries );
         u.p( "current index = " + index );
     }
@@ -170,6 +173,16 @@ public class HistoryManager {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/17 00:44:54  joshy
+ * fixed bug in the history manager
+ * added cursor support to the link listener
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 14:38:58  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

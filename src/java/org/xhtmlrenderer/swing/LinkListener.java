@@ -8,13 +8,14 @@ import org.xhtmlrenderer.util.u;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.event.*;
 
-public class LinkListener extends MouseAdapter {
+public class LinkListener extends MouseInputAdapter {
 
     /**
      * Description of the Field
      */
-    BasicPanel panel;
+    protected BasicPanel panel;
 
     /**
      * Constructor for the ClickMouseListener object
@@ -25,65 +26,47 @@ public class LinkListener extends MouseAdapter {
         this.panel = panel;
     }
 
+    public void mouseEntered(MouseEvent evt) {
+        Box box = panel.findBox(evt.getX(), evt.getY());
+        setCursor(box);
+    }
+
+    public void mouseExited(MouseEvent evt) {
+        Box box = panel.findBox(evt.getX(), evt.getY());
+        setCursor(box);
+    } 
+    
     public void mousePressed(MouseEvent evt) {
-        Box box = panel.findBox(evt.getX(), evt.getY());
-        if (box == null) {
-            return;
-        }
-        u.p("pressed " + box);
-
-        if (box.node != null) {
-            Node node = box.node;
-            if (node.getNodeType() == node.TEXT_NODE) {
-                node = node.getParentNode();
-            }
-
-            if (panel.getContext().getRenderingContext().getLayoutFactory().isLink(node)) {
-                u.p("clicked on a link");
-                box.clicked = true;
-                box.color = new Color(255, 255, 0);
-                panel.repaint();
-            }
-        }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param evt PARAM
-     */
     public void mouseReleased(MouseEvent evt) {
-
         Box box = panel.findBox(evt.getX(), evt.getY());
-        if (box == null) {
-            return;
+        if (box == null) return;
+
+        Element elem = box.getRealElement();
+        if(elem == null) return;
+
+        if (panel.getContext().getRenderingContext().getLayoutFactory().isLink(elem)) {
+            linkClicked(box,evt);
         }
-        u.p("pressed " + box);
-        if (box.node != null) {
-            Node node = box.node;
-            if (node.getNodeType() == node.TEXT_NODE) {
-                node = node.getParentNode();
-            }
-
-            if (panel.getContext().getRenderingContext().getLayoutFactory().isLink(node)) {
-                u.p("clicked on a link");
-                box.clicked = true;
-                box.color = new Color(255, 0, 0);
-                panel.repaint();
-                followLink((Element) node);
-            }
-
-        }
-
+        
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param elem PARAM
-     */
-    private void followLink(final Element elem) {
+    public void mouseMoved(MouseEvent evt) {
+        Box box = panel.findBox(evt.getX(), evt.getY());
+        setCursor(box);
+    }
+
+    public void mouseDragged(MouseEvent evt) {
+        Box box = panel.findBox(evt.getX(), evt.getY());
+        setCursor(box);
+    }
+
+    public void linkClicked(Box box, MouseEvent evt) {
+        box.clicked = true;
+        panel.repaint();
         try {
+            Element elem = box.getRealElement();
             if (elem.hasAttribute("href")) {
                 panel.setDocumentRelative(elem.getAttribute("href"));
             }
@@ -92,5 +75,34 @@ public class LinkListener extends MouseAdapter {
         }
     }
 
+    private Box prev;
+    private void setCursor(Box box){
+        if (prev == box || box == null) {
+            return;
+        }
+        
+        if(box.getRealElement() == null) { return; }
+
+        if (box.getRealElement().getNodeName().equals("a")){
+            if (!panel.getCursor().equals(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))){
+                panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+        } else {
+            if (!panel.getCursor().equals(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR))){
+                panel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
+        }
+
+        prev = box;
+    }
+/*
+    private Box findBox(MouseEvent evt) {
+        Box box = panel.findBox(evt.getX(), evt.getY());
+        if (box == null) return null;
+        if (box instanceof LineBox) return null;
+        return box;
+    }
+*/
+    
 }
 
