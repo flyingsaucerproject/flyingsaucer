@@ -28,6 +28,7 @@ import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.value.BorderColor;
 
 
 /**
@@ -78,6 +79,13 @@ public class Box {
     // margins, borders, and padding stuff
     /** Description of the Field */
     public Color border_color;
+    private BorderColor bd_color;
+    public void setBorderColor(BorderColor bd_color) {
+        this.bd_color = bd_color;
+    }
+    public BorderColor getBorderColor() {
+        return bd_color;
+    }
     /** Description of the Field */
     public Border padding;
     /** Description of the Field */
@@ -541,6 +549,15 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/07 16:23:18  joshy
+ * added support for lighten and darken to bordercolor
+ * added support for different colored sides
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/11/06 22:49:52  joshy
  * cleaned up alice
  * initial support for inline borders and backgrounds

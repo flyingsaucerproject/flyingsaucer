@@ -1,7 +1,7 @@
 /*
  *
  * DerivedValue.java
- * Copyright (c) 2004 Patrick Wright, Torbjörn Gannholm
+ * Copyright (c) 2004 Patrick Wright, Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -230,8 +230,8 @@ public class DerivedValue {
         switch ( cssSACPrimitiveValueType() ) {
             case CSSPrimitiveValue.CSS_EMS:
                 // EM is equal to font-size of element on which it is used
-                // The exception is when ’em’ occurs in the value of
-                // the ’font-size’ property itself, in which case it refers
+                // The exception is when ï¿½emï¿½ occurs in the value of
+                // the ï¿½font-sizeï¿½ property itself, in which case it refers
                 // to the font size of the parent element (spec: 4.3.2)
                 absVal = relVal * deriveFontSize( parentStyle, propName );
                 _newPrimitiveValueType = CSSPrimitiveValue.CSS_PX;

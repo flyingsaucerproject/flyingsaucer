@@ -388,7 +388,7 @@
             classpath="${dest.java.dir};${dest.dir}"
             fork="${java-exec.fork.tests}"
             >
-            <arg value="test.xhtml"/>
+            <arg value="${file}"/>
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
@@ -609,6 +609,15 @@
 $Id$
 
 $Log$
+Revision 1.65  2004/11/07 16:23:16  joshy
+added support for lighten and darken to bordercolor
+added support for different colored sides
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.64  2004/11/07 13:39:16  joshy
 fixed missing borders on the table
 changed td and th to display:table-cell

@@ -42,6 +42,22 @@ public class BorderColor {
     /** Color for right of the border. */
     public Color rightColor;
 
+    public BorderColor brighter() {
+        BorderColor bc = new BorderColor();
+        bc.topColor = topColor.brighter();
+        bc.bottomColor = bottomColor.brighter();
+        bc.leftColor = leftColor.brighter();
+        bc.rightColor = rightColor.brighter();
+        return bc;
+    }
+    public BorderColor darker() {
+        BorderColor bc = new BorderColor();
+        bc.topColor = topColor.darker();
+        bc.bottomColor = bottomColor.darker();
+        bc.leftColor = leftColor.darker();
+        bc.rightColor = rightColor.darker();
+        return bc;
+    }
 
     /**
      * ...
@@ -63,6 +79,15 @@ public class BorderColor {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/11/07 16:23:17  joshy
+ * added support for lighten and darken to bordercolor
+ * added support for different colored sides
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.2  2004/10/23 13:32:01  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

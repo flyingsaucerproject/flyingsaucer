@@ -1,7 +1,7 @@
 /*
  *
  * CalculatedStyle.java
- * Copyright (c) 2004 Patrick Wright, Torbjörn Gannholm
+ * Copyright (c) 2004 Patrick Wright, Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
