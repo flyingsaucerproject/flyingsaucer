@@ -92,6 +92,7 @@
                 <include name="demos/*.gif"/>
                 <include name="demos/*.png"/>
                 <include name="demos/splash/**"/>
+                <include name="demos/about/**"/>
             </fileset>
         </jar>
     </target>
