@@ -20,21 +20,19 @@
  */
 package org.xhtmlrenderer.css.constants;
 
-
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Field;
-import org.w3c.dom.css.CSSValue;
+import java.lang.reflect.Modifier;
 import java.util.*;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
-
+import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.XRValue;
 
 
-
-/** 
+/**
  * Utility class for working with <code>CSSValue</code> instances.
-*/
+ *
+ * @author   empty
+ */
 public class ValueConstants {
     /**
      * Type descriptions--a crude approximation taken by scanning CSSValue
@@ -43,23 +41,49 @@ public class ValueConstants {
     private final static List TYPE_DESCRIPTIONS;
 
     /**
+     * A text representation of the CSS type for this value.
+     *
+     * @param cssType             PARAM
+     * @param primitiveValueType  PARAM
+     * @return                    Returns
+     */
+    public static String cssType( int cssType, int primitiveValueType ) {
+        String desc = null;
+        if ( cssType == CSSValue.CSS_PRIMITIVE_VALUE ) {
+            if ( primitiveValueType >= TYPE_DESCRIPTIONS.size() ) {
+                desc = "{unknown: " + primitiveValueType + "}";
+            } else {
+                desc = (String)TYPE_DESCRIPTIONS.get( primitiveValueType );
+                if ( desc == null ) {
+                    desc = "{UNKNOWN VALUE TYPE}";
+                }
+            }
+        } else {
+            desc = "{value list}";
+        }
+        return desc;
+    }
+
+    /**
      * Returns true if the specified value was absolute (even if we have a
      * computed value for it)
      *
-     * @return   The absoluteUnit value
+     * @param cssValue  PARAM
+     * @return          The absoluteUnit value
      */
-    public static boolean isAbsoluteUnit(CSSValue cssValue) {
+    public static boolean isAbsoluteUnit( CSSValue cssValue ) {
         // WARN: this will fail if not a primitive value
-        if ( !( cssValue.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE )) 
+        if ( !( cssValue.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) ) {
             return false;
-        
+        }
+
         // HACK: in case someone passes an instance of XRValue
         short type = 0;
         if ( cssValue instanceof XRValue ) {
-            CSSValue nested = ((XRValue)cssValue).cssValue();
-            type = ((CSSPrimitiveValue)nested).getPrimitiveType();
+            CSSValue nested = ( (XRValue)cssValue ).cssValue();
+            type = ( (CSSPrimitiveValue)nested ).getPrimitiveType();
         } else {
-            type = ((CSSPrimitiveValue)cssValue).getPrimitiveType();
+            type = ( (CSSPrimitiveValue)cssValue ).getPrimitiveType();
         }
 
         // TODO: check this list...
@@ -69,7 +93,6 @@ public class ValueConstants {
             case CSSPrimitiveValue.CSS_EXS:
             case CSSPrimitiveValue.CSS_PERCENTAGE:
                 return false;
-            
             // length
             case CSSPrimitiveValue.CSS_IN:
             case CSSPrimitiveValue.CSS_CM:
@@ -109,20 +132,20 @@ public class ValueConstants {
             case CSSPrimitiveValue.CSS_IDENT:
             case CSSPrimitiveValue.CSS_STRING:
                 return true;
-                
             case CSSPrimitiveValue.CSS_UNKNOWN:
             default:
-            System.out.println(cssValue.getCssText() + ", returning false");
+                System.out.println( cssValue.getCssText() + ", returning false" );
                 return false;
         }
     }
-    
+
     /**
      * Gets the cssValueTypeDesc attribute of the XRValueImpl object
      *
-     * @return   The cssValueTypeDesc value
+     * @param cssValue  PARAM
+     * @return          The cssValueTypeDesc value
      */
-    public static String getCssValueTypeDesc(CSSValue cssValue) {
+    public static String getCssValueTypeDesc( CSSValue cssValue ) {
         switch ( cssValue.getCssValueType() ) {
             case CSSValue.CSS_CUSTOM:
                 return "CSS_CUSTOM";
@@ -136,22 +159,24 @@ public class ValueConstants {
                 return "UNKNOWN";
         }
     }
-    
+
     /**
      * Gets the length attribute of the XRValueImpl object
      *
-     * @return   The length value
+     * @param cssValue  PARAM
+     * @return          The length value
      */
-    public static boolean isNumber(CSSPrimitiveValue cssValue) {
-        return isNumber(cssValue.getPrimitiveType());   
+    public static boolean isNumber( CSSPrimitiveValue cssValue ) {
+        return isNumber( cssValue.getPrimitiveType() );
     }
 
     /**
      * Gets the length attribute of the XRValueImpl object
      *
-     * @return   The length value
+     * @param cssPrimitiveType  PARAM
+     * @return                  The length value
      */
-    public static boolean isNumber(short cssPrimitiveType) {
+    public static boolean isNumber( short cssPrimitiveType ) {
         switch ( cssPrimitiveType ) {
             // fall thru on all these
             // relative length or size
@@ -172,7 +197,7 @@ public class ValueConstants {
                 return false;
         }
     }
-    
+
     static {
         SortedMap map = new TreeMap();
         TYPE_DESCRIPTIONS = new ArrayList();
@@ -213,26 +238,19 @@ public class ValueConstants {
             ex.printStackTrace();
         }
     }
-    
-    /**
-     * A text representation of the CSS type for this value.
-     *
-     * @return   Returns
-     */
-    public static String cssType(int cssType, int primitiveValueType) {
-        String desc = null;
-        if ( cssType == CSSValue.CSS_PRIMITIVE_VALUE ) {
-            if ( primitiveValueType >= TYPE_DESCRIPTIONS.size() ) {
-                desc = "{unknown: " + primitiveValueType + "}";
-            } else {
-                desc = (String)TYPE_DESCRIPTIONS.get( primitiveValueType );
-                if ( desc == null ) {
-                    desc = "{UNKNOWN VALUE TYPE}";
-                }
-            }
-        } else {
-            desc = "{value list}";
-        }
-        return desc;
-    }
-} // end class
+}// end class
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:09:13  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards
+ * except for common packages
+ * (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
+
