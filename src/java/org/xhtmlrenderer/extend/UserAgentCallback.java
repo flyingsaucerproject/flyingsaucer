@@ -21,7 +21,7 @@
 
 package org.xhtmlrenderer.extend;
 
-import java.io.InputStream;
+import java.awt.Image;
 
 /**
  * To be implemented by any user agent using the panel
@@ -33,12 +33,12 @@ public interface UserAgentCallback {
     /**
      * returns null if UserAgent does not wish to access the URI
      */
-    public java.io.Reader getReaderForURI(String uri);
+    public java.io.Reader getStylesheet(String uri);
 
     /**
      * returns null if UserAgent does not wish to access the URI
      */
-    public InputStream getInputStreamForURI(String uri);
+    public Image getImage(String uri);
 
     /**
      * UserAgent should consider if it should answer truthfully or not for privacy reasons

@@ -8,8 +8,11 @@ package org.xhtmlrenderer.swing;
 
 import org.xhtmlrenderer.util.XRLog;
 
-import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.Image;
 import java.io.InputStreamReader;
+import java.lang.ref.SoftReference;
+import java.util.HashMap;
 
 /**
  * @author Torbjörn Gannholm
@@ -26,7 +29,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
         return new XhtmlNamespaceHandler();
     }*/
     
-    public java.io.Reader getReaderForURI(String uri) {
+    public java.io.Reader getStylesheet(String uri) {
         java.io.InputStream is = null;
         InputStreamReader isr = null;
         try {
@@ -41,17 +44,28 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
         return isr;
     }
 
-    public InputStream getInputStreamForURI(String uri) {
+    private HashMap imageCache;
+
+    public Image getImage(String uri) {
         java.io.InputStream is = null;
+        Image img = null;
+        if (imageCache != null) {
+            SoftReference ref = (SoftReference) imageCache.get(uri);
+            if (ref != null) img = (Image) ref.get();
+            if (img != null) return img;
+        }
         try {
             //is = _baseURI.resolve(uri).toURL().openStream();
             is = (new java.net.URL(uri)).openStream();
+            img = ImageIO.read(is);
+            if (imageCache == null) imageCache = new HashMap();
+            imageCache.put(uri, new SoftReference(img));
         } catch (java.net.MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
         } catch (java.io.IOException e) {
             XRLog.exception("IO problem for " + uri, e);
         }
-        return is;
+        return img;
     }
 
     public boolean isVisited(String uri) {

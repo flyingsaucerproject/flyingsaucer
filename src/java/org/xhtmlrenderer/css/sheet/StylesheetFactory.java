@@ -105,7 +105,7 @@ public class StylesheetFactory {
      * @return Returns null if uri could not be loaded
      */
     public Stylesheet parse(StylesheetInfo info) {
-        Reader r = _userAgent.getReaderForURI(info.getUri());
+        Reader r = _userAgent.getStylesheet(info.getUri());
         if (r != null) return parse(r, info);
         return null;
     }
@@ -241,6 +241,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/01/10 23:24:46  tobega
+ * Created image cache
+ *
  * Revision 1.11  2004/12/11 18:18:07  tobega
  * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
  *

@@ -21,10 +21,7 @@ package org.xhtmlrenderer.util;
 
 import org.xhtmlrenderer.layout.Context;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.Image;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -67,14 +64,7 @@ public class ImageUtil {
             }
         }
 
-        InputStream is = c.getCtx().getUac().getInputStreamForURI(src);
-        if (is != null) {
-            try {
-                img = ImageIO.read(is);
-            } catch (IOException e) {
-                XRLog.exception("Couldn't get image " + src, e);
-            }
-        }
+        img = c.getCtx().getUac().getImage(src);
 
         /*if (src.startsWith("http")) {
 
@@ -115,6 +105,9 @@ public class ImageUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/01/10 23:24:47  tobega
+ * Created image cache
+ *
  * Revision 1.8  2005/01/08 22:05:16  tobega
  * Now saves form components.
  *
