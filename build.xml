@@ -227,8 +227,12 @@
     <target name="compile.all" depends="compile, compile.browser, compile.about">
     </target>
     
-    <!-- builds JavaDoc for all code -->
-    <target name="javadoc" description="builds javadoc for all XR packages" depends="properties">
+    <!--
+    DONT USE THIS FROM COMMAND LINE; use docs
+    builds JavaDoc for all code. Meant to be used with antcall; set parameters
+    for properties antcall.dest.javadoc.dir and antcall.javadoc.file 
+    -->
+    <target name="_javadoc" description="internal use; use 'docs' instead. builds javadoc for all XR packages" depends="properties">
       <javadoc 
                 access="public" 
                 author="true"
@@ -526,11 +530,11 @@
             showFileName="true"
             showTableBorder="true"
             />
-        <antcall target="javadoc">
+        <antcall target="_javadoc">
           <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.full.dir}" />
           <param name="antcall.javadoc.file" value="" />
         </antcall>
-        <antcall target="javadoc">
+        <antcall target="_javadoc">
           <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.user.dir}" />
           <param name="antcall.javadoc.file" value="src/java/org/xhtmlrenderer/swing/HTMLPanel.java" />
           <reference refid="user-java-files" torefid="org-java-files" />
@@ -630,6 +634,9 @@
 $Id$
 
 $Log$
+Revision 1.71  2004/11/15 13:41:02  pdoubleya
+Renamed javadoc target to _javadoc, as it is meant for internal use; use 'docs' target to generate javadocs for the project.
+
 Revision 1.70  2004/11/12 20:43:29  joshy
 added demo of custom font
 
