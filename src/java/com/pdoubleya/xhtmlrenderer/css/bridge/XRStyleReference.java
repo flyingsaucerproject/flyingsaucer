@@ -39,6 +39,7 @@ import org.w3c.css.sac.LangCondition;
 import org.w3c.css.sac.PositionalCondition;
 import org.w3c.css.sac.Selector;
 import org.w3c.css.sac.SiblingSelector;
+import org.w3c.css.sac.SimpleSelector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -912,11 +913,84 @@ public class XRStyleReference implements StyleReference {
 
 
     /**
+     * Adds the top-level or leftmost selector of the XRStyleReference
+     * object.
+     *
+     * @param rs         The feature to be added to the ChainedSelector attribute
+     * @param selector  The feature to be added to the ChainedSelector attribute
+     */
+    private net.homelinux.tobe.css.Selector addSelector(Ruleset rs, Selector selector) {
+            net.homelinux.tobe.css.Selector s = null;
+            if ( selector.getSelectorType() == Selector.SAC_DIRECT_ADJACENT_SELECTOR ) {
+                s = addSelector(rs, ( (SiblingSelector)selector ).getSelector());
+                addChainedSelector(s, selector);
+            } else if ( selector.getSelectorType() == Selector.SAC_CHILD_SELECTOR ) {
+                s = addSelector(rs, ( (DescendantSelector)selector ).getAncestorSelector());
+                addChainedSelector(s, selector);
+            } else if ( selector.getSelectorType() == Selector.SAC_DESCENDANT_SELECTOR ) {
+                s = addSelector(rs, ( (DescendantSelector)selector ).getAncestorSelector());
+                addChainedSelector(s, selector);
+            } else if ( selector.getSelectorType() == Selector.SAC_CONDITIONAL_SELECTOR ) {
+                Condition cond = ( (ConditionalSelector)selector ).getCondition();
+                s = addSelector(rs, ( (ConditionalSelector)selector ).getSimpleSelector());
+                addConditions( s, cond );
+            } else if ( selector.getSelectorType() == Selector.SAC_ELEMENT_NODE_SELECTOR ) {
+                s = rs.createSelector( net.homelinux.tobe.css.Selector.DESCENDANT_AXIS, ( (ElementSelector)selector ).getLocalName() );
+            } else System.err.println("bad selector in addSelector");
+
+            return s;
+    }
+
+    /**
+     * Adds a feature to the ChainedSelector attribute of the XRStyleReference
+     * object.
+     *
+     * @param s         The feature to be added to the ChainedSelector attribute
+     * @param selector  The feature to be added to the ChainedSelector attribute
+     */
+    // CLN: Taken from TobeRuleBank (PWW 08/07/2004)
+    // Tobe fixed 2004-08-26
+    private void addChainedSelector( net.homelinux.tobe.css.Selector s, Selector selector ) {
+        int axis = 0;
+        SimpleSelector simple = null;
+        switch ( selector.getSelectorType() ) {
+            case Selector.SAC_DIRECT_ADJACENT_SELECTOR:
+                axis = net.homelinux.tobe.css.Selector.IMMEDIATE_SIBLING_AXIS;
+                simple = ( (SiblingSelector)selector ).getSiblingSelector();
+                break;
+            case Selector.SAC_CHILD_SELECTOR:
+                axis = net.homelinux.tobe.css.Selector.CHILD_AXIS;
+                simple = ( (DescendantSelector)selector ).getSimpleSelector();
+                break;
+            case Selector.SAC_DESCENDANT_SELECTOR:
+                axis = net.homelinux.tobe.css.Selector.DESCENDANT_AXIS;
+                simple = ( (DescendantSelector)selector ).getSimpleSelector();
+                break;
+            default:
+                System.err.println( "Bad selector" );
+        }
+
+        Condition cond = null;
+        if ( simple.getSelectorType() == Selector.SAC_CONDITIONAL_SELECTOR ) {
+            cond = ( (ConditionalSelector)selector ).getCondition();
+            //if ConditionalSelectors can be nested, we are in trouble here
+            simple = ( (ConditionalSelector)selector ).getSimpleSelector();
+        }
+        if ( simple.getSelectorType() == Selector.SAC_ELEMENT_NODE_SELECTOR ) {
+            s = s.appendChainedSelector( axis, ( (ElementSelector)simple ).getLocalName() );
+        }
+        if ( cond != null ) {
+            addConditions( s, cond );
+        }
+    }
+
+    /**
      * Adds a feature to the Rule attribute of the XRStyleReference object
      *
      * @param rule  The feature to be added to the Rule attribute
      */
     // CLN: * Taken from TobeRuleBank (PWW 08/07/2004)
+    // Tobe fixed 2004-08-26
     private void addRule( JStyle rule ) {
         _tbStyleMap = null;//New rule means we have to remap elements to their styles
         Ruleset rs = new Ruleset();
@@ -925,34 +999,7 @@ public class XRStyleReference implements StyleReference {
 
         for ( int i = 0; i < rule.selector_list.getLength(); i++ ) {
             Selector selector = rule.selector_list.item( i );
-            Selector nextSelector = null;
-            Condition cond = null;
-            net.homelinux.tobe.css.Selector s = null;
-            if ( selector.getSelectorType() == Selector.SAC_DIRECT_ADJACENT_SELECTOR ) {
-                nextSelector = selector;
-                selector = ( (SiblingSelector)nextSelector ).getSelector();
-            }
-            if ( selector.getSelectorType() == Selector.SAC_CHILD_SELECTOR ) {
-                nextSelector = selector;
-                selector = ( (DescendantSelector)nextSelector ).getAncestorSelector();
-            }
-            if ( selector.getSelectorType() == Selector.SAC_DESCENDANT_SELECTOR ) {
-                nextSelector = selector;
-                selector = ( (DescendantSelector)nextSelector ).getAncestorSelector();
-            }
-            if ( selector.getSelectorType() == Selector.SAC_CONDITIONAL_SELECTOR ) {
-                cond = ( (ConditionalSelector)selector ).getCondition();
-                selector = ( (ConditionalSelector)selector ).getSimpleSelector();
-            }
-            if ( selector.getSelectorType() == Selector.SAC_ELEMENT_NODE_SELECTOR ) {
-                s = rs.createSelector( net.homelinux.tobe.css.Selector.DESCENDANT_AXIS, ( (ElementSelector)selector ).getLocalName() );
-            }
-            if ( cond != null ) {
-                addConditions( s, cond );
-            }
-            if ( nextSelector != null ) {
-                addChainedSelector( s, nextSelector );
-            }
+            net.homelinux.tobe.css.Selector s = addSelector(rs, selector);
         }
     }
 
@@ -1066,62 +1113,6 @@ public class XRStyleReference implements StyleReference {
         }
     }
 
-
-    /**
-     * Adds a feature to the ChainedSelector attribute of the XRStyleReference
-     * object.
-     *
-     * @param s         The feature to be added to the ChainedSelector attribute
-     * @param selector  The feature to be added to the ChainedSelector attribute
-     */
-    // CLN: Taken from TobeRuleBank (PWW 08/07/2004)
-    private void addChainedSelector( net.homelinux.tobe.css.Selector s, Selector selector ) {
-        int axis = 0;
-        switch ( selector.getSelectorType() ) {
-            case Selector.SAC_DIRECT_ADJACENT_SELECTOR:
-                axis = net.homelinux.tobe.css.Selector.IMMEDIATE_SIBLING_AXIS;
-                selector = ( (SiblingSelector)selector ).getSiblingSelector();
-                break;
-            case Selector.SAC_CHILD_SELECTOR:
-                axis = net.homelinux.tobe.css.Selector.CHILD_AXIS;
-                selector = ( (DescendantSelector)selector ).getSimpleSelector();
-                break;
-            case Selector.SAC_DESCENDANT_SELECTOR:
-                axis = net.homelinux.tobe.css.Selector.DESCENDANT_AXIS;
-                selector = ( (DescendantSelector)selector ).getAncestorSelector();
-                break;
-            default:
-                System.err.println( "Bad selector" );
-        }
-
-        Selector nextSelector = null;
-        Condition cond = null;
-        if ( selector.getSelectorType() == Selector.SAC_DIRECT_ADJACENT_SELECTOR ) {
-            nextSelector = selector;
-            selector = ( (SiblingSelector)nextSelector ).getSelector();
-        }
-        if ( selector.getSelectorType() == Selector.SAC_CHILD_SELECTOR ) {
-            nextSelector = selector;
-            selector = ( (DescendantSelector)nextSelector ).getAncestorSelector();
-        }
-        if ( selector.getSelectorType() == Selector.SAC_DESCENDANT_SELECTOR ) {
-            nextSelector = selector;
-            selector = ( (DescendantSelector)nextSelector ).getAncestorSelector();
-        }
-        if ( selector.getSelectorType() == Selector.SAC_CONDITIONAL_SELECTOR ) {
-            cond = ( (ConditionalSelector)selector ).getCondition();
-            selector = ( (ConditionalSelector)selector ).getSimpleSelector();
-        }
-        if ( selector.getSelectorType() == Selector.SAC_ELEMENT_NODE_SELECTOR ) {
-            s = s.appendChainedSelector( axis, ( (ElementSelector)selector ).getLocalName() );
-        }
-        if ( cond != null ) {
-            addConditions( s, cond );
-        }
-        if ( nextSelector != null ) {
-            addChainedSelector( s, nextSelector );
-        }
-    }
 }
 /*
  * :folding=java:collapseFolds=1:noTabs=true:tabSize=4:indentSize=4:
