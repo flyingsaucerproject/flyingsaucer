@@ -3,14 +3,20 @@ package org.joshy.html.app.aboutbox;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.*;
+import java.io.*;
+import java.net.URL;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
 
 import org.joshy.html.*;
 import org.joshy.u;
+import org.joshy.html.app.browser.*;
 
 public class AboutBox extends JDialog implements Runnable {
     JScrollPane scroll;
     JButton close_button;
     boolean go = false;
+    
     public AboutBox(String text, String url) {
         super();
         setTitle(text);
@@ -37,7 +43,7 @@ public class AboutBox extends JDialog implements Runnable {
         });
         
         try {
-            panel.setDocument(url);
+            loadPage(url,panel);
         } catch (Exception ex) {
             u.p(ex);
         }
@@ -47,6 +53,40 @@ public class AboutBox extends JDialog implements Runnable {
         setLocation((screen.width-w)/2,(screen.height-h)/2);
     }
     
+    public void loadPage(String url_text, HTMLPanel panel) throws Exception {
+        DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
+        fact.setValidating(true);
+        DocumentBuilder builder = fact.newDocumentBuilder();
+        //builder.setErrorHandler(root.error_handler);
+        Document doc = null;
+        
+        
+        URL ref = null;
+        
+        if(url_text.startsWith("demo:")) {
+            u.p("starts with demo");
+            DemoMarker marker = new DemoMarker();
+            u.p("url text = " + url_text);
+            String short_url = url_text.substring(5);
+            if(!short_url.startsWith("/")) {
+                short_url = "/" + short_url;
+            }
+            u.p("short url = " + short_url);
+            ref = marker.getClass().getResource(short_url);
+            u.p("ref = " + ref);
+            doc = builder.parse(marker.getClass().getResourceAsStream(short_url));
+        } else if(url_text.startsWith("http")) {
+            doc = builder.parse(url_text);
+            ref = new File(url_text).toURL();
+        } else {
+            doc = builder.parse(url_text);
+            ref = new File(url_text).toURL();
+        }
+        u.p("ref = " + ref);
+        u.p("url_text = " + url_text);
+        panel.setDocument(doc,ref);
+    }
+
     public void setVisible(boolean vis) {
         super.setVisible(vis);
         if(vis == true) {
@@ -82,7 +122,7 @@ public class AboutBox extends JDialog implements Runnable {
         
         launch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                AboutBox ab = new AboutBox("About Flying Saucer","demos/about/index.xhtml");
+                AboutBox ab = new AboutBox("About Flying Saucer","demo:demos/about/index.xhtml");
                 ab.setVisible(true);
             }
         });
