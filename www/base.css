@@ -39,7 +39,7 @@ body, #fs {
 	display: inline;
 	border: 0px none #000000;
 	margin: 0px;
-	padding: 5px;
+	padding: 4px;
 	background: transparent;
 	font-size: medium;
 	vertical-align: top;
@@ -47,7 +47,9 @@ body, #fs {
 #fs ul#menu {
 	background: #1777A4;
 	background: #FFFFFF url(images/scanbg.gif) left top;
-	padding: 10px;
+	padding: 0px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 	border-top: 1px none;
 	border-right: 1px none;
 	border-bottom: 1px solid;
@@ -70,5 +72,6 @@ body, #fs {
 	padding: 3px;
 	vertical-align:middle;
 	background-color: white;
+	margin: 3px;
 	}
 	
