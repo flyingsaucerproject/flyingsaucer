@@ -80,3 +80,13 @@ body, #fs {
 	margin-left: 43px;
 	}
 	
+code {
+	color: #3300FF;
+	font-weight: bold;
+}
+pre {
+	border: 1px dotted #FFCC00;
+	background: #FFFFCC;
+	margin: 10px;
+	padding: 6px;
+}

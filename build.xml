@@ -425,7 +425,11 @@
 
     </target>
 
-
+    <target name="demo-test" depends="compile">
+        <java classname="org.joshy.html.PanelTest" classpath="build/classes" fork="true">
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
 
     
 
