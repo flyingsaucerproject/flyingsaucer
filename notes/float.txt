@@ -23,13 +23,17 @@ tests:
 2    span that becomes a left float in a single paragraph with 5 lines
 3    span that becomes a left float in a para w/ 1 lines
 4    span, float left, 2 para, float extends to second para
-5    span float left in big para with long word that must shove down
-6    span float left with next span w/ clear to shove down
-7    two span floats left, in one big para
-8    two spans float left and not enough room so wrap to next line, in one big para
-9    5 spans float left w/ different heights in one big para w/ float wrapping
-10    5 spans float left w/ long words and images and wrap to next para    
-11    span float right in a single para
+5    three paras. middle one floats to the left
+
+*    span float left in big para with long word that must shove down
+*    span float left with next span w/ clear to shove down
+*    two span floats left, in one big para
+*    two spans float left and not enough room so wrap to next line, in one big para
+*    5 spans float left w/ different heights in one big para w/ float wrapping
+*    5 spans float left w/ long words and images and wrap to next para    
+    span float right in a single para
+
+
 
 ------------------
 plan for abs
