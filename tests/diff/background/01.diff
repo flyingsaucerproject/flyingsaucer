@@ -1,8 +1,8 @@
-box:-element:html-value:null-(0,0)-(200x52)
- box:-element:head-value:null-(0,0)-(0x0)
- box:-element:body-value:null-(0,0)-(200x52)
-  box:-element:p-value:null-(0,0)-(194x46)
-   line:-element:p-value:null-(0,0)-(178x19)
-    inline:-element:#text-value:this paragraph should be inside of a one pixel black border-(0,-3)-(178x16)
-   line:-element:p-value:null-(0,19)-(143x19)
-    inline:-element:#text-value:this paragraph should be inside of a one pixel black border-(0,-3)-(143x16)
+box:-element:html-box(0,0)-(200x52)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-none-scroll-0-0)-value:null
+ box:-element:head-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-repeat-scroll-0-0)-value:null
+ box:-element:body-box(0,0)-(200x52)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#ffffffff)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+  box:-element:p-box(0,0)-(194x46)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(solid)-insets(mar(0,0,0,0)-bor(1,1,1,1)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:p-box(0,0)-(178x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(178x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:this paragraph should be inside of a one pixel black border
+   line:-element:p-box(0,19)-(143x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(143x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:this paragraph should be inside of a one pixel black border

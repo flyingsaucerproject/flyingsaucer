@@ -233,8 +233,37 @@ public class Box {
     }
     
     
+    /** This generates a string which fully represents every facet of the
+    rendered box (or at least as much as possible without actually drawing
+    it).  This includes dimensions, location, color, backgrounds, images, text, and pretty
+    much everything else. The test string is used by the regression tests.
+    */
+    /*
+     display_none
+     relative
+     fixed
+     top
+     right
+     bottom
+     left
+     floated
+     border_color
+     padding
+     border
+     margin
+     border_style
+     color
+     background_color
+     background_image
+     repeat
+     attachment
+     back_pos_vert
+     back_pos_horiz
+     
+    */
     public String getTestString() {
         StringBuffer sb = new StringBuffer();
+        // type
         if(this instanceof LineBox) {
             sb.append("line:");
         } else if(this instanceof InlineBox) {
@@ -242,11 +271,58 @@ public class Box {
         } else {
             sb.append("box:");
         }
+        
+        // element
         sb.append("-element:"+this.getClosestNode().getNodeName());
+        
+        // dimensions and location
+        sb.append("-box("+x+","+y+")-("+width+"x"+height+")");
+        
+        // positioning info
+        if(relative) {
+            sb.append("-relative");
+        }
+        if(fixed) {
+            sb.append("-fixed");
+        }
+        sb.append("-pos("+top+","+right+","+bottom+","+left+")");
+        if(floated) {
+            sb.append("-floated");
+        }
+        
+        // colors and insets
+        sb.append("-colors(for"+getColorTestString(color));
+        sb.append("-bor"+getColorTestString(border_color));
+        sb.append("-bak"+getColorTestString(background_color)+")");
+        sb.append("-style("+border_style+")");
+        sb.append("-insets(mar"+getBorderTestString(margin));
+        sb.append("-bor"+getBorderTestString(border));
+        sb.append("-pad"+getBorderTestString(padding)+")");
+        
+        // background images
+        sb.append("-backimg("+background_image);
+        sb.append("-"+repeat);
+        sb.append("-"+attachment);
+        sb.append("-"+background_position_vertical);
+        sb.append("-"+background_position_horizontal+")");
+        
         sb.append("-value:"+this.getClosestNode().getNodeValue());
-        sb.append("-("+x+","+y+")-("+width+"x"+height+")");
         return sb.toString();
     }
+    
+    public String getColorTestString(Color c) {
+        if(c == null) {
+            return "[null]";
+        }
+        return "#"+Integer.toHexString(c.getRGB());
+    }
+    public String getBorderTestString(Border b) {
+        if(b == null) {
+            return "[null]";
+        }
+        return "("+b.top+","+b.right+","+b.bottom+","+b.left+")";
+    }
+    
     
     
     public String toString() {
