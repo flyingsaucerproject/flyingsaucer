@@ -106,12 +106,15 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
                 if (m.matches()) {
                     int start = m.end();
                     String alternate = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+                    //TODO: handle alternate stylesheets
                     if (alternate.equals("yes")) continue;//DON'T get alternate stylesheets for now
                 }
                 m = _typePattern.matcher(pi);
                 if (m.find()) {
                     int start = m.end();
                     String type = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+                    //TODO: handle other stylesheet types
+                    if (!type.equals("text/css")) continue;//for now
                     info.setType(type);
                 }
                 m = _hrefPattern.matcher(pi);
