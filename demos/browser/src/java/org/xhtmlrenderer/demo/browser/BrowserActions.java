@@ -79,16 +79,15 @@ public class BrowserActions {
      * Description of the Method
      */
     public void init() {
-        /* URL url = null;
-        try {
-            url = new URL("/icons/images/stop24.gif");
-        } catch ( Exception ex ) {
-            System.out.println("Exception on URL: " + ex.getMessage());
-        } */
-        //if ( url == null ) throw new RuntimeException("Can't find image");
-        //stop = new EmptyAction("Stop", new ImageIcon(url));
-        stop = new EmptyAction("Stop", null);
-        setAccel(stop, KeyEvent.VK_ESCAPE);
+        URL url = null;
+        url = this.getClass().getClassLoader().getResource("images/Stop24.gif");
+        stop = new AbstractAction("", new ImageIcon(url)) {
+            public void actionPerformed(ActionEvent evt) {
+              // TODO: stop not coded
+            }
+        };
+        // TODO: need right API call for ESC
+        //stop.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE));
         stop.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_S));
 
         open_file =
@@ -137,7 +136,8 @@ public class BrowserActions {
         setMnemonic(paste, new Integer(KeyEvent.VK_P));
 
 
-        backward = new AbstractAction("Back",new ImageIcon("StepBack24.gif")) {
+        url = this.getClass().getClassLoader().getResource("images/StepBack24.gif");
+        backward = new AbstractAction("", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.goBack();
@@ -154,7 +154,8 @@ public class BrowserActions {
                         InputEvent.ALT_MASK));
 
 
-        forward = new AbstractAction("Forward",new ImageIcon("StepForward24.gif")) {
+        url = this.getClass().getClassLoader().getResource("images/StepForward24.gif");
+        forward = new AbstractAction("",new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.goForward();
@@ -169,8 +170,8 @@ public class BrowserActions {
                 KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
                         InputEvent.ALT_MASK));
 
-
-        refresh = new EmptyAction("Refresh", new ImageIcon("Refresh24.gif")) {
+        url = this.getClass().getClassLoader().getResource("images/Refresh24.gif");
+        refresh = new EmptyAction("", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.view.invalidate();
@@ -183,7 +184,8 @@ public class BrowserActions {
         refresh.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke("F5"));
 
-        reload = new EmptyAction("Reload") {
+        url = this.getClass().getClassLoader().getResource("images/Refresh24.gif");
+        reload = new EmptyAction("", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.reloadPage();
@@ -263,6 +265,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/03/28 20:03:00  pdoubleya
+ * Icon assignments.
+ *
  * Revision 1.13  2005/03/28 19:06:16  pdoubleya
  * Added font-size actions.
  *
