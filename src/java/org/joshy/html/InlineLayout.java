@@ -30,6 +30,7 @@ public class InlineLayout extends BoxLayout {
 
 public Box layoutChildren(Context c, Box box) {
     //u.p("InlineLayout.layoutChildren(: " + box);
+    //u.dump_stack();
     //u.p("parent box = " + c.parent_box);
     //u.p("placement point = " + c.placement_point);
     if(!box.isAnonymous()) {
@@ -45,8 +46,10 @@ public Box layoutChildren(Context c, Box box) {
     // calculate the initial position and dimensions
     Rectangle bounds = new Rectangle();
     bounds.width = c.getExtents().width;
+    //u.p("initial bounds width = " + bounds.width);
     bounds.width -= box.margin.left + box.border.left + box.padding.left +
         box.padding.right + box.border.right + box.margin.right;
+    //u.p("initial bounds width = " + bounds.width);
     bounds.x = 0;
     bounds.y = 0;
     bounds.height = 0;
@@ -96,6 +99,13 @@ public Box layoutChildren(Context c, Box box) {
     while(current_node != null) {
         // loop until no more text in this node
         while(true) {
+            //u.p("loop start bounds width = " + bounds.width);
+            //u.p("prev inline = " + prev_inline);
+            //u.p("current node = " + current_node);
+            if(bounds.width < 0) {
+                u.p("bounds width = " + bounds.width);
+                System.exit(-1);
+            }
             // test if there is no more text in the current text node
             // if there is a prev, and if the prev was part of this current node
             if(prev_inline != null && prev_inline.node == current_node) {
@@ -120,10 +130,11 @@ public Box layoutChildren(Context c, Box box) {
                 }
             }
             if(bounds.width < 100) {
-                //u.p("warning. width < 0 " + width);
+                //u.p("warning. width < 0 " + bounds.width);
             }
             debug_counter++;
-            if(debug_counter > 143) {
+            final int limit = 20;
+            if(debug_counter > limit) {
                 u.on();
                 u.p("previous inline = " + prev_inline);
                 u.p("current line = " + curr_line);
@@ -132,7 +143,7 @@ public Box layoutChildren(Context c, Box box) {
                 u.p("current node = " + current_node + " text= " + current_node.getNodeValue());
                 u.p("rem width = " + remaining_width + " width " + bounds.width);
             }
-            if(debug_counter > 143) {
+            if(debug_counter > limit) {
                 u.p("element = " + elem);
                 org.joshy.x.p(elem);
                 u.p("previous inline = " + prev_inline);
@@ -140,11 +151,13 @@ public Box layoutChildren(Context c, Box box) {
                 u.p("lines = ");
                 //u.p(block.boxes);
                 u.p("db 1 hit");
+                System.exit(-1);
                 throw new InfiniteLoopError("Infinite loop detected in InlineLayout");
             }
             // look at current inline
             // break off the longest section that will fit
             //u.p("looking for another inline from the text: " + current_node.getNodeValue());
+            //u.p("remaining width = " + remaining_width + " bounds.width = " + bounds.width);
             InlineBox new_inline = this.calculateInline(c,current_node,remaining_width,bounds.width,
                 curr_line, prev_inline, elem, prev_align_inline);
             //u.p("new inline box: " + new_inline);
@@ -152,6 +165,7 @@ public Box layoutChildren(Context c, Box box) {
             // if this inline needs to be on a new line
             if(new_inline.break_before && !new_inline.floated) {
                 // finish up the current line
+                //u.p("is break before and not floated");
                 remaining_width = bounds.width;
                 saveLine(curr_line, prev_line, elem, bounds.width, bounds.x, c, block);
                 bounds.height += curr_line.height;
@@ -168,12 +182,14 @@ public Box layoutChildren(Context c, Box box) {
 
             // save the new inline to the list
             curr_line.addChild(new_inline);
+            //u.p("added new_inline: " + new_inline);
 
             // calc new height of the line
             // don't count the inline towards the line height and
             //line baseline if it's a floating inline.
             if(!isFloated(new_inline,c)) {
                 if(!this.isFloatedBlock(new_inline.node,c)) {
+                    //u.p("calcing new height of line");
                     if(new_inline.height + new_inline.y > curr_line.height) {
                         curr_line.height = new_inline.height + new_inline.y;
                     }
@@ -191,12 +207,16 @@ public Box layoutChildren(Context c, Box box) {
             remaining_width = remaining_width - new_inline.width;
             // if the last inline was at the end of a line, then go to next line
             if(new_inline.break_after) {
+                //u.p("is break after. doing a new line");
                 // then remaining_width = max_width
+                //u.p("remaining width = " + remaining_width);
                 remaining_width = bounds.width;
+                //u.p("remaining width = " + remaining_width);
                 //u.p("width = " + width);
                 // save the line
                 //u.p("curr line = " + curr_line);
                 saveLine(curr_line, prev_line,elem,bounds.width,bounds.x,c,block);
+                // increase bounds height to account for the new line
                 bounds.height += curr_line.height;
                 //u.p("saved line: " + curr_line);
                 prev_line = curr_line;
@@ -206,6 +226,7 @@ public Box layoutChildren(Context c, Box box) {
                 //u.p("rem width = " + remaining_width);
                 //if(c.getLeftTab().y > 0) {
                 remaining_width = adjustForTab(c, prev_line, remaining_width);
+                //u.p("remaining width = " + remaining_width);
                 //curr_line.width = remaining_width;
                 curr_line.width = 0;
                 //u.p("now rem width = " + remaining_width);
@@ -239,6 +260,7 @@ public Box layoutChildren(Context c, Box box) {
     //}
     //c.setLeftTab(old_left_tab);
     //u.p("final tabl = " + c.getLeftTab());
+    //u.p("debug counter = " + debug_counter);
     return block;
 }
 
@@ -280,26 +302,38 @@ private InlineBox calculateInline(Context c, Node node, int avail, int max_width
 
     Font font = FontUtil.getFont(c,node);
     if(isReplaced(node)) {
+        //u.p("is replaced");
         return LineBreaker.generateReplacedInlineBox(c,node,avail,prev, text,prev_align,font);
     }
     if(isFloatedBlock(node,c)) {
+        //u.p("is floated");
         return LineBreaker.generateFloatedBlockInlineBox(c,node,avail,prev, text,prev_align,font);
     }
     if(InlineUtil.isBreak(node)) {
+        //u.p("is break");
         return LineBreaker.generateBreakInlineBox(node);
     }
     if(LineBreaker.isWhitespace(c,containing_block)) {
+        //u.p("is whitespace");
         return LineBreaker.generateWhitespaceInlineBox(c,node,start,prev,text,prev_align,font);
     }
     // ==== unbreakable long word =====
     if(LineBreaker.isUnbreakableLine(c,node,start,text,avail,font)) {
+        //u.p("is unbreakable");
+        //u.p("node = " + node);
+        //u.p("start = " + start);
+        //u.p("text = " + text);
+        //u.p("avail = " + avail);
+        //u.p("font = " + font);
         return LineBreaker.generateUnbreakableInlineBox(c,node,start,text,prev,prev_align,font);
     }
     // rest of this string can fit on the line
     if(LineBreaker.canFitOnLine(c,node,start,text,avail,font)) {
+        //u.p("can fit on line");
         return LineBreaker.generateRestOfTextNodeInlineBox(c,node,start,text,prev,prev_align,font);
     }
     // normal multiline break
+    //u.p("is normal multiline break");
     return LineBreaker.generateMultilineBreak(c,node,start,text,prev,prev_align,avail);
 }
 

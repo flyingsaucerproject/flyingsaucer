@@ -17,7 +17,7 @@ public class Table {
     }
     
     
-    public void addTable(Element elem) throws Exception {
+    public void addTable(Element elem) {
         // for each tr
         NodeList rows = elem.getChildNodes();
         boolean first_row = true;
@@ -37,15 +37,15 @@ public class Table {
         }
     }
     
-    public void addRow(Node row, int y) throws Exception {
+    public void addRow(Node row, int y) {
         addRow(row,false, y);
     }
     
-    public void addFirstRow(Node row) throws Exception {
+    public void addFirstRow(Node row) {
         addRow(row,true, 0);
     }
     
-    public void addRow(Node row, boolean first_row, int y) throws Exception {
+    public void addRow(Node row, boolean first_row, int y) {
         // for each td
         //Row rw = new Row();
         //rw.node = row;
@@ -77,16 +77,16 @@ public class Table {
     }
     
     // add cells from the first row
-    public Cell addTopCell(Node node, int x, int y) throws Exception {
+    public Cell addTopCell(Node node, int x, int y) {
         Cell cl = addCell(node, x, y);
         top_cells.add(cl);
         return cl;
     }
     
-    public Cell addCell(Node node, int x, int y) throws Exception {
+    public Cell addCell(Node node, int x, int y) {
         //u.p("addCell("+node+","+x+","+y+")");
         if(node.getNodeType() != node.ELEMENT_NODE) {
-            throw new Exception("this isn't an element" + node);
+            throw new Error("this isn't an element" + node);
         }
         Element cell = (Element)node;
         Cell cl = new Cell();
@@ -115,7 +115,8 @@ public class Table {
         for(int i=0; i<top_cells.size(); i++) {
             Cell cell = (Cell)top_cells.get(i);
             if(c.css.hasProperty((Element)cell.node,"width",false)) {
-                int width = (int)c.css.getFloatProperty((Element)cell.node,"width",false);
+                // fixed bug that made cell sizing fail w/ %s
+                int width = (int)c.css.getFloatProperty((Element)cell.node,"width",avail_width,false);
                 //u.p("got width: " + width);
                 for(int j=col_count; j<col_count+cell.col_span; j++) {
                     widths[j] = width/cell.col_span;

@@ -54,13 +54,12 @@ public class TableLayout2
     }
 
     public Box layout(Context c, Element elem) {
-
-        try {
+        //u.p("TableLayout2.layout(" + c + " , " + elem);
 
             //u.p("\n====\nLayout");
             // create the table box
             TableBox table_box = (TableBox)createBox(c, elem);
-
+            //u.p("c = " + c);
             // set up the border spacing
             float border_spacing = c.css.getFloatProperty(elem, 
                                                           "border-spacing");
@@ -69,18 +68,22 @@ public class TableLayout2
 
             // set up the width
             int fixed_width = c.getExtents().width;
+            //u.p("fixed width = " + fixed_width);
+            //u.p("c = " + c);
 
             if (c.css.hasProperty(elem, "width", false)) {
-                fixed_width = (int)c.css.getFloatProperty(elem, "width", false);
+                fixed_width = (int)c.css.getFloatProperty(elem, "width", c.getExtents().width, false);
             }
 
             int orig_fixed_width = fixed_width;
+            //u.p("fixed width = " + fixed_width);
 
             //subtract off the margin, border, and padding
             fixed_width -= table_box.margin.left + table_box.border.left +
                 table_box.padding.left + table_box.spacing.x + 
                 table_box.padding.right + table_box.border.right + table_box.margin.right;
 
+            //u.p("fixed width = " + fixed_width);
             // create the table
             Table table = new Table();
             table.addTable(elem);
@@ -97,16 +100,13 @@ public class TableLayout2
 
             //bx.width
             return bx;
-        } catch (Exception ex) {
-            u.p(ex);
-
-            return null;
-        }
     }
     
     
     public Box calculateBoxes(int avail_width, TableBox box, Context c, Table table) {
-
+        //u.p("TableLayout2.calculateBoxes(" + avail_width  + 
+        //    " , " + box + " , " + c + " , " + table);
+            
         box.width = avail_width;
         box.height = 100;
         box.x = 5;
@@ -133,7 +133,7 @@ public class TableLayout2
                 //u.p("grid width = " + grid.getWidth());
                 if(grid.isReal(x,y)) {
                     //u.p("it's real");
-                    
+                    //u.p("getting real cell: " + x + " , " + y);
                     Cell cell = grid.getCell(x,y);
                     
                     // create a new cell box for this cell
@@ -148,25 +148,32 @@ public class TableLayout2
                     cell_box.node = cell.node;
                     
                     // do the internal layout
-                        // save the old extents and create new with smaller width
-                        Rectangle oe = c.getExtents();
-                        c.setExtents(new Rectangle(c.getExtents().x,c.getExtents().y,
-                            cell_box.width, 100));
-                        // do child layout
-                        Layout layout = LayoutFactory.getLayout(cell.node);
-                        Box cell_contents = layout.layout(c,(Element)cell_box.node);
-                        cell_box.sub_box = cell_contents;
-                        cell_box.height = cell_box.sub_box.height;
-                        column_count += cell.col_span;
-                        // restore old extents
-                        c.setExtents(oe);
+                    // save the old extents and create new with smaller width
+                    Rectangle oe = c.getExtents();
+                    c.setExtents(new Rectangle(c.getExtents().x,c.getExtents().y,
+                        cell_box.width, 100));
+                    // do child layout
+                    Layout layout = LayoutFactory.getLayout(cell.node);
+                    //u.p("cell box = " + cell_box);
+                    //u.p("doing child layout on: " + layout + " for " + cell_box.node);
+                    //u.p("cell_box properly = " + cell_box);
+                    c.setSubBlock(true);
+                    Box cell_contents = layout.layout(c,(Element)cell_box.node);
+                    c.setSubBlock(false);
+                    cell_box.sub_box = cell_contents;
+                    cell_box.height = cell_box.sub_box.height;
+                    column_count += cell.col_span;
+                    //u.p("cellbox = " + cell_box);
+                    //u.p("sub box = " + cell_box.sub_box);
+                    // restore old extents
+                    c.setExtents(oe);
                     
                     
                     // y is relative to the rowbox so it's just 0
                     cell_box.y = 0;
                     // add the cell to the row
                     row_box.cells.add(cell_box);
-                    
+                    //u.p("cell box width = " + cell_box.width);
                                     
                     // if this is a non row spanning cell then
                     // adjust the row height to fit this cell

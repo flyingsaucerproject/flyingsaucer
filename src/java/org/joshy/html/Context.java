@@ -581,5 +581,15 @@ public class Context {
             }
         }
     }
+    
+    
+    /* notes to help manage inline sub blocks (like table cells) */
+    public void setSubBlock(boolean sub_block) {
+        this.sub_block = sub_block;
+    }
+    private boolean sub_block = false;
+    public boolean isSubBlock() {
+        return sub_block;
+    }
 }
 

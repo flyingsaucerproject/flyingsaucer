@@ -96,10 +96,8 @@ public class BoxLayout extends Layout {
 
         Rectangle oe = c.getExtents();
 
-        //u.p("old extents = " + c.getExtents());
 
         c.setExtents(new Rectangle(oe));
-
 
 
         adjustWidth(c, block);
@@ -136,7 +134,10 @@ public class BoxLayout extends Layout {
 
         //u.p("avail space = " + block.width);
 
+        boolean old_sub = c.isSubBlock();
+        c.setSubBlock(false);
         layoutChildren(c, block);
+        c.setSubBlock(old_sub);
 
 
 
@@ -211,6 +212,17 @@ public class BoxLayout extends Layout {
         Element elem = block.getElement();
 
         if (c.css.hasProperty(elem, "width", false)) {
+            // if it is a sub block then don't mess with the width
+            if(c.isSubBlock()) {
+                if(!elem.getNodeName().equals("td")) {
+                    u.p("ERRRRRRRRRRORRRR!!! in a sub block that's not a TD!!!!");
+                }
+                //u.p("calling get width on: " + elem + " with parent width: " + c.getExtents().width);
+                //u.p("setting width: " + block.width);
+                //u.p("block box = " + block);
+                //u.p("parent box = " + block.getParent());
+                return;
+            }
 
             float new_width = c.css.getFloatProperty(elem, "width", c.getExtents().width, false);
 
@@ -219,9 +231,6 @@ public class BoxLayout extends Layout {
             block.width = (int) new_width;
 
             block.auto_width = false;
-
-            //u.p("setting width: " + block.width);
-
         }
 
     }
