@@ -356,7 +356,14 @@ public class XRStyleReference implements StyleReference {
             NodeList nl = XPathAPI.selectNodeList(root, "//processing-instruction('xml-stylesheet')");
             for ( int i=0, len=nl.getLength(); i < len; i++ ) {
                 Node piNode = nl.item(i);
-                System.out.println(piNode.getNodeValue());
+                String pi = piNode.getNodeValue();
+                String s = pi.substring(pi.indexOf("type=")+5);
+                String type = s.substring(1, s.indexOf(s.charAt(0),1));
+                if(type.equals("text/css")) {
+                    s = pi.substring(pi.indexOf("href=")+5);
+                    String href = s.substring(1, s.indexOf(s.charAt(0),1));
+                    parseStylesheet(href);
+                }
             }
         } catch ( Exception ex ) {
             ex.printStackTrace();   
@@ -377,11 +384,28 @@ public class XRStyleReference implements StyleReference {
             for ( int i=0, len=nl.getLength(); i < len; i++ ) {
                 Node hrefNode = nl.item(i);
                 String href = hrefNode.getNodeValue();
+                parseStylesheet(href);
+            }
+        } catch ( Exception ex ) {
+            ex.printStackTrace();   
+        }
+    }
+
+    /**
+     * Parses the CSS style information from a URL
+     * and loads these rules into the associated RuleBank.
+     *
+     * @param root             Root of the document for which to search for link tags.
+     * @exception IOException  Throws
+     */
+    public void parseStylesheet( String href )
+    throws IOException {
+        try {
                 // HACK: need clean way to check if this is local reference...local references will need to be resolved to server reference, won't they?
                 Reader reader = null;
                 try {
                     URL url = null;
-                    if ( !href.startsWith("http://"))
+                    if ( !href.startsWith("http://") && !href.startsWith("file://"))
                         url = new URL(_context.getBaseURL(),href);
 
                     url = new URL(href);
@@ -405,7 +429,6 @@ public class XRStyleReference implements StyleReference {
                     parse(reader, XRStyleSheet.AUTHOR);
                     reader.close();
                 }
-            }
         } catch ( Exception ex ) {
             ex.printStackTrace();   
         }
