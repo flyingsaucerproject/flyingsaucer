@@ -398,6 +398,22 @@ public class RulesetSelectorTest extends TestCase {
         assertTrue(sel.matches(e, yes));
     }
     
+    public void testFirstChild() {
+        System.out.println("testFirstChild");
+        Ruleset rules = new Ruleset();
+        Selector sel = rules.createSelector(Selector.DESCENDANT_AXIS, null);
+        sel.addFirstChildCondition();
+        Element e = doc.createElement("e");
+        doc.appendChild(e);
+        Element one = doc.createElement("one");
+        e.appendChild(one);
+        Element two = doc.createElement("two");
+        e.appendChild(two);
+        assertTrue("selector for :first-child should match root element",  sel.matches(e, null));
+        assertTrue("selector for :first-child should match first element",  sel.matches(one, null));
+        assertFalse("selector for :first-child should not match second element",  sel.matches(two, null));
+    }
+    
     private Document doc;
     
 }

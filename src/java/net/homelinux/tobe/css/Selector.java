@@ -69,6 +69,11 @@ public class Selector {
         else return chainedSelector.appendChainedSelector(axis, elementName);
     }
 
+    /** the CSS condition that element has pseudo-class :first-child */
+    public void addFirstChildCondition() {
+        addCondition(Condition.createFirstChildCondition());
+    }
+
     /** the CSS condition :lang(x) */
     public void addLangCondition(String lang) {
         addCondition(Condition.createLangCondition(lang));

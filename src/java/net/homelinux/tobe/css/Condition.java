@@ -147,6 +147,21 @@ abstract class Condition {
         
     }
     
+    private static class FirstChildCondition extends Condition {
+        
+        FirstChildCondition() {
+        }
+        
+        boolean matches(org.w3c.dom.Element e, net.homelinux.tobe.css.AttributeResolver attRes) {
+                org.w3c.dom.Node parent = e.getParentNode();
+                org.w3c.dom.NodeList nl = parent.getChildNodes();
+                int i = 0;
+                while(i<nl.getLength() && nl.item(i).getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) i++;
+                return(nl.item(i) == e);
+        }
+        
+    }
+    
     abstract boolean matches(org.w3c.dom.Element e, AttributeResolver attRes);
     
     /** the CSS condition [attribute] */
@@ -182,6 +197,11 @@ abstract class Condition {
     /** the CSS condition lang(x) */
     static Condition createLangCondition(String lang) {
         return new LangCondition(lang);
+    }
+    
+    /** the CSS condition that element has pseudo-class :first-child */
+    static Condition createFirstChildCondition() {
+        return new FirstChildCondition();
     }
     
 }
