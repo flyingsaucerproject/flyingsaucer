@@ -131,7 +131,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         view = new XHTMLPanel();
         font_inc = new JButton("A");
         font_dec = new JButton("a");
-        
+
         RenderingContext rc = view.getRenderingContext();
         try {
             rc.setFontMapping("Fuzz", Font.createFont(Font.TRUETYPE_FONT,
@@ -219,10 +219,10 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         reload.setAction(root.actions.reload);
         url.setAction(root.actions.load);
         updateButtons();
-        
+
         font_inc.setAction(root.actions.increase_font);
         font_dec.setAction(root.actions.decrease_font);
-        
+
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0), "pagedown");
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
@@ -347,7 +347,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
             u.p("ref = " + ref);
         } else if (url_text.startsWith("http")) {
             doc = builder.parse(url_text);
-            ref = new File(url_text).toURL();
+            ref = new URL(url_text);
         } else if (url_text.startsWith("file://")) {
             File file = new File(new URI(url_text));
             if (file.isDirectory()) {
@@ -499,6 +499,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/12/01 00:13:34  tobega
+ * Fixed incorrect handling of http urls.
+ *
  * Revision 1.11  2004/11/27 15:46:37  joshy
  * lots of cleanup to make the code clearer
  *
