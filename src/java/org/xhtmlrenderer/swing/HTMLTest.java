@@ -119,6 +119,7 @@ public class HTMLTest extends JFrame {
         addFileLoadAction( test, "extended", demoRootDir + "/extended.xhtml" );
         addFileLoadAction( test, "XML-like", demoRootDir + "/xml.xhtml" );
         addFileLoadAction( test, "XML", demoRootDir + "/xml.xml" );
+        addFileLoadAction( test, "expansion-bug", "/home/tobe/Projekt/xhtmlrenderer/demos/expansion-bug.html" );
 
         JMenu debug = new JMenu( "Debug" );
         mb.add( debug );
@@ -341,10 +342,10 @@ public class HTMLTest extends JFrame {
                 // DOM Tree Inspector needs to work with either CSSBank
                 // or XRStyleReference--implementations are not perfectly
                 // so we have different constructors
-                if ( panel.c.css instanceof CSSBank ) {
-                    inspector = new DOMInspector( panel.doc );
-                } else {
+                if ( panel.c.css instanceof XRStyleReference ) {
                     inspector = new DOMInspector( panel.doc, panel.c, (XRStyleReference)panel.c.css );
+                } else {
+                    inspector = new DOMInspector( panel.doc );
                 }
 
                 inspectorFrame.getContentPane().add( inspector );
@@ -353,10 +354,10 @@ public class HTMLTest extends JFrame {
                 inspectorFrame.setSize( text_width, 600 );
                 inspectorFrame.show();
             } else {
-                if ( panel.c.css instanceof CSSBank ) {
-                    inspector.setForDocument( panel.doc );
-                } else {
+                if ( panel.c.css instanceof XRStyleReference ) {
                     inspector.setForDocument( panel.doc, panel.c, (XRStyleReference)panel.c.css );
+                } else {
+                    inspector.setForDocument( panel.doc );
                 }
             }
             inspectorFrame.show();
@@ -509,6 +510,9 @@ class ClickMouseListener extends MouseAdapter {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/06 22:15:15  tobega
+ * Quick fix to run old DOMInspector
+ *
  * Revision 1.8  2004/10/28 13:46:33  joshy
  * removed dead code
  * moved code about specific elements to the layout factory (link and br)
