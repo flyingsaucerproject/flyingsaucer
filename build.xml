@@ -207,7 +207,7 @@
     <target name="test" depends="compile" description="Test">
         <java
             classname="org.xhtmlrenderer.swing.HTMLTest"
-            classpath="build/classes"
+            classpath="build/classes;build"
             fork="true"
             >
             <arg value="demos/browser/xhtml/paragraph.xhtml"/>
@@ -283,6 +283,9 @@
 $Id$
 
 $Log$
+Revision 1.40  2004/10/18 10:08:19  pdoubleya
+Moved default property settings into build file itself. Now looks for build.properties as override, and a local properties file in userhome/.flyingsaucer/flyingsaucer.build.properties.
+
 Revision 1.39  2004/10/13 22:55:36  pdoubleya
 Added system property to auto-load configuration for logging system.
 
