@@ -122,6 +122,14 @@ public class BrowserMenuBar extends JMenuBar {
         view.add(root.actions.stop);
         view.add(root.actions.refresh);
         view.add(root.actions.reload);
+        view.add(new JSeparator());
+        JMenu text_size = new JMenu("Text Size");
+        text_size.setMnemonic('Z');
+        text_size.add(root.actions.increase_font);
+        text_size.add(root.actions.decrease_font);
+        text_size.add(new JSeparator());
+        text_size.add(root.actions.reset_font);
+        view.add(text_size);
 
         go = new JMenu("Go");
         go.setMnemonic('G');
@@ -155,6 +163,11 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add(new PriorDemoAction());
         demos.add(new JSeparator());
         allDemos = new LinkedHashMap();
+
+        //allDemos.put("Simple Page", "demo:demos/single-line-page.xhtml");
+
+        allDemos.put("Nested Float", "demo:demos/layout/multicol/glish/nested-float.xhtml");
+
         allDemos.put("Paragraph", "demo:demos/paragraph.xhtml");
         allDemos.put("Line Breaking", "demo:demos/breaking.xhtml");
         allDemos.put("Selectors", "demo:demos/selectors.xhtml");
@@ -179,12 +192,6 @@ public class BrowserMenuBar extends JMenuBar {
         for (Iterator iter = allDemos.keySet().iterator(); iter.hasNext();) {
             String s = (String) iter.next();
             demos.add(new LoadAction(s, (String) allDemos.get(s)));
-        }
-        try {
-            //demos.add(new LoadAction("File Listing (Win)","file:///c:"));
-            //demos.add(new LoadAction("File Listing (Unix)","file:///"));
-        } catch (Exception ex) {
-            Uu.p(ex);
         }
 
         add(demos);
@@ -575,6 +582,9 @@ public class BrowserMenuBar extends JMenuBar {
  * @author empty
  */
 class EmptyAction extends AbstractAction {
+    public EmptyAction(String name, Icon icon) {
+        super(name, icon);
+    }
 
     /**
      * Constructor for the EmptyAction object
@@ -612,6 +622,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/03/28 19:04:17  pdoubleya
+ * Moved text size controls on menu, cleaned list of pages.
+ *
  * Revision 1.28  2005/01/29 12:24:57  pdoubleya
  * .
  *
