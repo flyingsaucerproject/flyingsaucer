@@ -96,199 +96,18 @@ public class TableLayout
         //leftover space = table.width - sum(columns.widths)
         int leftover_width = (int)fixed_width - 0;
 
-        //for(each column)
-        //if(column.width)
-        //save column.width;
-        //for(each cell in first row)
+        // calculate how wide each column should be and return the total
         leftover_width -= calculateColumnWidths(c,elem,col_widths);
 
-        //u.p("widths x = ");
-        //u.p(col_widths);
-        for (int i = 0; i < col_widths.length; i++) {
-
-            //u.p("col = " + col_widths[i]);
-        }
-
-        //u.p("left over = " + leftover_width);
-        // count the remaining unset columns
-        int unset_count = 0;
-
-        for (int i = 0; i < col_widths.length; i++) {
-
-            if (col_widths[i] == -1) {
-                unset_count++;
-            }
-        }
-
-        //if(leftover space > 0) {
-        if (leftover_width > 0) {
-
-            //distribute leftover space to columns
-            for (int i = 0; i < col_count; i++) {
-
-                // set width only if it's not already set
-                if (col_widths[i] == -1) {
-                    col_widths[i] = (leftover_width - 
-                                    table.spacing.x * col_count) / unset_count;
-                }
-            }
-        }
-
-        // debugging
-        //u.p("widths = ");
-        //u.p(col_widths);
-        for (int i = 0; i < col_widths.length; i++) {
-
-            //u.p("col = " + col_widths[i]);
-        }
-
-        /*
-        */
+        // distribute the remaining space to the unset columns
+        distributeRemainingColumnWidth(c,col_widths,leftover_width,table);
 
         //table.width = max(table.width, sum(columns.widths))
         table.width = fixed_width;
-
-        //layout the rest of the table
-        //for each row {
-        RowBox prev_row = new RowBox(0, 0, 0, 0);
-        prev_row.y = table.margin.top + table.border.top + 
-                     table.padding.top - fudge;
-
-        NodeList rows = elem.getChildNodes();
-
-        for (int i = 0; i < rows.getLength(); i++) {
-
-            Node row = rows.item(i);
-
-            if (row.getNodeName().equals("tr")) {
-
-                // create a new rowbox
-                RowBox rowbox = new RowBox(0, 0, 0, 0);
-                rowbox.node = row;
-
-                //for each cell {
-                CellBox prev_cell = new CellBox(0, 0, 0, 0);
-                NodeList cells = row.getChildNodes();
-                int col_counter = 0;
-
-                for (int j = 0; j < cells.getLength(); j++) {
-
-                    Node cell = cells.item(j);
-
-                    if (cell.getNodeName().equals("td") || 
-                        cell.getNodeName().equals("th")) {
-
-                        //cell.width = col.width
-                        //u.p("col counter = " + col_counter);
-                        //u.p("node = " + cell);
-                        //x.p(elem);
-                        //u.p("widths length = " + col_widths.length);
-                        // if there are too many cells on this line then skip the rest
-                        if (col_counter >= col_widths.length) {
-
-                            continue;
-                        }
-
-                        CellBox cellbox = new CellBox(0, 0, 
-                                                      col_widths[col_counter], 
-                                                      0);
-
-                        //u.p("using width = " + col_widths[col_counter] + " counter = " + col_counter);
-                        // attach the node
-                        //cellbox.node = (Element)cell;
-                        cellbox.node = cell;
-                        getBorder(c, cellbox);
-                        getMargin(c, cellbox);
-                        getPadding(c, cellbox);
-
-                        //layout cell w/ modified inline
-                        cellbox.x = prev_cell.x + prev_cell.width + 
-                                    table.spacing.x + fudge;
-
-                        // y is 0 relative to the parent row
-                        cellbox.y = 0;
-
-                        // width is based on fixed value
-                        // already done above
-                        // height is based on contents
-                        cellbox.height = 50;
-
-                        Rectangle oe = c.getExtents();
-
-                        //u.p("avail width for cell = " + cellbox.width);
-                        // new extents = old extents but smaller. same origin tho
-                        c.setExtents(new Rectangle(c.getExtents().x, 
-                                                   c.getExtents().y, 
-                                                   cellbox.width, 100));
-
-                        //u.p("=== table = " + this.hashCode());
-                        //u.p("extents for cell = " + c.getExtents());
-                        // lay out the cell
-                        Layout layout = LayoutFactory.getLayout(cell);
-                        Box cell_contents = layout.layout(c, 
-                                                          (Element)cellbox.node);
-                        cellbox.sub_box = cell_contents;
-
-                        // restore old extents
-                        c.setExtents(oe);
-
-                        // height of the cell will be based on the height of it's
-                        // contents
-                        cellbox.height = cell_contents.height;
-
-                        //save cellbox
-                        // height of row is max height of cells
-                        rowbox.height = Math.max(cellbox.height, rowbox.height);
-                        rowbox.cells.add(cellbox);
-
-                        //u.p("created : " + cellbox);
-                        //u.p("got back contents = " + cell_contents);
-                        //u.p("lines in it = " + cell_contents.boxes.size());
-                        prev_cell = cellbox;
-
-                        //u.p("col counter = " + col_counter);
-                        col_counter++;
-
-                        //u.p("now its: " + col_counter);
-                    }
-                }
-
-                // x is always 0 (rel to the parent table)
-                rowbox.x = +table.margin.left + table.border.left + 
-                           table.padding.left;
-
-                // y is prev row.y + prev row.height
-                rowbox.y = prev_row.y + prev_row.height + table.spacing.y + 
-                           fudge;
-
-                // width is width of table
-                rowbox.width = table.width;
-
-                // set the heights on all of the cells
-                for (int k = 0; k < rowbox.cells.size(); k++) {
-                    ((CellBox)rowbox.cells.get(k)).height = rowbox.height;
-                }
-
-                table.rows.add(rowbox);
-
-                //u.p("row = " + rowbox);
-                prev_row = rowbox;
-            }
-        }
-
-        //}
-        //save rowbox
-        //}
-        //save tablebox
-        table.height = prev_row.y + prev_row.height + table.spacing.y + 
-                       table.padding.bottom + table.border.bottom + 
-                       table.margin.bottom;
-        table.width = orig_fixed_width;
-
-        //u.p("table = " + table);
+            
+        layoutTableRows(c, table, elem, col_widths, orig_fixed_width);
         return table;
     }
-
     
     protected int calculateColumnWidths(Context c, Element elem, int[] col_widths) {
         int total_width = 0;
@@ -329,7 +148,156 @@ public class TableLayout
         return total_width;
     }
 
+    public void distributeRemainingColumnWidth(Context c, int[]col_widths, int leftover_width, TableBox table) {
+        
+        // count the remaining unset columns
+        int unset_count = 0;
+
+        for (int i = 0; i < col_widths.length; i++) {
+
+            if (col_widths[i] == -1) {
+                unset_count++;
+            }
+        }
+
+        //if(leftover space > 0) {
+        if (leftover_width > 0) {
+
+            //distribute leftover space to columns
+            for (int i = 0; i < col_widths.length; i++) {
+
+                // set width only if it's not already set
+                if (col_widths[i] == -1) {
+                    col_widths[i] = (leftover_width - 
+                                    table.spacing.x * col_widths.length) / unset_count;
+                }
+            }
+        }
+    }
     
+    protected void layoutTableRows(Context c, TableBox table, Element elem, int[] col_widths, int orig_fixed_width) {
+        
+        // create dummy previous row
+        RowBox prev_row = new RowBox(0, 0, 0, 0);
+        prev_row.y = table.margin.top + table.border.top + 
+                     table.padding.top - fudge;
+
+        // loop through all of the table rows
+        NodeList rows = elem.getChildNodes();
+        for (int i = 0; i < rows.getLength(); i++) {
+            Node row = rows.item(i);
+            if (row.getNodeName().equals("tr")) {
+
+                prev_row = layoutRow(c,row,prev_row,table,col_widths);
+            }
+        }
+        
+        
+        table.height = prev_row.y + prev_row.height + table.spacing.y + 
+                       table.padding.bottom + table.border.bottom + 
+                       table.margin.bottom;
+        table.width = orig_fixed_width;
+    }
+    
+    
+    public RowBox layoutRow(Context c, Node row, RowBox prev_row, TableBox table, int[] col_widths) {
+        // create a new rowbox
+        RowBox rowbox = new RowBox(0, 0, 0, 0);
+        rowbox.node = row;
+
+        // create dummy previous cell
+        CellBox prev_cell = new CellBox(0, 0, 0, 0);
+        
+        // loop through all of the cells in the current row
+        NodeList cells = row.getChildNodes();
+        int col_counter = 0;
+        for (int j = 0; j < cells.getLength(); j++) {
+            Node cell = cells.item(j);
+            if (cell.getNodeName().equals("td") || 
+                cell.getNodeName().equals("th")) {
+                
+                // if there are too many cells on this line then skip the rest
+                if (col_counter >= col_widths.length) {
+                    u.p("WARNING: too many cells on this row");
+                    continue;
+                }
+
+                prev_cell = layoutCell(c, cell, prev_cell, rowbox, table, col_widths[col_counter]);
+
+                //u.p("col counter = " + col_counter);
+                col_counter++;
+
+                //u.p("now its: " + col_counter);
+            }
+        }
+
+        // x is always 0 (rel to the parent table)
+        rowbox.x = +table.margin.left + table.border.left + 
+                   table.padding.left;
+
+        // y is prev row.y + prev row.height
+        rowbox.y = prev_row.y + prev_row.height + table.spacing.y + 
+                   fudge;
+
+        // width is width of table
+        rowbox.width = table.width;
+
+        // set the heights on all of the cells
+        for (int k = 0; k < rowbox.cells.size(); k++) {
+            ((CellBox)rowbox.cells.get(k)).height = rowbox.height;
+        }
+
+        table.rows.add(rowbox);
+
+        //u.p("row = " + rowbox);
+        return rowbox;
+    }
+    
+    public CellBox layoutCell(Context c, Node cell, CellBox prev_cell, RowBox rowbox, TableBox table, int cellwidth) {
+        CellBox cellbox = new CellBox(0, 0, cellwidth, 0);
+        
+        // attach the node
+        cellbox.node = cell;
+        getBorder(c, cellbox);
+        getMargin(c, cellbox);
+        getPadding(c, cellbox);
+
+        //layout cell w/ modified inline
+        cellbox.x = prev_cell.x + prev_cell.width + 
+                    table.spacing.x + fudge;
+
+        // y is 0 relative to the parent row
+        cellbox.y = 0;
+
+        // set height to 50 until it's set by the cell contents
+        cellbox.height = 50;
+
+        Rectangle oe = c.getExtents();
+
+        // new extents = old extents but smaller. same origin tho
+        c.setExtents(new Rectangle(c.getExtents().x, 
+                                   c.getExtents().y, 
+                                   cellbox.width, 100));
+
+        // lay out the cell's contents
+        Layout layout = LayoutFactory.getLayout(cell);
+        Box cell_contents = layout.layout(c, (Element)cellbox.node);
+        cellbox.sub_box = cell_contents;
+
+        // restore old extents
+        c.setExtents(oe);
+
+        // height of the cell will be based on the height of it's
+        // contents
+        cellbox.height = cell_contents.height;
+
+        //save cellbox
+        // height of row is max height of cells
+        rowbox.height = Math.max(cellbox.height, rowbox.height);
+        rowbox.cells.add(cellbox);
+
+        return cellbox;
+    }
     
     
     /* =========== painting code ============= */
