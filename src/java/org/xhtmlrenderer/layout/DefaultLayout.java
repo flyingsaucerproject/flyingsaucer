@@ -24,6 +24,7 @@ import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.DefaultRenderer;
 import org.xhtmlrenderer.render.Renderer;
@@ -117,10 +118,11 @@ public class DefaultLayout implements Layout {
      */
     public static Border getPadding(Context c, Box box) {
         //TODO: can this be removed?: if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
-        if (box.padding == null) {
-            box.padding = c.getCurrentStyle().getPaddingWidth();
+        if (box.isInlineElement() || !(box.content instanceof TextContent)) {
+            if (box.padding == null) {
+                box.padding = c.getCurrentStyle().getPaddingWidth();
+            }
         }
-        //}
         return box.padding;
     }
 
@@ -134,10 +136,11 @@ public class DefaultLayout implements Layout {
      */
     public static Border getMargin(Context c, Box box) {
         //TODO: can this be removed?: if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
-        if (box.margin == null) {
-            box.margin = c.getCurrentStyle().getMarginWidth();
+        if (box.isInlineElement() || !(box.content instanceof TextContent)) {
+            if (box.margin == null) {
+                box.margin = c.getCurrentStyle().getMarginWidth();
+            }
         }
-        //}
         return box.margin;
     }
 
@@ -155,19 +158,20 @@ public class DefaultLayout implements Layout {
      */
     public static Color getBackgroundColor(Context c, Box box) {
         //TODO: can this be removed?: if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
-        if (box.background_color == null) {
-            CalculatedStyle style = c.getCurrentStyle();
-            if (style.isIdentifier(CSSName.BACKGROUND_COLOR)) {
-                String value = style.getStringProperty("background-color");
-                //Uu.p("got : " + obj);
-                if (value.equals("transparent")) {
-                    box.background_color = new Color(0, 0, 0, 0);
-                    return box.background_color;
+        if (box.isInlineElement() || !(box.content instanceof TextContent)) {
+            if (box.background_color == null) {
+                CalculatedStyle style = c.getCurrentStyle();
+                if (style.isIdentifier(CSSName.BACKGROUND_COLOR)) {
+                    String value = style.getStringProperty("background-color");
+                    //Uu.p("got : " + obj);
+                    if (value.equals("transparent")) {
+                        box.background_color = new Color(0, 0, 0, 0);
+                        return box.background_color;
+                    }
                 }
+                box.background_color = style.getBackgroundColor();
             }
-            box.background_color = style.getBackgroundColor();
         }
-        //}
         return box.background_color;
     }
 
@@ -178,6 +182,9 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2004/12/13 02:12:53  tobega
+ * Borders are working again
+ *
  * Revision 1.33  2004/12/12 03:32:58  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

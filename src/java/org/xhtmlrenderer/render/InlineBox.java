@@ -302,6 +302,10 @@ public class InlineBox extends Box {
         if(this.getRealElement() == this.getParent().getParent().getRealElement()) {
             return false;
         }*/
+        if (this.content == null) return false;
+        if (this.getParent() == null) return true;
+        if (this.getParent().getParent() == null) return true;
+        if (this.getParent().getParent().content == null) return true;
         if (this.content.getElement() == this.getParent().getParent().content.getElement()) {
             return false;
         }
@@ -315,6 +319,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2004/12/13 02:12:53  tobega
+ * Borders are working again
+ *
  * Revision 1.20  2004/12/12 23:19:26  tobega
  * Tried to get hover working. Something happens, but not all that's supposed to happen.
  *

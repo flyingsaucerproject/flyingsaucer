@@ -23,6 +23,7 @@ import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.content.TextContent;
 
 import java.awt.*;
 
@@ -43,6 +44,7 @@ public class BorderPainter {
     public void paint(Context ctx, Box box) {
         //Uu.p("checking: " + box);
         //Uu.p("hashcode = " + box.hashCode());
+        if (box.content != null && box.content instanceof TextContent && !box.isInlineElement()) return;
         if (box.border == null) return;
         Graphics g = ctx.getGraphics();
 
@@ -412,6 +414,9 @@ public void paintSimpleBorder( Graphics2D g, Rectangle bounds, Border border, Bo
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/12/13 02:12:53  tobega
+ * Borders are working again
+ *
  * Revision 1.11  2004/12/12 04:18:57  tobega
  * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
  *

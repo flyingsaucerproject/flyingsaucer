@@ -3,6 +3,7 @@ package org.xhtmlrenderer.layout;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.Box;
 
 public class LayoutUtil {
@@ -37,13 +38,14 @@ public class LayoutUtil {
 
     public static Border getBorder(Context c, Box box) {
         //TODO: can I skip this? if (isBlockOrInlineElementBox(c, box)) {
-        // Uu.p("setting border for: " + box);
-        if (box.border == null) {
-            box.border = c.getCurrentStyle().getBorderWidth();
+        if (box.isInlineElement() || !(box.content instanceof TextContent)) {
+            // Uu.p("setting border for: " + box);
+            if (box.border == null) {
+                box.border = c.getCurrentStyle().getBorderWidth();
+            }
+            //} else {
+            // Uu.p("skipping border for: " + box);
         }
-        //} else {
-        // Uu.p("skipping border for: " + box);
-        //}
         return box.border;
     }
 
