@@ -83,7 +83,7 @@ public class BrowserStartup {
         frame.setJMenuBar(bs.menu);
         frame.getContentPane().add(bs.panel);
         frame.pack();
-        frame.setSize(500,600);
+        frame.setSize(600,700);
         frame.show();
         if(args.length > 0) {
             bs.panel.loadPage(args[0]);
