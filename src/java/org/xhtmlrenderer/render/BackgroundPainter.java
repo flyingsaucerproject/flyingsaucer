@@ -22,10 +22,11 @@ package org.xhtmlrenderer.render;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.*;
 
 /**
  * Description of the Class
@@ -33,6 +34,9 @@ import org.xhtmlrenderer.util.u;
  * @author   empty
  */
 public class BackgroundPainter {
+    private static final Color transparent = new Color(0,0,0,0);
+
+
     /**
      * Description of the Method
      *
@@ -40,6 +44,13 @@ public class BackgroundPainter {
      * @param block  PARAM
      */
     public static void paint( Context c, Box block ) {
+        
+        // don't draw if the backgrounds are turned off
+        if(!Configuration.isTrue("xr.renderer.draw.backgrounds",true)) {
+            return;
+        }
+
+        
         if(block.border == null) return;
         Rectangle box = new Rectangle(
                 block.x + block.margin.left + block.border.left,
@@ -47,11 +58,15 @@ public class BackgroundPainter {
                 block.width - block.margin.left - block.margin.right - block.border.left - block.border.right,
                 block.height - block.margin.top - block.border.top - block.border.bottom - block.margin.bottom
                  );
+                 
         // paint the background
         if ( block.background_color != null ) {
-            //u.p("filling background: " + block.background_color + " " + block);
-            c.getGraphics().setColor( block.background_color );
-            c.getGraphics().fillRect( box.x, box.y, box.width, box.height );
+            // skip transparent background
+            if(!block.background_color.equals(transparent)) {
+                //TODO. make conf controlled u.p("filling a background");
+                c.getGraphics().setColor( block.background_color );
+                c.getGraphics().fillRect( box.x, box.y, box.width, box.height );
+            }
         }
 
         int xoff = 0;
@@ -59,6 +74,7 @@ public class BackgroundPainter {
 
         if ( block.attachment != null && block.attachment.equals( "fixed" ) ) {
             yoff = c.canvas.getLocation().y;
+            //TODO. make conf controlled u.p("setting the clip rect for fixed background");
             c.graphics.setClip( c.canvas.getVisibleRect() );
         }
 
@@ -93,14 +109,7 @@ public class BackgroundPainter {
             int ih = block.background_image.getHeight( null );
 
             // handle image position offsets
-            /*
-             * u.p("block = " + block);
-             * u.p("xoff = " + xoff);
-             * u.p("back_width = " + back_width);
-             * u.p("iw = " + iw);
-             * u.p("bg pos = " + block.background_position_horizontal);
-             */
-            /*
+            /* KEEP JMM (11/16)
              * xoff = block width - image width * pos
              * pos = 0
              * block width = 300
@@ -112,8 +121,6 @@ public class BackgroundPainter {
              */
             xoff += (int)( (double)( back_width - iw ) * (double)( (double)block.background_position_horizontal / (double)100 ) );
             yoff -= (int)( (double)( back_height - ih ) * (double)( (double)block.background_position_vertical / (double)100 ) );
-            //u.p("xoff = " + xoff);
-            //u.p("yoff = " + yoff);
 
             // calculations for fixed tile images
             int starty = (int)Math.ceil( (double)( top_insets + yoff ) / ih );
@@ -139,22 +146,21 @@ public class BackgroundPainter {
                 vert = true;
             }
 
+            //TODO. make conf controlled u.p("filling background with an image");
+            // fixed tiled image
             if ( block.attachment != null && block.attachment.equals( "fixed" ) ) {
                 tileFill( c.getGraphics(), block.background_image,
                         new Rectangle( left_insets, top_insets, back_width, back_height ),
                         xoff, -yoff, horiz, vert );
             } else {
                 // do normal tile image
-                //u.p("normal looping");
                 tileFill( c.getGraphics(), block.background_image,
                         new Rectangle( left_insets, top_insets, back_width, back_height ),
                         xoff, -yoff, horiz, vert );
-                //u.p("finished loop");
             }
+            //TODO. make conf controlled u.p("setting the clip rect");
             c.getGraphics().setClip( oldclip );
         }
-        //u.off();
-
     }
     
 
@@ -206,6 +212,15 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/16 15:38:44  joshy
+ * removed background printing which speeds it up considerably
+ * added boolean in conf to turn off backgrounds for testing
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/11/10 17:28:55  joshy
  * initial support for anti-aliased text w/ minium
  *

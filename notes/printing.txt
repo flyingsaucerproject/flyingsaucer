@@ -1,0 +1,38 @@
+printing notes
+
+
+the printing subsystem should
+
+be in it's own package
+affect the rest of the core as little as possible
+support as much native features of printers as possible
+print to color if possible
+use the @media attribute to style correctly
+scale so that point based fonts are sized correctly
+
+72pt font = 1 inch high (ascend+descend or X height?)
+
+setting widths by absolute units should be correct
+    width = 1in  -> box 1 inch wide
+    
+should break pages where appropriate
+should repeat table headers when table goes over multiple pages
+
+adjust graphics to account for imageable area
+
+should be really simple to create browser action to do printing
+
+always smooth fonts
+
+support pages of different sizes
+
+support various printing and breaking css properties
+
+browser should be able to add it's own printing enhancments
+    url at bottom
+    date
+    margin and border adjustments
+    duplex/mulit-plex printing
+    turn on and off header repeats
+
+(should we be moving to font glyphs and vectors?)

@@ -45,6 +45,7 @@ public class XHTMLPrintable implements Printable {
                 u.p("building new Graphics2DRenderer");
                 g2r = new Graphics2DRenderer();
                 g2r.getRenderingContext().setDPI(72f);
+                g2r.getRenderingContext().setPrinting(true);
                 g2r.getRenderingContext().getTextRenderer().setSmoothingThreshold(0);
                 g2r.getRenderingContext().getTextRenderer().setSmoothingLevel(TextRenderer.HIGH);
                 g2r.setDocument(panel.getURL());

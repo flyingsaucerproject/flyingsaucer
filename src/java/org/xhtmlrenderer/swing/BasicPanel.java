@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -52,6 +53,7 @@ import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.x;
+import org.xhtmlrenderer.util.u;
 import org.xml.sax.ErrorHandler;
 
 
@@ -108,6 +110,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         layout_thread = new LayoutThread( this );
         setLayout( new AbsoluteLayoutManager() );
         documentListeners = new HashMap();
+        setBackground(Color.white);
     }
 
     /**
@@ -226,11 +229,14 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         XRLog.layout( Level.FINEST, "after layout: " + body_box);
         //long end_time = new java.util.Date().getTime();
 
+        
+        /*
         if ( enclosingScrollPane != null ) {
-            if ( this.body_box != null ) {
-                this.enclosingScrollPane.getViewport().setBackground( body_box.background_color );
-            }
+            //if ( this.body_box != null ) {
+                this.enclosingScrollPane.getViewport().setBackground( Color.white );// body_box.background_color );
+            //}
         }
+        */
 
         intrinsic_size = new Dimension( getContext().getMaxWidth(), layout.contents_height );
         if ( enclosingScrollPane != null ) {
@@ -605,6 +611,14 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
 
     /** Description of the Method */
     protected void doRender() {
+        // paint the normal swing background first
+        // but only if we aren't printing.
+        if(!getRenderingContext().isPrinting()) {
+            Graphics g = getRenderingContext().getContext().getGraphics();
+            g.setColor(getBackground());
+            g.fillRect(0,0,getWidth(),getHeight());
+        }
+        // start painting the box tree
         layout.getRenderer().paint( getRenderingContext().getContext(),
                 body_box );
     }
@@ -750,6 +764,15 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/16 15:38:44  joshy
+ * removed background printing which speeds it up considerably
+ * added boolean in conf to turn off backgrounds for testing
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/11/16 10:30:20  pdoubleya
  * Changed to use XRLog for logging.
  * Ran code formatter.

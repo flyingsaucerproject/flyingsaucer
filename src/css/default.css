@@ -54,9 +54,6 @@ html {
     list-style-type: none;
     list-style-image: none;
 }
-html {
-    background-color: white;
-}
 head {
     display: none;
 }
@@ -64,7 +61,6 @@ head {
 html, blockquote, body, div, form, h1, h2, h3, h4, h5, h6, ol, p, ul, pre   { display: block }
 
 body {
-    background-color: #ffffff;
     background-repeat: repeat;
     padding: 3px;
     margin: 0px;
