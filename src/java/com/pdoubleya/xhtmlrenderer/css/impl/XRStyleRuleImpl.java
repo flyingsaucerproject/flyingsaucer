@@ -137,7 +137,7 @@ public class XRStyleRuleImpl extends XRSheetRuleImpl implements XRStyleRule {
      *
      * @return   Returns
      */
-    public synchronized int selectorSpecificity() {
+    public int selectorSpecificity() {
         if ( _specificity == 0 ) {
             int idCnt = 0;
             int elemCnt = 0;
@@ -190,12 +190,6 @@ public class XRStyleRuleImpl extends XRSheetRuleImpl implements XRStyleRule {
                     }
                 }
             }
-            /*
-             * CLEAN: DBG
-             * sDbgLogger.finest("  idCnt    " + idCnt);
-             * sDbgLogger.finest("  otherCnt " + otherCnt);
-             * sDbgLogger.finest("  elemCnt  " + elemCnt);
-             */
             _specificity = new Integer( idCnt + "" + otherCnt + "" + elemCnt ).intValue();
         }
         return _specificity;
@@ -205,7 +199,7 @@ public class XRStyleRuleImpl extends XRSheetRuleImpl implements XRStyleRule {
     /**
      * @return   Returns
      */
-    public synchronized JStyle asJStyle() {
+    public JStyle asJStyle() {
         if ( _jStyle == null ) {
             _jStyle = new JStyle();
             _jStyle.sheet = _sheet;

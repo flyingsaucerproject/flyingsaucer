@@ -210,7 +210,7 @@ public abstract class XRSheetRuleImpl implements XRSheetRule {
      *
      * @param fromRule  PARAM
      */
-    public synchronized void mergeProperties( XRRule fromRule ) {
+    public void mergeProperties( XRRule fromRule ) {
         Iterator iter = fromRule.listXRProperties();
         while ( iter.hasNext() ) {
             XRProperty prop = (XRProperty)iter.next();
