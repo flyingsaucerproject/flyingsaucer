@@ -2,13 +2,9 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
-import org.xhtmlrenderer.layout.content.FloatedBlockContent;
-import org.xhtmlrenderer.layout.content.InlineBlockContent;
-import org.xhtmlrenderer.layout.content.StylePop;
-import org.xhtmlrenderer.layout.content.StylePush;
+import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.TextDecoration;
-import org.xhtmlrenderer.util.*;
+import org.xhtmlrenderer.util.GraphicsUtil;
 
 import java.awt.*;
 import java.awt.font.LineMetrics;
@@ -88,7 +84,14 @@ public class InlineRenderer extends BoxRenderer {
 
         // for each inline box
         for (int j = 0; j < line.getChildCount(); j++) {
-            InlineBox box = (InlineBox) line.getChild(j);
+            Box child = line.getChild(j);
+            if (child.content instanceof AbsolutelyPositionedContent) {
+                paintAbsolute(c, child);
+                //debugInlines(c, child, lx, ly);
+                continue;
+            }
+
+            InlineBox box = (InlineBox) child;
             if (box.restyle) {
                 restyle(c, box);
                 //box.restyle = false;
@@ -115,13 +118,7 @@ public class InlineRenderer extends BoxRenderer {
         }
 
         if (inline.content instanceof FloatedBlockContent) {
-            paintFloat(c, inline, line);
-            debugInlines(c, inline, lx, ly);
-            return;
-        }
-
-        if (inline.content instanceof AbsolutelyPositionedContent) {
-            paintAbsolute(c, inline, line);
+            paintFloat(c, inline);
             debugInlines(c, inline, lx, ly);
             return;
         }
@@ -199,7 +196,7 @@ public class InlineRenderer extends BoxRenderer {
         c.translate(-line.x, -(line.y + (line.baseline - inline.height)));
     }
 
-    private void paintAbsolute(Context c, InlineBox inline, LineBox line) {
+    private void paintAbsolute(Context c, Box inline) {
         // Uu.p("paint absolute: " + inline);
         //c.translate(line.x, line.y + (line.baseline - inline.height));
         Renderer rend = c.getRenderer(inline.content.getElement());
@@ -208,7 +205,7 @@ public class InlineRenderer extends BoxRenderer {
     }
 
 
-    private void paintFloat(Context c, InlineBox inline, LineBox line) {
+    private void paintFloat(Context c, InlineBox inline) {
         // Uu.p("painting a float: " + inline);
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe.x, 0, oe.width, oe.height));

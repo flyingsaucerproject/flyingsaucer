@@ -233,6 +233,16 @@ public class BoxLayout extends DefaultLayout {
      */
     public Box layoutChildren(Context c, Box box) {
         BlockBox block = (BlockBox) box;
+        java.util.List contentList = block.content.getChildContent(c);
+        if (contentList == null) return block;
+        if (contentList.size() == 0) return block;//we can do this if there is no content, right?
+
+        layoutContent(c, box, contentList, block);
+
+        return block;
+    }
+
+    public static void layoutContent(Context c, Box box, List contentList, Box block) {
         c.shrinkExtents(block);
 
         // save the original height in case it
@@ -242,22 +252,6 @@ public class BoxLayout extends DefaultLayout {
         // prepare for the list items
         int old_counter = c.getListCounter();
         c.setListCounter(0);
-
-        java.util.List contentList = block.content.getChildContent(c);
-        if(contentList == null) return block;
-        if (contentList.size() == 0) return block;//we can do this if there is no content, right?
-        layoutContent(c, box, contentList, block);
-
-        c.addMaxWidth(box.width);
-
-        c.setListCounter(old_counter);
-
-        c.unshrinkExtents(block);
-
-        return block;
-    }
-
-    public static void layoutContent(Context c, Box box, List contentList, BlockBox block) {
         // Uu.p("BoxLayout.layoutContent(): " + block);
         Iterator contentIterator = contentList.iterator();
         //TODO: how does a block's firstLineStyle and firstLetterStyle propagate downwards?
@@ -324,6 +318,12 @@ public class BoxLayout extends DefaultLayout {
             // increase the final layout height by the height of the child
             box.height += child_box.height;
         }
+        c.addMaxWidth(box.width);
+
+        c.setListCounter(old_counter);
+
+        c.unshrinkExtents(block);
+
     }
 
     //TODO: look over form handling. Should be handled through NamespaceHandler and DOM-events, I think
@@ -355,6 +355,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.53  2004/12/20 23:25:31  tobega
+ * Cleaned up handling of absolute boxes and went back to correct use of anonymous boxes in ContentUtil
+ *
  * Revision 1.52  2004/12/16 17:22:25  joshy
  * minor code cleanup
  * Issue number:

@@ -22,9 +22,9 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.*;
-import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
@@ -53,24 +53,24 @@ public class InlineLayout extends BoxLayout {
         }*/
 
         List contentList = box.content.getChildContent(c);
-        if(contentList == null) return box;
+        if (contentList == null) return box;
         if (contentList.size() == 0) return box;//we can do this if there is no content, right?
 
-        Box block = box;//I think this should work - tobe 2004-12-11
+        //Box block = box;//I think this should work - tobe 2004-12-11
 
         // Uu.p("testing block content: " + box);
         if (ContentUtil.isBlockContent(contentList)) {//this should be block layed out
-            //BoxLayout.layoutContent(c, box, contentList, block);
-            super.layoutChildren(c, box);
+            BoxLayout.layoutContent(c, box, contentList, box);
+            //super.layoutChildren(c, box);
         } else {
-            layoutContent(c, box, contentList, block);
+            layoutContent(c, box, contentList);
         }
 
         // Uu.p("finished block = " + block);
-        return block;
+        return box;
     }
 
-    public static void layoutContent(Context c, Box box, List contentList, Box block) {
+    public static void layoutContent(Context c, Box box, List contentList) {
         // Uu.p("+ InlineLayout.layoutContent(): " + box);
         Rectangle bounds = new Rectangle();
         bounds.width = c.getExtents().width;
@@ -111,11 +111,11 @@ public class InlineLayout extends BoxLayout {
             Object o = contentList.get(0);
             contentList.remove(0);
             if (o instanceof FirstLineStyle) {//can actually only be the first object in list
-                block.firstLineStyle = ((FirstLineStyle) o).getStyle();
+                box.firstLineStyle = ((FirstLineStyle) o).getStyle();
                 continue;
             }
             if (o instanceof FirstLetterStyle) {//can actually only be the first or second object in list
-                block.firstLetterStyle = ((FirstLetterStyle) o).getStyle();
+                box.firstLetterStyle = ((FirstLetterStyle) o).getStyle();
                 continue;
             }
             if (o instanceof StylePush) {
@@ -142,6 +142,14 @@ public class InlineLayout extends BoxLayout {
             // loop until no more text in this node
             while (true) {
 
+                if (currentContent instanceof AbsolutelyPositionedContent) {
+                    // Uu.p("this might be a problem, but it could just be an absolute block");
+                    //     result = new BoxLayout().layout(c,content);
+                    Box absolute = Absolute.generateAbsoluteBox(c, currentContent);
+                    curr_line.addChild(absolute);
+                    break;
+                }
+
                 // debugging check
                 if (bounds.width < 0) {
                     Uu.p("bounds width = " + bounds.width);
@@ -167,11 +175,11 @@ public class InlineLayout extends BoxLayout {
                 // look at current inline
                 // break off the longest section that will fit
                 InlineBox new_inline = calculateInline(c, currentContent, remaining_width, bounds.width,
-                        prev_inline, prev_align_inline, isFirstLetter, block.firstLetterStyle, block.firstLineStyle);
+                        prev_inline, prev_align_inline, isFirstLetter, box.firstLetterStyle, box.firstLineStyle);
                 // Uu.p("got back inline: " + new_inline);
                 
                 // skipp empty inlines
-                if(isNormalInline(currentContent)) {
+                if (isNormalInline(currentContent)) {
                     if (new_inline.getSubstring().equals("")) break;
                 }
                 // Uu.p("current line = " + curr_line);
@@ -182,7 +190,7 @@ public class InlineLayout extends BoxLayout {
                 if (new_inline.break_before && !new_inline.floated) {
                     // Uu.p("break before");
                     remaining_width = bounds.width;
-                    saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, block, false);
+                    saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, false);
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line);
@@ -204,7 +212,7 @@ public class InlineLayout extends BoxLayout {
 
                 // calc new height of the line
                 // don't count floats, absolutes, and inline-blocks
-                if(isNormalInline(currentContent)) {
+                if (isNormalInline(currentContent)) {
                     adjustLineHeight(curr_line, new_inline);
                 }
 
@@ -219,7 +227,7 @@ public class InlineLayout extends BoxLayout {
                     // then remaining_width = max_width
                     remaining_width = bounds.width;
                     // save the line
-                    saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, block, false);
+                    saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, false);
                     // increase bounds height to account for the new line
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
@@ -229,7 +237,7 @@ public class InlineLayout extends BoxLayout {
 
 
                 // set the inline to use for left alignment
-                if(!isOutsideFlow(currentContent)) {
+                if (!isOutsideFlow(currentContent)) {
                     prev_align_inline = new_inline;
                     // }
                 }
@@ -242,8 +250,8 @@ public class InlineLayout extends BoxLayout {
         }
 
         // save the final line
-        saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, block, true);
-        finishBlock(block, curr_line, bounds);
+        saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, true);
+        finishBlock(box, curr_line, bounds);
         // Uu.p("- InlineLayout.layoutContent(): " + box);
     }
 
@@ -312,7 +320,7 @@ public class InlineLayout extends BoxLayout {
         block.y = 0;
     }
 
-    
+
     public static boolean isNormalInline(Content currentContent) {
         if (!(currentContent instanceof InlineBlockContent)) {
             if (!(currentContent instanceof FloatedBlockContent)) {
@@ -323,7 +331,7 @@ public class InlineLayout extends BoxLayout {
         }
         return false;
     }
-    
+
     public static boolean isOutsideFlow(Content currentContent) {
         if (currentContent instanceof FloatedBlockContent) {
             return true;
@@ -333,7 +341,7 @@ public class InlineLayout extends BoxLayout {
         }
         return false;
     }
-    
+
     /**
      * Get the longest inline possible.
      *
@@ -365,10 +373,6 @@ public class InlineLayout extends BoxLayout {
         } else if (content instanceof FloatedBlockContent) {
             //Uu.p("calcinline: is floated block");
             result = FloatUtil.generateFloatedBlockInlineBox(c, content, avail, prev_align, font);
-        } else if (content instanceof AbsolutelyPositionedContent) {
-             // Uu.p("this might be a problem, but it could just be an absolute block");
-        //     result = new BoxLayout().layout(c,content);
-            result = Absolute.generateInlineBox(c, content, avail, prev_align, font);
         } else {
 
             //OK, now we should have only TextContent left, fail fast if not
@@ -479,6 +483,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.65  2004/12/20 23:25:31  tobega
+* Cleaned up handling of absolute boxes and went back to correct use of anonymous boxes in ContentUtil
+*
 * Revision 1.64  2004/12/16 17:33:15  joshy
 * moved back to abs pos content
 * Issue number:

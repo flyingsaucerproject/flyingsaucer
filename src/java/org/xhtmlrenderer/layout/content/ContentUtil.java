@@ -321,8 +321,8 @@ public class ContentUtil {
     }
 
     static List resolveRunInContent(List pendingInlines, Element parentElement, Context c) {
-        return new LinkedList(pendingInlines);//pendingInlines.clone();
-        /*
+        //return new LinkedList(pendingInlines);//pendingInlines.clone();
+
         List inline = new LinkedList();
         List block = new LinkedList();
         for (Iterator i = pendingInlines.iterator(); i.hasNext();) {
@@ -346,7 +346,7 @@ public class ContentUtil {
             block.add(new AnonymousBlockContent(parentElement, inline));
         }
         return block;
-*/
+
     }
 
     //TODO: following methods should not need to be public
@@ -462,6 +462,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2004/12/20 23:25:30  tobega
+ * Cleaned up handling of absolute boxes and went back to correct use of anonymous boxes in ContentUtil
+ *
  * Revision 1.20  2004/12/16 17:41:46  joshy
  * fixed floats.  it was looking for the display property instead of the float
  * property

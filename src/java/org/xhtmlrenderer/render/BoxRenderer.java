@@ -5,15 +5,14 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BoxLayout;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.layout.content.ContentUtil;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.layout.LayoutUtil;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 
@@ -52,6 +51,8 @@ public class BoxRenderer extends DefaultRenderer {
             paintRelative(c, block);
         } else if (block.fixed) {
             paintFixed(c, block);
+        } else if (block.absolute) {
+            paintAbsoluteBox(c, block);
         } else {
             paintNormal(c, block);
         }
@@ -71,9 +72,9 @@ public class BoxRenderer extends DefaultRenderer {
             c.popStyle();
         }
 
-        
+
         if (c.debugDrawBoxes() ||
-            Configuration.isTrue("xr.renderer.debug.box-outlines", true)) {
+                Configuration.isTrue("xr.renderer.debug.box-outlines", true)) {
             GraphicsUtil.drawBox(c.getGraphics(), block, Color.red);
         }
     }
@@ -119,7 +120,37 @@ public class BoxRenderer extends DefaultRenderer {
     public void paintFixed(Context c, Box block) {
         Rectangle rect = c.getFixedRectangle();
         //Uu.p("rect = " + rect);
-        Graphics g = c.getGraphics();
+        //Graphics g = c.getGraphics();
+        int xoff = -rect.x;
+        int yoff = -rect.y;
+
+        if (block.top_set) {
+            yoff += block.top;
+        }
+        if (block.right_set) {
+            xoff = -rect.x + rect.width - block.width - block.right;
+        }
+        if (block.left_set) {
+            xoff = block.left;
+        }
+        if (block.bottom_set) {
+            yoff = -rect.y + rect.height - block.height - block.bottom;
+        }
+        c.translate(xoff, yoff);
+        paintNormal(c, block);
+        c.translate(-xoff, -yoff);
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param c     PARAM
+     * @param block PARAM
+     */
+    //HACK: more or less copied paintFixed - tobe
+    public void paintAbsoluteBox(Context c, Box block) {
+        Rectangle rect = c.getExtents();
+        //why this?
         int xoff = -rect.x;
         int yoff = -rect.y;
 
@@ -150,7 +181,7 @@ public class BoxRenderer extends DefaultRenderer {
     public void paintBackground(Context c, Box box) {
         Box block = box;
 
-        if(!LayoutUtil.shouldDrawBackground(block)) {
+        if (!LayoutUtil.shouldDrawBackground(block)) {
             //Uu.p("skipping: " + block);
             return;
         }
