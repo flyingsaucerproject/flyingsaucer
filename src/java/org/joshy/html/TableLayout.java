@@ -388,7 +388,7 @@ public class TableLayout
             c.setExtents(new Rectangle(0, 0, cell.width, cell.height));
     
             Layout layout = LayoutFactory.getLayout(cell.node);
-            u.p("doing cell: " + cell);
+            //u.p("doing cell: " + cell);
             layout.paint(c, cell.sub_box);
     
             c.getGraphics().translate(-oe.x, -oe.y);

@@ -21,7 +21,7 @@ public class TableCellLayout extends InlineLayout {
     
     public void paintBackground(Context c, Box box) {
         //contents.height = c.getExtents().height;
-        u.p("painting a cell background: " + box);
+        //u.p("painting a cell background: " + box);
         super.paintBackground(c,box);
     }
 

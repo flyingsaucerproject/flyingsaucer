@@ -129,10 +129,10 @@ public class TableLayout2
             
             // loop through the cells
             for(int x=0; x<grid.getWidth(); x++) {
-                u.p("x = " + x);
+                //u.p("x = " + x);
                 //u.p("grid width = " + grid.getWidth());
                 if(grid.isReal(x,y)) {
-                    u.p("it's real");
+                    //u.p("it's real");
                     
                     Cell cell = grid.getCell(x,y);
                     
@@ -178,7 +178,7 @@ public class TableLayout2
                     row_box.width += cell_box.width;
                     
                 } else {
-                    u.p("it's virtual");
+                    //u.p("it's virtual");
                     Cell cell = grid.getCell(x,y);
                     // create a virtual cell box for this cell
                     CellBox cell_box = CellBox.createVirtual(cell.cb);
@@ -222,7 +222,7 @@ public class TableLayout2
                     real.sub_box.height = real.height;
                     //u.p("now real = " + real);
                 }
-                u.p("cell = " + cb);
+                //u.p("cell = " + cb);
             }
             
             
