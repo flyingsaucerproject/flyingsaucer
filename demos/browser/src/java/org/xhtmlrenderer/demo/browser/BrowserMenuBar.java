@@ -427,7 +427,7 @@ public class BrowserMenuBar extends JMenuBar {
 
         public void actionPerformed( ActionEvent evt ) {
             root.panel.view.getRenderingContext().getTextRenderer().setSmoothingLevel(hint);
-            root.panel.view.getRenderingContext().getTextRenderer().setSmoothingThreshold(20);
+            //root.panel.view.getRenderingContext().getTextRenderer().setSmoothingThreshold(20);
             root.panel.view.repaint();
         }
     }
@@ -478,6 +478,13 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/11/15 14:50:45  joshy
+ * removed text code
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.16  2004/11/15 14:50:26  joshy
  * font threshold support
  *
