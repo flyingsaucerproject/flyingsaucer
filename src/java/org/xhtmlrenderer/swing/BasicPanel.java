@@ -19,12 +19,12 @@
  */
 package org.xhtmlrenderer.swing;
 
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
+import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -59,11 +59,34 @@ import java.util.logging.Level;
  *
  * @author Joshua Marinacci
  */
-public abstract class BasicPanel extends JPanel implements ComponentListener {
+public abstract class BasicPanel extends JPanel implements ComponentListener, UserInterface {
     /**
      * Description of the Field
      */
     public Element hovered_element = null;
+    public Element active_element = null;
+    public Element focus_element = null;
+
+    public boolean isHover(org.w3c.dom.Element e) {
+        if (e == hovered_element) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isActive(org.w3c.dom.Element e) {
+        if (e == active_element) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isFocus(org.w3c.dom.Element e) {
+        if (e == focus_element) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Description of the Field
@@ -126,7 +149,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
      * Constructor for the BasicPanel object
      */
     public BasicPanel() {
-
+        ctx = new RenderingContext();
         layout_thread = new LayoutThread(this);
         documentListeners = new HashMap();
         setBackground(Color.white);
@@ -528,37 +551,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     }
 
     /**
-     * Sets the document attribute of the BasicPanel object
-     *
-     * @param doc The new document value
-     * @param url The new document value
-     */
-    public void setDocument(Document doc, URL url) {
-        resetScrollPosition();
-        this.doc = doc;
-        this.url = url;
-
-        //TODO: find a reasonable way to set the namespace handler, this is wrong.
-        //have to do this first
-        getRenderingContext().setBaseURL(url);
-        StaticXhtmlAttributeResolver ar =
-                new StaticXhtmlAttributeResolver() {
-                    public boolean isHover(org.w3c.dom.Element e) {
-                        if (e == hovered_element) {
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-        getContext().setAttributeResolver(ar);
-        getContext().setNamespaceHandler(new XhtmlNamespaceHandler());
-        getRenderingContext().getStyleReference().setDocumentContext(getContext(), getContext().getNamespaceHandler(), ar, doc);
-
-        calcLayout();
-        repaint();
-    }
-
-    /**
      * Sets the errorHandler attribute of the BasicPanel object
      *
      * @param error_handler The new errorHandler value
@@ -649,22 +641,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
      * @return The documentTitle value
      */
     public String getDocumentTitle() {
-        String title = "";
-        try {
-            Element root = this.doc.getDocumentElement();
-            Node node =
-                    (Node) XPathAPI.selectSingleNode(root, "//head/title/text()");
-            if (node == null) {
-                XRLog.exception("Apparently no title element for this document.");
-                title = "TITLE UNKNOWN";
-            } else {
-                title = node.getNodeValue();
-            }
-        } catch (Exception ex) {
-            XRLog.exception("Error retrieving document title. " + ex.getMessage());
-            title = "";
-        }
-        return title;
+        return getContext().getNamespaceHandler().getDocumentTitle(doc);
     }
 
     /**
@@ -736,6 +713,35 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         }
     }
 
+    public void setDocument(Document doc, URL url, NamespaceHandler nsh) {
+        resetScrollPosition();
+        this.doc = doc;
+        this.url = url;
+
+        //have to do this first
+        getRenderingContext().setBaseURL(url);
+        getContext().setNamespaceHandler(nsh);
+        getRenderingContext().getStyleReference().setDocumentContext(getContext(), getContext().getNamespaceHandler(), doc, this);
+
+        calcLayout();
+        repaint();
+    }
+
+    public void setDocument(InputStream stream, URL url, NamespaceHandler nsh) throws Exception {
+        Document dom = Xx.loadDocument(stream);
+        setDocument(dom, url, nsh);
+    }
+
+
+    /**
+     * Sets the document attribute of the BasicPanel object
+     *
+     * @param doc The new document value
+     * @param url The new document value
+     */
+    public void setDocument(Document doc, URL url) {
+        setDocument(doc, url, new NoNamespaceHandler());
+    }
 
     /**
      * Description of the Method
@@ -759,8 +765,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     }
 
     protected void setDocument(InputStream stream, URL url) throws Exception {
-        Document dom = Xx.loadDocument(stream);
-        setDocument(dom, url);
+        setDocument(stream, url, new NoNamespaceHandler());
     }
 
     protected void setDocumentRelative(String filename)
@@ -871,6 +876,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/01/08 11:55:18  tobega
+ * Started massaging the extension interfaces
+ *
  * Revision 1.30  2005/01/07 12:42:08  tobega
  * Hacked improved support for custom components (read forms). Creates trouble with the image demo. Anyway, components work and are usually in the right place.
  *

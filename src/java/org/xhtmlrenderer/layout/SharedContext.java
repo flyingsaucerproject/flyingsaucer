@@ -23,7 +23,6 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.style.EmptyStyle;
-import org.xhtmlrenderer.extend.AttributeResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
@@ -562,23 +561,15 @@ public class SharedContext {
         return namespaceHandler;
     }
 
-    public AttributeResolver getAttributeResolver() {
-        return attributeResolver;
-    }
-
-    public void setAttributeResolver(AttributeResolver attributeResolver) {
-        this.attributeResolver = attributeResolver;
-    }
-
-    private AttributeResolver attributeResolver;
-
-
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/01/08 11:55:17  tobega
+ * Started massaging the extension interfaces
+ *
  * Revision 1.6  2005/01/05 17:56:35  tobega
  * Reduced memory more, especially by using WeakHashMap for caching Mappers. Look over other caching to use similar schemes (cache when memory available).
  *

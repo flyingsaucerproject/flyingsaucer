@@ -52,27 +52,50 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
     public String getNamespace() {
         return _namespace;
     }
-     
-    /*
+
+    /*public String getAttributeValue(org.w3c.dom.Element e, String attrName) {
+        return e.getAttribute(attrName);
+    }*/
+
     public String getClass(org.w3c.dom.Element e) {
         return e.getAttribute("class");
     }
-    
-    public String getElementStyling(org.w3c.dom.Element e) {
-         return e.getAttribute("style");
-    }
-    
+
     public String getID(org.w3c.dom.Element e) {
         return e.getAttribute("id");
     }
-    
-    public String getLang(org.w3c.dom.Element e) {
-        String lang = e.getAttribute("lang");
-        if(lang == null || lang.equals("")) lang = super.getLang(e);
-        return lang;
+
+    /*public String getLang(org.w3c.dom.Element e) {
+        return e.getAttribute("lang");
+    }*/
+
+    public String getElementStyling(org.w3c.dom.Element e) {
+        StringBuffer style = new StringBuffer();
+        if (e.getNodeName().equals("td")) {
+            String s;
+            if (!(s = e.getAttribute("colspan")).equals("")) {
+                style.append("-fs-table-cell-colspan: ");
+                style.append(s);
+                style.append(";");
+            }
+            if (!(s = e.getAttribute("rowspan")).equals("")) {
+                style.append("-fs-table-cell-rowspan: ");
+                style.append(s);
+                style.append(";");
+            }
+        }
+        style.append(e.getAttribute("style"));
+        return style.toString();
     }
-    */
-    
+
+    public String getLinkUri(org.w3c.dom.Element e) {
+        String href = null;
+        if (e.getNodeName().equalsIgnoreCase("a") && !e.getAttribute("href").equals("")) {
+            href = e.getAttribute("href");
+        }
+        return href;
+    }
+
     //xpath needs prefix for element when namespace-aware
     org.apache.xml.utils.PrefixResolver pres = new org.apache.xml.utils.PrefixResolver() {
         public java.lang.String getNamespaceForPrefix(java.lang.String prefix) {

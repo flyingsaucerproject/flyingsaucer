@@ -3,6 +3,7 @@ package org.xhtmlrenderer.simple;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.swing.BasicPanel;
+import org.xhtmlrenderer.swing.XhtmlNamespaceHandler;
 
 import java.io.File;
 import java.io.InputStream;
@@ -57,7 +58,6 @@ import java.net.URL;
 public class XHTMLPanel extends BasicPanel {
 
     public XHTMLPanel() {
-        ctx = new RenderingContext();
         //ctx.setTextRenderer(new MiniumTextRenderer());
         //ctx.getTextRenderer().setSmoothingLevel(TextRenderer.HIGH);
     }
@@ -82,11 +82,11 @@ public class XHTMLPanel extends BasicPanel {
     }
 
     public void setDocument(Document doc, URL url) {
-        super.setDocument(doc, url);
+        super.setDocument(doc, url, new XhtmlNamespaceHandler());
     }
 
     public void setDocument(InputStream stream, URL url) throws Exception {
-        super.setDocument(stream, url);
+        super.setDocument(stream, url, new XhtmlNamespaceHandler());
     }
     
     /*

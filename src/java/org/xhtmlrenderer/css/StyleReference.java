@@ -31,6 +31,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.AttributeResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -61,11 +62,6 @@ public class StyleReference {
     /**
      * Description of the Field
      */
-    private AttributeResolver _attRes;
-
-    /**
-     * Description of the Field
-     */
     private StylesheetFactory _stylesheetFactory;
 
     /**
@@ -79,12 +75,15 @@ public class StyleReference {
      */
     private org.xhtmlrenderer.css.style.Styler _styler;
 
+    private UserAgentCallback _uac;
+
     /**
      * Default constructor for initializing members.
      *
      * @param userAgent PARAM
      */
     public StyleReference(UserAgentCallback userAgent) {
+        _uac = userAgent;
         _stylesheetFactory = new StylesheetFactory(userAgent);
     }
 
@@ -103,18 +102,18 @@ public class StyleReference {
      *
      * @param context The new documentContext value
      * @param nsh     The new documentContext value
-     * @param ar      The new documentContext value
      * @param doc     The new documentContext value
+     * @param ui
      */
-    public void setDocumentContext(SharedContext context, NamespaceHandler nsh, AttributeResolver ar, Document doc) {
+    public void setDocumentContext(SharedContext context, NamespaceHandler nsh, Document doc, UserInterface ui) {
         _context = context;
         _nsh = nsh;
         _doc = doc;
-        _attRes = ar;
+        AttributeResolver attRes = new StandardAttributeResolver(_nsh, _uac, ui);
 
         List infos = getStylesheets();
         XRLog.match("media = " + _context.getMedia());
-        _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(_attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
+        _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
         _styler = new org.xhtmlrenderer.css.style.Styler();
     }
 
@@ -237,6 +236,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/01/08 11:55:16  tobega
+ * Started massaging the extension interfaces
+ *
  * Revision 1.17  2005/01/04 10:19:11  tobega
  * resolve selectors to styles direcly on match, should reduce memory footprint and not affect speed very much.
  *

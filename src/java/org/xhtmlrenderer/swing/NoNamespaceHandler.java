@@ -46,24 +46,29 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
         return _namespace;
     }
 
-    /*
+    public String getAttributeValue(org.w3c.dom.Element e, String attrName) {
+        return e.getAttribute(attrName);
+    }
+
     public String getClass(org.w3c.dom.Element e) {
-System.err.println("NoNamespace class!");
         return null;
     }
-    
-    public String getElementStyling(org.w3c.dom.Element e) {
-         return null;
-    }
-    
+
     public String getID(org.w3c.dom.Element e) {
         return null;
     }
-    
+
     public String getLang(org.w3c.dom.Element e) {
-        return e.getAttributeNS(_namespace, "lang");
+        return e.getAttribute("lang");
     }
-    */
+
+    public String getElementStyling(org.w3c.dom.Element e) {
+        return null;
+    }
+
+    public String getLinkUri(org.w3c.dom.Element e) {
+        return null;
+    }
 
     public String getDocumentTitle(org.w3c.dom.Document doc) {
         return null;

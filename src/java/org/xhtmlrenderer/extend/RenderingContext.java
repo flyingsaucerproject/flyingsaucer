@@ -20,15 +20,25 @@ public class RenderingContext {
     /**
      * Constructor for the RenderingContext object
      */
-    public RenderingContext() {
+    public RenderingContext(UserAgentCallback uac) {
         setMedia("screen");
         setContext(new SharedContext());
         getContext().setCtx(this);
-        getContext().setCss(new StyleReference(new NaiveUserAgent()));
+        this.uac = uac;
+        getContext().setCss(new StyleReference(uac));
         XRLog.render("Using CSS implementation from: " + getContext().getCss().getClass().getName());
         setTextRenderer(new Java2DTextRenderer());
     }
 
+    public RenderingContext() {
+        this(new NaiveUserAgent());
+    }
+
+    protected UserAgentCallback uac;
+
+    public UserAgentCallback getUac() {
+        return uac;
+    }
 
     /**
      * Description of the Field

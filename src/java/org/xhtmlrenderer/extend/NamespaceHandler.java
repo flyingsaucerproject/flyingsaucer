@@ -63,18 +63,36 @@ public interface NamespaceHandler {
      * @return all links to CSS stylesheets (type="text/css") in this document
      */
     public StylesheetInfo[] getStylesheetLinks(Document doc);
-    
-    /** may return null */
-    //public String getClass(org.w3c.dom.Element e);
-    
-    /** may return null */
-    //public String getID(org.w3c.dom.Element e);
-    
-    /** may return null */
-    //public String getElementStyling(org.w3c.dom.Element e);
-    
-    /** may return null */
-    //public String getLang(org.w3c.dom.Element e);
+
+    /**
+     * may return null. Required to return null if attribute does not exist and not null if attribute exists.
+     */
+    public String getAttributeValue(org.w3c.dom.Element e, String attrName);
+
+    /**
+     * may return null
+     */
+    public String getClass(org.w3c.dom.Element e);
+
+    /**
+     * may return null
+     */
+    public String getID(org.w3c.dom.Element e);
+
+    /**
+     * may return null
+     */
+    public String getElementStyling(org.w3c.dom.Element e);
+
+    /**
+     * may return null
+     */
+    public String getLang(org.w3c.dom.Element e);
+
+    /**
+     * should return null if element is not a link
+     */
+    public String getLinkUri(org.w3c.dom.Element e);
 
     /**
      * @param e

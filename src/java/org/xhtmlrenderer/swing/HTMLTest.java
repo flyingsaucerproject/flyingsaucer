@@ -25,7 +25,7 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -184,7 +184,7 @@ public class HTMLTest extends JFrame {
                     else
                         url = new File(uri).toURL();
 
-
+                    System.err.println("loading " + url.toString() + "!");
                     panel.setDocument(url);
 
                     long el = System.currentTimeMillis() - st;
@@ -467,6 +467,9 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/01/08 11:55:18  tobega
+ * Started massaging the extension interfaces
+ *
  * Revision 1.26  2004/12/29 10:39:35  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *
