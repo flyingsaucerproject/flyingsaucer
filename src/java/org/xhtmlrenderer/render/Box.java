@@ -74,7 +74,7 @@ public class Box {
 
     public Content content;
 
-    public boolean restyle;//used during render if things have changed because of e.g. hover
+    //public boolean restyle;//used during render if things have changed because of e.g. hover
     public boolean hover;//dynamic attribute set
 
     // dimensions stuff
@@ -139,7 +139,6 @@ public class Box {
      */
 //    public BorderColor border_color;
 
-    //TODO: get rid of this
 /*    public BorderColor getBorderColor() {
         return border_color;
     }*/
@@ -270,8 +269,9 @@ public class Box {
         if (margin != null) {
             pd += margin.left + margin.right;
         }
-        if (this.padding != null) {
-            pd += this.padding.left + this.padding.right;
+        Border padding = style.getPaddingWidth();
+        if (padding != null) {
+            pd += padding.left + padding.right;
         }
         Border border = LayoutUtil.getBorder(this, style);
         if (border != null) {
@@ -292,8 +292,9 @@ public class Box {
         if (margin != null) {
             pd += margin.top + margin.bottom;
         }
-        if (this.padding != null) {
-            pd += this.padding.top + this.padding.bottom;
+        Border padding = style.getPaddingWidth();
+        if (padding != null) {
+            pd += padding.top + padding.bottom;
         }
         Border border = LayoutUtil.getBorder(this, style);
         if (border != null) {
@@ -314,8 +315,9 @@ public class Box {
         if (margin != null) {
             pd += margin.top;
         }
-        if (this.padding != null) {
-            pd += this.padding.top;
+        Border padding = style.getPaddingWidth();
+        if (padding != null) {
+            pd += padding.top;
         }
         Border border = LayoutUtil.getBorder(this, style);
         if (border != null) {
@@ -336,8 +338,9 @@ public class Box {
         if (margin != null) {
             pd += margin.left;
         }
-        if (this.padding != null) {
-            pd += this.padding.left;
+        Border padding = style.getPaddingWidth();
+        if (padding != null) {
+            pd += padding.left;
         }
         Border border = LayoutUtil.getBorder(this, style);
         if (border != null) {
@@ -352,8 +355,9 @@ public class Box {
         if (margin != null) {
             pd += margin.right;
         }
-        if (this.padding != null) {
-            pd += this.padding.right;
+        Border padding = style.getPaddingWidth();
+        if (padding != null) {
+            pd += padding.right;
         }
         Border border = LayoutUtil.getBorder(this, style);
         if (border != null) {
@@ -557,7 +561,7 @@ public class Box {
         //sb.append("-style(" + border_style + ")");
         //sb.append("-insets(mar" + getBorderTestString(margin));
         //sb.append("-bor" + getBorderTestString(border));
-        sb.append("-pad" + getBorderTestString(padding) + ")");
+        //sb.append("-pad" + getBorderTestString(padding) + ")");
 
         // background images
         sb.append("-backimg(" + background_image);
@@ -622,6 +626,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2004/12/28 01:48:24  tobega
+ * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
+ *
  * Revision 1.31  2004/12/27 09:40:48  tobega
  * Moved more styling to render stage. Now inlines have backgrounds and borders again.
  *

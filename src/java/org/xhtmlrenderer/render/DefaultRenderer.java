@@ -142,7 +142,7 @@ public class DefaultRenderer implements Renderer {
     private void restyleChildren(Box box) {
         for (int i = 0; i < box.getChildCount(); i++) {
             Box child = box.getChild(i);
-            child.restyle = true;
+            //child.restyle = true;
             child.hover = box.hover;
         }
     }

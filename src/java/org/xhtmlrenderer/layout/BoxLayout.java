@@ -34,7 +34,6 @@ import org.xhtmlrenderer.render.BoxRenderer;
 import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
@@ -298,7 +297,7 @@ public class BoxLayout extends DefaultLayout {
 
             // execute the layout and get the return bounds
             //c.parent_box = box;
-            c.placement_point = new Point(0, box.height);
+            //c.placement_point = new Point(0, box.height);
             c.getBlockFormattingContext().translate(0, box.height);
             child_box = layout.layout(c, currentContent);
             c.getBlockFormattingContext().translate(0, -box.height);
@@ -372,6 +371,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.57  2004/12/28 01:48:23  tobega
+ * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
+ *
  * Revision 1.56  2004/12/27 09:40:47  tobega
  * Moved more styling to render stage. Now inlines have backgrounds and borders again.
  *

@@ -108,12 +108,13 @@ public abstract class FormItemLayout extends CustomBlockLayout {
 
             Border border = LayoutUtil.getBorder(box, c.getCurrentStyle());
             Border margin = c.getCurrentStyle().getMarginWidth();
+            Border padding = c.getCurrentStyle().getPaddingWidth();
             coords.x -= margin.left;
             coords.x -= border.left;
-            coords.x -= box.padding.left;
+            coords.x -= padding.left;
             coords.y -= margin.top;
             coords.y -= border.top;
-            coords.y -= box.padding.top;
+            coords.y -= padding.top;
         }
     }
 
@@ -178,6 +179,9 @@ public abstract class FormItemLayout extends CustomBlockLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/12/28 01:48:22  tobega
+ * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
+ *
  * Revision 1.11  2004/12/27 09:40:46  tobega
  * Moved more styling to render stage. Now inlines have backgrounds and borders again.
  *

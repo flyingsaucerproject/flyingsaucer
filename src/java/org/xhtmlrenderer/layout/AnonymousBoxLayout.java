@@ -38,7 +38,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
@@ -96,7 +95,7 @@ public class AnonymousBoxLayout extends InlineLayout {
         //prepareBox(c, block);
         //HACK: set empty styles here
         //block.margin = new Border();
-        block.padding = new Border();
+        //block.padding = new Border();
         //block.border = new Border();
         //block.background_color = new Color(0, 0, 0, 0);//transparent
 
@@ -238,6 +237,9 @@ public class AnonymousBoxLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/12/28 01:48:23  tobega
+ * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
+ *
  * Revision 1.12  2004/12/27 09:40:47  tobega
  * Moved more styling to render stage. Now inlines have backgrounds and borders again.
  *

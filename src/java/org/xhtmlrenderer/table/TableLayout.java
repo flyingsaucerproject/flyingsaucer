@@ -127,8 +127,9 @@ public class TableLayout
 
         Border border = LayoutUtil.getBorder(table, c.getCurrentStyle());
         Border margin = c.getCurrentStyle().getMarginWidth();
-        fixed_width -= margin.left + border.left + table.padding.left +
-                table.spacing.x + table.padding.right + border.right + margin.right;
+        Border padding = c.getCurrentStyle().getPaddingWidth();
+        fixed_width -= margin.left + border.left + padding.left +
+                table.spacing.x + padding.right + border.right + margin.right;
 
         //Uu.p("fixed width = " + fixed_width);
 
@@ -273,11 +274,12 @@ public class TableLayout
 
         Border border = LayoutUtil.getBorder(table, c.getCurrentStyle());
         Border margin = c.getCurrentStyle().getMarginWidth();
+        Border padding = c.getCurrentStyle().getPaddingWidth();
 
         // Xx is always 0 (rel to the parent table)
 
         rowbox.x = +margin.left + border.left +
-                table.padding.left;
+                padding.left;
 
         // y is prev row.y + prev row.height
 
@@ -456,9 +458,10 @@ public class TableLayout
 
         Border border = LayoutUtil.getBorder(table, c.getCurrentStyle());
         Border margin = c.getCurrentStyle().getMarginWidth();
+        Border padding = c.getCurrentStyle().getPaddingWidth();
 
         prev_row.y = margin.top + border.top +
-                table.padding.top - fudge;
+                padding.top - fudge;
 
         // loop through all of the table rows
 
@@ -477,7 +480,7 @@ public class TableLayout
 
 
         table.height = prev_row.y + prev_row.height + table.spacing.y +
-                table.padding.bottom + border.bottom +
+                padding.bottom + border.bottom +
                 margin.bottom;
 
         table.width = orig_fixed_width;
@@ -539,6 +542,9 @@ public class TableLayout
 /*
    $Id$
    $Log$
+   Revision 1.15  2004/12/28 01:48:25  tobega
+   More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
+
    Revision 1.14  2004/12/27 09:40:49  tobega
    Moved more styling to render stage. Now inlines have backgrounds and borders again.
 

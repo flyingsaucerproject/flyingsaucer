@@ -812,7 +812,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         // CLEAN
         //getContext().setExtents(new Rectangle(0,0,viewport.getWidth(),viewport.getHeight()));
         
-        getContext().viewport = this.enclosingScrollPane;
+        //getContext().viewport = this.enclosingScrollPane;
         
         // CLEAN
         //getContext().cursor = last;
@@ -869,6 +869,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2004/12/28 01:48:24  tobega
+ * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
+ *
  * Revision 1.19  2004/12/27 07:43:33  tobega
  * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
  *

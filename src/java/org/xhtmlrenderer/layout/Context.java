@@ -89,12 +89,12 @@ public class Context {
     /**
      * Description of the Field
      */
-    public JComponent viewport;
+    //public JComponent viewport;
 
     /**
      * Description of the Field
      */
-    public Point placement_point;
+    //public Point placement_point;
 
     /*
      * selection management code
@@ -318,6 +318,7 @@ public class Context {
     public void translateInsets(Box box) {
         Border border = LayoutUtil.getBorder(box, getCurrentStyle());
         Border margin = getCurrentStyle().getMarginWidth();
+        Border padding = getCurrentStyle().getPaddingWidth();
         if (box == null) {
             XRLog.render(Level.WARNING, "null box");
             return;//TODO: why?
@@ -332,13 +333,13 @@ public class Context {
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
-        if (box.padding == null) {
+        if (padding == null) {
             XRLog.render(Level.WARNING, "translate insets: null padding on box of type " + box.getClass().getName() +
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
-        translate(margin.left + border.left + box.padding.left,
-                margin.top + border.top + box.padding.top);
+        translate(margin.left + border.left + padding.left,
+                margin.top + border.top + padding.top);
     }
 
     /**
@@ -349,6 +350,7 @@ public class Context {
     public void untranslateInsets(Box box) {
         Border border = LayoutUtil.getBorder(box, getCurrentStyle());
         Border margin = getCurrentStyle().getMarginWidth();
+        Border padding = getCurrentStyle().getPaddingWidth();
         if (margin == null) {
             XRLog.render(Level.WARNING, "translate insets: null margin on box of type " + box.getClass().getName() +
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
@@ -359,13 +361,13 @@ public class Context {
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
-        if (box.padding == null) {
+        if (padding == null) {
             XRLog.render(Level.WARNING, "translate insets: null padding on box of type " + box.getClass().getName() +
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
-        translate(-(margin.left + border.left + box.padding.left),
-                -(margin.top + border.top + box.padding.top));
+        translate(-(margin.left + border.left + padding.left),
+                -(margin.top + border.top + padding.top));
     }
 
 
@@ -564,27 +566,27 @@ public class Context {
      *
      * @return The viewport value
      */
-    public JComponent getViewport() {
+    /*public JComponent getViewport() {
         return this.viewport;
-    }
+    }*/
 
     /**
      * Gets the xoff attribute of the Context object
      *
      * @return The xoff value
      */
-    public int getXoff() {
+    /*public int getXoff() {
         return this.xoff;
-    }
+    }*/
 
     /**
      * Gets the yoff attribute of the Context object
      *
      * @return The yoff value
      */
-    public int getYoff() {
+    /*public int getYoff() {
         return this.yoff;
-    }
+    }*/
 
     /**
      * Gets the maxWidth attribute of the Context object
@@ -826,6 +828,9 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2004/12/28 01:48:23  tobega
+ * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
+ *
  * Revision 1.38  2004/12/27 09:40:47  tobega
  * Moved more styling to render stage. Now inlines have backgrounds and borders again.
  *

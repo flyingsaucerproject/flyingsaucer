@@ -116,12 +116,13 @@ public class DefaultLayout implements Layout {
      * @return The padding value
      */
     public static Border getPadding(Context c, Box box) {
-        if (LayoutUtil.isBlockOrInlineElementBox(box)) {
+        Border padding = c.getCurrentStyle().getPaddingWidth();
+        /*if (LayoutUtil.isBlockOrInlineElementBox(box)) {
             if (box.padding == null) {
                 box.padding = c.getCurrentStyle().getPaddingWidth();
             }
-        }
-        return box.padding;
+        }*/
+        return padding;
     }
 
 
@@ -182,6 +183,9 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2004/12/28 01:48:23  tobega
+ * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
+ *
  * Revision 1.38  2004/12/27 09:40:47  tobega
  * Moved more styling to render stage. Now inlines have backgrounds and borders again.
  *

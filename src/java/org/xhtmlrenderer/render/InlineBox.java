@@ -49,7 +49,7 @@ public class InlineBox extends Box {
         height = box.height;
         //border = box.border;
         //margin = box.margin;
-        padding = box.padding;
+        //padding = box.padding;
         color = box.color;
         content = box.content;
         master = box.master;
@@ -339,6 +339,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2004/12/28 01:48:24  tobega
+ * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
+ *
  * Revision 1.24  2004/12/27 09:40:48  tobega
  * Moved more styling to render stage. Now inlines have backgrounds and borders again.
  *

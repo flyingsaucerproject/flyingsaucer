@@ -101,7 +101,7 @@ public class StyleReference {
      * @param e PARAM
      * @return Returns
      */
-    public boolean wasHoverRestyled(Element e) {
+    public boolean isHoverStyled(Element e) {
         boolean isHoverStyled = _matcher.isHoverStyled(e);
         //XRLog.general("Element "+e+" tested for hover styling "+isHoverStyled);
         if (_matcher.isHoverStyled(e)) {
@@ -292,6 +292,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/12/28 01:48:22  tobega
+ * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
+ *
  * Revision 1.13  2004/12/11 18:18:08  tobega
  * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
  *

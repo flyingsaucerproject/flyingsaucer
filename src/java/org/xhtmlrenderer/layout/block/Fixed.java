@@ -6,6 +6,7 @@ import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.render.Box;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 
 public class Fixed {
     public static void positionFixedChild(Context c, Box box) {
@@ -22,22 +23,23 @@ public class Fixed {
         if (LayoutUtil.isFixed(box.content.getStyle())) {
             box.fixed = true;
             box.setChildrenExceedBounds(true);
+            Rectangle rect = c.getFixedRectangle();
 
             CalculatedStyle style = c.getCurrentStyle();
             if (style.hasProperty("top")) {
-                box.top = (int) style.getFloatPropertyRelative("top", 0);
+                box.top = (int) style.getFloatPropertyRelative("top", (float) rect.getHeight());
                 box.top_set = true;
             }
             if (style.hasProperty("right")) {
-                box.right = (int) style.getFloatPropertyRelative("right", 0);
+                box.right = (int) style.getFloatPropertyRelative("right", (float) (rect.getWidth()));
                 box.right_set = true;
             }
             if (style.hasProperty("bottom")) {
-                box.bottom = (int) style.getFloatPropertyRelative("bottom", 0);
+                box.bottom = (int) style.getFloatPropertyRelative("bottom", (float) (rect.getHeight()));
                 box.bottom_set = true;
             }
             if (style.hasProperty("left")) {
-                box.left = (int) style.getFloatPropertyRelative("left", 0);
+                box.left = (int) style.getFloatPropertyRelative("left", (float) (rect.getWidth()));
                 box.left_set = true;
             }
 

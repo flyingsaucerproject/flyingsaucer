@@ -77,9 +77,10 @@ public class InlineLayout extends BoxLayout {
         bounds.width = c.getExtents().width;
         Border border = LayoutUtil.getBorder(box, c.getCurrentStyle());
         Border margin = c.getCurrentStyle().getMarginWidth();
+        Border padding = c.getCurrentStyle().getPaddingWidth();
         //below should maybe be done somewhere else?
-        bounds.width -= margin.left + border.left + box.padding.left +
-                box.padding.right + border.right + margin.right;
+        bounds.width -= margin.left + border.left + padding.left +
+                padding.right + border.right + margin.right;
         validateBounds(bounds);
         bounds.x = 0;
         bounds.y = 0;
@@ -488,6 +489,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.73  2004/12/28 01:48:24  tobega
+* More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
+*
 * Revision 1.72  2004/12/27 09:40:47  tobega
 * Moved more styling to render stage. Now inlines have backgrounds and borders again.
 *
