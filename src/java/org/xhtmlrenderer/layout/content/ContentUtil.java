@@ -24,6 +24,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.inline.WhitespaceStripper;
@@ -279,6 +280,7 @@ public class ContentUtil {
 
     //TODO: following methods should not need to be public
     public static boolean mayHaveFirstLetter(CascadedStyle style) {
+        // ASK: why use CascadedStyle here, instead of Calculated? (PWW 25-01-05)
         if (style == null) return false;//for DomToplevelNode
         if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
         String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
@@ -291,6 +293,7 @@ public class ContentUtil {
     }
 
     public static boolean mayHaveFirstLine(CascadedStyle style) {
+        // ASK: why use CascadedStyle here, instead of Calculated? (PWW 25-01-05)
         //if(style == null) return false;//for DomToplevelNode
         if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
         String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
@@ -402,6 +405,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/01/25 12:38:11  pdoubleya
+ * ASK comment.
+ *
  * Revision 1.30  2005/01/16 18:50:04  tobega
  * Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
  *
