@@ -53,3 +53,6 @@ body, #fs {
 	background: #FFFFFF;
 	border: 1px solid #000000;
 }
+#fs #menu a:visited {
+	color:#ffffFF;
+	}
