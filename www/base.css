@@ -28,3 +28,28 @@ a:hover {
 	color: #FFFFFF;
 	background: #0099FF;
 }
+#menu li {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #FFFFFF;
+	display: inline;
+	border: 0px none #000000;
+	margin: 0px;
+	padding: 5px;
+	background: transparent;
+	font-size: medium;
+}
+ul#menu {
+	background: #1777A4;
+	background: #FFFFFF url(images/scanbg.gif) left top;
+	padding: 10px;
+}
+#menu a {
+	color: #FFFFFF;
+	padding: 5px;
+	border: 1px none;
+}
+#menu a:hover {
+	color: #000000;
+	background: #FFFFFF;
+	border: 1px solid #000000;
+}
