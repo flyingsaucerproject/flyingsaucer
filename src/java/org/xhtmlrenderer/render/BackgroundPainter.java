@@ -24,7 +24,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import org.xhtmlrenderer.layout.Context;
-
+import org.xhtmlrenderer.util.u;
 
 /**
  * Description of the Class
@@ -39,7 +39,6 @@ public class BackgroundPainter {
      * @param block  PARAM
      */
     public static void paint( Context c, Box block ) {
-
         Rectangle box = new Rectangle(
                 block.x + block.margin.left + block.border.left,
                 block.y + block.margin.top + block.border.top,
@@ -155,6 +154,7 @@ public class BackgroundPainter {
         //u.off();
 
     }
+    
 
     /**
      * Description of the Method
@@ -204,6 +204,14 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/10/27 14:03:38  joshy
+ * added initial viewport repainting support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:50:26  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

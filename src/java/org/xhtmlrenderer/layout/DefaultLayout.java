@@ -21,12 +21,14 @@ package org.xhtmlrenderer.layout;
 
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Renderer;
+import org.xhtmlrenderer.util.*;
 
 
 /**
@@ -256,7 +258,15 @@ public class DefaultLayout implements Layout {
      * @param layout  PARAM
      */
     public void paintChild( Context c, Box box, Renderer layout ) {
-        layout.paint( c, box );
+        if(Configuration.isTrue("xr.renderer.viewport-repaint",false)) {
+            Rectangle oldclip = (Rectangle)c.getGraphics().getClip();
+            Rectangle box_rect = new Rectangle(box.x,box.y,box.width,box.height);
+            if(oldclip.intersects(box_rect)) {
+                layout.paint( c, box );
+            }
+        } else {
+            layout.paint( c, box );
+        }
     }
     
     public Renderer getRenderer() {
@@ -464,6 +474,14 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/10/27 14:03:37  joshy
+ * added initial viewport repainting support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/27 13:17:00  joshy
  * beginning to split out rendering code
  * Issue number:
