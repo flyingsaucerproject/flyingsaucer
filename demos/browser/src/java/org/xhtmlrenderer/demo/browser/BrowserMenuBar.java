@@ -154,7 +154,6 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add(new NextDemoAction());
         demos.add(new PriorDemoAction());
         demos.add(new JSeparator());
-        // CLEAN
         allDemos = new LinkedHashMap();
         allDemos.put("Paragraph", "demo:demos/paragraph.xhtml");
         allDemos.put("Line Breaking", "demo:demos/breaking.xhtml");
@@ -613,6 +612,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/01/29 12:24:57  pdoubleya
+ * .
+ *
  * Revision 1.27  2005/01/25 11:51:39  pdoubleya
  * Added next and prior page; refactored demos into Map for manipulation.
  *
