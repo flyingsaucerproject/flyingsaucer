@@ -1,5 +1,5 @@
 /*
- * FirstLetterStyle.java
+ * Content.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -17,25 +17,22 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-package org.xhtmlrenderer.layout.inline.content;
+package org.xhtmlrenderer.layout.content;
 
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 
 /**
  * Created by IntelliJ IDEA.
  * User: tobe
  * Date: 2004-dec-06
- * Time: 03:21:52
+ * Time: 02:20:48
  * To change this template use File | Settings | File Templates.
  */
-public class FirstLetterStyle {
-    private CascadedStyle _style;
+public interface Content {
+    public Element getElement();
 
-    public FirstLetterStyle(CascadedStyle style) {
-        _style = style;
-    }
+    public String getText();
 
-    public CascadedStyle getStyle() {
-        return _style;
-    }
+    public CalculatedStyle getStyle();
 }

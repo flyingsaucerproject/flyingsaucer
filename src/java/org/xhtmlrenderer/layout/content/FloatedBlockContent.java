@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-package org.xhtmlrenderer.layout.inline.content;
+package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -25,15 +25,15 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 /**
  * Created by IntelliJ IDEA.
  * User: tobe
- * Date: 2004-dec-06
- * Time: 23:47:41
+ * Date: 2004-dec-05
+ * Time: 17:14:08
  * To change this template use File | Settings | File Templates.
  */
-public class BlockContent {
+public class FloatedBlockContent implements Content {
     private Element _elem;
     private CalculatedStyle _style;
 
-    public BlockContent(Element e, CalculatedStyle style) {
+    public FloatedBlockContent(Element e, CalculatedStyle style) {
         _elem = e;
         _style = style;
     }
@@ -51,7 +51,7 @@ public class BlockContent {
     }
 
     public String toString() {
-        return "Block: " + _elem.getNodeName();
+        return "FloatedBlock: " + _elem.getNodeName();
     }
 
 }

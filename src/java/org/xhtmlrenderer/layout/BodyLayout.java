@@ -29,9 +29,8 @@ import org.xhtmlrenderer.render.Renderer;
  *
  * @author empty
  */
-//public class BodyLayout extends InlineLayout {
-//BoxLayout seems to work better. Tobe 2004-12-06
-public class BodyLayout extends BoxLayout {//treat document element as if it is block
+public class BodyLayout extends InlineLayout {
+//InlineLayout does work better. Tobe 2004-12-07
 
     /**
      * Description of the Method
@@ -59,6 +58,9 @@ public class BodyLayout extends BoxLayout {//treat document element as if it is 
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/12/08 00:42:34  tobega
+ * More cleaning of use of Node, more preparation for Content-based inline generation. Also fixed 2 irritating bugs!
+ *
  * Revision 1.9  2004/12/06 23:41:13  tobega
  * More cleaning of use of Node, more preparation for Content-based inline generation.
  *

@@ -1,5 +1,5 @@
 /*
- * TextContent.java
+ * FloatedBlockContent.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-package org.xhtmlrenderer.layout.inline.content;
+package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -25,19 +25,17 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 /**
  * Created by IntelliJ IDEA.
  * User: tobe
- * Date: 2004-dec-05
- * Time: 16:23:09
+ * Date: 2004-dec-06
+ * Time: 23:47:41
  * To change this template use File | Settings | File Templates.
  */
-public class TextContent implements Content {
-    private Element _elem;//will need this for handling dynamic content!
+public class BlockContent {
+    private Element _elem;
     private CalculatedStyle _style;
-    private StringBuffer _sb;
 
-    public TextContent(Element e, CalculatedStyle style) {
+    public BlockContent(Element e, CalculatedStyle style) {
         _elem = e;
         _style = style;
-        _sb = new StringBuffer();
     }
 
     public Element getElement() {
@@ -49,15 +47,11 @@ public class TextContent implements Content {
     }
 
     public String getText() {
-        return _sb.toString();
-    }
-
-    public void append(String text) {
-        _sb.append(text);
+        return _elem.getNodeValue();
     }
 
     public String toString() {
-        return "TextContent:\nStyle: " + _style + "\nText: " + getText();
+        return "Block: " + _elem.getNodeName();
     }
 
 }

@@ -224,7 +224,7 @@ public class BoxLayout extends DefaultLayout {
         
         // save the original height in case it
         // has a fixed height
-        int original_height = block.height;
+        //not used: int original_height = block.height;
 
         Element elem = (Element) box.getNode();
         // prepare for the list items
@@ -247,12 +247,12 @@ public class BoxLayout extends DefaultLayout {
             if (c.getRenderingContext().getLayoutFactory().isBreak(child)) {
                 continue;
             }
-            if (child.getNodeType() == child.COMMENT_NODE) {
+            if (child.getNodeType() == Node.COMMENT_NODE) {
                 continue;
             }
 
             Box child_box = null;
-            if (child.getNodeType() == child.ELEMENT_NODE) {
+            if (child.getNodeType() == Node.ELEMENT_NODE) {
                 // update the counter for printing OL list items
                 c.setListCounter(c.getListCounter() + 1);
 
@@ -357,6 +357,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2004/12/08 00:42:34  tobega
+ * More cleaning of use of Node, more preparation for Content-based inline generation. Also fixed 2 irritating bugs!
+ *
  * Revision 1.33  2004/12/06 23:41:14  tobega
  * More cleaning of use of Node, more preparation for Content-based inline generation.
  *

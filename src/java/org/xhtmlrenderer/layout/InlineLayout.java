@@ -52,7 +52,7 @@ public class InlineLayout extends BoxLayout {
         if (!box.isAnonymous()) {
             if (LayoutUtil.isBlockLayout(box.getElement(), c)) {
                 // u.p("doing up block for: " + box);
-                return super.layoutChildren(c, box);
+                return super.layoutChildren(c, box);//Would this ever be called? tobe
             }
         }
         
@@ -371,6 +371,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.40  2004/12/08 00:42:34  tobega
+* More cleaning of use of Node, more preparation for Content-based inline generation. Also fixed 2 irritating bugs!
+*
 * Revision 1.39  2004/12/06 02:55:43  tobega
 * More cleaning of use of Node, more preparation for Content-based inline generation.
 *

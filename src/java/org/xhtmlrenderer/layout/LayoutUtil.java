@@ -151,7 +151,9 @@ public class LayoutUtil {
             if (display != null &&
                     (display.equals("block") ||
                     display.equals("table") ||
+                    //TODO:table cell should not be block according to spec. What did I miss? tobe
                     display.equals("table-cell"))
+            //TODO: list-item should be block. What did I miss? tobe
             ) {
                 return true;
             }

@@ -1,5 +1,5 @@
 /*
- * FloatedBlockContent.java
+ * FirstLetterStyle.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -17,41 +17,25 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-package org.xhtmlrenderer.layout.inline.content;
+package org.xhtmlrenderer.layout.content;
 
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 
 /**
  * Created by IntelliJ IDEA.
  * User: tobe
- * Date: 2004-dec-05
- * Time: 17:14:08
+ * Date: 2004-dec-06
+ * Time: 03:21:52
  * To change this template use File | Settings | File Templates.
  */
-public class FloatedBlockContent implements Content {
-    private Element _elem;
-    private CalculatedStyle _style;
+public class FirstLetterStyle {
+    private CascadedStyle _style;
 
-    public FloatedBlockContent(Element e, CalculatedStyle style) {
-        _elem = e;
+    public FirstLetterStyle(CascadedStyle style) {
         _style = style;
     }
 
-    public Element getElement() {
-        return _elem;
-    }
-
-    public CalculatedStyle getStyle() {
+    public CascadedStyle getStyle() {
         return _style;
     }
-
-    public String getText() {
-        return _elem.getNodeValue();
-    }
-
-    public String toString() {
-        return "FloatedBlock: " + _elem.getNodeName();
-    }
-
 }

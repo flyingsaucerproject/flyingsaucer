@@ -40,7 +40,6 @@ package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
 
@@ -48,18 +47,25 @@ import org.xhtmlrenderer.render.Box;
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class AnonymousBoxLayout extends InlineLayout {
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Element parent;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Node text;
 
-    /** Constructor for the AnonymousBoxLayout object */
-    public AnonymousBoxLayout() { }
+    /**
+     * Constructor for the AnonymousBoxLayout object
+     */
+    public AnonymousBoxLayout() {
+    }
 
 
     // use the passed in 'text'  since that's what we are
@@ -71,13 +77,13 @@ public class AnonymousBoxLayout extends InlineLayout {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param node  PARAM
-     * @return      Returns
+     * @param c    PARAM
+     * @param node PARAM
+     * @return Returns
      */
-    public Box createBox( Context c, Node node ) {
+    public Box createBox(Context c, Node node) {
 
-        AnonymousBlockBox block = new AnonymousBlockBox( text, c );
+        AnonymousBlockBox block = new AnonymousBlockBox(text, c);
 
         return block;
     }
@@ -88,32 +94,32 @@ public class AnonymousBoxLayout extends InlineLayout {
      * @param box  PARAM
      * @param c    PARAM
      */
-     /*
-    public void prepareBox( Box box, Context c ) {
+    /*
+   public void prepareBox( Box box, Context c ) {
 
-        box.border = new Border();
+       box.border = new Border();
 
-        box.padding = new Border();
+       box.padding = new Border();
 
-        box.margin = new Border();
+       box.margin = new Border();
 
-    }
-    */
+   }
+   */
 
 
     /**
      * Description of the Method
      *
-     * @param c       PARAM
-     * @param parent  PARAM
-     * @param text    PARAM
-     * @return        Returns
+     * @param c      PARAM
+     * @param parent PARAM
+     * @param text   PARAM
+     * @return Returns
      */
-    public Box layout( Context c, Element parent, Node text ) {
+    public Box layout(Context c, Element parent, Node text) {//called by BoxLayout.layoutChildren
         this.parent = parent;
         this.text = text;
         //Box box = new AnonymousBlockBox(text);
-        Box box = super.layout( c, parent );
+        Box box = super.layout(c, parent);//BoxLayout
         //u.p("AnonymousBoxLayout.layout: returning: " + box);
         return box;
     }
@@ -125,12 +131,12 @@ public class AnonymousBoxLayout extends InlineLayout {
      * @param box  PARAM
      * @return     Returns
      */
-     /*
-    public Box layoutChildren( Context c, Box box ) {
-        //u.p("AnonymousBoxLayout.layoutChildren() noop" + box);
-        return super.layoutChildren( c, box );
-        //return box;
-    }*/
+    /*
+   public Box layoutChildren( Context c, Box box ) {
+       //u.p("AnonymousBoxLayout.layoutChildren() noop" + box);
+       return super.layoutChildren( c, box );
+       //return box;
+   }*/
 
 }
 
@@ -138,6 +144,9 @@ public class AnonymousBoxLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/08 00:42:34  tobega
+ * More cleaning of use of Node, more preparation for Content-based inline generation. Also fixed 2 irritating bugs!
+ *
  * Revision 1.4  2004/11/18 18:49:48  joshy
  * fixed the float issue.
  * commented out more dead code

@@ -154,7 +154,7 @@ public class LayoutFactory {
         }
 
         // skip whitespace only nodes
-        else if (elem.getNodeType() == elem.TEXT_NODE) {
+        else if (elem.getNodeType() == Node.TEXT_NODE) {
             if (elem.getNodeValue().trim().equals("")) {
                 return new NullLayout();
             }
@@ -295,7 +295,7 @@ public class LayoutFactory {
 
     private void initializeLayouts() {
         InlineLayout inline = new InlineLayout();
-        BoxLayout block = new BoxLayout();
+        //not used: BoxLayout block = new BoxLayout();
         addDisplayLayout("block", inline);
         addDisplayLayout("inline", inline);
         addDisplayLayout("list-item", inline);
@@ -328,6 +328,9 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.21  2004/12/08 00:42:35  tobega
+* More cleaning of use of Node, more preparation for Content-based inline generation. Also fixed 2 irritating bugs!
+*
 * Revision 1.20  2004/12/06 23:41:14  tobega
 * More cleaning of use of Node, more preparation for Content-based inline generation.
 *

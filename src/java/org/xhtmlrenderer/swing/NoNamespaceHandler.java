@@ -96,25 +96,25 @@ System.err.println("NoNamespace class!");
                     if (alternate.equals("yes")) continue;//DON'T get alternate stylesheets for now
                 }
                 m = _typePattern.matcher(pi);
-                if (m.matches()) {
+                if (m.find()) {
                     int start = m.end();
                     String type = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
                     info.setType(type);
                 }
                 m = _hrefPattern.matcher(pi);
-                if (m.matches()) {
+                if (m.find()) {
                     int start = m.end();
                     String href = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
                     info.setUri(href);
                 }
                 m = _titlePattern.matcher(pi);
-                if (m.matches()) {
+                if (m.find()) {
                     int start = m.end();
                     String title = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
                     info.setTitle(title);
                 }
                 m = _mediaPattern.matcher(pi);
-                if (m.matches()) {
+                if (m.find()) {
                     int start = m.end();
                     String media = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
                     info.setMedia(media);
