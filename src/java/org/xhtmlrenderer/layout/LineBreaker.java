@@ -451,7 +451,7 @@ public class LineBreaker {
             CascadedStyle pseudo = c.css.getPseudoElementStyle(getNearestBlockElement(node, c), "first-line");
             if (pseudo != null) {
                 CalculatedStyle normal = c.css.getStyle(box.getRealElement());
-                CalculatedStyle merged = new CalculatedStyle(normal, pseudo);
+                CalculatedStyle merged = c.css.getDerivedStyle(normal, pseudo);
                 styleInlineBox(c, merged, box);
             }
         }
@@ -518,7 +518,7 @@ public class LineBreaker {
         CalculatedStyle parent = c.css.getStyle(node);
         CalculatedStyle cs = null;
         if (ps != null) {
-            cs = new CalculatedStyle(parent, ps);
+            cs = c.css.getDerivedStyle(parent, ps);
         } else {
             cs = parent;
         }
@@ -544,6 +544,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2004/12/05 18:11:38  tobega
+ * Now uses style cache for pseudo-element styles. Also started preparing to replace inline node handling with inline content handling.
+ *
  * Revision 1.28  2004/12/05 14:35:39  tobega
  * Cleaned up some usages of Node (and removed unused stuff) in layout code. The goal is to pass "better" objects than Node wherever possible in an attempt to shake out the bugs in tree-traversal (probably often unnecessary tree-traversal)
  *

@@ -81,7 +81,7 @@ public class TBStyleReference implements StyleReference {
      * Instance of our element-styles matching class. Will be null if new rules
      * have been added since last match.
      */
-    private org.xhtmlrenderer.css.newmatch.Matcher _tbStyleMap;
+    private org.xhtmlrenderer.css.newmatch.Matcher _matcher;
 
     /**
      * Description of the Field
@@ -105,9 +105,9 @@ public class TBStyleReference implements StyleReference {
      * @return Returns
      */
     public boolean wasHoverRestyled(Element e) {
-        boolean isHoverStyled = _tbStyleMap.isHoverStyled(e);
+        boolean isHoverStyled = _matcher.isHoverStyled(e);
         //XRLog.general("Element "+e+" tested for hover styling "+isHoverStyled);
-        if (_tbStyleMap.isHoverStyled(e)) {
+        if (_matcher.isHoverStyled(e)) {
             _styler.restyleTree(e);
             return true;
         }
@@ -172,7 +172,7 @@ public class TBStyleReference implements StyleReference {
         } else {
             e = (Element) node.getParentNode();
         }
-        return _tbStyleMap.getPECascadedStyle(e, pseudoElement);
+        return _matcher.getPECascadedStyle(e, pseudoElement);
     }
 
     /**
@@ -189,6 +189,10 @@ public class TBStyleReference implements StyleReference {
             e = (Element) node.getParentNode();
         }
         return _styler.getCalculatedStyle(e);
+    }
+
+    public CalculatedStyle getDerivedStyle(CalculatedStyle parent, CascadedStyle matched) {
+        return _styler.getDerivedStyle(parent, matched);
     }
 
     /**
@@ -271,12 +275,12 @@ public class TBStyleReference implements StyleReference {
 
             XRLog.match("No of stylesheets = " + infos.size());
             System.out.println("media = " + _context.getMedia());
-            _tbStyleMap = new org.xhtmlrenderer.css.newmatch.Matcher(_doc, _attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
+            _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(_doc, _attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
 
             // now we have a match-map, apply against our entire Document....restyleTree() is recursive
             Element root = _doc.getDocumentElement();
             _styler = new org.xhtmlrenderer.css.style.Styler();
-            _styler.setMatcher(_tbStyleMap);
+            _styler.setMatcher(_matcher);
             _styler.styleTree(root);
         } catch (RuntimeException re) {
             throw new XRRuntimeException("Failed on matchStyles(), unknown RuntimeException.", re);
@@ -296,6 +300,9 @@ public class TBStyleReference implements StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2004/12/05 18:11:36  tobega
+ * Now uses style cache for pseudo-element styles. Also started preparing to replace inline node handling with inline content handling.
+ *
  * Revision 1.21  2004/12/05 14:35:38  tobega
  * Cleaned up some usages of Node (and removed unused stuff) in layout code. The goal is to pass "better" objects than Node wherever possible in an attempt to shake out the bugs in tree-traversal (probably often unnecessary tree-traversal)
  *

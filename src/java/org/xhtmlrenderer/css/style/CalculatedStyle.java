@@ -97,12 +97,13 @@ public class CalculatedStyle {
 
 
     /**
-     * Constructor for the CalculatedStyle object
+     * Constructor for the CalculatedStyle object.
+     * To get a derived style, use the Styler objects getDerivedStyle which will cache styles
      *
      * @param parent  PARAM
      * @param matched PARAM
      */
-    public CalculatedStyle(CalculatedStyle parent, CascadedStyle matched) {
+    CalculatedStyle(CalculatedStyle parent, CascadedStyle matched) {
         this();
         _parent = parent;
         _matched = matched;
@@ -412,6 +413,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/12/05 18:11:36  tobega
+ * Now uses style cache for pseudo-element styles. Also started preparing to replace inline node handling with inline content handling.
+ *
  * Revision 1.7  2004/12/05 00:48:54  tobega
  * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
  *

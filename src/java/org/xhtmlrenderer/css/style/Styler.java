@@ -19,125 +19,133 @@
  */
 package org.xhtmlrenderer.css.style;
 
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 
 
 /**
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class Styler {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private java.util.HashMap _styleMap = new java.util.HashMap();
     //java.util.HashMap _peStyleMap = new java.util.HashMap();
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private java.util.HashMap _styleCache = new java.util.HashMap();
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private org.xhtmlrenderer.css.newmatch.Matcher _matcher;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private java.awt.Rectangle _rect;
 
-    /** Creates a new instance of Styler  */
-    public Styler() { }
+    /**
+     * Creates a new instance of Styler
+     */
+    public Styler() {
+    }
 
     /**
      * Applies matches to Element and its children, recursively. StyleMap should
      * have been re-loaded before calling this. <p/>
-     *
+     * <p/>
      * TODO: change matchElement, then this method is not needed
      *
-     * @param elem  PARAM
+     * @param elem PARAM
      */
-    public void styleTree( org.w3c.dom.Element elem ) {
+    public void styleTree(org.w3c.dom.Element elem) {
         CalculatedStyle parent = null;
 
-        if ( elem.getOwnerDocument().getDocumentElement() == elem ) {
+        if (elem.getOwnerDocument().getDocumentElement() == elem) {
             _styleCache = new java.util.HashMap();
-            parent = new CurrentBoxStyle( _rect );
+            parent = new CurrentBoxStyle(_rect);
         } else {
             org.w3c.dom.Node pnode = elem.getParentNode();
-            if ( pnode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE ) {
-                parent = getCalculatedStyle( (org.w3c.dom.Element)pnode );
+            if (pnode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                parent = getCalculatedStyle((org.w3c.dom.Element) pnode);
             }
-            if ( parent == null ) {
-                throw new RuntimeException( "Applying matches to elements, found an element with no mapped parent; can't continue." );
+            if (parent == null) {
+                throw new RuntimeException("Applying matches to elements, found an element with no mapped parent; can't continue.");
             }
         }
         //org.xhtmlrenderer.css.newmatch.CascadedStyle matched = _matcher.matchElement(elem);
-        org.xhtmlrenderer.css.newmatch.CascadedStyle matched = _matcher.getCascadedStyle( elem );
+        org.xhtmlrenderer.css.newmatch.CascadedStyle matched = _matcher.getCascadedStyle(elem);
 
-        CalculatedStyle cs = null;
-        StringBuffer sb = new StringBuffer();
-        sb.append( parent.hashCode() ).append( ":" ).append( matched.hashCode() );
-        String fingerprint = sb.toString();
-        cs = (CalculatedStyle)_styleCache.get( fingerprint );
+        CalculatedStyle cs = getDerivedStyle(parent, matched);
 
-        if ( cs == null ) {
-            cs = new CalculatedStyle( parent, matched );
-            _styleCache.put( fingerprint, cs );
-        }
-        _styleMap.put( elem, cs );
+        _styleMap.put(elem, cs);
         //System.err.println(elem.getNodeName()+" "+cs);
 
         // apply rules from style attribute on element, if any
         // elementStyling is now responsibility of Matcher
 
         org.w3c.dom.NodeList nl = elem.getChildNodes();
-        for ( int i = 0, len = nl.getLength(); i < len; i++ ) {
-            org.w3c.dom.Node n = nl.item( i );
-            if ( n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE ) {
-                styleTree( (org.w3c.dom.Element)n );
+        for (int i = 0, len = nl.getLength(); i < len; i++) {
+            org.w3c.dom.Node n = nl.item(i);
+            if (n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                styleTree((org.w3c.dom.Element) n);
             }
         }
+    }
+
+    public CalculatedStyle getDerivedStyle(CalculatedStyle parent, CascadedStyle matched) {
+        CalculatedStyle cs = null;
+        StringBuffer sb = new StringBuffer();
+        sb.append(parent.hashCode()).append(":").append(matched.hashCode());
+        String fingerprint = sb.toString();
+        cs = (CalculatedStyle) _styleCache.get(fingerprint);
+
+        if (cs == null) {
+            cs = new CalculatedStyle(parent, matched);
+            _styleCache.put(fingerprint, cs);
+        }
+        return cs;
     }
 
     /**
      * Applies matches to Element and its children, recursively. StyleMap should
      * have been re-loaded before calling this.
      *
-     * @param elem  PARAM
+     * @param elem PARAM
      */
-    public void restyleTree( org.w3c.dom.Element elem ) {
+    public void restyleTree(org.w3c.dom.Element elem) {
         CalculatedStyle parent = null;
 
-        if ( elem.getOwnerDocument().getDocumentElement() == elem ) {
+        if (elem.getOwnerDocument().getDocumentElement() == elem) {
             _styleCache = new java.util.HashMap();
-            parent = new CurrentBoxStyle( _rect );
+            parent = new CurrentBoxStyle(_rect);
         } else {
             org.w3c.dom.Node pnode = elem.getParentNode();
-            if ( pnode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE ) {
-                parent = getCalculatedStyle( (org.w3c.dom.Element)pnode );
+            if (pnode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                parent = getCalculatedStyle((org.w3c.dom.Element) pnode);
             }
-            if ( parent == null ) {
-                throw new RuntimeException( "Applying matches to elements, found an element with no mapped parent; can't continue." );
+            if (parent == null) {
+                throw new RuntimeException("Applying matches to elements, found an element with no mapped parent; can't continue.");
             }
         }
-        org.xhtmlrenderer.css.newmatch.CascadedStyle matched = _matcher.matchElement( elem );
+        org.xhtmlrenderer.css.newmatch.CascadedStyle matched = _matcher.matchElement(elem);
         //org.xhtmlrenderer.css.newmatch.CascadedStyle matched = _matcher.getCascadedStyle(elem);
 
-        CalculatedStyle cs = null;
-        StringBuffer sb = new StringBuffer();
-        sb.append( parent.hashCode() ).append( ":" ).append( matched.hashCode() );
-        String fingerprint = sb.toString();
-        cs = (CalculatedStyle)_styleCache.get( fingerprint );
-
-        if ( cs == null ) {
-            cs = new CalculatedStyle( parent, matched );
-            _styleCache.put( fingerprint, cs );
-        }
-        _styleMap.put( elem, cs );
+        CalculatedStyle cs = getDerivedStyle(parent, matched);
+        _styleMap.put(elem, cs);
         //System.err.println(elem.getNodeName()+" "+cs);
 
         // apply rules from style attribute on element, if any
         // elementStyling is now responsibility of Matcher
 
         org.w3c.dom.NodeList nl = elem.getChildNodes();
-        for ( int i = 0, len = nl.getLength(); i < len; i++ ) {
-            org.w3c.dom.Node n = nl.item( i );
-            if ( n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE ) {
-                restyleTree( (org.w3c.dom.Element)n );
+        for (int i = 0, len = nl.getLength(); i < len; i++) {
+            org.w3c.dom.Node n = nl.item(i);
+            if (n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                restyleTree((org.w3c.dom.Element) n);
             }
         }
     }
@@ -145,7 +153,7 @@ public class Styler {
     /**
      * May return null
      *
-     * @param m  The new matcher value
+     * @param m The new matcher value
      */
     /*
      * public CalculatedStyle getPECalculatedStyle(org.w3c.dom.Element e, String pseudoElement) {
@@ -178,7 +186,7 @@ public class Styler {
      * }
      */
     //changing this should cause a restyle
-    public void setMatcher( org.xhtmlrenderer.css.newmatch.Matcher m ) {
+    public void setMatcher(org.xhtmlrenderer.css.newmatch.Matcher m) {
         _matcher = m;
     }
 
@@ -186,9 +194,9 @@ public class Styler {
     /**
      * Sets the viewportRectangle attribute of the Styler object
      *
-     * @param rect  The new viewportRectangle value
+     * @param rect The new viewportRectangle value
      */
-    public void setViewportRectangle( java.awt.Rectangle rect ) {
+    public void setViewportRectangle(java.awt.Rectangle rect) {
         _rect = rect;
         //System.err.println("Bounds "+rect.height+" "+rect.width);
     }
@@ -196,11 +204,11 @@ public class Styler {
     /**
      * Gets the calculatedStyle attribute of the Styler object
      *
-     * @param e  PARAM
-     * @return   The calculatedStyle value
+     * @param e PARAM
+     * @return The calculatedStyle value
      */
-    public CalculatedStyle getCalculatedStyle( org.w3c.dom.Element e ) {
-        return (CalculatedStyle)_styleMap.get( e );
+    public CalculatedStyle getCalculatedStyle(org.w3c.dom.Element e) {
+        return (CalculatedStyle) _styleMap.get(e);
     }
 } // end class
 
@@ -211,6 +219,9 @@ public class Styler {
  *
 
  * $Log$
+ * Revision 1.9  2004/12/05 18:11:36  tobega
+ * Now uses style cache for pseudo-element styles. Also started preparing to replace inline node handling with inline content handling.
+ *
  * Revision 1.8  2004/11/15 12:42:23  pdoubleya
  * Across this checkin (all may not apply to this particular file)
  * Changed default/package-access members to private.

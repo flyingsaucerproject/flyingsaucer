@@ -19,34 +19,35 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.inline.content.FloatedBlockContent;
+import org.xhtmlrenderer.layout.inline.content.ReplacedContent;
+import org.xhtmlrenderer.layout.inline.content.TextContent;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * 
- *
- * @author   joshy
+ * @author joshy
  */
 public class InlineUtil {
 
     /**
      * Description of the Method
      *
-     * @param node_list  PARAM
-     * @return           Returns
+     * @param node_list PARAM
+     * @return Returns
      */
-    public static Node nextTextNode( List node_list ) {
-        if ( node_list.size() < 1 ) {
+    public static Node nextTextNode(List node_list) {
+        if (node_list.size() < 1) {
             return null;
         }
-        Node nd = (Node)node_list.get( 0 );
-        node_list.remove( nd );
+        Node nd = (Node) node_list.get(0);
+        node_list.remove(nd);
         return nd;
     }
 
@@ -54,74 +55,73 @@ public class InlineUtil {
     /**
      * Gets the inlineNodeList attribute of the InlineUtil class
      *
-     * @param node  PARAM
-     * @param elem  PARAM
-     * @param c     PARAM
-     * @return      The inlineNodeList value
+     * @param elem PARAM
+     * @param c    PARAM
+     * @return The inlineNodeList value
      */
-    public static List getInlineNodeList( Node node, Element elem, Context c ) {
-        return getInlineNodeList( node, elem, c, false );
+    public static List getInlineNodeList(Element elem, Context c) {
+        return getInlineNodeList(elem, elem, c, false);
     }
 
     /**
      * Gets the inlineNodeList attribute of the InlineUtil class
      *
-     * @param node            PARAM
-     * @param elem            PARAM
-     * @param c               PARAM
-     * @param stop_at_blocks  PARAM
-     * @return                The inlineNodeList value
+     * @param root           PARAM
+     * @param elem           PARAM
+     * @param c              PARAM
+     * @param stop_at_blocks PARAM
+     * @return The inlineNodeList value
      */
-    public static List getInlineNodeList( Node root, Element elem, Context c, boolean stop_at_blocks ) {
+    public static List getInlineNodeList(Node root, Element elem, Context c, boolean stop_at_blocks) {
         List list = new ArrayList();
-        if ( root == null ) {
+        if (root == null) {
             return list;
         }
-        if ( elem == null ) {
+        if (elem == null) {
             return list;
         }
-        if ( !elem.hasChildNodes() ) {
+        if (!elem.hasChildNodes()) {
             //u.p("it's empty");
             return list;
         }
 
         // u.p("starting at: " + root);
         Node curr = root;
-        while ( true ) {
+        while (true) {
             // u.p("now list = " + list);
             
-            // skip the first time through
-            if ( curr != root ) {
-                if ( curr.getNodeType() == curr.TEXT_NODE ) {
+            // skip the first time
+            if (curr != root) {
+                if (curr.getNodeType() == curr.TEXT_NODE) {
                     // u.p("adding text: " + curr);
-                    list.add( curr );
+                    list.add(curr);
                     root = curr;
                     continue;
                 }
 
-                if ( LayoutUtil.isReplaced(c, curr ) ) {
+                if (LayoutUtil.isReplaced(c, curr)) {
                     // u.p("adding replaced: " + curr);
-                    list.add( curr );
+                    list.add(curr);
                     root = curr;
                     continue;
                 }
 
-                if ( LayoutUtil.isFloatedBlock( curr, c ) ) {
+                if (LayoutUtil.isFloatedBlock(curr, c)) {
                     // u.p("adding floated block: " + curr);
-                    list.add( curr );
+                    list.add(curr);
                     root = curr;
                     continue;
                 }
 
-                if ( c.getRenderingContext().getLayoutFactory().isBreak( curr ) ) {
+                if (c.getRenderingContext().getLayoutFactory().isBreak(curr)) {
                     // u.p("adding break: " + curr);
-                    list.add( curr );
+                    list.add(curr);
                     root = curr;
                     continue;
                 }
 
-                if ( stop_at_blocks ) {
-                    if ( LayoutUtil.isBlockNode( curr, c ) ) {
+                if (stop_at_blocks) {
+                    if (LayoutUtil.isBlockNode(curr, c)) {
                         //u.p("at block boundary");
                         return list;
                     }
@@ -141,15 +141,15 @@ public class InlineUtil {
                     }
                 }
                 */
-                
+
             }
 
 
-            if ( curr.hasChildNodes() ) {
+            if (curr.hasChildNodes()) {
                 // u.p("about to test: " + curr);
                 // if it's a floating block we don't want to recurse
-                if ( !LayoutUtil.isFloatedBlock( curr, c ) &&
-                        !LayoutUtil.isReplaced(c, curr ) ) {
+                if (!LayoutUtil.isFloatedBlock(curr, c) &&
+                        !LayoutUtil.isReplaced(c, curr)) {
                     curr = curr.getFirstChild();
                     // u.p("going to first child " + curr);
                     continue;
@@ -159,16 +159,16 @@ public class InlineUtil {
                 // not the node being examined. this only matters when we
                 // start the loop at the root of a floated block
                 
-                if ( LayoutUtil.isFloatedBlock( root, c ) ) {
-                    if ( root == elem ) {
+                if (LayoutUtil.isFloatedBlock(root, c)) {
+                    if (root == elem) {
                         curr = curr.getFirstChild();
                         continue;
                     }
                 }
-                
+
             }
 
-            if ( curr.getNextSibling() != null ) {
+            if (curr.getNextSibling() != null) {
                 curr = curr.getNextSibling();
                 // u.p("going to next sibling: " + curr);
                 continue;
@@ -176,11 +176,11 @@ public class InlineUtil {
 
             // keep going up until we get another sibling
             // or we are at elem.
-            while ( true ) {
+            while (true) {
                 curr = curr.getParentNode();
                 // u.p("going to parent: " + curr);
                 // if we are at the top then return null
-                if ( curr == elem ) {
+                if (curr == elem) {
                     // u.p("at the top again. returning null");
                     // u.p("returning the list");
                     // u.p(list);
@@ -188,7 +188,164 @@ public class InlineUtil {
                     //return null;
                 }
 
-                if ( curr.getNextSibling() != null ) {
+                if (curr.getNextSibling() != null) {
+                    curr = curr.getNextSibling();
+                    // u.p("going to next sibling: " + curr);
+                    break;
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Gets the inline content of a sequence of nodes
+     *
+     * @param root           PARAM
+     * @param elem           PARAM
+     * @param c              PARAM
+     * @param stop_at_blocks PARAM
+     * @return The inlineNodeList value
+     */
+    public static List getInlineContentList(Node root, Element elem, Context c, boolean stop_at_blocks) {
+        List contentList = new LinkedList();
+        if (root == null) {
+            throw new NullPointerException("Trying to get ContentList for null root node");
+        }
+        if (elem == null) {
+            throw new NullPointerException("Trying to get ContentList for null element");
+        }
+        if (!elem.hasChildNodes()) {
+            //u.p("it's empty");
+            return contentList;
+        }
+
+        // u.p("starting at: " + root);
+        Node curr = root;
+        TextContent text = null;
+        CalculatedStyle style = null;
+        while (true) {
+            // u.p("now list = " + list);
+            if (style == null) style = c.css.getStyle(curr);
+
+            // skip first time
+            if (curr != root) {
+                if (curr.getNodeType() == curr.TEXT_NODE) {
+                    // u.p("adding text: " + curr);
+                    if (text == null) text = new TextContent(style);
+                    text.append(curr.getNodeValue());
+                    root = curr;
+                    continue;
+                }
+
+                //TODO: what if a replaced element has :before and/or :after content?
+                if (LayoutUtil.isReplaced(c, curr)) {
+                    // u.p("adding replaced: " + curr);
+                    if (text != null) {
+                        contentList.add(text);
+                        text = null;
+                    }
+                    contentList.add(new ReplacedContent((Element) curr));
+                    root = curr;
+                    continue;
+                }
+
+                //TODO: what if a floated block has :before and/or :after content?
+                if (LayoutUtil.isFloatedBlock(curr, c)) {
+                    // u.p("adding floated block: " + curr);
+                    if (text != null) {
+                        contentList.add(text);
+                        text = null;
+                    }
+                    contentList.add(new FloatedBlockContent((Element) curr));
+                    root = curr;
+                    continue;
+                }
+
+                //break handling should be done by :before content
+                CascadedStyle before = c.css.getPseudoElementStyle(curr, "before");
+                if (before != null) {
+                    CalculatedStyle parentStyle = c.css.getStyle(curr);
+                    CalculatedStyle derived = c.css.getDerivedStyle(parentStyle, before);
+                    if (text != null) {
+                        contentList.add(text);
+                        text = null;
+                    }
+                    contentList.add(new TextContent(derived));
+                    //do not reset style here, because if this element is empty, we will not have changed context
+                }
+
+                //TODO: check if this should maybe always be true
+                if (stop_at_blocks) {
+                    if (LayoutUtil.isBlockNode(curr, c)) {
+                        //u.p("at block boundary");
+                        return contentList;
+                    }
+                }
+            }
+
+            if (curr.hasChildNodes()) {
+                // u.p("about to test: " + curr);
+                // if it's a floating block we don't want to recurse
+                if (!LayoutUtil.isFloatedBlock(curr, c) &&
+                        !LayoutUtil.isReplaced(c, curr)) {
+                    //new element, new style
+                    if (text != null) {
+                        contentList.add(text);
+                        text = null;
+                    }
+                    style = null;
+
+                    curr = curr.getFirstChild();
+                    // u.p("going to first child " + curr);
+                    continue;
+                }
+
+                // it's okay to recurse if it's the root that's the float,
+                // not the node being examined. this only matters when we
+                // start the loop at the root of a floated block
+
+                if (LayoutUtil.isFloatedBlock(root, c)) {
+                    if (root == elem) {
+                        //ok, the style should already be set and text should be null
+                        curr = curr.getFirstChild();
+                        continue;
+                    }
+                }
+
+            }
+
+            if (curr.getNextSibling() != null) {
+                //ok, the style should still apply
+                curr = curr.getNextSibling();
+                // u.p("going to next sibling: " + curr);
+                continue;
+            }
+
+            // keep going up until we get another sibling
+            // or we are at elem.
+            while (true) {
+                curr = curr.getParentNode();
+                //new element, new style
+                if (text != null) {
+                    contentList.add(text);
+                    text = null;
+                }
+                style = null;
+
+                // u.p("going to parent: " + curr);
+                // if we are at the top then return null
+                if (curr == elem) {
+                    // u.p("at the top again. returning null");
+                    // u.p("returning the list");
+                    // u.p(list);
+                    return contentList;
+                    //return null;
+                }
+
+                if (curr.getNextSibling() != null) {
                     curr = curr.getNextSibling();
                     // u.p("going to next sibling: " + curr);
                     break;
@@ -206,6 +363,9 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/12/05 18:11:38  tobega
+ * Now uses style cache for pseudo-element styles. Also started preparing to replace inline node handling with inline content handling.
+ *
  * Revision 1.15  2004/11/27 15:46:38  joshy
  * lots of cleanup to make the code clearer
  *

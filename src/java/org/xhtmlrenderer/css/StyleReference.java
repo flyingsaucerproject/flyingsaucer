@@ -89,6 +89,11 @@ public interface StyleReference {
     public CalculatedStyle getStyle(Node node);
 
     /**
+     * get a derived CalculatedStyle
+     */
+    public CalculatedStyle getDerivedStyle(CalculatedStyle parent, CascadedStyle matched);
+
+    /**
      * Handle a restyle because of a change in hover state. If the element (and its children) was restyled
      * because of this, true is returned
      */
@@ -100,6 +105,9 @@ public interface StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/12/05 18:11:37  tobega
+ * Now uses style cache for pseudo-element styles. Also started preparing to replace inline node handling with inline content handling.
+ *
  * Revision 1.11  2004/12/05 14:35:38  tobega
  * Cleaned up some usages of Node (and removed unused stuff) in layout code. The goal is to pass "better" objects than Node wherever possible in an attempt to shake out the bugs in tree-traversal (probably often unnecessary tree-traversal)
  *

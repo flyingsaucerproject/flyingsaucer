@@ -91,7 +91,7 @@ public class InlineLayout extends BoxLayout {
         if (box.isAnonymous()) {
             inline_node_list = ((AnonymousBlockBox) box).node_list;
         } else {
-            inline_node_list = InlineUtil.getInlineNodeList(elem, elem, c);
+            inline_node_list = InlineUtil.getInlineNodeList(elem, c);
         }
 
         Node current_node = InlineUtil.nextTextNode(inline_node_list);
@@ -412,6 +412,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.37  2004/12/05 18:11:38  tobega
+* Now uses style cache for pseudo-element styles. Also started preparing to replace inline node handling with inline content handling.
+*
 * Revision 1.36  2004/12/05 14:35:39  tobega
 * Cleaned up some usages of Node (and removed unused stuff) in layout code. The goal is to pass "better" objects than Node wherever possible in an attempt to shake out the bugs in tree-traversal (probably often unnecessary tree-traversal)
 *

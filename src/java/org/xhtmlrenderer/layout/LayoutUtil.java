@@ -201,7 +201,7 @@ public class LayoutUtil {
         }
 
         Element el = (Element) node;
-        String display = getDisplay(c, el);
+        //not used: String display = getDisplay(c, el);
         if (isFloated(c, node)) {
             return true;
         }

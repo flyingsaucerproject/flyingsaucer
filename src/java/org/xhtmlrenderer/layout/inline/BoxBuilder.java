@@ -145,7 +145,7 @@ public class BoxBuilder {
             CascadedStyle pseudo = c.css.getPseudoElementStyle(LineBreaker.getNearestBlockElement(box.getNode(), c), "first-line");
             if (pseudo != null) {
                 CalculatedStyle normal = c.css.getStyle(box.getRealElement());
-                CalculatedStyle merged = new CalculatedStyle(normal, pseudo);
+                CalculatedStyle merged = c.css.getDerivedStyle(normal, pseudo);
                 LineBreaker.styleInlineBox(c, merged, box);
             }
         }
