@@ -135,7 +135,16 @@ my form fields?</h2>
 <br/>
 <h3>Developer's FAQ</h3>
 
-<h2>Configuration</h2>
+<h2>CLASSPATH Setup</h2>
+<p>You should include all JAR files in the /lib directory, plus the /resources directory
+tree, to your classpath. If running from our Ant build file, this is taken care of automatically.</p>
+
+<h2>Building or Running without Ant</h2>
+<p>Our Ant <code>build.xml</code> file includes all JAR files in the /lib directory, plus the <code>/resources</code> directory
+tree in the classpath. The <b>compile</b> target also copies CSS and properties resources from <code>/src/css</code>
+and <code>src/conf</code> to <code>/build/resources</code>. If running from an IDE, you will need to synchronize this yourself.</p>
+
+<h2>Runtime Configuration</h2>
 <p>The renderer works with a simple, <code>java.util.Properties</code>-based configuration system--no XML!
 Our <code>org.xhtmlrenderer.util.Confuration</code> class loads properties on first access and makes them available 
 at runtime.</p>
@@ -152,7 +161,7 @@ this is not a good idea, as you will have to merge your changes back on new rele
 will make reporting bugs more complicated. Instead, you can use one of two override mechanisms
 for changing the value of individual properties.</p>
 
-<p><b>Override with Second Conf File:</b>You can override properties by specifying the location
+<p><b>Override with Second Conf File:</b> You can override properties by specifying the location
 of a second properties file as a System property when starting your app. Specifically, you need
 to define the System property <b>"xr-props"</b>. This should be the location of the second file
 relative to the CLASSPATH, e.g. 
@@ -163,8 +172,7 @@ Your override file should just re-assign values for properties originally given 
 <conf>xhtmlrenderer.conf</conf>. Please see the documentation in that file for a 
 description of what each property affects.</p>
 
-
-<p><b>Override with System Properties:</b>You can also override properties one-by-one
+<p><b>Override with System Properties:</b> You can also override properties one-by-one
 on the command line, using System properties. To override a property using the System 
 properties, just re-define the property on the command line. e.g. 
 <pre>
@@ -178,8 +186,26 @@ property name not in that file will have no effect--the property will not be
 loaded or available for lookup. Configuration is NOT used to control logging
 levels or output; see LogStartupConfig.</p>
 
-<p></p>
-<p></p>
+<h2>Runtime Logging</h2>
+<p>The renderer uses the <code>java.util.logging</code> package for logging information and 
+exceptions at runtime. Logging behavior (output) is controlled via a properties file,
+<code>/resources/conf/xr-logging.properties</code>. As with configuration, this is loaded from 
+the CLASSPATH. If you are running the renderer from the JAR, it will be picked up 
+automatically. Otherwise, make sure it is on your classpath, or mounted to the root of
+your JAR if you re-jar the renderer.</p>
+
+<p>Please review the <code>java.util.logging</code> package docs before proceeding.</p>
+
+<p>We log to a set of hierarchies. The internal code--everything between a request to load
+a page and the page rendering--is logged to a subhierarchy of "plumbing", e.g. plumbing.load.
+Our convention is that WARNING and SEVERE levels are very important and should always be
+logged. INFO messages are useful and but can be excluded if you want a quiet ride. Anything
+below INFO (FINE, FINER, FINEST) is generally only interesting for core renderer developers.
+We don't guarrantee that anything below INFO will be useful, correct, practical or informative.
+You can usually leave log levels at INFO for most purposes.</p>
+
+<!-- TODO: Update logging docs once we figure out how we will handle distribution log
+controls versus dev log controls with override files. PW -->
 
 </div>
 </body>
