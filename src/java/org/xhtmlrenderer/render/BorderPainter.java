@@ -304,6 +304,7 @@ public class BorderPainter {
             g.fillPolygon(poly);
         }
 
+        // CLEAN: duplicate, except for color, with paintGoodBevel() for BOTTOM (PWW 25-01-05)
         if (side == BOTTOM) {
             poly = new Polygon();
             poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom);
@@ -314,6 +315,7 @@ public class BorderPainter {
             g.fillPolygon(poly);
         }
 
+        // CLEAN: duplicate, except for color, with paintGoodBevel() for BOTTOM (PWW 25-01-05)
         if (side == RIGHT) {
             poly = new Polygon();
             poly.addPoint(bounds.x + bounds.width, bounds.y);
@@ -342,6 +344,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/01/25 10:55:15  pdoubleya
+ * Added warning on possible duplicate code.
+ *
  * Revision 1.18  2005/01/24 22:46:42  pdoubleya
  * Added support for ident-checks using IdentValue instead of string comparisons.
  *
