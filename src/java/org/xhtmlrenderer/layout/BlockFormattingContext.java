@@ -57,12 +57,8 @@ public class BlockFormattingContext {
     /* ====== float stuff ========= */
 
     public void addLeftFloat(Box block) {
-        u.p("current offset at time of add: " + getOffset());
-        u.p("adding float: " + block);
-        //u.p("parent = " + block.getParent());
         left_floats.add(block);
         offset_map.put(block,getOffset());
-        //u.dump_stack();
     }
     
     public void addRightFloat(Box block) {
@@ -89,15 +85,15 @@ public class BlockFormattingContext {
         if(left_floats.size() == 0) {
             return 0;
         }
-        u.p("left floats size = " + left_floats.size());
-        u.p("doing get left float dist. line = " + line);
-        u.p("line y = " + line.y);
+        // u.p("left floats size = " + left_floats.size());
+        // u.p("doing get left float dist. line = " + line);
+        // u.p("line y = " + line.y);
         
         // we only handle floats inside the same parent
         Box last_float = (Box)left_floats.get(left_floats.size()-1);
-        u.p("last float = " + last_float);
-        u.p("last float parent = " + last_float.getParent());
-        u.p("line parent = " + line.getParent());
+        // u.p("last float = " + last_float);
+        // u.p("last float parent = " + last_float.getParent());
+        // u.p("line parent = " + line.getParent());
         
         if(line.getParent() != last_float.getParent().getParent()) {
             //u.p("last float = " + last_float);

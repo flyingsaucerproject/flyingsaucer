@@ -51,6 +51,8 @@ public class LineBreaker {
      */
     public static InlineBox generateMultilineBreak( Context c, Node node, int start, String text,
                                                     InlineBox prev, InlineBox prev_align, int avail ) {
+
+        int extra = 0;
         // calc end index to most words that will fit
         int end = start;
         int dbcount = 0;
@@ -463,6 +465,10 @@ public class LineBreaker {
         }
         */
 
+        // adjust width based on borders and padding
+        box.width += box.totalHorizontalPadding();
+        //box.height += box.totalVerticalPadding();
+        
         return box;
     }
     
@@ -543,6 +549,14 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/08 22:08:00  joshy
+ * improved inline border formatting and text drawing
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/11/08 20:50:59  joshy
  * improved float support
  *

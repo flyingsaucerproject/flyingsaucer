@@ -181,13 +181,7 @@ public class InlineRenderer extends BoxRenderer {
             c.translate( inline.left, inline.top );
         }
 
-        // paint the background
-        c.translate(0,line.baseline-inline.y-inline.height);
-        //u.p("line = " + line);
-        //u.p("inline = " + inline);
-        paintBackground(c,inline);
-        paintBorder(c,inline);
-        c.translate(0,-(line.baseline-inline.y-inline.height));
+        paintPadding(c,line,inline);
 
         
         c.updateSelection( inline );
@@ -196,6 +190,8 @@ public class InlineRenderer extends BoxRenderer {
         String text = inline.getSubstring();
         int iy = ly + inline.y;
         int ix = lx + inline.x;
+        // account for padding
+        ix += inline.totalLeftPadding();
         // draw a selection rectangle
         paintSelection( c, inline, lx, ly );
         //adjust font for current settings
@@ -203,15 +199,18 @@ public class InlineRenderer extends BoxRenderer {
         c.getGraphics().setFont( inline.getFont() );
         Color oldcolor = c.getGraphics().getColor();
         c.getGraphics().setColor( inline.color );
+        Font cur_font = c.getGraphics().getFont();
+        LineMetrics lm = cur_font.getLineMetrics( text, ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
 
+        //u.p("lm descent = " + lm.getDescent());
+        iy-= (int)lm.getDescent();
+        
         //draw the line
         if ( text != null && text.length() > 0 ) {
             c.getGraphics().drawString( text, ix, iy );
         }
         c.getGraphics().setColor( oldcolor );
         //draw any text decoration
-        Font cur_font = c.getGraphics().getFont();
-        LineMetrics lm = cur_font.getLineMetrics( text, ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
         if ( inline.underline ) {
             float down = lm.getUnderlineOffset();
             float thick = lm.getUnderlineThickness();
@@ -244,4 +243,26 @@ public class InlineRenderer extends BoxRenderer {
         }
     }
 
+    public void paintPadding(Context c, LineBox line, InlineBox inline) {
+        // paint the background
+        //int padding_xoff = inline.totalLeftPadding();
+        int padding_xoff = 0;
+        int padding_yoff = inline.totalTopPadding();
+        //u.p("padding yoff = " + padding_yoff);
+        c.translate(-padding_xoff, line.baseline-inline.y-inline.height - padding_yoff);
+        //u.p("line = " + line);
+        //u.p("inline = " + inline);
+        int old_width = inline.width;
+        int old_height = inline.height;
+        //inline.width += inline.totalHorizontalPadding();
+        inline.height += inline.totalVerticalPadding();
+        paintBackground(c,inline);
+        paintBorder(c,inline);
+        inline.width = old_width;
+        inline.height = old_height;
+        c.translate(+padding_xoff, -(line.baseline-inline.y-inline.height) + padding_yoff);
+    }
 }
+
+
+

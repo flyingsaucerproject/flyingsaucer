@@ -8,18 +8,16 @@
             body { margin: 30px 30px;
                     padding: 20px 30px;
                     background-color: white; 
-/*                    font-family: "Garamond";
-*/
                     font-family: Garamond; 
                     font-size: 14pt;
-                    }
+                    } 
             .dropcap { 
                 color: #88A;
                 /* body = 12, line = 12*3, size = 12*4 */
                 font-size: 3em;
                 line-height: 40pt;
                 font-family: Abbess;
-                float: left; 
+                float: left;
                 width: 42px;
                 text-align: center;
                 }
@@ -54,6 +52,8 @@
                 font-weight: normal;
                 font-family: sans-serif;
                 }
+            p { text-indent: 20px; }
+            p.figure, p.dropcap-holder { text-indent: 0px; }
         </style>
 
     </head>
@@ -64,7 +64,7 @@
         
         <h2>Down the Rabbit-Hole</h2>
 
-        <p><span class="dropcap">A</span>lice was beginning to get very tired of sitting by her sister
+        <p class="dropcap-holder"><div class="dropcap">A</div>lice was beginning to get very tired of sitting by her sister
         on the bank, and of having nothing to do: once or twice she had
         peeped into the book her sister was reading, but it had no pictures
         or conversations in it, `and what is the use of a book,' thought
