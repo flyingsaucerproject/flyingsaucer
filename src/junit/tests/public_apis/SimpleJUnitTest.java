@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 
@@ -50,6 +51,17 @@ public class SimpleJUnitTest extends TestCase {
         String bodyP = "//body/p[@id=1]";
         Element pElem = lookupElement(bodyP);
         assertNotNull("Failed to find element " + bodyP, pElem);
+    }
+
+    /** A unit test for JUnit */
+    public void testBorderSize() {
+        String bodyP = "//body/p[@id=1]";
+        Element pElem = lookupElement(bodyP);
+        Border border = _ctx.getStyleReference().getBorderWidth(pElem);
+        assertEquals("border top width should be 1px", 1, border.top);
+        assertEquals("border bottom width should be 1px", 1, border.bottom);
+        assertEquals("border left width should be 1px", 1, border.left);
+        assertEquals("border right width should be 1px", 1, border.right);
     }
 
     /** The teardown method for JUnit */
@@ -131,6 +143,9 @@ public class SimpleJUnitTest extends TestCase {
  *
 
  * $Log$
+ * Revision 1.2  2004/11/16 14:47:18  pdoubleya
+ * Added border width test.
+ *
  * Revision 1.1  2004/11/16 14:36:44  pdoubleya
  * Added to CVS.
  *
