@@ -82,16 +82,14 @@ public class TobeRuleBank implements RuleBank {
     }
     
     private void addConditions(net.homelinux.tobe.css.Selector s, Condition cond) {
-                AttributeCondition attr = (AttributeCondition) cond;
-                CombinatorCondition comb = (CombinatorCondition) cond;
-                LangCondition lang = (LangCondition) cond;
-                PositionalCondition pos = (PositionalCondition) cond;
         switch(cond.getConditionType()) {
             case Condition.SAC_AND_CONDITION:
+                CombinatorCondition comb = (CombinatorCondition) cond;
                 addConditions(s, comb.getFirstCondition());
                 addConditions(s, comb.getSecondCondition());
             break;
             case Condition.SAC_ATTRIBUTE_CONDITION:
+                AttributeCondition attr = (AttributeCondition) cond;
                 if(attr.getSpecified()) {
                     s.addAttributeEqualsCondition(attr.getLocalName(), attr.getValue());
                 } else {
@@ -99,24 +97,31 @@ public class TobeRuleBank implements RuleBank {
                 }
             break;
             case Condition.SAC_BEGIN_HYPHEN_ATTRIBUTE_CONDITION:
+                attr = (AttributeCondition) cond;
                 s.addAttributeMatchesFirstPartCondition(attr.getLocalName(), attr.getValue());
             break;
             case Condition.SAC_CLASS_CONDITION:
+                attr = (AttributeCondition) cond;
                 s.addClassCondition(attr.getValue());
             break;
             case Condition.SAC_ID_CONDITION:
+                attr = (AttributeCondition) cond;
                 s.addIDCondition(attr.getValue());
             break;
             case Condition.SAC_LANG_CONDITION:
+                LangCondition lang = (LangCondition) cond;
                 s.addLangCondition(lang.getLang());
             break;
             case Condition.SAC_ONE_OF_ATTRIBUTE_CONDITION:
+                attr = (AttributeCondition) cond;
                 s.addAttributeMatchesListCondition(attr.getLocalName(), attr.getValue());
             break;
             case Condition.SAC_POSITIONAL_CONDITION:
+                PositionalCondition pos = (PositionalCondition) cond;
                 s.addFirstChildCondition();
             break;
             case Condition.SAC_PSEUDO_CLASS_CONDITION:
+                attr = (AttributeCondition) cond;
                 if(attr.getValue().equals("link")) s.setPseudoClass(AttributeResolver.LINK_PSEUDOCLASS);
                 if(attr.getValue().equals("visited")) s.setPseudoClass(AttributeResolver.VISITED_PSEUDOCLASS);
                 if(attr.getValue().equals("hover")) s.setPseudoClass(AttributeResolver.HOVER_PSEUDOCLASS);
