@@ -24,6 +24,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.datatransfer.*;
 import java.util.logging.*;
 import java.net.*;
 import java.io.*;
@@ -103,13 +104,14 @@ public class BrowserActions {
         copy = new EmptyAction( "Copy", KeyEvent.VK_C ) {
             
             public void actionPerformed( ActionEvent evt ) {
-                System.out.println("copy");
                 HTMLPanel panel = root.panel.view;
                 Box start = panel.getContext().getSelectionStart();
                 Box end = panel.getContext().getSelectionEnd();
                 StringBuffer sb = new StringBuffer();
                 collectSelection(panel.getContext(), panel.getRootBox(), start, end, sb, false);
-                u.p("selection = " + sb);
+                Toolkit tk = Toolkit.getDefaultToolkit();
+                Clipboard clip = tk.getSystemClipboard();
+                clip.setContents(new StringSelection(sb.toString()),null);
             }
             
             public boolean collectSelection(Context ctx, Box root, Box current, Box last, StringBuffer sb, boolean in_selection) {
@@ -300,6 +302,13 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/13 00:16:33  joshy
+ * finished copy support
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/11/13 00:09:14  joshy
  * added copy support
  * Issue number:
