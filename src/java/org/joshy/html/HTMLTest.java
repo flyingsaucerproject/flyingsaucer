@@ -10,11 +10,12 @@ import org.w3c.dom.*;
 import java.io.File;
 import org.joshy.html.box.Box;
 
-public class HTMLTest {
+public class HTMLTest extends JFrame {
     public static final int text_width = 300;
-    public static void main(String[] args) throws Exception {
-        final JFrame frame = new JFrame("xhtml rendering test");
-        final HTMLPanel panel = new HTMLPanel();
+    private final HTMLPanel panel = new HTMLPanel();
+
+    public HTMLTest(String[] args) throws Exception {
+        super("xhtml rendering test");
         panel.setPreferredSize(new Dimension(text_width,text_width));
         JScrollPane scroll = new JScrollPane(panel);
         scroll.setVerticalScrollBarPolicy(scroll.VERTICAL_SCROLLBAR_ALWAYS);
@@ -23,15 +24,15 @@ public class HTMLTest {
         panel.setViewportComponent(scroll);
         panel.setJScrollPane(scroll);
         panel.addMouseListener(new ClickMouseListener(panel));
-        
+
         if(args.length > 0) {
             File file = new File(args[0]);
             panel.setDocument(x.loadDocument(args[0]),file.toURL());
         }
 
-        frame.getContentPane().add("Center",scroll);
-        
-        
+        getContentPane().add("Center",scroll);
+
+
         JMenuBar mb = new JMenuBar();
         JMenu file = new JMenu("File");
         mb.add(file);
@@ -43,114 +44,24 @@ public class HTMLTest {
 
         JMenu test = new JMenu("Test");
         mb.add(test);
-        test.add(new AbstractAction("background colors and images") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/background.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.repaint();
-            }            
-        });
-        test.add(new AbstractAction("borders") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument(x.loadDocument("demos/border.xhtml")); } catch (Exception ex) { u.p(ex); }
-                panel.repaint();
-            }
-        });
-        test.add(new AbstractAction("box sizing") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/box-sizing.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.repaint();
-            }
-        });
-        test.add(new AbstractAction("mixed test 1") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/content.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.repaint();
-            }
-        });
-        test.add(new AbstractAction("line breaking") {
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    panel.setDocument("demos/breaking.xhtml");
-                } catch (Exception ex) {
-                    u.p(ex);
-                }
-                panel.repaint();
-            }
-        });
-        test.add(new AbstractAction("headers") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/header.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.repaint();
-            }
-        });
-        test.add(new AbstractAction("inline image") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/image.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.repaint();
-            }
-        });
-        test.add(new AbstractAction("list ") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/list.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.repaint();
-            }
-        });
-        test.add(new AbstractAction("nesting") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/nested.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.repaint();
-            }
-        });
-        test.add(new AbstractAction("general styled text") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/paragraph.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.doLayout();
-            }            
-        });
-        test.add(new AbstractAction("CSS selectors") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/selectors.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.doLayout();
-                //panel.doLayout();
-            }            
-        });
-        test.add(new AbstractAction("table") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/table.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.doLayout();
-            }            
-        });
-        test.add(new AbstractAction("text alignment") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/text-alignment.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.doLayout();
-            }            
-        });
-        test.add(new AbstractAction("whitespace handling") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/whitespace.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.doLayout();
-            }            
-        });
-        test.add(new AbstractAction("itunes email") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/itunes/itunes1.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.doLayout();
-            }            
-        });
-        test.add(new AbstractAction("follow links") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/link.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.doLayout();
-            }            
-        });
-        test.add(new AbstractAction("Hamlet (slow!)") {
-            public void actionPerformed(ActionEvent evt) {
-                try { panel.setDocument("demos/hamlet.xhtml"); } catch (Exception ex) { u.p(ex); }
-                panel.doLayout();
-            }            
-        });
 
+        addFileLoadAction(test, "background colors and images", "demos/background.xhtml");
+        addFileLoadAction(test, "borders", "demos/border.xhtml");
+        addFileLoadAction(test, "box sizing", "demos/box-sizing.xhtml");
+        addFileLoadAction(test, "mixed test 1", "demos/content.xhtml");
+        addFileLoadAction(test, "line breaking", "demos/breaking.xhtml");
+        addFileLoadAction(test, "headers", "demos/header.xhtml");
+        addFileLoadAction(test, "inline image", "demos/image.xhtml");
+        addFileLoadAction(test, "list ", "demos/list.xhtml");
+        addFileLoadAction(test, "nesting", "demos/nested.xhtml");
+        addFileLoadAction(test, "general styled text", "demos/paragraph.xhtml");
+        addFileLoadAction(test, "CSS selectors", "demos/selectors.xhtml");
+        addFileLoadAction(test, "table", "demos/table.xhtml");
+        addFileLoadAction(test, "text alignment", "demos/text-alignment.xhtml");
+        addFileLoadAction(test, "whitespace handling", "demos/whitespace.xhtml");
+        addFileLoadAction(test, "itunes email", "demos/itunes/itunes1.xhtml");
+        addFileLoadAction(test, "follow links", "demos/link.xhtml");
+        addFileLoadAction(test, "Hamlet (slow!)", "demos/hamlet.xhtml");
 
 
         JMenu debug = new JMenu("Debug");
@@ -184,11 +95,28 @@ public class HTMLTest {
         });
 
 
-        frame.setJMenuBar(mb);
-        
-        
-        
-        
+        setJMenuBar(mb);
+
+    }
+
+    public void addFileLoadAction(JMenu menu, String display, final String file) {
+        menu.add(new AbstractAction(display) {
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    panel.setDocument(file);
+                } catch (Exception ex) {
+                    u.p(ex);
+                }
+                panel.repaint();
+            }
+        });
+    }
+
+
+    public static void main(String[] args) throws Exception {
+
+        final JFrame frame = new HTMLTest(args);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         //frame.setSize(text_width,300);
         frame.show();
@@ -225,14 +153,14 @@ class ClickMouseListener extends MouseAdapter {
             if(node.getNodeType() == node.TEXT_NODE) {
                 node = node.getParentNode();
             }
-     
+
             if(node.getNodeName().equals("a")) {
                 u.p("clicked on a link");
                 box.clicked = true;
                 box.color = new Color(255,255,0);
                 panel.repaint();
             }
-            
+
         }
     }
     public void mouseReleased(MouseEvent evt) {
@@ -244,7 +172,7 @@ class ClickMouseListener extends MouseAdapter {
             if(node.getNodeType() == node.TEXT_NODE) {
                 node = node.getParentNode();
             }
-     
+
             if(node.getNodeName().equals("a")) {
                 u.p("clicked on a link");
                 box.clicked = true;
@@ -252,10 +180,10 @@ class ClickMouseListener extends MouseAdapter {
                 panel.repaint();
                 followLink((Element)node);
             }
-            
+
         }
     }
-    
+
     private void followLink(final Element elem) {
         try {
             if(elem.hasAttribute("href")) {
@@ -265,7 +193,7 @@ class ClickMouseListener extends MouseAdapter {
             u.p(ex);
         }
     }
-    
+
 }
 
 
