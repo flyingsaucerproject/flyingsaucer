@@ -33,13 +33,12 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.logging.Logger;
+import org.xhtmlrenderer.simple.FSScrollPane;
 
 
 /**
@@ -129,6 +128,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         reload = new JButton("Reload");
         url = new JTextField();
         view = new XHTMLPanel();
+        scroll = new FSScrollPane(view);
         font_inc = new JButton("A");
         font_dec = new JButton("a");
 
@@ -145,30 +145,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
         int text_width = 200;
         view.setPreferredSize(new Dimension(text_width, text_width));
-        scroll = new JScrollPane(view);
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setPreferredSize(new Dimension(text_width, text_width));
-
-        // TODO: need to get line-height, I think; this should not be fixed (PWW 28-01-05)
-        scroll.getVerticalScrollBar().setUnitIncrement(15);
-        
-        view.addComponentListener( new ComponentAdapter() {
-            /** Invoked when the component's size changes. Reset scrollable increment, because 
-             * page-down/up is relative to current view size.
-             */
-            public void componentResized(ComponentEvent e) {
-                JScrollBar bar = scroll.getVerticalScrollBar();
-                
-                // NOTE: use the scroll pane size--the XHTMLPanel size is a virtual size of the entire
-                // page
-
-                // want to page down leaving the current line at the bottom be the first at the top
-                // TODO: this will only work once unit increment is set correctly; multiplier is a workaround (PWW 28-01-05)
-                int incr = (int)(scroll.getSize().getHeight() - (bar.getUnitIncrement(1) * 3));
-                scroll.getVerticalScrollBar().setBlockIncrement(incr);
-            }
-        });
     }
 
     /**
@@ -240,62 +216,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
         font_inc.setAction(root.actions.increase_font);
         font_dec.setAction(root.actions.decrease_font);
-
-        view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
-                put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0), "pagedown");
-        view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
-                put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0), "pageup");
-        view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
-                put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "down");
-        view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
-                put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "up");
-        view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
-                put(KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_MASK), "pageend");
-        view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
-                put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_MASK), "pagestart");
-
-        view.getActionMap().put("pagedown",
-                new AbstractAction() {
-                    public void actionPerformed(ActionEvent evt) {
-                        JScrollBar sb = scroll.getVerticalScrollBar();
-                        sb.getModel().setValue(sb.getModel().getValue() + sb.getBlockIncrement(1));
-                    }
-                });
-        view.getActionMap().put("pageend",
-                new AbstractAction() {
-                    public void actionPerformed(ActionEvent evt) {
-                        JScrollBar sb = scroll.getVerticalScrollBar();
-                        sb.getModel().setValue(sb.getModel().getMaximum());
-                    }
-                });
-        view.getActionMap().put("pageup",
-                new AbstractAction() {
-                    public void actionPerformed(ActionEvent evt) {
-                        JScrollBar sb = scroll.getVerticalScrollBar();
-                        sb.getModel().setValue(sb.getModel().getValue() - sb.getBlockIncrement(-1));
-                    }
-                });
-        view.getActionMap().put("pagestart",
-                new AbstractAction() {
-                    public void actionPerformed(ActionEvent evt) {
-                        JScrollBar sb = scroll.getVerticalScrollBar();
-                        sb.getModel().setValue(0);
-                    }
-                });
-        view.getActionMap().put("down",
-                new AbstractAction() {
-                    public void actionPerformed(ActionEvent evt) {
-                        JScrollBar sb = scroll.getVerticalScrollBar();
-                        sb.getModel().setValue(sb.getModel().getValue() + sb.getUnitIncrement(1));
-                    }
-                });
-        view.getActionMap().put("up",
-                new AbstractAction() {
-                    public void actionPerformed(ActionEvent evt) {
-                        JScrollBar sb = scroll.getVerticalScrollBar();
-                        sb.getModel().setValue(sb.getModel().getValue() - sb.getUnitIncrement(-1));
-                    }
-                });
 
     }
 
@@ -537,6 +457,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/01/30 10:21:49  pdoubleya
+ * Extracted keyboard actions to FSScrollPane.
+ *
  * Revision 1.18  2005/01/29 20:17:42  pdoubleya
  * Updated panels to support page up/down properly, and formatted/cleaned.
  *
