@@ -127,8 +127,8 @@ public class TableLayout2 extends TableLayout {
      * @return             Returns
      */
     public void calculateBoxes( int avail_width, TableBox box, Context c, Table table ) {
-        u.p("TableLayout2.calculateBoxes(" + avail_width  +
-            " , " + box + " , " + c + " , " + table);
+        //u.p("TableLayout2.calculateBoxes(" + avail_width  +
+        //    " , " + box + " , " + c + " , " + table);
         box.width = avail_width;
         box.height = 100;
         box.x = 5;
@@ -292,6 +292,14 @@ public class TableLayout2 extends TableLayout {
 /*
    $Id$
    $Log$
+   Revision 1.7  2004/11/19 14:39:08  joshy
+   fixed crash when a tr is empty
+
+   Issue number:
+   Obtained from:
+   Submitted by:
+   Reviewed by:
+
    Revision 1.6  2004/11/19 14:27:38  joshy
    removed hard coded element names
    added support for tbody, or tbody missing

@@ -25,6 +25,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
+import org.xhtmlrenderer.util.u;
 
 
 /**
@@ -69,13 +70,18 @@ public class Table {
             }
             
             if ( isRow(c,row) ) {
+                boolean added_cells = false;
                 if ( first_row ) {
-                    addFirstRow(c, row );
+                    added_cells = addFirstRow(c, row );
                     first_row = false;
                 } else {
-                    addRow(c, row, row_count );
+                    added_cells = addRow(c, row, row_count );
                 }
-                row_count++;
+                // checking for added_cells lets us skip
+                // rows which were empty
+                if(added_cells) {
+                    row_count++;
+                }
             }
         }
     }
@@ -112,8 +118,8 @@ public class Table {
      * @param row  The feature to be added to the Row attribute
      * @param y    The feature to be added to the Row attribute
      */
-    public void addRow( Context c, Node row, int y ) {
-        addRow(c, row, false, y );
+    public boolean addRow( Context c, Node row, int y ) {
+        return addRow(c, row, false, y );
     }
 
     /**
@@ -121,8 +127,8 @@ public class Table {
      *
      * @param row  The feature to be added to the FirstRow attribute
      */
-    public void addFirstRow( Context c, Node row ) {
-        addRow(c, row, true, 0 );
+    public boolean addFirstRow( Context c, Node row ) {
+        return addRow(c, row, true, 0 );
     }
 
     /**
@@ -132,32 +138,29 @@ public class Table {
      * @param first_row  The feature to be added to the Row attribute
      * @param y          The feature to be added to the Row attribute
      */
-    public void addRow( Context c, Node row, boolean first_row, int y ) {
-        // for each td
-        //Row rw = new Row();
-        //rw.node = row;
+    public boolean addRow( Context c, Node row, boolean first_row, int y ) {
         //u.p("Table.addRow("+row+","+first_row+","+y+")");
         NodeList cells = row.getChildNodes();
         int col_counter = 0;
+        // for each td
+        boolean added = false;
         for ( int j = 0; j < cells.getLength(); j++ ) {
             Node cell = cells.item( j );
             if ( isTableCell(c, cell) ) {
-        //cell.getNodeName().equals( "td" ) || cell.getNodeName().equals( "th" ) ) {
                 //u.p("adding: " + col_counter + " " + y);
                 // add the cell
                 Cell cl = null;
                 if ( first_row ) {
                     cl = addTopCell( cell, col_counter, y );
-                    //rw.addCell(cl);
                 } else {
                     cl = addCell( cell, col_counter, y );
-                    //rw.addCell(cl);
                 }
                 col_counter += cl.getColumnSpan();
+                added = true;
             }
         }
         first_row = false;
-        //rows.add(rw);
+        return added;
     }
     
     
@@ -352,6 +355,14 @@ public class Table {
 /*
    $Id$
    $Log$
+   Revision 1.5  2004/11/19 14:39:08  joshy
+   fixed crash when a tr is empty
+
+   Issue number:
+   Obtained from:
+   Submitted by:
+   Reviewed by:
+
    Revision 1.4  2004/11/19 14:27:38  joshy
    removed hard coded element names
    added support for tbody, or tbody missing
