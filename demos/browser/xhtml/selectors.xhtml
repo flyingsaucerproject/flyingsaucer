@@ -44,6 +44,8 @@
 
     .test11 span { display: block; padding: 10px 10px; font-weight: normal; background-color: white }
 
+    h3.sibling + p { background-color: #ccccff; }
+
         </style>
     </head>
     <body>
@@ -54,6 +56,11 @@ They should all be blue instead of red, except where marked.</p>
 
         <h3>no selector</h3>
 
+        <p>selector = "p"  (background should be red)</p>
+
+        <h3 class="sibling">sibling selector</h3>
+
+        <p>selector = "p"  (background should be blue)</p>
         <p>selector = "p"  (background should be red)</p>
 
 
@@ -70,7 +77,7 @@ They should all be blue instead of red, except where marked.</p>
             <span>span</span> (span should be bold and
 background blue)
         </p>
-        <p>normal
+        <p>(background red) normal
             <b>bold
                 <i>bold italic (should be white) </i> bold
                 <i>also white</i>
@@ -96,24 +103,24 @@ background blue)
         </p>
 
         <div class="testbox">
-            <p>indented</p>
-            <p>also indented</p>
-            <p>also indented</p>
+            <p>(background red) indented</p>
+            <p>(background red) also indented</p>
+            <p>(background red) also indented</p>
         </div>
 
         <div class="testbox2">
-            <p>indented</p>
-            <p>also indented</p>
-            <p>also indented</p>
+            <p>(background red) indented</p>
+            <p>(background red) also indented</p>
+            <p>(background red) also indented</p>
         </div>
 
         <div class="testbold">
-            <p>bold indented</p>
-            <p>also bold indented</p>
-            <p>also bold indented</p>
+            <p>(background red) bold indented</p>
+            <p>(background red) also bold indented</p>
+            <p>(background red) also bold indented</p>
         </div>
 
-        <p class="test9">normal
+        <p class="test9">(background red) normal
             <span>blue bold padded</span> normal
             <span>blue bold padded</span> normal
         </p>
@@ -124,15 +131,15 @@ background blue)
         </p>
 
         <p class="test10">normal
-            <span>indented</span>
-            <span>also indented</span>
-            <span>also indented</span>
+            <span>(background white) indented</span>
+            <span>(background white) also indented</span>
+            <span>(background white) also indented</span>
         </p>
 
         <p class="test11">normal
-            <span>indented</span>
-            <span>also indented</span>
-            <span>also indented</span>
+            <span>(background white) indented</span>
+            <span>(background white) also indented</span>
+            <span>(background white) also indented</span>
         </p>
 
     </body>

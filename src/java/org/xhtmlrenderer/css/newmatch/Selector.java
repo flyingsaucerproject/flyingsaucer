@@ -135,9 +135,10 @@ class Selector {
         switch (_axis) {
             case IMMEDIATE_SIBLING_AXIS:
                 sibling = e.getPreviousSibling();
+                while (sibling != null && sibling.getNodeType() != Node.ELEMENT_NODE) sibling = sibling.getPreviousSibling();
                 break;
             default:
-                XRLog.exception("Bad selector");
+                XRLog.exception("Bad sibling axis");
         }
         if (!(sibling instanceof Element)) return null;
         return (Element) sibling;
@@ -159,11 +160,11 @@ class Selector {
     /**
      * append a selector to this chain, specifying which axis it should be evaluated on
      */
-    public Selector setSiblingSelector(int axis, String elementName) {
+    public Selector appendSiblingSelector(int axis, String elementName) {
         if (siblingSelector == null)
             return (siblingSelector = new Selector(_pos, getSpecificityB(), getSpecificityC(), getSpecificityD(), _parent, axis, elementName));
         else
-            return siblingSelector.setSiblingSelector(axis, elementName);
+            return siblingSelector.appendSiblingSelector(axis, elementName);
     }
 
     /**

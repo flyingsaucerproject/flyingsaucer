@@ -87,10 +87,7 @@ public class Matcher {
                     //carry it forward to other descendants
                     childMapper.axes.add(sel);
                 } else if (sel.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
-                    //remove it from this mapper immediately
-                    //NB handling of immediate sibling requires child elements to be traversed in order
-                    axes.remove(i);
-                    i--;
+                    throw new RuntimeException();
                 }
                 if (!sel.matches(e, _attRes)) continue;
                 //Assumption: if it is a pseudo-element, it does not also have dynamic pseudo-class
@@ -115,9 +112,7 @@ public class Matcher {
                 if (chain == null) {
                     childMapper.mappedSelectors.add(sel);
                 } else if (chain.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
-                    //add it to this mapper!
-                    axes.add(i, chain);
-                    i++;
+                    throw new RuntimeException();
                 } else {
                     childMapper.axes.add(chain);
                 }
@@ -212,8 +207,7 @@ public class Matcher {
     private Selector addSelector(int pos, org.xhtmlrenderer.css.sheet.Ruleset rs, org.w3c.css.sac.Selector selector) {
         Selector s = null;
         if (selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR) {
-            s = addSelector(pos, rs, ((org.w3c.css.sac.SiblingSelector) selector).getSelector());
-            addChainedSelector(s, selector);
+            s = addSiblingSelector(pos, rs, selector);
         } else if (selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR) {
             s = addSelector(pos, rs, ((org.w3c.css.sac.DescendantSelector) selector).getAncestorSelector());
             addChainedSelector(s, selector);
@@ -240,10 +234,6 @@ public class Matcher {
         int axis = 0;
         org.w3c.css.sac.SimpleSelector simple = null;
         switch (selector.getSelectorType()) {
-            case org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR:
-                axis = Selector.IMMEDIATE_SIBLING_AXIS;
-                simple = ((org.w3c.css.sac.SiblingSelector) selector).getSiblingSelector();
-                break;
             case org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR:
                 axis = Selector.CHILD_AXIS;
                 simple = ((org.w3c.css.sac.DescendantSelector) selector).getSimpleSelector();
@@ -253,7 +243,7 @@ public class Matcher {
                 simple = ((org.w3c.css.sac.DescendantSelector) selector).getSimpleSelector();
                 break;
             default:
-                System.err.println("Bad selector");
+                System.err.println("Bad selector in addChainedSelector");
         }
 
         org.w3c.css.sac.Condition cond = null;
@@ -271,20 +261,38 @@ public class Matcher {
     }
 
     /**
-     * @param s        The feature to be added to the ChainedSelector attribute
-     * @param selector The feature to be added to the ChainedSelector attribute
+     * @param siblingSelector The feature to be added to the ChainedSelector attribute
      */
-    private void addSiblingSelector(Selector s, org.w3c.css.sac.Selector selector) {
-        int axis = 0;
+    private Selector addSiblingSelector(int pos, org.xhtmlrenderer.css.sheet.Ruleset rs, org.w3c.css.sac.Selector siblingSelector) {
+        int axis = Selector.DESCENDANT_AXIS;
         org.w3c.css.sac.SimpleSelector simple = null;
-        switch (selector.getSelectorType()) {
+        org.w3c.css.sac.Selector sib = null;
+        switch (siblingSelector.getSelectorType()) {
             case org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR:
-                axis = Selector.IMMEDIATE_SIBLING_AXIS;
-                simple = ((org.w3c.css.sac.SiblingSelector) selector).getSiblingSelector();
+                simple = ((org.w3c.css.sac.SiblingSelector) siblingSelector).getSiblingSelector();
+                sib = ((org.w3c.css.sac.SiblingSelector) siblingSelector).getSelector();
                 break;
             default:
-                XRLog.exception("Bad selector");
+                XRLog.exception("Bad selector in addSiblingSelector");
         }
+
+        Selector ancestor = null;
+        Selector current = null;
+        org.w3c.css.sac.Selector pa = sib;
+        while (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR) {
+            pa = ((org.w3c.css.sac.SiblingSelector) pa).getSelector();
+        }
+        if (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR) {
+            ancestor = addSelector(pos, rs, ((org.w3c.css.sac.DescendantSelector) pa).getAncestorSelector());
+            axis = Selector.CHILD_AXIS;
+        } else if (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_DESCENDANT_SELECTOR) {
+            ancestor = addSelector(pos, rs, ((org.w3c.css.sac.DescendantSelector) pa).getAncestorSelector());
+        } else if (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
+            //do nothing, no ancestor selector exists
+        } else if (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
+            //do nothing, no ancestor selector exists
+        } else
+            XRLog.exception("unsupported selector in addSiblingSelector: " + pa.getSelectorType());
 
         org.w3c.css.sac.Condition cond = null;
         if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
@@ -293,11 +301,60 @@ public class Matcher {
             simple = ((org.w3c.css.sac.ConditionalSelector) simple).getSimpleSelector();
         }
         if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
-            s = s.setSiblingSelector(axis, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
+            if (ancestor == null) {
+                current = new Selector(pos, rs, Selector.DESCENDANT_AXIS, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
+                ancestor = current;
+            } else {
+                current = ancestor.appendChainedSelector(axis, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
+            }
+        }
+        if (cond != null) {
+            addConditions(current, cond);
+        }
+
+        while (sib.getSelectorType() == org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR) {
+            simple = ((org.w3c.css.sac.SiblingSelector) sib).getSiblingSelector();
+            cond = null;
+            Selector s = null;
+            if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
+                cond = ((org.w3c.css.sac.ConditionalSelector) simple).getCondition();
+                //if ConditionalSelectors can be nested, we are in trouble here
+                simple = ((org.w3c.css.sac.ConditionalSelector) simple).getSimpleSelector();
+            }
+            if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
+                s = current.appendSiblingSelector(Selector.IMMEDIATE_SIBLING_AXIS, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
+            }
+            if (cond != null) {
+                addConditions(s, cond);
+            }
+            sib = ((org.w3c.css.sac.SiblingSelector) sib).getSelector();
+        }
+        simple = null;
+        switch (sib.getSelectorType()) {
+            case org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR:
+                simple = ((org.w3c.css.sac.DescendantSelector) sib).getSimpleSelector();
+                break;
+            case org.w3c.css.sac.Selector.SAC_DESCENDANT_SELECTOR:
+                simple = ((org.w3c.css.sac.DescendantSelector) sib).getSimpleSelector();
+                break;
+            default:
+                simple = (org.w3c.css.sac.SimpleSelector) sib;
+        }
+
+        cond = null;
+        Selector s = null;
+        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
+            cond = ((org.w3c.css.sac.ConditionalSelector) simple).getCondition();
+            //if ConditionalSelectors can be nested, we are in trouble here
+            simple = ((org.w3c.css.sac.ConditionalSelector) simple).getSimpleSelector();
+        }
+        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
+            s = current.appendSiblingSelector(Selector.IMMEDIATE_SIBLING_AXIS, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
         }
         if (cond != null) {
             addConditions(s, cond);
         }
+        return ancestor;
     }
 
     /**
