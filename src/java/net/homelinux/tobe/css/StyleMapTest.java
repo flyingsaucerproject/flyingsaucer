@@ -195,6 +195,72 @@ public class StyleMapTest extends TestCase {
         pl = myStyles.getMappedProperties(secondsecond);
         assertEquals("Should be no properties for secondsecond", 0, pl.size());
     }
+    
+    public void testSortOrder() {
+        System.out.println("testSortOrder");
+        
+        java.util.List l = new java.util.LinkedList();
+        
+        Ruleset r = new Ruleset();
+        Selector s = r.createSelector(Selector.DESCENDANT_AXIS, "first");
+        s.appendChainedSelector(Selector.IMMEDIATE_SIBLING_AXIS, "second");
+        r.setStyleDeclaration(new Integer(1));
+        l.add(r);
+        
+        r = new Ruleset();
+        s = r.createSelector(Selector.DESCENDANT_AXIS, "first");
+        s.appendChainedSelector(Selector.CHILD_AXIS, "second");
+        r.setStyleDeclaration(new Integer(2));
+        l.add(r);
+        
+        r = new Ruleset();
+        s = r.createSelector(Selector.DESCENDANT_AXIS, "root");
+        s.appendChainedSelector(Selector.DESCENDANT_AXIS, "second");
+        r.setStyleDeclaration(new Integer(3));
+        l.add(r);
+        
+        r = new Ruleset();
+        s = r.createSelector(Selector.DESCENDANT_AXIS, "second");
+        r.setStyleDeclaration(new Integer(4));
+        l.add(r);
+        
+        r = new Ruleset();
+        s = r.createSelector(Selector.DESCENDANT_AXIS, "first");
+        s.appendChainedSelector(Selector.IMMEDIATE_SIBLING_AXIS, "second");
+        r.setStyleDeclaration(new Integer(5));
+        l.add(r);
+        
+        r = new Ruleset();
+        s = r.createSelector(Selector.DESCENDANT_AXIS, "first");
+        s.appendChainedSelector(Selector.CHILD_AXIS, "second");
+        r.setStyleDeclaration(new Integer(6));
+        l.add(r);
+        
+        r = new Ruleset();
+        s = r.createSelector(Selector.DESCENDANT_AXIS, "root");
+        s.appendChainedSelector(Selector.DESCENDANT_AXIS, "second");
+        r.setStyleDeclaration(new Integer(7));
+        l.add(r);
+        
+        r = new Ruleset();
+        s = r.createSelector(Selector.DESCENDANT_AXIS, "second");
+        r.setStyleDeclaration(new Integer(8));
+        l.add(r);
+        
+        StyleMap myStyles = StyleMap.createMap(doc, l, null);
+        
+        Element root = doc.getDocumentElement();
+        NodeList n = root.getElementsByTagName("first");
+        Element first = (Element) n.item(0);
+        n = first.getElementsByTagName("second");
+        Element firstsecond = (Element) n.item(0);
+        java.util.List pl = myStyles.getMappedProperties(firstsecond);
+        assertEquals(8,pl.size());
+        for(int i = 0; i < pl.size(); i++) {
+            Integer ord = (Integer) pl.get(i);
+            assertEquals(i+1,ord.intValue());
+        }
+    }
    
     public void testDynamic() {
         System.out.println("testDynamic");
