@@ -113,9 +113,6 @@ public class CalculatedStyle {
      * @return          Returns
      */
     public DerivedProperty propertyByName( String propName ) {
-        // HERE: when we get the property, check if it is resolved
-        // if not, call resolve() and pass it our parent's reference
-        // or just our XRElement
         DerivedProperty prop = (DerivedProperty)_derivedPropertiesByName.get( propName );
 
         // but the property may not be defined for this Element

@@ -36,8 +36,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xhtmlrenderer.css.CSSBank;
-import org.xhtmlrenderer.css.bridge.XRStyleReference;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.layout.LayoutFactory;
@@ -364,15 +362,7 @@ public class HTMLTest extends JFrame {
             if ( inspector == null ) {
                 // inspectorFrame = new JFrame("DOM Tree Inspector");
 
-                // CLEAN: this is more complicated than it needs to be
-                // DOM Tree Inspector needs to work with either CSSBank
-                // or XRStyleReference--implementations are not perfectly
-                // so we have different constructors
-                if ( panel.c.css instanceof CSSBank ) {
-                    inspector = new DOMInspector( panel.doc );
-                } else {
-                    inspector = new DOMInspector( panel.doc, panel.c, panel.c.css );
-                }
+                inspector = new DOMInspector( panel.doc, panel.c, panel.c.css );
 
                 inspectorFrame.getContentPane().add( inspector );
 
@@ -380,11 +370,7 @@ public class HTMLTest extends JFrame {
                 inspectorFrame.setSize( text_width, 600 );
                 inspectorFrame.show();
             } else {
-                if ( panel.c.css instanceof CSSBank ) {
-                    inspector.setForDocument( panel.doc );
-                } else {
-                    inspector.setForDocument( panel.doc, panel.c, panel.c.css );
-                }
+                inspector.setForDocument( panel.doc, panel.c, panel.c.css );
             }
             inspectorFrame.show();
         }
@@ -453,6 +439,9 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/11/10 04:46:12  tobega
+ * no message
+ *
  * Revision 1.14  2004/11/09 16:16:08  joshy
  * moved listeners into their own classes
  * Issue number:

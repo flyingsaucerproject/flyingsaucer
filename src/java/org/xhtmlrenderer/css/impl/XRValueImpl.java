@@ -29,7 +29,6 @@ import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
 import org.w3c.dom.css.Counter;
 import org.w3c.dom.css.Rect;
-import org.xhtmlrenderer.css.XRElement;
 import org.xhtmlrenderer.css.XRValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.ValueConstants;
@@ -209,7 +208,7 @@ public class XRValueImpl implements XRValue {
      *      assigned; given because some relative values differ for font-size,
      *      etc.
      */
-    public void computeRelativeUnit( Context context, XRElement ownerElement, String propName ) {
+    /*public void computeRelativeUnit( Context context, XRElement ownerElement, String propName ) {
         if ( ValueConstants.isAbsoluteUnit( cssValue() ) ) {
             XRLog.cascade( "Was asked to convert a relative value, but value is absolute. Call isAbsolute() first." );
             return;
@@ -305,7 +304,7 @@ public class XRValueImpl implements XRValue {
         // point parse the text looking for the type code--so need the suffix
         setCssText( "" + _asFloat + newTypeSuffix );
         _requiresComputation = false;
-    }
+    }*/
 
 
     /**
@@ -514,7 +513,7 @@ public class XRValueImpl implements XRValue {
      * @param propName      PARAM
      * @return              Returns
      */
-    private float deriveFontSize( Context context, XRElement ownerElement, String propName ) {
+    /*private float deriveFontSize( Context context, XRElement ownerElement, String propName ) {
         float fontSize = 0F;
         XRElement parentElem = ownerElement.parentXRElement();
         if ( propName.equals( CSSName.FONT_SIZE ) && parentElem != null ) {
@@ -523,7 +522,7 @@ public class XRValueImpl implements XRValue {
             fontSize = ownerElement.derivedStyle().propertyByName( context, CSSName.FONT_SIZE ).actualValue().asFloat();
         }
         return fontSize;
-    }
+    }*/
 
 
     /**
@@ -636,6 +635,9 @@ public class XRValueImpl implements XRValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/10 04:38:51  tobega
+ * no message
+ *
  * Revision 1.3  2004/10/23 13:21:15  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

@@ -44,9 +44,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.apache.xpath.XPathAPI;
-import org.xhtmlrenderer.css.CSSBank;
-import org.xhtmlrenderer.css.XRStyleSheet;
-import org.xhtmlrenderer.css.bridge.XRStyleReference;
 import org.xhtmlrenderer.css.bridge.TBStyleReference;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
@@ -765,6 +762,9 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2004/11/10 04:46:12  tobega
+ * no message
+ *
  * Revision 1.21  2004/11/07 23:24:19  joshy
  * added menu item to generate diffs
  * added diffs for multi-colored borders and inline borders

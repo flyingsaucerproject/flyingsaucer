@@ -133,7 +133,7 @@ public interface XRValue extends CSSValue {
      * @param propName      PARAM
      */
     // TODO: clean all PARAM
-    void computeRelativeUnit( Context context, XRElement ownerElement, String propName );
+    //void computeRelativeUnit( Context context, XRElement ownerElement, String propName );
 
     /**
      * Deep copy operation. However, any contained SAC instances are not
@@ -148,6 +148,9 @@ public interface XRValue extends CSSValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/11/10 04:42:22  tobega
+ * no message
+ *
  * Revision 1.2  2004/10/23 13:03:47  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

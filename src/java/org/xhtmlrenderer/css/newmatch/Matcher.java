@@ -175,8 +175,6 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
     }
         
     /**
-     * Adds the top-level or leftmost selector of the XRStyleReference
-     * object.
      *
      * @param rs         The feature to be added to the ChainedSelector attribute
      * @param selector  The feature to be added to the ChainedSelector attribute
@@ -204,8 +202,6 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
     }
 
     /**
-     * Adds a feature to the ChainedSelector attribute of the XRStyleReference
-     * object.
      *
      * @param s         The feature to be added to the ChainedSelector attribute
      * @param selector  The feature to be added to the ChainedSelector attribute

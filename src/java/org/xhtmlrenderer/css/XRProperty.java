@@ -93,7 +93,7 @@ public interface XRProperty {
      * @param elemContext  The <code>XRElement</code> to which this property is
      *      associated.
      */
-    void resolveValue( Context context, XRElement elemContext );
+    //void resolveValue( Context context, XRElement elemContext );
 
     /**
      * Deep copy operation. However, any contained SAC instances are not
@@ -120,6 +120,9 @@ public interface XRProperty {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/11/10 04:41:43  tobega
+ * no message
+ *
  * Revision 1.2  2004/10/23 13:03:46  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

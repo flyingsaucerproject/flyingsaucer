@@ -209,7 +209,7 @@ public class XRPropertyImpl implements XRProperty {
      * @param context      PARAM
      * @param elemContext  PARAM
      */
-    public void resolveValue( Context context, XRElement elemContext ) {
+    /*public void resolveValue( Context context, XRElement elemContext ) {
         // CLN System.out.println("resolveValue(" + propertyName() + ") _isResolved " + _isResolved);
         if ( _isResolved ) {
             return;
@@ -259,7 +259,7 @@ public class XRPropertyImpl implements XRProperty {
             }
             _isResolved = true;
         }
-    }
+    }*/
 
 
     /**
@@ -300,7 +300,7 @@ public class XRPropertyImpl implements XRProperty {
         PropertyFactory factory = (PropertyFactory)PRP_FACTORIES.get( propName );
 
         if ( /*( factory == null && cssRule.getType() == CSSRule.STYLE_RULE ) ||*/
-                propName.indexOf( "color" ) >= 0 && !propName.equals( "border" ) ) {
+                propName.indexOf( "color" ) >= 0 /*&& !propName.equals( "border" )*/ ) {
             RULE_NORMALIZER.normalize( (CSSStyleRule)cssRule );
             style = ( (CSSStyleRule)cssRule ).getStyle();
         }
@@ -376,6 +376,9 @@ public class XRPropertyImpl implements XRProperty {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/10 04:37:39  tobega
+ * no message
+ *
  * Revision 1.4  2004/11/06 01:38:52  tobega
  * fixed (?) bug of repetitive property expansions
  *
