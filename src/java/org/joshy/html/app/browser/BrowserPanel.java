@@ -44,6 +44,8 @@ public class BrowserPanel extends JPanel {
         scroll.setVerticalScrollBarPolicy(scroll.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(scroll.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setPreferredSize(new Dimension(text_width,text_width));
+        scroll.getVerticalScrollBar().setBlockIncrement(10);
+        scroll.getVerticalScrollBar().setUnitIncrement(50);
         view.setViewportComponent(scroll);
         view.setJScrollPane(scroll);
         

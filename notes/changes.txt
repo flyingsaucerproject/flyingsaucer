@@ -1,3 +1,6 @@
+08/02/2004
+    added normalization for "border: dim style color"
+    changed unit increment on the scroll bar to 50
 8/01/2004
     moved most event handlers into the BrowserActions class
 7/30/2004
