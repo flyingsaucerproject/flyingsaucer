@@ -75,6 +75,11 @@ public class ListItemPainter {
         box.color = c.css.getStyle(box.getRealElement()).getColor();
         c.getGraphics().setColor(box.color);
         
+        // save the old AntiAliasing setting, then force it on
+        Object aa_key = c.getGraphics().getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+        c.getGraphics().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                           RenderingHints.VALUE_ANTIALIAS_ON);
+        
         
         // calculations for bullets
         int rad = 8;// change this to use the glyph height
@@ -99,6 +104,9 @@ public class ListItemPainter {
             return;
         }
 
+        // restore the old AntiAliasing setting
+        c.getGraphics().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                           aa_key);
 
 
 
@@ -202,6 +210,15 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/12/05 05:18:02  joshy
+ * made bullets be anti-aliased
+ * fixed bug in link listener that caused NPEs
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/12/05 00:48:59  tobega
  * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
  *

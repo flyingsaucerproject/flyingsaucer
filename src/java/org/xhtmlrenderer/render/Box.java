@@ -507,7 +507,7 @@ public class Box {
         if (isElement()) {
             return getElement();
         }
-        if (getNode() == null) {
+        if (this.node == null) {
             return null;
         }
         return (Element) getNode().getParentNode();
@@ -531,7 +531,7 @@ public class Box {
      * @return The element value
      */
     public boolean isElement() {
-        if (getNode() == null) {
+        if(this.node == null) {
             return false;
         }
         if (getNode().getNodeType() == getNode().ELEMENT_NODE) {
@@ -692,6 +692,15 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2004/12/05 05:18:02  joshy
+ * made bullets be anti-aliased
+ * fixed bug in link listener that caused NPEs
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.18  2004/12/05 00:48:59  tobega
  * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
  *
