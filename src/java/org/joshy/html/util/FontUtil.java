@@ -53,6 +53,8 @@ public static Font getElementFont(Context c, Element el) {
         u.p("ended up at the top somehow!: ");
         return c.getGraphics().getFont().deriveFont((float)10);
     }
+    
+    
 
     // calculate the font size
     // look up the parent and use it's font size to scale against
@@ -62,46 +64,17 @@ public static Font getElementFont(Context c, Element el) {
     Element par = (Element)el.getParentNode();
     float parent_size = c.css.getFloatProperty(par,"font-size");
     float size = c.css.getFloatProperty(el,"font-size",parent_size);
-    f = f.deriveFont((float)size);
 
-    // calculate the font weight
     String weight = c.css.getStringProperty(el,"font-weight");
-    if(weight.equals("bold")) {
-        f = f.deriveFont(Font.BOLD);
+    String[] family = c.css.getStringArrayProperty(el,"font-family");
+    if(!family[0].equals("sans-serif")) {
+        //u.p("family = ");
+        //u.p(family);
+        //u.p("");
     }
-
-    // calculate the font family
-
-    // all of this font craziness should be pulled out into another class
-    //if(el.hasAttribute("font-family")) {
-
-    //String family = el.getAttribute("font-family");
-    String family = c.css.getStringArrayProperty(el,"font-family")[0];
-    //u.p("new fam get = ");
-    //u.p(c.css.getStringArrayProperty(el,"font-family"));
-    //u.p("");
-    String fontname = "SansSerif";
-    if(family.equals("serif")) {
-        fontname = "Serif";
-    }
-    if(family.equals("sans-serif")) {
-        fontname = "SansSerif";
-    }
-    if(family.equals("monospace")) {
-        fontname = "Monospaced";
-    }
-    //u.p("final font name = " + fontname);
-    f = new Font(fontname,f.getStyle(),f.getSize());
-    //}
-
-    // calculate the font style
     String style = c.css.getStringProperty(el,"font-style");
-    if(style != null) {
-        if(style.equals("italic")) {
-            f = f.deriveFont(Font.ITALIC|f.getStyle());//.deriveFont(Font.BOLD);
-            //c.getGraphics().setFont(c.getGraphics().getFont().deriveFont(Font.ITALIC));
-        }
-    }
+
+    f = c.getFontResolver().resolveFont(c,family,size,weight,style);
 
     // calculate the font color
     c.getGraphics().setColor(c.css.getColor(el));

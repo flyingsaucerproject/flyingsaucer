@@ -2,8 +2,10 @@ package org.joshy.html;
 
 import java.util.HashMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.Element;
 import org.joshy.u;
 import org.joshy.html.forms.InputButton;
+import org.joshy.html.forms.*;
 
 /**
 Returns the appropriate layout for a given node. Currently this hard codes
@@ -68,7 +70,13 @@ public class LayoutFactory {
             if(elem.getNodeName().equals("br")) { return new InlineLayout(); }
             if(elem.getNodeName().equals("font")) { return new InlineLayout(); }
             if(elem.getNodeName().equals("hr")) { return new NullLayout(); }
-            if(elem.getNodeName().equals("input")) { return new InputButton(); }
+            if(elem.getNodeName().equals("input")) { 
+                Element el = (Element)elem;
+                if(el.getAttribute("type").equals("text")) {
+                    return new InputText();
+                }
+                return new InputButton(); 
+            }
         }
 
         // skip whitespace only nodes

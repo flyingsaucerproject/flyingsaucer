@@ -1,5 +1,6 @@
 package org.joshy.html;
 
+import org.joshy.html.css.FontResolver;
 import java.util.Stack;
 import javax.swing.JComponent;
 import java.awt.Color;
@@ -155,6 +156,16 @@ public class Context {
     public void untranslateInsets(Box box) {
         translate(-(box.margin.left + box.border.left + box.padding.left),
                   -(box.margin.top + box.border.top + box.padding.top));
+    }
+    
+    FontResolver font_resolver;
+    
+    public FontResolver getFontResolver() {
+        return font_resolver;
+    }
+    
+    public Context() {
+        font_resolver = new FontResolver();
     }
     
     public String toString() {
