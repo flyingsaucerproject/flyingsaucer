@@ -1,38 +1,27 @@
 /* this applies to all elements */
 * {
-
-    text-transform: none;
-    /*
-    text-align: inherit;
-    */
-    background-image: none;
-    background-repeat: none;
-    border-style: none;
+    /* type and positioning */
     display: inline;
     position: static;
-
-    color: #000000;
-    background-color: transparent;
-    background-position: 0% 0%;
-    background-attachment: scroll;
-
-    font-size: 12pt;
-    font-weight: normal;
-    font-style: normal;  /* why was this commented out? jmm */
-    font-family: sans-serif;
-    text-decoration: none;
-    white-space: normal;
-    vertical-align: baseline;
     float: none;
 
+    /* coloring */
+    color: #000000;
+    background-color: transparent;
+    background-image: none;
+    background-position: 0% 0%;
+    background-attachment: scroll;
+    background-repeat: none;
 
+
+    /* border, padding, and margin stuff */
     border-top-width: 0px;
     border-right-width: 0px;
     border-bottom-width: 0px;
     border-left-width: 0px;
     border-color: #000000;
-    border-style: solid;
-
+    /*border-style: solid;*/
+    border-style: none;
     padding-top: 0px;
     padding-right: 0px;
     padding-bottom: 0px;
@@ -41,6 +30,22 @@
     margin-left: 0px;
     margin-bottom: 0px;
     margin-right: 0px;
+
+    /* standard text stuff */
+    font-size: 12pt;
+    /*
+    font-weight: inherit;
+    font-style: normal;
+    font-family: sans-serif;
+    */
+    text-decoration: none;
+    white-space: normal;
+    vertical-align: baseline;
+    text-transform: none;
+    /*
+    text-align: inherit;
+    */
+
 
     /* default list stuff */
     list-style-type: none;
@@ -58,7 +63,9 @@ body {
     display: block;
     text-align: left;
     font-size: 12pt;
-
+    font-weight: normal;
+    font-family: sans-serif;
+    font-style: normal;
 }
 
 p {
@@ -195,7 +202,6 @@ div {
 }
 
 img {
-    background-color: #ff00ff;
     border-top-width: 1px;
     border-right-width: 1px;
     border-bottom-width: 1px;

@@ -9,13 +9,8 @@
     <head>
         <title>Flying Saucer</title>
         <style type="text/css">
-        
-body { text-align: center; background: #4784FF; }
 
-/* bug work around */
-* { background-color: transparent; }
-div { background-color: transparent; }
-
+body { background: #4784FF; }
 
 /* styles for rounded boxes */
 div { border: 0px solid red; padding: 0px; margin: 0px;}
@@ -23,13 +18,12 @@ div { border: 0px solid red; padding: 0px; margin: 0px;}
 .section { padding: 0px; }
 .top { background: url(images/head-r.gif) no-repeat; background-position: 100% 0%; }
 .content { background: url(images/body-l.gif) no-repeat bottom left; background-position: 0% 100%; }
-.top div { background: url(images/head-l.gif) no-repeat top left; } 
+.top div { background: url(images/head-l.gif) no-repeat top left; }
 .content { padding-bottom: 2em; }
 
 
 #splash, .section {
 	border: 0px solid black;
-	text-align: left;
 	background-color: red;
 	margin-bottom: 20px;
 	margin-left: 50px;
@@ -40,9 +34,6 @@ div { border: 0px solid red; padding: 0px; margin: 0px;}
 */
 	}
 
-
-    
-    
 
 /* splash specific formatting */
 #splash { text-align: center; }
@@ -63,12 +54,11 @@ div { border: 0px solid red; padding: 0px; margin: 0px;}
 	}
 
 
-    
-    
-    
-.section p, .section ul, .section img {
+
+
+
+.section p, .section ul {
 	font-family: "Century Gothic", Arial, sans-serif;
-	text-align: left;
 	padding: 10px 30px 15px 50px;
 	border: 0px solid black;
 	font-size: 16pt;
@@ -78,14 +68,12 @@ div { border: 0px solid red; padding: 0px; margin: 0px;}
 .section ul {
 	padding-left: 4em;
 	}
-.section ul li {
-    }
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
 /* the side bars */
 /*
 p.sidebar {
@@ -112,6 +100,7 @@ p.sidebar {
 
 #thanks {
 	text-align: right;
+    padding-bottom: 2em;
 	}
 
 </style>
@@ -124,13 +113,15 @@ p.sidebar {
             </div>
             <div class="content">
                 <h1>Flying Saucer</h1>
+                <p>
                 <img src="images/flyingsaucer.jpg" width="377"/>
+                </p>
                 <h2>The 100% Java XHTML/CSS2 Renderer</h2>
             </div>
         </div>
-    
+
         <div class="section">
-            
+
             <div class="top">
                 <div>.<br/>
                 <br/>.</div>
@@ -139,7 +130,7 @@ p.sidebar {
                 <p>Flying Saucer is a Java library which lets you embed XHTML inside of your
                     application. Anywhere you use styled text you can use Flying Saucer.</p>
                     <!--
-                <p class="sidebar">Rolling Stone says: 
+                <p class="sidebar">Rolling Stone says:
                     <q>It's a number one smash hit!</q>
                 </p>
                     -->
@@ -157,9 +148,9 @@ p.sidebar {
                 <p id="thanks">thanks From the Flying Saucer Team</p>
 
             </div>
-            
-            
+
+
         </div>
-        
+
     </body>
 </html>
