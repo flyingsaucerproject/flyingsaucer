@@ -1,13 +1,11 @@
 package org.xhtmlrenderer.layout;
 
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
-
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class BlockFormattingContext {
     private Box master = null;
@@ -100,22 +98,7 @@ public class BlockFormattingContext {
     */
     
     public int getLeftFloatDistance(LineBox line) {
-        int xoff = 0;
-
-        if (left_floats.size() == 0) {
-            return 0;
-        }
-
-        for (int i = 0; i < left_floats.size(); i++) {
-            Box floater = (Box) left_floats.get(i);
-            Point fpt = (Point) offset_map.get(floater);
-            Point lpt = new Point(this.x, this.y);
-            lpt.y -= line.y;
-            if (lpt.y > fpt.y - floater.height) {
-                xoff = Math.max(xoff, floater.width);
-            }
-        }
-        return xoff;
+        return getFloatDistance(line, left_floats);
     }
 
     public Box getLeftFloatX(Box box) {
@@ -184,21 +167,19 @@ public class BlockFormattingContext {
         return null;
     }
     
-    // public Box getLastLeftFloat() {
-    //     return (Box)left_floats.get(left_floats.size()-1);
-    // }
-    
     public int getRightFloatDistance(LineBox line) {
-        //Uu.p("doing get right float dist. line = " + line);
-        //Uu.p("line y = " + line.y);
+        return getFloatDistance(line, right_floats);
+    }
+
+    private int getFloatDistance(LineBox line, List floatsList) {
         int xoff = 0;
 
-        if (right_floats.size() == 0) {
+        if (floatsList.size() == 0) {
             return 0;
         }
 
-        for (int i = 0; i < right_floats.size(); i++) {
-            Box floater = (Box) right_floats.get(i);
+        for (int i = 0; i < floatsList.size(); i++) {
+            Box floater = (Box) floatsList.get(i);
             Point fpt = (Point) offset_map.get(floater);
             Point lpt = new Point(this.x, this.y);
             lpt.y -= line.y;
