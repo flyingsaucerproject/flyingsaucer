@@ -94,11 +94,6 @@ public class Matcher {
             link(e, childMapper);
         }
 
-        /**
-         * the node connected to this mapper
-         */
-        //org.w3c.dom.Node _node;
-
         java.util.List axes = new java.util.ArrayList();
 
         java.util.List mappedSelectors = new java.util.LinkedList();
@@ -110,9 +105,8 @@ public class Matcher {
     /**
      * creates a new matcher for the combination of parameters
      */
-    public Matcher(org.w3c.dom.Document doc, AttributeResolver ar, StylesheetFactory factory, Iterator stylesheets, String media) {
+    public Matcher(AttributeResolver ar, StylesheetFactory factory, Iterator stylesheets, String media) {
         newMaps();
-        _doc = doc;
         _attRes = ar;
         _styleFactory = factory;
         docMapper = createDocumentMapper(stylesheets, media);
@@ -125,7 +119,6 @@ public class Matcher {
     private void newMaps() {
         _map = new java.util.HashMap();
         _csCache = new java.util.HashMap();
-        _csMap = new java.util.HashMap();
         _peMap = new java.util.HashMap();
         _elStyle = new java.util.HashMap();
         _hoverElements = new java.util.HashSet();
@@ -398,7 +391,6 @@ public class Matcher {
     }
 
     public CascadedStyle matchElement(org.w3c.dom.Element e) {
-        //TODO: eliminate need to go back to parent.
         org.w3c.dom.Node parent = e.getParentNode();
         if (parent.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
             Mapper m = getMapper((org.w3c.dom.Element) parent);
@@ -443,21 +435,11 @@ public class Matcher {
                 _csCache.put(fingerprint, cs);
             }
         }
-        _csMap.put(e, cs);
         return cs;
     }
 
     public CascadedStyle getCascadedStyle(org.w3c.dom.Element e) {
-        if (_csMap == null) _csMap = new java.util.HashMap();
-        CascadedStyle cs = (CascadedStyle) _csMap.get(e);
-        if (cs != null) return cs;
-        //HACK: this if-statement can be removed when matchElement does not need to go back to parent
-        if (getMapper(e) != null) {
-            cs = createCascadedStyle(e);
-        } else {
-            cs = matchElement(e);
-        }
-        return cs;
+        return matchElement(e);
     }
 
     /**
@@ -591,13 +573,11 @@ public class Matcher {
         return rs;
     }
 
-    private org.w3c.dom.Document _doc;
     Mapper docMapper;
     private org.xhtmlrenderer.extend.AttributeResolver _attRes;
     private org.xhtmlrenderer.css.sheet.StylesheetFactory _styleFactory;
 
     private java.util.HashMap _map;
-    private java.util.HashMap _csMap;
     private java.util.HashMap _peMap;
     private java.util.HashMap _csCache;
     private java.util.HashMap _elStyle;

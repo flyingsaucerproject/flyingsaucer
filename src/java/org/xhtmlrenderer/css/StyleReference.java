@@ -52,11 +52,6 @@ public class StyleReference {
     /**
      * Description of the Field
      */
-    private UserAgentCallback _userAgent;
-
-    /**
-     * Description of the Field
-     */
     private NamespaceHandler _nsh;
 
     /**
@@ -91,7 +86,6 @@ public class StyleReference {
      * @param userAgent PARAM
      */
     public StyleReference(UserAgentCallback userAgent) {
-        _userAgent = userAgent;
         _stylesheetFactory = new StylesheetFactory(userAgent);
     }
 
@@ -102,13 +96,7 @@ public class StyleReference {
      * @return Returns
      */
     public boolean isHoverStyled(Element e) {
-        boolean isHoverStyled = _matcher.isHoverStyled(e);
-        //XRLog.general("Element "+e+" tested for hover styling "+isHoverStyled);
-        if (_matcher.isHoverStyled(e)) {
-            _styler.restyleTree(e);
-            return true;
-        }
-        return false;
+        return _matcher.isHoverStyled(e);
     }
 
     /**
@@ -135,25 +123,15 @@ public class StyleReference {
      * @param e PARAM
      * @return The derivedPropertiesMap value
      */
-    public java.util.Map getDerivedPropertiesMap(Element e) {
-        org.xhtmlrenderer.css.style.CalculatedStyle cs = _styler.getCalculatedStyle(e);
+    public java.util.Map getCascadedPropertiesMap(Element e) {
+        CascadedStyle cs = _matcher.getCascadedStyle(e);
         java.util.LinkedHashMap props = new java.util.LinkedHashMap();
-        for (java.util.Iterator i = cs.getAvailablePropertyNames().iterator(); i.hasNext();) {
+        for (java.util.Iterator i = cs.getMatchedPropertyDeclarations(); i.hasNext();) {
             String propName = (String) i.next();
-            props.put(propName, cs.propertyByName(propName).computedValue().cssValue());
+            props.put(propName, cs.propertyByName(propName).getValue());
         }
         return props;
     }
-
-    /**
-     * Gets the firstLetterStyle attribute of the StyleReference object
-     *
-     * @param e PARAM
-     * @return The firstLetterStyle value
-     */
-    /*public CalculatedStyle getFirstLetterStyle(Element e) {
-        return null;//not supported yet
-    } is this needed? or does getPseudoElementStyle cover it?*/
 
     /**
      * Gets the pseudoElementStyle attribute of the StyleReference object
@@ -267,13 +245,9 @@ public class StyleReference {
 
             XRLog.match("No of stylesheets = " + infos.size());
             System.out.println("media = " + _context.getMedia());
-            _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(_doc, _attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
+            _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(_attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
 
-            // now we have a match-map, apply against our entire Document....restyleTree() is recursive
-            Element root = _doc.getDocumentElement();
             _styler = new org.xhtmlrenderer.css.style.Styler();
-            _styler.setMatcher(_matcher);
-            _styler.styleTree(root);
         } catch (RuntimeException re) {
             throw new XRRuntimeException("Failed on matchStyles(), unknown RuntimeException.", re);
         } catch (Exception e) {
@@ -292,6 +266,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/01/03 23:40:40  tobega
+ * Cleaned out unnecessary styling/matching code. styling/matching is now called during boxing/rendering rather than as a separate stage.
+ *
  * Revision 1.15  2004/12/29 10:39:27  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

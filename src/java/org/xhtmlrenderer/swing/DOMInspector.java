@@ -293,7 +293,7 @@ class ElementPropertiesPanel extends JPanel {
             Toolkit.getDefaultToolkit().beep();
             return _defaultTableModel;
         }
-        Map props = _sr.getDerivedPropertiesMap((Element) node);
+        Map props = _sr.getCascadedPropertiesMap((Element) node);
         return new PropertiesTableModel(props);
     }
 
@@ -782,6 +782,9 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/01/03 23:40:40  tobega
+ * Cleaned out unnecessary styling/matching code. styling/matching is now called during boxing/rendering rather than as a separate stage.
+ *
  * Revision 1.9  2004/12/29 10:39:35  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *
