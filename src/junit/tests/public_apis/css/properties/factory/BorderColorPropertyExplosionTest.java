@@ -1,24 +1,14 @@
 package tests.public_apis.css.properties.factory;
 
-import java.awt.Color;
-import java.io.*;
+import java.awt.*;
 import java.util.*;
-import org.w3c.css.sac.InputSource;
-import org.w3c.dom.css.CSSRuleList;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSStyleRule;
-import org.w3c.dom.css.CSSStyleSheet;
-import com.steadystate.css.parser.CSSOMParser;
+
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.sheet.Stylesheet;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.css.sheet.factory.PropertyDeclarationFactory;
 import org.xhtmlrenderer.css.sheet.factory.BorderColorPropertyDeclarationFactory;
-import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xhtmlrenderer.css.sheet.factory.PropertyDeclarationFactory;
 
 
 /**
@@ -28,7 +18,7 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  */
 public class BorderColorPropertyExplosionTest extends AbstractPropertyExplosionTest {
     /**
-     * Constructor for the FSCssTestCase object
+     * Constructor for the BorderColorPropertyExplosionTest object
      *
      * @param name  PARAM
      */
@@ -111,6 +101,9 @@ public class BorderColorPropertyExplosionTest extends AbstractPropertyExplosionT
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 14:32:29  pdoubleya
+ * Cleaned imports, removed references to FSCSSTestCase.
+ *
  * Revision 1.1  2005/01/24 14:26:45  pdoubleya
  * Added to CVS.
  *

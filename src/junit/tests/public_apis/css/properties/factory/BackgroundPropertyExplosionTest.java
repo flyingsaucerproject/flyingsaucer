@@ -1,25 +1,13 @@
 package tests.public_apis.css.properties.factory;
 
-import java.io.*;
 import java.util.*;
-import java.awt.*;
 
-import org.w3c.css.sac.InputSource;
-import org.w3c.dom.css.CSSRuleList;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSStyleRule;
-import org.w3c.dom.css.CSSStyleSheet;
-import com.steadystate.css.parser.CSSOMParser;
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.css.sheet.factory.BackgroundPropertyDeclarationFactory;
 import org.xhtmlrenderer.css.sheet.factory.PropertyDeclarationFactory;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
 /**
  * CSS "background" shorthand property assignment tests.
@@ -28,7 +16,7 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  */
 public class BackgroundPropertyExplosionTest extends AbstractPropertyExplosionTest {
     /**
-     * Constructor for the FSCssTestCase object
+     * Constructor for the BackgroundPropertyExplosionTest object
      *
      * @param name  PARAM
      */
@@ -122,6 +110,9 @@ public class BackgroundPropertyExplosionTest extends AbstractPropertyExplosionTe
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 14:32:29  pdoubleya
+ * Cleaned imports, removed references to FSCSSTestCase.
+ *
  * Revision 1.1  2005/01/24 14:26:45  pdoubleya
  * Added to CVS.
  *

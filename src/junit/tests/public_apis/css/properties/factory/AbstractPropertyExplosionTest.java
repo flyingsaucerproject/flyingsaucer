@@ -1,6 +1,6 @@
 package tests.public_apis.css.properties.factory;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.*;
 import java.util.*;
 
@@ -16,11 +16,10 @@ import junit.framework.TestSuite;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.css.sheet.factory.PropertyDeclarationFactory;
-import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xhtmlrenderer.util.PermutationGenerator;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
@@ -63,7 +62,7 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
     private boolean showLog;
 
     /**
-     * Constructor for the FSCssTestCase object
+     * Constructor for the AbstractPropertyExplosionTest object
      *
      * @param name PARAM
      */
@@ -294,6 +293,9 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 14:32:29  pdoubleya
+ * Cleaned imports, removed references to FSCSSTestCase.
+ *
  * Revision 1.1  2005/01/24 14:26:45  pdoubleya
  * Added to CVS.
  *

@@ -1,23 +1,13 @@
 package tests.public_apis.css.properties.factory;
 
-import java.io.*;
 import java.util.*;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import com.steadystate.css.parser.CSSOMParser;
-import org.w3c.css.sac.InputSource;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.*;
-import org.w3c.dom.css.CSSRuleList;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSStyleSheet;
 
-import org.xhtmlrenderer.css.sheet.*;
-import org.xhtmlrenderer.css.sheet.factory.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.util.*;
-import tests.public_apis.css.FSCssTestCase;
+import org.xhtmlrenderer.css.sheet.factory.BackgroundPositionPropertyDeclarationFactory;
+import org.xhtmlrenderer.css.sheet.factory.PropertyDeclarationFactory;
 
 /**
  * background-position property assignment tests.
@@ -26,7 +16,7 @@ import tests.public_apis.css.FSCssTestCase;
  */
 public class BackgroundPositionPropertyExplosionTest extends AbstractPropertyExplosionTest {
     /**
-     * Constructor for the FSCssTestCase object
+     * Constructor for the BackgroundPositionPropertyExplosionTest object
      *
      * @param name  PARAM
      */
@@ -104,6 +94,9 @@ public class BackgroundPositionPropertyExplosionTest extends AbstractPropertyExp
  *
 
  * $Log$
+ * Revision 1.2  2005/01/24 14:32:29  pdoubleya
+ * Cleaned imports, removed references to FSCSSTestCase.
+ *
  * Revision 1.1  2005/01/24 14:26:45  pdoubleya
  * Added to CVS.
  *
