@@ -1,4 +1,3 @@
-
 /*
  * {{{ header & license
  * Copyright (c) 2004 Joshua Marinacci
@@ -29,7 +28,6 @@ import java.net.URL;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.DefaultCSSMarker;
-import org.xhtmlrenderer.css.CSSBank;
 import org.xhtmlrenderer.css.XRStyleSheet;
 import org.xhtmlrenderer.css.bridge.XRStyleReference;
 import org.xhtmlrenderer.layout.BodyLayout;
@@ -60,7 +58,7 @@ public class CSSSpeedTest {
         // load doc
 
         String fileURL = Configuration.valueFor( "xr.test.files.hamlet" );
-        InputStream is = GeneralUtil.openStreamFromClasspath(new DefaultCSSMarker(), fileURL );
+        InputStream is = GeneralUtil.openStreamFromClasspath( new DefaultCSSMarker(), fileURL );
         if ( is == null ) {
             System.err.println( "Can't find test file on CLASSPATH: " + fileURL );
             return;
@@ -160,4 +158,16 @@ public class CSSSpeedTest {
     }
 
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.9  2004/10/23 14:01:42  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 
