@@ -26,23 +26,36 @@ import java.util.logging.*;
 
 
 /**
+ * <p>
+ *
  * Stores runtime configuration information for application parameters that may
  * vary on restarting. This implements the Singleton pattern, but through static
  * methods. That is, the first time Configuration is used, the properties are
  * loaded into the Singleton instance. Subsequent calls to valueFor() retrieve
- * values from the Singleton. To look up a property, use
- * Configuration.valueFor("property name"); Properties may be overridden using a
- * second properties file, or individually using System properties specified on
- * the command line. To override using a second properties file, specify the
- * System property xr-props. This should be the location of the second file
- * relative to the CLASSPATH, e.g. java -Dxr-props=resources/conf/myprops.conf
- * Browser To override a property using the System properties, just re-define
- * the property on the command line. e.g. java -Dxr.property-name=new_value You
- * can override as many properties as you like. Note that overrides are driven
- * by the property names in the default configuration file. Specifying a
- * property name not in that file will have no effect--the property will not be
- * loaded or available for lookup. Configuration is NOT used to control logging
- * levels or output; see LogStartupConfig.
+ * values from the Singleton. To look up a property, use <code>Configuration.valueFor("property name");</code>
+ * </p> <p>
+ *
+ * Properties may be overridden using a second properties file, or individually
+ * using System properties specified on the command line. To override using a
+ * second properties file, specify the System property xr-props. This should be
+ * the location of the second file relative to the CLASSPATH, e.g. <code>java -Dxr-props=resources/conf/myprops.conf</code>
+ * </p><p>
+ *
+ * To override a property using the System properties, just re-define the
+ * property on the command line. e.g. <code>java -Dxr.property-name=new_value</code>
+ * You can override as many properties as you like. </p> <p>
+ *
+ * Note that overrides are driven by the property names in the default
+ * configuration file. Specifying a property name not in that file will have no
+ * effect--the property will not be loaded or available for lookup.
+ * Configuration is NOT used to control logging levels or output; see
+ * LogStartupConfig.</p>
+ *
+ * <p>There are convenience converstion method for all the primitive types, 
+ * in methods like valueAsInt(). A default must always be provided for these
+ * methods. The default is returned if the value is not found, or if the 
+ * conversion from String fails. If the value is not present, or the conversion
+ * fails, a warning message is written to the log.</p>
  *
  * @author   Patrick Wright
  */
@@ -189,9 +202,171 @@ public class Configuration {
     }
 
     /**
-     * Returns the value for key in the Configuration, or a default value if not
-     * found. A warning is issued to the log if the property is not defined, and
-     * if the default is null.
+     * Returns the value for key in the Configuration as a byte, or the default
+     * provided value if not found or if the value is not a valid byte. A
+     * warning is issued to the log if the property is not defined, or if the
+     * conversion from String fails.
+     *
+     * @param key         Name of the property.
+     * @param defaultVal  PARAM
+     * @return            Value assigned to the key, as a String.
+     */
+    public static int valueAsByte( String key, byte defaultVal ) {
+        String val = valueFor( key );
+        if ( val == null ) {
+            return defaultVal;
+        }
+
+        byte bval = -1;
+        try {
+            bval = Byte.valueOf( val ).byteValue();
+        } catch ( NumberFormatException nex ) {
+            XRLog.exception( "Property '" + key + "' was requested as a byte, but " +
+                    "value of '" + val + "' is not a byte. Check configuration." );
+            bval = defaultVal;
+        }
+        return bval;
+    }
+
+    /**
+     * Returns the value for key in the Configuration as a short, or the default
+     * provided value if not found or if the value is not a valid short. A
+     * warning is issued to the log if the property is not defined, or if the
+     * conversion from String fails.
+     *
+     * @param key         Name of the property.
+     * @param defaultVal  PARAM
+     * @return            Value assigned to the key, as a String.
+     */
+    public static int valueAsShort( String key, short defaultVal ) {
+        String val = valueFor( key );
+        if ( val == null ) {
+            return defaultVal;
+        }
+
+        short sval = -1;
+        try {
+            sval = Short.valueOf( val ).shortValue();
+        } catch ( NumberFormatException nex ) {
+            XRLog.exception( "Property '" + key + "' was requested as a short, but " +
+                    "value of '" + val + "' is not a short. Check configuration." );
+            sval = defaultVal;
+        }
+        return sval;
+    }
+
+    /**
+     * Returns the value for key in the Configuration as an integer, or a
+     * default value if not found or if the value is not a valid integer. A
+     * warning is issued to the log if the property is not defined, or if the
+     * conversion from String fails.
+     *
+     * @param key         Name of the property.
+     * @param defaultVal  PARAM
+     * @return            Value assigned to the key, as a String.
+     */
+    public static int valueAsInt( String key, int defaultVal ) {
+        String val = valueFor( key );
+        if ( val == null ) {
+            return defaultVal;
+        }
+
+        int ival = -1;
+        try {
+            ival = Integer.valueOf( val ).intValue();
+        } catch ( NumberFormatException nex ) {
+            XRLog.exception( "Property '" + key + "' was requested as an integer, but " +
+                    "value of '" + val + "' is not an integer. Check configuration." );
+            ival = defaultVal;
+        }
+        return ival;
+    }
+
+    /**
+     * Returns the value for key in the Configurationas a long, or the default
+     * provided value if not found or if the value is not a valid long. A
+     * warning is issued to the log if the property is not defined, or if the
+     * conversion from String fails.
+     *
+     * @param key         Name of the property.
+     * @param defaultVal  PARAM
+     * @return            Value assigned to the key, as a String.
+     */
+    public static long valueAsLong( String key, long defaultVal ) {
+        String val = valueFor( key );
+        if ( val == null ) {
+            return defaultVal;
+        }
+
+        long lval = -1;
+        try {
+            lval = Long.valueOf( val ).longValue();
+        } catch ( NumberFormatException nex ) {
+            XRLog.exception( "Property '" + key + "' was requested as a long, but " +
+                    "value of '" + val + "' is not a long. Check configuration." );
+            lval = defaultVal;
+        }
+        return lval;
+    }
+
+    /**
+     * Returns the value for key in the Configuration as a float, or the default
+     * provided value if not found or if the value is not a valid float. A
+     * warning is issued to the log if the property is not defined, or if the
+     * conversion from String fails.
+     *
+     * @param key         Name of the property.
+     * @param defaultVal  PARAM
+     * @return            Value assigned to the key, as a String.
+     */
+    public static float valueAsFloat( String key, float defaultVal ) {
+        String val = valueFor( key );
+        if ( val == null ) {
+            return defaultVal;
+        }
+
+        float fval = -1;
+        try {
+            fval = Float.valueOf( val ).floatValue();
+        } catch ( NumberFormatException nex ) {
+            XRLog.exception( "Property '" + key + "' was requested as a float, but " +
+                    "value of '" + val + "' is not a float. Check configuration." );
+            fval = defaultVal;
+        }
+        return fval;
+    }
+
+    /**
+     * Returns the value for key in the Configuration as a double, or the
+     * default provided value if not found or if the value is not a valid
+     * double. A warning is issued to the log if the property is not defined, or
+     * if the conversion from String fails.
+     *
+     * @param key         Name of the property.
+     * @param defaultVal  PARAM
+     * @return            Value assigned to the key, as a String.
+     */
+    public static double valueAsDouble( String key, double defaultVal ) {
+        String val = valueFor( key );
+        if ( val == null ) {
+            return defaultVal;
+        }
+
+        double dval = -1;
+        try {
+            dval = Double.valueOf( val ).doubleValue();
+        } catch ( NumberFormatException nex ) {
+            XRLog.exception( "Property '" + key + "' was requested as a double, but " +
+                    "value of '" + val + "' is not a double. Check configuration." );
+            dval = defaultVal;
+        }
+        return dval;
+    }
+
+    /**
+     * Returns the value for key in the Configuration, or the default provided
+     * value if not found. A warning is issued to the log if the property is not
+     * defined, and if the default is null.
      *
      * @param key         Name of the property.
      * @param defaultVal  PARAM
@@ -215,12 +390,56 @@ public class Configuration {
      */
     public static void main( String args[] ) {
         try {
-            System.out.println( Configuration.valueFor( "xr.test-prop" ) );
+            System.out.println( "byte: " + String.valueOf( Configuration.valueAsByte( "xr.test-config-byte", (byte)15 ) ) );
+            System.out.println( "short: " + String.valueOf( Configuration.valueAsShort( "xr.test-config-short", (short)20 ) ) );
+            System.out.println( "int: " + String.valueOf( Configuration.valueAsInt( "xr.test-config-int", 25 ) ) );
+            System.out.println( "long: " + String.valueOf( Configuration.valueAsLong( "xr.test-config-long", 30L ) ) );
+            System.out.println( "float: " + String.valueOf( Configuration.valueAsFloat( "xr.test-config-float", 45.5F ) ) );
+            System.out.println( "double: " + String.valueOf( Configuration.valueAsDouble( "xr.test-config-double", 50.75D ) ) );
+            System.out.println( "boolean: " + String.valueOf( Configuration.isTrue( "xr.test-config-boolean", false ) ) );
         } catch ( Exception ex ) {
             ex.printStackTrace();
         }
     }
 
+    /**
+     * Returns true if the value is "true" (ignores case), or the default
+     * provided value if not found or if the value is not a valid boolean (true
+     * or false, ignores case). A warning is issued to the log if the property
+     * is not defined, and if the default is null.
+     *
+     * @param key         Name of the property.
+     * @param defaultVal  PARAM
+     * @return            Value assigned to the key, as a String.
+     */
+    public static boolean isTrue( String key, boolean defaultVal ) {
+        String val = valueFor( key );
+        if ( val == null ) {
+            return defaultVal;
+        }
+
+        if ( "true|false".indexOf( val ) == -1 ) {
+            XRLog.exception( "Property '" + key + "' was requested as a boolean, but " +
+                    "value of '" + val + "' is not a boolean. Check configuration." );
+            return defaultVal;
+        } else {
+            return Boolean.valueOf( val ).booleanValue();
+        }
+    }
+
+    /**
+     * Returns true if the value is not "true" (ignores case), or the default
+     * provided value if not found or if the value is not a valid boolean (true
+     * or false, ignores case). A warning is issued to the log if the property
+     * is not defined, or the value is not a valid boolean.
+     *
+     * @param key         Name of the property.
+     * @param defaultVal  PARAM
+     * @return            Value assigned to the key, as a String.
+     */
+    public static boolean isFalse( String key, boolean defaultVal ) {
+        return !isTrue( key, defaultVal );
+    }
 
     /**
      * @return   The singleton instance of the class.
@@ -237,6 +456,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/10/14 15:06:27  pdoubleya
+ * Added conversion methods for primitive datatypes, and testing in main().
+ *
  * Revision 1.3  2004/10/14 12:55:28  pdoubleya
  * Use plumbing.init logging hierarchy instead of plumbing.config.
  *
