@@ -50,7 +50,7 @@ public class InlineBox extends Box {
         //border = box.border;
         //margin = box.margin;
         //padding = box.padding;
-        color = box.color;
+        //color = box.color;
         content = box.content;
         master = box.master;
         sub_block = box.sub_block;
@@ -339,6 +339,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2004/12/28 02:15:19  tobega
+ * More cleaning.
+ *
  * Revision 1.25  2004/12/28 01:48:24  tobega
  * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
  *

@@ -438,7 +438,7 @@ public class LineBreaker {
         //CalculatedStyle style = box.getStyle(c);//c.css.getStyle(elem);
         VerticalAlign.setupVerticalAlign(c, style, box);
         box.setFont(font);//FontUtil.getFont(c,node));
-        box.color = style.getColor();
+        //box.color = style.getColor();
         //Relative.setupRelative(box, c);
 
         
@@ -515,6 +515,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2004/12/28 02:15:18  tobega
+ * More cleaning.
+ *
  * Revision 1.40  2004/12/27 09:40:47  tobega
  * Moved more styling to render stage. Now inlines have backgrounds and borders again.
  *

@@ -262,7 +262,7 @@ public class InlineRenderer extends BoxRenderer {
         Font oldfont = c.getGraphics().getFont();
         c.getGraphics().setFont(inline.getFont());
         Color oldcolor = c.getGraphics().getColor();
-        c.getGraphics().setColor(inline.color);
+        c.getGraphics().setColor(c.getCurrentStyle().getColor());
         Font cur_font = c.getGraphics().getFont();
         LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), cur_font, text);
 

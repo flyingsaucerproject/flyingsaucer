@@ -1,6 +1,5 @@
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.util.Configuration;
@@ -131,8 +130,8 @@ public class DefaultRenderer implements Renderer {
     }
 
     public void restyle(Context ctx, Box box) {
-        CalculatedStyle style = ctx.getCurrentStyle();
-        box.color = style.getColor();
+        //CalculatedStyle style = ctx.getCurrentStyle();
+        //box.color = style.getColor();
         //box.border_color = style.getBorderColor();
         //box.border_style = style.getStringProperty("border-top-style");
         //box.background_color = style.getBackgroundColor();

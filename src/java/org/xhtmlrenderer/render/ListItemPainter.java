@@ -76,8 +76,8 @@ public class ListItemPainter {
         }
 
         // prep the color
-        box.color = style.getColor();
-        c.getGraphics().setColor(box.color);
+        //box.color = style.getColor();
+        c.getGraphics().setColor(style.getColor());
         
         // save the old AntiAliasing setting, then force it on
         Object aa_key = c.getGraphics().getRenderingHint(RenderingHints.KEY_ANTIALIASING);
@@ -210,6 +210,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/12/28 02:15:19  tobega
+ * More cleaning.
+ *
  * Revision 1.10  2004/12/12 04:18:58  tobega
  * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
  *

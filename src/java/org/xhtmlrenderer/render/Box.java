@@ -51,9 +51,9 @@ public class Box {
      */
     public Box(boolean create_substyles) {
         boxes = new ArrayList();
-        if (create_substyles) {
+        /*if (create_substyles) {
             this.click_styles = new Box(false);
-        }
+        }*/
     }
 
     /**
@@ -146,7 +146,7 @@ public class Box {
     /**
      * Description of the Field
      */
-    public Border padding;
+    //public Border padding;
     /**
      * Description of the Field
      */
@@ -163,13 +163,13 @@ public class Box {
     /**
      * Description of the Field
      */
-    public Box click_styles;
+    //public Box click_styles;
 
     // foreground stuff
     /**
      * Description of the Field
      */
-    public Color color;
+    //public Color color;
 
     // background stuff
     /**
@@ -555,7 +555,7 @@ public class Box {
         }
 
         // colors and insets
-        sb.append("-colors(for" + getColorTestString(color));
+        //sb.append("-colors(for" + getColorTestString(color));
         //sb.append("-bor" + getColorTestString(border_color));
         //sb.append("-bak" + getColorTestString(background_color) + ")");
         //sb.append("-style(" + border_style + ")");
@@ -626,6 +626,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2004/12/28 02:15:19  tobega
+ * More cleaning.
+ *
  * Revision 1.32  2004/12/28 01:48:24  tobega
  * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
  *

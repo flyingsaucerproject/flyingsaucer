@@ -28,7 +28,7 @@ public class BoxBuilder {
 
 
         // =========== setup the color
-        box.color = style.getColor();
+        //box.color = style.getColor();
 
 
 
