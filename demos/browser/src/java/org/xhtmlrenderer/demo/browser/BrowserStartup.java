@@ -21,6 +21,7 @@ package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.util.Uu;
 
+import java.awt.event.*;
 import javax.swing.*;
 import java.util.logging.Logger;
 
@@ -111,13 +112,20 @@ public class BrowserStartup {
                 //System.out.println(new URI("images/Stop24.gif"));
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        BrowserStartup bs = new BrowserStartup();
+        final BrowserStartup bs = new BrowserStartup();
         bs.frame = frame;
         bs.init();
         frame.setJMenuBar(bs.menu);
         frame.getContentPane().add(bs.panel);
         frame.pack();
         frame.setSize(600, 700);
+        frame.addComponentListener(
+                      new ComponentAdapter() {
+                        public void componentResized( ComponentEvent e ) {
+                          bs.panel.view.relayout();
+                        }
+                      } );
+        
         frame.show();
         if (args.length > 0) {
             bs.panel.loadPage(args[0]);
@@ -148,6 +156,9 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/03/28 19:18:47  pdoubleya
+ * Fixed to update layout on resize.
+ *
  * Revision 1.9  2005/03/28 19:03:32  pdoubleya
  * Changed startup page.
  *
