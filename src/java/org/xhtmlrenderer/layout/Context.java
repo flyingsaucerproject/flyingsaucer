@@ -36,6 +36,7 @@ import javax.swing.JTextField;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.swing.*;
 import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.FontResolver;
@@ -369,6 +370,10 @@ public class Context {
      */
     public void setExtents( Rectangle rect ) {
         this.extents = rect;
+        if(extents.width < 1) {
+            XRLog.exception("width < 1");
+            extents.width = 1;
+        }
     }
 
     /**
@@ -680,6 +685,14 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/11/14 06:26:39  joshy
+ * added better detection for width problems. should avoid most
+ * crashes
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.15  2004/11/12 22:02:00  joshy
  * initial support for mouse copy selection
  * Issue number:

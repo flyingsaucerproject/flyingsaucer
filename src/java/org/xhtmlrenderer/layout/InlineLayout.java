@@ -38,6 +38,7 @@ import org.xhtmlrenderer.css.value.*;
 import org.xhtmlrenderer.css.*;
 import org.xhtmlrenderer.util.InfiniteLoopError;
 import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.XRLog;
 /**
 * Description of the Class
 *
@@ -69,7 +70,8 @@ public class InlineLayout extends BoxLayout {
         Rectangle bounds = new Rectangle();
         bounds.width = c.getExtents().width;
         bounds.width -= box.margin.left + box.border.left + box.padding.left +
-        box.padding.right + box.border.right + box.margin.right;
+            box.padding.right + box.border.right + box.margin.right;
+        validateBounds(bounds);
         bounds.x = 0;
         bounds.y = 0;
         bounds.height = 0;
@@ -116,6 +118,7 @@ public class InlineLayout extends BoxLayout {
                 // debugging check
                 if ( bounds.width < 0 ) {
                     u.p( "bounds width = " + bounds.width );
+                    u.dump_stack();
                     System.exit( -1 );
                 }
                 
@@ -146,9 +149,10 @@ public class InlineLayout extends BoxLayout {
                 
                 
                 // the crash warning code
-                if ( bounds.width < 10 ) {
-                    u.p( "warning. width < 10 " + bounds.width );
+                if ( bounds.width < 1 ) {
+                    u.p( "warning. width < 1 " + bounds.width );
                 }
+                /*
                 debug_counter++;
                 final int limit = 140;
                 if ( debug_counter > limit && bounds.width < 10 ) {
@@ -171,7 +175,7 @@ public class InlineLayout extends BoxLayout {
                     System.exit( -1 );
                     throw new InfiniteLoopError( "Infinite loop detected in InlineLayout" );
                 }
-                
+                */
                 
                 
                 // look at current inline
@@ -258,6 +262,13 @@ public class InlineLayout extends BoxLayout {
         block.x = 0;
         block.y = 0;
         return block;
+    }
+    
+    private void validateBounds(Rectangle bounds) {
+        if(bounds.width <= 0) {
+            bounds.width = 1;
+            XRLog.exception("width < 1");
+        }
     }
 
      
@@ -367,6 +378,14 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.22  2004/11/14 06:26:39  joshy
+* added better detection for width problems. should avoid most
+* crashes
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.21  2004/11/12 20:25:18  joshy
 * added hover support to the browser
 * created hover demo

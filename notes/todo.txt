@@ -34,9 +34,15 @@
 //copy text via mouse selection
 
 redesign layout factory
-
+    should support display property
+    should support layout generation by element name or other code
+    tell if something is a break
+    if something is floated or absolute it should be turned into a block
+    should the factory itself be replaceable?
+    
     -floated divs work, but not floated spans. span should turn into a block when floated
     -make layoutfactory use display for generating layouts
+    
 -fix crash on width = 0
 -fix threading/loop issue with hamlet
 
