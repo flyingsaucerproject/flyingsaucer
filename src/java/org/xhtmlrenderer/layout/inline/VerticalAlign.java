@@ -5,6 +5,7 @@ import org.xhtmlrenderer.render.*;
 import org.w3c.dom.*;
 import java.awt.*;
 import java.awt.font.*;
+import org.xhtmlrenderer.util.u;
 
 public class VerticalAlign {
     public static void setupVerticalAlign( Context c, Node node, InlineBox box ) {
@@ -22,10 +23,11 @@ public class VerticalAlign {
         //u.p("parent = " + parent + " elem = " + elem);
         //int parent_height = FontUtil.lineHeight(c,parent);
         Font parent_font = FontUtil.getFont( c, parent );
+        //u.p("parent font = " + parent_font);
         LineMetrics parent_metrics = null;
         if ( !LayoutUtil.isReplaced(c, node ) ) {
             if ( !LayoutUtil.isFloatedBlock( node, c ) ) {
-                parent_metrics = parent_font.getLineMetrics( box.getText(), ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
+                parent_metrics = parent_font.getLineMetrics( box.getSubstring(), ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
             } else {
                 parent_metrics = parent_font.getLineMetrics( "Test", ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
             }

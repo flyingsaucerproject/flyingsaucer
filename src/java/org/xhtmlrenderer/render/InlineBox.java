@@ -195,6 +195,7 @@ public class InlineBox extends Box {
         if(end < start) {
             u.p("setting substring to: " + start + " " + end);
             u.dump_stack();
+            System.exit(-1);
         }
         start_index = start;
         end_index = end;
@@ -255,6 +256,15 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/11/23 01:53:30  joshy
+ * re-enabled vertical align
+ * added unit tests for various text-align and indent forms
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.12  2004/11/22 21:34:04  joshy
  * created new whitespace handler.
  * new whitespace routines only work if you set a special property. it's

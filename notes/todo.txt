@@ -77,6 +77,15 @@ can we separate inline and box more? maybe do that later?
 cache linemetrics and ascend/dscend more
 take out redundant functions in font stuff
     
+post about dpi to units issue
+fix n test vertical align
+fix n test horizontal align
+fix n test line wrapping w/ floats
+fix n test space collapsing w/ images
+fix n test tab alignment
+test first line pseudo
+test first char pseudo
+
 
 --crash w/ width = 50%
 --% width for absolute layout

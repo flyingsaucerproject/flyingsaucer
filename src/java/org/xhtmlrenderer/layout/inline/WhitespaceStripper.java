@@ -76,8 +76,8 @@ public class WhitespaceStripper {
     }
     
     
-    public InlineBox createInline(Context c, Node node, String text, InlineBox prev, int avail, int max, Font font) {
-        
+    public InlineBox createInline(Context c, Node node, String text, InlineBox prev, InlineBox prev_align, int avail, int max, Font font) {
+        // u.p("text = " + text);
         InlineBox inline = new InlineBox();
         inline.node = node;
         inline.whitespace =  getWhitespace(c,node);
@@ -86,30 +86,37 @@ public class WhitespaceStripper {
         // from the end of the previous (if applicable) to the
         // end of the master string
         if(prev == null  || prev.node != node) {
+            // u.p("regen text for: " + text);
             text = stripWhitespace(c,node,prev,text);
             inline.setMasterText(text);
             inline.setSubstring(0,text.length());
         } else {
             //grab text from the previous inline
+            // u.p("reusing text for: " + text);
+            // u.p("prev = " + prev);
+            
             text = prev.getMasterText();
             inline.setMasterText(text);
-            inline.setSubstring(prev.end_index+1,text.length());
+            inline.setSubstring(prev.end_index,text.length());
+            // u.p("new = " + inline);
         }
-        
-        inline.x = max - avail;
-        breakText( c, inline, prev, avail, max, font );
+
+        breakText( c, inline, prev, prev_align, avail, max, font );
         prepBox( c, inline, prev, font );
         // u.p("final inline = " + inline);
         return inline;
     }
     
-    public boolean breakText(Context c, InlineBox inline, InlineBox prev, int avail, int max, Font font) {
-        // u.p("=========================");
-        // u.p("breaking: " + inline);
-        // u.p("breaking : '" + inline.getSubstring() + "'");
-        // u.p("avail = " + avail);
-        // u.p("max = " + max);
+    public boolean breakText(Context c, InlineBox inline, InlineBox prev, InlineBox prev_align, int avail, int max, Font font) {
         boolean db = false;
+        if(db) {
+         u.p("=========================");
+         u.p("breaking: " + inline);
+         u.p("breaking : '" + inline.getSubstring() + "'");
+         u.p("avail = " + avail);
+         u.p("max = " + max);
+         u.p("prev align = " + prev_align);
+        }
         
         //text pre
         // if(text pre) {
@@ -155,9 +162,9 @@ public class WhitespaceStripper {
             // a single unbreakable string that can't fit on the line
             // handle a single unbreakable string
             if(n == -1 && pn == 0) {
-                if(inline.x != 0) {
+                if(prev_align != null) {
                     inline.break_before = true;
-                    inline.x = 0;
+                    //inline.x = 0;
                 }
                 
                 
@@ -186,7 +193,7 @@ public class WhitespaceStripper {
             
             // if the string is too long to fit in the available space
             int len = FontUtil.len(c,tenative,font);
-            // u.p("len = " + len + " avail = " + avail);
+            if(db) { u.p("len = " + len + " avail = " + avail); }
             if(len >= avail) {
                 
                 // if the previous tenative string would work, then add
@@ -197,25 +204,32 @@ public class WhitespaceStripper {
                     //     inline.start_index = 0;
                     // }
                     
-                    if(db) { u.p("normal break on current line. break after"); }
+                    if(db) {
+                        u.p("normal break on current line. break after. pn = " + pn); 
+                    }
                     inline.setSubstring( inline.start_index, inline.start_index + pn);
                     inline.break_after = true;
                     return true;
                 }
                 
                 
-                // if this is an unbreakable word so put it on the next line                
+                // if this is an unbreakable word so put it on the next line
+                // by itself
+                
                 // HACK. not sure the better way to do this
                 // if there is another space after this, then tack it on
-                if(inline.getSubstring().length() > n &&
-                                inline.getSubstring().charAt(n) == ' ') {
-                    // u.p("ending space!!");
+                if(inline.getSubstring().length() > n && inline.getSubstring().charAt(n) == ' ') {
+                    if(db) { u.p("ending space!!"); }
                     inline.setSubstring(inline.start_index, inline.start_index + n+1);
                 } else {
                     inline.setSubstring(inline.start_index, inline.start_index + n);
                 }
                 if(db) { u.p("unbreakable word in inline. break before"); }
                 inline.break_before = true;
+                // if it's so long that it fills up the next line too
+                if(FontUtil.len(c,inline.getSubstring(),font) > max) {
+                    inline.break_after = true;
+                }
                 return true;
 
 
@@ -236,29 +250,41 @@ public class WhitespaceStripper {
         BoxLayout.getBorder(c,box);
         BoxLayout.getMargin(c,box);
         BoxLayout.getPadding(c,box);
-        // NOTE: color should be set properly
-        box.color = java.awt.Color.black;
+
+
+        // =========== setup the color
+        if ( box.node.getNodeType() == box.node.TEXT_NODE ) {
+            box.color = c.css.getColor( (Element)box.node.getParentNode(), true );
+        } else {
+            box.color = c.css.getColor( (Element)box.node, true );
+        }
+
+
 
         // shift left if starting a new line
         if(box.break_before) {
             box.x = 0;
         }
         
-        // trim off leading space if at start of new line
-        if(box.x == 0 && box.getSubstring().startsWith(space)) {
-            box.setSubstring(box.start_index+1,box.end_index);
-        }
 
 
+        // u.p("box = " + box);
+        // u.p("prev align = " + prev_align);
         // ============ set x
-        /*
-        // use the prev_align to calculate the x
-        if ( prev_align != null && !prev_align.break_after ) {
+        
+        // use the prev_align to calculate the x if not at start of
+        // new line
+        if ( prev_align != null && !prev_align.break_after && !box.break_before ) {
             box.x = prev_align.x + prev_align.width;
         } else {
             box.x = 0;
+
+            // trim off leading space only if at start of new line
+            if(box.getSubstring().startsWith(space)) {
+                box.setSubstring(box.start_index+1,box.end_index);
+            }
         }
-        */
+        
         
         
         // =========== set y
@@ -329,17 +355,9 @@ public class WhitespaceStripper {
         
         
         // =========== setup vertical alignment
-        /*
         // do vertical alignment
-        VerticalAlign.setupVerticalAlign( c, node, box );
-        box.setFont( font );//FontUtil.getFont(c,node));
-        if ( node.getNodeType() == node.TEXT_NODE ) {
-            box.color = c.css.getColor( (Element)node.getParentNode(), true );
-        } else {
-            box.color = c.css.getColor( (Element)node, true );
-        }
-        Relative.setupRelative( c, box );
-        */
+        VerticalAlign.setupVerticalAlign( c, box.node, box );
+        //Relative.setupRelative( c, box );
 
         
         // ============= do special setup for first line

@@ -220,7 +220,6 @@ public class InlineLayout extends BoxLayout {
                 remaining_width = remaining_width - new_inline.width;
                 // if the last inline was at the end of a line, then go to next line
                 if ( new_inline.break_after ) {
-                    //u.p("breaking after");
                     // then remaining_width = max_width
                     remaining_width = bounds.width;
                     // save the line
@@ -233,7 +232,6 @@ public class InlineLayout extends BoxLayout {
                     // adjust remaining width for floats
                     curr_line.y = prev_line.y + prev_line.height;
                     curr_line.setParent(prev_line.getParent());
-                    //u.p("set parent to: " + curr_line.getParent());
                     remaining_width = FloatUtil.adjustForTab( c, curr_line, remaining_width );
                     curr_line.width = 0;
                 }
@@ -251,6 +249,8 @@ public class InlineLayout extends BoxLayout {
                 TextUtil.stripWhitespace( c, current_node, elem );
             }
         }
+        
+        // save the final line
         saveLine( curr_line, prev_line, elem, bounds.width, bounds.x, c, block , true);
         bounds.height += curr_line.height;
         block.width = bounds.width;
@@ -331,7 +331,7 @@ public class InlineLayout extends BoxLayout {
             WhitespaceStripper whitespace = new WhitespaceStripper();
             // u.p("calling whitespace stripper on node: " + node);
             // u.p(" prev = " + prev);
-            return whitespace.createInline(c, node, text, prev, avail, max_width, font);
+            return whitespace.createInline(c, node, text, prev, prev_align, avail, max_width, font);
         } else {
         
         
@@ -403,6 +403,15 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.29  2004/11/23 01:53:29  joshy
+* re-enabled vertical align
+* added unit tests for various text-align and indent forms
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.28  2004/11/22 21:34:03  joshy
 * created new whitespace handler.
 * new whitespace routines only work if you set a special property. it's
