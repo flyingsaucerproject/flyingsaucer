@@ -240,21 +240,10 @@ public class CSSBank extends CSSAccessor {
      */
     public CSSValue getProperty( Element elem, String prop, boolean inherit ) {
 
-        if ( elem.getNodeName().equals( "a" ) && prop.equals( "color" ) ) {
-
-            //u.p("looking at: " + elem.getNodeName() + " prop = " + prop + " inherit " + inherit);
-
-        }
-
         //RuleFinder rf = new RuleFinder(this.styles);
 
         CSSStyleDeclaration style_dec = rule_bank.findRule( elem, prop, inherit );
 
-        if ( elem.getNodeName().equals( "a" ) && prop.equals( "color" ) ) {
-
-            //u.p("got style: " + style_dec);
-
-        }
 
         if ( style_dec == null ) {
 
@@ -271,15 +260,6 @@ public class CSSBank extends CSSAccessor {
 
             u.p( "WARNING!! elem " + elem.getNodeName() + " doesn't have the property: " + prop );
 
-            /*
-             * if(elem.getParentNode() != null && inherit) {
-             * u.p("going up: " + elem.getNodeName() + " -> " + elem.getParentNode().getNodeName() + " prop = " + prop);
-             * if(elem.getParentNode() instanceof Element) {
-             * return getProperty((Element)elem.getParentNode(),prop,inherit);
-             * }
-             * }
-             * return null;
-             */
         }
 
         //u.p("returning: " + val);
@@ -335,6 +315,9 @@ public class CSSBank extends CSSAccessor {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/10/28 13:39:46  joshy
+ * removed dead code
+ *
  * Revision 1.4  2004/10/23 13:03:45  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

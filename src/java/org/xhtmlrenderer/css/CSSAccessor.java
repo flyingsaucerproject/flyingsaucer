@@ -371,9 +371,7 @@ public abstract class CSSAccessor implements StyleReference {
     public Color getColor( Element elem, boolean inherit ) {
         //u.p("CSSBank.getColor("+elem.getNodeName() + ")");
         CSSValue val = getProperty( elem, "color", inherit );
-        if ( elem.getNodeName().equals( "a" ) ) {
-            //u.p("val = " + val);
-        }
+
         if ( val == null ) {
             u.p( "null returned on: " + elem.getNodeName() );
             u.p( "property color" );
@@ -469,6 +467,9 @@ public abstract class CSSAccessor implements StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/10/28 13:39:46  joshy
+ * removed dead code
+ *
  * Revision 1.4  2004/10/23 13:03:45  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
