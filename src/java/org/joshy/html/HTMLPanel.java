@@ -191,7 +191,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
 
         Element html = (Element)doc.getDocumentElement();
 
-        if ( 1 == 0 ) {
+        if ( 1 == 1 ) {
           c.css = new CSSBank();
         } else {
           // NOTE: currently context is externalized from StyleReference even
