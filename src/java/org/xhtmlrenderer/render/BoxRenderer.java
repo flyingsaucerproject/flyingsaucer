@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BoxLayout;
 import org.xhtmlrenderer.layout.Context;
@@ -27,12 +28,18 @@ public class BoxRenderer extends DefaultRenderer {
         Box block = (Box) box;
 
         //set the current style
-        if (block.content.getStyle() != null)
+        CascadedStyle hoverStyle = null;
+        if (block.content.getStyle() != null) {
             c.pushStyle(block.content.getStyle());
+            if (block.hover) {
+                hoverStyle = c.css.getPseudoElementStyle(block.content.getElement(), "hover");
+                if (hoverStyle != null) c.pushStyle(hoverStyle);
+            }
+        }
 
         if (box.restyle) {
             restyle(c, box);
-            box.restyle = false;
+            //box.restyle = false;
         }
 
         // copy the bounds to we don't mess it up
@@ -57,8 +64,10 @@ public class BoxRenderer extends DefaultRenderer {
         c.setExtents(oldBounds);
 
         //reset style
-        if (block.content.getStyle() != null)
+        if (block.content.getStyle() != null) {
+            if (hoverStyle != null) c.popStyle();
             c.popStyle();
+        }
 
         if (c.debugDrawBoxes()) {
             GraphicsUtil.drawBox(c.getGraphics(), block, Color.red);

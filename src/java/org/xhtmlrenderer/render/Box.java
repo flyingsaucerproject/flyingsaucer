@@ -74,6 +74,7 @@ public class Box {
     public Content content;
 
     public boolean restyle;//used during render if things have changed because of e.g. hover
+    public boolean hover;//dynamic attribute set
 
     // dimensions stuff
     /**
@@ -598,8 +599,6 @@ public class Box {
      * &lt;p&gt; some text &lt;/p&gt;
      * </pre>
      * </p>
-     *
-     * @deprecated maybe, have to analyse
      */
     public boolean isInlineElement() {
         return false;
@@ -610,6 +609,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2004/12/12 23:19:26  tobega
+ * Tried to get hover working. Something happens, but not all that's supposed to happen.
+ *
  * Revision 1.26  2004/12/12 03:33:00  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

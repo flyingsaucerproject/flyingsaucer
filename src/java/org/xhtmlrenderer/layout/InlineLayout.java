@@ -118,12 +118,17 @@ public class InlineLayout extends BoxLayout {
             if (o instanceof StylePush) {
                 c.pushStyle(((StylePush) o).getStyle());
                 if (pendingPushStyles == null) pendingPushStyles = new LinkedList();
-                pendingPushStyles.add(((StylePush) o).getStyle());
+                pendingPushStyles.add((StylePush) o);
                 continue;
             }
             if (o instanceof StylePop) {
                 c.popStyle();
-                prev_inline.popstyles++;
+                if (pendingPushStyles != null && pendingPushStyles.size() != 0) {
+                    pendingPushStyles.remove(pendingPushStyles.size() - 1);//was a redundant one
+                } else {
+                    if (prev_inline.popstyles == null) prev_inline.popstyles = new LinkedList();
+                    prev_inline.popstyles.add(o);
+                }
                 continue;
             }
             Content currentContent = (Content) o;
@@ -402,6 +407,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.53  2004/12/12 23:19:25  tobega
+* Tried to get hover working. Something happens, but not all that's supposed to happen.
+*
 * Revision 1.52  2004/12/12 21:02:37  tobega
 * Images working again
 *

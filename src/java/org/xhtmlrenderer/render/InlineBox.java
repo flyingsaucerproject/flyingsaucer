@@ -65,7 +65,7 @@ public class InlineBox extends Box {
     //might need to push styles before rendering this box
     public List pushstyles;
     //might need to pop styles after rendering this box
-    public int popstyles = 0;
+    public List popstyles;
 
     // if we are an inline block, then this is
 
@@ -297,12 +297,14 @@ public class InlineBox extends Box {
         return this.style;
     }
 
-    //TODO: check what is going on here
     public boolean isInlineElement() {
         /* just to get it to compile, for now
         if(this.getRealElement() == this.getParent().getParent().getRealElement()) {
             return false;
         }*/
+        if (this.content.getElement() == this.getParent().getParent().content.getElement()) {
+            return false;
+        }
         return true;
     }
 
@@ -313,6 +315,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2004/12/12 23:19:26  tobega
+ * Tried to get hover working. Something happens, but not all that's supposed to happen.
+ *
  * Revision 1.19  2004/12/12 05:51:49  tobega
  * Now things run. But there is a lot to do before it looks as nice as it did. At least we now have :before and :after content and handling of breaks by css.
  *

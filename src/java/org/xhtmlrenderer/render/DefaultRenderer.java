@@ -2,6 +2,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -30,7 +31,7 @@ public class DefaultRenderer implements Renderer {
         XRLog.render(Level.WARNING, "Using default renderer for " + box.getClass().getName());
         if (box.restyle) {
             restyle(c, box);
-            box.restyle = false;
+            //box.restyle = false;
         }
         paintBackground(c, box);
         paintComponent(c, box);
@@ -75,19 +76,23 @@ public class DefaultRenderer implements Renderer {
     public void paintChildren(Context c, Box box) {
         //Uu.p("Layout.paintChildren(): " + box);
         //Uu.p("child count = " + box.getChildCount());
-        XRLog.render(Level.WARNING, "using default renderer paintChildren for " + box.getClass().getName());
+        //XRLog.render(Level.WARNING, "using default renderer paintChildren for " + box.getClass().getName());
         for (int i = 0; i < box.getChildCount(); i++) {
             Box child = (Box) box.getChild(i);
             //Uu.p("child = " + child);
             Renderer renderer = null;
-            if (child.isAnonymous()) {
+            if (child.content instanceof AnonymousBlockContent) {
                 renderer = c.getRenderingContext().getLayoutFactory().getAnonymousRenderer();
             } else {
                 if (child.content == null) {
                     XRLog.render(Level.WARNING, "null node of child: " + child + " of type " + child.getClass().getName());
                     renderer = new InlineRenderer();
                 } else {
-                    //renderer = c.getRenderer(child.getNode());
+                    /*if(isBlockLayedOut(box)) {
+                        renderer = new BoxRenderer();
+                    } else if(isInlineLayedOut(box)) {
+                        renderer = new InlineRenderer();
+                    } else*/
                     //TODO: find another way to work out the renderer
                     renderer = c.getRenderer(child.content.getElement());
                 }
@@ -130,13 +135,14 @@ public class DefaultRenderer implements Renderer {
         box.border_color = style.getBorderColor();
         box.border_style = style.getStringProperty("border-top-style");
         box.background_color = style.getBackgroundColor();
-        restyleChildren(ctx, box);
+        restyleChildren(box);
     }
 
-    private void restyleChildren(Context ctx, Box box) {
+    private void restyleChildren(Box box) {
         for (int i = 0; i < box.getChildCount(); i++) {
             Box child = box.getChild(i);
             child.restyle = true;
+            child.hover = box.hover;
         }
     }
 
@@ -150,6 +156,16 @@ public class DefaultRenderer implements Renderer {
             if (child instanceof InlineBlockBox) return false;
         }
         return true;
+    }
+
+    //TODO: check the logic here
+    public static boolean isInlineLayedOut(Box box) {
+        if (box.getChildCount() == 0) return false;//have to return something, it shouldn't matter
+        for (int i = 0; i < box.getChildCount(); i++) {
+            Box child = box.getChild(i);
+            if (child instanceof LineBox) return true;
+        }
+        return false;
     }
 }
 

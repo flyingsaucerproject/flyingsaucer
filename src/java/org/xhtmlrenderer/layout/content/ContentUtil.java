@@ -79,14 +79,14 @@ public class ContentUtil {
             if (before != null && before.hasProperty(CSSName.CONTENT)) {
                 String content = ((CSSPrimitiveValue) before.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
                 if (!content.equals("")) {
-                    inlineList.add(new StylePush(before));
+                    inlineList.add(new StylePush(before, parentElement));
                     c.pushStyle(before);
                     textContent = new StringBuffer();
                     textContent.append(content.replaceAll("\\\\A", "\n"));
                     inlineList.add(new TextContent(parentElement, textContent.toString()));
                     textContent = null;
                     c.popStyle();
-                    inlineList.add(new StylePop());
+                    inlineList.add(new StylePop(parentElement));
                 }
                 //do not reset style here, because if this element is empty, we will not have changed context
             }
@@ -211,7 +211,7 @@ public class ContentUtil {
             List childList = inline.getChildContent(c);
             if (isBlockContent(childList)) {
                 //need to put current inlineList in front, with a StylePush appended
-                inlineList.add(new StylePush(style));//this is already pushed to context
+                inlineList.add(new StylePush(style, elem));//this is already pushed to context
                 //the child list represents the entire contents of an element,
                 //therefore we need not concern ourselves with style-changes, as they will even out
                 for (Iterator ci = childList.iterator(); ci.hasNext();) {
@@ -238,11 +238,11 @@ public class ContentUtil {
                 //add the rest of the children
                 blockList.addAll(childList);
                 //append StylePop
-                inlineList.add(new StylePop());//pop from c below
+                inlineList.add(new StylePop(elem));//pop from c below
             } else {
-                inlineList.add(new StylePush(style));
+                inlineList.add(new StylePush(style, elem));
                 inlineList.addAll(childList);
-                inlineList.add(new StylePop());//pop from c below
+                inlineList.add(new StylePop(elem));//pop from c below
             }
             c.popStyle();
         }
@@ -261,12 +261,12 @@ public class ContentUtil {
                         inlineList.add(new TextContent(parentElement, textContent.toString()));
                         textContent = null;
                     }
-                    inlineList.add(new StylePush(after));
+                    inlineList.add(new StylePush(after, parentElement));
                     textContent = new StringBuffer();
                     textContent.append(content.replaceAll("\\\\A", "\n"));
                     inlineList.add(new TextContent(parentElement, textContent.toString()));
                     textContent = null;
-                    inlineList.add(new StylePop());
+                    inlineList.add(new StylePop(parentElement));
                 }
             }
         }
@@ -439,6 +439,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/12/12 23:19:25  tobega
+ * Tried to get hover working. Something happens, but not all that's supposed to happen.
+ *
  * Revision 1.13  2004/12/12 19:12:25  tobega
  * Stripping whitespace already in content-analysis. (Whitespace property does not apply to pseudos that are resolved later)
  *

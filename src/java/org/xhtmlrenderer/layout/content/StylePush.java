@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout.content;
 
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 
 /**
@@ -26,12 +27,18 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
  */
 public class StylePush {
     private CascadedStyle _style;
+    private Element _elem;//needed for dynamic stuff
 
-    StylePush(CascadedStyle style) {
+    StylePush(CascadedStyle style, Element e) {
         _style = style;
+        _elem = e;
     }
 
     public CascadedStyle getStyle() {
         return _style;
+    }
+
+    public Element getElement() {
+        return _elem;
     }
 }

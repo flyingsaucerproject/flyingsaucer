@@ -19,11 +19,20 @@
  */
 package org.xhtmlrenderer.layout.content;
 
+import org.w3c.dom.Element;
+
 
 /**
  * A marker for returning to the previous style
  */
 public class StylePop {
-    StylePop() {
+    private Element element;//needed for dynamic stuff
+
+    StylePop(Element e) {
+        element = e;
+    }
+
+    public Element getElement() {
+        return element;
     }
 }

@@ -4,6 +4,8 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.FloatedBlockContent;
 import org.xhtmlrenderer.layout.content.InlineBlockContent;
+import org.xhtmlrenderer.layout.content.StylePop;
+import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.inline.TextDecoration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 
@@ -57,15 +59,14 @@ public class InlineRenderer extends BoxRenderer {
         BlockBox block = null;
         if (box instanceof BlockBox) {//Why isn't it always a BlockBox?
             block = (BlockBox) box;
-            if (block.firstLineStyle != null) c.pushStyle(block.firstLineStyle);
-            //TODO: should we do something with firstLetterStyle here?
         }
 
         for (int i = 0; i < box.getChildCount(); i++) {
             if (box.restyle) {
                 restyle(c, box);
-                box.restyle = false;
+                //box.restyle = false;
             }
+            if (i == 0 && block != null && block.firstLineStyle != null) c.pushStyle(block.firstLineStyle);
             // get the line box
             paintLine(c, (LineBox) box.getChild(i));
             if (i == 0 && block != null && block.firstLineStyle != null) c.popStyle();
@@ -88,7 +89,7 @@ public class InlineRenderer extends BoxRenderer {
             InlineBox box = (InlineBox) line.getChild(j);
             if (box.restyle) {
                 restyle(c, box);
-                box.restyle = false;
+                //box.restyle = false;
             }
             paintInline(c, box, lx, ly, line);
         }
@@ -118,8 +119,12 @@ public class InlineRenderer extends BoxRenderer {
 
         if (inline.pushstyles != null) {
             for (Iterator i = inline.pushstyles.iterator(); i.hasNext();) {
-                CascadedStyle cs = (CascadedStyle) i.next();
-                c.pushStyle(cs);
+                StylePush sp = (StylePush) i.next();
+                c.pushStyle(sp.getStyle());
+                if (inline.hover) {
+                    CascadedStyle hs = c.css.getPseudoElementStyle(sp.getElement(), "hover");
+                    if (hs != null) c.pushStyle(hs);
+                }
             }
         }
 
@@ -139,7 +144,16 @@ public class InlineRenderer extends BoxRenderer {
         debugInlines(c, inline, lx, ly);
         handleRelativePost(c, inline);
 
-        for (int i = 0; i < inline.popstyles; i++) c.popStyle();
+        if (inline.popstyles != null) {
+            for (Iterator i = inline.popstyles.iterator(); i.hasNext();) {
+                StylePop sp = (StylePop) i.next();
+                if (inline.hover) {
+                    CascadedStyle hs = c.css.getPseudoElementStyle(sp.getElement(), "hover");
+                    if (hs != null) c.popStyle();
+                }
+                c.popStyle();
+            }
+        }
     }
 
 
