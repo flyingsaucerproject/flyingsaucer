@@ -20,25 +20,34 @@
  */
 package org.xhtmlrenderer.util;
 
-
 import java.io.*;
 import java.util.logging.*;
 
 
 /**
- * This class is auto-loaded by the Logging system if
- * the system property
- * java.util.logging.config.class
- * is set to this class name (fully-qualified). This class
- * loads the LogManager with the logging properties from
- * the xr-logging.properties file, which must be on the 
- * CLASSPATH to be read.
+ * <p>
+ *
+ * This class is auto-loaded by the Logging system if the *System* property
+ * java.util.logging.config.class is set to this class name (fully-qualified)
+ * the first time the LogManager is loaded directly or indirectly. <p>
+ *
+ * This class loads the LogManager with the logging properties from a file,
+ * which must be on the CLASSPATH to be read. The location of the file is read
+ * from Configuration, using the key xr.logging-properties-default. 
+ *
+ * <p>Note that
+ * log level settings, handlers, and formatters in this logging-properties file follows the conventions in
+ * LogManager. You cannot override logging settings in the main Configuration
+ * file. Configuration is only used to identify the location of the logging
+ * properties file. Configuration does support a formatting key when using
+ * the XRSimpleLogFormatter--since LogManager properties doesn't support such
+ * special-case parameters. Phew!
  *
  * @author   Patrick Wright
  */
 public class LogStartupConfig {
-    /** Description of the Field */
-    public final static String LOG_CONFIG_NAME = "resources/conf/xr-logging.properties";
+    /** Location of the logging configuration file, on the CLASSPATH. */
+    public final static String LOG_CONFIG_NAME;
 
     /** Constructor for the LogStartupConfig object */
     public LogStartupConfig() {
@@ -54,12 +63,19 @@ public class LogStartupConfig {
         }
     }
 
+    static {
+        LOG_CONFIG_NAME = Configuration.valueFor( "xr.logging-properties-default" );
+    }
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2004/10/14 11:12:42  pdoubleya
+ * Logging properties location now read from Configuration. Updated comments.
+ *
  * Revision 1.1  2004/10/13 23:00:33  pdoubleya
  * Added to CVS.
  *
