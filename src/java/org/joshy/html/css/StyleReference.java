@@ -15,6 +15,7 @@ import org.joshy.html.Border;
 
 import com.pdoubleya.xhtmlrenderer.css.value.BorderColor;
 
+
 /**
  * <p>
  *
@@ -41,322 +42,351 @@ import com.pdoubleya.xhtmlrenderer.css.value.BorderColor;
  * NOTE: pulled from CSSBank and CSSAccessor to have a common ancestor interface
  * </p>
  *
- * @author    Patrick Wright
+ * @author   Patrick Wright
  */
 public interface StyleReference {
-  /**
-   * Returns the background Color assigned to an Element
-   *
-   * @param elem  The DOM element to find the property for.
-   * @return      The Color property
-   */
-  Color getBackgroundColor( Element elem );
+    /**
+     * Returns the background Color assigned to an Element
+     *
+     * @param elem  The DOM element to find the property for.
+     * @return      The Color property
+     */
+    Color getBackgroundColor( Element elem );
 
 
-  /**
-   * Returns the border Color assigned to an Element
-   *
-   * @param elem  The DOM element to find the property for.
-   * @return      The Color property
-   */
-  BorderColor getBorderColor( Element elem );
+    /**
+     * Returns the border Color assigned to an Element
+     *
+     * @param elem  The DOM element to find the property for.
+     * @return      The Color property
+     */
+    BorderColor getBorderColor( Element elem );
 
 
-  /**
-   * Returns the border width (all sides) assigned to an Element
-   *
-   * @param elem  The DOM element to find the property for.
-   * @return      The Border property (for widths)
-   */
-  Border getBorderWidth( Element elem );
+    /**
+     * Returns the border width (all sides) assigned to an Element
+     *
+     * @param elem  The DOM element to find the property for.
+     * @return      The Border property (for widths)
+     */
+    Border getBorderWidth( Element elem );
 
 
-  /**
-   * Returns the foreground Color assigned to an Element, searching ancestor
-   * Elements for an inheritable value if not found on the Element.
-   *
-   * @param elem  The DOM element to find the property for.
-   * @return      The foreground Color property
-   */
-  Color getColor( Element elem );
+    /**
+     * Returns the foreground Color assigned to an Element, searching ancestor
+     * Elements for an inheritable value if not found on the Element.
+     *
+     * @param elem  The DOM element to find the property for.
+     * @return      The foreground Color property
+     */
+    Color getColor( Element elem );
 
 
-  /**
-   * Returns the foreground Color assigned to an Element, searching ancestor
-   * Elements for an inheritable value if requested.
-   *
-   * @param elem     The DOM element to find the property for.
-   * @param inherit  If true and property not found on this element, searches
-   *      through element ancestors for property
-   * @return         The foreground Color property
-   */
-  Color getColor( Element elem, boolean inherit );
+    /**
+     * Returns the foreground Color assigned to an Element, searching ancestor
+     * Elements for an inheritable value if requested.
+     *
+     * @param elem     The DOM element to find the property for.
+     * @param inherit  If true and property not found on this element, searches
+     *      through element ancestors for property
+     * @return         The foreground Color property
+     */
+    Color getColor( Element elem, boolean inherit );
 
 
-  /**
-   * Returns the a property assigned to an Element that can be interpreted as a
-   * Point with floating-point positioning, and, if not found and inherit is
-   * true, searches for an inheritable property by that name assigned to parent
-   * and ancestor elements.
-   *
-   * @param elem     The DOM element to find the property for.
-   * @param inherit  If true and property not found on this element, searches
-   *      through element ancestors for property
-   * @param prop     The property name
-   * @return         The named property as a Point
-   */
-  Point getFloatPairProperty( Element elem, String prop, boolean inherit );
+    /**
+     * Returns the a property assigned to an Element that can be interpreted as
+     * a Point with floating-point positioning, and, if not found and inherit is
+     * true, searches for an inheritable property by that name assigned to
+     * parent and ancestor elements.
+     *
+     * @param elem     The DOM element to find the property for.
+     * @param inherit  If true and property not found on this element, searches
+     *      through element ancestors for property
+     * @param prop     The property name
+     * @return         The named property as a Point
+     */
+    Point getFloatPairProperty( Element elem, String prop, boolean inherit );
 
 
-  /**
-   * Returns the value of a property matched to an element cast as a float,
-   * searching ancestor Elements for an inheritable value if not found on the
-   * Element.
-   *
-   * @param elem  The DOM Element to find the property for
-   * @param prop  The property name
-   * @return      The named property as a float
-   */
-  float getFloatProperty( Element elem, String prop );
+    /**
+     * Returns the value of a property matched to an element cast as a float,
+     * searching ancestor Elements for an inheritable value if not found on the
+     * Element.
+     *
+     * @param elem  The DOM Element to find the property for
+     * @param prop  The property name
+     * @return      The named property as a float
+     */
+    float getFloatProperty( Element elem, String prop );
 
 
-  /**
-   * Returns the value of a property matched to an element cast as a float,
-   * inheriting the value from the nearest ancestor if requested
-   *
-   * @param elem     The DOM Element to find the property for
-   * @param prop     The property name
-   * @param inherit  If true, searches ancestor Elements for the property if not
-   *      defined on this Element.
-   * @return         The named property as a float
-   */
-  float getFloatProperty( Element elem, String prop, boolean inherit );
+    /**
+     * Returns the value of a property matched to an element cast as a float,
+     * inheriting the value from the nearest ancestor if requested
+     *
+     * @param elem     The DOM Element to find the property for
+     * @param prop     The property name
+     * @param inherit  If true, searches ancestor Elements for the property if
+     *      not defined on this Element.
+     * @return         The named property as a float
+     */
+    float getFloatProperty( Element elem, String prop, boolean inherit );
 
 
-  /**
-   * Returns the value of a property matched to an element cast as a float,
-   * using the parent float value to determine relative values if requested
-   * (e.g. if the property is a percentage), and inheriting the value if
-   * necessary.
-   *
-   * @param elem          The DOM Element to find the property for
-   * @param prop          The property name
-   * @param parent_value  The Element's parent value for the same property
-   * @return              The named property as a float
-   */
-  float getFloatProperty( Element elem, String prop, float parent_value );
+    /**
+     * Returns the value of a property matched to an element cast as a float,
+     * using the parent float value to determine relative values if requested
+     * (e.g. if the property is a percentage), and inheriting the value if
+     * necessary.
+     *
+     * @param elem          The DOM Element to find the property for
+     * @param prop          The property name
+     * @param parent_value  The Element's parent value for the same property
+     * @return              The named property as a float
+     */
+    float getFloatProperty( Element elem, String prop, float parent_value );
 
 
-  /**
-   * Returns the value of a property matched to an element cast as a float,
-   * using the parent float value to determine relative values if requested
-   * (e.g. if the property is a percentage), inheriting the value if requested.
-   *
-   * @param elem          The DOM Element to find the property for
-   * @param prop          The property name
-   * @param parent_value  The Element's parent value for the same property
-   * @param inherit       If true, inherits the value from the Element's parent
-   * @return              The named property as a float
-   */
-  float getFloatProperty( Element elem, String prop, float parent_value, boolean inherit );
+    /**
+     * Returns the value of a property matched to an element cast as a float,
+     * using the parent float value to determine relative values if requested
+     * (e.g. if the property is a percentage), inheriting the value if
+     * requested.
+     *
+     * @param elem          The DOM Element to find the property for
+     * @param prop          The property name
+     * @param parent_value  The Element's parent value for the same property
+     * @param inherit       If true, inherits the value from the Element's
+     *      parent
+     * @return              The named property as a float
+     */
+    float getFloatProperty( Element elem, String prop, float parent_value, boolean inherit );
 
 
-  /**
-   * Same as <code>getFloatProperty(Element, String, float, boolean)</code>, but
-   * for Node elements
-   *
-   * @param node          The DOM Node to find the property for
-   * @param prop          The property name
-   * @param parent_value  The Node's parent value for the same property
-   * @param inherit       If true, inherits the value from the Node's parent
-   * @return              The named property as a float
-   */
-  float getFloatProperty( Node node, String prop, float parent_value, boolean inherit );
+    /**
+     * Same as <code>getFloatProperty(Element, String, float, boolean)</code>,
+     * but for Node elements
+     *
+     * @param node          The DOM Node to find the property for
+     * @param prop          The property name
+     * @param parent_value  The Node's parent value for the same property
+     * @param inherit       If true, inherits the value from the Node's parent
+     * @return              The named property as a float
+     */
+    float getFloatProperty( Node node, String prop, float parent_value, boolean inherit );
 
 
-  /**
-   * Returns the margin width (all sides) assigned to an Element
-   *
-   * @param elem  The DOM element to find the property for.
-   * @return      The margin property as a Border (for widths)
-   */
-  Border getMarginWidth( Element elem );
+    /**
+     * Returns the margin width (all sides) assigned to an Element
+     *
+     * @param elem  The DOM element to find the property for.
+     * @return      The margin property as a Border (for widths)
+     */
+    Border getMarginWidth( Element elem );
 
 
-  /**
-   * Returns the padding width (all sides) assigned to an Element
-   *
-   * @param elem  The DOM element to find the property for.
-   * @return      The padding property as a Border (for widths)
-   */
-  Border getPaddingWidth( Element elem );
+    /**
+     * Returns the padding width (all sides) assigned to an Element
+     *
+     * @param elem  The DOM element to find the property for.
+     * @return      The padding property as a Border (for widths)
+     */
+    Border getPaddingWidth( Element elem );
 
 
-  /**
-   * Returns the value of a property as a W3C CSSValue instance, inheriting from
-   * the parent element if requested.
-   *
-   * @param elem     The DOM Element to find the property for
-   * @param prop     The property name
-   * @param inherit  If true, inherits the value from the Element's parent
-   * @return         The property value as CSSValue
-   */
-  CSSValue getProperty( Element elem, String prop, boolean inherit );
+    /**
+     * Returns the value of a property as a W3C CSSValue instance, inheriting
+     * from the parent element if requested.
+     *
+     * @param elem     The DOM Element to find the property for
+     * @param prop     The property name
+     * @param inherit  If true, inherits the value from the Element's parent
+     * @return         The property value as CSSValue
+     */
+    CSSValue getProperty( Element elem, String prop, boolean inherit );
 
 
-  /**
-   * Returns the value of a property as a String array, for example, for
-   * font-family declarations, inheriting the property if necessary.
-   *
-   * @param elem  The DOM Element to find the property for
-   * @param prop  The property name
-   * @return      The property value as String array
-   */
-  String[] getStringArrayProperty( Element elem, String prop );
+    /**
+     * Returns the value of a property as a String array, for example, for
+     * font-family declarations, inheriting the property if necessary.
+     *
+     * @param elem  The DOM Element to find the property for
+     * @param prop  The property name
+     * @return      The property value as String array
+     */
+    String[] getStringArrayProperty( Element elem, String prop );
 
 
-  /**
-   * Returns the value of a property as a String, inheriting the property if
-   * necessary.
-   *
-   * @param elem  The DOM Element to find the property for
-   * @param prop  The property name
-   * @return      The property value as String
-   */
-  String getStringProperty( Element elem, String prop );
+    /**
+     * Returns the value of a property as a String, inheriting the property if
+     * necessary.
+     *
+     * @param elem  The DOM Element to find the property for
+     * @param prop  The property name
+     * @return      The property value as String
+     */
+    String getStringProperty( Element elem, String prop );
 
 
-  /**
-   * Returns the value of a property as a String, inheriting the value from the
-   * Element's parent if requested.
-   *
-   * @param elem     The DOM Element to find the property for
-   * @param prop     The property name
-   * @param inherit  If true, inherits the property from the Element's parent if
-   *      necessary.
-   * @return         The property value as String
-   */
-  String getStringProperty( Element elem, String prop, boolean inherit );
+    /**
+     * Returns the value of a property as a String, inheriting the value from
+     * the Element's parent if requested.
+     *
+     * @param elem     The DOM Element to find the property for
+     * @param prop     The property name
+     * @param inherit  If true, inherits the property from the Element's parent
+     *      if necessary.
+     * @return         The property value as String
+     */
+    String getStringProperty( Element elem, String prop, boolean inherit );
 
 
-  /**
-   * Returns the value of a property as a String from a DOM Node instance,
-   * searching ancestor Elements for an inheritable value if not found on the
-   * Element.
-   *
-   * @param node  The DOM Node to find the property for
-   * @param prop  The property name
-   * @return      The property value as String
-   */
-  String getStringProperty( Node node, String prop );
+    /**
+     * Returns the value of a property as a String from a DOM Node instance,
+     * searching ancestor Elements for an inheritable value if not found on the
+     * Element.
+     *
+     * @param node  The DOM Node to find the property for
+     * @param prop  The property name
+     * @return      The property value as String
+     */
+    String getStringProperty( Node node, String prop );
 
 
-  /**
-   * Returns the value of a property as a String, inheriting the value from the
-   * Node's parent if requested.
-   *
-   * @param node     The DOM Node to find the property for.
-   * @param prop     The property name
-   * @param inherit  If true, inherits the property from the Element's parent if
-   *      necessary
-   * @return         The property value as String
-   */
-  String getStringProperty( Node node, String prop, boolean inherit );
+    /**
+     * Returns the value of a property as a String, inheriting the value from
+     * the Node's parent if requested.
+     *
+     * @param node     The DOM Node to find the property for.
+     * @param prop     The property name
+     * @param inherit  If true, inherits the property from the Element's parent
+     *      if necessary
+     * @return         The property value as String
+     */
+    String getStringProperty( Node node, String prop, boolean inherit );
 
 
-  /**
-   * Checks whether a property is defined at all for an Element, inherited or
-   * not.
-   *
-   * @param elem  The DOM Element to find the property for
-   * @param prop  The property name
-   * @return      True if the Element, or an ancestor, has the property defined.
-   */
-  boolean hasProperty( Element elem, String prop );
+    /**
+     * Checks whether a property is defined at all for an Element, inherited or
+     * not.
+     *
+     * @param elem  The DOM Element to find the property for
+     * @param prop  The property name
+     * @return      True if the Element, or an ancestor, has the property
+     *      defined.
+     */
+    boolean hasProperty( Element elem, String prop );
 
 
-  /**
-   * Checks whether a property is defined at all for an Element, searching
-   * ancestor Elements for the property if requested.
-   *
-   * @param elem     The DOM Element to find the property for
-   * @param prop     The property name
-   * @param inherit  If true, searches ancestors for the Element for the
-   *      property as well.
-   * @return         True if the Element has the property defined.
-   */
-  boolean hasProperty( Element elem, String prop, boolean inherit );
+    /**
+     * Checks whether a property is defined at all for an Element, searching
+     * ancestor Elements for the property if requested.
+     *
+     * @param elem     The DOM Element to find the property for
+     * @param prop     The property name
+     * @param inherit  If true, searches ancestors for the Element for the
+     *      property as well.
+     * @return         True if the Element has the property defined.
+     */
+    boolean hasProperty( Element elem, String prop, boolean inherit );
 
 
-  /**
-   * Checks whether a property is defined at all for an Node, searching ancestor
-   * Node for the property if requested.
-   *
-   * @param node     The DOM Node to find the property for
-   * @param prop     The property name
-   * @param inherit  If true, searches ancestors for the Node for the property
-   *      as well.
-   * @return         True if the Node has the property defined.
-   */
-  boolean hasProperty( Node node, String prop, boolean inherit );
+    /**
+     * Checks whether a property is defined at all for an Node, searching
+     * ancestor Node for the property if requested.
+     *
+     * @param node     The DOM Node to find the property for
+     * @param prop     The property name
+     * @param inherit  If true, searches ancestors for the Node for the property
+     *      as well.
+     * @return         True if the Node has the property defined.
+     */
+    boolean hasProperty( Node node, String prop, boolean inherit );
 
 
-  /**
-   * <p>
-   *
-   * Attempts to match any loaded to Elements in the supplied Document, using
-   * CSS2 matching rules on selection. This should be called after all
-   * stylesheets and styles are loaded, but before any properties are retrieved.
-   * </p>
-   *
-   * @param document  PARAM
-   */
-  void matchStyles( Document document );
+    /**
+     * <p>
+     *
+     * Attempts to match any loaded to Elements in the supplied Document, using
+     * CSS2 matching rules on selection. This should be called after all
+     * stylesheets and styles are loaded, but before any properties are
+     * retrieved. </p>
+     *
+     * @param document  PARAM
+     */
+    void matchStyles( Document document );
 
 
-  /**
-   * Parses the CSS style sheet enclosed by the Reader into style information,
-   * and loads this into the associated RuleBank.
-   *
-   * @param reader           A Reader from which to read the style information.
-   * @exception IOException  Throws
-   */
-  void parse( Reader reader )
-    throws IOException;
+    /**
+     * Parses the CSS style sheet enclosed by the Reader into style information,
+     * and loads this into the associated RuleBank.
+     *
+     * @param reader           A Reader from which to read the style
+     *      information.
+     * @exception IOException  Throws
+     */
+    void parse( Reader reader )
+        throws IOException;
 
 
-  /**
-   * Parses the CSS style information from the source parameter, and loads these
-   * rules into the associated RuleBank.
-   *
-   * @param source           A String containing CSS style rules
-   * @exception IOException  Throws
-   */
-  void parse( String source )
-    throws IOException;
+    /**
+     * Parses the CSS style sheet enclosed by the Reader into style information,
+     * and loads this into the associated RuleBank.
+     *
+     * @param reader           A Reader from which to read the style
+     *      information.
+     * @param origin           The origin of the enclosed style information--an
+     *      int constant from XRStyleSheet, e.g. {@link
+     *      com.pdoubleya.xhtmlrenderer.css.XRStyleSheet#AUTHOR}. Used to
+     *      determine precedence of rules derived from the parse sheet.
+     * @exception IOException  Throws
+     */
+    void parse( Reader reader, int origin )
+        throws IOException;
+
+    /**
+     * Parses the CSS style information from the source parameter, and loads
+     * these rules into the associated RuleBank.
+     *
+     * @param source           A String containing CSS style rules
+     * @exception IOException  Throws
+     */
+    void parse( String source )
+        throws IOException;
+
+    /**
+     * Same as {@link #parse(Reader, int)} for a String datasource.
+     *
+     * @param source           A String containing CSS style rules
+     * @param origin           See {@link #parse(Reader, int)}
+     * @exception IOException  {@link #parse(Reader, int)}
+     */
+    public void parse( String source, int origin )
+        throws IOException;
 
 
-  /**
-   * Parses the CSS style information from a "<style>" Element (for example in
-   * XHTML), and loads these rules into the associated RuleBank.
-   *
-   * @param elem             The Element from which to pull a style attribute.
-   * @exception IOException  Throws
-   */
-  void parseInlineStyles( Element elem )
-    throws IOException;
+    /**
+     * Parses the CSS style information from a "<style>" Element (for example in
+     * XHTML), and loads these rules into the associated RuleBank.
+     *
+     * @param elem             The Element from which to pull a style attribute.
+     * @exception IOException  Throws
+     */
+    void parseInlineStyles( Element elem )
+        throws IOException;
 
 
-  /**
-   * Parses the CSS style information from the inline "style" attribute on the
-   * DOM Element, and loads these rules into the associated RuleBank,
-   * automatically associating those styles as matched to the Element.
-   *
-   * @param elem             The Element from which to pull a style attribute.
-   * @exception IOException  Throws
-   */
-  void parseElementStyling( Element elem )
-    throws IOException;
+    /**
+     * Parses the CSS style information from the inline "style" attribute on the
+     * DOM Element, and loads these rules into the associated RuleBank,
+     * automatically associating those styles as matched to the Element.
+     *
+     * @param elem             The Element from which to pull a style attribute.
+     * @exception IOException  Throws
+     */
+    void parseElementStyling( Element elem )
+        throws IOException;
 
 }// end interface
 
