@@ -52,9 +52,9 @@ public class InlineBoxing {
         //for formatting purposes
         Rectangle bounds = new Rectangle();
         bounds.width = c.getExtents().width;
-        Border border = c.getCurrentStyle().getBorderWidth();
-        Border margin = c.getCurrentStyle().getMarginWidth();
-        Border padding = c.getCurrentStyle().getPaddingWidth();
+        Border border = c.getCurrentStyle().getBorderWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
+        Border margin = c.getCurrentStyle().getMarginWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
+        Border padding = c.getCurrentStyle().getPaddingWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
         //below should maybe be done somewhere else?
         bounds.width -= margin.left + border.left + padding.left +
                 padding.right + border.right + margin.right;
@@ -486,6 +486,9 @@ public class InlineBoxing {
 * $Id$
 *
 * $Log$
+* Revision 1.12  2005/01/24 14:36:33  pdoubleya
+* Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+*
 * Revision 1.11  2005/01/16 18:50:05  tobega
 * Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
 *

@@ -39,9 +39,9 @@ public class TableRendering {
         table.restyle = false;
         c.getGraphics().translate(table.x, table.y);
 
-        Border border = c.getCurrentStyle().getBorderWidth();
-        Border margin = c.getCurrentStyle().getMarginWidth();
-        Border padding = c.getCurrentStyle().getPaddingWidth();
+        Border border = c.getCurrentStyle().getBorderWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
+        Border margin = c.getCurrentStyle().getMarginWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
+        Border padding = c.getCurrentStyle().getPaddingWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
 
         c.getGraphics().translate(margin.left + border.left + padding.left,
                 margin.top + border.top + padding.top);

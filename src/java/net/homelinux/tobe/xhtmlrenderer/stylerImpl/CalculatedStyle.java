@@ -94,26 +94,6 @@ public class CalculatedStyle {
     }
 
 
-    /**
-     * Constructor for the XRDerivedStyleImpl object
-     *
-     * @param forElement  PARAM
-     * @param rule        PARAM
-     */
-    /*public CalculatedStyle(XRElementImpl forElement, XRStyleRule rule) {
-        _xrElement = forElement;
-
-        _matchedStyles.add( rule );
-
-        List props = pullFromRule( rule );
-        Iterator iter = props.iterator();
-        while ( iter.hasNext() ) {
-            XRPropertyImpl property = (XRPropertyImpl)iter.next();
-            _derivedPropertiesByName.put( property.propertyName(), property );
-        }
-    }*/
-
-
     /** Constructor for the XRDerivedStyleImpl object */
     protected CalculatedStyle() {
         _derivedPropertiesByName = new TreeMap();
@@ -340,8 +320,21 @@ public class CalculatedStyle {
         }
         return new DerivedProperty(name, computed);
     }
+} // end class
 
+/*
 
+ * $Id$
 
-}
+ *
+
+ * $Log$
+ * Revision 1.5  2005/01/24 14:36:32  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
+
+ *
+
+*/
+
 

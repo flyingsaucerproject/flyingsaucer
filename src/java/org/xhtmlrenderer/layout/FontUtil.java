@@ -70,7 +70,7 @@ public class FontUtil {
         int val = (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont(c), "Test").getHeight());
         //TODO: line-height should probably be resolved by CalculatedStyle (possibly with input of used font-size)
         if (!style.propertyByName(CSSName.LINE_HEIGHT).computedValue().cssValue().getCssText().equals("normal")) {
-            val = (int) style.getFloatPropertyRelative(CSSName.LINE_HEIGHT, val);
+            val = (int) style.getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, c.getBlockFormattingContext().getHeight()); // CLEAN
         }
         return val;
     }
@@ -106,7 +106,9 @@ public class FontUtil {
             return f;
         }
 
-        float size = style.propertyByName(CSSName.FONT_SIZE).computedValue().asFloat();
+        //CLEAN
+        // float size = style.propertyByName(CSSName.FONT_SIZE).computedValue().asFloat();
+        float size = style.getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, c.getBlockFormattingContext().getHeight());
 
         String weight = style.propertyByName(CSSName.FONT_WEIGHT).computedValue().asString();
         String[] families = style.propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
@@ -145,6 +147,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/01/24 14:36:32  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
  * Revision 1.26  2005/01/10 01:58:36  tobega
  * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
  *

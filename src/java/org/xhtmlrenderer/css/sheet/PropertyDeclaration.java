@@ -19,6 +19,10 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import java.util.*;
+
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.sheet.factory.*;
 
 /**
  * Represents a single property declared in a CSS rule set. A
@@ -31,6 +35,12 @@ package org.xhtmlrenderer.css.sheet;
  * @author Torbjörn Gannholm
  */
 public class PropertyDeclaration {
+    private String propName;
+    private org.w3c.dom.css.CSSPrimitiveValue cssPrimitiveValue;
+
+    private final static Map PD_FACTORIES;
+    private final static PropertyDeclarationFactory DEFAULT_PD_FACTORY;
+    
     /**
      * The XRProperty instance we are wrapping.
      */
@@ -95,6 +105,16 @@ public class PropertyDeclaration {
      *             it was declared. See {@link Stylesheet#USER_AGENT}, {@link
      *             Stylesheet#USER}, and {@link Stylesheet#AUTHOR}.
      */
+    //public PropertyDeclaration( org.xhtmlrenderer.css.XRProperty p, boolean imp, int orig ) {
+    public PropertyDeclaration( String name, 
+                                org.w3c.dom.css.CSSPrimitiveValue value,
+                                boolean imp, 
+                                int orig ) {
+        //base = p;
+        propName = name;
+        cssPrimitiveValue = value;
+    }
+
     public PropertyDeclaration(org.xhtmlrenderer.css.XRProperty p, boolean imp, int orig) {
         base = p;
         important = imp;
@@ -138,8 +158,11 @@ public class PropertyDeclaration {
      * @return See desc.
      */
     public String getName() {
-        return base.propertyName();
+        // CLEAN return base.propertyName();
+        return propName;
     }
+    
+    public String toString() { return getName() + ": " + getValue().toString(); }
 
     /**
      * Returns the specified {@link org.w3c.dom.css.CSSValue} for this property.
@@ -149,8 +172,52 @@ public class PropertyDeclaration {
      *
      * @return See desc.
      */
-    public org.w3c.dom.css.CSSValue getValue() {
-        return base.specifiedValue().cssValue();
+    public org.w3c.dom.css.CSSPrimitiveValue getValue() {
+        return cssPrimitiveValue;
+    }
+    
+    public static PropertyDeclarationFactory newFactory(String forProperty) {
+        PropertyDeclarationFactory pdf = (PropertyDeclarationFactory)PD_FACTORIES.get(forProperty);
+        if ( pdf == null ) {
+            pdf = DEFAULT_PD_FACTORY;   
+        }
+        return pdf;
+    }
+    
+    static {
+        DEFAULT_PD_FACTORY = DefaultPropertyDeclarationFactory.instance();
+        
+        PD_FACTORIES = new HashMap();
+
+        PD_FACTORIES.put( CSSName.BACKGROUND_SHORTHAND, BackgroundPropertyDeclarationFactory.instance() );
+        PD_FACTORIES.put( CSSName.BACKGROUND_POSITION, BackgroundPositionPropertyDeclarationFactory.instance() );
+
+        PD_FACTORIES.put( CSSName.BORDER_SHORTHAND, BorderPropertyDeclarationFactory.instance() );
+        PD_FACTORIES.put( CSSName.BORDER_COLOR_SHORTHAND,
+                          BorderColorPropertyDeclarationFactory.instance() );
+
+        PD_FACTORIES.put( CSSName.BORDER_STYLE_SHORTHAND, BorderStylePropertyDeclarationFactory.instance() );
+        PD_FACTORIES.put( CSSName.BORDER_WIDTH_SHORTHAND, BorderWidthPropertyDeclarationFactory.instance() );
+
+        PD_FACTORIES.put( CSSName.BORDER_TOP_SHORTHAND,   BorderSidePropertyDeclarationFactory.instance() );
+        PD_FACTORIES.put( CSSName.BORDER_RIGHT_SHORTHAND, BorderSidePropertyDeclarationFactory.instance() );
+        PD_FACTORIES.put( CSSName.BORDER_BOTTOM_SHORTHAND,BorderSidePropertyDeclarationFactory.instance() );
+        PD_FACTORIES.put( CSSName.BORDER_LEFT_SHORTHAND,  BorderSidePropertyDeclarationFactory.instance() );
+
+        PD_FACTORIES.put( CSSName.FONT_SHORTHAND, FontPropertyDeclarationFactory.instance() );
+        PD_FACTORIES.put( CSSName.FONT_FAMILY, FontFamilyPropertyDeclarationFactory.instance() );
+
+        PD_FACTORIES.put( CSSName.LIST_STYLE_SHORTHAND,       
+                          ListStylePropertyDeclarationFactory.instance() );
+
+        PD_FACTORIES.put( CSSName.MARGIN_SHORTHAND,       
+                          MarginPropertyDeclarationFactory.instance() );
+
+        PD_FACTORIES.put( CSSName.OUTLINE_SHORTHAND,       
+                          OutlinePropertyDeclarationFactory.instance() );
+
+        PD_FACTORIES.put( CSSName.PADDING_SHORTHAND,       
+                          PaddingPropertyDeclarationFactory.instance() );
     }
 }// end class
 
@@ -158,6 +225,9 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/01/24 14:36:30  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
  * Revision 1.5  2004/12/11 18:18:07  tobega
  * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
  *

@@ -515,6 +515,9 @@ class DOMTreeModel implements TreeModel {
      * Description of the Field
      */
     Document doc;
+    
+    /** Our root for display */
+    Node root;
 
     /**
      * Description of the Field
@@ -534,7 +537,17 @@ class DOMTreeModel implements TreeModel {
     public DOMTreeModel(Document doc) {
         this.displayableNodes = new HashMap();
         this.doc = doc;
-
+        setRoot("body");
+    }
+    
+    private void setRoot(String rootNodeName) {
+        Node tempRoot = doc.getDocumentElement();
+        NodeList nl = tempRoot.getChildNodes();
+        for ( int i=0; i < nl.getLength(); i++ ) {
+            if ( nl.item(i).getNodeName().toLowerCase().equals(rootNodeName)) {
+                this.root = nl.item(i);
+            }
+        }
     }
 
 
@@ -673,7 +686,7 @@ class DOMTreeModel implements TreeModel {
      */
     public Object getRoot() {
 
-        return doc;
+        return this.root;
     }
 
 
@@ -774,7 +787,11 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
 
         }
 
-        return super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+        DefaultTreeCellRenderer tcr = (DefaultTreeCellRenderer)super.getTreeCellRendererComponent( tree, value, selected, expanded, leaf, row, hasFocus );
+        tcr.setOpenIcon(null);
+        tcr.setClosedIcon(null);
+        
+        return super.getTreeCellRendererComponent( tree, value, selected, expanded, leaf, row, hasFocus );
     }
 }//}}}
 
@@ -782,6 +799,9 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/01/24 14:36:35  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
  * Revision 1.10  2005/01/03 23:40:40  tobega
  * Cleaned out unnecessary styling/matching code. styling/matching is now called during boxing/rendering rather than as a separate stage.
  *

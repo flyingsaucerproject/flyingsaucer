@@ -37,10 +37,10 @@ import org.xhtmlrenderer.css.RuleNormalizer;
 
 
 /**
- * Default XRProperty implementation.
+ * A derived property TODO
  *
+ * @author    Torbjörn Gannholm
  * @author    Patrick Wright
- *
  */
 public class DerivedProperty {
     /** Property's text name, e.g. "margin-top" */
@@ -50,12 +50,9 @@ public class DerivedProperty {
     private DerivedValue _computedValue;
 
     /**
-     * Constructor for the XRPropertyImpl object
-     *
-     * @param style     PARAM
-     * @param propName  PARAM
-     * @param sequence  PARAM
-     * @param value     PARAM
+     * 
+     * @param propName
+     * @param value
      */
     public DerivedProperty(String propName, DerivedValue value) {
         _propName = propName;
@@ -65,9 +62,13 @@ public class DerivedProperty {
     /**
      * Deep copy operation for the purposes of inheriting a computed value.
      * Used when a child element needs the parent element's computed value
-     * for a property. The following is true of the copy: 1) is resolved
-     * 2) computed value is same as parent's computed 3) actual value
-     * is same as parent's actual value. Any contained SAC instances are not
+     * for a property. The following is true of the copy:
+     * <ol>
+     *  <li>is resolved</li>
+     *  <li>computed value is same as parent's computed</li>
+     *  <li>actual value</li>
+     * </ol>
+     * is same as parent's actual value. Any contained SAC {@link CSSValue} instances are not
      * deep-copied.
      *
      * @return   See desc
@@ -85,8 +86,6 @@ public class DerivedProperty {
     public DerivedValue computedValue() {
         //a derived property only has a calculated value!
         return _computedValue;
-        //resolveValue();
-        //return ( ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()) ? _specifiedValue : _computedValue );
     }
 
     /**
@@ -109,4 +108,20 @@ public class DerivedProperty {
     }
 
 }// end class
+
+/*
+
+ * $Id$
+
+ *
+
+ * $Log$
+ * Revision 1.3  2005/01/24 14:36:31  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
+
+ *
+
+*/
+
 

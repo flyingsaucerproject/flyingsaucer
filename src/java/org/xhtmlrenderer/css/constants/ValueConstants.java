@@ -23,9 +23,13 @@ package org.xhtmlrenderer.css.constants;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.logging.*;
+
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
-import org.xhtmlrenderer.css.XRValue;
+
+import org.xhtmlrenderer.util.GeneralUtil;
+import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 
@@ -34,12 +38,13 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  *
  * @author   empty
  */
-public class ValueConstants {
+public final class ValueConstants {
     /**
      * Type descriptions--a crude approximation taken by scanning CSSValue
      * statics
      */
     private final static List TYPE_DESCRIPTIONS;
+    private static final Map sacTypesStrings;
 
     /**
      * A text representation of the CSS type for this value.
@@ -69,29 +74,32 @@ public class ValueConstants {
      * Returns true if the specified value was absolute (even if we have a
      * computed value for it), meaning that either the value can be used
      * directly (e.g. pixels) or there is a fixed context-independent conversion
-     * for it (e.g. inches).
+     * for it (e.g. inches). Proportional types (e.g. %) return false.
      *
-     * @param cssValue  The CSSValue instance to check.
+     * @param primitive  The CSSValue instance to check.
      * @return          See desc.
      */
-    public static boolean isAbsoluteUnit( CSSValue cssValue ) {
-        // WARN: this will fail if not a primitive value
-        if ( !( cssValue.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) ) {
-            return false;
-        }
-
-        // HACK: in case someone passes an instance of XRValue
+    public static boolean isAbsoluteUnit( CSSPrimitiveValue primitive ) {
         short type = 0;
-        if ( cssValue instanceof XRValue ) {
-            CSSValue nested = ( (XRValue)cssValue ).cssValue();
-            type = ( (CSSPrimitiveValue)nested ).getPrimitiveType();
-        } else {
-            type = ( (CSSPrimitiveValue)cssValue ).getPrimitiveType();
-        }
+        type = ( (CSSPrimitiveValue)primitive ).getPrimitiveType();
+        return isAbsoluteUnit(type);
+    }
 
+    /**
+     * Returns true if the specified type absolute (even if we have a
+     * computed value for it), meaning that either the value can be used
+     * directly (e.g. pixels) or there is a fixed context-independent conversion
+     * for it (e.g. inches). Proportional types (e.g. %) return false.
+     *
+     * @param type  The CSSValue type to check.
+     * @return          See desc.
+     */
+    private static boolean isAbsoluteUnit( short type ) {
         // TODO: check this list...
+
+        // note, all types are included here to make sure none are missed
         switch ( type ) {
-            // relative length or size
+            // proportional length or size
             case CSSPrimitiveValue.CSS_EMS:
             case CSSPrimitiveValue.CSS_EXS:
             case CSSPrimitiveValue.CSS_PERCENTAGE:
@@ -136,14 +144,17 @@ public class ValueConstants {
             case CSSPrimitiveValue.CSS_STRING:
                 return true;
             case CSSPrimitiveValue.CSS_UNKNOWN:
+                XRLog.cascade(Level.WARNING, "Asked whether type was absolute, given CSS_UNKNOWN as the type. " +
+                        "Might be one of those funny values like background-position.");
+                GeneralUtil.dumpShortException(new Exception());
+                // fall-through
             default:
-                System.out.println( cssValue.getCssText() + ", returning false" );
                 return false;
         }
     }
 
     /**
-     * Gets the cssValueTypeDesc attribute of the XRValueImpl object
+     * Gets the cssValueTypeDesc attribute of the {@link CSSValue} object
      *
      * @param cssValue  PARAM
      * @return          The cssValueTypeDesc value
@@ -161,19 +172,6 @@ public class ValueConstants {
             default:
                 return "UNKNOWN";
         }
-    }
-
-    /**
-     * Returns true if the value's type represents a number. Note, does not
-     * actually check the value, just the type, which is given us by the CSS
-     * unit type. This is a shorthand way of saying, did the user declare this
-     * as a number unit (like px)?
-     *
-     * @param cssValue  The CSSPrimitiveValue to check
-     * @return          See desc.
-     */
-    public static boolean isNumber( CSSPrimitiveValue cssValue ) {
-        return isNumber( cssValue.getPrimitiveType() );
     }
 
     /**
@@ -245,6 +243,48 @@ public class ValueConstants {
         } catch ( Exception ex ) {
             throw new XRRuntimeException( "Could not build static list of CSS type descriptions.", ex );
         }
+
+        // HACK: this is a quick way to perform the lookup, but dumb if the short assigned are > 100; but the compiler will tell us that (PWW 21-01-05)
+        sacTypesStrings = new HashMap(25);
+        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_EMS), "em");
+        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_EXS), "ex");
+        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PX), "px");
+        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PERCENTAGE), "%");
+        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_IN), "in");
+        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_CM), "cm");
+        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_MM), "mm");
+        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PT), "pt");
+        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PC), "pc");
+    }
+
+    public static short sacPrimitiveTypeForString(String type) {
+        if ( "em".equals(type)){
+            return CSSPrimitiveValue.CSS_EMS;
+        } else if ( "ex".equals(type)){
+            return CSSPrimitiveValue.CSS_EXS;
+        } else if ( "px".equals(type)){
+            return CSSPrimitiveValue.CSS_PX;
+        } else if ( "%".equals(type)){
+            return CSSPrimitiveValue.CSS_PERCENTAGE;
+        } else if ( "in".equals(type)){
+            return CSSPrimitiveValue.CSS_IN;
+        } else if ( "cm".equals(type)){
+            return CSSPrimitiveValue.CSS_CM;
+        } else if ( "mm".equals(type)){
+            return CSSPrimitiveValue.CSS_MM;
+        } else if ( "pt".equals(type)){
+            return CSSPrimitiveValue.CSS_PT;
+        } else if ( "pc".equals(type)){
+            return CSSPrimitiveValue.CSS_PC;
+        } else if ( type == null ){
+            return CSSPrimitiveValue.CSS_PT;
+        } else {
+            throw new XRRuntimeException("Unknown type on CSS value: " + type);
+        }
+    }
+
+    public static String stringForSACPrimitiveType(short type) {
+        return (String)sacTypesStrings.get(new Short(type));
     }
 }// end class
 
@@ -252,6 +292,9 @@ public class ValueConstants {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/24 14:36:32  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
  * Revision 1.3  2004/11/16 10:38:21  pdoubleya
  * Use XRR exception, added comments.
  *

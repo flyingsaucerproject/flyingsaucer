@@ -283,15 +283,17 @@ public class Box {
      */
     public int totalHorizontalPadding(CalculatedStyle style) {
         int pd = 0;
-        Border margin = style.getMarginWidth();
+
+        // ASK: where do we get the containing height/width here
+        Border margin = style.getMarginWidth(width, height);
         if (margin != null) {
             pd += margin.left + margin.right;
         }
-        Border padding = style.getPaddingWidth();
+        Border padding = style.getPaddingWidth(width, height);
         if (padding != null) {
             pd += padding.left + padding.right;
         }
-        Border border = style.getBorderWidth();
+        Border border = style.getBorderWidth(width, height);
         if (border != null) {
             pd += border.left + border.right;
         }
@@ -306,15 +308,15 @@ public class Box {
      */
     public int totalVerticalPadding(CalculatedStyle style) {
         int pd = 0;
-        Border margin = style.getMarginWidth();
+        Border margin = style.getMarginWidth(width, height);
         if (margin != null) {
             pd += margin.top + margin.bottom;
         }
-        Border padding = style.getPaddingWidth();
+        Border padding = style.getPaddingWidth(width, height);
         if (padding != null) {
             pd += padding.top + padding.bottom;
         }
-        Border border = style.getBorderWidth();
+        Border border = style.getBorderWidth(width, height);
         if (border != null) {
             pd += border.top + border.bottom;
         }
@@ -329,15 +331,15 @@ public class Box {
      */
     public int totalTopPadding(CalculatedStyle style) {
         int pd = 0;
-        Border margin = style.getMarginWidth();
+        Border margin = style.getMarginWidth(width, height);
         if (margin != null) {
             pd += margin.top;
         }
-        Border padding = style.getPaddingWidth();
+        Border padding = style.getPaddingWidth(width, height);
         if (padding != null) {
             pd += padding.top;
         }
-        Border border = style.getBorderWidth();
+        Border border = style.getBorderWidth(width, height);
         if (border != null) {
             pd += border.top;
         }
@@ -352,15 +354,15 @@ public class Box {
      */
     public int totalLeftPadding(CalculatedStyle style) {
         int pd = 0;
-        Border margin = style.getMarginWidth();
+        Border margin = style.getMarginWidth(width, height);
         if (margin != null) {
             pd += margin.left;
         }
-        Border padding = style.getPaddingWidth();
+        Border padding = style.getPaddingWidth(width, height);
         if (padding != null) {
             pd += padding.left;
         }
-        Border border = style.getBorderWidth();
+        Border border = style.getBorderWidth(width, height);
         if (border != null) {
             pd += border.left;
         }
@@ -369,15 +371,15 @@ public class Box {
 
     public int totalRightPadding(CalculatedStyle style) {
         int pd = 0;
-        Border margin = style.getMarginWidth();
+        Border margin = style.getMarginWidth(width, height);
         if (margin != null) {
             pd += margin.right;
         }
-        Border padding = style.getPaddingWidth();
+        Border padding = style.getPaddingWidth(width, height);
         if (padding != null) {
             pd += padding.right;
         }
-        Border border = style.getBorderWidth();
+        Border border = style.getBorderWidth(width, height);
         if (border != null) {
             pd += border.right;
         }
@@ -650,6 +652,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2005/01/24 14:36:35  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
  * Revision 1.40  2005/01/16 18:50:05  tobega
  * Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
  *

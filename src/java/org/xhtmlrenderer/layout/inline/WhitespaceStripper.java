@@ -150,6 +150,10 @@ public class WhitespaceStripper {
     static boolean stripWhitespace(CalculatedStyle style, boolean collapseLeading, TextContent tc) {
 
         String whitespace = style.getStringProperty(CSSName.WHITE_SPACE);
+        if ( whitespace == null ) {
+            System.out.println("NO SUCH VALUE: WHITESPACE");
+            style.dumpProperties();
+        }
         String text = tc.getText();
 
         // do step 1

@@ -178,12 +178,22 @@ public class RuleNormalizer {
      * @param prop PARAM
      * @param rule PARAM
      */
-    private void expandProperty(String prop, CSSStyleRule rule) {
-        if (prop.equals("color") ||
-                prop.equals("background-color") ||
-                prop.equals("border-color")) {
-            String value = rule.getStyle().getPropertyValue(prop);
-            rule.getStyle().setProperty(prop, getColorHex(value), rule.getStyle().getPropertyPriority(prop));
+    private void expandProperty( String prop, CSSStyleRule rule ) {
+        if ( prop.equals( "color" ) ||
+                prop.equals( "background-color" )) {
+            String value = rule.getStyle().getPropertyValue( prop );
+            rule.getStyle().setProperty( prop, getColorHex( value ), rule.getStyle().getPropertyPriority( prop ) );
+        } else if ( prop.equals( "border-color" ) ) {
+            String value = rule.getStyle().getPropertyValue( prop );
+            if ( value.indexOf(" ") > 0 && value.indexOf("rgb") == -1 ) {
+                String colors[] = value.split(" ");
+                for ( int i=0; i < colors.length; i++ ) {
+                    String actual = getColorHex( colors[i].trim() );
+                    rule.getStyle().setProperty( prop, actual, rule.getStyle().getPropertyPriority( prop ) );
+                }
+            } else {
+                rule.getStyle().setProperty( prop, getColorHex( value ), rule.getStyle().getPropertyPriority( prop ) );
+            }
             return;
         } else if (prop.equals("padding")) {
             expand(prop, rule);
@@ -317,14 +327,6 @@ public class RuleNormalizer {
         return false;
     }
 
-    /*
-     * private boolean isBorderWidth(String test) {
-     * if(test.equals("thick")) { return true; }
-     * if(test.equals("medium")) { return true; }
-     * if(test.equals("thin")) { return true; }
-     * return isDimension(test);
-     * }
-     */
     /**
      * only supports px right now
      *
@@ -715,7 +717,7 @@ public class RuleNormalizer {
         FONT_STYLES.add("italic");
         FONT_STYLES.add("oblique");
 
-    }// end main()
+    }// end static
 
 }
 
@@ -723,6 +725,9 @@ public class RuleNormalizer {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/01/24 14:36:30  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
  * Revision 1.6  2004/12/12 03:32:55  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

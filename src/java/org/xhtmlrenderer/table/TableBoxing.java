@@ -82,14 +82,16 @@ public class TableBoxing {
 
         c.pushStyle(content.getStyle());
         // set up the border spacing
-        float border_spacing = c.getCurrentStyle().getFloatProperty(CSSName.BORDER_SPACING);
-        table_box.spacing = new Point((int) border_spacing,
-                (int) border_spacing);
+        // CLEAN
+        // float border_spacing = c.getCurrentStyle().getFloatProperty(CSSName.BORDER_SPACING);
+        float border_spacing_x = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getWidth());
+        float border_spacing_y = c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getHeight());
+        table_box.spacing = new Point((int) border_spacing_x, (int) border_spacing_y);
 
         // set up the width
         int fixed_width = c.getExtents().width;
         if (content.getStyle().hasProperty(CSSName.WIDTH)) {
-            fixed_width = (int) c.getCurrentStyle().getFloatPropertyRelative("width", c.getExtents().width);
+            fixed_width = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth("width", c.getExtents().width);
         }
         //not used: int orig_fixed_width = fixed_width;
 
@@ -285,6 +287,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.5  2005/01/24 14:36:36  pdoubleya
+   Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+
    Revision 1.4  2005/01/16 18:50:07  tobega
    Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
 

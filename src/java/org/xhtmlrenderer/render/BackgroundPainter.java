@@ -51,9 +51,11 @@ public class BackgroundPainter {
             return;
         }
 
-        Border border = c.getCurrentStyle().getBorderWidth();
+        int width = block.getWidth();
+        int height = block.getHeight();
+        Border border = c.getCurrentStyle().getBorderWidth(width, height);
         if (border == null) return;
-        Border margin = c.getCurrentStyle().getMarginWidth();
+        Border margin = c.getCurrentStyle().getMarginWidth(width, height);
         Rectangle box = new Rectangle(block.x + margin.left + border.left,
                 block.y + margin.top + border.top,
                 block.width - margin.left - margin.right - border.left - border.right,
@@ -80,6 +82,7 @@ public class BackgroundPainter {
         }
 
         if (block.background_image != null) {
+            // CLEAN System.out.println("[" + block.background_image.hashCode() + "]   background-image: OK to paint");
             int left_insets = box.x;
             int top_insets = box.y;
             int back_width = box.width;
@@ -124,6 +127,15 @@ public class BackgroundPainter {
              */
             xoff += (int) ((double) (back_width - iw) * (double) ((double) block.background_position_horizontal / (double) 100));
             yoff -= (int) ((double) (back_height - ih) * (double) ((double) block.background_position_vertical / (double) 100));
+            /* CLEAN
+            System.out.println("[" + block.background_image.hashCode() +
+                    "]   background-image: box_width " + back_width +
+                    ", image-width " + iw +
+                    ", block.bgp_horizontal " + block.background_position_horizontal);
+            System.out.println("[" + block.background_image.hashCode() +
+                    "]   background-image: box_height " + back_height +
+                    ", image-height " + ih +
+                    ", block.bgp_vertical " + block.background_position_vertical);*/
 
             // calculations for fixed tile images
             /* not used
@@ -162,6 +174,8 @@ public class BackgroundPainter {
                 tileFill(c.getGraphics(), block.background_image,
                         new Rectangle(left_insets, top_insets, back_width, back_height),
                         xoff, -yoff, horiz, vert);
+                // CLEAN System.out.println("[" + block.background_image.hashCode() + "]   background-image: left_insets " + left_insets + ", top_insets " + top_insets + ", xoff " + xoff + ", yoff " + yoff);
+                // CLEAN System.out.println("[" + block.background_image.hashCode() + "]   background-image: painting at " + (left_insets + xoff) + ", " + (top_insets + -yoff));
             }
             //TODO. make conf controlled Uu.p("setting the clip rect");
             c.getGraphics().setClip(oldclip);
@@ -217,6 +231,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/01/24 14:36:34  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
  * Revision 1.16  2005/01/10 01:58:37  tobega
  * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
  *

@@ -28,19 +28,19 @@ public class Fixed {
 
             CalculatedStyle style = c.getCurrentStyle();
             if (style.hasProperty("top")) {
-                box.top = (int) style.getFloatPropertyRelative("top", (float) rect.getHeight());
+                box.top = (int) style.getFloatPropertyProportionalHeight("top", (float) (rect.getHeight()));
                 box.top_set = true;
             }
             if (style.hasProperty("right")) {
-                box.right = (int) style.getFloatPropertyRelative("right", (float) (rect.getWidth()));
+                box.right = (int) style.getFloatPropertyProportionalWidth("right", (float) (rect.getWidth()));
                 box.right_set = true;
             }
             if (style.hasProperty("bottom")) {
-                box.bottom = (int) style.getFloatPropertyRelative("bottom", (float) (rect.getHeight()));
+                box.bottom = (int) style.getFloatPropertyProportionalHeight("bottom", (float) (rect.getHeight()));
                 box.bottom_set = true;
             }
             if (style.hasProperty("left")) {
-                box.left = (int) style.getFloatPropertyRelative("left", (float) (rect.getWidth()));
+                box.left = (int) style.getFloatPropertyProportionalWidth("left", (float) (rect.getWidth()));
                 box.left_set = true;
             }
 

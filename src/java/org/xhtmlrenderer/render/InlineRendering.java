@@ -323,7 +323,7 @@ public class InlineRendering {
         int old_height = inline.height;
         inline.height += inline.totalVerticalPadding(c.getCurrentStyle());
         BoxRendering.paintBackground(c, inline);
-        Border margin = c.getCurrentStyle().getMarginWidth();
+        Border margin = c.getCurrentStyle().getMarginWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
 
         Rectangle bounds = new Rectangle(inline.x + margin.left,
                 inline.y + margin.top,

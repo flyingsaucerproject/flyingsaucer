@@ -65,7 +65,7 @@ public class VerticalAlign {
             //HACK: for now, just align the top of this box with the top of the line
             baselineOffset = descent - (curr_line.height - curr_line.getBaseline());
         } else {
-            baselineOffset = (int) c.getCurrentStyle().getFloatPropertyRelative(CSSName.VERTICAL_ALIGN, blockLineHeight);
+            baselineOffset = (int) c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.VERTICAL_ALIGN, c.getBlockFormattingContext().getHeight());
         }
         return baselineOffset;
     }

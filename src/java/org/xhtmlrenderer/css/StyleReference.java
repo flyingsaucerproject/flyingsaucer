@@ -118,10 +118,14 @@ public class StyleReference {
     }
 
     /**
-     * Gets the derivedPropertiesMap attribute of the StyleReference object
+     * Returns a Map keyed by CSS property names (e.g. 'border-width'), and the assigned value
+     * as a SAC CSSValue instance. The properties should have been matched to the element when
+     * the Context was established for this StyleReference on the Document to which the Element
+     * belongs. See {@link org.xhtmlrenderer.swing.BasicPanel#setDocument(Document, java.net.URL)}
+     * for an example of how to establish a StyleReference and associate to a Document.
      *
-     * @param e PARAM
-     * @return The derivedPropertiesMap value
+     * @param e The DOM Element for which to find properties
+     * @return Map of CSS property names to CSSValue instance assigned to it.
      */
     public java.util.Map getCascadedPropertiesMap(Element e) {
         CascadedStyle cs = _matcher.getCascadedStyle(e, false);//this is only for debug, I think
@@ -228,6 +232,40 @@ public class StyleReference {
         return infos;
     }
 
+    /**
+     * <p/>
+     * <p/>
+     * Attempts to match any styles loaded to Elements in the supplied Document,
+     * using CSS2 matching guidelines re: selection to prepare internal lookup
+     * routines for property lookup methods. This should be called after all stylesheets and
+     * styles are found, but before any properties are retrieved. </p>
+     * The linked stylesheets are lazy-loaded by the matcher if needed
+     *
+     * @param infos the list of StylesheetInfos. Any needed stylesheets not in cache will be loaded by matcher
+     */
+/*    private void matchStyles(List infos) {
+        long st = System.currentTimeMillis();
+        try {
+
+            XRLog.match("No of stylesheets = " + infos.size());
+            System.out.println("media = " + _context.getMedia());
+            _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(_doc, _attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
+
+            // now we have a match-map, apply against our entire Document....restyleTree() is recursive
+            Element root = _doc.getDocumentElement();
+            _styler = new org.xhtmlrenderer.css.style.Styler();
+            _styler.setMatcher(_matcher);
+            _styler.styleTree(root);
+        } catch (RuntimeException re) {
+            throw new XRRuntimeException("Failed on matchStyles(), unknown RuntimeException.", re);
+        } catch (Exception e) {
+            throw new XRRuntimeException("Failed on matchStyles(), unknown Exception.", e);
+        }
+        long el = System.currentTimeMillis() - st;
+        XRLog.match("TIME: match styles  " + el + "ms");
+    }
+=======
+>>>>>>> 1.19*/
 }
 
 /*
@@ -237,6 +275,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/01/24 14:36:30  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
  * Revision 1.20  2005/01/16 18:50:03  tobega
  * Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
  *
@@ -277,11 +318,6 @@ public class StyleReference {
  * modified media to use the value from the rendering context
  * added the inline-block box
  * - j
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
  *
  * Revision 1.17  2004/11/30 23:47:56  tobega
  * At-media rules should now work (not tested). Also fixed at-import rules, which got broken at previous modification.

@@ -27,6 +27,11 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
  */
 public class Styler {
     /**
+     * Description of the Field
+     */
+    private java.util.HashMap _styleMap = new java.util.HashMap();
+
+    /**
      * Cache styles that have the same parent style and same cascaded properties
      */
     private java.util.HashMap _styleCache = new java.util.HashMap();
@@ -37,6 +42,50 @@ public class Styler {
     public Styler() {
     }
 
+    /**
+     * Applies matches to Element and its children, recursively. StyleMap should
+     * have been re-loaded before calling this. <p/>
+     * <p/>
+     * TODO: change matchElement, then this method is not needed
+     *
+     * @param elem PARAM
+     */
+/*
+    public void styleTree(org.w3c.dom.Element elem) {
+        CalculatedStyle parent = null;
+
+        if (elem.getOwnerDocument().getDocumentElement() == elem) {
+            _styleCache = new java.util.HashMap();
+            parent = new EmptyStyle();
+        } else {
+            org.w3c.dom.Node pnode = elem.getParentNode();
+            if (pnode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                parent = getCalculatedStyle((org.w3c.dom.Element) pnode);
+            }
+            if (parent == null) {
+                throw new RuntimeException("Applying matches to elements, found an element with no mapped parent; can't continue.");
+            }
+        }
+        org.xhtmlrenderer.css.newmatch.CascadedStyle matched = _matcher.getCascadedStyle( elem );
+
+        CalculatedStyle cs = getDerivedStyle(parent, matched);
+
+        _styleMap.put(elem, cs);
+
+        // apply rules from style attribute on element, if any
+        // elementStyling is now responsibility of Matcher
+        org.w3c.dom.NodeList nl = elem.getChildNodes();
+        for (int i = 0, len = nl.getLength(); i < len; i++) {
+            org.w3c.dom.Node n = nl.item(i);
+            if (n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                styleTree((org.w3c.dom.Element) n);
+            }
+        }
+    }
+
+=======
+>>>>>>> 1.12
+*/
     public CalculatedStyle getDerivedStyle(CalculatedStyle parent, CascadedStyle matched) {
         CalculatedStyle cs = null;
         StringBuffer sb = new StringBuffer();
@@ -53,12 +102,18 @@ public class Styler {
 } // end class
 
 /*
+<<<<<<< Styler.java
+ * $Id$
+=======
 
  * $Id$
 
+>>>>>>> 1.12
  *
-
  * $Log$
+ * Revision 1.13  2005/01/24 14:36:31  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
  * Revision 1.12  2005/01/03 23:40:40  tobega
  * Cleaned out unnecessary styling/matching code. styling/matching is now called during boxing/rendering rather than as a separate stage.
  *
@@ -80,9 +135,7 @@ public class Styler {
  * Removed some unnecessary SAC member variables that were only used in initialization.
  * CVS log section.
  *
-
  *
-
 */
 
 

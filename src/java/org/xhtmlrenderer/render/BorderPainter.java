@@ -50,7 +50,9 @@ public class BorderPainter {
         CalculatedStyle style = ctx.getCurrentStyle();
 
         BorderColor border_color = style.getBorderColor();
-        Border border = style.getBorderWidth();
+        int width = (int)bounds.getWidth();
+        int height = (int)bounds.getHeight();
+        Border border = style.getBorderWidth(width, height);
         //Border margin = style.getMarginWidth();
 
         /*Rectangle bounds = new Rectangle(box.x + margin.left,
@@ -346,6 +348,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/01/24 14:36:34  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
  * Revision 1.16  2005/01/09 15:22:49  tobega
  * Prepared improved handling of margins, borders and padding.
  *

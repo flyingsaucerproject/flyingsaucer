@@ -19,7 +19,8 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
-import org.xhtmlrenderer.css.impl.XRPropertyImpl;
+import java.util.*;
+
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 
@@ -83,7 +84,7 @@ public class Ruleset {
     private void pullSelectorsFromDOMRule( org.w3c.dom.css.CSSStyleRule sacRule ) {
         try {
             // note, we parse the selector for this instance, not the one from the CSS Style, which
-            // might still be multi-part; selector for XRStyleRule is always single (no commas)
+            // might still be multi-part; selector for TODO is always single (no commas)
             sacSelectorList =
                     CSOM_PARSER.parseSelectors(
                     new org.w3c.css.sac.InputSource(
@@ -95,21 +96,27 @@ public class Ruleset {
 
     /**
      * Given a CSSStyleRule, pulls all properties into instances of
-     * PropertyDeclaration.
+     * PropertyDeclaration which are stored in our _props List.
      *
      * @param sacRule  PARAM
      */
     private void pullPropertiesFromDOMRule( org.w3c.dom.css.CSSStyleRule sacRule ) {
         org.w3c.dom.css.CSSStyleDeclaration decl = sacRule.getStyle();
+        
+        // a style declaration is a block of property assignments
+        // so looping items in the declaration means looping properties
+        //
+        // here we create a PropertyDeclaration for each property, expanding
+        // shorthand properties along the way.
         for ( int i = 0; i < decl.getLength(); i++ ) {
-
             String propName = decl.item( i );
-            java.util.Iterator iter = XRPropertyImpl.fromCSSPropertyDecl( sacRule, decl, propName, 0 );
-            boolean importance = decl.getPropertyPriority( decl.item( i ) ).compareToIgnoreCase( "important" ) == 0;
-            while ( iter.hasNext() ) {
-                XRPropertyImpl xrProp = (XRPropertyImpl)iter.next();
-                PropertyDeclaration prop = new PropertyDeclaration( xrProp, importance, _origin );
-                _props.add( prop );
+
+            PropertyDeclaration prop = null;
+            Iterator iter = PropertyDeclaration.newFactory(propName).buildDeclarations(decl, propName, _origin);
+
+            while (iter.hasNext()) {
+                // the cast is just for doc purposes
+                _props.add((PropertyDeclaration)iter.next());
             }
         }
     }
@@ -123,6 +130,9 @@ public class Ruleset {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/24 14:36:30  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
  * Revision 1.3  2004/11/15 12:42:23  pdoubleya
  * Across this checkin (all may not apply to this particular file)
  * Changed default/package-access members to private.

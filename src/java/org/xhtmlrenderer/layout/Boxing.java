@@ -194,7 +194,7 @@ public class Boxing {
                 return;
             }
             //float new_width = c.css.getFloatProperty(elem, "width", c.getExtents().width, false);
-            float new_width = style.getFloatPropertyRelative("width", c.getExtents().width);
+            float new_width = style.getFloatPropertyProportionalWidth("width", c.getExtents().width);
             c.getExtents().width = (int) new_width;
             block.width = (int) new_width;
             //block.auto_width = false;
@@ -208,7 +208,7 @@ public class Boxing {
         }
         CalculatedStyle style = c.getCurrentStyle();
         if (style.hasProperty("height")) {
-            float new_height = style.getFloatPropertyRelative("height", c.getExtents().height);
+            float new_height = style.getFloatPropertyProportionalHeight("height", c.getExtents().height);
             c.getExtents().height = (int) new_height;
             block.height = (int) new_height;
             block.auto_height = false;
@@ -292,6 +292,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/01/24 14:36:32  pdoubleya
+ * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+ *
  * Revision 1.6  2005/01/09 15:22:48  tobega
  * Prepared improved handling of margins, borders and padding.
  *

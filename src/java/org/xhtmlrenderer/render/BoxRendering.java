@@ -125,7 +125,9 @@ public class BoxRendering {
         if (!(block instanceof AnonymousBlockBox)) c.untranslateInsets(block);
 
         if (!(block instanceof AnonymousBlockBox)) {
-            Border margin = c.getCurrentStyle().getMarginWidth();
+            int width = block.getWidth();
+            int height = block.getHeight();
+            Border margin = c.getCurrentStyle().getMarginWidth(width, height);
 
             Rectangle bounds = new Rectangle(block.x + margin.left,
                     block.y + margin.top,
@@ -241,7 +243,15 @@ public class BoxRendering {
         // handle image positioning issues
         // need to update this to support vert and horz, not just vert
         if (style.hasProperty("background-position")) {
-            Point pt = style.getBackgroundPosition();
+            float width = c.getBlockFormattingContext().getWidth();
+            float height = c.getBlockFormattingContext().getHeight();
+            // CLEAN System.out.println("----Context w: " + width + " h: " + height);
+
+            float w = box.getWidth();
+            float h = box.getHeight();
+            // CLEAN System.out.println("----Context w: " + w + " h: " + h);
+
+            Point pt = style.getBackgroundPosition(width, height);
             block.background_position_horizontal = (int) pt.getX();
             block.background_position_vertical = (int) pt.getY();
         }
@@ -251,6 +261,7 @@ public class BoxRendering {
         if (back_image != null && !"none".equals(back_image)) {
             try {
                 block.background_image = ImageUtil.loadImage(c, back_image);
+                // CLEAN System.out.println("[" + block.background_image.hashCode() + "]   backgound-image: loaded " + back_image);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 Uu.p(ex);

@@ -413,9 +413,9 @@ public class ContextImpl implements Context {
      */
     //TODO: this is wrong! margins can collapse, for starters!
     public void translateInsets(Box box) {
-        Border border = getCurrentStyle().getBorderWidth();
-        Border margin = getCurrentStyle().getMarginWidth();
-        Border padding = getCurrentStyle().getPaddingWidth();
+        Border border = getCurrentStyle().getBorderWidth(box.getWidth(), box.getHeight());
+        Border margin = getCurrentStyle().getMarginWidth(box.getWidth(), box.getHeight());
+        Border padding = getCurrentStyle().getPaddingWidth(box.getWidth(), box.getHeight());
         if (box == null) {
             XRLog.render(Level.WARNING, "null box");
             return;//TODO: why?
@@ -444,9 +444,9 @@ public class ContextImpl implements Context {
      */
     //TODO: this is wrong! margins can collapse, for starters!
     public void untranslateInsets(Box box) {
-        Border border = getCurrentStyle().getBorderWidth();
-        Border margin = getCurrentStyle().getMarginWidth();
-        Border padding = getCurrentStyle().getPaddingWidth();
+        Border border = getCurrentStyle().getBorderWidth(box.getWidth(), box.getHeight());
+        Border margin = getCurrentStyle().getMarginWidth(box.getWidth(), box.getHeight());
+        Border padding = getCurrentStyle().getPaddingWidth(box.getWidth(), box.getHeight());
         if (margin == null) {
             XRLog.render(Level.WARNING, "translate insets: null margin on box of type " + box.getClass().getName());
             return;

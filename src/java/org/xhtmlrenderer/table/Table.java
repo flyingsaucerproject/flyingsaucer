@@ -271,7 +271,7 @@ public class Table {
             Cell cell = (Cell) top_cells.get(i);
             if (c.getCss().getCascadedStyle((Element) cell.node, false).hasProperty("width")) {
                 // fixed bug that made cell sizing fail w/ %s
-                int width = (int) c.getCurrentStyle().getFloatPropertyRelative("width", avail_width);
+                int width = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth("width", avail_width);
                 //Uu.p("got width: " + width);
                 for (int j = col_count; j < col_count + cell.col_span; j++) {
                     widths[j] = width / cell.col_span;
@@ -378,6 +378,9 @@ public class Table {
 /*
    $Id$
    $Log$
+   Revision 1.14  2005/01/24 14:36:36  pdoubleya
+   Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
+
    Revision 1.13  2005/01/16 18:50:06  tobega
    Re-introduced caching of styles, which make hamlet and alice scroll nicely again. Background painting still slow though.
 

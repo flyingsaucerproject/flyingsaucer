@@ -49,7 +49,7 @@ public class Absolute {
                         //Uu.p("right set to auto");
                     }
                 } else {
-                    box.right = (int) style.getFloatPropertyRelative("right", 0);
+                    box.right = (int) style.getFloatPropertyProportionalWidth("right", c.getBlockFormattingContext().getWidth());
                     box.right_set = true;
                     //Uu.p("right set to : " + box.right);
                 }
@@ -62,7 +62,7 @@ public class Absolute {
                         //Uu.p("left set to auto");
                     }
                 } else {
-                    box.left = (int) style.getFloatPropertyRelative("left", 0);
+                    box.left = (int) style.getFloatPropertyProportionalWidth("left", c.getBlockFormattingContext().getWidth());
                     box.left_set = true;
                     //Uu.p("left set to : " + box.left);
                 }
@@ -75,11 +75,11 @@ public class Absolute {
             */
             
             if (style.hasProperty("bottom")) {
-                box.top = (int) style.getFloatPropertyRelative("bottom", 0);
+                box.top = (int) style.getFloatPropertyProportionalHeight("bottom", c.getBlockFormattingContext().getHeight());
                 box.bottom_set = true;
             }
             if (style.hasProperty("top")) {
-                box.top = (int) style.getFloatPropertyRelative("top", 0);
+                box.top = (int) style.getFloatPropertyProportionalHeight("top", c.getBlockFormattingContext().getHeight());
                 box.top_set = true;
             }
             box.absolute = true;
