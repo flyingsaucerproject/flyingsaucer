@@ -49,14 +49,11 @@ public class BlockBoxing {
     public static void layoutContent( Context c, Box box, List contentList, Box block ) {
         c.shrinkExtents( block );
 
-        // save the original height in case it
-        // has a fixed height
-        //not used: int original_height = block.height;
-
         // prepare for the list items
         int old_counter = c.getListCounter();
         c.setListCounter( 0 );
         // Uu.p("BoxLayout.layoutContent(): " + block);
+
         Iterator contentIterator = contentList.iterator();
         //TODO: how does a block's firstLineStyle and firstLetterStyle propagate downwards?
         while ( contentIterator.hasNext() ) {
@@ -130,6 +127,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/31 22:50:17  pdoubleya
+ * .
+ *
  * Revision 1.3  2005/01/29 20:24:27  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
