@@ -61,7 +61,10 @@ public class LayoutUtil {
     }
 
     /**
-     * Gets the blockLayout attribute of the DefaultLayout object
+     * Checks that all direct children of this element will be laid
+     * out using inline. If at least one is block the the whole thing
+     * is. It skips floats, absolutes, and fixed because they don't
+     * force the box into block layout.
      *
      * @param elem  PARAM
      * @param c     PARAM
@@ -71,7 +74,7 @@ public class LayoutUtil {
         NodeList children = elem.getChildNodes();
         for ( int i = 0; i < children.getLength(); i++ ) {
             Node child = children.item( i );
-            if ( isBlockNode( child, c ) ) {
+            if ( isBlockNode( child, c ) && !isFloated( c, child ) ) {
                 //u.p("this layout is block");
                 return true;
             }

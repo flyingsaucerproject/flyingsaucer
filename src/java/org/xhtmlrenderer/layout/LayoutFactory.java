@@ -292,6 +292,7 @@ public class LayoutFactory {
 
     private void initializeLayouts() {
         InlineLayout inline = new InlineLayout();
+        BoxLayout block = new BoxLayout();
         addDisplayLayout("block",inline);
         addDisplayLayout("inline",inline);
         addDisplayLayout("list-item", inline);
@@ -322,6 +323,15 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.14  2004/11/18 18:49:49  joshy
+* fixed the float issue.
+* commented out more dead code
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.13  2004/11/18 16:45:11  joshy
 * improved the float code a bit.
 * now floats are automatically forced to be blocks

@@ -238,6 +238,7 @@ public class BoxLayout extends DefaultLayout {
                 // prepare the node list of the text children
                 //child_box = new AnonymousBlockBox(child);
                 // call layout
+                //u.p("doing an anonymous block for: " + child);
                 child_box = ( (AnonymousBoxLayout)layout ).layout( c, elem, child );
 
                 // skip text children if the prev_child == anonymous block box
@@ -328,6 +329,15 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2004/11/18 18:49:48  joshy
+ * fixed the float issue.
+ * commented out more dead code
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.24  2004/11/18 14:26:22  joshy
  * more code cleanup
  *

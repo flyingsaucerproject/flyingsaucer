@@ -26,7 +26,7 @@ import java.awt.Rectangle;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xhtmlrenderer.render.AnonymousBlockBox;
+//import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.value.BorderColor;
@@ -186,6 +186,15 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2004/11/18 18:49:49  joshy
+ * fixed the float issue.
+ * commented out more dead code
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.24  2004/11/18 14:26:22  joshy
  * more code cleanup
  *

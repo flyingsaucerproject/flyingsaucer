@@ -88,6 +88,7 @@ public class AnonymousBoxLayout extends InlineLayout {
      * @param box  PARAM
      * @param c    PARAM
      */
+     /*
     public void prepareBox( Box box, Context c ) {
 
         box.border = new Border();
@@ -97,6 +98,7 @@ public class AnonymousBoxLayout extends InlineLayout {
         box.margin = new Border();
 
     }
+    */
 
 
     /**
@@ -108,17 +110,11 @@ public class AnonymousBoxLayout extends InlineLayout {
      * @return        Returns
      */
     public Box layout( Context c, Element parent, Node text ) {
-
         this.parent = parent;
-
         this.text = text;
-
         //Box box = new AnonymousBlockBox(text);
-
         Box box = super.layout( c, parent );
-
         //u.p("AnonymousBoxLayout.layout: returning: " + box);
-
         return box;
     }
 
@@ -129,14 +125,12 @@ public class AnonymousBoxLayout extends InlineLayout {
      * @param box  PARAM
      * @return     Returns
      */
+     /*
     public Box layoutChildren( Context c, Box box ) {
-
         //u.p("AnonymousBoxLayout.layoutChildren() noop" + box);
-
         return super.layoutChildren( c, box );
         //return box;
-
-    }
+    }*/
 
 }
 
@@ -144,6 +138,15 @@ public class AnonymousBoxLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/18 18:49:48  joshy
+ * fixed the float issue.
+ * commented out more dead code
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:46:46  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

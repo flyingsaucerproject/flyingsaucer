@@ -59,13 +59,15 @@ public class InlineLayout extends BoxLayout {
         }
         if ( !box.isAnonymous() ) {
             if ( LayoutUtil.isBlockLayout( box.getElement(), c ) ) {
-                //u.p("doing up block for: " + box);
+                // u.p("doing up block for: " + box);
                 return super.layoutChildren( c, box );
             }
         }
         
-        int debug_counter = 0;
-        int childcount = 0;
+        
+        
+        //int debug_counter = 0;
+        //int childcount = 0;
         BlockBox block = (BlockBox)box;
         // calculate the initial position and dimensions
         Rectangle bounds = new Rectangle();
@@ -76,17 +78,16 @@ public class InlineLayout extends BoxLayout {
         bounds.x = 0;
         bounds.y = 0;
         bounds.height = 0;
-        //block.width = bounds.width;
-        //u.p("child layout: " + block);
+
+        // prepare remaining width and first linebox
         int remaining_width = bounds.width;
-        
-        
         LineBox curr_line = new LineBox();
         c.setFirstLine(true);
         curr_line.setParent(box);
         curr_line.x = bounds.x;
-        //curr_line.width = remaining_width;
         curr_line.width = 0;
+
+
         // account for text-indent
         Element elem = block.getElement();
         remaining_width = InlineUtil.doTextIndent( c, elem, remaining_width, curr_line );
@@ -94,15 +95,19 @@ public class InlineLayout extends BoxLayout {
         prev_line.setParent(box);
         prev_line.y = bounds.y;
         prev_line.height = 0;
-        InlineBox prev_inline = null;
-        
+        InlineBox prev_inline = null;        
         InlineBox prev_align_inline = null;
+        
+        // get the list of inlines for this run
         List inline_node_list = null;
         if ( box.isAnonymous() ) {
             inline_node_list = ( (AnonymousBlockBox)box ).node_list;
         } else {
             inline_node_list = InlineUtil.getInlineNodeList( elem, elem, c );
         }
+        //u.p("in box: " + box);
+        //u.p("final inline node list = ");
+        //u.p(inline_node_list);
         
         // loop until no more nodes
         Node current_node = InlineUtil.nextTextNode( inline_node_list );
@@ -371,6 +376,15 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.27  2004/11/18 18:49:49  joshy
+* fixed the float issue.
+* commented out more dead code
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.26  2004/11/18 16:45:11  joshy
 * improved the float code a bit.
 * now floats are automatically forced to be blocks
