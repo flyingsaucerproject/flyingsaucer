@@ -339,10 +339,14 @@ public class DefaultLayout implements Layout {
      */
     public static boolean isBlockNode( Node child, Context c ) {
         if ( child instanceof Element ) {
+            //u.p("checking: " + child);
             Element el = (Element)child;
             String display = c.css.getStringProperty( el, "display", false );
             //u.p("display = " + display);
-            if ( display != null && display.equals( "block" ) ) {
+            if ( display != null && 
+                (display.equals( "block" ) ||
+                 display.equals( "table-cell" ))
+               ) {
                 if ( !isFloated( el, c ) ) {
                     //u.p(child.getNodeName() + " is a block");
                     return true;
@@ -413,6 +417,19 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/11/07 13:39:17  joshy
+ * fixed missing borders on the table
+ * changed td and th to display:table-cell
+ * updated isBlockLayout() code to fix double border problem with tables
+ *
+ * -j
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.12  2004/11/05 18:45:14  joshy
  * support for floated blocks (not just inline blocks)
  *

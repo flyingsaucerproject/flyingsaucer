@@ -287,7 +287,6 @@ public class BoxLayout extends DefaultLayout {
      * @return     The border value
      */
     public static Border getBorder( Context c, Box box ) {
-        //u.p("checking box: " + box);
         //if text but parent is not block, then do border
         // if block then do border
         // if text but parent is block, then no border
@@ -305,8 +304,16 @@ public class BoxLayout extends DefaultLayout {
     
     public static boolean isBlockOrInlineElementBox(Context c, Box box) {
         if((box.node.getNodeType()==Node.TEXT_NODE && 
-           !InlineLayout.isBlockNode(box.getRealElement(),c)) ||
+           !DefaultLayout.isBlockNode(box.getRealElement(),c)) ||
            box.isElement()) {
+               
+               
+               //u.p("box = " + box);
+               //u.p("node type = " + box.node.getNodeType());
+               //u.p("text node == " + Node.TEXT_NODE);
+               //u.p("is block node = " + DefaultLayout.isBlockNode(box.getRealElement(),c));
+               //u.p("is element = " + box.isElement());
+               
                return true;
         }
         return false;
@@ -423,6 +430,19 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/11/07 13:39:17  joshy
+ * fixed missing borders on the table
+ * changed td and th to display:table-cell
+ * updated isBlockLayout() code to fix double border problem with tables
+ *
+ * -j
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.12  2004/11/06 22:49:51  joshy
  * cleaned up alice
  * initial support for inline borders and backgrounds
