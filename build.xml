@@ -59,6 +59,10 @@
     <property name="dest.resources.css.dir" location="${dest.java.dir}/resources/css"/>
     <property name="src.resources.conf.dir" location="${src.dir}/conf"/>
     <property name="dest.resources.conf.dir" location="${dest.java.dir}/resources/conf"/>
+    <property name="src.resources.entities.dir" location="${src.dir}/entity"/>
+    <property name="dest.resources.entities.dir" location="${dest.java.dir}/resources/entity"/>
+    <property name="src.resources.dtd.dir" location="${src.dir}/dtd"/>
+    <property name="dest.resources.dtd.dir" location="${dest.java.dir}/resources/dtd"/>
     <property name="src.packaging.dir" location="${src.dir}/packaging"/>
     <property name="src.demo.xhtml.dir" location="demos/browser/xhtml"/>
     <property name="src.demo.splash.dir" location="demos/splash"/>
@@ -117,6 +121,7 @@
         <include name="alice/**"/>
         <include name="game/**"/>
         <include name="fonts/**"/>
+        <include name="layout/**/*.xhtml"/>
     </patternset>
       
     <!-- zip file reference for all XHTML in the demos directory, and supporting files -->
@@ -168,6 +173,8 @@
         <mkdir dir="${dest.java.dir}"/>
         <mkdir dir="${dest.resources.css.dir}"/>
         <mkdir dir="${dest.resources.conf.dir}"/>
+        <mkdir dir="${dest.resources.entities.dir}"/>
+        <mkdir dir="${dest.resources.dtd.dir}"/>
     </target>
 
     <!-- =====================================================
@@ -185,38 +192,6 @@
     </target>
 
     <target name="clean-for-core-debug" depends="clean,resources.core"/>
-
-    <target name="nb-profile" description="creates nb_profile directory with current source, for NB 4.0 profiling" depends="properties">
-        <mkdir dir="${nb_profile}" />
-    
-        <delete dir="${nb_profile}/demos"/>
-        <delete dir="${nb_profile}/lib"/>
-        <delete dir="${nb_profile}/src"/>
-        
-        <copy todir="${nb_profile}/src/java">
-            <fileset dir="${src.java.dir}">
-                <include name="**"/>
-                <exclude name="**/net/**"/>
-                <exclude name="**/prototype/**"/>
-            </fileset>
-        </copy>
-        <copy todir="${nb_profile}/src/conf">
-            <fileset dir="${src.resources.conf.dir}">
-                <include name="*.*"/>
-            </fileset>
-        </copy>
-        <copy todir="${nb_profile}/src/css">
-            <fileset dir="${src.resources.css.dir}">
-                <include name="*.*"/>
-            </fileset>
-        </copy>
-        <copy todir="${nb_profile}/lib">
-            <fileset dir="${libraries.dir}">
-                <include name="*.jar"/>
-            </fileset>
-        </copy>
-    </target>
-
     
     <!-- cleans all javadoc/api files -->
     <target name="clean-javadoc" description="clean project javadoc files" depends="properties">
@@ -246,6 +221,16 @@
     <target name="resources.core" description="copy core resources to build directory" depends="init">
         <copy todir="${dest.resources.css.dir}" file="${src.resources.css.dir}/default.css"/>
         <copy todir="${dest.resources.conf.dir}" file="${src.resources.conf.dir}/xhtmlrenderer.conf"/>
+        <copy todir="${dest.resources.entities.dir}">
+          <fileset dir="${src.resources.entities.dir}">
+            <include name="*.ent"/>
+          </fileset>
+        </copy> 
+        <copy todir="${dest.resources.dtd.dir}">
+          <fileset dir="${src.resources.dtd.dir}">
+            <include name="*.dtd"/>
+          </fileset>
+        </copy> 
     </target>
 
     <!-- Compiles the Flying Saucer browser along with the main codebase -->
@@ -263,6 +248,7 @@
                 <include name="*.png"/>
                 <include name="splash/**"/>
                 <include name="about/**"/>
+                <include name="alice/**"/>
             </fileset>
         </copy>
     </target>
@@ -303,7 +289,7 @@
     <!-- Compiles main codebase, browser and about box -->
     <target name="compile.all" depends="compile, compile.browser, compile.about, compile.photogallery">
     </target>
-    
+
     <!--
     DONT USE THIS FROM COMMAND LINE; use docs
     builds JavaDoc for all code. Meant to be used with antcall; set parameters
@@ -637,6 +623,10 @@
             </syspropertyset>
             <sysproperty key="sun.java2D.opengl" value="false"/>
         </java>
+      <nbprofile classname="org.xhtmlrenderer.test.SimplePageTest">
+        <classpath refid="libraries-and-dest.all"/>
+      </nbprofile>
+        
     </target>
 
         <!-- Builds and jars the about box demo, and runs it -->
@@ -797,6 +787,10 @@
         <echo message="dest.resources.css.dir                  ${dest.resources.css.dir}"/>
         <echo message="src.resources.conf.dir                  ${src.resources.conf.dir}"/>
         <echo message="dest.resources.conf.dir                 ${dest.resources.conf.dir}"/>
+        <echo message="src.resources.entities.dir              ${src.resources.entities.dir}"/>
+        <echo message="dest.resources.entities.dir             ${dest.resources.entities.dir}"/>
+        <echo message="src.resources.dtd.dir                   ${src.resources.dtd.dir}"/>
+        <echo message="dest.resources.dtd.dir                  ${dest.resources.dtd.dir}"/>
         <echo message="src.packaging.dir                       ${src.packaging.dir}"/>
         <echo message="src.demo.xhtml.dir                      ${src.demo.xhtml.dir}"/>
         <echo message="src.demo.splash.dir                     ${src.demo.splash.dir}"/>
@@ -845,6 +839,9 @@
 $Id$
 
 $Log$
+Revision 1.86  2005/02/05 17:22:24  pdoubleya
+added resources for entities and dtds to copys commands.
+
 Revision 1.85  2005/01/29 12:20:06  pdoubleya
 Exclude /prototype src directory from build.
 
