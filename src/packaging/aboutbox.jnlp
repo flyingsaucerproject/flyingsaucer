@@ -16,8 +16,8 @@
     
     <resources>
         <j2se version="1.4+"/>
+        <jar href="about.jar"/>
         <jar href="core-renderer.jar"/>
-        <jar href="browser.jar"/>
         <jar href="ss_css2.jar"/>
         <jar href="xalan.jar"/>
     </resources>
