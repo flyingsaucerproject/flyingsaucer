@@ -21,22 +21,25 @@
 
 package org.xhtmlrenderer.extend;
 
+import org.w3c.dom.Document;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+
 /**
  * Provides knowledge specific to a certain document type, like resolving style-sheets
  */
 public interface NamespaceHandler {
-    
+
     //javax.xml.transform.Source getSource();
     
     public String getNamespace();
-    
+
     public java.io.Reader getDefaultStylesheet();
 
-    public String getDocumentTitle(org.w3c.dom.Document doc);
-    
-    public String getInlineStyle(org.w3c.dom.Document doc);
-    
-    public String[] getStylesheetURIs(org.w3c.dom.Document doc);
+    public String getDocumentTitle(Document doc);
+
+    public String getInlineStyle(Document doc, String media);
+
+    public StylesheetInfo[] getStylesheetLinks(Document doc);
     
     /** may return null */
     //public String getClass(org.w3c.dom.Element e);
@@ -49,5 +52,5 @@ public interface NamespaceHandler {
     
     /** may return null */
     //public String getLang(org.w3c.dom.Element e);
-    
+
 }

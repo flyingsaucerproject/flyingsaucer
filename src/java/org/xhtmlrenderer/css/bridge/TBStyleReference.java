@@ -30,6 +30,7 @@ import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetFactory;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.DerivedProperty;
 import org.xhtmlrenderer.css.value.BorderColor;
@@ -95,7 +96,7 @@ public class TBStyleReference implements StyleReference {
     private org.xhtmlrenderer.css.style.Styler _styler;
 
     /**
-     * seems to need a list of XRStyleRules....
+     * used for caching Stylesheet instances, wonder why...
      */
     private List _stylesheets;
 
@@ -523,8 +524,13 @@ public class TBStyleReference implements StyleReference {
         Stylesheet sheet = (Stylesheet) _stylesheetFactory.getStylesheet(uri);
         if (sheet == null) {
             reader = _nsh.getDefaultStylesheet();
+            StylesheetInfo info = new StylesheetInfo();
+            info.setUri(_nsh.getNamespace());
+            info.setOrigin(StylesheetInfo.USER_AGENT);
+            info.setMedia("all");
+            info.setType("text/css");
             if (reader != null) {
-                sheet = _stylesheetFactory.parse(Stylesheet.USER_AGENT, uri, reader);
+                sheet = _stylesheetFactory.parse(reader, info);
                 _stylesheetFactory.putStylesheet(uri, sheet);
             }
         }
@@ -532,17 +538,17 @@ public class TBStyleReference implements StyleReference {
             _stylesheets.add(sheet);
         }
 
-        String[] uris = _nsh.getStylesheetURIs(_doc);
-        if (uris != null) {
-            for (int i = 0; i < uris.length; i++) {
+        StylesheetInfo[] refs = _nsh.getStylesheetLinks(_doc);
+        if (refs != null) {
+            for (int i = 0; i < refs.length; i++) {
                 java.net.URL baseUrl = _context.getRenderingContext().getBaseURL();
                 try {
-                    uri = new java.net.URL(baseUrl, uris[i]).toString();
+                    uri = new java.net.URL(baseUrl, refs[i].getUri()).toString();
                     sheet = _stylesheetFactory.getStylesheet(uri);
                     if (sheet == null) {
                         reader = _userAgent.getReaderForURI(uri);
                         if (reader != null) {
-                            sheet = _stylesheetFactory.parse(Stylesheet.AUTHOR, uri, reader);
+                            sheet = _stylesheetFactory.parse(reader, refs[i]);
                             _stylesheetFactory.putStylesheet(uri, sheet);
                         }
                     }
@@ -555,13 +561,19 @@ public class TBStyleReference implements StyleReference {
             }
         }
 
-        uri = _context.getRenderingContext().getBaseURL().toString();
+        String baseUri = _context.getRenderingContext().getBaseURL().toString();
+        uri = baseUri + "?-fs-media-?" + _context.media;
         sheet = _stylesheetFactory.getStylesheet(uri);
         if (sheet == null) {
-            String inlineStyle = _nsh.getInlineStyle(_doc);
+            String inlineStyle = _nsh.getInlineStyle(_doc, _context.media);
             if (inlineStyle != null) {
                 reader = new java.io.StringReader(inlineStyle);
-                sheet = _stylesheetFactory.parse(Stylesheet.AUTHOR, uri, reader);
+                StylesheetInfo info = new StylesheetInfo();
+                info.setUri(baseUri);
+                info.setType("text/css");
+                info.setOrigin(StylesheetInfo.AUTHOR);
+                info.setMedia(_context.media);
+                sheet = _stylesheetFactory.parse(reader, info);
                 _stylesheetFactory.putStylesheet(uri, sheet);
             }
         }
@@ -593,7 +605,7 @@ public class TBStyleReference implements StyleReference {
             List sortedXRRules = new ArrayList();
             Iterator iter = _stylesheets.iterator();
 
-            _tbStyleMap = new org.xhtmlrenderer.css.newmatch.Matcher(_doc, _attRes, _stylesheets.iterator());
+            _tbStyleMap = new org.xhtmlrenderer.css.newmatch.Matcher(_doc, _attRes, _stylesheets.iterator(), _context.media);
             _tbStyleMap.setStylesheetFactory(_stylesheetFactory);
 
             // now we have a match-map, apply against our entire Document....restyleTree() is recursive
@@ -654,6 +666,9 @@ public class TBStyleReference implements StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/11/28 23:29:00  tobega
+ * Now handles media on Stylesheets, still need to handle at-media-rules. The media-type should be set in Context.media (set by default to "screen") before calling setContext on TBStyleReference.
+ *
  * Revision 1.14  2004/11/15 22:22:08  tobega
  * Now handles @import stylesheets
  *

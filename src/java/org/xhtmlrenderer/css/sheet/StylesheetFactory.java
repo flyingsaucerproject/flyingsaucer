@@ -24,6 +24,7 @@ import org.w3c.css.sac.InputSource;
 import org.w3c.dom.css.CSSImportRule;
 import org.w3c.dom.css.CSSStyleRule;
 import org.w3c.dom.css.CSSStyleSheet;
+import org.w3c.dom.stylesheets.MediaList;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -78,12 +79,11 @@ public class StylesheetFactory {
     /**
      * Description of the Method
      *
-     * @param origin PARAM
-     * @param uri
      * @param reader PARAM
+     * @param info
      * @return Returns
      */
-    public Stylesheet parse(int origin, String uri, java.io.Reader reader) {
+    public Stylesheet parse(java.io.Reader reader, StylesheetInfo info) {
         InputSource is = new InputSource(reader);
         CSSStyleSheet style = null;
         try {
@@ -92,7 +92,7 @@ public class StylesheetFactory {
             throw new XRRuntimeException("IOException on parsing style seet from a Reader; don't know the URI.", e);
         }
 
-        Stylesheet sheet = new Stylesheet(origin, uri);
+        Stylesheet sheet = new Stylesheet(info);
         pullRulesets(style, sheet);
 
         return sheet;
@@ -101,14 +101,13 @@ public class StylesheetFactory {
     /**
      * Description of the Method
      *
-     * @param origin PARAM
-     * @param uri    PARAM
+     * @param info
      * @return Returns null if uri could not be loaded
      *         TODO: what about relative uris? what are they relative to? how resolve?
      */
-    public Stylesheet parse(int origin, String uri) {
-        Reader r = _userAgent.getReaderForURI(uri);
-        if (r != null) return parse(origin, uri, r);
+    public Stylesheet parse(StylesheetInfo info) {
+        Reader r = _userAgent.getReaderForURI(info.getUri());
+        if (r != null) return parse(r, info);
         return null;
     }
 
@@ -128,15 +127,21 @@ public class StylesheetFactory {
                 //note: the steadystate parser does not fetch and load imported stylesheets
                 CSSImportRule cssir = (CSSImportRule) rl.item(i);
                 String href = cssir.getHref();
+                MediaList media = cssir.getMedia();
                 String uri = null;
                 try {
                     uri = new java.net.URL(new URL(stylesheet.getURI()), href).toString();
                     Stylesheet imported = getStylesheet(uri);
                     if (imported == null) {
-                        imported = parse(stylesheet.getOrigin(), uri);
+                        StylesheetInfo info = new StylesheetInfo();
+                        info.setOrigin(stylesheet.getOrigin());
+                        info.setUri(uri);
+                        info.setMedia(media.getMediaText());
+                        info.setType("text/css");
+                        imported = parse(info);
                         if (imported != null) putStylesheet(uri, imported);
                     }
-                    if (imported != null) stylesheet.addRulesets(imported);
+                    if (imported != null) stylesheet.addStylesheet(imported);
                 } catch (java.net.MalformedURLException e) {
                     XRLog.exception("bad URL for imported stylesheet", e);
                 }
@@ -159,7 +164,7 @@ public class StylesheetFactory {
             InputSource is = new InputSource(reader);
             CSSStyleSheet style = parser.parseStyleSheet(is);
             reader.close();
-            return new Ruleset((CSSStyleRule) style.getCssRules().item(0), Stylesheet.AUTHOR);
+            return new Ruleset((CSSStyleRule) style.getCssRules().item(0), StylesheetInfo.AUTHOR);
         } catch (Exception ex) {
             throw new XRRuntimeException("Cannot parse style declaration from string.", ex);
         }
@@ -191,6 +196,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/28 23:29:02  tobega
+ * Now handles media on Stylesheets, still need to handle at-media-rules. The media-type should be set in Context.media (set by default to "screen") before calling setContext on TBStyleReference.
+ *
  * Revision 1.6  2004/11/15 22:22:08  tobega
  * Now handles @import stylesheets
  *

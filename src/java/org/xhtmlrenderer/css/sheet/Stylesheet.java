@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
-import java.util.Iterator;
-
 
 /**
  * A representation of a CSS style sheet. A Stylesheet has the sheet's rules in
@@ -35,14 +33,9 @@ import java.util.Iterator;
  */
 public class Stylesheet {
     /**
-     * The origin of the stylesheet - USER_AGENT, USER or AUTHOR
+     * The info for this stylesheet
      */
-    private int _origin;
-
-    /**
-     * The uri for this stylesheet
-     */
-    private String _uri;
+    private StylesheetInfo _info;
 
     /**
      * Description of the Field
@@ -50,31 +43,21 @@ public class Stylesheet {
     private java.util.List _rulesets;
 
     /**
-     * Origin of stylesheet - user agent
-     */
-    public final static int USER_AGENT = 0;
-
-    /**
-     * Origin of stylesheet - user
-     */
-    public final static int USER = 1;
-
-    /**
-     * Origin of stylesheet - author
-     */
-    public final static int AUTHOR = 2;
-
-    /**
      * Creates a new instance of Stylesheet
      *
-     * @param origin One of the integer constants USER_AGENT, USER or AUTHOR,
-     *               indicates where the sheet originated and thus its precedence in the
-     * @param uri
+     * @param info
      */
-    public Stylesheet(int origin, String uri) {
-        _origin = origin;
-        _uri = uri;
+    public Stylesheet(StylesheetInfo info) {
+        _info = info;
         _rulesets = new java.util.LinkedList();
+    }
+
+    /**
+     * @param m a single media identifier
+     * @return true if the stylesheet referenced applies to the medium
+     */
+    public boolean appliesToMedia(String m) {
+        return _info.appliesToMedia(m);
     }
 
     /**
@@ -83,7 +66,7 @@ public class Stylesheet {
      * @return The origin value
      */
     public int getOrigin() {
-        return _origin;
+        return _info.getOrigin();
     }
 
     /**
@@ -92,11 +75,11 @@ public class Stylesheet {
      * @return The URI
      */
     public String getURI() {
-        return _uri;
+        return _info.getUri();
     }
 
     /**
-     * Returns the Rulesets loaded from the source stylesheet.
+     * Returns an iterator over the Rulesets and embedded Stylesheets loaded from the source stylesheet.
      *
      * @return The rulesets value
      */
@@ -106,7 +89,6 @@ public class Stylesheet {
 
     /**
      * Set the Rulesets to this stylesheet. Should usually only be called by StylesheetFactory.
-     * TODO: where do we keep track of @media? In Ruleset?
      */
     void addRuleset(Ruleset r) {
         _rulesets.add(r);
@@ -114,13 +96,9 @@ public class Stylesheet {
 
     /**
      * Set the imported stylesheet Rulesets to this stylesheet. Should usually only be called by StylesheetFactory.
-     * TODO: where do we keep track of @media? In Ruleset?
      */
-    void addRulesets(Stylesheet s) {
-        for (Iterator i = s.getRulesets(); i.hasNext();) {
-            Ruleset r = (Ruleset) i.next();
-            _rulesets.add(r);
-        }
+    void addStylesheet(Stylesheet s) {
+        _rulesets.add(s);
     }
 } // end class
 
@@ -128,6 +106,9 @@ public class Stylesheet {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/28 23:29:02  tobega
+ * Now handles media on Stylesheets, still need to handle at-media-rules. The media-type should be set in Context.media (set by default to "screen") before calling setContext on TBStyleReference.
+ *
  * Revision 1.5  2004/11/15 22:22:08  tobega
  * Now handles @import stylesheets
  *

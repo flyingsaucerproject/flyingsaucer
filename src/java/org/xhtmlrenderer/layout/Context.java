@@ -46,6 +46,11 @@ import java.util.List;
 public class Context {
 
     /**
+     * The media for this context
+     */
+    public String media = "screen";
+
+    /**
      * Description of the Field
      */
     public Graphics2D graphics;
@@ -554,7 +559,7 @@ public class Context {
     public FontResolver getFontResolver() {
         return font_resolver;
     }
-    
+
     public void flushFonts() {
         font_resolver = new FontResolver();
     }
@@ -766,6 +771,9 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2004/11/28 23:29:02  tobega
+ * Now handles media on Stylesheets, still need to handle at-media-rules. The media-type should be set in Context.media (set by default to "screen") before calling setContext on TBStyleReference.
+ *
  * Revision 1.22  2004/11/18 14:12:44  joshy
  * added whitespace test
  * cleaned up some code, spacing, and comments
