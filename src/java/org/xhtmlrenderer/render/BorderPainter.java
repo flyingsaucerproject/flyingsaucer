@@ -70,18 +70,15 @@ public class BorderPainter {
         //u.p("border style = " + border_style);
 
         if ( box.border_style == null ) {
-
             box.border_style = "none";
-
         }
 
 
         // return if border = none
-
         if ( box.border_style.equals( "none" ) ) {
-
             return;
         }
+        
 
 
         if ( box.border_style.equals( "ridge" ) ||
@@ -117,8 +114,36 @@ public class BorderPainter {
         if ( box.border_style.equals( "solid" ) ) {
             paintBevel( g, bounds, box.border, box.border_color, box.border_color );
         }
+        
+        if (box.border_style.equals ( "double" ) ) {
+            // this may need to be modified to account for rounding errors
+            // create a new border only 1/3 the thickness
+            Border outer = new Border();
+            outer.top = box.border.top / 3;
+            outer.bottom = box.border.bottom / 3;
+            outer.left = box.border.left / 3;
+            outer.right = box.border.right / 3;
+            Border center = new Border(outer);
+            
+            Border inner = new Border(outer);
+            if(box.border.top == 1) { outer.top = 1; center.top = 0; }
+            if(box.border.bottom == 1) { outer.bottom = 1; center.bottom = 0; }
+            if(box.border.left == 1) { outer.left = 1; center.left = 0; }
+            if(box.border.right == 1) { outer.right = 1; center.right = 0; }
+            
+            if(box.border.top == 2) { outer.top = 1; center.top = 0; inner.top = 1; }
+            if(box.border.bottom == 2) { outer.bottom = 1; center.bottom = 0; inner.bottom = 1; }
+            if(box.border.left == 2) { outer.left = 1; center.left = 0; inner.left = 1; }
+            if(box.border.right == 2) { outer.right = 1; center.right = 0; inner.right = 1; }
 
-        //u.p("border-style = " + box.border_style);
+            Rectangle b2 = shrinkRect(bounds,outer);
+            b2 = shrinkRect(b2,center);
+            // draw outer border
+            paintSimpleBorder( (Graphics2D)g, bounds, outer, box.border_color);
+            // draw inner border
+            paintSimpleBorder( (Graphics2D)g, b2, inner, box.border_color);
+        }
+
         if ( box.border_style.equals( "dashed" ) ) {
             Graphics2D g2 = (Graphics2D)g;
             g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
@@ -131,6 +156,36 @@ public class BorderPainter {
             paintRect( g2, bounds, box.border, box.border_color, new float[]{box.border.top, box.border.top} );
             g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         }
+    }
+    
+    
+    public Rectangle shrinkRect(Rectangle rect, Border border) {
+        Rectangle r2 = new Rectangle();
+        r2.x = rect.x + border.left;
+        r2.width = rect.width - border.left - border.right;
+        r2.y = rect.y + border.top;
+        r2.height = rect.height - border.top - border.bottom;
+        return r2;
+    }
+    
+    public void paintSimpleBorder( Graphics2D g2, Rectangle bounds, Border border, Color color) {
+        g2.setColor(color);
+        Polygon poly = new Polygon();
+        poly.addPoint( bounds.x, bounds.y );
+        poly.addPoint( bounds.x + bounds.width, bounds.y );
+        poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
+        poly.addPoint( bounds.x + border.left, bounds.y + border.top );
+        poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
+        poly.addPoint( bounds.x, bounds.y + bounds.height );
+        g2.fillPolygon( poly );
+        poly = new Polygon();
+        poly.addPoint( bounds.x + bounds.width, bounds.y );
+        poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
+        poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
+        poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
+        poly.addPoint( bounds.x, bounds.y + bounds.height );
+        poly.addPoint( bounds.x + bounds.width, bounds.y + bounds.height );
+        g2.fillPolygon( poly );
     }
 
     /**
@@ -173,44 +228,25 @@ public class BorderPainter {
      * @param low     PARAM
      */
     public void paintBevel( Graphics g, Rectangle bounds, Border border, Color high, Color low ) {
-
         g.setColor( high );
-
         Polygon poly = new Polygon();
-
         poly.addPoint( bounds.x, bounds.y );
-
         poly.addPoint( bounds.x + bounds.width, bounds.y );
-
         poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
-
         poly.addPoint( bounds.x + border.left, bounds.y + border.top );
-
         poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
-
         poly.addPoint( bounds.x, bounds.y + bounds.height );
-
         g.fillPolygon( poly );
-
 
         g.setColor( low );
-
         poly = new Polygon();
-
         poly.addPoint( bounds.x + bounds.width, bounds.y );
-
         poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
-
         poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
-
         poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
-
         poly.addPoint( bounds.x, bounds.y + bounds.height );
-
         poly.addPoint( bounds.x + bounds.width, bounds.y + bounds.height );
-
         g.fillPolygon( poly );
-
     }
 
 }
@@ -219,6 +255,15 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/02 17:14:00  joshy
+ * implemented double borders
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:50:26  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

@@ -1,0 +1,31 @@
+box:-element:html-box(0,0)-(200x346)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#ffffffff)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-none-scroll-0-0)-value:null
+ box:-element:head-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-repeat-scroll-0-0)-value:null
+ box:-element:body-box(0,0)-(200x346)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#ffffffff)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+  box:-element:p-box(0,0)-(194x44)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:p-box(0,0)-(155x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(155x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:The divs below should have double borders
+   line:-element:p-box(0,19)-(84x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(84x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:The divs below should have double borders
+  box:-element:div-box(0,44)-(194x27)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(double)-insets(mar(0,0,0,0)-bor(1,1,1,1)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:div-box(0,0)-(139x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(139x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:one pixel wide, no double
+  box:-element:div-box(0,71)-(194x29)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(double)-insets(mar(0,0,0,0)-bor(2,2,2,2)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:div-box(0,0)-(144x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(144x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:two pixels wide, no double
+  box:-element:div-box(0,100)-(194x31)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(double)-insets(mar(0,0,0,0)-bor(3,3,3,3)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:div-box(0,0)-(173x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(173x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:three pixels wide, w/ 1px double
+  box:-element:div-box(0,131)-(194x33)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(double)-insets(mar(0,0,0,0)-bor(4,4,4,4)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:div-box(0,0)-(144x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(144x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:four pixels wide, w/ double
+  box:-element:div-box(0,164)-(194x35)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(double)-insets(mar(0,0,0,0)-bor(5,5,5,5)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:div-box(0,0)-(141x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(141x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:five pixels wide, w/ double
+  box:-element:div-box(0,199)-(194x37)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(double)-insets(mar(0,0,0,0)-bor(6,6,6,6)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:div-box(0,0)-(160x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(160x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:six pixels wide, w/ 2px double
+  box:-element:div-box(0,236)-(194x104)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(double)-insets(mar(0,0,0,0)-bor(30,30,30,30)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:div-box(0,0)-(93x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(93x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:30 px wide, 10px double
+   line:-element:div-box(0,19)-(38x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(38x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:30 px wide, 10px double

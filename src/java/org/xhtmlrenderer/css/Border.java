@@ -27,6 +27,15 @@ package org.xhtmlrenderer.css;
  * @author   Patrick Wright
  */
 public class Border {
+    
+    public Border() {
+    }
+    public Border(Border bd) {
+        this.top = bd.top;
+        this.bottom = bd.bottom;
+        this.left = bd.left;
+        this.right = bd.right;
+    }
 
     /** Description of the Field */
     public int top;
@@ -56,6 +65,15 @@ public class Border {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/11/02 17:13:59  joshy
+ * implemented double borders
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.2  2004/10/23 13:03:44  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

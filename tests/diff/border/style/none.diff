@@ -1,0 +1,11 @@
+box:-element:html-box(0,0)-(200x75)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#ffffffff)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-none-scroll-0-0)-value:null
+ box:-element:head-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-repeat-scroll-0-0)-value:null
+ box:-element:body-box(0,0)-(200x75)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#ffffffff)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+  box:-element:p-box(0,0)-(194x44)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:p-box(0,0)-(165x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(165x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:The div below should have no border
+   line:-element:p-box(0,19)-(36x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(36x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:The div below should have no border
+  box:-element:div-box(0,44)-(194x25)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:div-box(0,0)-(25x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,-3)-(25x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:a div
