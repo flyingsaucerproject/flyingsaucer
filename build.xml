@@ -115,6 +115,7 @@
       <include name="splash/**"/>
       <include name="about/**"/>
       <include name="alice/**"/>
+      <include name="game/**"/>
       <include name="fonts/**"/>
     </patternset>
       
@@ -770,6 +771,13 @@
 $Id$
 
 $Log$
+Revision 1.79  2004/12/09 18:03:10  joshy
+added game screen to browser
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.78  2004/12/01 13:59:40  joshy
 added new demos
 Issue number:

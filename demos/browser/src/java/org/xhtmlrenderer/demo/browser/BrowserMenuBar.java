@@ -148,6 +148,7 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add( new LoadAction( "Link", "demo:demos/link.xhtml"));
         demos.add( new LoadAction( "Hamlet", "demo:demos/hamlet.xhtml"));
         demos.add( new LoadAction( "Alice", "demo:demos/alice/alice.xhtml"));
+        demos.add( new LoadAction( "Game Screen", "demo:demos/game/index.xhtml"));
         demos.add( new LoadAction( "Financial Report", "demo:demos/report.xhtml"));
         demos.add( new LoadAction( "Rollovers with :hover ", "demo:demos/hover.xhtml"));
         try {
@@ -489,6 +490,13 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2004/12/09 18:03:11  joshy
+ * added game screen to browser
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.20  2004/11/17 00:45:58  joshy
  * added link demo
  *
