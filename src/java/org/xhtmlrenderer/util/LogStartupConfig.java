@@ -21,58 +21,68 @@
 package org.xhtmlrenderer.util;
 
 import java.io.*;
+import java.util.*;
 import java.util.logging.*;
 
 
 /**
  * <p>
  *
- * This class is auto-loaded by the Logging system if the *System* property
- * java.util.logging.config.class is set to this class name (fully-qualified)
- * the first time the LogManager is loaded directly or indirectly. <p>
+ * This class is loaded by XRLog the first time XRLog is used.</p> <p>
  *
- * This class loads the LogManager with the logging properties from a file,
- * which must be on the CLASSPATH to be read. The location of the file is read
- * from Configuration, using the key xr.logging-properties-default. 
+ * This class loads the LogManager with the logging properties from
+ * Configuration, using keys prefixed by xr.util-logging. The rest of the key
+ * should correspond to log-level settings as specified in the LogManager API
+ * docs.</p> <p>
  *
- * <p>Note that
- * log level settings, handlers, and formatters in this logging-properties file follows the conventions in
- * LogManager. You cannot override logging settings in the main Configuration
- * file. Configuration is only used to identify the location of the logging
- * properties file. Configuration does support a formatting key when using
- * the XRSimpleLogFormatter--since LogManager properties doesn't support such
- * special-case parameters. Phew!
+ * Note that log level settings, handlers, and formatters in this
+ * logging-properties file follows the conventions in LogManager. Configuration
+ * also supports a formatting key when using the XRSimpleLogFormatter--since
+ * LogManager properties doesn't support such special-case parameters. </p>
  *
  * @author   Patrick Wright
  */
 public class LogStartupConfig {
-    /** Location of the logging configuration file, on the CLASSPATH. */
-    public final static String LOG_CONFIG_NAME;
-
     /** Constructor for the LogStartupConfig object */
     public LogStartupConfig() {
-        LogManager lm = LogManager.getLogManager();
-
         try {
-            InputStream is = GeneralUtil.openStreamFromClasspath( LOG_CONFIG_NAME );
-            lm.readConfiguration( is );
-            is.close();
-        } catch ( IOException ex ) {
-            System.err.println( "Log configuration: could not load log configuration file at " + LOG_CONFIG_NAME + ", using JDK/JRE defaults." );
-            ex.printStackTrace();
+            LogManager lm = LogManager.getLogManager();
+
+            // pull logging properties from configuration
+            // they are all prefixed as shown
+            String prefix = "xr.util-logging.";
+            Iterator iter = Configuration.keysByPrefix( prefix );
+            Properties props = new Properties();
+            while ( iter.hasNext() ) {
+                String fullkey = (String)iter.next();
+                String lmkey = fullkey.substring( prefix.length() );
+                props.setProperty( lmkey, Configuration.valueFor( fullkey ) );
+            }
+
+            // load our properties into our log manager
+            // log manager can only read properties from an InputStream
+            File f = File.createTempFile( "xr-log", null );
+            FileOutputStream fos = new FileOutputStream( f );
+            props.store( fos, "# Temporary properties file" );
+            fos.close();
+
+            FileInputStream fis = new FileInputStream( f );
+            lm.readConfiguration( fis );
+            fis.close();
+            f.delete();
+        } catch ( Throwable th ) {
+            th.printStackTrace();
         }
     }
-
-    static {
-        LOG_CONFIG_NAME = Configuration.valueFor( "xr.logging-properties-default" );
-    }
-
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/10/18 12:07:17  pdoubleya
+ * LogManager now initialized from main Configuration.
+ *
  * Revision 1.2  2004/10/14 11:12:42  pdoubleya
  * Logging properties location now read from Configuration. Updated comments.
  *
