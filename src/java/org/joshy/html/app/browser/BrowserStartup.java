@@ -57,7 +57,7 @@ public class BrowserStartup {
         actions = new BrowserActions(this);
         actions.init();
         
-        panel = new BrowserPanel(this);
+        panel = new BrowserPanel(this, new FrameBrowserPanelListener());
         panel.init();
         panel.createLayout();
         panel.createActions();
@@ -83,6 +83,13 @@ public class BrowserStartup {
             bs.panel.loadPage(args[0]);
         }
     }
+
+    class FrameBrowserPanelListener implements BrowserPanelListener {
+        public void pageLoadSuccess(String url, String title) {
+            frame.setTitle(title + ( title.length() > 0 ? " - " : "" ) + "Flying Saucer");
+        }
+    }
+    
     
 }
 
