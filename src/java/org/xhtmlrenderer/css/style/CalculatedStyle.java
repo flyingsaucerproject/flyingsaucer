@@ -211,13 +211,10 @@ public class CalculatedStyle {
      */
     public Border getBorderWidth(float parentWidth, float parentHeight) {
         if (_drvBorderWidth == null) {
-            Border border = new Border();
-
-            border.top = (int) getFloatPropertyProportionalHeight(CSSName.BORDER_WIDTH_TOP, parentHeight);
-            border.bottom = (int) getFloatPropertyProportionalHeight(CSSName.BORDER_WIDTH_BOTTOM, parentHeight);
-            border.left = (int) getFloatPropertyProportionalWidth(CSSName.BORDER_WIDTH_LEFT, parentWidth);
-            border.right = (int) getFloatPropertyProportionalWidth(CSSName.BORDER_WIDTH_RIGHT, parentWidth);
-            _drvBorderWidth = border;
+            _drvBorderWidth = deriveBorderInstance(
+                new CSSName[]{CSSName.BORDER_WIDTH_TOP,CSSName.BORDER_WIDTH_BOTTOM,CSSName.BORDER_WIDTH_LEFT, CSSName.BORDER_WIDTH_RIGHT},
+                parentHeight,
+                parentWidth);
         }
         return _drvBorderWidth;
     }
@@ -234,20 +231,29 @@ public class CalculatedStyle {
      */
     public Border getMarginWidth(float parentWidth, float parentHeight) {
         if (_drvMarginWidth == null) {
-            Border border = new Border();
-            /*border.top = (int) propertyByName(CSSName.MARGIN_TOP).computedValue().asFloat();
-            border.bottom = (int) propertyByName(CSSName.MARGIN_BOTTOM).computedValue().asFloat();
-            border.left = (int) propertyByName(CSSName.MARGIN_LEFT).computedValue().asFloat();
-            border.right = (int) propertyByName(CSSName.MARGIN_RIGHT).computedValue().asFloat();*/
-
-            border.top = (int) getFloatPropertyProportionalHeight(CSSName.MARGIN_TOP, parentHeight);
-            border.bottom = (int) getFloatPropertyProportionalHeight(CSSName.MARGIN_BOTTOM, parentHeight);
-            border.left = (int) getFloatPropertyProportionalWidth(CSSName.MARGIN_LEFT, parentWidth);
-            border.right = (int) getFloatPropertyProportionalWidth(CSSName.MARGIN_RIGHT, parentWidth);
-
-            _drvMarginWidth = border;
+            _drvMarginWidth = deriveBorderInstance(
+                new CSSName[]{CSSName.MARGIN_TOP,CSSName.MARGIN_BOTTOM,CSSName.MARGIN_LEFT, CSSName.MARGIN_RIGHT},
+                parentHeight,
+                parentWidth);
         }
         return _drvMarginWidth;
+    }
+
+    /**
+     * Instantiates a Border instance for a four-sided property, e.g. border-width, padding, margin.
+     *
+     * @param whichProperties Array of CSSNames for 4 sides, in order: top, bottom, left, right
+     * @param parentHeight Container parent height
+     * @param parentWidth Container parent width
+     * @return A Border instance representing the value for the 4 sides.
+     */
+    private Border deriveBorderInstance(CSSName[] whichProperties, float parentHeight, float parentWidth) {
+        Border border = new Border();
+        border.top = (int) getFloatPropertyProportionalHeight(whichProperties[0], parentHeight);
+        border.bottom = (int) getFloatPropertyProportionalHeight(whichProperties[1], parentHeight);
+        border.left = (int) getFloatPropertyProportionalWidth(whichProperties[2], parentWidth);
+        border.right = (int) getFloatPropertyProportionalWidth(whichProperties[3], parentWidth);
+        return border;
     }
 
 
@@ -262,17 +268,10 @@ public class CalculatedStyle {
      */
     public Border getPaddingWidth(float parentWidth, float parentHeight) {
         if (_drvPaddingWidth == null) {
-            Border border = new Border();
-            /*border.top = (int) propertyByName(CSSName.PADDING_TOP).computedValue().asFloat();
-            border.bottom = (int) propertyByName(CSSName.PADDING_BOTTOM).computedValue().asFloat();
-            border.left = (int) propertyByName(CSSName.PADDING_LEFT).computedValue().asFloat();
-            border.right = (int) propertyByName(CSSName.PADDING_RIGHT).computedValue().asFloat();*/
-
-            border.top = (int) getFloatPropertyProportionalHeight(CSSName.PADDING_TOP, parentHeight);
-            border.bottom = (int) getFloatPropertyProportionalHeight(CSSName.PADDING_BOTTOM, parentHeight);
-            border.left = (int) getFloatPropertyProportionalWidth(CSSName.PADDING_LEFT, parentWidth);
-            border.right = (int) getFloatPropertyProportionalWidth(CSSName.PADDING_RIGHT, parentWidth);
-            _drvPaddingWidth = border;
+            _drvPaddingWidth = deriveBorderInstance(
+                new CSSName[]{CSSName.PADDING_TOP,CSSName.PADDING_BOTTOM,CSSName.PADDING_LEFT, CSSName.PADDING_RIGHT},
+                parentHeight,
+                parentWidth);
         }
         return _drvPaddingWidth;
     }
@@ -459,6 +458,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/01/25 12:46:12  pdoubleya
+ * Refactored duplicate code into separate method.
+ *
  * Revision 1.11  2005/01/24 22:46:43  pdoubleya
  * Added support for ident-checks using IdentValue instead of string comparisons.
  *
