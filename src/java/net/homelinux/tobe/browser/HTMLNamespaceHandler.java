@@ -25,10 +25,16 @@ public class HTMLNamespaceHandler extends XhtmlNamespaceHandler {
             if(!s.endsWith(";")) sb.append(";");
         }
         s = e.getAttribute("align");
-        if(s.equals("left") || s.equals("right")) {
-            sb.append("float: ").append(s).append(";");
-        } else if(!s.equals("")) {
-            sb.append("vertical-align: ").append(s).append(";");
+        if(e.getTagName().equals("img")) {
+            if(s.equals("left") || s.equals("right")) {
+                sb.append("float: ").append(s).append(";");
+            } else if(!s.equals("")) {
+                sb.append("vertical-align: ").append(s).append(";");
+            }
+        } else {
+            if(!s.equals("")) {
+                sb.append("text-align: ").append(s).append(";");
+            }
         }
         s = e.getAttribute("bgcolor");
         if(!s.equals("")) {
@@ -37,6 +43,10 @@ public class HTMLNamespaceHandler extends XhtmlNamespaceHandler {
         s = e.getAttribute("border");
         if(!s.equals("")) {
             sb.append("border-width: ").append(s).append(";");
+        }
+        s = e.getAttribute("color");
+        if(!s.equals("")) {
+            sb.append("color: ").append(s).append(";");
         }
         /*s = e.getAttribute("height");
         if(!s.equals("")) {
@@ -51,6 +61,9 @@ public class HTMLNamespaceHandler extends XhtmlNamespaceHandler {
             sb.append("width: ").append(s).append(";");
         }*/
         //a special one
+        if(e.getTagName().equals("center")) {
+            sb.append("text-align: center;");
+        }
         if(e.getTagName().equals("font")) {
             s = e.getAttribute("size");
             if(!s.equals("")) {
@@ -75,10 +88,7 @@ public class HTMLNamespaceHandler extends XhtmlNamespaceHandler {
                     sb.append("xx-large").append(";");
                 }
             }
-            s = e.getAttribute("color");
-            if(!s.equals("")) {
-                sb.append("color: ").append(s).append(";");
-            }
+            //color is general
             s = e.getAttribute("face");
             if(!s.equals("")) {
                 sb.append("font-family: ").append(s).append(";");
@@ -151,6 +161,31 @@ public class HTMLNamespaceHandler extends XhtmlNamespaceHandler {
             uris[i] = (java.net.URI) list.get(i);
         }
         return uris;
+    }
+    
+    public java.io.Reader getDefaultStylesheet() {
+        java.io.Reader reader = null;
+        try {
+
+            //Object marker = new org.xhtmlrenderer.DefaultCSSMarker();
+            
+            //if(marker.getClass().getResourceAsStream("default.css") != null) {
+            if(this.getClass().getResourceAsStream("html.css") != null) {
+
+            //reader = new java.io.InputStreamReader(marker.getClass().getResource("default.css").openStream());
+            reader = new java.io.InputStreamReader(this.getClass().getResource("html.css").openStream());
+            } else {
+                System.err.println("Could not find css for "+this.getClass().getName());
+            }
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+
+        }
+        
+        return reader;
+
     }
     
 }

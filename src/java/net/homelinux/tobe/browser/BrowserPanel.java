@@ -277,8 +277,10 @@ public class BrowserPanel extends JPanel implements DocumentListener, UserAgentC
         } else {
             org.ccil.cowan.tagsoup.Parser tsp = new org.ccil.cowan.tagsoup.Parser();
             try{
+                //At the moment, the bad thing is that the below setting removes explicit namespaces too...
+                //Result is that I cannot detect difference between HTML and xhtml
                 tsp.setFeature(tsp.namespacesFeature, false);
-                tsp.setFeature(tsp.namespacePrefixesFeature, true);
+                //tsp.setFeature(tsp.namespacePrefixesFeature, true);
             }
             catch(org.xml.sax.SAXNotRecognizedException e) {
                 System.err.println(e);

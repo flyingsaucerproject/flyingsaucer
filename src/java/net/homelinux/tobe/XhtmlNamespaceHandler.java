@@ -140,11 +140,13 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
         java.io.Reader reader = null;
         try {
 
-            Object marker = new org.xhtmlrenderer.DefaultCSSMarker();
+            //Object marker = new org.xhtmlrenderer.DefaultCSSMarker();
             
-            if(marker.getClass().getResourceAsStream("default.css") != null) {
+            //if(marker.getClass().getResourceAsStream("default.css") != null) {
+            if(this.getClass().getResourceAsStream("xhtml.css") != null) {
 
-            reader = new java.io.InputStreamReader(marker.getClass().getResource("default.css").openStream());
+            //reader = new java.io.InputStreamReader(marker.getClass().getResource("default.css").openStream());
+            reader = new java.io.InputStreamReader(this.getClass().getResource("xhtml.css").openStream());
             } else {
                 System.err.println("Could not find css for "+this.getClass().getName());
             }
