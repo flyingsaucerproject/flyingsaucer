@@ -115,7 +115,10 @@ public class InlineRendering {
         if ( decoration == IdentValue.UNDERLINE ) {
             float down = lm.getUnderlineOffset();
             float thick = lm.getUnderlineThickness();
-            g.fillRect( ix, iy - (int)down, stringWidth, (int)thick );
+            
+            // correct the vertical pos of the underline by 2px, as without that 
+            // the underline sticks right against the text.
+            g.fillRect( ix, iy - (int)down + 2, stringWidth, (int)thick );
         } else if ( decoration == IdentValue.LINE_THROUGH ) {
             float down = lm.getStrikethroughOffset();
             float thick = lm.getStrikethroughThickness();
