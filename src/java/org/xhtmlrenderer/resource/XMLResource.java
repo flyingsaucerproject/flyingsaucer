@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
+import javax.xml.parsers.SAXParserFactory; 
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -50,9 +51,11 @@ public class XMLResource extends AbstractResource {
     private List inlineStyles;
     private Document document;
     private static final XMLResourceBuilder XML_RESOURCE_BUILDER;
+    private static boolean useConfiguredParser;
     
     static {
         XML_RESOURCE_BUILDER = new XMLResourceBuilder();
+        useConfiguredParser = true;
     }
     
     private XMLResource(InputStream stream) {
@@ -106,13 +109,30 @@ public class XMLResource extends AbstractResource {
     public static final XMLReader newXMLReader() {
         XMLReader saxParser = null;
         String xmlReaderClass = Configuration.valueFor("xr.load.xml-reader");
+        
+        //TODO: if it doesn't find the parser, note that in a static boolean--otherwise
+        // you get exceptions on every load
         try {
-            if ( xmlReaderClass != null && !xmlReaderClass.toLowerCase().equals("default")) {
-                saxParser = XMLReaderFactory.createXMLReader( xmlReaderClass );
+            if ( xmlReaderClass != null && 
+                 !xmlReaderClass.toLowerCase().equals("default") && 
+                 XMLResource.useConfiguredParser ) {
+                try {
+                    Class.forName(xmlReaderClass);
+                } catch (Exception ex) {
+                    XMLResource.useConfiguredParser = false;
+                    XRLog.load(Level.WARNING,
+                            "The XMLReader class you specified as a configuration property " +
+                            "could not be found. Class.forName() failed on "
+                            + xmlReaderClass +". Please check classpath. Use value 'default' in " +
+                            "FS configuration if necessary. Will now try JDK default.");
+                }
+                if ( XMLResource.useConfiguredParser ) {
+                    saxParser = XMLReaderFactory.createXMLReader( xmlReaderClass );
+                }
             }
         } catch ( Exception ex ) {
             XRLog.load(Level.WARNING,
-                    "Could not instantiate XMLReader class for XML parsing: "
+                    "Could not instantiate custom XMLReader class for XML parsing: "
                     + xmlReaderClass +". Please check classpath. Use value 'default' in " +
                     "FS configuration if necessary. Will now try JDK default.", ex);
         }
@@ -121,9 +141,11 @@ public class XMLResource extends AbstractResource {
                 // JDK default
                 // HACK: if 
                 if ( System.getProperty("org.xml.sax.driver") == null ) {
-                    System.setProperty("org.xml.sax.driver","org.apache.crimson.parser.XMLReaderImpl");
+                    String newDefault = "org.apache.crimson.parser.XMLReaderImpl";
+                     XRLog.load(Level.WARNING,
+                    "No value for system property 'org.xml.sax.driver'.");
                 }
-                saxParser = XMLReaderFactory.createXMLReader();
+                saxParser = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
                 xmlReaderClass = "{JDK default}";
             } catch ( Exception ex ) {
                 XRLog.general(ex.getMessage());
@@ -250,6 +272,9 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/03/16 19:26:31  pdoubleya
+ * Fixed to use proper javax.xml.transform instantiation for parser, and only try to load custom parser once, so that you don't get exceptions on each page.
+ *
  * Revision 1.4  2005/02/05 18:09:39  pdoubleya
  * Add specific SAX class name if none was specified and if system property is not already set.
  *
