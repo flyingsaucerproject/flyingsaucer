@@ -267,6 +267,7 @@
             </classpath>
         </java>
     </target>
+    
     <target name="generate-diff-tests" depends="core-jar">
         <java classname="org.xhtmlrenderer.test.DocumentDiffGenerate" fork="true">
             <classpath>
@@ -283,6 +284,17 @@
 $Id$
 
 $Log$
+Revision 1.43  2004/10/18 15:29:29  joshy
+split the layout into two classes
+made layout be an interface instead of a class.
+moved the layout code into default layout.
+
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.42  2004/10/18 15:00:42  joshy
 added comments and correct logging to the layout factory
 made layout factory use a hashtable instead of conditionals.

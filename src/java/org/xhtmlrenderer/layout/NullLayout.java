@@ -26,7 +26,7 @@ import org.w3c.dom.*;
 import org.xhtmlrenderer.util.*;
 import org.xhtmlrenderer.render.*;
 
-public class NullLayout extends Layout {
+public class NullLayout extends DefaultLayout {
     public Box layout(Context c, Element elem) {
         return new Box(0,0,0,0);
     }

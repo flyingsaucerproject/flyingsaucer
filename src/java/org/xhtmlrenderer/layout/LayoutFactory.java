@@ -28,8 +28,8 @@ import org.xhtmlrenderer.forms.*;
 import org.xhtmlrenderer.forms.InputButton;
 import org.xhtmlrenderer.table.*;
 
-//import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.render.Renderer;
 
 /**
  *  Returns the appropriate layout for a given node. Currently this hard codes
@@ -140,7 +140,7 @@ public class LayoutFactory {
             return new NullLayout();
         }
 
-        XRLog.exception("error! returning null! type = " + elem.getNodeType());
+        XRLog.layout(Level.WARNING, "error! returning null! type = " + elem.getNodeType());
         XRLog.layout(Level.INFO, "error! returning null! type = " + elem.getNodeType());
         XRLog.layout(Level.INFO, "name = " + elem.getNodeName());
 
@@ -158,6 +158,10 @@ public class LayoutFactory {
         XRLog.layout(Level.INFO, "processing inst = " + elem.PROCESSING_INSTRUCTION_NODE);
         XRLog.layout(Level.INFO, "text node = " + elem.TEXT_NODE);
         return new InlineLayout();
+    }
+    
+    public Renderer getRenderer(Node node) {
+        return getLayout(node);
     }
 
 
@@ -216,6 +220,7 @@ public class LayoutFactory {
         addCustomLayout("textarea", new InputTextArea());
 
     }
+    
 
 
 

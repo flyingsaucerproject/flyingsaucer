@@ -38,7 +38,7 @@ import org.xhtmlrenderer.css.*;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 
-public class BoxLayout extends Layout {
+public class BoxLayout extends DefaultLayout {
 
     public BoxLayout() {
     }
