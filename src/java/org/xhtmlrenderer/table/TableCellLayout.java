@@ -39,21 +39,6 @@ public class TableCellLayout extends InlineLayout {
 
 
 
-    /**
-     * Description of the Method
-     *
-     * @param c    PARAM
-     * @param box  PARAM
-     */
-    public void paintBackground( Context c, Box box ) {
-
-        //contents.height = c.getExtents().height;
-
-        //u.p("painting a cell background: " + box);
-
-        super.paintBackground( c, box );
-
-    }
 
 
 }
@@ -61,6 +46,14 @@ public class TableCellLayout extends InlineLayout {
 /*
    $Id$
    $Log$
+   Revision 1.4  2004/10/28 02:13:43  joshy
+   finished moving the painting code into the renderers
+
+   Issue number:
+   Obtained from:
+   Submitted by:
+   Reviewed by:
+
    Revision 1.3  2004/10/23 13:59:18  pdoubleya
    Re-formatted using JavaStyle tool.
    Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

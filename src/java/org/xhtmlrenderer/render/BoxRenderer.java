@@ -2,9 +2,10 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.util.*;
+import org.xhtmlrenderer.css.Border;
 import java.awt.*;
 
-public class BoxRenderer extends BoxLayout {
+public class BoxRenderer extends DefaultRenderer {
     
     /**
      * Description of the Method
@@ -29,7 +30,7 @@ public class BoxRenderer extends BoxLayout {
         }
 
         //u.p("here it's : " + c.getListCounter());
-        if ( isListItem( c, box ) ) {
+        if ( BoxLayout.isListItem( c, box ) ) {
             paintListItem( c, box );
         }
 
@@ -207,5 +208,20 @@ public class BoxRenderer extends BoxLayout {
     public void paintListItem( Context c, Box box ) {
         ListItemPainter.paint( c, box );
     }
+
+    public Border getBorder( Context c, Box box ) {
+        return BoxLayout.getBorder(c,box);
+    }
+    
+    public Border getPadding( Context c, Box box ) {
+        return BoxLayout.getPadding(c,box);
+    }
+    public Color getBackgroundColor( Context c, Box box ) {
+        return BoxLayout.getBackgroundColor(c,box);
+    }
+    public Border getMargin( Context c, Box box ) {
+        return BoxLayout.getMargin(c,box);
+    }
+
 
 }

@@ -79,15 +79,6 @@ public class CustomBlockLayout extends BoxLayout {
         return block;
     }
 
-    /**
-     * override this to paint your component
-     *
-     * @param c    PARAM
-     * @param box  PARAM
-     */
-    public void paintComponent( Context c, Box box ) {
-        u.p( "Custom components must override paintComponent" );
-    }
 
     /**
      * override this method to return the proper dimensions of your custom page
@@ -107,6 +98,14 @@ public class CustomBlockLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/10/28 02:13:40  joshy
+ * finished moving the painting code into the renderers
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:46:46  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

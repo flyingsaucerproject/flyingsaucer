@@ -18,7 +18,7 @@ public class InlineRenderer extends BoxRenderer {
             InlinePainter.paintInlineContext( c, box );
             return;
         }
-        if ( this.isBlockLayout( box.getElement(), c ) ) {
+        if ( BoxLayout.isBlockLayout( box.getElement(), c ) ) {
             //u.p("InlineLayout.paintComponent is block context: " + box);
             super.paintComponent( c, box );
             return;
@@ -38,7 +38,7 @@ public class InlineRenderer extends BoxRenderer {
             //u.p("it's anonymous so no children");
             return;
         }
-        if ( this.isBlockLayout( box.getElement(), c ) ) {
+        if ( BoxLayout.isBlockLayout( box.getElement(), c ) ) {
             //u.p("is block. doing super");
             super.paintChildren( c, box );
         }

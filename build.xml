@@ -68,7 +68,7 @@
     <property name="build.compiler" value="modern" />
     <property name="compiler.debug" value="true" />
     <property name="compiler.debuglevel" value="lines,vars,source"/>
-    <property name="compiler.deprecation" value="on" />
+    <property name="compiler.deprecation" value="off" />
     <property name="compiler.failonerror" value="true" />
     <property name="compiler.fork" value="no" />
     <property name="compiler.listfiles" value="no" />
@@ -592,6 +592,14 @@
 $Id$
 
 $Log$
+Revision 1.53  2004/10/28 02:13:38  joshy
+finished moving the painting code into the renderers
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.52  2004/10/28 01:34:22  joshy
 moved more painting code into the renderers
 

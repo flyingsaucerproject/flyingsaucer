@@ -255,7 +255,7 @@ public class BoxLayout extends DefaultLayout {
      * @param box  PARAM
      * @return     The listItem value
      */
-    public boolean isListItem( Context c, Box box ) {
+    public static boolean isListItem( Context c, Box box ) {
         String display = c.css.getStringProperty( (Element)box.node, "display", false );
         //u.p("display = " + display);
         if ( display.equals( "list-item" ) ) {
@@ -273,7 +273,7 @@ public class BoxLayout extends DefaultLayout {
      * @param box  PARAM
      * @return     The border value
      */
-    public Border getBorder( Context c, Box box ) {
+    public static Border getBorder( Context c, Box box ) {
         if ( box.isElement() ) {
             if ( box.border == null ) {
                 box.border = c.css.getBorderWidth( box.getElement() );
@@ -290,7 +290,7 @@ public class BoxLayout extends DefaultLayout {
      * @param box  PARAM
      * @return     The padding value
      */
-    public Border getPadding( Context c, Box box ) {
+    public static Border getPadding( Context c, Box box ) {
         if ( box.isElement() ) {
             if ( box.padding == null ) {
                 box.padding = c.css.getPaddingWidth( box.getElement() );
@@ -307,7 +307,7 @@ public class BoxLayout extends DefaultLayout {
      * @param box  PARAM
      * @return     The margin value
      */
-    public Border getMargin( Context c, Box box ) {
+    public static Border getMargin( Context c, Box box ) {
         if ( box.isElement() ) {
             if ( box.margin == null ) {
                 box.margin = c.css.getMarginWidth( box.getElement() );
@@ -323,7 +323,7 @@ public class BoxLayout extends DefaultLayout {
      * @param box  PARAM
      * @return     The backgroundColor value
      */
-    protected Color getBackgroundColor( Context c, Box box ) {
+    public static Color getBackgroundColor( Context c, Box box ) {
         if ( box.background_color == null ) {
             Object obj = c.css.getProperty( box.getElement(), "background-color", false );
             //u.p("got : " + obj);
@@ -371,6 +371,14 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/10/28 02:13:40  joshy
+ * finished moving the painting code into the renderers
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/10/28 01:34:23  joshy
  * moved more painting code into the renderers
  *

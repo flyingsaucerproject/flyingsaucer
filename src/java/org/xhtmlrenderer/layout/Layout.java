@@ -29,7 +29,7 @@ import org.xhtmlrenderer.render.Renderer;
  *
  * @author   empty
  */
-public interface Layout extends Renderer {
+public interface Layout {
 
     /**
      * Description of the Method
@@ -46,6 +46,14 @@ public interface Layout extends Renderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/10/28 02:13:41  joshy
+ * finished moving the painting code into the renderers
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/10/27 13:17:01  joshy
  * beginning to split out rendering code
  * Issue number:
