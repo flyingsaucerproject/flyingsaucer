@@ -5,7 +5,7 @@ import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Font;
+import java.awt.*;
 
 public class Breaker {
     public static void breakText(Context c, InlineBox inline, InlineBox prev_align, int avail, int max, Font font) {
@@ -19,7 +19,7 @@ public class Breaker {
             //Uu.p("prev align = " + prev_align);
         }
 
-        inline.setFont(font);
+        //inline.setFont(font);
         
         // ====== handle nowrap
         if (inline.whitespace.equals("nowrap")) {//we can't touch it

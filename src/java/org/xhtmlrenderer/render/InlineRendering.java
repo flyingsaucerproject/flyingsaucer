@@ -21,6 +21,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.util.GraphicsUtil;
@@ -248,7 +249,7 @@ public class InlineRendering {
             ((Graphics2D) c.getGraphics()).setPaint(new GradientPaint(0, 0, new Color(235, 235, 255),
                     0, inline.height / 2, new Color(190, 190, 235),
                     true));
-            LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), inline.getFont(), "Test");
+            LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), FontUtil.getFont(c), "Test");
             int top = ly + inline.y - (int) Math.ceil(lm.getAscent());
             int height = (int) Math.ceil(lm.getAscent() + lm.getDescent());
             c.getGraphics().fillRect(lx + inline.x + xoff,
@@ -264,7 +265,7 @@ public class InlineRendering {
         Graphics g = c.getGraphics();
         //adjust font for current settings
         Font oldfont = c.getGraphics().getFont();
-        c.getGraphics().setFont(inline.getFont());
+        c.getGraphics().setFont(FontUtil.getFont(c));
         Color oldcolor = c.getGraphics().getColor();
         c.getGraphics().setColor(c.getCurrentStyle().getColor());
         Font cur_font = c.getGraphics().getFont();
@@ -324,7 +325,7 @@ public class InlineRendering {
 
         int ty = line.baseline - inline.y - inline.height - padding_yoff + line.y;
 
-        LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), inline.getFont(), inline.getSubstring());
+        LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), FontUtil.getFont(c), inline.getSubstring());
         ty += (int) lm.getDescent();
         c.translate(-padding_xoff, ty);
         int old_width = inline.width;

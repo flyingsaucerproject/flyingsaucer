@@ -8,7 +8,7 @@ import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.swing.BasicPanel;
 
 import javax.swing.*;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -48,10 +48,12 @@ public class CopySelectionAction extends AbstractAction {
                 int start = 0;
                 int end = ib.getSubstring().length();
                 if (ib == current) {
-                    start = ib.getTextIndex(ctx.getSelectionStartX(), ctx.getGraphics());
+                    //TODO: find a way to do this
+                    //start = ib.getTextIndex(ctx.getSelectionStartX(), ctx.getGraphics());
                 }
                 if (ib == last) {
-                    end = ib.getTextIndex(ctx.getSelectionEndX(), ctx.getGraphics());
+                    //TODO: find a way to do this
+                    //end = ib.getTextIndex(ctx.getSelectionEndX(), ctx.getGraphics());
                 }
                 String st = ib.getSubstring().substring(Math.max(0, start - 1), end);
                 sb.append(st);

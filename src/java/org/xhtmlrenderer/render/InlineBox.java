@@ -19,11 +19,9 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
@@ -52,7 +50,7 @@ public class InlineBox extends Box {
         content = box.content;
         master = box.master;
         sub_block = box.sub_block;
-        font = box.font;
+        //font = box.font;
         underline = box.underline;
         overline = box.overline;
         strikethrough = box.strikethrough;
@@ -162,16 +160,16 @@ public class InlineBox extends Box {
         return "InlineBox text = \"" + getSubstring() +
                 "\" bnds = " + x + "," + y + " - " + width + "Xx" + height +
                 " start = " + this.start_index + " end = " + this.end_index +
-                " baseline = " + this.baseline + " vset = " + this.vset +
-                // CLN: (PWW 13/08/04)
-                //" color: " + color + " background-color: " + background_color +
-                " font: " + font;
+                " baseline = " + this.baseline + " vset = " + this.vset;// +
+        // CLN: (PWW 13/08/04)
+        //" color: " + color + " background-color: " + background_color +
+        //" font: " + font;
     }
 
     /**
      * Description of the Field
      */
-    private Font font;
+    //private Font font;
 
 
     /**
@@ -179,18 +177,18 @@ public class InlineBox extends Box {
      *
      * @return The font value
      */
-    public Font getFont() {
+    /*public Font getFont() {
         return font;
-    }
+    } */
 
     /**
      * Sets the font attribute of the InlineBox object
      *
      * @param font The new font value
      */
-    public void setFont(Font font) {
+    /*public void setFont(Font font) {
         this.font = font;
-    }
+    }*/
 
     /**
      * Gets the substring attribute of the InlineBox object
@@ -286,7 +284,8 @@ public class InlineBox extends Box {
 
     public String whitespace = "normal";
 
-    public int getTextIndex(int x, Graphics g) {
+    //TODO: find a way to find the font
+    /*public int getTextIndex(int x, Graphics g) {
         Font font = getFont();
         String str = getSubstring();
         char[] chars = new char[str.length()];
@@ -301,9 +300,10 @@ public class InlineBox extends Box {
         }
 
         return 0;
-    }
+    }*/
 
-    public int getAdvance(int x, Graphics g) {
+    //TODO: figure out another way to find the font, if we still need this method
+    /*public int getAdvance(int x, Graphics g) {
         Font font = getFont();
         String str = getSubstring();
         str = str.substring(0, x);
@@ -313,17 +313,17 @@ public class InlineBox extends Box {
         FontMetrics fm = g.getFontMetrics(font);
         //Uu.p("getting advance: " + Xx + " chars = " + chars);
         return fm.charsWidth(chars, 0, x);
-    }
+    }*/
 
 
     public LineMetrics line_metrics;
     public Rectangle2D text_bounds;
 
-    private CalculatedStyle style;
+    //private CalculatedStyle style;
 
-    public void setStyle(CalculatedStyle style) {
+    /*public void setStyle(CalculatedStyle style) {
         this.style = style;
-    }
+    }*/
 
 // --Commented out by Inspection START (2005-01-05 01:07):
 //    public CalculatedStyle getStyle() {
@@ -353,6 +353,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/01/05 17:56:35  tobega
+ * Reduced memory more, especially by using WeakHashMap for caching Mappers. Look over other caching to use similar schemes (cache when memory available).
+ *
  * Revision 1.28  2005/01/05 01:10:16  tobega
  * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
  *

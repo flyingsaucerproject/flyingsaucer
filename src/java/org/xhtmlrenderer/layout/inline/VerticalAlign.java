@@ -11,8 +11,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.font.LineMetrics;
 
 public class VerticalAlign {
@@ -59,7 +58,7 @@ public class VerticalAlign {
         box.vset = true;
 
         if (vertical_align.equals("baseline")) {
-            Font font = FontUtil.getFont(c, box);
+            Font font = FontUtil.getFont(c);
             box.y += FontUtil.getDescent(c, box, font);
         }
         

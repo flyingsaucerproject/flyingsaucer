@@ -445,7 +445,7 @@ public class LineBreaker {
         }*/
         //CalculatedStyle style = box.getStyle(c);//c.css.getStyle(elem);
         VerticalAlign.setupVerticalAlign(c, style, box);
-        box.setFont(font);//FontUtil.getFont(c,node));
+        //box.setFont(font);//FontUtil.getFont(c,node));
         //box.color = style.getColor();
         //Relative.setupRelative(box, c);
 
@@ -523,6 +523,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.46  2005/01/05 17:56:35  tobega
+ * Reduced memory more, especially by using WeakHashMap for caching Mappers. Look over other caching to use similar schemes (cache when memory available).
+ *
  * Revision 1.45  2005/01/05 01:10:15  tobega
  * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
  *

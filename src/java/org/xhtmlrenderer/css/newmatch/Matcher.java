@@ -124,10 +124,10 @@ public class Matcher {
     }
 
     private void newMaps() {
-        _map = new java.util.HashMap();
+        _map = new java.util.WeakHashMap();
         _csCache = new java.util.HashMap();
         _peMap = new java.util.HashMap();
-        _elStyle = new java.util.HashMap();
+        //_elStyle = new java.util.HashMap();
         _hoverElements = new java.util.HashSet();
         _activeElements = new java.util.HashSet();
         _focusElements = new java.util.HashSet();
@@ -512,7 +512,7 @@ public class Matcher {
 
     private Mapper getMapper(org.w3c.dom.Element e) {
         if (_map == null) {
-            _map = new java.util.HashMap();
+            _map = new java.util.WeakHashMap();
         }
         Mapper m = (Mapper) _map.get(e);
         if (m == null) matchElement(e);
@@ -566,13 +566,13 @@ public class Matcher {
 
     private org.xhtmlrenderer.css.sheet.Ruleset getElementStyle(org.w3c.dom.Element e) {
         if (_attRes == null || _styleFactory == null) return null;
-        org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) _elStyle.get(e);
-        if (rs == null) {
-            String style = _attRes.getElementStyling(e);
-            if (style == null || style.equals("")) return null;
-            rs = _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
-            _elStyle.put(e, rs);
-        }
+        org.xhtmlrenderer.css.sheet.Ruleset rs;// = (org.xhtmlrenderer.css.sheet.Ruleset) _elStyle.get(e);
+        //if (rs == null) {
+        String style = _attRes.getElementStyling(e);
+        if (style == null || style.equals("")) return null;
+        rs = _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
+        //_elStyle.put(e, rs);
+        //}
         return rs;
     }
 
@@ -580,10 +580,10 @@ public class Matcher {
     private org.xhtmlrenderer.extend.AttributeResolver _attRes;
     private org.xhtmlrenderer.css.sheet.StylesheetFactory _styleFactory;
 
-    private java.util.HashMap _map;
+    private java.util.WeakHashMap _map;
     private java.util.HashMap _peMap;
     private java.util.HashMap _csCache;
-    private java.util.HashMap _elStyle;
+    //private java.util.HashMap _elStyle;
 
     //handle dynamic
     private Set _hoverElements;

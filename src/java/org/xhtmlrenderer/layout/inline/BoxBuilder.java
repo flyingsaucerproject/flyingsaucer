@@ -14,11 +14,11 @@ public class BoxBuilder {
         //Uu.p("prev align = " + prev_align);
 
         CalculatedStyle style = c.getCurrentStyle();
-        box.setStyle(style);
+        //box.setStyle(style);
 
 
         // prepare the font, colors, border, etc
-        box.setFont(font);
+        //box.setFont(font);
         /*BoxLayout.getBackgroundColor(c, box);
         //BoxLayout.getBorder(c, box);
         //Uu.p("set border on inline box: " + box);

@@ -28,7 +28,6 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.util.Uu;
 
@@ -402,10 +401,10 @@ public class SharedContext {
     public void setSelectionStart(Box box, int x) {
         selection_start = box;
         selection_start_x = x;
-        if (box instanceof InlineBox) {
+        /*if (box instanceof InlineBox) {
             InlineBox ib = (InlineBox) box;
-            int i = ib.getTextIndex(x, getGraphics());
-        }
+            //int i = ib.getTextIndex(x, getGraphics());
+        }*/
     }
 
     /**
@@ -416,11 +415,12 @@ public class SharedContext {
     public void setSelectionEnd(Box box, int x) {
         selection_end = box;
         selection_end_x = x;
-        if (box instanceof InlineBox) {
+        //TODO: find a way to do this
+        /*if (box instanceof InlineBox) {
             InlineBox ib = (InlineBox) box;
             int i = ib.getTextIndex(x, getGraphics());
             selection_end_x = ib.getAdvance(i, getGraphics());
-        }
+        }*/
     }
 
 
@@ -579,6 +579,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/01/05 17:56:35  tobega
+ * Reduced memory more, especially by using WeakHashMap for caching Mappers. Look over other caching to use similar schemes (cache when memory available).
+ *
  * Revision 1.5  2005/01/05 01:10:15  tobega
  * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
  *

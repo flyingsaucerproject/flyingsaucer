@@ -23,8 +23,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineBox;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
+import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 
@@ -56,7 +55,7 @@ public class FontUtil {
 
     public static int len(Context c, InlineBox box) {
         //return c.getGraphics().getFontMetrics(box.getFont()).stringWidth(box.getSubstring());
-        return (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), box.getFont(), box.getSubstring()).getWidth());
+        return (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont(c), box.getSubstring()).getWidth());
     }
 
     /**
@@ -79,7 +78,7 @@ public class FontUtil {
             return (int) style.propertyByName(CSSName.LINE_HEIGHT).computedValue().asFloat();
         } else {
             //return c.getGraphics().getFontMetrics( box.getFont() ).getHeight();
-            return (int) Math.ceil(c.getTextRenderer().getLineMetrics(c.getGraphics(), box.getFont(), "Test").getHeight());
+            return (int) Math.ceil(c.getTextRenderer().getLineMetrics(c.getGraphics(), getFont(c), "Test").getHeight());
         }
     }
 
@@ -105,10 +104,7 @@ public class FontUtil {
     }
     //TODO: add method to get font-size for a specific XHeight
 
-    public static Font getFont(Context c, InlineBox box) {
-        if (box.getFont() != null) {
-            return box.getFont();
-        }
+    public static Font getFont(Context c) {
         CalculatedStyle style = c.getCurrentStyle();
         return getFont(c, style);
     }
@@ -136,7 +132,7 @@ public class FontUtil {
 
     public static LineMetrics getLineMetrics(Context c, InlineBox box) {
         return c.getTextRenderer().getLineMetrics(c.getGraphics(),
-                box.getFont(), box.getSubstring());
+                getFont(c), box.getSubstring());
     }
 
     public static Rectangle2D getTextBounds(Context c, InlineBox box) {
@@ -159,6 +155,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/01/05 17:56:34  tobega
+ * Reduced memory more, especially by using WeakHashMap for caching Mappers. Look over other caching to use similar schemes (cache when memory available).
+ *
  * Revision 1.22  2004/12/29 10:39:32  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *
