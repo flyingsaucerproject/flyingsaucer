@@ -29,8 +29,6 @@ public class IdentValue {
     private String ident;
 
     private static Map ALL_IDENT_VALUES;
-    // CLEAN: referenced in WhitespaceStripper, probably a typo; pre-line does not exist
-    // public static final IdentValue PRE_LINE = addValue("pre-line");
     public static final IdentValue ABSOLUTE = addValue("absolute");
     public static final IdentValue ARMENIAN = addValue("armenian");
     public static final IdentValue AUTO = addValue("auto");
@@ -94,6 +92,9 @@ public class IdentValue {
     public static final IdentValue OUTSET = addValue("outset");
     public static final IdentValue OVERLINE = addValue("overline");
     public static final IdentValue PRE = addValue("pre");
+    // HACK: pre-line/pre-wrap are not valid CSS values, but being used in CSS/demos. should prob be pre (PWW 25-01-05)
+    public static final IdentValue PRE_LINE = addValue("pre-line");
+    public static final IdentValue PRE_WRAP = addValue("pre-wrap");
     public static final IdentValue RELATIVE = addValue("relative");
     public static final IdentValue REPEAT = addValue("repeat");
     public static final IdentValue REPEAT_X = addValue("repeat-x");
@@ -170,6 +171,9 @@ public class IdentValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/25 15:24:38  pdoubleya
+ * Temporary support for pre-line and pre-wrap.
+ *
  * Revision 1.3  2005/01/25 14:38:03  pdoubleya
  * Added temporary support for invalid identifier "inline-block" to support existing code.
  *
