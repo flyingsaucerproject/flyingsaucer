@@ -1,18 +1,15 @@
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.Box;
 
 public class LayoutUtil {
 
-    public static String getDisplay(CalculatedStyle style) {
+    public static String getDisplay(CascadedStyle style) {
         // Uu.p("checking: " + child);
-        String display = style.getStringProperty("display");
+        String display = style.propertyByName("display").getValue().getCssText();
         // Uu.p("display = " + display);
         
         // override for floated
@@ -40,12 +37,12 @@ public class LayoutUtil {
 
     public static Border getBorder(Context c, Box box) {
         //TODO: can I skip this? if (isBlockOrInlineElementBox(c, box)) {
-            // Uu.p("setting border for: " + box);
-            if (box.border == null) {
-                box.border = c.getCurrentStyle().getBorderWidth();
-            }
+        // Uu.p("setting border for: " + box);
+        if (box.border == null) {
+            box.border = c.getCurrentStyle().getBorderWidth();
+        }
         //} else {
-            // Uu.p("skipping border for: " + box);
+        // Uu.p("skipping border for: " + box);
         //}
         return box.border;
     }
@@ -56,7 +53,7 @@ public class LayoutUtil {
      * @param style
      * @return The fixed value
      */
-    public static boolean isFixed(CalculatedStyle style) {
+    public static boolean isFixed(CascadedStyle style) {
         if (getPosition(style).equals("fixed")) {
             return true;
         }
@@ -98,8 +95,8 @@ public class LayoutUtil {
      * @param style
      * @return The position value
      */
-    public static String getPosition(CalculatedStyle style) {
-        String position = style.getStringProperty("position");
+    public static String getPosition(CascadedStyle style) {
+        String position = style.propertyByName("position").getValue().getCssText();
         if (position == null) {
             //TODO: check if we ever can get here. CSS-code should have taken care of this, surely?
             position = "static";
@@ -111,23 +108,11 @@ public class LayoutUtil {
     /**
      * Gets the floated attribute of the DefaultLayout class
      *
-     * @param inline PARAM
-     * @param c      PARAM
-     * @return The floated value
-     */
-    public static boolean isFloated(Box inline, Context c) {
-        CalculatedStyle style = c.getCurrentStyle();
-        return isFloated(style);
-    }
-
-    /**
-     * Gets the floated attribute of the DefaultLayout class
-     *
      * @param style
      * @return The floated value
      */
-    public static boolean isFloated(CalculatedStyle style) {
-        String float_val = style.getStringProperty("float");
+    public static boolean isFloated(CascadedStyle style) {
+        String float_val = style.propertyByName("float").getValue().getCssText();
         if (float_val == null) {
             return false;
         }
@@ -149,7 +134,6 @@ public class LayoutUtil {
     public static boolean isReplaced(Context c, Node node) {
         return c.getRenderingContext().getLayoutFactory().isReplaced(node);
     }
-
 
 
 }

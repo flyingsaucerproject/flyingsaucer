@@ -46,11 +46,10 @@ public class BorderPainter {
         if (box.border == null) return;
         Graphics g = ctx.getGraphics();
 
-        // TODO: color is per-side ((PWW 13/08/04))
+        // TODO: color is per-side ((PWW 13/08/04)). Is it already done? (tobe 2004-12-12)
         //Uu.p("border = " + ctx.css.getBorderColor(box.getRealElement()).bottomColor);
-        box.border_color = ctx.css.getStyle(box.getRealElement()).getBorderColor().topColor;
-        if (box.getBorderColor() == null) {//TODO: why do we need this? Shouldn't t be set already?
-            box.border_color = ctx.css.getStyle(box.getRealElement()).getBorderColor();
+        if (box.border_color == null) {
+            box.border_color = ctx.getCurrentStyle().getBorderColor();
         }
         //Uu.p("set the border colors to: " + box.getBorderColor());
 
@@ -58,7 +57,7 @@ public class BorderPainter {
         // CSSBank/Accessor leave it as a single property, but XRStyleReference
         // explodes it to individual values. Which way to go? (PWW 13/08/04)
         if (box.border_style == null) {
-            box.border_style = ctx.css.getStyle(box.getRealElement()).getStringProperty(CSSName.BORDER_STYLE_TOP);
+            box.border_style = ctx.getCurrentStyle().getStringProperty(CSSName.BORDER_STYLE_TOP);
         }
 
 
@@ -413,6 +412,9 @@ public void paintSimpleBorder( Graphics2D g, Rectangle bounds, Border border, Bo
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/12/12 04:18:57  tobega
+ * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
+ *
  * Revision 1.10  2004/12/12 03:33:00  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

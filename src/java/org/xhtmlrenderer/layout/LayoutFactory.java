@@ -21,7 +21,7 @@ package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.forms.*;
 import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.table.TableCellLayout;
@@ -92,7 +92,9 @@ public class LayoutFactory {
      * @return the correct layout for this node
      * @see org.xhtmlrenderer.layout.Layout
      */
-    /** @deprecated get layout based on content instead */
+    /**
+     * @deprecated get layout based on content instead
+     */
     public Layout getLayout(Context c, Node elem) {
         if (elem == null) return new NullLayout();//TODO: why?
         //Uu.p("getting layout for node: " + elem);
@@ -140,7 +142,7 @@ public class LayoutFactory {
 
 
             // check for floats
-            CalculatedStyle style = c.getCurrentStyle();
+            CascadedStyle style = c.css.getCascadedStyle((Element) elem);
             if (LayoutUtil.isFloated(style)) {
                 //Uu.p("in layout factory, found a floated element. forcing display: block");
                 return getCustomLayout("block");
@@ -331,6 +333,9 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.26  2004/12/12 04:18:57  tobega
+* Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
+*
 * Revision 1.25  2004/12/12 03:32:59  tobega
 * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
 *

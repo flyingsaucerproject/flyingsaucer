@@ -1,13 +1,14 @@
 package org.xhtmlrenderer.layout.block;
 
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.LayoutUtil;
+import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.render.Box;
 
 public class Relative {
-    public static void setupRelative(Box box) {
-        CalculatedStyle style = box.getContent().getStyle();
-        String position = LayoutUtil.getPosition(style);
+    public static void setupRelative(Box box, Context c) {
+        CalculatedStyle style = c.getCurrentStyle();
+        String position = style.getStringProperty(CSSName.POSITION);
         if (position.equals("relative")) {
             if (style.hasProperty("right")) {
                 box.left = -(int) style.getFloatPropertyRelative("right", 0);

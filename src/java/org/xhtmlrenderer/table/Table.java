@@ -22,7 +22,7 @@ package org.xhtmlrenderer.table;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
 
@@ -104,7 +104,7 @@ public class Table {
             return false;
         }
         // check the display value
-        CalculatedStyle style = c.css.getStyle(node);
+        CascadedStyle style = c.css.getCascadedStyle((Element) node);
         if (LayoutUtil.getDisplay(style).equals("table-row-group")) {
             return true;
         }
@@ -117,7 +117,7 @@ public class Table {
             return false;
         }
         // check the display value
-        CalculatedStyle style = c.css.getStyle(node);
+        CascadedStyle style = c.css.getCascadedStyle((Element) node);
         if (LayoutUtil.getDisplay(style).equals("table-row")) {
             return true;
         }
@@ -182,7 +182,7 @@ public class Table {
             return false;
         }
         // check the display value
-        CalculatedStyle style = c.css.getStyle(node);
+        CascadedStyle style = c.css.getCascadedStyle((Element) node);
         if (LayoutUtil.getDisplay(style).equals("table-cell")) {
             return true;
         }
@@ -264,12 +264,13 @@ public class Table {
         int[] widths = new int[total_cols];
 
         // loop over top cells looking for explict widths
+        //TODO: fix the style stuff here
         int col_count = 0;
         for (int i = 0; i < top_cells.size(); i++) {
             Cell cell = (Cell) top_cells.get(i);
-            if (c.css.getStyle(cell.node).hasProperty("width")) {
+            if (c.css.getCascadedStyle((Element) cell.node).hasProperty("width")) {
                 // fixed bug that made cell sizing fail w/ %s
-                int width = (int) c.css.getStyle(cell.node).getFloatPropertyRelative("width", avail_width);
+                int width = (int) c.getCurrentStyle().getFloatPropertyRelative("width", avail_width);
                 //Uu.p("got width: " + width);
                 for (int j = col_count; j < col_count + cell.col_span; j++) {
                     widths[j] = width / cell.col_span;
@@ -376,6 +377,9 @@ public class Table {
 /*
    $Id$
    $Log$
+   Revision 1.10  2004/12/12 04:18:58  tobega
+   Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
+
    Revision 1.9  2004/12/12 03:33:03  tobega
    Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
 

@@ -64,8 +64,7 @@ public class TableLayout2 extends TableLayout {
      */
     public Box createBox(Context c, Content content) {
         TableBox table = new TableBox();
-        table.setNode(content.getElement());
-        table.setContent(content);
+        table.content = content;
         // set up the box properties
         getMargin(c, table);
         getPadding(c, table);
@@ -85,17 +84,18 @@ public class TableLayout2 extends TableLayout {
         // create the table box
         TableBox table_box = (TableBox) createBox(c, content);
 
+        c.pushStyle(content.getStyle());
         // set up the border spacing
-        float border_spacing = content.getStyle().getFloatProperty("border-spacing");
+        float border_spacing = c.getCurrentStyle().getFloatProperty("border-spacing");
         table_box.spacing = new Point((int) border_spacing,
                 (int) border_spacing);
 
         // set up the width
         int fixed_width = c.getExtents().width;
         if (content.getStyle().hasProperty("width")) {
-            fixed_width = (int) content.getStyle().getFloatPropertyRelative("width", c.getExtents().width);
+            fixed_width = (int) c.getCurrentStyle().getFloatPropertyRelative("width", c.getExtents().width);
         }
-        int orig_fixed_width = fixed_width;
+        //not used: int orig_fixed_width = fixed_width;
 
         //subtract off the margin, border, padding, and spacing
         fixed_width -= table_box.totalHorizontalPadding() + table_box.spacing.x;
@@ -112,6 +112,9 @@ public class TableLayout2 extends TableLayout {
         calculateBoxes(fixed_width, table_box, c, table);
         table_box.width += table_box.totalHorizontalPadding();
         table_box.height += table_box.totalVerticalPadding();
+
+        c.popStyle();
+
         return table_box;
     }
 
@@ -123,7 +126,6 @@ public class TableLayout2 extends TableLayout {
      * @param box         PARAM
      * @param c           PARAM
      * @param table       PARAM
-     * @return Returns
      */
     public void calculateBoxes(int avail_width, TableBox box, Context c, Table table) {
         //Uu.p("TableLayout2.calculateBoxes(" + avail_width  +
@@ -166,7 +168,6 @@ public class TableLayout2 extends TableLayout {
                     // set the width
                     //Uu.p("column count = " + column_count + " col span = " + cell.col_span);
                     cell_box.width = table.calcColumnWidth(column_count, cell.col_span);
-                    cell_box.setNode(cell.node);
                     // do the internal layout
                     // save the old extents and create new with smaller width
                     Rectangle oe = c.getExtents();
@@ -179,7 +180,7 @@ public class TableLayout2 extends TableLayout {
                     //Uu.p("cell_box properly = " + cell_box);
                     c.setSubBlock(true);
                     //TODO: temporary hack
-                    Box cell_contents = layout.layout(c, new BlockContent((Element) cell_box.getNode(), c.css.getStyle(cell_box.getNode())));
+                    Box cell_contents = layout.layout(c, new BlockContent((Element) cell.node, c.css.getCascadedStyle((Element) cell.node)));
                     c.setSubBlock(false);
                     cell_box.sub_box = cell_contents;
                     cell_box.height = cell_box.sub_box.height;
@@ -292,6 +293,9 @@ public class TableLayout2 extends TableLayout {
 /*
    $Id$
    $Log$
+   Revision 1.12  2004/12/12 04:18:58  tobega
+   Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
+
    Revision 1.11  2004/12/12 03:33:03  tobega
    Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
 

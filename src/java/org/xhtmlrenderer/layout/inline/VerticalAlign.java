@@ -16,7 +16,7 @@ import java.awt.font.LineMetrics;
 public class VerticalAlign {
 
     public static void setupVerticalAlign(Context c, CalculatedStyle style, InlineBox box) {
-        Content content = box.getContent();
+        Content content = box.content;
 
         //not used: CalculatedStyle parent_style = c.css.getStyle(LineBreaker.getElement(parent));
         Font parent_font = FontUtil.getFont(c, style);

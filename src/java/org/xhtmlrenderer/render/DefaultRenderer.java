@@ -75,6 +75,7 @@ public class DefaultRenderer implements Renderer {
     public void paintChildren(Context c, Box box) {
         //Uu.p("Layout.paintChildren(): " + box);
         //Uu.p("child count = " + box.getChildCount());
+        XRLog.render(Level.WARNING, "using default renderer paintChildren for " + box.getClass().getName());
         for (int i = 0; i < box.getChildCount(); i++) {
             Box child = (Box) box.getChild(i);
             //Uu.p("child = " + child);
@@ -82,12 +83,13 @@ public class DefaultRenderer implements Renderer {
             if (child.isAnonymous()) {
                 renderer = c.getRenderingContext().getLayoutFactory().getAnonymousRenderer();
             } else {
-                if (child.getContent() == null) {
+                if (child.content == null) {
                     XRLog.render(Level.WARNING, "null node of child: " + child + " of type " + child.getClass().getName());
                     renderer = new InlineRenderer();
                 } else {
                     //renderer = c.getRenderer(child.getNode());
-                    renderer = c.getRenderer(child.getContent().getElement());
+                    //TODO: find another way to work out the renderer
+                    renderer = c.getRenderer(child.content.getElement());
                 }
             }
             paintChild(c, child, renderer);

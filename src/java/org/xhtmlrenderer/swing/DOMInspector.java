@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.css.CSSPrimitiveValue;
+import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.layout.Context;
 
@@ -783,6 +784,9 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/12/12 04:18:58  tobega
+ * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
+ *
  * Revision 1.7  2004/12/11 18:18:12  tobega
  * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
  *

@@ -25,7 +25,7 @@ import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 
-import java.awt.*;
+import java.awt.Dimension;
 
 
 /**
@@ -43,8 +43,7 @@ public class CustomBlockLayout extends BoxLayout {
      */
     public Box createBox(Context c, Content content) {
         BlockBox box = new BlockBox();
-        box.setNode(content.getElement());
-        box.setContent(content);
+        box.content = content;
         return box;
     }
 
@@ -99,6 +98,9 @@ public class CustomBlockLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/12/12 04:18:56  tobega
+ * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
+ *
  * Revision 1.7  2004/12/09 21:18:52  tobega
  * precaution: code still works
  *

@@ -443,7 +443,7 @@ public class LineBreaker {
         VerticalAlign.setupVerticalAlign(c, style, box);
         box.setFont(font);//FontUtil.getFont(c,node));
         box.color = style.getColor();
-        Relative.setupRelative(box);
+        Relative.setupRelative(box, c);
 
         
         
@@ -519,6 +519,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2004/12/12 04:18:57  tobega
+ * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
+ *
  * Revision 1.35  2004/12/12 03:32:59  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

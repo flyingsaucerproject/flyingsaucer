@@ -5,11 +5,11 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.render.Box;
 
-import java.awt.*;
+import java.awt.Point;
 
 public class Fixed {
     public static void positionFixedChild(Context c, Box box) {
-        if (LayoutUtil.isFixed(box.getContent().getStyle())) {
+        if (LayoutUtil.isFixed(box.content.getStyle())) {
             Point origin = c.getOriginOffset();
             box.x = 0;
             box.y = 0;
@@ -19,11 +19,11 @@ public class Fixed {
     }
 
     public static void setupFixed(Context c, Box box) {
-        if (LayoutUtil.isFixed(box.getContent().getStyle())) {
+        if (LayoutUtil.isFixed(box.content.getStyle())) {
             box.fixed = true;
             box.setChildrenExceedBounds(true);
 
-            CalculatedStyle style = c.css.getStyle(box.getNode());
+            CalculatedStyle style = c.getCurrentStyle();
             if (style.hasProperty("top")) {
                 box.top = (int) style.getFloatPropertyRelative("top", 0);
                 box.top_set = true;

@@ -44,7 +44,8 @@ public class ListItemPainter {
      * @param box PARAM
      */
     public static void paint(Context c, Box box) {
-        String type = c.css.getStyle(box.getNode()).getStringProperty("list-style-type");
+        CalculatedStyle style = c.getCurrentStyle();
+        String type = style.getStringProperty("list-style-type");
 
         if (type.equals("none")) {
             return;
@@ -56,7 +57,7 @@ public class ListItemPainter {
             type = "decimal";
         }
 
-        String image = c.css.getStyle(box.getNode()).getStringProperty("list-style-image");
+        String image = style.getStringProperty("list-style-image");
         Image img = null;
         if (!image.equals("none")) {
             try {
@@ -75,7 +76,7 @@ public class ListItemPainter {
         }
 
         // prep the color
-        box.color = c.css.getStyle(box.getRealElement()).getColor();
+        box.color = style.getColor();
         c.getGraphics().setColor(box.color);
         
         // save the old AntiAliasing setting, then force it on
@@ -86,10 +87,6 @@ public class ListItemPainter {
         
         // calculations for bullets
         int rad = 8;// change this to use the glyph height
-        //not used: int baseline = box.height;// change this to use the real baseline
-        CalculatedStyle style = c.css.getStyle(box.getRealElement());
-        //not used: Font font = FontUtil.getFont(c, style);
-        //Font font = FontUtil.getFont(c, box.getRealElement());
         int h = FontUtil.lineHeight(c, style);
         rad = h / 3;
         int x = box.x - rad - rad / 2;
@@ -161,7 +158,7 @@ public class ListItemPainter {
             text = toRoman(box.list_count).toUpperCase() + ".";
         }
 
-        CalculatedStyle style = c.css.getStyle(box.getRealElement());
+        CalculatedStyle style = c.getCurrentStyle();
         Font font = FontUtil.getFont(c, style);
         LineMetrics lm = font.getLineMetrics(text, ((Graphics2D) c.getGraphics()).getFontRenderContext());
         int w = FontUtil.len(c, text, font);
@@ -213,6 +210,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/12/12 04:18:58  tobega
+ * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
+ *
  * Revision 1.9  2004/12/12 03:33:01  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

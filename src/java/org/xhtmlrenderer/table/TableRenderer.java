@@ -171,7 +171,7 @@ public class TableRenderer extends BoxRenderer {
 
             c.setExtents(new Rectangle(0, 0, cell.width, cell.height));
 
-            Renderer rend = c.getRenderer(cell.getNode());
+            Renderer rend = c.getRenderer(cell.content.getElement());
 
             //Uu.p("doing cell: " + cell);
 

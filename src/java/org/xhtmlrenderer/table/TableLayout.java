@@ -22,6 +22,7 @@ package org.xhtmlrenderer.table;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.BoxLayout;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.Layout;
@@ -79,9 +80,7 @@ public class TableLayout
 
         Box box = new TableBox(0, 0, 0, 0);
 
-        box.setNode(content.getElement());
-
-        box.setContent(content);
+        box.content = content;
 
         return box;
     }
@@ -99,6 +98,9 @@ public class TableLayout
     public Box layout(Context c, Content content) {
         TableBox table = (TableBox) createBox(c, content);
 
+        //handle style
+        CascadedStyle cs = c.css.getCascadedStyle(content.getElement());
+        c.pushStyle(cs);
         // calculate the available space
 
         getMargin(c, table);
@@ -107,7 +109,7 @@ public class TableLayout
 
         getBorder(c, table);
 
-        float border_spacing = content.getStyle().getFloatProperty("border-spacing");
+        float border_spacing = c.getCurrentStyle().getFloatProperty("border-spacing");
 
         table.spacing = new Point((int) border_spacing, (int) border_spacing);
 
@@ -157,6 +159,8 @@ public class TableLayout
         table.width = fixed_width;
 
         layoutTableRows(c, table, content.getElement(), col_widths, orig_fixed_width);
+
+        c.popStyle();
 
         return table;
     }
@@ -223,7 +227,8 @@ public class TableLayout
 
         RowBox rowbox = new RowBox(0, 0, 0, 0);
 
-        rowbox.setNode(row);
+        //TODO: use Content for tables too
+        //rowbox.setNode(row);
 
         // create dummy previous cell
 
@@ -308,8 +313,8 @@ public class TableLayout
         CellBox cellbox = new CellBox(0, 0, cellwidth, 0);
 
         // attach the node
-
-        cellbox.setNode(cell);
+        //TODO: use content for tables too
+        //cellbox.setNode(cell);
 
         getBorder(c, cellbox);
 
@@ -343,7 +348,7 @@ public class TableLayout
         Layout layout = c.getLayout(cell);
 
         //TODO: temporary hack
-        Box cell_contents = layout.layout(c, new BlockContent((Element) cellbox.getNode(), c.css.getStyle(cellbox.getNode())));
+        Box cell_contents = layout.layout(c, new BlockContent((Element) cell, c.css.getCascadedStyle((Element) cell)));
 
         cellbox.sub_box = cell_contents;
 
@@ -400,7 +405,7 @@ public class TableLayout
 
                 //if(cell.width)
 
-                if (c.css.getStyle(td).hasProperty("width")) {
+                if (c.css.getCascadedStyle(td).hasProperty("width")) {
 
                     //save column.width;
 
@@ -411,8 +416,8 @@ public class TableLayout
                         //Xx.p(elem);
 
                     }
-
-                    col_widths[count] = (int) c.css.getStyle(td).getFloatProperty("width");
+                    //TODO: fix the style handling properly
+                    col_widths[count] = (int) c.getCurrentStyle().getFloatProperty("width");
 
                     total_width += col_widths[count];
 
@@ -524,6 +529,9 @@ public class TableLayout
 /*
    $Id$
    $Log$
+   Revision 1.12  2004/12/12 04:18:58  tobega
+   Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
+
    Revision 1.11  2004/12/12 03:33:03  tobega
    Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
 

@@ -32,7 +32,8 @@ public class BlockContent implements Content {
     private Element _elem;
     private CascadedStyle _style;
 
-    BlockContent(Element e, CascadedStyle style) {
+    //TODO: make constructor package local
+    public BlockContent(Element e, CascadedStyle style) {
         _elem = e;
         _style = style;
     }

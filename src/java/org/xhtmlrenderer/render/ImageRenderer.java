@@ -50,7 +50,7 @@ public class ImageRenderer extends BoxRenderer {
      * @param box PARAM
      */
     public void paintComponent(Context c, Box box) {
-        Image img = ImageLayout.getImage(c, box.getNode());
+        Image img = ImageLayout.getImage(c, box.content.getElement());
         if (img != null) {
             c.getGraphics().drawImage(img, box.x, box.y, null);
         }

@@ -161,7 +161,7 @@ public class BoxLayout extends DefaultLayout {
 
         // account for special positioning
         // need to add bfc/unbfc code for absolutes
-        Relative.setupRelative(block);
+        Relative.setupRelative(block, c);
         // need to add bfc/unbfc code for absolutes
         Absolute.setupAbsolute(block, c);
         Fixed.setupFixed(c, block);
@@ -347,6 +347,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2004/12/12 04:18:56  tobega
+ * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
+ *
  * Revision 1.42  2004/12/12 03:32:58  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

@@ -50,8 +50,8 @@ public class TextDecoration {
 
 
     public static boolean isDecoratable(Box box) {
-        if (!(box.getContent() instanceof InlineBlockContent)) {
-            if (!(box.getContent() instanceof FloatedBlockContent)) {
+        if (!(box.content instanceof InlineBlockContent)) {
+            if (!(box.content instanceof FloatedBlockContent)) {
                 return true;
             }
         }

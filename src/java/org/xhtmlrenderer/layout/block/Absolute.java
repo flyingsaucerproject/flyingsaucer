@@ -1,11 +1,10 @@
 package org.xhtmlrenderer.layout.block;
 
-import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.render.Box;
 
 public class Absolute {
@@ -27,16 +26,16 @@ public class Absolute {
 
     private static boolean isAbsolute(Box box) {
         CascadedStyle style = box.content.getStyle();
-        if(style == null) return false;
-            if (!style.hasProperty(CSSName.POSITION)) return false;//default is inline
-            String position = style.propertyByName(CSSName.POSITION).getValue().getCssText();
-            if (position.equals("absolute")) return true;
-            return false;
+        if (style == null) return false;
+        if (!style.hasProperty(CSSName.POSITION)) return false;//default is inline
+        String position = style.propertyByName(CSSName.POSITION).getValue().getCssText();
+        if (position.equals("absolute")) return true;
+        return false;
     }
 
     public static void setupAbsolute(Box box, Context c) {
         CalculatedStyle style = c.getCurrentStyle();
-        String position = LayoutUtil.getPosition(style);
+        String position = style.getStringProperty(CSSName.POSITION);
         if (position.equals("absolute")) {
             if (style.hasProperty("right")) {
                 //Uu.p("prop = " + c.css.getProperty(box.getRealElement(),"right",false));

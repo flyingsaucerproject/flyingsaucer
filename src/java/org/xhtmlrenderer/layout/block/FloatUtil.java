@@ -1,7 +1,6 @@
 package org.xhtmlrenderer.layout.block;
 
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
@@ -12,7 +11,7 @@ import org.xhtmlrenderer.render.Box;
 public class FloatUtil {
 
     public static void preChildrenLayout(Context c, Box block) {
-        CalculatedStyle style = c.getCurrentStyle();
+        CascadedStyle style = block.content.getStyle();
         //boolean set_bfc_float = false;
         if (LayoutUtil.isFloated(style)) {
             BlockFormattingContext bfc = new BlockFormattingContext(block);
@@ -23,7 +22,7 @@ public class FloatUtil {
     }
 
     public static void postChildrenLayout(Context c, Box block) {
-        CalculatedStyle style = c.getCurrentStyle();
+        CascadedStyle style = block.content.getStyle();
         if (LayoutUtil.isFloated(style)) {
             c.getBlockFormattingContext().doFinalAdjustments();
             c.popBFC();

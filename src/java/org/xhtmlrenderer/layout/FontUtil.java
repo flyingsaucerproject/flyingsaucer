@@ -23,7 +23,8 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineBox;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 
@@ -86,7 +87,7 @@ public class FontUtil {
         if (box.line_metrics != null) {
             return (int) box.line_metrics.getHeight();
         } else {
-            CalculatedStyle style = c.css.getStyle(box.getRealElement());
+            CalculatedStyle style = c.getCurrentStyle();
             return lineHeight(c, style);
         }
     }
@@ -108,7 +109,7 @@ public class FontUtil {
         if (box.getFont() != null) {
             return box.getFont();
         }
-        CalculatedStyle style = c.css.getStyle(box.getRealElement());
+        CalculatedStyle style = c.getCurrentStyle();
         return getFont(c, style);
     }
 
@@ -139,7 +140,7 @@ public class FontUtil {
     }
 
     public static Rectangle2D getTextBounds(Context c, InlineBox box) {
-        CalculatedStyle style = c.css.getStyle(box.getRealElement());
+        CalculatedStyle style = c.getCurrentStyle();
         return c.getTextRenderer().getLogicalBounds(c.getGraphics(),
                 getFont(c, style), box.getSubstring());
     }
@@ -158,6 +159,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2004/12/12 04:18:56  tobega
+ * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
+ *
  * Revision 1.19  2004/12/05 14:35:39  tobega
  * Cleaned up some usages of Node (and removed unused stuff) in layout code. The goal is to pass "better" objects than Node wherever possible in an attempt to shake out the bugs in tree-traversal (probably often unnecessary tree-traversal)
  *

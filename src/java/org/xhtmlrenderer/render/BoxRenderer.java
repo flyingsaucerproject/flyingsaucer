@@ -4,18 +4,15 @@ import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BoxLayout;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.logging.Level;
 
 public class BoxRenderer extends DefaultRenderer {
 
@@ -138,13 +135,7 @@ public class BoxRenderer extends DefaultRenderer {
         getBackgroundColor(c, block);
 
         // get the css properties
-        CalculatedStyle style = null;
-        if (box.getContent() == null) {
-            XRLog.render(Level.WARNING, "null content in BoxRenderer.paintBackground for " + box.getClass().getName());
-
-        } else {
-            style = box.getContent().getStyle();
-        }
+        CalculatedStyle style = c.getCurrentStyle();
         String back_image = style.getStringProperty("background-image");
         block.repeat = style.getStringProperty("background-repeat");
         block.attachment = style.getStringProperty("background-attachment");
