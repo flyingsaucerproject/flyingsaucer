@@ -50,7 +50,7 @@ import net.homelinux.tobe.xhtmlrenderer.stylerImpl.DerivedProperty;
 import net.homelinux.tobe.xhtmlrenderer.Stylesheet;
 
 import net.homelinux.tobe.renderer.UserAgentCallback;
-import net.homelinux.tobe.renderer.Document;
+import net.homelinux.tobe.renderer.XRDocument;
 
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.util.LoggerUtil;
@@ -65,7 +65,7 @@ import org.xhtmlrenderer.util.LoggerUtil;
     
     private UserAgentCallback _userAgent;
     
-    private Document _doc;
+    private XRDocument _doc;
     
     private StylesheetFactory _stylesheetFactory;
 
@@ -121,7 +121,7 @@ import org.xhtmlrenderer.util.LoggerUtil;
         _stylesheetFactory = new StylesheetFactory();
     }
     
-    public void setDocumentContext(Context context, Document doc) {
+    public void setDocumentContext(Context context, XRDocument doc) {
         _context = context;
         _doc = doc;
         

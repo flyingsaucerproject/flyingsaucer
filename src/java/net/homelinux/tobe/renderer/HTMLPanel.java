@@ -72,7 +72,6 @@ import javax.xml.parsers.*;
 
 import org.xml.sax.*;
 
-import org.joshy.u;
 
 //import org.joshy.x;
 
@@ -98,7 +97,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
 
     public static Logger logger = Logger.getLogger("app.browser");
 
-    public Document doc;
+    public XRDocument doc;
     public UserAgentCallback _userAgent;
     public Context c;
     public Box body_box = null;
@@ -158,7 +157,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
    }
 
     //public void setDocument(Document doc, URL url) {
-    public void setDocument(Document doc) {
+    public void setDocument(XRDocument doc) {
         resetScrollPosition();
         this.doc = doc;
 
@@ -351,7 +350,7 @@ System.out.println("body box is "+body_box+" layout body took "+(end_time-start_
         intrinsic_size = new Dimension(c.getMaxWidth(),layout.contents_height);
         if(!intrinsic_size.equals(this.getSize())) {
             this.setPreferredSize(intrinsic_size);
-            //this.revalidate();
+            this.revalidate();//strangely needed whenever loading a new document???
         }
       //this.fireDocumentLoaded();
     }
@@ -558,7 +557,7 @@ System.out.println("body box is "+body_box+" layout body took "+(end_time-start_
 
     private void printTree(Box box, String tab) {
 
-        u.p(tab + "Box = " + box);
+        System.out.println(tab + "Box = " + box);
 
         Iterator it = box.getChildIterator();
 

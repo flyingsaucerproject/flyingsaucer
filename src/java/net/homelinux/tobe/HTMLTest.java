@@ -25,8 +25,8 @@ package net.homelinux.tobe;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import org.joshy.x;
-import org.joshy.u;
+//import org.joshy.x;
+//import org.joshy.u;
 //import org.w3c.dom.*;
 //only for click-listener:
 import org.w3c.dom.Node;
@@ -37,7 +37,7 @@ import org.xhtmlrenderer.render.Box;
 
 import net.homelinux.tobe.renderer.HTMLPanel;
 import net.homelinux.tobe.renderer.UserAgentCallback;
-import net.homelinux.tobe.renderer.Document;
+import net.homelinux.tobe.renderer.XRDocument;
 
 public class HTMLTest extends JFrame implements UserAgentCallback {
     public static final int text_width = 600;
@@ -45,7 +45,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
     private final HTMLPanel panel = new HTMLPanel(this);
     
     private java.net.URI _baseURI;
-    private Document _doc;
+    private XRDocument _doc;
 
     public HTMLTest(String[] args) throws Exception {
         super(BASE_TITLE);
@@ -253,7 +253,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
                 try {
                     long st = System.currentTimeMillis();
                     java.net.URI uri = new java.net.URI(file);
-                    _doc = new Document(HTMLTest.this, getInputStreamForURI(uri), uri);
+                    _doc = new XRDocument(HTMLTest.this, getInputStreamForURI(uri), uri);
                     
                     long el = System.currentTimeMillis() - st;
                     System.out.println("TIME: loadDocument(" + file + ")  " + el + "ms, render may take longer");
@@ -267,7 +267,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
                                   _doc.getDocumentTitle() + "  " + 
                                   "(" + file + ")");
                 } catch (Exception ex) {
-                    u.p(ex);
+                    System.out.println(ex);
                 }
                 //panel.repaint();
             }
@@ -280,7 +280,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
                 try {
                     long st = System.currentTimeMillis();
                     java.net.URI uri = new java.net.URI(url.toString());
-                    _doc = new Document(HTMLTest.this, getInputStreamForURI(uri), uri);
+                    _doc = new XRDocument(HTMLTest.this, getInputStreamForURI(uri), uri);
                     
                     long el = System.currentTimeMillis() - st;
                     System.out.println("TIME: loadDocument(" + url + ")  " + el + "ms, render may take longer");
@@ -294,7 +294,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
                                   _doc.getDocumentTitle() + "  " + 
                                   "(" + url + ")");
                 } catch (Exception ex) {
-                    u.p(ex);
+                    System.out.println(ex);
                 }
                 //panel.repaint();
             }
@@ -357,7 +357,7 @@ class ClickMouseListener extends MouseAdapter {
     public void mousePressed(MouseEvent evt) {
         Box box = panel.findBox(evt.getX(),evt.getY());
         if(box == null) return;
-        u.p("pressed " + box);
+        //u.p("pressed " + box);
         if(box.node != null) {
             Node node = box.node;
             if(node.getNodeType() == node.TEXT_NODE) {
@@ -365,7 +365,7 @@ class ClickMouseListener extends MouseAdapter {
             }
 
             if(node.getNodeName().equals("a")) {
-                u.p("clicked on a link");
+                //u.p("clicked on a link");
                 box.clicked = true;
                 box.color = new Color(255,255,0);
                 //panel.repaint();
@@ -376,7 +376,7 @@ class ClickMouseListener extends MouseAdapter {
     public void mouseReleased(MouseEvent evt) {
         Box box = panel.findBox(evt.getX(),evt.getY());
         if(box == null) return;
-        u.p("pressed " + box);
+        //u.p("pressed " + box);
         if(box.node != null) {
             Node node = box.node;
             if(node.getNodeType() == node.TEXT_NODE) {
@@ -384,7 +384,7 @@ class ClickMouseListener extends MouseAdapter {
             }
 
             if(node.getNodeName().equals("a")) {
-                u.p("clicked on a link");
+                //u.p("clicked on a link");
                 box.clicked = true;
                 box.color = new Color(255,0,0);
                 //panel.repaint();
@@ -400,11 +400,11 @@ class ClickMouseListener extends MouseAdapter {
                 java.net.URI uri = new java.net.URI(elem.getAttribute("href"));
                 uri = _doc.getURI().resolve(uri);
                 java.io.InputStream is = getInputStreamForURI(uri);
-                _doc = new Document(HTMLTest.this, is, uri);
+                _doc = new XRDocument(HTMLTest.this, is, uri);
                 panel.setDocument(_doc);
             }
         } catch (Exception ex) {
-            u.p(ex);
+            System.err.println(ex);
         }
     }
 
