@@ -1,5 +1,4 @@
 /*
- *
  * AttributeResolver.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
@@ -19,40 +18,88 @@
  *
  */
 
-
-
 package org.xhtmlrenderer.css.match;
 
+
+
 /**
- * In XML, an application may or may not know how to find the ID and/or class and/or attribute defaults of an element.
+ * In XML, an application may or may not know how to find the ID and/or class
+ * and/or attribute defaults of an element. To enable matching of identity
+ * conditions, class conditions, language, and attribute defaults you need to
+ * provide an AttributeResolver to the StyleMap. NOTE: The application is
+ * required to look in a document's internal subset for default attribute
+ * values, but the application is not required to use its built-in knowledge of
+ * a namespace or look in the external subset.
  *
- * To enable matching of identity conditions, class conditions, language, and attribute defaults you need to provide an AttributeResolver to the StyleMap.
- *
- * NOTE: The application is required to look in a document's internal subset for default attribute values,
- * but the application is not required to use its built-in knowledge of a namespace or look in the external subset.
- *
- * @author  Torbjörn Gannholm
+ * @author   Torbjörn Gannholm
  */
 public interface AttributeResolver {
-    
-    /** may return null. Required to return null if attribute does not exist and not null if attribute exists. */
-    public String getAttributeValue(org.w3c.dom.Element e, String attrName);
-    
-    /** may return null */
-    public String getClass(org.w3c.dom.Element e);
-    
-    /** may return null */
-    public String getID(org.w3c.dom.Element e);
-    
-    /** may return null */
-    public String getLang(org.w3c.dom.Element e);
-    
-    public boolean isPseudoClass(org.w3c.dom.Element e, int pc);
-    
-    static public final int LINK_PSEUDOCLASS = 1;
-    static public final int VISITED_PSEUDOCLASS = 2;
-    static public final int HOVER_PSEUDOCLASS = 4;
-    static public final int ACTIVE_PSEUDOCLASS = 8;
-    static public final int FOCUS_PSEUDOCLASS = 16;
-    
+
+    /**
+     * may return null. Required to return null if attribute does not exist and
+     * not null if attribute exists.
+     *
+     * @param e         PARAM
+     * @param attrName  PARAM
+     * @return          The attributeValue value
+     */
+    public String getAttributeValue( org.w3c.dom.Element e, String attrName );
+
+    /**
+     * may return null
+     *
+     * @param e  PARAM
+     * @return   The class value
+     */
+    public String getClass( org.w3c.dom.Element e );
+
+    /**
+     * may return null
+     *
+     * @param e  PARAM
+     * @return   The iD value
+     */
+    public String getID( org.w3c.dom.Element e );
+
+    /**
+     * may return null
+     *
+     * @param e  PARAM
+     * @return   The lang value
+     */
+    public String getLang( org.w3c.dom.Element e );
+
+    /**
+     * Gets the pseudoClass attribute of the AttributeResolver object
+     *
+     * @param e   PARAM
+     * @param pc  PARAM
+     * @return    The pseudoClass value
+     */
+    public boolean isPseudoClass( org.w3c.dom.Element e, int pc );
+
+    /** Description of the Field */
+    public final static int LINK_PSEUDOCLASS = 1;
+    /** Description of the Field */
+    public final static int VISITED_PSEUDOCLASS = 2;
+    /** Description of the Field */
+    public final static int HOVER_PSEUDOCLASS = 4;
+    /** Description of the Field */
+    public final static int ACTIVE_PSEUDOCLASS = 8;
+    /** Description of the Field */
+    public final static int FOCUS_PSEUDOCLASS = 16;
+
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:29:06  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
+

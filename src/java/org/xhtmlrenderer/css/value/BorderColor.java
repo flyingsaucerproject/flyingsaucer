@@ -26,8 +26,7 @@ import java.awt.Color;
 /**
  * Adapted from org.xhtmlrenderer.css.Border by Josh M.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public class BorderColor {
 
@@ -60,4 +59,15 @@ public class BorderColor {
 
 }
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:32:01  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

@@ -1,5 +1,4 @@
 /*
- *
  * Ruleset.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
@@ -19,50 +18,86 @@
  *
  */
 
-
 package org.xhtmlrenderer.css.match;
 
+
+
 /**
- * Rulesets should be created by the CSS parser. A list of Rulesets make up a CSS.
+ * Rulesets should be created by the CSS parser. A list of Rulesets make up a
+ * CSS. A ruleset contains a list of selectors and a list of property
+ * declarations.
  *
- * A ruleset contains a list of selectors and a list of property declarations.
- *
- * @author  Torbjörn Gannholm
+ * @author   Torbjörn Gannholm
  */
 public class Ruleset {
 
-    
+    /** Description of the Field */
+    private java.util.List selectors = new java.util.ArrayList();
+    /** Description of the Field */
+    private Object styleDeclaration;
+
+
     /** Creates a new instance of Ruleset */
-    public Ruleset() {
-    }
-    
-    /** TODO: returns the list of property declarations of this ruleset
-     *  This method's signature may change
+    public Ruleset() { }
+
+    /**
+     * Description of the Method
+     *
+     * @param axis         PARAM
+     * @param elementName  PARAM
+     * @return             Returns
      */
-    /*public java.util.List getPropertyDeclarations() {
-        return declarations;
-    }*/
-    public Object getStyleDeclaration() {
-        return styleDeclaration;
+    public Selector createSelector( int axis, String elementName ) {
+        Selector s = new Selector( this, axis, elementName );
+        selectors.add( s );
+        return s;
     }
-    
-    /** Leave parameter as Object, tests of logic rely on it. Refactor!? */
-    public void setStyleDeclaration(Object declaration) {
+
+    /**
+     * Leave parameter as Object, tests of logic rely on it. Refactor!?
+     *
+     * @param declaration  The new styleDeclaration value
+     */
+    public void setStyleDeclaration( Object declaration ) {
         //declarations.add(declaration);
         styleDeclaration = declaration;
     }
-    
-    public Selector createSelector(int axis, String elementName) {
-        Selector s = new Selector(this, axis, elementName);
-        selectors.add(s);
-        return s;
+
+    /**
+     * TODO: returns the list of property declarations of this ruleset This
+     * method's signature may change
+     *
+     * @return   The styleDeclaration value
+     */
+    /*
+     * public java.util.List getPropertyDeclarations() {
+     * return declarations;
+     * }
+     */
+    public Object getStyleDeclaration() {
+        return styleDeclaration;
     }
-    
+
+    /**
+     * Gets the selectors attribute of the Ruleset object
+     *
+     * @return   The selectors value
+     */
     public java.util.List getSelectors() {
         return selectors;
     }
-    
-    private java.util.List selectors = new java.util.ArrayList();
-    private Object styleDeclaration;
-    
+
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:29:06  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
+

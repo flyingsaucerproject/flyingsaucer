@@ -18,8 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.css.util;    
-	
+package org.xhtmlrenderer.css.util;
 
 import java.awt.Color;
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -27,10 +26,12 @@ import org.w3c.dom.css.RGBColor;
 
 
 /**
-* Utility methods for data conversion.
-*/
+ * Utility methods for data conversion.
+ *
+ * @author   empty
+ */
 public class ConversionUtil {
-	/**
+    /**
      * Copied from Josh M.'s CSSAccessor class
      *
      * @param rgbcol  PARAM
@@ -41,5 +42,17 @@ public class ConversionUtil {
                 rgbcol.getGreen().getFloatValue( CSSPrimitiveValue.CSS_NUMBER ) / 255f,
                 rgbcol.getBlue().getFloatValue( CSSPrimitiveValue.CSS_NUMBER ) / 255f );
     }
-} // end class
+}// end class
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:30:42  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 
