@@ -31,13 +31,14 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.DefaultCSSMarker;
 import org.xhtmlrenderer.css.CSSBank;
 import org.xhtmlrenderer.css.XRStyleSheet;
+import org.xhtmlrenderer.css.bridge.XRStyleReference;
 import org.xhtmlrenderer.layout.BodyLayout;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.util.x;
-import org.xhtmlrenderer.util.Configuration;
 
 
 /**
@@ -58,10 +59,10 @@ public class CSSSpeedTest {
 
         // load doc
 
-        String fileURL = Configuration.valueFor("xr.test.files.hamlet");
-        InputStream is = GeneralUtil.openStreamFromClasspath(fileURL);
+        String fileURL = Configuration.valueFor( "xr.test.files.hamlet" );
+        InputStream is = GeneralUtil.openStreamFromClasspath( fileURL );
         if ( is == null ) {
-            System.err.println("Can't find test file on CLASSPATH: " + fileURL);
+            System.err.println( "Can't find test file on CLASSPATH: " + fileURL );
             return;
         }
         Document doc = x.loadDocument( is );
@@ -76,17 +77,12 @@ public class CSSSpeedTest {
 
         Graphics g = buff.getGraphics();
 
-
         // create context
         Context c = null;
 
-        u.p( "" );
-
-        u.p( "XRStyleReference" );
-
         c = new Context();
 
-        c.css = new CSSBank();
+        c.css = new XRStyleReference( c );
 
         runLoopTest( c, g, html );
     }
@@ -111,18 +107,16 @@ public class CSSSpeedTest {
 
         Object marker = new DefaultCSSMarker();
 
-        //InputStream stream = marker.getClass().getResourceAsStream( "default.css" );
-
         String defaultStyleSheetLocation = Configuration.valueFor( "xr.css.user-agent-default-css" );
-        InputStream stream = GeneralUtil.openStreamFromClasspath(defaultStyleSheetLocation);
-        /*
         if ( marker.getClass().getResourceAsStream( defaultStyleSheetLocation ) != null ) {
             URL stream = marker.getClass().getResource( defaultStyleSheetLocation );
             String str = u.inputstream_to_string( stream.openStream() );
             c.css.parse( new StringReader( str ), XRStyleSheet.USER_AGENT );
+        } else {
+            System.err.println(
+                    "Can't load default CSS from " + defaultStyleSheetLocation + "." +
+                    "This file must be on your CLASSPATH. Please check before continuing." );
         }
-        */
-        c.css.parse( new InputStreamReader( stream ), XRStyleSheet.USER_AGENT );
 
         c.css.parseInlineStyles( html );
 
@@ -137,7 +131,6 @@ public class CSSSpeedTest {
         // create layout
 
         BodyLayout layout = new BodyLayout();
-
 
         int total = 0;
         int loop = 30;
