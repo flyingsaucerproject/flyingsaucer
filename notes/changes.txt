@@ -1,4 +1,8 @@
 08/19/2004
+    added more form accessors
+    added submit support for GETs
+    added reset support (resets text elements)
+08/19/2004
     added a document listener interface to return document events 
         (initially for the document loaded event)
     added grouping support to radio buttons
