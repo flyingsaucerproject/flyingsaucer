@@ -243,6 +243,7 @@
                 sourcepath="${src.java.dir}"
                 splitindex="true"
                 use="true" 
+                encoding="iso-8859-1"
                 version="true">
                 
         <packageset dir="${src.java.dir}">
@@ -612,6 +613,13 @@
 $Id$
 
 $Log$
+Revision 1.68  2004/11/11 15:27:12  joshy
+added encoding
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.67  2004/11/11 15:25:32  joshy
 changed the encoding
 
