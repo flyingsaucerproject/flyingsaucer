@@ -235,7 +235,7 @@ public class DerivedValue {
      */
     public void computeRelativeUnit(CalculatedStyle parentStyle, String propName) {
         if (ValueConstants.isAbsoluteUnit(cssValue())) {
-            XRLog.general(Level.FINE, "Was asked to convert a relative value, but value is absolute. Call isAbsolute() first.");
+            XRLog.general(Level.FINE, "Was asked to convert a relative value, but value is absolute. Call isAbsoluteOrFixed() first.");
             return;
         }
 

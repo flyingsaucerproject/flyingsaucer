@@ -110,7 +110,7 @@ public class ContentUtil {
                 continue;//at least for now, don't generate hidden content
             }
 
-            if (isAbsolute(style)) {
+            if (isAbsoluteOrFixed(style)) {
                 // U.p("adding replaced: " + curr);
                 if (textContent != null) {
                     inlineList.add(textContent);
@@ -368,7 +368,7 @@ public class ContentUtil {
         return false;
     }
 
-    public static boolean isAbsolute(CascadedStyle style) {
+    public static boolean isAbsoluteOrFixed(CascadedStyle style) {
         if (!style.hasProperty(CSSName.POSITION)) return false;//default is inline
         String position = style.propertyByName(CSSName.POSITION).getValue().getCssText();
         if (position.equals("absolute")) return true;
@@ -413,6 +413,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/12/12 03:05:12  tobega
+ * Making progress
+ *
  * Revision 1.6  2004/12/12 02:49:58  tobega
  * Making progress
  *

@@ -213,7 +213,7 @@ public class XRValueImpl implements XRValue {
      */
     /*public void computeRelativeUnit( Context context, XRElement ownerElement, String propName ) {
         if ( ValueConstants.isAbsoluteUnit( cssValue() ) ) {
-            XRLog.cascade( "Was asked to convert a relative value, but value is absolute. Call isAbsolute() first." );
+            XRLog.cascade( "Was asked to convert a relative value, but value is absolute. Call isAbsoluteOrFixed() first." );
             return;
         }
 
@@ -638,6 +638,9 @@ public class XRValueImpl implements XRValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/12 03:06:11  tobega
+ * Making progress
+ *
  * Revision 1.5  2004/12/12 02:55:58  tobega
  * Making progress
  *

@@ -32,9 +32,10 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BoxRenderer;
 import org.xhtmlrenderer.render.Renderer;
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.U;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Iterator;
 
 
@@ -105,7 +106,7 @@ public class BoxLayout extends DefaultLayout {
             bfc.setWidth((int) c.getExtents().getWidth());
         }
 
-        //u.p("elem = " + block.node);
+        //U.p("elem = " + block.node);
 
         // copy the extents
         Rectangle oe = c.getExtents();
@@ -141,7 +142,7 @@ public class BoxLayout extends DefaultLayout {
 
         // restore height incase fixed height
         if (block.auto_height == false) {
-            u.p("restoring original height");
+            U.p("restoring original height");
             block.height = original_height;
         }
 
@@ -162,7 +163,7 @@ public class BoxLayout extends DefaultLayout {
         // need to add bfc/unbfc code for absolutes
         Relative.setupRelative(block);
         // need to add bfc/unbfc code for absolutes
-        Absolute.setupAbsolute(block);
+        Absolute.setupAbsolute(block, c);
         Fixed.setupFixed(c, block);
         FloatUtil.setupFloat(c, block);
         //TODO: rethink: setupForm(c, block);
@@ -193,7 +194,7 @@ public class BoxLayout extends DefaultLayout {
             // if it is a sub block then don't mess with the width
             if (c.isSubBlock()) {
                 /*if (!elem.getNodeName().equals("td")) {
-                    u.p("ERRRRRRRRRRORRRR!!! in a sub block that's not a TD!!!!");
+                    U.p("ERRRRRRRRRRORRRR!!! in a sub block that's not a TD!!!!");
                 }*/
                 return;
             }
@@ -217,7 +218,7 @@ public class BoxLayout extends DefaultLayout {
             c.getExtents().height = (int) new_height;
             block.height = (int) new_height;
             block.auto_height = false;
-            u.p("set height to: " + block.height);
+            U.p("set height to: " + block.height);
         }
     }
 
@@ -346,6 +347,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2004/12/12 03:04:31  tobega
+ * Making progress
+ *
  * Revision 1.40  2004/12/11 23:36:48  tobega
  * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
  *

@@ -1,6 +1,8 @@
 package org.xhtmlrenderer.layout.block;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
@@ -24,41 +26,42 @@ public class Absolute {
     }
 
     private static boolean isAbsolute(Box box) {
-        String position = LayoutUtil.getPosition(box.getContent().getStyle());
-        if (position.equals("absolute")) {
-            return true;
-        }
-        return false;
+        CascadedStyle style = box.content.getStyle();
+        if(style == null) return false;
+            if (!style.hasProperty(CSSName.POSITION)) return false;//default is inline
+            String position = style.propertyByName(CSSName.POSITION).getValue().getCssText();
+            if (position.equals("absolute")) return true;
+            return false;
     }
 
-    public static void setupAbsolute(Box box) {
-        CalculatedStyle style = box.getContent().getStyle();
+    public static void setupAbsolute(Box box, Context c) {
+        CalculatedStyle style = c.getCurrentStyle();
         String position = LayoutUtil.getPosition(style);
         if (position.equals("absolute")) {
             if (style.hasProperty("right")) {
-                //u.p("prop = " + c.css.getProperty(box.getRealElement(),"right",false));
+                //U.p("prop = " + c.css.getProperty(box.getRealElement(),"right",false));
                 if (style.isIdentifier("right")) {
                     if (style.getStringProperty("right").equals("auto")) {
                         box.right_set = false;
-                        //u.p("right set to auto");
+                        //U.p("right set to auto");
                     }
                 } else {
                     box.right = (int) style.getFloatPropertyRelative("right", 0);
                     box.right_set = true;
-                    //u.p("right set to : " + box.right);
+                    //U.p("right set to : " + box.right);
                 }
             }
             if (style.hasProperty("left")) {
-                //u.p("prop = " + c.css.getProperty(box.getRealElement(),"left",false));
+                //U.p("prop = " + c.css.getProperty(box.getRealElement(),"left",false));
                 if (style.isIdentifier("left")) {
                     if (style.getStringProperty("left").equals("auto")) {
                         box.left_set = false;
-                        //u.p("left set to auto");
+                        //U.p("left set to auto");
                     }
                 } else {
                     box.left = (int) style.getFloatPropertyRelative("left", 0);
                     box.left_set = true;
-                    //u.p("left set to : " + box.left);
+                    //U.p("left set to : " + box.left);
                 }
             }
             /*
@@ -102,9 +105,9 @@ public class Absolute {
             /*
             // bottom positioning
             child_box.y = bfc.getY() + bfc.getHeight() - child_box.height - child_box.top + 50;
-            u.p("bfc = " + bfc);
-            u.p("bfc.height = " + bfc.getHeight());
-            u.p("final child box = " + child_box);
+            U.p("bfc = " + bfc);
+            U.p("bfc.height = " + bfc.getHeight());
+            U.p("final child box = " + child_box);
             */
         } else {
             // top positioning
