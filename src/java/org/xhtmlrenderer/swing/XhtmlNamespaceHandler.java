@@ -113,7 +113,7 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
                 StringBuffer style = new StringBuffer();
                 org.w3c.dom.Element elem = (org.w3c.dom.Element) nl.item(i);
                 String m = elem.getAttribute("media");
-                if ("".equals(m)) m = "screen";//default for HTML
+                if ("".equals(m)) m = "all";//default for HTML is "screen", but that is silly and firefox assumes "all"
                 StylesheetInfo info = new StylesheetInfo();
                 info.setMedia(m);
                 info.setType(elem.getAttribute("type"));//I'd be surprised if this was not text/css!
