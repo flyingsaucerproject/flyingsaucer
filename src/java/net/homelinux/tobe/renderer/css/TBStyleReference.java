@@ -46,7 +46,6 @@ import org.joshy.html.css.StyleReference;
 
 import net.homelinux.tobe.xhtmlrenderer.stylerImpl.DerivedProperty;
 
-import net.homelinux.tobe.xhtmlrenderer.bridge.StaticHtmlAttributeResolver;
 import net.homelinux.tobe.xhtmlrenderer.Stylesheet;
 
 import net.homelinux.tobe.renderer.UserAgentCallback;
@@ -248,11 +247,11 @@ long st = System.currentTimeMillis();
         try {
             
             org.w3c.dom.Document document = _doc.getDomDocument();
-            
+System.err.println("No of stylesheets = "+_stylesheets.size());            
             List sortedXRRules = new ArrayList();
             Iterator iter = _stylesheets.iterator();
 
-            _tbStyleMap = new net.homelinux.tobe.xhtmlrenderer.matcherImpl.Matcher(document, new StaticHtmlAttributeResolver(), _stylesheets.iterator());
+            _tbStyleMap = new net.homelinux.tobe.xhtmlrenderer.matcherImpl.Matcher(document, _doc, _stylesheets.iterator());
             _tbStyleMap.setStylesheetFactory(_stylesheetFactory);
             
         // now we have a match-map, apply against our entire Document....restyleTree() is recursive

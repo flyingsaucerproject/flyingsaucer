@@ -1,6 +1,6 @@
 /*
  *
- * UserAgentCallback.java
+ * Document.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -22,19 +22,32 @@
 package net.homelinux.tobe.renderer;
 
 /**
- * To be implemented by any user agent using the panel
- *
- * Provides services only the current user agent should provide
+ * Provides knowledge specific to a certain document type, like resolving style-sheets
  */
-public interface UserAgentCallback {
+public interface NamespaceHandler {
     
-    /** returns null if UserAgent does not wish to access the URI */
-    public java.io.InputStream getInputStreamForURI(java.net.URI uri);
+    //javax.xml.transform.Source getSource();
     
-    /** UserAgent should consider if it should answer truthfully or not for privacy reasons */
-    public boolean isVisited(java.net.URI uri);
+    public String getNamespace();
     
-    /** returns a NamespaceHandler for a namespace */
-    public NamespaceHandler getNamespaceHandler(String namespace);
+    public java.io.Reader getDefaultStylesheet();
+
+    public String getDocumentTitle(org.w3c.dom.Document doc);
+    
+    public String getInlineStyle(org.w3c.dom.Document doc);
+    
+    public java.net.URI[] getStylesheetURIs(org.w3c.dom.Document doc);
+    
+    /** may return null */
+    public String getClass(org.w3c.dom.Element e);
+    
+    /** may return null */
+    public String getID(org.w3c.dom.Element e);
+    
+    /** may return null */
+    public String getElementStyling(org.w3c.dom.Element e);
+    
+    /** may return null */
+    public String getLang(org.w3c.dom.Element e);
     
 }

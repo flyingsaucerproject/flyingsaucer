@@ -21,7 +21,7 @@
 
 package net.homelinux.tobe;
 
-import org.joshy.html.swing.DOMInspector;
+//import org.joshy.html.swing.DOMInspector;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -38,7 +38,6 @@ import org.joshy.html.box.Box;
 import net.homelinux.tobe.renderer.HTMLPanel;
 import net.homelinux.tobe.renderer.UserAgentCallback;
 import net.homelinux.tobe.renderer.Document;
-import net.homelinux.tobe.renderer.XhtmlDocument;
 
 public class HTMLTest extends JFrame implements UserAgentCallback {
     public static final int text_width = 600;
@@ -55,7 +54,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
         JScrollPane scroll = new JScrollPane(panel);
         scroll.setVerticalScrollBarPolicy(scroll.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(scroll.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setPreferredSize(new Dimension(text_width,text_width));
+        //scroll.setPreferredSize(new Dimension(text_width,text_width));
         panel.setViewportComponent(scroll);
         panel.setJScrollPane(scroll);
         panel.addMouseListener(new ClickMouseListener(panel));
@@ -184,7 +183,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
     }
 
     class ShowDOMInspectorAction extends AbstractAction {
-        private DOMInspector inspector;
+//        private DOMInspector inspector;
         private JFrame inspectorFrame;
         ShowDOMInspectorAction() {
             super("DOM Tree Inspector");
@@ -192,34 +191,21 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
         }
         
         public void actionPerformed(ActionEvent evt) {
+ /* leave inspector for now
             if ( inspectorFrame == null ) {
                 inspectorFrame = new JFrame("DOM Tree Inspector");
             }
             if ( inspector == null ) {
-                // inspectorFrame = new JFrame("DOM Tree Inspector");
-                
-                // CLEAN: this is more complicated than it needs to be
-                // DOM Tree Inspector needs to work with either CSSBank
-                // or XRStyleReference--implementations are not perfectly
-                // so we have different constructors
-                /*if ( panel.c.css instanceof CSSBank )*/
                     inspector = new DOMInspector(panel.doc.getDomDocument());     
-                /*else 
-                    inspector = new DOMInspector(panel.doc, panel.c, (XRStyleReference)panel.c.css);
-                */    
                 inspectorFrame.getContentPane().add(inspector);
                     
                 inspectorFrame.pack();
                 inspectorFrame.setSize(text_width,600);
                 inspectorFrame.show();
             } else {
-                /*if ( panel.c.css instanceof CSSBank )
                     inspector.setForDocument(panel.doc);     
-                else 
-                    inspector.setForDocument(panel.doc, panel.c, (XRStyleReference)panel.c.css);
-                 */
             }
-            inspectorFrame.show();
+            inspectorFrame.show();*/
         }
     }
     
@@ -258,7 +244,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
                 try {
                     long st = System.currentTimeMillis();
                     java.net.URI uri = new java.net.URI(file);
-                    _doc = new XhtmlDocument(getInputStreamForURI(uri), uri);
+                    _doc = new Document(HTMLTest.this, getInputStreamForURI(uri), uri);
                     
                     long el = System.currentTimeMillis() - st;
                     System.out.println("TIME: loadDocument(" + file + ")  " + el + "ms, render may take longer");
@@ -269,12 +255,12 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
                     el = System.currentTimeMillis() - st;
                     System.out.println("TIME: setDocument(" + file + ")  " + el + "ms, render may take longer");
                     HTMLTest.this.setTitle(BASE_TITLE + "-  " + 
-                                  panel.getDocumentTitle() + "  " + 
+                                  _doc.getDocumentTitle() + "  " + 
                                   "(" + file + ")");
                 } catch (Exception ex) {
                     u.p(ex);
                 }
-                panel.repaint();
+                //panel.repaint();
             }
         });
     }
@@ -320,6 +306,11 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
         */
     }
 
+    public net.homelinux.tobe.renderer.NamespaceHandler getNamespaceHandler(String namespace) {
+        if(namespace.equals("http://www.w3.org/1999/xhtml")) return new XhtmlNamespaceHandler();
+        else return new NoNamespaceHandler();
+    }
+    
 class ClickMouseListener extends MouseAdapter {
     HTMLPanel panel;
 
@@ -341,7 +332,7 @@ class ClickMouseListener extends MouseAdapter {
                 u.p("clicked on a link");
                 box.clicked = true;
                 box.color = new Color(255,255,0);
-                panel.repaint();
+                //panel.repaint();
             }
 
         }
@@ -360,7 +351,7 @@ class ClickMouseListener extends MouseAdapter {
                 u.p("clicked on a link");
                 box.clicked = true;
                 box.color = new Color(255,0,0);
-                panel.repaint();
+                //panel.repaint();
                 followLink((Element)node);
             }
 
@@ -373,7 +364,7 @@ class ClickMouseListener extends MouseAdapter {
                 java.net.URI uri = new java.net.URI(elem.getAttribute("href"));
                 uri = _doc.getURI().resolve(uri);
                 java.io.InputStream is = getInputStreamForURI(uri);
-                _doc = new XhtmlDocument(is, uri);
+                _doc = new Document(HTMLTest.this, is, uri);
                 panel.setDocument(_doc);
             }
         } catch (Exception ex) {

@@ -88,8 +88,8 @@ import org.apache.xpath.XPathAPI;
 
 import org.joshy.html.forms.*;
 
-import com.pdoubleya.xhtmlrenderer.css.bridge.XRStyleReference;
-import com.pdoubleya.xhtmlrenderer.css.XRStyleSheet;
+//import com.pdoubleya.xhtmlrenderer.css.bridge.XRStyleReference;
+//import com.pdoubleya.xhtmlrenderer.css.XRStyleSheet;
 import org.joshy.html.css.StyleReference;
 
 import org.joshy.html.Context;
@@ -151,25 +151,6 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
             list.documentLoaded();
         }
     }
-
-    public String getDocumentTitle() {
-        String title = "";
-        try {
-            Element root = this.doc.getDomDocument().getDocumentElement(); 
-            Node node = 
-                (Node)XPathAPI.selectSingleNode( root, "//head/title/text()" );
-            if ( node == null ) { 
-                System.err.println("Apparently no title element for this document.");
-                title = "TITLE UNKNOWN";
-            } else {
-                title = node.getNodeValue();
-            }
-        } catch ( Exception ex ) {
-            System.err.println("Error retrieving document title. " + ex.getMessage());
-            title = "";
-        }
-        return title;
-    }    
 
     /*public void setDocumentRelative(String filename ) throws Exception {
 
@@ -267,10 +248,13 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
 
         this.body_box = null;
 
+                    long st = System.currentTimeMillis();
         calcLayout();
+                    long el = System.currentTimeMillis() - st;
+                    System.out.println("TIME: calcLayout()  " + el);
         
 
-        repaint();
+        //repaint();
 
     }
 
@@ -322,7 +306,10 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
 
         }
 
+                    long st = System.currentTimeMillis();
         doPaint(g);
+                    long el = System.currentTimeMillis() - st;
+                    System.out.println("TIME: doPaint(g)  " + el);
 
     }
 
@@ -337,8 +324,8 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         
 
         //long start_time = new java.util.Date().getTime();
-
         
+         
 
         if(body_box == null) {
 
@@ -400,11 +387,11 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
 
             c.setExtents(new Rectangle(viewport.getViewportBorderBounds()));
 
-        } else {
+        } /*else {
 
             c.setExtents(new Rectangle(200,200));
 
-        }
+        }*/
 
         //c.setExtents(new Rectangle(0,0,viewport.getWidth(),viewport.getHeight()));
 
@@ -419,7 +406,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
     
 
     public void calcLayout(Graphics g) {
-
+        
         //u.p("calcLayout()");
 
         this.removeAll();
@@ -488,7 +475,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
 
                 //u.p("body box = " + body_box.hashCode());
 
-                this.pane.getViewport().setBackground(body_box.background_color);
+                //this.pane.getViewport().setBackground(body_box.background_color);
 
             }
 
@@ -579,7 +566,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         //c.getGraphics().setColor(Color.blue);
 
         //c.getGraphics().drawLine(0,0,50,50);
-        this.fireDocumentLoaded();
+        //this.fireDocumentLoaded();
     }
 
     
