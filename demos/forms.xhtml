@@ -8,21 +8,18 @@
         <title>Form Test</title>
         <style>
             form { border-width: 1px; border-color: black; border-style: solid; }
-        /*
-            input { 
-                border-width: 1px;
-                border-color: black;
-                background-color: green;
-                }
-                */
+            /*input { border: 5px solid black; padding: 5px; margin: 5px; background-color: green; } */
+            img { vertical-align: sub; }
+            div { font-size: 600%; }
         </style>
     </head>
-    <body>
-    
-    
+    <body>    
         <h3>Test different input types</h3>
         
-        <div>Button: <input type="button" value="Panic!"/><br/>
+        <div>
+            Button: 
+            <img src="image.png" alt="test image"/>
+            <input type="button" value="Panic!"/><br/>
             Text: <input type="text" value=""/><br/>
         </div>
         
@@ -37,6 +34,7 @@
         <p>
             before <input type="text"/> after
         </p>
+        
     </body>
         
 </html>

@@ -130,8 +130,9 @@ public abstract class FormItemLayout extends CustomBlockLayout {
         // nested inside of an inline. when we redo the inline-block code
         // this should be fixed
         
-        coords.x += box.totalLeftPadding()+box.getParent().totalLeftPadding();
-        coords.y += box.totalTopPadding()+box.getParent().totalTopPadding();
+        coords.x += box.totalLeftPadding()+box.getParent().totalLeftPadding()+2;
+        coords.y += box.totalTopPadding()+box.getParent().totalTopPadding()+2;
+        adjustVerticalAlign(coords,box);
         //u.p("abs coords = " + coords);
         //u.p("comp coords = " + ib.component.getLocation());
         
@@ -156,6 +157,18 @@ public abstract class FormItemLayout extends CustomBlockLayout {
         
 
     }
+    
+    public void adjustVerticalAlign(Point coords, Box box) {
+        if(box.getParent() instanceof InlineBox) {
+            InlineBox ib = (InlineBox) box.getParent();
+            LineBox lb = (LineBox) ib.getParent();
+            //u.p("box = " + box + " parent = " + box.getParent());
+            int off = lb.baseline - ib.height;
+            //u.p("off = " + off);
+            coords.y += off;
+        }
+    }
+
 
     public Point absCoords(Box box) {
         //u.p("box = " + box);

@@ -37,6 +37,7 @@
     /* default list stuff */
     list-style-type: none;
 }
+
 body {
     background-color: #ffffff;
     background-repeat: repeat;
@@ -226,4 +227,11 @@ th {
 
 form {
     display: block;
+}
+
+input {
+    border: 0px solid red;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: baseline;
 }
