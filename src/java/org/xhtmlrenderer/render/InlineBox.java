@@ -20,6 +20,9 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.Font;
+import org.xhtmlrenderer.util.*;
+import org.xhtmlrenderer.layout.*;
+import java.awt.FontMetrics;
 
 
 /**
@@ -186,12 +189,49 @@ public class InlineBox extends Box {
         return this.text;
     }
 
+    
+    public int getTextIndex(Context ctx, int x) {
+        Font font = getFont();
+        String str = getSubstring();
+        char[] chars = new char[str.length()];
+        getSubstring().getChars(0,str.length(),chars,0);
+        FontMetrics fm = ctx.getGraphics().getFontMetrics(font);
+
+        for(int i=0; i<chars.length; i++) {
+            
+            if(fm.charsWidth(chars,0,i) >= x) {
+                return i;
+            }
+        }
+
+        return 0;
+    }
+    
+    public int getAdvance(Context ctx, int x) {
+        Font font = getFont();
+        String str = getSubstring();
+        str = str.substring(0,x);
+        //u.p("substring = " + str);
+        char[] chars = new char[str.length()];
+        getSubstring().getChars(0,str.length(),chars,0);
+        FontMetrics fm = ctx.getGraphics().getFontMetrics(font);
+        //u.p("getting advance: " + x + " chars = " + chars);
+        return fm.charsWidth(chars,0,x);
+    }
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/12 22:02:01  joshy
+ * initial support for mouse copy selection
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.9  2004/11/10 14:54:43  joshy
  * code cleanup on aisle 6
  * Issue number:

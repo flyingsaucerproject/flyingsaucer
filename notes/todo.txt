@@ -30,8 +30,7 @@
 //fixed pos support
 //support getMinimumSize() on headless interface
 //build hover demo
-
-build browser test of custom font from 1001fonts.com
+//build browser test of custom font from 1001fonts.com
 
 redesign layout factory
 

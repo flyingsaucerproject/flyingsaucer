@@ -35,6 +35,8 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.swing.*;
+import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.FontResolverTest;
@@ -384,8 +386,13 @@ public class Context {
      *
      * @param box  The new selectionStart value
      */
-    public void setSelectionStart( Box box ) {
+    public void setSelectionStart( Box box, int x ) {
         selection_start = box;
+        selection_start_x = x;
+        if(box instanceof InlineBox) {
+            InlineBox ib = (InlineBox)box;
+            int i = ib.getTextIndex(this,x);
+        }
     }
 
     /**
@@ -393,27 +400,16 @@ public class Context {
      *
      * @param box  The new selectionEnd value
      */
-    public void setSelectionEnd( Box box ) {
+    public void setSelectionEnd( Box box, int x ) {
         selection_end = box;
-    }
-
-    /**
-     * Sets the selectionStartX attribute of the Context object
-     *
-     * @param x  The new selectionStartX value
-     */
-    public void setSelectionStartX( int x ) {
-        selection_start_x = x;
-    }
-
-    /**
-     * Sets the selectionEndX attribute of the Context object
-     *
-     * @param x  The new selectionEndX value
-     */
-    public void setSelectionEndX( int x ) {
         selection_end_x = x;
+        if(box instanceof InlineBox) {
+            InlineBox ib = (InlineBox)box;
+            int i = ib.getTextIndex(this,x);
+            selection_end_x = ib.getAdvance(this,i);
+        }
     }
+
 
     /**
      * Sets the listCounter attribute of the Context object
@@ -684,6 +680,13 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/11/12 22:02:00  joshy
+ * initial support for mouse copy selection
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.14  2004/11/12 17:05:24  joshy
  * support for fixed positioning
  * Issue number:
