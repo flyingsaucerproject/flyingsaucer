@@ -23,16 +23,10 @@ package org.xhtmlrenderer.css.sheet.factory;
 import java.util.*;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.CSSValueList;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.Idents;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.value.FSCssValue;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
@@ -58,7 +52,7 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
      *
      * @param priority  Priority string for this value
      * @param important True if author-marked important!
-     * @param propName  property name
+     * @param cssName  property name
      * @param origin    The origin of the stylesheet; constant from {@link org.xhtmlrenderer.css.sheet.Stylesheet}, e.g.
      *                  Stylesheet.AUTHOR
      * @return Iterator of PropertyDeclarations for the shorthand margin property.
@@ -66,13 +60,13 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
     protected Iterator doBuildDeclarations(CSSPrimitiveValue[] primVals,
                                            String priority,
                                            boolean important,
-                                           String propName,
+                                           CSSName cssName,
                                            int origin) {
 
         List declarations = new ArrayList();
         CSSPrimitiveValue primitive = null;
         CSSPrimitiveValue primitives[] = new CSSPrimitiveValue[1];
-        String names[] = new String[1];
+        CSSName[] names = new CSSName[1];
         CSSPrimitiveValue bgPosPrimitive = null;
         StringBuffer bgPos = null;
         String val = null;
@@ -85,7 +79,7 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
             // sniff this one value out. using an array to return
             // multiple pieces of info; see parseSingle() method
             Object[] ret = parseSingle(val, primitive, bgPos);
-            names[0] = (String) ret[0];
+            names[0] = (CSSName) ret[0];
             primitives[0] = (CSSPrimitiveValue) ret[1];
 
             // handle background-position. the issue here is that
@@ -114,8 +108,6 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
 
         }
         if (bgPos != null) {
-            // CLEAN: convert from ident in DerivedValue
-            // val = Idents.convertIdent(CSSName.BACKGROUND_POSITION, bgPos.toString().trim());
             val = bgPos.toString().trim();
 
             // handle for single value--first will be taken as horizontal; as per CSS spec
@@ -135,16 +127,15 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
     }
 
     /**
-     * Description of the Method
      *
-     * @param value     PARAM
-     * @param primitive PARAM
-     * @param bgPos     PARAM
-     * @return Returns
+     * @param val
+     * @param primitive
+     * @param bgPos
+     * @return
      */
     private Object[] parseSingle(String val, CSSPrimitiveValue primitive, StringBuffer bgPos) {
         Boolean wasBGP = Boolean.FALSE;
-        String expPropName = "";
+        CSSName expPropName = null;
         CSSPrimitiveValue bgPosPrimitive = null;
         //System.out.println("  TESTING '" + val + "'");
 
@@ -194,6 +185,9 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 19:00:57  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.1  2005/01/24 14:25:33  pdoubleya
  * Added to CVS.
  *

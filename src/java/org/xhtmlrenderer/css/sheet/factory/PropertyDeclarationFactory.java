@@ -23,6 +23,7 @@ package org.xhtmlrenderer.css.sheet.factory;
 import java.util.Iterator;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.constants.CSSName;
 
 
 /**
@@ -42,12 +43,12 @@ public interface PropertyDeclarationFactory {
      * class.
      *
      * @param style     The {@link org.w3c.dom.css.CSSStyleDeclaration} from the SAC parser.
-     * @param propName  The String property name for the property to explode.
+     * @param cssName  The String property name for the property to explode.
      * @return          Iterator of one or more PropertyDeclaration instances
      *      representing the exploded values.
      */
     Iterator buildDeclarations( CSSStyleDeclaration style, 
-                                String propName, 
+                                CSSName cssName,
                                 int origin );
 }// end class
 
@@ -55,6 +56,9 @@ public interface PropertyDeclarationFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/01/24 19:01:00  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.2  2005/01/24 14:54:53  pdoubleya
  * Comments referred to old class.
  *

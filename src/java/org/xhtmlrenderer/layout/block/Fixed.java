@@ -27,20 +27,20 @@ public class Fixed {
             Rectangle rect = c.getFixedRectangle();
 
             CalculatedStyle style = c.getCurrentStyle();
-            if (style.hasProperty("top")) {
-                box.top = (int) style.getFloatPropertyProportionalHeight("top", (float) (rect.getHeight()));
+            if (style.hasProperty(CSSName.TOP)) {
+                box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, (float) (rect.getHeight()));
                 box.top_set = true;
             }
-            if (style.hasProperty("right")) {
-                box.right = (int) style.getFloatPropertyProportionalWidth("right", (float) (rect.getWidth()));
+            if (style.hasProperty(CSSName.RIGHT)) {
+                box.right = (int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, (float) (rect.getWidth()));
                 box.right_set = true;
             }
-            if (style.hasProperty("bottom")) {
-                box.bottom = (int) style.getFloatPropertyProportionalHeight("bottom", (float) (rect.getHeight()));
+            if (style.hasProperty(CSSName.BOTTOM)) {
+                box.bottom = (int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, (float) (rect.getHeight()));
                 box.bottom_set = true;
             }
-            if (style.hasProperty("left")) {
-                box.left = (int) style.getFloatPropertyProportionalWidth("left", (float) (rect.getWidth()));
+            if (style.hasProperty(CSSName.LEFT)) {
+                box.left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, (float) (rect.getWidth()));
                 box.left_set = true;
             }
 

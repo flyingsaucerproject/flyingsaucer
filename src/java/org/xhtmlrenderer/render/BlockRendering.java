@@ -41,7 +41,7 @@ public class BlockRendering {
         if (box.getBlockFormattingContext() != null) c.pushBFC(box.getBlockFormattingContext());
         //Uu.p("Layout.paintChildren(): " + box);
         //Uu.p("child count = " + box.getChildCount());
-        //XRLog.render(Level.WARNING, "using default renderer paintChildren for " + box.getClass().getName());
+        //XRLog.render(Level.WARNING, "using default renderer paintChildren for " + box.getClass().getPropertyName());
         //TODO: work out how images and other replaced content really should be handled
         /*if (box instanceof InlineBox && box.getChildCount() == 0) {
             InlineBox inline = (InlineBox) box;

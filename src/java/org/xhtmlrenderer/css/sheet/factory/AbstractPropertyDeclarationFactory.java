@@ -21,14 +21,14 @@
 package org.xhtmlrenderer.css.sheet.factory;
 
 import java.util.*;
+
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
+
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
@@ -50,16 +50,16 @@ public abstract class AbstractPropertyDeclarationFactory implements PropertyDecl
      *
      * @param style     The {@link org.w3c.dom.css.CSSStyleDeclaration} from the
      *      SAC parser.
-     * @param propName  The String property name for the property to explode.
+     * @param cssName  The String property name for the property to explode.
      * @param origin    PARAM
      * @return          Iterator of one or more PropertyDeclaration instances
      *      representing the exploded values.
      */
     public final Iterator buildDeclarations( CSSStyleDeclaration style,
-                                             String propName,
+                                             CSSName cssName,
                                              int origin ) {
 
-        Object attr[] = extractStyleAttributes( style, propName );
+        Object attr[] = extractStyleAttributes( style, cssName );
         CSSValue cssValue = (CSSValue)attr[0];
         String priority = (String)attr[1];
         boolean important = ( (Boolean)attr[2] ).booleanValue();
@@ -85,18 +85,18 @@ public abstract class AbstractPropertyDeclarationFactory implements PropertyDecl
             }
         }
         
-        return doBuildDeclarations( pvalues, priority, important, propName, origin );
+        return doBuildDeclarations( pvalues, priority, important, cssName, origin );
     }
 
     /**
-     * Internal version of {@link #buildDeclarations(org.w3c.dom.css.CSSStyleDeclaration, String, int)},
+     * Internal version of {@link #buildDeclarations(org.w3c.dom.css.CSSStyleDeclaration, CSSName, int)},
      *  with value, priority and important already extracted for easy access. Override this in subclass to
      * implement.
      *
      * @param primVals   The SAC value for this property
      * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param propName   property name
+     * @param cssName   property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of {@link PropertyDeclaration} for the shorthand
@@ -105,13 +105,13 @@ public abstract class AbstractPropertyDeclarationFactory implements PropertyDecl
     protected abstract Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
                                                      String priority,
                                                      boolean important,
-                                                     String propName,
+                                                     CSSName cssName,
                                                      int origin );
 
     /**
      * Creates a new PropertyDeclaration. This is a utility method.
      *
-     * @param propName   Name of the CSS property to create.
+     * @param cssName   Name of the CSS property to create.
      * @param primitive  The CSSPrimitiveValue
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
@@ -119,12 +119,12 @@ public abstract class AbstractPropertyDeclarationFactory implements PropertyDecl
      *      important
      * @return           The new PropertyDeclaration representing this property.
      */
-    protected PropertyDeclaration newPropertyDeclaration( String propName,
+    protected PropertyDeclaration newPropertyDeclaration( CSSName cssName,
                                                           CSSPrimitiveValue primitive,
                                                           int origin,
                                                           boolean important ) {
 
-        return new PropertyDeclaration( propName, primitive, important, origin );
+        return new PropertyDeclaration(cssName, primitive, important, origin );
     }
 
     /**
@@ -134,23 +134,22 @@ public abstract class AbstractPropertyDeclarationFactory implements PropertyDecl
      *
      * @param declarations  The list to add to.
      * @param primitives    Array of CSSPrimitiveValues
-     * @param names         Array of properties, matching the primitive values
+     * @param cssNames         Array of properties, matching the primitive values
      *      array.
      * @param origin        The origin of the Stylesheet, constant from
      *      Stylesheet class e.g. Stylesheet.AUTHOR
      * @param important     True if the original shorthand property is marked
-     *      important.
      */
     protected void addProperties( List declarations,
                                   CSSPrimitiveValue[] primitives,
-                                  String[] names,
+                                  CSSName[] cssNames,
                                   int origin,
                                   boolean important ) {
 
         for ( int i = 0; i < primitives.length; i++ ) {
             declarations.add(
                         newPropertyDeclaration(
-                        names[i],
+                        cssNames[i],
                         primitives[i],
                         origin,
                         important ) );
@@ -163,17 +162,17 @@ public abstract class AbstractPropertyDeclarationFactory implements PropertyDecl
      * Convenience method to extract the {@link CSSValue}, priority, and importance from
      * a SAC {@link CSSStyleDeclaration}.
      *
-     * @param style     The {@link CSSStyleDeclaration} from which to extract the
+     * @param style     The {@link org.w3c.dom.css.CSSStyleDeclaration} from which to extract the
      *      attributes.
-     * @param propName  Name of the property for which to get the attributes.
+     * @param cssName  Name of the property for which to get the attributes.
      * @return          Object array with CSSValue, String priority and Boolean
      *      importance in fixed sequence: always 3, always that sequence.
      */
-    protected Object[] extractStyleAttributes( CSSStyleDeclaration style, String propName ) {
-        CSSValue cssValue = style.getPropertyCSSValue( propName );
-        String priority = style.getPropertyPriority( propName );
+    protected Object[] extractStyleAttributes( CSSStyleDeclaration style, CSSName cssName ) {
+        CSSValue cssValue = style.getPropertyCSSValue( cssName.toString() );
+        String priority = style.getPropertyPriority( cssName.toString() );
         Boolean important = Boolean.valueOf(
-                    style.getPropertyPriority( propName ).compareToIgnoreCase( "important" ) == 0 );
+                    style.getPropertyPriority( cssName.toString() ).compareToIgnoreCase( "important" ) == 0 );
         return new Object[]{cssValue, priority, important};
     }
 }// end class
@@ -182,6 +181,9 @@ public abstract class AbstractPropertyDeclarationFactory implements PropertyDecl
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/01/24 19:00:57  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.2  2005/01/24 14:53:11  pdoubleya
  * Comments referred to old class.
  *

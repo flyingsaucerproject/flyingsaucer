@@ -21,19 +21,9 @@
 
 package org.xhtmlrenderer.css.style;
 
-import org.xhtmlrenderer.css.constants.ValueConstants;
-import java.util.*;
-import java.util.logging.*;
-
-import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSStyleRule;
 import org.w3c.dom.css.CSSValue;
 
 import org.xhtmlrenderer.css.constants.CSSName;
-
-import org.xhtmlrenderer.css.RuleNormalizer;
 
 
 /**
@@ -44,18 +34,18 @@ import org.xhtmlrenderer.css.RuleNormalizer;
  */
 public class DerivedProperty {
     /** Property's text name, e.g. "margin-top" */
-    private String _propName;
+    private CSSName _cssName;
 
    /** Relative value as computed */
     private DerivedValue _computedValue;
 
     /**
      * 
-     * @param propName
+     * @param cssName
      * @param value
      */
-    public DerivedProperty(String propName, DerivedValue value) {
-        _propName = propName;
+    public DerivedProperty(CSSName cssName, DerivedValue value) {
+        _cssName = cssName;
         _computedValue = value;
     }
 
@@ -74,7 +64,7 @@ public class DerivedProperty {
      * @return   See desc
      */
     public DerivedProperty copyForInherit() {
-        DerivedProperty newProp = new DerivedProperty( _propName, _computedValue.copyOf() );
+        DerivedProperty newProp = new DerivedProperty( _cssName, _computedValue.copyOf() );
         return newProp;
     }
 
@@ -94,7 +84,7 @@ public class DerivedProperty {
      * @return   Returns
      */
     public String propertyName() {
-        return _propName;
+        return _cssName.toString();
     }
 
 
@@ -104,7 +94,7 @@ public class DerivedProperty {
      * @return   Returns
      */
     public String toString() {
-        return _propName + "=" + _computedValue;
+        return _cssName + "=" + _computedValue;
     }
 
 }// end class
@@ -116,6 +106,9 @@ public class DerivedProperty {
  *
 
  * $Log$
+ * Revision 1.4  2005/01/24 19:01:05  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.3  2005/01/24 14:36:31  pdoubleya
  * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
  *

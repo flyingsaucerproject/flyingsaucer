@@ -166,7 +166,7 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
             //reader = new java.io.InputStreamReader(marker.getClass().getResource("default.css").openStream());
             reader = new java.io.InputStreamReader(this.getClass().getResource("nonamespace.css").openStream());
             } else {
-                System.err.println("Could not find css for "+this.getClass().getName());
+                System.err.println("Could not find css for "+this.getClass().getPropertyName());
             }
 
         } catch (Exception ex) {

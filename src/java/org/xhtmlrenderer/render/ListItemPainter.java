@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.util.ImageUtil;
@@ -45,7 +46,7 @@ public class ListItemPainter {
      */
     public static void paint(Context c, Box box) {
         CalculatedStyle style = c.getCurrentStyle();
-        String type = style.getStringProperty("list-style-type");
+        String type = style.getStringProperty(CSSName.LIST_STYLE_TYPE);
 
         if (type.equals("none")) {
             return;
@@ -57,7 +58,7 @@ public class ListItemPainter {
             type = "decimal";
         }
 
-        String image = style.getStringProperty("list-style-image");
+        String image = style.getStringProperty(CSSName.LIST_STYLE_IMAGE);
         Image img = null;
         if (!image.equals("none")) {
             try {
@@ -210,6 +211,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/01/24 19:01:03  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.13  2005/01/10 01:58:37  tobega
  * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
  *

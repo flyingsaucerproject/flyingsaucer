@@ -85,7 +85,7 @@ public class DerivedValue {
     /**
      *
      */
-    private String _propName;
+    private CSSName _cssName;
 
     /**
      * If background-position, and the position is absolute (on x and y axis), then the <code>Point</code> for the
@@ -126,32 +126,6 @@ public class DerivedValue {
      */
     private static final Color COLOR_TRANSPARENT = new Color(0, 0, 0, 0);
 
-    /**
-     * The value assigned to the horizontal coordinate of a background-position. Number only, does not contain the CSS
-     * value type suffix if specified (e.g. px, %). Pulled on instantiation of a background-position.
-     */
-    // CLEAN private float _bgPosXValue;
-
-    /**
-     *
-     */
-    // CLEAN private short _bgPosXType;
-
-    /**
-     * The value assigned to the vertical coordinate of a background-position. Number only, does not contain the CSS
-     * value type suffix if specified (e.g. px, %). Pulled on instantiation of a background-position.
-     */
-    // CLEAN private float _bgPosYValue;
-
-    /**
-     *
-     */
-    // CLEAN private short _bgPosYType;
-
-    /**
-     *
-     */
-    // CLEAN private boolean _bgPosIsAbsolute;
     private static final float MM__PER__PX = 0.28F;
     private static final int MM__PER__CM = 10;
     private static final float CM__PER__IN = 2.54F;
@@ -160,43 +134,39 @@ public class DerivedValue {
     private boolean _hasAbsCalculated;
     private Color _color;
 
-    private String _orgText;
-
     /**
-     * @param propName
+     * @param cssName
      * @param primitive
      * @param inheritedStyle
      */
-    public DerivedValue(String propName, CSSPrimitiveValue primitive, CalculatedStyle inheritedStyle) {
-        _propName = propName;
+    public DerivedValue(CSSName cssName, CSSPrimitiveValue primitive, CalculatedStyle inheritedStyle) {
+        _cssName = cssName;
         _domCSSPrimitiveValue = primitive;
         String org = _domCSSPrimitiveValue.getCssText();
-        _orgText = org;
-        primitive.setCssText(Idents.convertIdent(propName, org));
+        primitive.setCssText(Idents.convertIdent(cssName, org));
         if (primitive.getCssText() == null) {
-            throw new XRRuntimeException("CSSValue for '" + propName + "' is null after " +
+            throw new XRRuntimeException("CSSValue for '" + cssName + "' is null after " +
                     "resolving CSS identifier for value '" + org + "'");
         }
         _inheritedStyle = inheritedStyle;
 
         try {
-            if (_propName.equals(CSSName.BACKGROUND_POSITION)) {
+            if (_cssName == CSSName.BACKGROUND_POSITION) {
                 pullPointValuesForBGPos(primitive);
-                // CLEAN System.out.println("[" + this.hashCode() + "]   background-position: " + _orgText + ", " + primitive.getCssText());
             } else {
-                if (Idents.looksLikeALength(primitive.getCssText()) && !_propName.equals(CSSName.FONT_WEIGHT )) {
+                if (Idents.looksLikeALength(primitive.getCssText()) && !(_cssName == CSSName.FONT_WEIGHT )) {
                     // split out the length (as string), as float, as the primitive type
                     pullLengthValueParts(primitive);
                 }
             }
         } catch (Exception ex) {
             if ( inheritedStyle != null ) inheritedStyle.dumpProperties();
-            throw new XRRuntimeException("For " + propName + ": '" + org + "', failed to instantiate DerivedValue. " + ex.getMessage());
+            throw new XRRuntimeException("For " + cssName + ": '" + org + "', failed to instantiate DerivedValue. " + ex.getMessage());
         }
     }
 
     public boolean hasAbsoluteUnit() {
-        return (_propName.equals(CSSName.BACKGROUND_POSITION) || ValueConstants.isAbsoluteUnit(_domCSSPrimitiveValue));
+        return (_cssName == CSSName.BACKGROUND_POSITION || ValueConstants.isAbsoluteUnit(_domCSSPrimitiveValue));
     }
 
     /**
@@ -206,19 +176,18 @@ public class DerivedValue {
      * @param primitive
      */
     private void pullLengthValueParts(CSSPrimitiveValue primitive) {
-        // CLEAN System.out.println("PROCESSING " + _propName + ": " + primitive.getCssText());
         Matcher m = CSS_LENGTH_PATTERN.matcher(primitive.getCssText());
         if ( m.matches() ) {
             _lengthAsString = m.group(1);
             _lengthAsFloat = new Float(_lengthAsString).floatValue();
             _lengthPrimitiveType = ValueConstants.sacPrimitiveTypeForString(m.group(3));
         } else {
-            throw new XRRuntimeException("Could not extract length for " + _propName + " from " + primitive.getCssText() +
+            throw new XRRuntimeException("Could not extract length for " + _cssName + " from " + primitive.getCssText() +
                     " using " + CSS_LENGTH_PATTERN);
         }
 
         if ( _lengthAsString == null ) {
-            throw new XRRuntimeException("Could not extract length for " + _propName + " from " + primitive.getCssText() +
+            throw new XRRuntimeException("Could not extract length for " + _cssName + " from " + primitive.getCssText() +
                     "; is null, using " + CSS_LENGTH_PATTERN);
 
 
@@ -239,27 +208,14 @@ public class DerivedValue {
             Matcher m = CSS_LENGTH_PATTERN.matcher(pos[0]);
             m.matches();
             String xAsString = m.group(1);
-            // CLEAN _bgPosXValue = new Float(xAsString).floatValue();
             float x = new Float(xAsString).floatValue();
-            // CLEAN _bgPosXType = ValueConstants.sacPrimitiveTypeForString(m.group(3));
 
             m = CSS_LENGTH_PATTERN.matcher(pos[1]);
             m.matches();
             String yAsString = m.group(1);
-            // CLEAN _bgPosYValue = new Float(yAsString).floatValue();
             float y = new Float(yAsString).floatValue();
-            // CLEAN _bgPosYType = ValueConstants.sacPrimitiveTypeForString(m.group(3));
             _asPoint = new Point();
             _asPoint.setLocation(x, y);
-            /* CLEAN
-            if (ValueConstants.isAbsoluteUnit(_bgPosXType) && ValueConstants.isAbsoluteUnit(_bgPosYType)) {
-                // CLEAN
-                //float x = calcFloatProportionalValue(_bgPosXValue, _bgPosXType, 1F);
-                //float y = calcFloatProportionalValue(_bgPosYValue, _bgPosYType, 1F);
-                _asPoint = new Point();
-                _asPoint.setLocation(_bgPosXValue, _bgPosYValue);
-                _bgPosIsAbsolute = true;
-            }*/
         } catch (Exception ex) {
             StringBuffer msg = new StringBuffer();
             msg.append("background-position: failed to convert '" + cssText + "' into a Point. ");
@@ -280,7 +236,7 @@ public class DerivedValue {
      * @return A clone of this <copy>DerivedValue</copy>, pointing to the same SAC {@link CSSValue} as the original.
      */
     public DerivedValue copyOf() {
-        DerivedValue nv = new DerivedValue(_propName, _domCSSPrimitiveValue, _inheritedStyle);
+        DerivedValue nv = new DerivedValue(_cssName, _domCSSPrimitiveValue, _inheritedStyle);
         return nv;
     }
 
@@ -416,7 +372,7 @@ public class DerivedValue {
                 }
                 break;
             case CSSPrimitiveValue.CSS_PT:
-                if ( _propName.equals(CSSName.FONT_SIZE)) {
+                if ( _cssName == CSSName.FONT_SIZE) {
                     absVal = relVal;
                 } else if ( _hasAbsCalculated ) {
                     absVal = _absoluteLengthAsFloat;
@@ -441,7 +397,7 @@ public class DerivedValue {
                 // The exception is when �em� occurs in the value of
                 // the �font-size� property itself, in which case it refers
                 // to the font size of the parent element (spec: 4.3.2)
-                if ( _propName.equals(CSSName.LINE_HEIGHT )) {
+                if ( _cssName == CSSName.LINE_HEIGHT) {
                     absVal = relVal * baseValue;
                 } else {
                     absVal = relVal * deriveFontSize(baseValue);
@@ -454,11 +410,9 @@ public class DerivedValue {
                 // To convert EMS to pixels, we need the height of the lowercase 'Xx' character in the current
                 // element...
                 // to the font size of the parent element (spec: 4.3.2)
-                if ( _propName.equals(CSSName.LINE_HEIGHT )) {
+                if ( _cssName == CSSName.LINE_HEIGHT) {
                     absVal = relVal * baseValue;
                 } else {
-                    // CLEAN
-                    // float xHeight = _inheritedStyle.propertyByName("font-size").computedValue().asFloat();
                     float xHeight = _inheritedStyle.getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, baseValue);
                     absVal = relVal * xHeight;
                 }
@@ -466,9 +420,9 @@ public class DerivedValue {
                 break;
             case CSSPrimitiveValue.CSS_PERCENTAGE:
                 // percentage depends on the property this value belongs to
-                if (_propName.equals(CSSName.VERTICAL_ALIGN)) {
+                if (_cssName == CSSName.VERTICAL_ALIGN) {
                     relVal = _inheritedStyle.getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, baseValue);
-                } else if (_propName.equals(CSSName.FONT_SIZE)) {
+                } else if (_cssName == CSSName.FONT_SIZE) {
                     // same as with EM
                     baseValue = deriveFontSize(baseValue);
                 }
@@ -478,19 +432,19 @@ public class DerivedValue {
             default:
                 // nothing to do, we only convert those listed above
                 XRLog.cascade(Level.SEVERE,
-                        "Asked to convert " + _propName + " from relative to absolute, " +
+                        "Asked to convert " + _cssName + " from relative to absolute, " +
                         " don't recognize the datatype " +
                         "'" + ValueConstants.stringForSACPrimitiveType(_lengthPrimitiveType) + "' "
                         + _lengthPrimitiveType);
         }
         assert(new Float(absVal).intValue() > 0);
 
-        if ( _propName.equals(CSSName.FONT_SIZE )) {
-            XRLog.cascade(Level.FINEST, _propName + ", relative= " +
+        if ( _cssName == CSSName.FONT_SIZE) {
+            XRLog.cascade(Level.FINEST, _cssName + ", relative= " +
                 relVal + " (" + _domCSSPrimitiveValue.getCssText() + "), absolute= "
                 + absVal);
         } else {
-            XRLog.cascade(Level.FINEST, _propName + ", relative= " +
+            XRLog.cascade(Level.FINEST, _cssName + ", relative= " +
                     relVal + " (" + _domCSSPrimitiveValue.getCssText() + "), absolute= "
                     + absVal + " using base=" + baseValue);
         }
@@ -498,17 +452,11 @@ public class DerivedValue {
         // round down
         double d = Math.floor((double) absVal);
         absVal = new Float(d).floatValue();
-        /* CLEAN
-        if ( absVal > 1000 || _propName.equals(CSSName.FONT_SIZE)) {
-            XRLog.cascade(Level.INFO, _propName + ", relative value " +
-                    relVal + " (" + _domCSSPrimitiveValue.getCssText() + "), absolute value "
-                    + absVal + " using base=" + baseValue);
-        }*/
         return absVal;
     }
 
     /**
-     * HACK: this only works if the value is actually a primitve
+     * Returns the value as a Color, if it is a color.
      *
      * @return The rGBColorValue value
      */
@@ -525,7 +473,7 @@ public class DerivedValue {
                 else
                     _color = Color.decode(str);
             } catch (Exception ex) {
-                throw new XRRuntimeException("Could not return '" + _propName + "' in a DerivedValue as a Color (value '" + str + "')." + ex.getMessage());
+                throw new XRRuntimeException("Could not return '" + _cssName + "' in a DerivedValue as a Color (value '" + str + "')." + ex.getMessage());
             }
         }
         return _color;
@@ -564,8 +512,6 @@ public class DerivedValue {
         float fontSize = 0F;
         if (_inheritedStyle != null) {
             //TODO: this is probably wrong
-            // CLEAN
-            // fontSize = _inheritedStyle.propertyByName(CSSName.FONT_SIZE).computedValue().asFloat();
             fontSize = _inheritedStyle.getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, parentHeight);
         } else {
             System.err.println("ERROR: Trying to derive font size wrongly in " + this.getClass().getName());
@@ -582,7 +528,7 @@ public class DerivedValue {
         return _asPoint;
 
         /*
-        // CLEAN: this was a version where bgpos was calculated relative to containing size
+        // KEEP: this was a version where bgpos was calculated relative to containing size
         // however in BackgroundPainter, the value is requested as a percentage...not sure that
         // is always valid, but...(PWW 24-01-05)
         Point pt = null;
@@ -591,11 +537,9 @@ public class DerivedValue {
             pt = _asPoint;
         } else {
             pt = new Point();
-            // CLEAN
-            //float xF = calcFloatProportionalValue(_bgPosXValue, _bgPosXType, parentWidth);
-            //float yF = calcFloatProportionalValue(_bgPosYValue, _bgPosYType, parentHeight);
-            //pt.setLocation(xF, yF);
-            pt.setLocation(_bgPosXValue, _bgPosYValue);
+            float xF = calcFloatProportionalValue(_bgPosXValue, _bgPosXType, parentWidth);
+            float yF = calcFloatProportionalValue(_bgPosYValue, _bgPosYType, parentHeight);
+            pt.setLocation(xF, yF);
         }
         System.out.println("[" + this.hashCode() + "]   background-position (absolute: " + _bgPosIsAbsolute + ") " + _orgText + " (" + _domCSSPrimitiveValue.getCssText() + ") x:" + pt.getX() + " y:" + pt.getY());
         return pt; */

@@ -53,7 +53,7 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
      * @param primVals   The SAC value for this property
      * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param propName   property name
+     * @param cssName   property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -62,12 +62,12 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
     protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
                                             String priority,
                                             boolean important,
-                                            String propName,
+                                            CSSName cssName,
                                             int origin ) {
 
         if ( primVals.length > 1 ) {
             throw new XRRuntimeException( "Tried to use " + this.getClass().getName() +
-                    " to create PropertyDeclarations for " + propName + ", but the" +
+                    " to create PropertyDeclarations for " + cssName + ", but the" +
                     " CSS style information is not primitive--is a list of values." +
                     " Should be handled by a shorthand property factory." );
         }
@@ -75,9 +75,9 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
             System.out.println("!!! got white space " + primVals[0]);
         } */
 
-        FSCssValue fsCssValue = new FSCssValue( propName, primVals[0] );
+        FSCssValue fsCssValue = new FSCssValue( cssName, primVals[0] );
         List declarations = new ArrayList( 1 );
-        declarations.add( newPropertyDeclaration( propName, fsCssValue, origin, important ) );
+        declarations.add( newPropertyDeclaration( cssName, fsCssValue, origin, important ) );
         return declarations.iterator();
     }
 
@@ -98,6 +98,9 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 19:00:58  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.1  2005/01/24 14:25:35  pdoubleya
  * Added to CVS.
  *

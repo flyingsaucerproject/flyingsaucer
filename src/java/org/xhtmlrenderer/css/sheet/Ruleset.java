@@ -22,6 +22,7 @@ package org.xhtmlrenderer.css.sheet;
 import java.util.*;
 
 import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xhtmlrenderer.css.constants.CSSName;
 
 
 /**
@@ -110,9 +111,10 @@ public class Ruleset {
         // shorthand properties along the way.
         for ( int i = 0; i < decl.getLength(); i++ ) {
             String propName = decl.item( i );
+            CSSName cssName = CSSName.getByPropertyName(propName);
 
             PropertyDeclaration prop = null;
-            Iterator iter = PropertyDeclaration.newFactory(propName).buildDeclarations(decl, propName, _origin);
+            Iterator iter = PropertyDeclaration.newFactory(cssName).buildDeclarations(decl, cssName, _origin);
 
             while (iter.hasNext()) {
                 // the cast is just for doc purposes
@@ -130,6 +132,9 @@ public class Ruleset {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/01/24 19:01:08  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.4  2005/01/24 14:36:30  pdoubleya
  * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
  *

@@ -55,7 +55,7 @@ public class BackgroundPositionPropertyDeclarationFactory extends AbstractProper
      * @param primVals   The SAC value for this property
      * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param propName   property name
+     * @param cssName   property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -64,7 +64,7 @@ public class BackgroundPositionPropertyDeclarationFactory extends AbstractProper
     protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
                                             String priority,
                                             boolean important,
-                                            String propName,
+                                            CSSName cssName,
                                             int origin ) {
 
         StringBuffer pos = new StringBuffer();
@@ -74,8 +74,6 @@ public class BackgroundPositionPropertyDeclarationFactory extends AbstractProper
         }
         pos.deleteCharAt(pos.length() - 1); // remove spc
 
-        // CLEAN: don't convert to ident until we have a DerivedValue
-        // String val = Idents.convertIdent(CSSName.BACKGROUND_POSITION, pos.toString().trim());
         String val = pos.toString().trim();
 
         // handle for single value--first will be taken as horizontal; as per CSS spec
@@ -86,9 +84,9 @@ public class BackgroundPositionPropertyDeclarationFactory extends AbstractProper
                 val += " 50%";
         }
 
-        FSCssValue fsCssValue = new FSCssValue( propName, primVals[0], val );
+        FSCssValue fsCssValue = new FSCssValue( cssName, primVals[0], val );
         List declarations = new ArrayList( 1 );
-        declarations.add( newPropertyDeclaration( propName, fsCssValue, origin, important ) );
+        declarations.add( newPropertyDeclaration( cssName, fsCssValue, origin, important ) );
         return declarations.iterator();
     }
 
@@ -109,6 +107,9 @@ public class BackgroundPositionPropertyDeclarationFactory extends AbstractProper
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 19:00:57  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.1  2005/01/24 14:25:33  pdoubleya
  * Added to CVS.
  *

@@ -221,7 +221,7 @@ public class WhitespaceStripper {
     }*/
 
     public static String getWhitespace(CalculatedStyle style) {
-        String whitespace = style.getStringProperty("white-space");
+        String whitespace = style.getStringProperty(CSSName.WHITE_SPACE);
         if (whitespace == null) {//should never happen
             whitespace = "normal";
         }

@@ -21,15 +21,12 @@
 package org.xhtmlrenderer.css.sheet.factory;
 
 import java.util.*;
+
 import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.CSSValueList;
+
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.Idents;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.value.FSCssValue;
-import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 
@@ -64,7 +61,7 @@ public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclar
      * @param primVals   The SAC value for this property
      * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param propName   property name
+     * @param cssName   property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -73,52 +70,28 @@ public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclar
     protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
                                             String priority,
                                             boolean important,
-                                            String propName,
+                                            CSSName cssName,
                                             int origin ) {
 
         List declarations = new ArrayList();
-        String explodes[] = (String[])PROP_EXPLODE.get( propName );
+        CSSName explodes[] = (CSSName[])PROP_EXPLODE.get( cssName );
         CSSPrimitiveValue primitives[] = null;
-        String names[] = null;
+        CSSName names[] = null;
 
         if ( explodes == null ) {
-            throw new XRRuntimeException( "Found no mapping for border side property named '" + propName + "'." );
+            throw new XRRuntimeException( "Found no mapping for border side property named '" + cssName + "'." );
         }
 
         for ( int i = 0; i < primVals.length; i++ ) {
             CSSPrimitiveValue primitive = primVals[i];
 
             String val = primitive.getCssText().trim();
-            String matchedProp = matchPropName( val, explodes );
+            CSSName matchedProp = matchPropName( val, explodes );
             primitives = new CSSPrimitiveValue[]{new FSCssValue( matchedProp, primitive )};
-            names = new String[]{matchedProp};
+            names = new CSSName[]{matchedProp};
             addProperties( declarations, primitives, names, origin, important );
         }
 
-        /*
-         * // CAREFUL: note that with steadyState parser impl, their value class impl
-         * // both primitive and value list interfaces! use getCssValueType(), not instanceof!!
-         * if ( primVals.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
-         * String val = ((CSSPrimitiveValue)primVals).getCssText().trim();
-         * String matchedProp = matchPropName(val, explodes);
-         * primitives = new CSSPrimitiveValue[]{new FSCssValue(matchedProp, (CSSPrimitiveValue)primVals)};
-         * names = new String[]{matchedProp};
-         * addProperties( declarations, primitives, names, origin, important );
-         * } else {
-         * // is a value list
-         * CSSValueList vList = (CSSValueList)primVals;
-         * // border-style explodes differently based on number of supplied values
-         * CSSPrimitiveValue primitive = null;
-         * for ( int i = 0, len = vList.getLength(); i < len; i++ ) {
-         * primitive = (CSSPrimitiveValue)vList.item( i );
-         * String val = primitive.getCssText().trim();
-         * String matchedProp = matchPropName(val, explodes);
-         * primitives = new CSSPrimitiveValue[]{new FSCssValue(matchedProp, (CSSPrimitiveValue)primitive)};
-         * names = new String[]{matchedProp};
-         * addProperties( declarations, primitives, names, origin, important );
-         * }
-         * }
-         */
         return declarations.iterator();
     }
 
@@ -129,17 +102,17 @@ public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclar
      * @param explodeTo  PARAM
      * @return           Returns
      */
-    private String matchPropName( String val, String[] explodeTo ) {
-        String propName = "";
+    private CSSName matchPropName( String val, CSSName[] explodeTo ) {
+        CSSName cssName = null;
         if ( Idents.looksLikeAColor( val ) ) {
-            propName = explodeTo[COLOR_IDX];
+            cssName = explodeTo[COLOR_IDX];
         } else if ( Idents.looksLikeABorderStyle( val ) ) {
-            propName = explodeTo[STYLE_IDX];
+            cssName = explodeTo[STYLE_IDX];
         } else {
             // HACK: as with background, we should go ahead and check this is a valid CSS length value (PWW 24-08-04)
-            propName = explodeTo[WIDTH_IDX];
+            cssName = explodeTo[WIDTH_IDX];
         }
-        return propName;
+        return cssName;
     }
 
     /**
@@ -159,13 +132,13 @@ public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclar
         COLOR_IDX = 2;
 
         PROP_EXPLODE = new HashMap();
-        String top[] = new String[]{CSSName.BORDER_WIDTH_TOP, CSSName.BORDER_STYLE_TOP, CSSName.BORDER_COLOR_TOP};
+        CSSName top[] = new CSSName[]{CSSName.BORDER_WIDTH_TOP, CSSName.BORDER_STYLE_TOP, CSSName.BORDER_COLOR_TOP};
 
-        String right[] = new String[]{CSSName.BORDER_WIDTH_RIGHT, CSSName.BORDER_STYLE_RIGHT, CSSName.BORDER_COLOR_RIGHT};
+        CSSName right[] = new CSSName[]{CSSName.BORDER_WIDTH_RIGHT, CSSName.BORDER_STYLE_RIGHT, CSSName.BORDER_COLOR_RIGHT};
 
-        String bottom[] = new String[]{CSSName.BORDER_WIDTH_BOTTOM, CSSName.BORDER_STYLE_BOTTOM, CSSName.BORDER_COLOR_BOTTOM};
+        CSSName bottom[] = new CSSName[]{CSSName.BORDER_WIDTH_BOTTOM, CSSName.BORDER_STYLE_BOTTOM, CSSName.BORDER_COLOR_BOTTOM};
 
-        String left[] = new String[]{CSSName.BORDER_WIDTH_LEFT, CSSName.BORDER_STYLE_LEFT, CSSName.BORDER_COLOR_LEFT};
+        CSSName left[] = new CSSName[]{CSSName.BORDER_WIDTH_LEFT, CSSName.BORDER_STYLE_LEFT, CSSName.BORDER_COLOR_LEFT};
 
         PROP_EXPLODE.put( CSSName.BORDER_TOP_SHORTHAND, top );
         PROP_EXPLODE.put( CSSName.BORDER_RIGHT_SHORTHAND, right );
@@ -179,6 +152,9 @@ public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 19:00:58  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.1  2005/01/24 14:25:34  pdoubleya
  * Added to CVS.
  *

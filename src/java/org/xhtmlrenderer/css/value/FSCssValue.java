@@ -1,10 +1,10 @@
 package org.xhtmlrenderer.css.value;
 
 import org.w3c.dom.css.*;
-import org.xhtmlrenderer.css.constants.Idents;
+
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.util.XRRuntimeException;
-import org.xhtmlrenderer.util.GeneralUtil;
 
 
 /**
@@ -20,10 +20,9 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
      *
      */
     private String propName;
+    private CSSName cssName;
     /** Description of the Field */
     private String cssText;
-    /** Description of the Field */
-    private short valueType;
     /** Description of the Field */
     private Counter counter;
     /** Description of the Field */
@@ -34,28 +33,19 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
     private Rect rectValue;
     /** Description of the Field */
     private RGBColor rgbColorValue;
-    /** Description of the Field */
-    private String stringValue;
 
     /**
      * Constructor for the FSCssValue object
      *
      * @param primitive  PARAM
      */
-    public FSCssValue( String propName, org.w3c.dom.css.CSSPrimitiveValue primitive ) {
-        this.propName = propName;
+    public FSCssValue( CSSName cssName, org.w3c.dom.css.CSSPrimitiveValue primitive ) {
+        this.cssName = cssName;
+        this.propName = cssName.toString();
         this.primitiveType = primitive.getPrimitiveType();
         this.cssText = (primitiveType == CSSPrimitiveValue.CSS_STRING ?
                         primitive.getStringValue() :
                         primitive.getCssText());
-        this.valueType = primitive.getCssValueType();
-
-        // CLEAN
-        /* if ( this.valueType == CSSValue.CSS_VALUE_LIST ) {
-            System.out.println("### FSCssValue created as value type: " + propName);
-            //new Exception().printStackTrace();
-        } */
-
 
         // TODO
         // access on these values is not correctly supported in this class
@@ -72,10 +62,10 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
                 this.rgbColorValue = primitive.getRGBColorValue();
                 break;
             case org.w3c.dom.css.CSSPrimitiveValue.CSS_IDENT:
-                cssText = Idents.convertIdent(propName, cssText);
+                cssText = Idents.convertIdent(cssName, cssText);
                 break;
             case org.w3c.dom.css.CSSPrimitiveValue.CSS_STRING:
-                stringValue = cssText;
+                // ASK: do we need this? not clear when a CSS_STRING is meaningful (PWW 24-01-05)
                 break;
             case org.w3c.dom.css.CSSPrimitiveValue.CSS_COUNTER:
                 this.counter = primitive.getCounterValue();
@@ -83,7 +73,27 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
             case org.w3c.dom.css.CSSPrimitiveValue.CSS_RECT:
                 this.rectValue = primitive.getRectValue();
                 break;
-                // TODO: we can code other fixed-type conversions here, like inch-pixel (PWW 19-11-04)
+            case CSSPrimitiveValue.CSS_IN:
+                // fall-thru
+            case CSSPrimitiveValue.CSS_CM:
+                // fall-thru
+            case CSSPrimitiveValue.CSS_EMS:
+                // fall-thru
+            case CSSPrimitiveValue.CSS_EXS:
+                // fall-thru
+            case CSSPrimitiveValue.CSS_MM:
+                // fall-thru
+            case CSSPrimitiveValue.CSS_NUMBER:
+                // fall-thru
+            case CSSPrimitiveValue.CSS_PC:
+                // fall-thru
+            case CSSPrimitiveValue.CSS_PERCENTAGE:
+                // fall-thru
+            case CSSPrimitiveValue.CSS_PT:
+                // fall-thru
+            case CSSPrimitiveValue.CSS_PX:
+                this.floatValue = primitive.getFloatValue(primitiveType);
+                break;
             default:
             // leave as is
         }
@@ -95,11 +105,19 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
     }
 
     /** Use a given CSSPrimitiveValue, with an overriding internal text value */
-    public FSCssValue( String propName, org.w3c.dom.css.CSSPrimitiveValue primitive, String newValue ) {
-        this(propName, primitive);
+    public FSCssValue( CSSName cssName, org.w3c.dom.css.CSSPrimitiveValue primitive, String newValue ) {
+        this(cssName, primitive);
         this.cssText = newValue;
-        this.stringValue = newValue;
     }
+
+    public String getPropName() {
+        return propName;
+    }
+
+    public CSSName getCssName() {
+        return cssName;
+    }
+
     /**
      * Returns the string representation of the instance, in this case, the CSS
      * text value.
@@ -155,7 +173,6 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
      * @return   The cssValueType value
      */
     public short getCssValueType() {
-        //return valueType;
         // HACK: we assume that, whatever value we are wrapping, we are, in effect, a single value
         // because shorthand-expansion creates us
         return CSSValue.CSS_PRIMITIVE_VALUE;
@@ -168,7 +185,6 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
      */
     public Counter getCounterValue() {
         return counter;
-        //throw new XRRuntimeException( "FSCssValue.getCounterValue() is not supported." );
     }
 
     /**
@@ -179,7 +195,6 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
      */
     public float getFloatValue( short unitType ) {
         return floatValue;
-        //throw new XRRuntimeException( "FSCssValue.getFloatValue() is not supported." );
     }
 
     /**
@@ -198,7 +213,6 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
      */
     public Rect getRectValue() {
         return rectValue;
-        //throw new XRRuntimeException( "FSCssValue.getRectValue() is not supported." );
     }
 
     /**
@@ -206,11 +220,8 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
      *
      * @return   The rGBColorValue value
      */
-    // not supported, just not coded right now. would need to keep RGBColor instance
-    // in sync with changes to color from RuleNormalizer.
     public RGBColor getRGBColorValue() {
         return rgbColorValue;
-        //throw new XRRuntimeException( "FSCssValue.getRGBColorValue() is not supported." );
     }
 
     /**
@@ -229,6 +240,9 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 19:01:07  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.1  2005/01/24 14:27:52  pdoubleya
  * Added to CVS.
  *

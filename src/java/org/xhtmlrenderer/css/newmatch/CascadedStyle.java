@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import java.util.*;
+
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
 
@@ -33,21 +36,21 @@ import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
  * you will need to determine which PropertyDeclarations belong in the set--for
  * example, by matching {@link org.xhtmlrenderer.css.sheet.Ruleset}s to {@link
  * org.w3c.dom.Document} {@link org.w3c.dom.Element}s via their selectors. You
- * can get individual properties by using {@link #propertyByName(String)} or an
+ * can get individual properties by using {@link #propertyByName(CSSName)} or an
  * {@link java.util.Iterator} of properties with {@link
  * #getMatchedPropertyDeclarations()}. Check for individual property assignments
- * using {@link #hasProperty(String)}. A CascadedStyle is immutable, as
+ * using {@link #hasProperty(CSSName)}. A CascadedStyle is immutable, as
  * properties can not be added or removed from it once instantiated.
  *
  * @author   Torbjörn Gannholm
  * @author   Patrick Wright
  */
 public class CascadedStyle {
+
     /**
-     * The main Map of MatchedProperties keyed by CSS property name, after
-     * cascade takes place.
+     * Array of PropertyDeclarations, indexed by {@link CSSName#getAssignedID()}
      */
-    private java.util.Map _cascadedPropertiesByName;
+    private PropertyDeclaration[] _cascadedPropertiesByID;
 
     /**
      * Constructs a new CascadedStyle, given an {@link java.util.Iterator} of
@@ -79,8 +82,7 @@ public class CascadedStyle {
         for ( int i = 0; i < buckets.length; i++ ) {
             for ( java.util.Iterator it = buckets[i].iterator(); it.hasNext();  ) {
                 PropertyDeclaration prop = (PropertyDeclaration)it.next();
-                //System.err.println("matched "+prop.getName());
-                _cascadedPropertiesByName.put( prop.getName(), prop );
+                _cascadedPropertiesByID[prop.getCSSName().getAssignedID()] = prop;
             }
         }
     }
@@ -92,18 +94,20 @@ public class CascadedStyle {
      * properties.
      */
     protected CascadedStyle() {
-        _cascadedPropertiesByName = new java.util.TreeMap();
+        // CLEAN_cascadedPropertiesByName = new java.util.TreeMap(CSSName.getComparator());
+        _cascadedPropertiesByID = new PropertyDeclaration[CSSName.countCSSNames()];
     }
 
 
     /**
      * Returns true if property has been defined in this style.
      *
-     * @param propName  The CSS property name, e.g. "font-family".
+     * @param cssName  The CSS property name, e.g. "font-family".
      * @return          True if the property is defined in this set.
      */
-    public boolean hasProperty( String propName ) {
-        return _cascadedPropertiesByName.get( propName ) != null;
+    public boolean hasProperty( CSSName cssName ) {
+        //return _cascadedPropertiesByName.get( cssName ) != null;
+        return _cascadedPropertiesByID[cssName.getAssignedID()] != null;
     }
 
 
@@ -113,24 +117,32 @@ public class CascadedStyle {
      * instantiation, so this will return the actual property (and corresponding
      * value) to use for CSS-based layout and rendering.
      *
-     * @param propName  The CSS property name, e.g. "font-family".
+     * @param cssName  The CSS property name, e.g. "font-family".
      * @return          The PropertyDeclaration, if declared in this set, or
      *      null if not found.
      */
-    public PropertyDeclaration propertyByName( String propName ) {
-        PropertyDeclaration prop = (PropertyDeclaration)_cascadedPropertiesByName.get( propName );
+    public PropertyDeclaration propertyByName( CSSName cssName ) {
+        PropertyDeclaration prop = _cascadedPropertiesByID[cssName.getAssignedID()];
 
         return prop;
     }
 
     /**
      * Returns an {@link java.util.Iterator} over the set of {@link
-     * org.xhtmlrenderer.css.sheet.PropertyDeclaration}s in this CascadedStyle.
+     * org.xhtmlrenderer.css.sheet.PropertyDeclaration}s already matched in this
+     * CascadedStyle. For a given property name, there may be no match, in which
+     * case there will be no <code>PropertyDeclaration</code> for that property name in the Iterator.
      *
      * @return   Iterator over a set of properly cascaded PropertyDeclarations.
      */
     public java.util.Iterator getMatchedPropertyDeclarations() {
-        return _cascadedPropertiesByName.values().iterator();
+        List list = new ArrayList(_cascadedPropertiesByID.length);
+        for (int i = 0; i < _cascadedPropertiesByID.length; i++) {
+            PropertyDeclaration propertyDeclaration = _cascadedPropertiesByID[i];
+            if ( propertyDeclaration == null ) continue;
+            list.add(propertyDeclaration);
+        }
+        return list.iterator();
     }
 
 }// end class
@@ -139,6 +151,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/24 19:01:06  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.3  2004/11/15 13:40:14  pdoubleya
  * Updated JavaDoc.
  *

@@ -91,7 +91,7 @@ public class TableBoxing {
         // set up the width
         int fixed_width = c.getExtents().width;
         if (content.getStyle().hasProperty(CSSName.WIDTH)) {
-            fixed_width = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth("width", c.getExtents().width);
+            fixed_width = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width);
         }
         //not used: int orig_fixed_width = fixed_width;
 
@@ -287,6 +287,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.6  2005/01/24 19:01:09  pdoubleya
+   Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+
    Revision 1.5  2005/01/24 14:36:36  pdoubleya
    Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
 

@@ -70,7 +70,7 @@ public class FontUtil {
         int val = (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont(c), "Test").getHeight());
         //TODO: line-height should probably be resolved by CalculatedStyle (possibly with input of used font-size)
         if (!style.propertyByName(CSSName.LINE_HEIGHT).computedValue().cssValue().getCssText().equals("normal")) {
-            val = (int) style.getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, c.getBlockFormattingContext().getHeight()); // CLEAN
+            val = (int) style.getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, c.getBlockFormattingContext().getHeight());
         }
         return val;
     }
@@ -106,8 +106,6 @@ public class FontUtil {
             return f;
         }
 
-        //CLEAN
-        // float size = style.propertyByName(CSSName.FONT_SIZE).computedValue().asFloat();
         float size = style.getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, c.getBlockFormattingContext().getHeight());
 
         String weight = style.propertyByName(CSSName.FONT_WEIGHT).computedValue().asString();
@@ -147,6 +145,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/01/24 19:01:04  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.27  2005/01/24 14:36:32  pdoubleya
  * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
  *

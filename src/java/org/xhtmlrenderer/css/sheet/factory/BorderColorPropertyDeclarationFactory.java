@@ -21,15 +21,11 @@
 package org.xhtmlrenderer.css.sheet.factory;
 
 import java.util.*;
+
 import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.CSSValueList;
+
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.value.FSCssValue;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
@@ -47,7 +43,7 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * this is closely in sync with the explosion code below, don't change
      * willy-nilly.
      */
-    private static String ONE_TO_FOUR[] = {
+    private final static CSSName ONE_TO_FOUR[] = {
                 CSSName.BORDER_COLOR_TOP,
                 CSSName.BORDER_COLOR_RIGHT,
                 CSSName.BORDER_COLOR_BOTTOM,
@@ -58,7 +54,7 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * this is closely in sync with the explosion code below, don't change
      * willy-nilly.
      */
-    private static String TWO_TO_FOUR[] = {
+    private final static CSSName TWO_TO_FOUR[] = {
                 CSSName.BORDER_COLOR_TOP,
                 CSSName.BORDER_COLOR_BOTTOM,
                 CSSName.BORDER_COLOR_RIGHT,
@@ -69,7 +65,7 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * this is closely in sync with the explosion code below, don't change
      * willy-nilly.
      */
-    private static String THREE_TO_FOUR[] = {
+    private final static CSSName THREE_TO_FOUR[] = {
                 CSSName.BORDER_COLOR_TOP,
                 CSSName.BORDER_COLOR_RIGHT,
                 CSSName.BORDER_COLOR_LEFT,
@@ -80,7 +76,7 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * this is closely in sync with the explosion code below, don't change
      * willy-nilly.
      */
-    private static String FOUR_TO_FOUR[] = {
+    private final static CSSName FOUR_TO_FOUR[] = {
                 CSSName.BORDER_COLOR_TOP,
                 CSSName.BORDER_COLOR_RIGHT,
                 CSSName.BORDER_COLOR_BOTTOM,
@@ -96,7 +92,7 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * @param primVals   The SAC value for this property
      * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param propName   property name
+     * @param cssName   property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -105,7 +101,7 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
     protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
                                             String priority,
                                             boolean important,
-                                            String propName,
+                                            CSSName cssName,
                                             int origin ) {
 
         List declarations = new ArrayList();
@@ -116,7 +112,6 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
         CSSPrimitiveValue p3 = null;
         CSSPrimitiveValue p4 = null;
         CSSPrimitiveValue[] primitives = null;
-        String names[] = null;
 
         switch ( primVals.length ) {
             case 1:
@@ -227,6 +222,9 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 19:00:58  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.1  2005/01/24 14:25:34  pdoubleya
  * Added to CVS.
  *

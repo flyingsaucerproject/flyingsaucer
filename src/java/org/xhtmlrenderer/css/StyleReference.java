@@ -29,6 +29,7 @@ import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
@@ -132,7 +133,8 @@ public class StyleReference {
         java.util.LinkedHashMap props = new java.util.LinkedHashMap();
         for (java.util.Iterator i = cs.getMatchedPropertyDeclarations(); i.hasNext();) {
             String propName = (String) i.next();
-            props.put(propName, cs.propertyByName(propName).getValue());
+            CSSName cssName = CSSName.getByPropertyName(propName);
+            props.put(propName, cs.propertyByName(cssName).getValue());
         }
         return props;
     }
@@ -275,6 +277,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/01/24 19:01:09  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.21  2005/01/24 14:36:30  pdoubleya
  * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
  *

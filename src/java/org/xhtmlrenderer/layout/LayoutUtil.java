@@ -1,13 +1,14 @@
 package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.render.Box;
 
 public class LayoutUtil {
 
     public static String getDisplay(CascadedStyle style) {
         // Uu.p("checking: " + child);
-        String display = style.propertyByName("display").getValue().getCssText();
+        String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
         // Uu.p("display = " + display);
         
         // override for floated
@@ -93,8 +94,8 @@ public class LayoutUtil {
      */
     public static String getPosition(CascadedStyle style) {
         if (style == null) return "";//TODO: this should not be necessary?
-        if (!style.hasProperty("position")) return "";
-        String position = style.propertyByName("position").getValue().getCssText();
+        if (!style.hasProperty(CSSName.POSITION)) return "";
+        String position = style.propertyByName(CSSName.POSITION).getValue().getCssText();
         if (position == null) {
             //TODO: check if we ever can get here. CSS-code should have taken care of this, surely?
             position = "static";
@@ -111,8 +112,8 @@ public class LayoutUtil {
      */
     public static boolean isFloated(CascadedStyle style) {
         if (style == null) return false;//TODO: this should be unnecessary?
-        if (!style.hasProperty("float")) return false;
-        String float_val = style.propertyByName("float").getValue().getCssText();
+        if (!style.hasProperty(CSSName.FLOAT)) return false;
+        String float_val = style.propertyByName(CSSName.FLOAT).getValue().getCssText();
         if (float_val == null) {
             return false;
         }

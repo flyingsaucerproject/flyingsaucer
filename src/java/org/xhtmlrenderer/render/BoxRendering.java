@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Boxing;
@@ -237,19 +238,14 @@ public class BoxRendering {
 
         // get the css properties
         CalculatedStyle style = c.getCurrentStyle();
-        String back_image = style.getStringProperty("background-image");
-        block.repeat = style.getStringProperty("background-repeat");
-        block.attachment = style.getStringProperty("background-attachment");
+        String back_image = style.getStringProperty(CSSName.BACKGROUND_IMAGE);
+        block.repeat = style.getStringProperty(CSSName.BACKGROUND_REPEAT);
+        block.attachment = style.getStringProperty(CSSName.BACKGROUND_ATTACHMENT);
         // handle image positioning issues
         // need to update this to support vert and horz, not just vert
-        if (style.hasProperty("background-position")) {
+        if (style.hasProperty(CSSName.BACKGROUND_POSITION)) {
             float width = c.getBlockFormattingContext().getWidth();
             float height = c.getBlockFormattingContext().getHeight();
-            // CLEAN System.out.println("----Context w: " + width + " h: " + height);
-
-            float w = box.getWidth();
-            float h = box.getHeight();
-            // CLEAN System.out.println("----Context w: " + w + " h: " + h);
 
             Point pt = style.getBackgroundPosition(width, height);
             block.background_position_horizontal = (int) pt.getX();
@@ -261,7 +257,7 @@ public class BoxRendering {
         if (back_image != null && !"none".equals(back_image)) {
             try {
                 block.background_image = ImageUtil.loadImage(c, back_image);
-                // CLEAN System.out.println("[" + block.background_image.hashCode() + "]   backgound-image: loaded " + back_image);
+                // DEBUG System.out.println("[" + block.background_image.hashCode() + "]   backgound-image: loaded " + back_image);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 Uu.p(ex);

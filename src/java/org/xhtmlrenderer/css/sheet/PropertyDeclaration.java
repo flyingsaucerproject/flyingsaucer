@@ -35,6 +35,8 @@ import org.xhtmlrenderer.css.sheet.factory.*;
  */
 public class PropertyDeclaration {
     private String propName;
+
+    private CSSName cssName;
     private org.w3c.dom.css.CSSPrimitiveValue cssPrimitiveValue;
 
     private final static Map PD_FACTORIES;
@@ -86,7 +88,7 @@ public class PropertyDeclaration {
      * Creates a new instance of PropertyDeclaration from an {@link
      * CSSPrimitiveValue} instance.
      *
-     * @param name The property name, e.g. background-position
+     * @param cssName
      * @param value The CSSValue to wrap
      * @param imp  True if property was declared important! and false if not.
      * @param orig int constant from {@link Stylesheet} for the origin of the
@@ -94,14 +96,15 @@ public class PropertyDeclaration {
      *             it was declared. See {@link StylesheetInfo#USER_AGENT}, {@link
      *             StylesheetInfo#USER}, and {@link StylesheetInfo#AUTHOR}.
      */
-    public PropertyDeclaration( String name,
-                                org.w3c.dom.css.CSSPrimitiveValue value,
-                                boolean imp, 
-                                int orig ) {
-        propName = name;
-        cssPrimitiveValue = value;
-        important = imp;
-        origin = orig;
+    public PropertyDeclaration(CSSName cssName,
+                               org.w3c.dom.css.CSSPrimitiveValue value,
+                               boolean imp,
+                               int orig) {
+        this.propName = cssName.toString();
+        this.cssName = cssName;
+        this.cssPrimitiveValue = value;
+        this.important = imp;
+        this.origin = orig;
     }
 
     /**
@@ -140,11 +143,15 @@ public class PropertyDeclaration {
      *
      * @return See desc.
      */
-    public String getName() {
+    public String getPropertyName() {
         return propName;
     }
     
-    public String toString() { return getName() + ": " + getValue().toString(); }
+    public CSSName getCSSName() {
+        return cssName;
+    }
+
+    public String toString() { return getPropertyName() + ": " + getValue().toString(); }
 
     /**
      * Returns the specified {@link org.w3c.dom.css.CSSValue} for this property.
@@ -158,8 +165,8 @@ public class PropertyDeclaration {
         return cssPrimitiveValue;
     }
     
-    public static PropertyDeclarationFactory newFactory(String forProperty) {
-        PropertyDeclarationFactory pdf = (PropertyDeclarationFactory)PD_FACTORIES.get(forProperty);
+    public static PropertyDeclarationFactory newFactory(CSSName cssName) {
+        PropertyDeclarationFactory pdf = (PropertyDeclarationFactory)PD_FACTORIES.get(cssName);
         if ( pdf == null ) {
             pdf = DEFAULT_PD_FACTORY;   
         }
@@ -207,6 +214,9 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/01/24 19:01:08  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.7  2005/01/24 14:54:32  pdoubleya
  * Removed references to XRProperty (unused).
  *

@@ -165,8 +165,6 @@ public class XRLog {
      * @param msg  PARAM
      */
     public static void junit( String msg ) {
-        // CLEAN
-        //System.out.println("JUNIT: " + msg);
         junit( Level.FINEST, msg );
     }
 
@@ -387,6 +385,9 @@ public class XRLog {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/01/24 19:01:10  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.4  2005/01/24 14:33:07  pdoubleya
  * Added junit logging hierarchy.
  *

@@ -21,15 +21,11 @@
 package org.xhtmlrenderer.css.sheet.factory;
 
 import java.util.*;
+
 import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.CSSValueList;
+
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.Idents;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.css.value.FSCssValue;
-import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 
@@ -53,7 +49,7 @@ public class ListStylePropertyDeclarationFactory extends AbstractPropertyDeclara
      * @param primVals   The SAC value for this property
      * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param propName   property name
+     * @param cssName   property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -62,7 +58,7 @@ public class ListStylePropertyDeclarationFactory extends AbstractPropertyDeclara
     protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
                                             String priority,
                                             boolean important,
-                                            String propName,
+                                            CSSName cssName,
                                             int origin ) {
 
         List declarations = new ArrayList();
@@ -72,13 +68,13 @@ public class ListStylePropertyDeclarationFactory extends AbstractPropertyDeclara
         // provided and sniff for the value-type
         CSSPrimitiveValue primitive = null;
         CSSPrimitiveValue primitives[] = new CSSPrimitiveValue[1];
-        String names[] = new String[1];
+        CSSName names[] = new CSSName[1];
 
         for ( int i=0; i < primVals.length; i++ ) {
             primitive = primVals[ i ];
 
             String val = primitive.getCssText().trim();
-            String expPropName = "";
+            CSSName expPropName = null;
             if ( Idents.looksLikeAListStyleType( val ) ) {
                 expPropName = CSSName.LIST_STYLE_TYPE;
             } else if ( Idents.looksLikeAListStyleImage( val ) ) {
@@ -93,42 +89,6 @@ public class ListStylePropertyDeclarationFactory extends AbstractPropertyDeclara
             addProperties( declarations, primitives, names, origin, important );
         }
         
-        // CAREFUL: note that with steadyState parser impl, their value class impl
-        // both primitive and value list interfaces! use getCssValueType(), not instanceof!!
-        /* if ( primVals.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
-            addProperties( declarations, new CSSPrimitiveValue[]{(CSSPrimitiveValue)primVals}, new String[]{propName}, origin, important );
-        } else {
-            // is a value list
-            CSSValueList vList = (CSSValueList)primVals;
-
-            // list-style shorthand can have color, image, repeat,
-            // attachment, position in any order; so loop whatever's
-            // provided and sniff for the value-type
-            CSSPrimitiveValue primitive = null;
-            CSSPrimitiveValue primitives[] = new CSSPrimitiveValue[1];
-            String names[] = new String[1];
-
-            CSSPrimitiveValue bgPosPrimitive = null;
-            StringBuffer bgPos = null;
-            for ( int i = 0, len = vList.getLength(); i < len; i++ ) {
-                primitive = (CSSPrimitiveValue)vList.item( i );
-
-                String val = primitive.getCssText().trim();
-                String expPropName = "";
-                if ( Idents.looksLikeAListStyleType( val ) ) {
-                    expPropName = CSSName.LIST_STYLE_TYPE;
-                } else if ( Idents.looksLikeAListStyleImage( val ) ) {
-                    expPropName = CSSName.LIST_STYLE_IMAGE;
-                } else if ( Idents.looksLikeAListStylePosition( val ) ) {
-                    expPropName = CSSName.LIST_STYLE_POSITION;
-                } else {
-                    throw new XRRuntimeException( "Can't recognize the list-style shorthand property value: : " + val );
-                }
-                names[0] = expPropName;
-                primitives[0] = primitive;
-                addProperties( declarations, primitives, names, origin, important );
-            } // loop values element list 
-        } // if a primitive */
         return declarations.iterator();
     }
 
@@ -149,6 +109,9 @@ public class ListStylePropertyDeclarationFactory extends AbstractPropertyDeclara
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 19:00:59  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.1  2005/01/24 14:25:35  pdoubleya
  * Added to CVS.
  *

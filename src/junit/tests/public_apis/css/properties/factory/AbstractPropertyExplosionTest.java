@@ -96,6 +96,7 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
             sel = rule.getSelectorText();
             decl = rule.getStyle();
             propName = decl.item(0);
+            CSSName cssName = CSSName.getByPropertyName(propName);
 
             // get the comparison data using the current selector
             // testMap is a Map of exploded property name to expected value
@@ -103,7 +104,7 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
             testMap = (Map) dat[1];
 
             // explode the property using the property factory initialized above
-            Iterator iter = factory.buildDeclarations(decl, propName, origin);
+            Iterator iter = factory.buildDeclarations(decl, cssName, origin);
             int explodedCnt = 0;
             while (iter.hasNext()) {
                 PropertyDeclaration pd = (PropertyDeclaration) iter.next();
@@ -111,7 +112,7 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
                 log("   " + sel + "=> " + pd );
 
                 // get the expected value
-                Object expected = testMap.get(pd.getName());
+                Object expected = testMap.get(pd.getPropertyName());
                 Object actual = null;
                 if (expected instanceof Color) {
                     actual = Color.decode(pd.getValue().toString());
@@ -119,7 +120,7 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
                     actual = pd.getValue().toString();
                 }
                 // compare actual with expected
-                assertEquals(sel + " ::Value for " + pd.getName() + " should be " +
+                assertEquals(sel + " ::Value for " + pd.getPropertyName() + " should be " +
                         expected, expected, actual);
                 explodedCnt++;
             }
@@ -196,36 +197,29 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
      * @param selector     The *prefix* for the selector you want to use. An integer counter will be appended to this
      *                     selector for each permutation generated. Supply a decent prefix if you want meaningful
      *                     logging.
-     * @param propertyName The CSS property shorthand name you want to use. See {@link CSSName}.
+     * @param cssName The CSS property shorthand name you want to use. See {@link org.xhtmlrenderer.css.constants.CSSName}.
      * @param elem         Array of elements which form the basis of the permutations. The number of permutations is the
      *                     factorial of elem.length, so be careful: over 20, you have reached the limit of a long
      *                     datatype (we can handle a little bit more, but the tests will run awhile).
      * @param testValues   The Map of values to test against. This is a Map of CSS property names that are to be
      *                     expanded from the shorthand property, assigned to the value you expect to be parsed from the
-     *                     shorthand values.
      */
-    protected final void appendTestPermutations(Map testsMap, String selector, String propertyName, String elem[], Map testValues) {
+    protected final void appendTestPermutations(Map testsMap, String selector, CSSName cssName, String elem[], Map testValues) {
         PermutationGenerator pg = new PermutationGenerator(elem.length);
 
         int[] indices;
         StringBuffer permutation;
         int cnt = 0;
         while (pg.hasMore()) {
-            permutation = new StringBuffer("{ " + propertyName + ":");
+            permutation = new StringBuffer("{ " + cssName + ":");
             indices = pg.getNext();
             for (int i = 0; i < indices.length; i++) {
                 permutation.append(" " + elem[indices[i]]);
             }
             permutation.append("; }");
-            // CLEAN
-            // System.out.println("Adding " + selector + "_" + cnt + " for permutation " + permutation);
             testsMap.put(selector + "pmt" + cnt, new Object[]{permutation, testValues});
             cnt++;
-            // CLEAN
-            // System.out.println(permutation.toString());
         }
-        // CLEAN
-        // System.out.println("MAP: " + testsMap);
     }
 
     /**
@@ -293,6 +287,9 @@ public abstract class AbstractPropertyExplosionTest extends TestCase {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/01/24 19:01:01  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.2  2005/01/24 14:32:29  pdoubleya
  * Cleaned imports, removed references to FSCSSTestCase.
  *

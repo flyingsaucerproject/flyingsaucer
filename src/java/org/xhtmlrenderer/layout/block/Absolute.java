@@ -41,28 +41,28 @@ public class Absolute {
         CalculatedStyle style = c.getCurrentStyle();
         String position = style.getStringProperty(CSSName.POSITION);
         if (position.equals("absolute")) {
-            if (style.hasProperty("right")) {
+            if (style.hasProperty(CSSName.RIGHT)) {
                 //Uu.p("prop = " + c.css.getProperty(box.getRealElement(),"right",false));
-                if (style.isIdentifier("right")) {
-                    if (style.getStringProperty("right").equals("auto")) {
+                if (style.isIdentifier(CSSName.RIGHT)) {
+                    if (style.getStringProperty(CSSName.RIGHT).equals("auto")) {
                         box.right_set = false;
                         //Uu.p("right set to auto");
                     }
                 } else {
-                    box.right = (int) style.getFloatPropertyProportionalWidth("right", c.getBlockFormattingContext().getWidth());
+                    box.right = (int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth());
                     box.right_set = true;
                     //Uu.p("right set to : " + box.right);
                 }
             }
-            if (style.hasProperty("left")) {
+            if (style.hasProperty(CSSName.LEFT)) {
                 // c.css.getProperty(box.getRealElement(),"left",false));
-                if (style.isIdentifier("left")) {
-                    if (style.getStringProperty("left").equals("auto")) {
+                if (style.isIdentifier(CSSName.LEFT)) {
+                    if (style.getStringProperty(CSSName.LEFT).equals("auto")) {
                         box.left_set = false;
                         //Uu.p("left set to auto");
                     }
                 } else {
-                    box.left = (int) style.getFloatPropertyProportionalWidth("left", c.getBlockFormattingContext().getWidth());
+                    box.left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, c.getBlockFormattingContext().getWidth());
                     box.left_set = true;
                     //Uu.p("left set to : " + box.left);
                 }
@@ -74,12 +74,12 @@ public class Absolute {
             }
             */
             
-            if (style.hasProperty("bottom")) {
-                box.top = (int) style.getFloatPropertyProportionalHeight("bottom", c.getBlockFormattingContext().getHeight());
+            if (style.hasProperty(CSSName.BOTTOM)) {
+                box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, c.getBlockFormattingContext().getHeight());
                 box.bottom_set = true;
             }
-            if (style.hasProperty("top")) {
-                box.top = (int) style.getFloatPropertyProportionalHeight("top", c.getBlockFormattingContext().getHeight());
+            if (style.hasProperty(CSSName.TOP)) {
+                box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight());
                 box.top_set = true;
             }
             box.absolute = true;

@@ -21,14 +21,10 @@
 package org.xhtmlrenderer.css.sheet.factory;
 
 import java.util.*;
+
 import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.CSSValueList;
+
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
@@ -46,7 +42,7 @@ public class BorderWidthPropertyDeclarationFactory extends AbstractPropertyDecla
      * this is closely in sync with the explosion code below, don't change
      * willy-nilly.
      */
-    private static String ONE_TO_FOUR[] = {
+    private final static CSSName ONE_TO_FOUR[] = {
                 CSSName.BORDER_WIDTH_TOP,
                 CSSName.BORDER_WIDTH_RIGHT,
                 CSSName.BORDER_WIDTH_BOTTOM,
@@ -57,7 +53,7 @@ public class BorderWidthPropertyDeclarationFactory extends AbstractPropertyDecla
      * this is closely in sync with the explosion code below, don't change
      * willy-nilly.
      */
-    private static String TWO_TO_FOUR[] = {
+    private final static CSSName TWO_TO_FOUR[] = {
                 CSSName.BORDER_WIDTH_TOP,
                 CSSName.BORDER_WIDTH_BOTTOM,
                 CSSName.BORDER_WIDTH_RIGHT,
@@ -68,7 +64,7 @@ public class BorderWidthPropertyDeclarationFactory extends AbstractPropertyDecla
      * this is closely in sync with the explosion code below, don't change
      * willy-nilly.
      */
-    private static String THREE_TO_FOUR[] = {
+    private final static CSSName THREE_TO_FOUR[] = {
                 CSSName.BORDER_WIDTH_TOP,
                 CSSName.BORDER_WIDTH_RIGHT,
                 CSSName.BORDER_WIDTH_LEFT,
@@ -79,7 +75,7 @@ public class BorderWidthPropertyDeclarationFactory extends AbstractPropertyDecla
      * this is closely in sync with the explosion code below, don't change
      * willy-nilly.
      */
-    private static String FOUR_TO_FOUR[] = {
+    private final static CSSName FOUR_TO_FOUR[] = {
                 CSSName.BORDER_WIDTH_TOP,
                 CSSName.BORDER_WIDTH_RIGHT,
                 CSSName.BORDER_WIDTH_BOTTOM,
@@ -95,7 +91,7 @@ public class BorderWidthPropertyDeclarationFactory extends AbstractPropertyDecla
      * @param primVals   The SAC value for this property
      * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param propName   property name
+     * @param cssName   property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -104,13 +100,12 @@ public class BorderWidthPropertyDeclarationFactory extends AbstractPropertyDecla
     protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
                                             String priority,
                                             boolean important,
-                                            String propName,
+                                            CSSName cssName,
                                             int origin ) {
 
         List declarations = new ArrayList();
         CSSPrimitiveValue primitive = null;
         CSSPrimitiveValue primitives[] = null;
-        String names[] = null;
 
         switch ( primVals.length ) {
             case 1:
@@ -152,56 +147,6 @@ public class BorderWidthPropertyDeclarationFactory extends AbstractPropertyDecla
                 break;
         }
 
-        // CAREFUL: note that with steadyState parser impl, their value class impl
-        // both primitive and value list interfaces! use getCssValueType(), not instanceof!!
-        /*
-         * if ( primVals.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
-         * CSSPrimitiveValue primitive = (CSSPrimitiveValue)primVals;
-         * CSSPrimitiveValue primitives[] = {
-         * primitive,
-         * primitive,
-         * primitive,
-         * primitive};
-         * addProperties( declarations, primitives, ONE_TO_FOUR, origin, important );
-         * } else {
-         * // is a value list
-         * CSSValueList vList = (CSSValueList)primVals;
-         * // border-width explodes differently based on number of supplied values
-         * CSSPrimitiveValue primitive = null;
-         * CSSPrimitiveValue primitives[] = null;
-         * String names[] = null;
-         * switch ( vList.getLength() ) {
-         * case 1:
-         * // bug in CSSValue implementation! should be a primitive value
-         * // not a list
-         * throw new XRRuntimeException( "'border-width' property has only one value, but SAC parser marked it as a value list." );
-         * case 2:
-         * primitives = new CSSPrimitiveValue[]{
-         * (CSSPrimitiveValue)vList.item( 0 ),
-         * (CSSPrimitiveValue)vList.item( 0 ),
-         * (CSSPrimitiveValue)vList.item( 1 ),
-         * (CSSPrimitiveValue)vList.item( 1 )};
-         * addProperties( declarations, primitives, TWO_TO_FOUR, origin, important );
-         * break;
-         * case 3:
-         * primitives = new CSSPrimitiveValue[]{
-         * (CSSPrimitiveValue)vList.item( 0 ),
-         * (CSSPrimitiveValue)vList.item( 1 ),
-         * (CSSPrimitiveValue)vList.item( 1 ),
-         * (CSSPrimitiveValue)vList.item( 2 )};
-         * addProperties( declarations, primitives, THREE_TO_FOUR, origin, important );
-         * break;
-         * case 4:
-         * primitives = new CSSPrimitiveValue[]{
-         * (CSSPrimitiveValue)vList.item( 0 ),
-         * (CSSPrimitiveValue)vList.item( 1 ),
-         * (CSSPrimitiveValue)vList.item( 2 ),
-         * (CSSPrimitiveValue)vList.item( 3 )};
-         * addProperties( declarations, primitives, FOUR_TO_FOUR, origin, important );
-         * break;
-         * }
-         * }
-         */
         return declarations.iterator();
     }
 
@@ -222,6 +167,9 @@ public class BorderWidthPropertyDeclarationFactory extends AbstractPropertyDecla
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 19:00:58  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.1  2005/01/24 14:25:35  pdoubleya
  * Added to CVS.
  *

@@ -398,7 +398,7 @@ public class Box {
         /*if (content == null) {
             sb.append(" null content, ");
         } else {
-            String nm = content.getClass().getName();
+            String nm = content.getClass().getPropertyName();
             nm = nm.substring(nm.lastIndexOf('.') + 1, nm.length());
             sb.append(nm);// + " (" + content.hashCode() + ")");
             sb.append("-");
@@ -652,6 +652,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2005/01/24 19:01:03  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.41  2005/01/24 14:36:35  pdoubleya
  * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
  *

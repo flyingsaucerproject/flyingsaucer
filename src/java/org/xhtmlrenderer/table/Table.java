@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
 
@@ -269,9 +270,9 @@ public class Table {
         int col_count = 0;
         for (int i = 0; i < top_cells.size(); i++) {
             Cell cell = (Cell) top_cells.get(i);
-            if (c.getCss().getCascadedStyle((Element) cell.node, false).hasProperty("width")) {
+            if (c.getCss().getCascadedStyle((Element) cell.node, false).hasProperty(CSSName.WIDTH)) {
                 // fixed bug that made cell sizing fail w/ %s
-                int width = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth("width", avail_width);
+                int width = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.WIDTH, avail_width);
                 //Uu.p("got width: " + width);
                 for (int j = col_count; j < col_count + cell.col_span; j++) {
                     widths[j] = width / cell.col_span;
@@ -378,6 +379,9 @@ public class Table {
 /*
    $Id$
    $Log$
+   Revision 1.15  2005/01/24 19:01:09  pdoubleya
+   Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+
    Revision 1.14  2005/01/24 14:36:36  pdoubleya
    Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
 

@@ -53,7 +53,7 @@ public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarati
      * @param primVals   The SAC value for this property
      * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param propName   property name
+     * @param cssName   property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -62,7 +62,7 @@ public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarati
     protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
                                             String priority,
                                             boolean important,
-                                            String propName,
+                                            CSSName cssName,
                                             int origin ) {
 
         List declarations = new ArrayList();
@@ -71,13 +71,13 @@ public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarati
         // provided and sniff for the value-type
         CSSPrimitiveValue primitive = null;
         CSSPrimitiveValue primitives[] = new CSSPrimitiveValue[1];
-        String names[] = new String[1];
+        CSSName names[] = new CSSName[1];
 
         for ( int i=0; i < primVals.length; i++ ) {
             primitive = primVals[ i ];
 
             String val = primitive.getCssText().trim();
-            String expPropName = "";
+            CSSName expPropName = null;
             if ( Idents.looksLikeAColor( val ) ) {
                 expPropName = CSSName.OUTLINE_COLOR;
                 primitive = new FSCssValue(CSSName.OUTLINE_COLOR, primitive);
@@ -92,42 +92,6 @@ public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarati
             addProperties( declarations, primitives, names, origin, important );
         }
         
-        // CAREFUL: note that with steadyState parser impl, their value class impl
-        // both primitive and value list interfaces! use getCssValueType(), not instanceof!!
-        /*if ( primVals.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
-            addProperties( declarations, new CSSPrimitiveValue[]{(CSSPrimitiveValue)primVals}, new String[]{propName}, origin, important );
-        } else {
-            // is a value list
-            CSSValueList vList = (CSSValueList)primVals;
-
-            // outline shorthand can have color, image, repeat,
-            // attachment, position in any order; so loop whatever's
-            // provided and sniff for the value-type
-            CSSPrimitiveValue primitive = null;
-            CSSPrimitiveValue primitives[] = new CSSPrimitiveValue[1];
-            String names[] = new String[1];
-
-            CSSPrimitiveValue bgPosPrimitive = null;
-            StringBuffer bgPos = null;
-            for ( int i = 0, len = vList.getLength(); i < len; i++ ) {
-                primitive = (CSSPrimitiveValue)vList.item( i );
-
-                String val = primitive.getCssText().trim();
-                String expPropName = "";
-                if ( Idents.looksLikeAColor( val ) ) {
-                    expPropName = CSSName.OUTLINE_COLOR;
-                    primitive = new FSCssValue(CSSName.OUTLINE_COLOR, primitive);
-                } else if ( Idents.looksLikeABorderStyle( val ) ) {
-                    expPropName = CSSName.OUTLINE_STYLE;
-                } else {
-                    // HACK: as with Background, assume it is a length value
-                    expPropName = CSSName.OUTLINE_WIDTH;
-                }
-                names[0] = expPropName;
-                primitives[0] = primitive;
-                addProperties( declarations, primitives, names, origin, important );
-            }// loop values element list
-        }// if a primitive */
         return declarations.iterator();
     }
 
@@ -148,6 +112,9 @@ public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarati
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 19:00:59  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.1  2005/01/24 14:25:36  pdoubleya
  * Added to CVS.
  *

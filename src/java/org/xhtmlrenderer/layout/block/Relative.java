@@ -31,17 +31,17 @@ public class Relative {
         int top = 0;
         int left = 0;
         if (position.equals("relative")) {
-            if (style.hasProperty("right")) {
-                left = -(int) style.getFloatPropertyProportionalWidth("right", c.getBlockFormattingContext().getWidth());
+            if (style.hasProperty(CSSName.RIGHT)) {
+                left = -(int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth());
             }
-            if (style.hasProperty("bottom")) {
-                top = -(int) style.getFloatPropertyProportionalHeight("bottom", c.getBlockFormattingContext().getHeight());
+            if (style.hasProperty(CSSName.BOTTOM)) {
+                top = -(int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, c.getBlockFormattingContext().getHeight());
             }
-            if (style.hasProperty("top")) {
-                top = (int) style.getFloatPropertyProportionalHeight("top",  c.getBlockFormattingContext().getHeight());
+            if (style.hasProperty(CSSName.TOP)) {
+                top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP,  c.getBlockFormattingContext().getHeight());
             }
-            if (style.hasProperty("left")) {
-                left = (int) style.getFloatPropertyProportionalWidth("left",  c.getBlockFormattingContext().getWidth());
+            if (style.hasProperty(CSSName.LEFT)) {
+                left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT,  c.getBlockFormattingContext().getWidth());
             }
             c.translate(left, top);
         }
@@ -53,17 +53,17 @@ public class Relative {
         int top = 0;
         int left = 0;
         if (position.equals("relative")) {
-            if (style.hasProperty("right")) {
-                left = -(int) style.getFloatPropertyProportionalWidth("right", c.getBlockFormattingContext().getWidth());
+            if (style.hasProperty(CSSName.RIGHT)) {
+                left = -(int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth());
             }
-            if (style.hasProperty("bottom")) {
-                top = -(int) style.getFloatPropertyProportionalHeight("bottom", c.getBlockFormattingContext().getHeight());
+            if (style.hasProperty(CSSName.BOTTOM)) {
+                top = -(int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, c.getBlockFormattingContext().getHeight());
             }
-            if (style.hasProperty("top")) {
-                top = (int) style.getFloatPropertyProportionalHeight("top",  c.getBlockFormattingContext().getHeight());
+            if (style.hasProperty(CSSName.TOP)) {
+                top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP,  c.getBlockFormattingContext().getHeight());
             }
-            if (style.hasProperty("left")) {
-                left = (int) style.getFloatPropertyProportionalWidth("left",  c.getBlockFormattingContext().getWidth());
+            if (style.hasProperty(CSSName.LEFT)) {
+                left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT,  c.getBlockFormattingContext().getWidth());
             }
             c.translate(-left, -top);
         }

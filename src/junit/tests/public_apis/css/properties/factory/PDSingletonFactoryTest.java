@@ -28,7 +28,7 @@ public class PDSingletonFactoryTest extends TestCase {
     public void testDefaultSingletonLookup() {
         assertEquals( "Non-existent properties use DefaultPropertyDeclarationFactory",
                     DefaultPropertyDeclarationFactory.instance(),
-                    PropertyDeclaration.newFactory( "NOT_A_PROPERTY" ) );
+                    PropertyDeclaration.newFactory( null ) );
     }
 
     /** A unit test for JUnit */
@@ -195,6 +195,9 @@ public class PDSingletonFactoryTest extends TestCase {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/01/24 19:01:01  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.2  2005/01/24 14:32:31  pdoubleya
  * Cleaned imports, removed references to FSCSSTestCase.
  *

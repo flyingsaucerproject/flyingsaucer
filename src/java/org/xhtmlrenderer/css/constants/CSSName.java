@@ -20,302 +20,371 @@
  */
 package org.xhtmlrenderer.css.constants;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
+
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
- * Used for CSS2-related constants
+ * A CSSName is a Singleton representing a single CSS property name, like border-width.
+ * The class declares a Singleton static instance for each CSS Level 2 property. A CSSName
+ * instance has the property name available from the {@link #toString()} method, as well
+ * as a unique (among all CSSName instances) integer id ranging from 0...n instances, incremented
+ * by 1, available using the {@link #getAssignedID()} method.
  *
  * @author   Patrick Wright
  */
 public final class CSSName {
+    private String propName;
 
+    private int assignedID;
+    private static int maxAssigned = 0;
+    private static final Comparator CSSNAME_COMPARATOR = new Comparator() {
+        public int compare(Object o, Object o1) {
+            return ((CSSName)o).toString().compareTo(((CSSName)o1).toString());  //To change body of implemented methods use File | Settings | File Templates.
+        }
+    };
+
+
+    private CSSName(String propName) {
+        try {
+            this.propName = propName;
+            this.assignedID = maxAssigned++;
+        } catch ( Exception ex ) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    public static CSSName getByPropertyName(String propName) {
+        CSSName cssName = (CSSName) ALL_PROPERTY_NAMES.get(propName);
+        if ( cssName == null ) {
+            throw new XRRuntimeException("Property name " + propName + " has no CSSName instance assigned to it.");
+        }
+        return cssName;
+    }
+
+    public static Comparator getComparator() {
+        return CSSNAME_COMPARATOR;
+    }
+
+    public static final int countCSSNames() {
+        return maxAssigned;
+    }
+
+    /**
+     * Returns a string representation of the object, in this case, always the full CSS property name
+     * in lowercase.
+     *
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return this.propName;
+    }
+
+    /**
+     * Returns the unique int ID assigned to this instance of a CSSName. Instances are Singletons
+     * and numbered starting at 0, incrementally by 1.
+     *
+     * @return The unique integer id for the CSSName instance.
+     */
+    public int getAssignedID() {
+        return assignedID;
+    }
+
+    private static synchronized final CSSName addProperty(String propName) {
+        if ( ALL_PROPERTY_NAMES == null ) {
+            ALL_PROPERTY_NAMES = new TreeMap();
+        }
+        CSSName cssName = new CSSName(propName);
+        ALL_PROPERTY_NAMES.put(propName, cssName);
+        return cssName;
+    }
+
     /** Constant string for CSS2 property. */
-    public final static String COLOR = "color";
+    public final static CSSName COLOR = addProperty("color");
 
     /** Constant string for CSS2 property. */
-    public final static String BACKGROUND_SHORTHAND = "background";
+    public final static CSSName BACKGROUND_SHORTHAND = addProperty("background");
 
     /** Constant string for CSS2 property. */
-    public final static String BACKGROUND_COLOR = "background-color";
+    public final static CSSName BACKGROUND_COLOR = addProperty("background-color");
 
     /** Constant string for CSS2 property. */
-    public final static String BACKGROUND_IMAGE = "background-image";
+    public final static CSSName BACKGROUND_IMAGE = addProperty("background-image");
 
     /** Constant string for CSS2 property. */
-    public final static String BACKGROUND_REPEAT = "background-repeat";
+    public final static CSSName BACKGROUND_REPEAT = addProperty("background-repeat");
 
     /** Constant string for CSS2 property. */
-    public final static String BACKGROUND_ATTACHMENT = "background-attachment";
+    public final static CSSName BACKGROUND_ATTACHMENT = addProperty("background-attachment");
 
     /** Constant string for CSS2 property. */
-    public final static String BACKGROUND_POSITION = "background-position";
+    public final static CSSName BACKGROUND_POSITION = addProperty("background-position");
 
     /** Constant string for CSS2 property. */
-    public final static String BORDER_COLLAPSE = "border-collapse";
+    public final static CSSName BORDER_COLLAPSE = addProperty("border-collapse");
 
     /** Constant string for CSS2 property. */
-    public final static String BORDER_SPACING = "border-spacing";
+    public final static CSSName BORDER_SPACING = addProperty("border-spacing");
 
     /** Constant string for CSS2 property. */
-    public final static String BOTTOM = "bottom";
+    public final static CSSName BOTTOM = addProperty("bottom");
 
     /** Constant string for CSS2 property. */
-    public final static String CAPTION_SIDE = "caption-side";
+    public final static CSSName CAPTION_SIDE = addProperty("caption-side");
 
     /** Constant string for CSS2 property. */
-    public final static String CLEAR = "clear";
+    public final static CSSName CLEAR = addProperty("clear");
 
     /** Constant string for CSS2 property. */
-    public final static String CLIP = "clip";
+    public final static CSSName CLIP = addProperty("clip");
 
     /** Constant string for CSS2 property. */
-    public final static String CONTENT = "content";
+    public final static CSSName CONTENT = addProperty("content");
 
     /** Constant string for CSS2 property. */
-    public final static String COUNTER_INCREMENT = "counter-increment";
+    public final static CSSName COUNTER_INCREMENT = addProperty("counter-increment");
 
     /** Constant string for CSS2 property. */
-    public final static String COUNTER_RESET = "counter-reset";
+    public final static CSSName COUNTER_RESET = addProperty("counter-reset");
 
     /** Constant string for CSS2 property. */
-    public final static String CURSOR = "cursor";
+    public final static CSSName CURSOR = addProperty("cursor");
 
     /** Constant string for CSS2 property. */
-    public final static String DIRECTION = "direction";
+    public final static CSSName DIRECTION = addProperty("direction");
 
     /** Constant string for CSS2 property. */
-    public final static String DISPLAY = "display";
+    public final static CSSName DISPLAY = addProperty("display");
 
     /** Constant string for CSS2 property. */
-    public final static String EMPTY_CELLS = "empty-cells";
+    public final static CSSName EMPTY_CELLS = addProperty("empty-cells");
 
     /** Constant string for CSS2 property. */
-    public final static String FLOAT = "float";
+    public final static CSSName FLOAT = addProperty("float");
 
     /** Constant string for CSS2 property. */
-    public final static String FONT_SHORTHAND = "font";
+    public final static CSSName FONT_SHORTHAND = addProperty("font");
 
     /** Constant string for CSS2 property. */
-    public final static String FONT_STYLE = "font-style";
+    public final static CSSName FONT_STYLE = addProperty("font-style");
 
     /** Constant string for CSS2 property. */
-    public final static String FONT_VARIANT = "font-variant";
+    public final static CSSName FONT_VARIANT = addProperty("font-variant");
 
     /** Constant string for CSS2 property. */
-    public final static String FONT_WEIGHT = "font-weight";
+    public final static CSSName FONT_WEIGHT = addProperty("font-weight");
 
     /** Constant string for CSS2 property. */
-    public final static String FONT_SIZE = "font-size";
+    public final static CSSName FONT_SIZE = addProperty("font-size");
 
     /** Constant string for CSS2 property. */
-    public final static String LINE_HEIGHT = "line-height";
+    public final static CSSName LINE_HEIGHT = addProperty("line-height");
 
     /** Constant string for CSS2 property. */
-    public final static String FONT_FAMILY = "font-family";
+    public final static CSSName FONT_FAMILY = addProperty("font-family");
 
     /** Constant string for CSS2 property. */
-    public final static String FONT_SIZE_ADJUST = "font-size-adjust";
+    public final static CSSName FONT_SIZE_ADJUST = addProperty("font-size-adjust");
 
     /** Constant string for CSS2 property. */
-    public final static String FONT_STRETCH = "font-stretch";
+    public final static CSSName FONT_STRETCH = addProperty("font-stretch");
 
     /** Constant string for CSS2 property. */
-    public final static String HEIGHT = "height";
+    public final static CSSName HEIGHT = addProperty("height");
 
     /** Constant string for CSS2 property. */
-    public final static String LEFT = "left";
+    public final static CSSName LEFT = addProperty("left");
 
     /** Constant string for CSS2 property. */
-    public final static String LETTER_SPACING = "letter-spacing";
+    public final static CSSName LETTER_SPACING = addProperty("letter-spacing");
 
     /** Constant string for CSS2 property. */
-    public final static String LIST_STYLE_SHORTHAND = "list-style";
+    public final static CSSName LIST_STYLE_SHORTHAND = addProperty("list-style");
 
     /** Constant string for CSS2 property. */
-    public final static String LIST_STYLE_TYPE = "list-style-type";
+    public final static CSSName LIST_STYLE_TYPE = addProperty("list-style-type");
 
     /** Constant string for CSS2 property. */
-    public final static String LIST_STYLE_POSITION = "list-style-position";
+    public final static CSSName LIST_STYLE_POSITION = addProperty("list-style-position");
 
     /** Constant string for CSS2 property. */
-    public final static String LIST_STYLE_IMAGE = "list-style-image";
+    public final static CSSName LIST_STYLE_IMAGE = addProperty("list-style-image");
 
     /** Constant string for CSS2 property. */
-    public final static String MARKER_OFFSET = "marker-offset";
+    public final static CSSName MARKER_OFFSET = addProperty("marker-offset");
 
     /** Constant string for CSS2 property. */
-    public final static String MARKS = "marks";
+    public final static CSSName MARKS = addProperty("marks");
 
     /** Constant string for CSS2 property. */
-    public final static String MAX_HEIGHT = "max-height";
+    public final static CSSName MAX_HEIGHT = addProperty("max-height");
 
     /** Constant string for CSS2 property. */
-    public final static String MAX_WIDTH = "max-width";
+    public final static CSSName MAX_WIDTH = addProperty("max-width");
 
     /** Constant string for CSS2 property. */
-    public final static String MIN_HEIGHT = "min-height";
+    public final static CSSName MIN_HEIGHT = addProperty("min-height");
 
     /** Constant string for CSS2 property. */
-    public final static String MIN_WIDTH = "min-width";
+    public final static CSSName MIN_WIDTH = addProperty("min-width");
 
     /** Constant string for CSS2 property. */
-    public final static String ORPHANS = "orphans";
+    public final static CSSName ORPHANS = addProperty("orphans");
 
     /** Constant string for CSS2 property. */
-    public final static String OUTLINE_SHORTHAND = "outline";
+    public final static CSSName OUTLINE_SHORTHAND = addProperty("outline");
 
     /** Constant string for CSS2 property. */
-    public final static String OUTLINE_COLOR = "outline-color";
+    public final static CSSName OUTLINE_COLOR = addProperty("outline-color");
 
     /** Constant string for CSS2 property. */
-    public final static String OUTLINE_STYLE = "outline-style";
+    public final static CSSName OUTLINE_STYLE = addProperty("outline-style");
 
     /** Constant string for CSS2 property. */
-    public final static String OUTLINE_WIDTH = "outline-width";
+    public final static CSSName OUTLINE_WIDTH = addProperty("outline-width");
 
     /** Constant string for CSS2 property. */
-    public final static String OVERFLOW = "overflow";
+    public final static CSSName OVERFLOW = addProperty("overflow");
 
     /** Constant string for CSS2 property. */
-    public final static String PAGE = "page";
+    public final static CSSName PAGE = addProperty("page");
 
     /** Constant string for CSS2 property. */
-    public final static String PAGE_BREAK_AFTER = "page-break-after";
+    public final static CSSName PAGE_BREAK_AFTER = addProperty("page-break-after");
 
     /** Constant string for CSS2 property. */
-    public final static String PAGE_BREAK_BEFORE = "page-break-before";
+    public final static CSSName PAGE_BREAK_BEFORE = addProperty("page-break-before");
 
     /** Constant string for CSS2 property. */
-    public final static String PAGE_BREAK_INSIDE = "page-break-inside";
+    public final static CSSName PAGE_BREAK_INSIDE = addProperty("page-break-inside");
 
     /** Constant string for CSS2 property. */
-    public final static String POSITION = "position";
+    public final static CSSName POSITION = addProperty("position");
 
     /** Constant string for CSS2 property. */
-    public final static String QUOTES = "quotes";
+    public final static CSSName QUOTES = addProperty("quotes");
 
     /** Constant string for CSS2 property. */
-    public final static String RIGHT = "right";
+    public final static CSSName RIGHT = addProperty("right");
 
     /** Constant string for CSS2 property. */
-    public final static String SIZE = "size";
+    public final static CSSName SIZE = addProperty("size");
 
     /** Constant string for CSS2 property. */
-    public final static String TABLE_LAYOUT = "table-layout";
+    public final static CSSName TABLE_LAYOUT = addProperty("table-layout");
 
     /** Constant string for CSS2 property. */
-    public final static String TEXT_ALIGN = "text-align";
+    public final static CSSName TEXT_ALIGN = addProperty("text-align");
 
     /** Constant string for CSS2 property. */
-    public final static String TEXT_DECORATION = "text-decoration";
+    public final static CSSName TEXT_DECORATION = addProperty("text-decoration");
 
     /** Constant string for CSS2 property. */
-    public final static String TEXT_INDENT = "text-indent";
+    public final static CSSName TEXT_INDENT = addProperty("text-indent");
 
     /** Constant string for CSS2 property. */
-    public final static String TEXT_SHADOW = "text-shadow";
+    public final static CSSName TEXT_SHADOW = addProperty("text-shadow");
 
     /** Constant string for CSS2 property. */
-    public final static String TEXT_TRANSFORM = "text-transform";
+    public final static CSSName TEXT_TRANSFORM = addProperty("text-transform");
 
     /** Constant string for CSS2 property. */
-    public final static String TOP = "top";
+    public final static CSSName TOP = addProperty("top");
 
     /** Constant string for CSS2 property. */
-    public final static String UNICODE_BIDI = "unicode-bidi";
+    public final static CSSName UNICODE_BIDI = addProperty("unicode-bidi");
 
     /** Constant string for CSS2 property. */
-    public final static String VERTICAL_ALIGN = "vertical-align";
+    public final static CSSName VERTICAL_ALIGN = addProperty("vertical-align");
 
     /** Constant string for CSS2 property. */
-    public final static String VISIBILITY = "visibility";
+    public final static CSSName VISIBILITY = addProperty("visibility");
 
     /** Constant string for CSS2 property. */
-    public final static String WHITE_SPACE = "white-space";
+    public final static CSSName WHITE_SPACE = addProperty("white-space");
 
     /** Constant string for CSS2 property. */
-    public final static String WIDOWS = "widows";
+    public final static CSSName WIDOWS = addProperty("widows");
 
     /** Constant string for CSS2 property. */
-    public final static String WIDTH = "width";
+    public final static CSSName WIDTH = addProperty("width");
 
     /** Constant string for CSS2 property. */
-    public final static String WORD_SPACING = "word-spacing";
+    public final static CSSName WORD_SPACING = addProperty("word-spacing");
 
     /** Constant string for CSS2 property. */
-    public final static String Z_INDEX = "z-index";
+    public final static CSSName Z_INDEX = addProperty("z-index");
 
     /** Constant string for CSS2 property. */
-    public final static String BORDER_SHORTHAND = "border";
+    public final static CSSName BORDER_SHORTHAND = addProperty("border");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_TOP_SHORTHAND = "border-top";
+    public final static CSSName BORDER_TOP_SHORTHAND = addProperty("border-top");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_RIGHT_SHORTHAND = "border-right";
+    public final static CSSName BORDER_RIGHT_SHORTHAND = addProperty("border-right");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_BOTTOM_SHORTHAND = "border-bottom";
+    public final static CSSName BORDER_BOTTOM_SHORTHAND = addProperty("border-bottom");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_LEFT_SHORTHAND = "border-left";
+    public final static CSSName BORDER_LEFT_SHORTHAND = addProperty("border-left");
 
     /** Constant string for CSS2 property. */
-    public final static String BORDER_COLOR_SHORTHAND = "border-color";
+    public final static CSSName BORDER_COLOR_SHORTHAND = addProperty("border-color");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_COLOR_TOP = "border-top-color";
+    public final static CSSName BORDER_COLOR_TOP = addProperty("border-top-color");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_COLOR_RIGHT = "border-right-color";
+    public final static CSSName BORDER_COLOR_RIGHT = addProperty("border-right-color");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_COLOR_BOTTOM = "border-bottom-color";
+    public final static CSSName BORDER_COLOR_BOTTOM = addProperty("border-bottom-color");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_COLOR_LEFT = "border-left-color";
+    public final static CSSName BORDER_COLOR_LEFT = addProperty("border-left-color");
 
     /** Constant string for CSS2 property. */
-    public final static String BORDER_STYLE_SHORTHAND = "border-style";
+    public final static CSSName BORDER_STYLE_SHORTHAND = addProperty("border-style");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_STYLE_TOP = "border-top-style";
+    public final static CSSName BORDER_STYLE_TOP = addProperty("border-top-style");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_STYLE_RIGHT = "border-right-style";
+    public final static CSSName BORDER_STYLE_RIGHT = addProperty("border-right-style");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_STYLE_BOTTOM = "border-bottom-style";
+    public final static CSSName BORDER_STYLE_BOTTOM = addProperty("border-bottom-style");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_STYLE_LEFT = "border-left-style";
+    public final static CSSName BORDER_STYLE_LEFT = addProperty("border-left-style");
 
     /** Constant string for CSS2 property. */
-    public final static String BORDER_WIDTH_SHORTHAND = "border-width";
+    public final static CSSName BORDER_WIDTH_SHORTHAND = addProperty("border-width");
 
     /** Constant string for CSS2 property. */
-    public final static String BORDER_WIDTH_TOP = "border-top-width";
+    public final static CSSName BORDER_WIDTH_TOP = addProperty("border-top-width");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_WIDTH_RIGHT = "border-right-width";
+    public final static CSSName BORDER_WIDTH_RIGHT = addProperty("border-right-width");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_WIDTH_BOTTOM = "border-bottom-width";
+    public final static CSSName BORDER_WIDTH_BOTTOM = addProperty("border-bottom-width");
     /** Constant string for CSS2 property. */
-    public final static String BORDER_WIDTH_LEFT = "border-left-width";
+    public final static CSSName BORDER_WIDTH_LEFT = addProperty("border-left-width");
 
     /** Constant string for CSS2 property. */
-    public final static String MARGIN_SHORTHAND = "margin";
+    public final static CSSName MARGIN_SHORTHAND = addProperty("margin");
     /** Constant string for CSS2 property. */
-    public final static String MARGIN_TOP = "margin-top";
+    public final static CSSName MARGIN_TOP = addProperty("margin-top");
     /** Constant string for CSS2 property. */
-    public final static String MARGIN_RIGHT = "margin-right";
+    public final static CSSName MARGIN_RIGHT = addProperty("margin-right");
     /** Constant string for CSS2 property. */
-    public final static String MARGIN_BOTTOM = "margin-bottom";
+    public final static CSSName MARGIN_BOTTOM = addProperty("margin-bottom");
     /** Constant string for CSS2 property. */
-    public final static String MARGIN_LEFT = "margin-left";
+    public final static CSSName MARGIN_LEFT = addProperty("margin-left");
 
     /** Constant string for CSS2 property. */
-    public final static String PADDING_SHORTHAND = "padding";
+    public final static CSSName PADDING_SHORTHAND = addProperty("padding");
     /** Constant string for CSS2 property. */
-    public final static String PADDING_TOP = "padding-top";
+    public final static CSSName PADDING_TOP = addProperty("padding-top");
     /** Constant string for CSS2 property. */
-    public final static String PADDING_RIGHT = "padding-right";
+    public final static CSSName PADDING_RIGHT = addProperty("padding-right");
     /** Constant string for CSS2 property. */
-    public final static String PADDING_BOTTOM = "padding-bottom";
+    public final static CSSName PADDING_BOTTOM = addProperty("padding-bottom");
     /** Constant string for CSS2 property. */
-    public final static String PADDING_LEFT = "padding-left";
+    public final static CSSName PADDING_LEFT = addProperty("padding-left");
     /** Constant string for CSS2 property. */
-    private final static List ALL_PROPERTY_NAMES;// static block at bottom of class
+    private static Map ALL_PROPERTY_NAMES;
     /** Constant string for CSS2 property. */
     private final static List DEFAULT_INHERITABLE;// static block at bottom of class
 
@@ -331,18 +400,18 @@ public final class CSSName {
      * @return   Returns
      */
     public final static Iterator allCSS2PropertyNames() {
-        return ALL_PROPERTY_NAMES.iterator();
+        return ALL_PROPERTY_NAMES.keySet().iterator();
     }
 
     /**
      * Returns true if the named property inherits by default, according to the
      * CSS2 spec.
      *
-     * @param propName  PARAM
+     * @param cssName  PARAM
      * @return          Returns
      */
-    public final static boolean propertyInherits( String propName ) {
-        return DEFAULT_INHERITABLE.contains( propName );
+    public final static boolean propertyInherits( CSSName cssName ) {
+        return DEFAULT_INHERITABLE.contains( cssName );
     }
 
     /**
@@ -350,28 +419,14 @@ public final class CSSName {
      * spec, as a String. Casting must be taken care of by the caller, as there
      * is too much variation in value-types.
      *
-     * @param propName  PARAM
+     * @param cssName  PARAM
      * @return          Returns
      */
-    public final static String initialValue( String propName ) {
-        return (String)INITIAL_VALUE_MAP.get( propName );
+    public final static String initialValue( CSSName cssName ) {
+        return (String)INITIAL_VALUE_MAP.get( cssName );
     }
 
     static {
-        ALL_PROPERTY_NAMES = new ArrayList();
-        try {
-            Field fields[] = CSSName.class.getFields();
-            for ( int i = 0; i < fields.length; i++ ) {
-                Field f = fields[i];
-                int mod = f.getModifiers();
-                if ( Modifier.isFinal( mod ) && Modifier.isStatic( mod ) && Modifier.isPublic( mod ) && f.getType() == String.class ) {
-                    ALL_PROPERTY_NAMES.add( (String)f.get( null ) );
-                }
-            }
-        } catch ( Exception ex ) {
-            ex.printStackTrace();
-        }
-
         DEFAULT_INHERITABLE = new ArrayList();
         DEFAULT_INHERITABLE.add( BORDER_COLLAPSE );
         DEFAULT_INHERITABLE.add( BORDER_SPACING );
@@ -441,7 +496,7 @@ public final class CSSName {
         INITIAL_VALUE_MAP.put( CLEAR, "none" );
         INITIAL_VALUE_MAP.put( CLIP, "auto" );
 
-        INITIAL_VALUE_MAP.put( COLOR, "black" );// CLEAN: UA dependent
+        INITIAL_VALUE_MAP.put( COLOR, "black" );// TODO: UA dependent
 
         INITIAL_VALUE_MAP.put( CONTENT, "" );
 
@@ -488,7 +543,7 @@ public final class CSSName {
         INITIAL_VALUE_MAP.put( MAX_HEIGHT, "none" );
         INITIAL_VALUE_MAP.put( MIN_HEIGHT, "0" );
         INITIAL_VALUE_MAP.put( MAX_WIDTH, "none" );
-        INITIAL_VALUE_MAP.put( MIN_WIDTH, "0" );// CLEAN: UA dependent
+        INITIAL_VALUE_MAP.put( MIN_WIDTH, "0" );// TODO: UA dependent
 
         INITIAL_VALUE_MAP.put( ORPHANS, "2" );
 
@@ -509,14 +564,14 @@ public final class CSSName {
         INITIAL_VALUE_MAP.put( PAGE_BREAK_INSIDE, "auto" );
 
         INITIAL_VALUE_MAP.put( POSITION, "static" );
-        INITIAL_VALUE_MAP.put( QUOTES, "none" );// CLEAN: depends on UA
+        INITIAL_VALUE_MAP.put( QUOTES, "none" );// TODO: UA dependent
 
         INITIAL_VALUE_MAP.put( RIGHT, "auto" );
         INITIAL_VALUE_MAP.put( SIZE, "auto" );
 
         INITIAL_VALUE_MAP.put( TABLE_LAYOUT, "auto" );
 
-        INITIAL_VALUE_MAP.put( TEXT_ALIGN, "left" );// CLEAN: depends on UA
+        INITIAL_VALUE_MAP.put( TEXT_ALIGN, "left" );// TODO: UA dependent
         INITIAL_VALUE_MAP.put( TEXT_DECORATION, "none" );
         INITIAL_VALUE_MAP.put( TEXT_INDENT, "0px" );
         INITIAL_VALUE_MAP.put( TEXT_SHADOW, "none" );
@@ -539,6 +594,9 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/01/24 19:01:07  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.2  2004/10/23 13:09:13  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards

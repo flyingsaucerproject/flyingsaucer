@@ -185,7 +185,7 @@ public class Boxing {
         //block.width = c.getExtents().width;
         CalculatedStyle style = c.getCurrentStyle();
         //if (c.css.hasProperty(elem, "width", false)) {
-        if (style.hasProperty("width")) {
+        if (style.hasProperty(CSSName.WIDTH)) {
             // if it is a sub block then don't mess with the width
             if (c.isSubBlock()) {
                 /*if (!elem.getNodeName().equals("td")) {
@@ -194,7 +194,7 @@ public class Boxing {
                 return;
             }
             //float new_width = c.css.getFloatProperty(elem, "width", c.getExtents().width, false);
-            float new_width = style.getFloatPropertyProportionalWidth("width", c.getExtents().width);
+            float new_width = style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width);
             c.getExtents().width = (int) new_width;
             block.width = (int) new_width;
             //block.auto_width = false;
@@ -207,8 +207,8 @@ public class Boxing {
             return;
         }
         CalculatedStyle style = c.getCurrentStyle();
-        if (style.hasProperty("height")) {
-            float new_height = style.getFloatPropertyProportionalHeight("height", c.getExtents().height);
+        if (style.hasProperty(CSSName.HEIGHT)) {
+            float new_height = style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height);
             c.getExtents().height = (int) new_height;
             block.height = (int) new_height;
             block.auto_height = false;
@@ -278,7 +278,7 @@ public class Boxing {
         Color bgc = new Color(0, 0, 0, 0);
         CalculatedStyle style = c.getCurrentStyle();
         if (style.isIdentifier(CSSName.BACKGROUND_COLOR)) {
-            String value = style.getStringProperty("background-color");
+            String value = style.getStringProperty(CSSName.BACKGROUND_COLOR);
             if (value.equals("transparent")) {
                 return bgc;
             }
@@ -292,6 +292,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/01/24 19:01:04  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.7  2005/01/24 14:36:32  pdoubleya
  * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
  *

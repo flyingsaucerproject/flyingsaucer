@@ -55,7 +55,7 @@ public class FontFamilyPropertyDeclarationFactory extends AbstractPropertyDeclar
      * @param primVals   The SAC value for this property
      * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param propName   property name
+     * @param cssName   property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -64,7 +64,7 @@ public class FontFamilyPropertyDeclarationFactory extends AbstractPropertyDeclar
     protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
                                             String priority,
                                             boolean important,
-                                            String propName,
+                                            CSSName cssName,
                                             int origin ) {
 
         StringBuffer pos = new StringBuffer();
@@ -74,9 +74,9 @@ public class FontFamilyPropertyDeclarationFactory extends AbstractPropertyDeclar
             pos.append(primVal.getCssText().trim() + suffix);
         }
         pos.deleteCharAt(pos.length() - suffix.length()); // remove ,spc
-        FSCssValue fsCssValue = new FSCssValue( propName, primVals[0], pos.toString().trim() );
+        FSCssValue fsCssValue = new FSCssValue( cssName, primVals[0], pos.toString().trim() );
         List declarations = new ArrayList( 1 );
-        declarations.add( newPropertyDeclaration( propName, fsCssValue, origin, important ) );
+        declarations.add( newPropertyDeclaration( cssName, fsCssValue, origin, important ) );
         return declarations.iterator();
     }
 
@@ -97,6 +97,9 @@ public class FontFamilyPropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/24 19:00:59  pdoubleya
+ * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
+ *
  * Revision 1.1  2005/01/24 14:25:35  pdoubleya
  * Added to CVS.
  *
