@@ -1,16 +1,14 @@
 package org.xhtmlrenderer.layout.inline;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.BoxLayout;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LineBreaker;
+import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.util.u;
 
 import java.awt.*;
 
@@ -34,13 +32,9 @@ public class FloatUtil {
      * @param full_width      PARAM
      * @param enclosing_block PARAM
      */
-    public static void handleFloated(Context c, InlineBox inline, LineBox line,
+    /*not used public static void handleFloated(Context c, InlineBox inline, LineBox line,
                                      int full_width, Element enclosing_block) {
-        u.p("handleFloated called on a box: " + inline);
-        /* NOTE: this code may be dead now because there's no such thing as an inline floated box.
-        All floats must become block boxes. JMM 11/17 */
-        /* NOTE: nevermind. it's the other one. JMM 11/17 */
-        
+
         BlockFormattingContext bfc = c.getBlockFormattingContext();
         //u.p("testing inline box: " + inline);
         // joshy: ??? i don't know what this is for. nesting?
@@ -105,7 +99,7 @@ public class FloatUtil {
         //u.p("accounting for right float");
         line.width -= bfc.getRightFloatDistance(line);
         //line.width = line.width - inline.width;
-    }
+    }*/
 
     
     // change this to use the existing block instead of a new one
@@ -113,29 +107,28 @@ public class FloatUtil {
      * Description of the Method
      *
      * @param c          PARAM
-     * @param node       PARAM
+     * @param content
      * @param avail      PARAM
-     * @param prev       PARAM
-     * @param text       PARAM
      * @param prev_align PARAM
      * @param font       PARAM
      * @return Returns
      */
-    public static InlineBox generateFloatedBlockInlineBox(Context c, Node node, int avail, InlineBox prev, String text, InlineBox prev_align, Font font) {
+    public static InlineBox generateFloatedBlockInlineBox(Context c, Content content, int avail, InlineBox prev_align, Font font) {
         // u.p("generate floated block inline box: avail = " + avail);
         /*
           joshy: change this to just modify the existing block instead of creating
           a  new one. is that possible?
         */
         //u.p("generate floated block inline box");
-        BoxLayout layout = (BoxLayout) c.getLayout(node); //
+        BoxLayout layout = (BoxLayout) c.getLayout(content.getElement()); //
         Rectangle oe = c.getExtents(); // copy the extents for safety
         c.setExtents(new Rectangle(oe));
         
 
         //BlockBox block = (BlockBox)layout.layout( c, (Element)node );
         InlineBlockBox inline_block = new InlineBlockBox();
-        inline_block.setNode(node);
+        inline_block.setNode(content.getElement());
+        inline_block.setContent(content);
         layout.layout(c, inline_block);
 
         //u.p("got a block box from the sub layout: " + block);
@@ -147,7 +140,11 @@ public class FloatUtil {
         // u.p("before newbox block = " + inline_block);
         int x = inline_block.x;
         int y = inline_block.y;
-        LineBreaker.newBox(c, node, 0, 0, prev, text, bounds, prev_align, font, inline_block);
+        //TODO: is firstLineStyle needed? To my mind it could have already been handled in layout.layout above...
+        CascadedStyle firstLineStyle = c.css.getPseudoElementStyle(content.getElement(), "first-line");
+        //TODO: refactor styleBox
+        //for now, null is safe
+        LineBreaker.styleBox(c, content.getElement(), 0, 0, null, bounds, prev_align, font, inline_block, firstLineStyle);
         inline_block.x = x;
         inline_block.y = y;
         // u.p("after newbox = " + inline_block);

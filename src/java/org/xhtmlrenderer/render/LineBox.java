@@ -23,22 +23,29 @@ package org.xhtmlrenderer.render;
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class LineBox extends Box {
 
+    public LineBox() {
+    }
+
     //public List inlines = new ArrayList();
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int lineheight;// relative to x,y
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int baseline;// relative to x,y
 
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
 
@@ -51,6 +58,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/12/10 06:51:05  tobega
+ * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
+ *
  * Revision 1.2  2004/10/23 13:50:27  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

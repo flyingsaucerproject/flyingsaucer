@@ -2,9 +2,11 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.util.logging.Level;
 
 public class DefaultRenderer implements Renderer {
 //    public int contents_height;
@@ -74,11 +76,13 @@ public class DefaultRenderer implements Renderer {
             if (child.isAnonymous()) {
                 renderer = c.getRenderingContext().getLayoutFactory().getAnonymousRenderer();
             } else {
-                /* replaced by fast-fail on getNode
-                if(child.getNode() == null) {
-                    u.p("null node of child: " + child);
-                } */
-                renderer = c.getRenderer(child.getNode());
+                if (child.getContent() == null) {
+                    XRLog.render(Level.WARNING, "null node of child: " + child + " of type " + child.getClass().getName());
+                    renderer = new InlineRenderer();
+                } else {
+                    //renderer = c.getRenderer(child.getNode());
+                    renderer = c.getRenderer(child.getContent().getElement());
+                }
             }
             paintChild(c, child, renderer);
         }

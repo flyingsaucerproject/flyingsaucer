@@ -341,6 +341,7 @@ public class TableLayout
 
         Layout layout = c.getLayout(cell);
 
+        //TODO: temporary hack
         Box cell_contents = layout.layout(c, new BlockContent((Element) cellbox.getNode(), c.css.getStyle(cellbox.getNode())));
 
         cellbox.sub_box = cell_contents;
@@ -522,6 +523,9 @@ public class TableLayout
 /*
    $Id$
    $Log$
+   Revision 1.10  2004/12/10 06:51:05  tobega
+   Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
+
    Revision 1.9  2004/12/09 21:18:53  tobega
    precaution: code still works
 

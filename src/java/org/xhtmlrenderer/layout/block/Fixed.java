@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class Fixed {
     public static void positionFixedChild(Context c, Box box) {
-        if (LayoutUtil.isFixed(c, box)) {
+        if (LayoutUtil.isFixed(box.getContent().getStyle())) {
             Point origin = c.getOriginOffset();
             box.x = 0;
             box.y = 0;
@@ -19,7 +19,7 @@ public class Fixed {
     }
 
     public static void setupFixed(Context c, Box box) {
-        if (LayoutUtil.isFixed(c, box)) {
+        if (LayoutUtil.isFixed(box.getContent().getStyle())) {
             box.fixed = true;
             box.setChildrenExceedBounds(true);
 

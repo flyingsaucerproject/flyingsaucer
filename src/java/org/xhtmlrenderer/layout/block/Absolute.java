@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.layout.block;
 
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
@@ -8,7 +9,7 @@ import org.xhtmlrenderer.render.Box;
 public class Absolute {
 
     public static void preChildrenLayout(Context c, Box block) {
-        if (isAbsolute(c, block)) {
+        if (isAbsolute(block)) {
             BlockFormattingContext bfc = new BlockFormattingContext(block);
             bfc.setWidth(block.width);
             c.pushBFC(bfc);
@@ -16,45 +17,46 @@ public class Absolute {
     }
 
     public static void postChildrenLayout(Context c, Box block) {
-        if (isAbsolute(c, block)) {
+        if (isAbsolute(block)) {
             c.getBlockFormattingContext().doFinalAdjustments();
             c.popBFC();
         }
     }
 
-    private static boolean isAbsolute(Context c, Box box) {
-        String position = LayoutUtil.getPosition(c, box);
+    private static boolean isAbsolute(Box box) {
+        String position = LayoutUtil.getPosition(box.getContent().getStyle());
         if (position.equals("absolute")) {
             return true;
         }
         return false;
     }
 
-    public static void setupAbsolute(Context c, Box box) {
-        String position = LayoutUtil.getPosition(c, box);
+    public static void setupAbsolute(Box box) {
+        CalculatedStyle style = box.getContent().getStyle();
+        String position = LayoutUtil.getPosition(style);
         if (position.equals("absolute")) {
-            if (c.css.getStyle(box.getNode()).hasProperty("right")) {
+            if (style.hasProperty("right")) {
                 //u.p("prop = " + c.css.getProperty(box.getRealElement(),"right",false));
-                if (LayoutUtil.hasIdent(c, box.getRealElement(), "right", false)) {
-                    if (c.css.getStyle(box.getNode()).getStringProperty("right").equals("auto")) {
+                if (style.isIdentifier("right")) {
+                    if (style.getStringProperty("right").equals("auto")) {
                         box.right_set = false;
                         //u.p("right set to auto");
                     }
                 } else {
-                    box.right = (int) c.css.getStyle(box.getNode()).getFloatPropertyRelative("right", 0);
+                    box.right = (int) style.getFloatPropertyRelative("right", 0);
                     box.right_set = true;
                     //u.p("right set to : " + box.right);
                 }
             }
-            if (c.css.getStyle(box.getNode()).hasProperty("left")) {
+            if (style.hasProperty("left")) {
                 //u.p("prop = " + c.css.getProperty(box.getRealElement(),"left",false));
-                if (LayoutUtil.hasIdent(c, box.getRealElement(), "left", false)) {
-                    if (c.css.getStyle(box.getNode()).getStringProperty("left").equals("auto")) {
+                if (style.isIdentifier("left")) {
+                    if (style.getStringProperty("left").equals("auto")) {
                         box.left_set = false;
                         //u.p("left set to auto");
                     }
                 } else {
-                    box.left = (int) c.css.getStyle(box.getNode()).getFloatPropertyRelative("left", 0);
+                    box.left = (int) style.getFloatPropertyRelative("left", 0);
                     box.left_set = true;
                     //u.p("left set to : " + box.left);
                 }
@@ -66,12 +68,12 @@ public class Absolute {
             }
             */
             
-            if (c.css.getStyle(box.getNode()).hasProperty("bottom")) {
-                box.top = (int) c.css.getStyle(box.getNode()).getFloatPropertyRelative("bottom", 0);
+            if (style.hasProperty("bottom")) {
+                box.top = (int) style.getFloatPropertyRelative("bottom", 0);
                 box.bottom_set = true;
             }
-            if (c.css.getStyle(box.getNode()).hasProperty("top")) {
-                box.top = (int) c.css.getStyle(box.getNode()).getFloatPropertyRelative("top", 0);
+            if (style.hasProperty("top")) {
+                box.top = (int) style.getFloatPropertyRelative("top", 0);
                 box.top_set = true;
             }
             box.setAbsolute(true);

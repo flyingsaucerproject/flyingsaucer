@@ -7,9 +7,11 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
+import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.u;
 
 import java.awt.*;
+import java.util.logging.Level;
 
 public class BoxRenderer extends DefaultRenderer {
 
@@ -36,7 +38,7 @@ public class BoxRenderer extends DefaultRenderer {
         }
 
         //u.p("here it's : " + c.getListCounter());
-        if (LayoutUtil.isListItem(c, box)) {
+        if (LayoutUtil.isListItem(box)) {
             paintListItem(c, box);
         }
 
@@ -124,7 +126,13 @@ public class BoxRenderer extends DefaultRenderer {
         getBackgroundColor(c, block);
 
         // get the css properties
-        CalculatedStyle style = c.css.getStyle(block.getRealElement());
+        CalculatedStyle style = null;
+        if (box.getContent() == null) {
+            XRLog.render(Level.WARNING, "null content in BoxRenderer.paintBackground for " + box.getClass().getName());
+
+        } else {
+            style = box.getContent().getStyle();
+        }
         String back_image = style.getStringProperty("background-image");
         block.repeat = style.getStringProperty("background-repeat");
         block.attachment = style.getStringProperty("background-attachment");

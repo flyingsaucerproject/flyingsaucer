@@ -2,8 +2,8 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
+import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.util.GraphicsUtil;
-import org.xhtmlrenderer.util.u;
 
 import java.awt.*;
 import java.awt.font.LineMetrics;
@@ -21,8 +21,7 @@ public class InlineRenderer extends BoxRenderer {
             paintInlineContext(c, box);
             return;
         }
-        //TODO: wouldn't the box itself know if it contained a block layout?
-        if (LayoutUtil.isBlockLayout(box.getElement(), c)) {
+        if (box.getContent() != null && !(box.getContent() instanceof TextContent)) {
             super.paintComponent(c, box);
             return;
         }
@@ -39,8 +38,7 @@ public class InlineRenderer extends BoxRenderer {
         if (box.isAnonymous()) {
             return;
         }
-        //TODO: wouldn't the box itself know if it was block layout?
-        if (LayoutUtil.isBlockLayout(box.getElement(), c)) {
+        if (box instanceof BlockBox) {
             super.paintChildren(c, box);
         }
     }

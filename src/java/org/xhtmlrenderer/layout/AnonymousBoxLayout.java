@@ -38,9 +38,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xhtmlrenderer.layout.content.BlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
@@ -52,16 +49,6 @@ import org.xhtmlrenderer.render.Box;
  * @author empty
  */
 public class AnonymousBoxLayout extends InlineLayout {
-
-    /**
-     * Description of the Field
-     */
-    private Element parent;
-
-    /**
-     * Description of the Field
-     */
-    private Node text;
 
     /**
      * Constructor for the AnonymousBoxLayout object
@@ -85,7 +72,7 @@ public class AnonymousBoxLayout extends InlineLayout {
      */
     public Box createBox(Context c, Content content) {
 
-        AnonymousBlockBox block = new AnonymousBlockBox(text, c);
+        AnonymousBlockBox block = new AnonymousBlockBox(content);
 
         return block;
     }
@@ -117,15 +104,15 @@ public class AnonymousBoxLayout extends InlineLayout {
      * @param text   PARAM
      * @return Returns
      */
-    public Box layout(Context c, Element parent, Node text) {//called by BoxLayout.layoutChildren
+    //CHECK: shouldn't be needed
+    /*public Box layout(Context c, Element parent, Node text) {//called by BoxLayout.layoutChildren
         this.parent = parent;
         this.text = text;
         //Box box = new AnonymousBlockBox(text);
-        //TODO: temporary hack
         Box box = super.layout(c, new BlockContent(parent, c.css.getStyle(parent)));//BoxLayout
         //u.p("AnonymousBoxLayout.layout: returning: " + box);
         return box;
-    }
+    }*/
 
     /**
      * Description of the Method
@@ -147,6 +134,9 @@ public class AnonymousBoxLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/12/10 06:51:01  tobega
+ * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
+ *
  * Revision 1.7  2004/12/09 21:18:52  tobega
  * precaution: code still works
  *

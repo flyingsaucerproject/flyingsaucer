@@ -171,7 +171,7 @@ public class ImageLayout extends BoxLayout {
      */
     public static Image getImage(Context c, Node node) {
 
-        if (node.getNodeType() != node.ELEMENT_NODE) {
+        if (node.getNodeType() != Node.ELEMENT_NODE) {
 
             return null;
         }
@@ -209,6 +209,9 @@ public class ImageLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/12/10 06:51:02  tobega
+ * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
+ *
  * Revision 1.8  2004/12/09 21:18:52  tobega
  * precaution: code still works
  *

@@ -23,6 +23,8 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * User: tobe
@@ -38,7 +40,7 @@ public interface Content {
      * @return either a String (for TextContent) or a List of Content objects.
      *         The List may be headed by FirstLineStyle and/or FirstLetterStyle if these are applicable
      */
-    public Object getContent(Context c);
+    public List getContent(Context c);
 
     public CalculatedStyle getStyle();
 }

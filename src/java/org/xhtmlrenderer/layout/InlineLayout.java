@@ -20,18 +20,16 @@
 
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
-import org.xhtmlrenderer.layout.content.BlockContent;
-import org.xhtmlrenderer.layout.content.ContentUtil;
+import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.*;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.u;
 
 import java.awt.*;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -49,21 +47,19 @@ public class InlineLayout extends BoxLayout {
      */
     public Box layoutChildren(Context c, Box box) {
         //u.p("starting to lay out the children");
-        if (LayoutUtil.isHiddenNode(box.getElement(), c)) {
+        /* resolved by ContentUtil if (LayoutUtil.isHiddenNode(box.getElement(), c)) {
             return box;
-        }
+        }*/
 
-        //TODO: probably a temporary hack, may have a Content-object in the box that can be called instead
-        List contentList = ContentUtil.getInlineContentList(box.getElement(), c);
+        List contentList = box.getContent().getContent(c);
         if (contentList.size() == 0) return box;//we can do this if there is no content, right?
 
-        if (!box.isAnonymous()) {//this check should really be unnecessary now. tobe 2004-12-09
+        if (!box.isAnonymous()) {//this check should really be unnecessary when content layout is completed. tobe 2004-12-09
             //This where the magic decision of creating AnonymousBlockBox is
             //if (LayoutUtil.isBlockLayout(box.getElement(), c)) {
 
             Object last = contentList.get(contentList.size() - 1);
             if (last instanceof AnonymousBlockContent || last instanceof BlockContent) {//this should be block layed out
-                //TODO: why not pass in the content list here?
                 return super.layoutChildren(c, box);
             }
         }
@@ -86,9 +82,8 @@ public class InlineLayout extends BoxLayout {
 
 
         // account for text-indent
-        Element elem = block.getElement();
-        CalculatedStyle style = c.css.getStyle(elem);
-        remaining_width = TextIndent.doTextIndent(style, remaining_width, curr_line);
+        CalculatedStyle parentStyle = box.getContent().getStyle();//this should work already
+        remaining_width = TextIndent.doTextIndent(parentStyle, remaining_width, curr_line);
         
         // more setup
         LineBox prev_line = new LineBox();
@@ -98,21 +93,28 @@ public class InlineLayout extends BoxLayout {
         InlineBox prev_inline = null;
         InlineBox prev_align_inline = null;
 
-        // get the list of inlines for this run
-        List inline_node_list = null;
-        if (box.isAnonymous()) {
-            inline_node_list = ((AnonymousBlockBox) box).node_list;
-        } else {
-            inline_node_list = InlineUtil.getInlineNodeList(elem, c);
-        }
-
-        Node current_node = InlineUtil.nextTextNode(inline_node_list);
+        Iterator contentIterator = contentList.iterator();
 
         // adjust the first line for float tabs
         remaining_width = FloatUtil.adjustForTab(c, prev_line, remaining_width);
 
+        CalculatedStyle currentStyle = parentStyle;
+        CascadedStyle firstLineStyle = null;
+        CascadedStyle firstLetterStyle = null;
+        boolean isFirstLetter = true;
         // loop until no more nodes
-        while (current_node != null) {
+        while (contentIterator.hasNext()) {
+            Object o = contentIterator.next();
+            //TODO: can we do this? contentIterator.remove();//chop it off, no need to keep it?
+            if (o instanceof FirstLineStyle) {//can actually only be the first object in list
+                firstLineStyle = ((FirstLineStyle) o).getStyle();
+                continue;
+            }
+            if (o instanceof FirstLetterStyle) {//can actually only be the first or second object in list
+                firstLetterStyle = ((FirstLetterStyle) o).getStyle();
+                continue;
+            }
+            Content currentContent = (Content) o;
             // loop until no more text in this node
             while (true) {
 
@@ -130,23 +132,27 @@ public class InlineLayout extends BoxLayout {
                 
                 // test if there is no more text in the current text node
                 // if there is a prev, and if the prev was part of this current node
-                if (prev_inline != null && prev_inline.getNode() == current_node) {
-                    if (isEndOfBlock(c, current_node, prev_inline)) {//c and node can be replaced by content object
+                if (prev_inline != null && prev_inline.getContent() == currentContent) {
+                    if (isEndOfBlock(prev_inline, currentContent)) {
                         break;
                     }
                 }
-                
+
+                currentStyle = currentContent.getStyle();
+
                 // look at current inline
                 // break off the longest section that will fit
-                InlineBox new_inline = calculateInline(c, current_node, remaining_width, bounds.width,
-                        curr_line, prev_inline, elem, prev_align_inline);
+                InlineBox new_inline = calculateInline(c, currentContent, remaining_width, bounds.width,
+                        prev_inline, prev_align_inline, isFirstLetter, firstLetterStyle, firstLineStyle);
                 // u.p("got back inline: " + new_inline);
-
+                isFirstLetter = false;
+                firstLetterStyle = null;
 
                 // if this inline needs to be on a new line
                 if (new_inline.break_before && !new_inline.floated) {
                     remaining_width = bounds.width;
-                    saveLine(curr_line, prev_line, elem, bounds.width, bounds.x, c, block, false);
+                    saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, block, false);
+                    firstLineStyle = null;
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line);
@@ -161,8 +167,8 @@ public class InlineLayout extends BoxLayout {
                 // calc new height of the line
                 // don't count the inline towards the line height and
                 // line baseline if it's a floating inline.
-                if (!LayoutUtil.isFloated(new_inline, c)) {
-                    if (!LayoutUtil.isFloatedBlock(new_inline.getNode(), c)) {
+                if (!(currentContent instanceof ReplacedContent)) {
+                    if (!(currentContent instanceof FloatedBlockContent)) {
                         adjustLineHeight(curr_line, new_inline);
                     }
                 }
@@ -180,7 +186,8 @@ public class InlineLayout extends BoxLayout {
                     // then remaining_width = max_width
                     remaining_width = bounds.width;
                     // save the line
-                    saveLine(curr_line, prev_line, elem, bounds.width, bounds.x, c, block, false);
+                    saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, block, false);
+                    firstLineStyle = null;
                     // increase bounds height to account for the new line
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
@@ -190,19 +197,17 @@ public class InlineLayout extends BoxLayout {
                 
                 
                 // set the inline to use for left alignment
-                if (!LayoutUtil.isFloated(new_inline, c)) {
+                if (!(currentContent instanceof FloatedBlockContent)) {
                     prev_align_inline = new_inline;
                 }
 
                 prev_inline = new_inline;
             }
 
-
-            current_node = InlineUtil.nextTextNode(inline_node_list);
         }
         
         // save the final line
-        saveLine(curr_line, prev_line, elem, bounds.width, bounds.x, c, block, true);
+        saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, block, true);
         finishBlock(block, curr_line, bounds);
         return block;
     }
@@ -242,17 +247,17 @@ public class InlineLayout extends BoxLayout {
     }
 
 
-    public boolean isEndOfBlock(Context c, Node current_node, InlineBox prev_inline) {
+    private boolean isEndOfBlock(InlineBox prev_inline, Content content) {
         // replaced elements aren't split, so done with this one
-        if (LayoutUtil.isReplaced(c, current_node)) {//if(content instanceof ReplacedContent)
+        if (content instanceof ReplacedContent) {
             return true;
         }
-        if (LayoutUtil.isFloatedBlock(current_node, c)) {//if(content instanceof FloatedBlockContent)
+        if (content instanceof FloatedBlockContent) {
             return true;
         }
-        if (c.getRenderingContext().getLayoutFactory().isBreak(current_node)) {//not needed with content
+        /*if (c.getRenderingContext().getLayoutFactory().isBreak(current_node)) {//not needed with content
             return true;
-        }
+        }*/
         // if no more unused text in this node
         // u.p("looking for skip to next node");
         if (prev_inline.end_index >= prev_inline.getMasterText().length()) {
@@ -273,87 +278,89 @@ public class InlineLayout extends BoxLayout {
      * Get the longest inline possible.
      *
      * @param c                PARAM
-     * @param node             PARAM
+     * @param content
      * @param avail            PARAM
      * @param max_width        PARAM
-     * @param line             PARAM
      * @param prev             PARAM
-     * @param containing_block PARAM
      * @param prev_align       PARAM
+     * @param isFirstLetter
+     * @param firstLetterStyle
+     * @param firstLineStyle
      * @return Returns
      */
-    private InlineBox calculateInline(Context c, Node node, int avail, int max_width,
-                                      LineBox line, InlineBox prev, Element containing_block, InlineBox prev_align) {
+    private InlineBox calculateInline(Context c, Content content, int avail, int max_width,
+                                      InlineBox prev, InlineBox prev_align, boolean isFirstLetter, CascadedStyle firstLetterStyle, CascadedStyle firstLineStyle) {
 
+        CalculatedStyle style = content.getStyle();
+        // get the current font. required for sizing
+        Font font = FontUtil.getFont(c, style);
+
+        // handle each case
+        if (content instanceof ReplacedContent) {
+            //u.p("is replaced");
+            return LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align, font);
+        }
+
+        //u.p("calc inline on node : " + node);
+        if (content instanceof FloatedBlockContent) {
+            //u.p("calcinline: is floated block");
+            return FloatUtil.generateFloatedBlockInlineBox(c, content, avail, prev_align, font);
+        }
+
+        //OK, now we should have only TextContent left, fail fast if not
+        TextContent textContent = (TextContent) content;
 
         // calculate the starting index
         int start = 0;
         // if this is another box from the same node as the previous one
-        if (prev != null && prev.getNode() == node) {//prev != null && prev.getContent() == content
+        if (prev != null && prev.getContent() == textContent) {
             start = prev.end_index;
         }
         // get the text of the node
-        String text = node.getNodeValue();//content.getText()
+        String text = textContent.getText();
 
         // transform the text if required (like converting to caps)
         // this must be done before any measuring since it might change the
         // size of the text
         //u.p("text from the node = \"" + text + "\"");
-        CalculatedStyle style = c.css.getStyle(node);//content.getStyle()
         text = TextUtil.transformText(text, style);
 
         // u.p("calculating inline: text = " + text);
         // u.p("avail space = " + avail + " max = " + max_width + "   start index = " + start);
 
-        // get the current font. required for sizing
-        Font font = FontUtil.getFont(c, style);
-        
-        // handle each case
-        if (LayoutUtil.isReplaced(c, node)) {//content instanceof ReplacedContent
-            //u.p("is replaced");
-            return LineBreaker.generateReplacedInlineBox(c, node, avail, prev, text, prev_align, font);
-        }
-        
-        //u.p("calc inline on node : " + node);
-        if (LayoutUtil.isFloatedBlock(node, c)) {//content instanceof ReplacedContent
-            //u.p("calcinline: is floated block");
-            return FloatUtil.generateFloatedBlockInlineBox(c, node, avail, prev, text, prev_align, font);
-        }
-
-        if (LineBreaker.isFirstLetter(c, node, start)) {//TODO:should be handled earlier and differently
+        if (isFirstLetter && firstLetterStyle != null) {
             //u.p("is first letter");
-            return LineBreaker.generateFirstLetterInlineBox(c, node, start, text, prev, prev_align, avail);
+            return LineBreaker.generateFirstLetterInlineBox(c, start, text, prev_align, textContent, firstLetterStyle, firstLineStyle);
         }
 
-        if (c.getRenderingContext().getLayoutFactory().isBreak(node)) {//not needed
+        /*if (c.getRenderingContext().getLayoutFactory().isBreak(node)) {//not needed, handled by before-content
             // u.p("is break");
             return LineBreaker.generateBreakInlineBox(node);
-        }        
+        }*/
         
         // new whitespace code
-        WhitespaceStripper whitespace = new WhitespaceStripper();
         // u.p("calling whitespace stripper on node: " + node);
         // u.p(" prev = " + prev);
-        return whitespace.createInline(c, node, text, prev, prev_align, avail, max_width, font);
+        return WhitespaceStripper.createInline(c, textContent, prev, prev_align, avail, max_width, font, firstLineStyle);
     }
 
 
     /**
      * Description of the Method
      *
-     * @param line_to_save     PARAM
-     * @param prev_line        PARAM
-     * @param containing_block PARAM
-     * @param width            PARAM
-     * @param x                PARAM
-     * @param c                PARAM
-     * @param block            PARAM
+     * @param line_to_save PARAM
+     * @param style
+     * @param prev_line    PARAM
+     * @param width        PARAM
+     * @param x            PARAM
+     * @param c            PARAM
+     * @param block        PARAM
      */
-    private void saveLine(LineBox line_to_save, LineBox prev_line, Element containing_block, int width, int x,
+    private void saveLine(LineBox line_to_save, CalculatedStyle style, LineBox prev_line, int width, int x,
                           Context c, Box block, boolean last) {
         c.setFirstLine(false);
         // account for text-align
-        TextAlign.adjustTextAlignment(c, line_to_save, containing_block, width, x, last);
+        TextAlign.adjustTextAlignment(c, style, line_to_save, width, x, last);
         // set the y
         line_to_save.y = prev_line.y + prev_line.height;
         
@@ -373,7 +380,7 @@ public class InlineLayout extends BoxLayout {
     public void restyle(Context ctx, Box box) {
         super.restyle(ctx, box);
         if (box instanceof InlineBox) {
-            TextDecoration.setupTextDecoration(ctx, box.getNode(), (InlineBox) box);
+            TextDecoration.setupTextDecoration((InlineBox) box);
         }
     }
 
@@ -384,6 +391,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.43  2004/12/10 06:51:02  tobega
+* Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
+*
 * Revision 1.42  2004/12/09 21:18:52  tobega
 * precaution: code still works
 *

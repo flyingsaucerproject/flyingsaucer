@@ -20,18 +20,21 @@
 package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Fixed;
 import org.xhtmlrenderer.layout.block.FloatUtil;
 import org.xhtmlrenderer.layout.block.Relative;
-import org.xhtmlrenderer.layout.content.BlockContent;
-import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.layout.content.*;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.BoxRenderer;
+import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.util.u;
 
 import java.awt.*;
+import java.util.Iterator;
 
 
 /**
@@ -130,7 +133,7 @@ public class BoxLayout extends DefaultLayout {
         int tx = block.totalLeftPadding();
         int ty = block.totalTopPadding();
         c.translate(tx, ty);
-        layoutChildren(c, block);
+        layoutChildren(c, block);//when this is really an anonymous, InlineLayout.layoutChildren is called
         c.translate(-tx, -ty);
         c.setSubBlock(old_sub);
 
@@ -155,9 +158,9 @@ public class BoxLayout extends DefaultLayout {
 
         // account for special positioning
         // need to add bfc/unbfc code for absolutes
-        Relative.setupRelative(c, block);
+        Relative.setupRelative(block);
         // need to add bfc/unbfc code for absolutes
-        Absolute.setupAbsolute(c, block);
+        Absolute.setupAbsolute(block);
         Fixed.setupFixed(c, block);
         FloatUtil.setupFloat(c, block);
         setupForm(c, block);
@@ -174,14 +177,15 @@ public class BoxLayout extends DefaultLayout {
 
     // calculate the width based on css and available space
     private void adjustWidth(Context c, Box block) {
-        if (!block.isElement()) {
+        if (!(block.getContent() instanceof BlockContent)) {//then it must be anonymous
             return;
         }
         // initalize the width to all the available space
         //block.width = c.getExtents().width;
         Element elem = block.getElement();
+        CalculatedStyle style = block.getContent().getStyle();
         //if (c.css.hasProperty(elem, "width", false)) {
-        if (c.css.getStyle(elem).hasProperty("width")) {
+        if (style.hasProperty("width")) {
             // if it is a sub block then don't mess with the width
             if (c.isSubBlock()) {
                 if (!elem.getNodeName().equals("td")) {
@@ -190,7 +194,7 @@ public class BoxLayout extends DefaultLayout {
                 return;
             }
             //float new_width = c.css.getFloatProperty(elem, "width", c.getExtents().width, false);
-            float new_width = c.css.getStyle(elem).getFloatPropertyRelative("width", c.getExtents().width);
+            float new_width = style.getFloatPropertyRelative("width", c.getExtents().width);
             c.getExtents().width = (int) new_width;
             block.width = (int) new_width;
             block.auto_width = false;
@@ -199,13 +203,14 @@ public class BoxLayout extends DefaultLayout {
 
     // calculate the height based on css and available space
     private void adjustHeight(Context c, Box block) {
-        if (!block.isElement()) {
+        if (!(block.getContent() instanceof BlockContent)) {//then it must be anonymous
             return;
         }
         Element elem = block.getElement();
-        if (c.css.getStyle(elem).hasProperty("height")) {
+        CalculatedStyle style = block.getContent().getStyle();
+        if (style.hasProperty("height")) {
             //float new_height = c.css.getFloatProperty(elem, "height", c.getExtents().height);
-            float new_height = c.css.getStyle(elem).getFloatPropertyRelative("height", c.getExtents().height);
+            float new_height = style.getFloatPropertyRelative("height", c.getExtents().height);
             c.getExtents().height = (int) new_height;
             block.height = (int) new_height;
             block.auto_height = false;
@@ -224,75 +229,55 @@ public class BoxLayout extends DefaultLayout {
     public Box layoutChildren(Context c, Box box) {
         BlockBox block = (BlockBox) box;
         c.shrinkExtents(block);
-        
+
         // save the original height in case it
         // has a fixed height
         //not used: int original_height = block.height;
 
-        Element elem = (Element) box.getNode();
         // prepare for the list items
         int old_counter = c.getListCounter();
         c.setListCounter(0);
 
-        // for each child
-        NodeList nl = elem.getChildNodes();
-        for (int i = 0; i < nl.getLength(); i++) {
-            Node child = nl.item(i);
+        java.util.List contentList = box.getContent().getContent(c);
+        if (contentList.size() == 0) return box;//we can do this if there is no content, right?
+        Iterator contentIterator = contentList.iterator();
 
-            // get the layout for this child
-            //Aha! if child is not an element, we get a NullLayout or an AnonymousBlockLayout back
-            Layout layout = c.getLayout(child);
-            if (layout == null) {
+        //TODO: how to pass these on to first child?
+        CascadedStyle firstLineStyle = null;
+        CascadedStyle firstLetterStyle = null;
+
+        while (contentIterator.hasNext()) {
+            Object o = contentIterator.next();
+            //TODO: can we do this? contentIterator.remove();//chop it off, no need to keep it?
+            if (o instanceof FirstLineStyle) {//can actually only be the first object in list
+                firstLineStyle = ((FirstLineStyle) o).getStyle();
                 continue;
             }
-            if (layout instanceof NullLayout) {
+            if (o instanceof FirstLetterStyle) {//can actually only be the first or second object in list
+                firstLetterStyle = ((FirstLetterStyle) o).getStyle();
                 continue;
             }
-            if (c.getRenderingContext().getLayoutFactory().isBreak(child)) {
-                continue;
-            }
-            if (child.getNodeType() == Node.COMMENT_NODE) {
-                continue;
-            }
+            Content currentContent = (Content) o;
 
             Box child_box = null;
-            if (child.getNodeType() == Node.ELEMENT_NODE) {
+            if (!(currentContent instanceof AnonymousBlockContent)) {
+                Layout layout = c.getLayout(currentContent.getElement());
                 // update the counter for printing OL list items
                 c.setListCounter(c.getListCounter() + 1);
 
-                Element child_elem = (Element) child;
                 // execute the layout and get the return bounds
                 //c.parent_box = box;
                 c.placement_point = new Point(0, box.height);
                 c.getBlockFormattingContext().translate(0, box.height);
-                //TODO: below is a temporary hack
-                child_box = layout.layout(c, new BlockContent(child_elem, c.css.getStyle(child_elem)));
+                child_box = layout.layout(c, currentContent);
                 c.getBlockFormattingContext().translate(0, -box.height);
                 child_box.list_count = c.getListCounter();
-            } else {
-                // create anonymous block box
-                // prepare the node list of the text children
-                // call layout
-                //TODO: these casts seem risky (or at least, very non-encapsulated). Refactor.
-                child_box = ((AnonymousBoxLayout) layout).layout(c, elem, child);
-
-                // skip text children if the prev_child == anonymous block box
-                // because that means they were sucked into this block
-                Node last_node = ((AnonymousBlockBox) child_box).last_node;
-                // if anonymous box is only one node wide then skip this
-                // junk
-                if (child != last_node) {
-                    while (true) {
-                        i++;
-                        Node ch = nl.item(i);
-                        //u.p("trying to skip: " + ch);
-                        if (ch == last_node) {
-                            break;
-                        }
-                    }
-                }
-
+            } else { //AnonymousBlockContent, fail fast if not
+                AnonymousBlockContent anonymous = (AnonymousBlockContent) currentContent;
+                Layout layout = new AnonymousBoxLayout();
+                child_box = layout.layout(c, anonymous);
             }
+
             box.addChild(child_box);
             // set the child_box location
             child_box.x = 0;
@@ -362,6 +347,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2004/12/10 06:51:02  tobega
+ * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
+ *
  * Revision 1.36  2004/12/09 21:18:52  tobega
  * precaution: code still works
  *

@@ -2,11 +2,10 @@ package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.util.u;
 
 public class LayoutUtil {
 
@@ -42,7 +41,7 @@ public class LayoutUtil {
         if (isBlockOrInlineElementBox(c, box)) {
             // u.p("setting border for: " + box);
             if (box.border == null) {
-                box.border = c.css.getStyle(box.getRealElement()).getBorderWidth();
+                box.border = box.getContent().getStyle().getBorderWidth();
             }
         } else {
             // u.p("skipping border for: " + box);
@@ -53,12 +52,11 @@ public class LayoutUtil {
     /**
      * Gets the fixed attribute of the DefaultLayout object
      *
-     * @param c   PARAM
-     * @param box PARAM
+     * @param style
      * @return The fixed value
      */
-    public static boolean isFixed(Context c, Box box) {
-        if (getPosition(c, box).equals("fixed")) {
+    public static boolean isFixed(CalculatedStyle style) {
+        if (getPosition(style).equals("fixed")) {
             return true;
         }
         return false;
@@ -74,8 +72,7 @@ public class LayoutUtil {
      * @param c    PARAM
      * @return The blockLayout value
      */
-    //TODO: should be possible to remove this now
-    public static boolean isBlockLayout(Element elem, Context c) {
+    /* not used public static boolean isBlockLayout(Element elem, Context c) {
         NodeList children = elem.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
@@ -92,18 +89,18 @@ public class LayoutUtil {
             }
         }
         return false;
-    }
+    } */
 
     /**
      * Gets the position attribute of the DefaultLayout class
      *
-     * @param c   PARAM
-     * @param box PARAM
+     * @param style
      * @return The position value
      */
-    public static String getPosition(Context c, Box box) {
-        String position = c.css.getStyle(box.getRealElement()).getStringProperty("position");
+    public static String getPosition(CalculatedStyle style) {
+        String position = style.getStringProperty("position");
         if (position == null) {
+            //TODO: check if we ever can get here. CSS-code should have taken care of this, surely?
             position = "static";
         }
         return position;
@@ -118,7 +115,7 @@ public class LayoutUtil {
      * @return The floated value
      */
     public static boolean isFloated(Box inline, Context c) {
-        CalculatedStyle style = c.css.getStyle(inline.getNode());
+        CalculatedStyle style = inline.getContent().getStyle();
         return isFloated(style);
     }
 
@@ -152,7 +149,7 @@ public class LayoutUtil {
     public static boolean isBlockNode(Node child, Context c) {
         //need this as a sensible default
         if (child == child.getOwnerDocument().getDocumentElement()) return true;
-        
+
         if (child instanceof Element) {
             CalculatedStyle style = c.css.getStyle(child);
             String display = getDisplay(style);
@@ -176,7 +173,7 @@ public class LayoutUtil {
      * @param c     PARAM
      * @return The hiddenNode value
      */
-    public static boolean isHiddenNode(Node child, Context c) {
+    /* not used anymore: tobe 2004-12-10 public static boolean isHiddenNode(Node child, Context c) {
         if (child instanceof Element) {
             CalculatedStyle style = c.css.getStyle(child);
             String display = getDisplay(style);//c.css.getStringProperty( el, "display", false );
@@ -185,7 +182,7 @@ public class LayoutUtil {
             }
         }
         return false;
-    }
+    } */
 
     /**
      * Gets the replaced attribute of the DefaultLayout class
@@ -219,31 +216,17 @@ public class LayoutUtil {
 
 
     public static boolean isBlockOrInlineElementBox(Context c, Box box) {
-        if(box.isElement()) {
-            return true;
-        }
-        if (  box.getNode().getNodeType() == Node.TEXT_NODE &&
-              !LayoutUtil.isBlockNode(box.getRealElement(), c)
-            ) {
-             // u.p("box = " + box);
-             // u.p("node type = " + box.getNode().getNodeType());
-             // u.p("text node == " + Node.TEXT_NODE);
-             // u.p("real element = " + box.getRealElement());
-             // u.p("is block node = " + isBlockNode(box.getRealElement(),c));
-             // u.p("is element = " + box.isElement());
-            return true;
-        }
-        return false;
+        return !(box.getContent() instanceof TextContent);//TODO: check. This does seem to match what was intended, but the name is confusing
     }
 
 
-    public static boolean hasIdent(Context c, Element elem, String property, boolean inherit) {
+    /*not used now public static boolean hasIdent(Context c, Element elem, String property, boolean inherit) {
         return c.css.getStyle(elem).isIdentifier(property);
-    }
+    } */
 
 
-    public static boolean isListItem(Context c, Box box) {
-        CalculatedStyle style = c.css.getStyle(box.getNode());
+    public static boolean isListItem(Box box) {
+        CalculatedStyle style = box.getContent().getStyle();
         String display = getDisplay(style);
         if (display.equals("list-item")) {
             return true;

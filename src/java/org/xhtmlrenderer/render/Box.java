@@ -45,6 +45,7 @@ public class Box {
         width = box.width;
         height = box.height;
         setNode(box.getNode());
+        setContent(box.getContent());
         border = box.border;
         margin = box.margin;
         padding = box.padding;
@@ -511,17 +512,22 @@ public class Box {
      * @return The element value
      */
     public Element getElement() {
-        return (Element) getNode();
-    }
-
-    public Element getRealElement() {
-        if (isElement()) {
-            return getElement();
-        }
         if (this.node == null) {
             return null;
         }
-        return (Element) getNode().getParentNode();
+        return getContent().getElement();
+    }
+
+    //TODO: the node is ALWAYS an element
+    public Element getRealElement() {
+        /*if (isElement()) {
+            return getElement();
+        }*/
+        if (this.node == null) {
+            return null;
+        }
+        /*return (Element) getNode().getParentNode();*/
+        return getContent().getElement();
     }
 
     /**
@@ -541,14 +547,16 @@ public class Box {
      *
      * @return The element value
      */
+    //TODO: this ALWAYS returns true now
     public boolean isElement() {
-        if (this.node == null) {
+        /*if (this.node == null) {
             return false;
         }
-        if (getNode().getNodeType() == getNode().ELEMENT_NODE) {
+        if (getNode().getNodeType() == Node.ELEMENT_NODE) {
             return true;
         }
-        return false;
+        return false;*/
+        return true;
     }
 
     /**
@@ -729,6 +737,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2004/12/10 06:51:04  tobega
+ * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
+ *
  * Revision 1.22  2004/12/09 21:18:53  tobega
  * precaution: code still works
  *

@@ -22,6 +22,7 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.DefaultRenderer;
@@ -141,7 +142,7 @@ public class DefaultLayout implements Layout {
     public static Border getPadding(Context c, Box box) {
         if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
             if (box.padding == null) {
-                box.padding = c.css.getStyle(box.getRealElement()).getPaddingWidth();
+                box.padding = box.getContent().getStyle().getPaddingWidth();
             }
         }
         return box.padding;
@@ -158,7 +159,7 @@ public class DefaultLayout implements Layout {
     public static Border getMargin(Context c, Box box) {
         if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
             if (box.margin == null) {
-                box.margin = c.css.getStyle(box.getRealElement()).getMarginWidth();
+                box.margin = box.getContent().getStyle().getMarginWidth();
             }
         }
         return box.margin;
@@ -179,15 +180,16 @@ public class DefaultLayout implements Layout {
     public static Color getBackgroundColor(Context c, Box box) {
         if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
             if (box.background_color == null) {
-                if (c.css.getStyle(box.getRealElement()).isIdentifier(CSSName.BACKGROUND_COLOR)) {
-                    String value = c.css.getStyle(box.getRealElement()).getStringProperty("background-color");
+                CalculatedStyle style = box.getContent().getStyle();
+                if (style.isIdentifier(CSSName.BACKGROUND_COLOR)) {
+                    String value = style.getStringProperty("background-color");
                     //u.p("got : " + obj);
                     if (value.equals("transparent")) {
                         box.background_color = new Color(0, 0, 0, 0);
                         return box.background_color;
                     }
                 }
-                box.background_color = c.css.getStyle(box.getRealElement()).getBackgroundColor();
+                box.background_color = style.getBackgroundColor();
             }
         }
         return box.background_color;
@@ -200,6 +202,9 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2004/12/10 06:51:02  tobega
+ * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
+ *
  * Revision 1.29  2004/12/09 21:18:52  tobega
  * precaution: code still works
  *

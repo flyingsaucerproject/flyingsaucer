@@ -28,7 +28,7 @@ public class AnonymousBlockContent implements Content {
         return _elem;
     }
 
-    public Object getContent(Context c) {
+    public List getContent(Context c) {
         return _inline;
     }
 

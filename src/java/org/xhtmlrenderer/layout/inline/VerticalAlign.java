@@ -1,10 +1,11 @@
 package org.xhtmlrenderer.layout.inline;
 
-import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
-import org.xhtmlrenderer.layout.LayoutUtil;
+import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.layout.content.FloatedBlockContent;
+import org.xhtmlrenderer.layout.content.ReplacedContent;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 
@@ -14,13 +15,13 @@ import java.awt.font.LineMetrics;
 public class VerticalAlign {
 
     public static void setupVerticalAlign(Context c, CalculatedStyle style, InlineBox box) {
-        Node node = box.getNode();
+        Content content = box.getContent();
 
         //not used: CalculatedStyle parent_style = c.css.getStyle(LineBreaker.getElement(parent));
         Font parent_font = FontUtil.getFont(c, style);
         LineMetrics parent_metrics = null;
-        if (!LayoutUtil.isReplaced(c, node)) {
-            if (!LayoutUtil.isFloatedBlock(node, c)) {
+        if (!(content instanceof ReplacedContent)) {
+            if (!(content instanceof FloatedBlockContent)) {
                 parent_metrics = parent_font.getLineMetrics(box.getSubstring(), ((Graphics2D) c.getGraphics()).getFontRenderContext());
             } else {
                 parent_metrics = parent_font.getLineMetrics("Test", ((Graphics2D) c.getGraphics()).getFontRenderContext());
@@ -35,7 +36,7 @@ public class VerticalAlign {
         String vertical_align = style.propertyByName("vertical-align").computedValue().asString();
 
         // set the height of the box to the height of the font
-        if (!LayoutUtil.isReplaced(c, node)) {
+        if (!(content instanceof ReplacedContent)) {
             box.height = FontUtil.lineHeight(c, box);
         }
 

@@ -23,6 +23,8 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * User: tobe
@@ -47,7 +49,7 @@ public class FloatedBlockContent implements Content {
         return _style;
     }
 
-    public Object getContent(Context c) {
+    public List getContent(Context c) {
         return ContentUtil.getInlineContentList(_elem, c);
     }
 

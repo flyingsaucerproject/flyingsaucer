@@ -8,13 +8,12 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.LineBreaker;
 import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.util.u;
 
 import java.awt.*;
 
 public class BoxBuilder {
 
-    public static void prepBox(Context c, InlineBox box, InlineBox prev_align, Font font) {
+    public static void prepBox(Context c, InlineBox box, InlineBox prev_align, Font font, CascadedStyle firstLineStyle) {
         //u.p("box = " + box);
         //u.p("prev align = " + prev_align);
 
@@ -127,8 +126,8 @@ public class BoxBuilder {
 
 
         // =========== setup text decorations
-        if (TextDecoration.isDecoratable(c, box.getNode())) {
-            TextDecoration.setupTextDecoration(c, box.getNode(), box);
+        if (TextDecoration.isDecoratable(box)) {
+            TextDecoration.setupTextDecoration(style, box);
         }
         
         
@@ -143,11 +142,10 @@ public class BoxBuilder {
         
         // if first line then do extra setup        
         if (c.isFirstLine()) {
-            // if there is a first line pseudo class
-            CascadedStyle pseudo = c.css.getPseudoElementStyle(LineBreaker.getNearestBlockElement(box.getNode(), c), "first-line");
-            if (pseudo != null) {
+            // if there is a first line firstLineStyle class
+            if (firstLineStyle != null) {
                 CalculatedStyle normal = c.css.getStyle(box.getRealElement());
-                CalculatedStyle merged = c.css.getDerivedStyle(normal, pseudo);
+                CalculatedStyle merged = c.css.getDerivedStyle(normal, firstLineStyle);
                 LineBreaker.styleInlineBox(c, merged, box);
             }
         }

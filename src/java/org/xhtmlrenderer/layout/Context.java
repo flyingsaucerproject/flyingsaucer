@@ -37,6 +37,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Description of the Class
@@ -49,7 +50,7 @@ public class Context {
      * The media for this context
      */
     public String getMedia() {
-         return ctx.getMedia();
+        return ctx.getMedia();
     }
 
     /**
@@ -314,6 +315,25 @@ public class Context {
      * @param box PARAM
      */
     public void translateInsets(Box box) {
+        if (box == null) {
+            XRLog.render(Level.WARNING, "null box");
+            return;//TODO: why?
+        }
+        if (box.margin == null) {
+            XRLog.render(Level.WARNING, "translate insets: null margin on box of type " + box.getClass().getName() +
+                    " content " + (box.getContent() == null ? "null" : box.getContent().getClass().getName()));
+            return;
+        }
+        if (box.border == null) {
+            XRLog.render(Level.WARNING, "translate insets: null border on box of type " + box.getClass().getName() +
+                    " content " + (box.getContent() == null ? "null" : box.getContent().getClass().getName()));
+            return;
+        }
+        if (box.padding == null) {
+            XRLog.render(Level.WARNING, "translate insets: null padding on box of type " + box.getClass().getName() +
+                    " content " + (box.getContent() == null ? "null" : box.getContent().getClass().getName()));
+            return;
+        }
         translate(box.margin.left + box.border.left + box.padding.left,
                 box.margin.top + box.border.top + box.padding.top);
     }
@@ -324,6 +344,21 @@ public class Context {
      * @param box PARAM
      */
     public void untranslateInsets(Box box) {
+        if (box.margin == null) {
+            XRLog.render(Level.WARNING, "translate insets: null margin on box of type " + box.getClass().getName() +
+                    " content " + (box.getContent() == null ? "null" : box.getContent().getClass().getName()));
+            return;
+        }
+        if (box.border == null) {
+            XRLog.render(Level.WARNING, "translate insets: null border on box of type " + box.getClass().getName() +
+                    " content " + (box.getContent() == null ? "null" : box.getContent().getClass().getName()));
+            return;
+        }
+        if (box.padding == null) {
+            XRLog.render(Level.WARNING, "translate insets: null padding on box of type " + box.getClass().getName() +
+                    " content " + (box.getContent() == null ? "null" : box.getContent().getClass().getName()));
+            return;
+        }
         translate(-(box.margin.left + box.border.left + box.padding.left),
                 -(box.margin.top + box.border.top + box.padding.top));
     }
@@ -731,9 +766,11 @@ public class Context {
         bfc_stack.push(this.bfc);
         this.bfc = bfc;
     }
+
     public void popBFC() {
-        this.bfc = (BlockFormattingContext)bfc_stack.pop();
+        this.bfc = (BlockFormattingContext) bfc_stack.pop();
     }
+
     public void setBlockFormattingContext(BlockFormattingContext bfc) {
         this.bfc = bfc;
     }
@@ -782,6 +819,9 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2004/12/10 06:51:02  tobega
+ * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
+ *
  * Revision 1.27  2004/12/05 05:22:35  joshy
  * fixed NPEs in selection listener
  * Issue number:

@@ -95,6 +95,7 @@ public class LayoutFactory {
      */
 
     public Layout getLayout(Context c, Node elem) {
+        if (elem == null) return new NullLayout();//TODO: why?
         //u.p("getting layout for node: " + elem);
         // we have to do the inputs manually since they don't depend on
         // the element name
@@ -154,6 +155,7 @@ public class LayoutFactory {
         }
 
         // skip whitespace only nodes
+        //TODO: this should never happen
         else if (elem.getNodeType() == Node.TEXT_NODE) {
             if (elem.getNodeValue().trim().equals("")) {
                 return new NullLayout();
@@ -328,6 +330,9 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.23  2004/12/10 06:51:02  tobega
+* Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
+*
 * Revision 1.22  2004/12/09 00:11:51  tobega
 * Almost ready for Content-based inline generation.
 *

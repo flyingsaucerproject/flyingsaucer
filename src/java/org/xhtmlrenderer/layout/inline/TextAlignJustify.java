@@ -1,7 +1,7 @@
 package org.xhtmlrenderer.layout.inline;
 
-import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.render.InlineBox;
@@ -11,37 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TextAlignJustify {
-    public static boolean isJustified(Context c, Element containing_block) {
-        String text_align = c.css.getStyle(containing_block).getStringProperty(CSSName.TEXT_ALIGN);
+    public static boolean isJustified(CalculatedStyle style) {
+        String text_align = style.getStringProperty(CSSName.TEXT_ALIGN);
         if (text_align != null && text_align.equals("justify")) {
             return true;
         }
         return false;
     }
 
-    public static void justifyLine(Context c, LineBox line, Element elem, int width) {
+    public static void justifyLine(Context c, LineBox line, int width) {
         if (line.width > width) {
             return;
         }
-        //u.p("line width = " + line.width);
-        //u.p("available width = " + width);
-        //u.p("inlines = " + line.getChildCount());
-        //u.p("word count = " + wordCount((InlineBox)line.getChild(0)));
-        //int extra = width - line.width;
-        //u.p("extra = " + extra);
-        /*
-        int word_count = 0;
-        for(int i=0; i<line.getChildCount();i++) {
-            word_count += wordCount((InlineBox)line.getChild(i));
-        }
-        if(word_count < 2) {
-            return;
-        }
-        //u.p("final word count = " + word_count);
-        int spacer = extra/(word_count-1);
-        //u.p("spacer = " + spacer);
-        */
-        
+
         // split each inline box into words
         List temp_list = new ArrayList();
         for (int i = 0; i < line.getChildCount(); i++) {

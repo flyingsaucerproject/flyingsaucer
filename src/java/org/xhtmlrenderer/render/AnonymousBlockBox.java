@@ -19,12 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.InlineUtil;
-
-import java.util.List;
+import org.xhtmlrenderer.layout.content.Content;
 
 /**
  * Description of the Class
@@ -33,32 +28,17 @@ import java.util.List;
  */
 public class AnonymousBlockBox extends BlockBox {
 
-    /**
-     * Description of the Field
-     */
-    public List node_list;
-
-    /**
-     * Description of the Field
-     */
-    public Node last_node;
-
 
     /**
      * Constructor for the AnonymousBlockBox object
      *
-     * @param startNode PARAM
-     * @param c         PARAM
+     * @param content
      */
-    public AnonymousBlockBox(Node startNode, Context c) {
+    public AnonymousBlockBox(Content content) {
 
-        this.setNode(startNode.getParentNode());
-
-        node_list = InlineUtil.getInlineNodeList(startNode, (Element) this.getNode(), c, true);
-
-        //this should now already have been done: node_list.add(0, startNode);
-
-        last_node = (Node) node_list.get(node_list.size() - 1);
+        super();
+        setContent(content);
+        setNode(content.getElement());
 
         /*
          * while(true) {
@@ -108,6 +88,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/12/10 06:51:04  tobega
+ * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
+ *
  * Revision 1.6  2004/12/05 19:42:44  tobega
  * Made recursion in InlineUtil easier to understand
  *
