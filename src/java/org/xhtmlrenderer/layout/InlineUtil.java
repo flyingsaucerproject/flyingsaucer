@@ -21,18 +21,18 @@
 
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.util.u;
 import java.util.List;
 import java.util.ArrayList;
-import java.awt.Point;
-import org.xhtmlrenderer.layout.*;
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.css.constants.*;
+
 public class InlineUtil {
 
 public static int doTextIndent(Context c, Element elem, int width, LineBox first_line) {
-    if(c.css.hasProperty(elem,"text-indent")) {
-        float indent = c.css.getFloatProperty(elem,"text-indent",width);
+    if(c.css.hasProperty(elem,CSSName.TEXT_INDENT)) {
+        float indent = c.css.getFloatProperty(elem,CSSName.TEXT_INDENT,width);
         width = width - (int)indent;
         first_line.x = first_line.x + (int)indent;
     }
@@ -53,7 +53,7 @@ public static void handleFloated(Context c, InlineBox inline, LineBox line,
         }
     }
 
-    String float_val = c.css.getStringProperty(inline.node,"float",false);
+    String float_val = c.css.getStringProperty(inline.node,CSSName.FLOAT,false);
 
     if(float_val == null) {
         float_val = "none";
