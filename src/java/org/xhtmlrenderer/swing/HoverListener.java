@@ -17,60 +17,62 @@ public class HoverListener extends MouseInputAdapter {
     }
     public void mouseMoved( MouseEvent evt ) {
         InlineBox ib = findInlineBox(evt);
-        if ( ib == null ) return;
         restyle(ib);
     }
     public void mouseEntered( MouseEvent evt ) {
         InlineBox ib = findInlineBox(evt);
-        if ( ib == null ) return;
-        panel.hovered_element = ib.getRealElement();
         XRLog.general("Element "+panel.hovered_element+" entered");
-        //restyle(ib);
+        restyle(ib);
     }
     public void mouseExited( MouseEvent evt ) {
         InlineBox ib = findInlineBox(evt);
-        //restyle(ib);
+        restyle(ib);
     }
     private void restyle(InlineBox ib) {
-        // if moved out of the old block then unstyle it
-        /* 
-         if(prev != null && prev != ib) {
-            Layout lt = LayoutFactory.getLayout(prev.getRealElement());
-            if(lt instanceof InlineLayout) {
-                ((InlineLayout)lt).restyleNormal(panel.getContext(), prev);
-                panel.repaint();
-            }
-        }*/
-        
         if(prev == ib) {
             return;
         }
-        /*
+
+        if(ib == null) panel.hovered_element = null;
+        else panel.hovered_element = ib.getRealElement();
+
+        // if moved out of the old block then unstyle it
         if(prev != null) {
-            boolean b = panel.getContext().css.wasHoverRestyled(prev.getRealElement());
-            u.p("previous was styled = " + b);
+            boolean restyled = panel.getContext().css.wasHoverRestyled(prev.getRealElement());
+            u.p("previous was styled = " + restyled);
+            u.p("prev = " + prev);
+            CalculatedStyle style = panel.getContext().css.getStyle(prev.getRealElement());
+            u.p("prev calc style = " + style);
+            u.p("prev color = " + style.getColor());
+            if(restyled) {
+                Layout lt = LayoutFactory.getLayout(prev.getRealElement());
+                if(lt instanceof InlineLayout) {
+                    ((InlineLayout)lt).restyle(panel.getContext(), prev);
+                    panel.repaint();
+                }
+            }
         }
-        */
+
         prev = ib;
         // return if no new hovered block;
         if(ib == null) { return; }
         
+        boolean restyled = panel.getContext().css.wasHoverRestyled(ib.getRealElement());
+        u.p("was styled = " + restyled);
+        
         CalculatedStyle style = panel.getContext().css.getStyle(ib.getRealElement());
         u.p("color = " + style.getColor());
-        boolean b = panel.getContext().css.wasHoverRestyled(ib.getRealElement());
-        u.p("was styled = " + b);
-        style = panel.getContext().css.getStyle(ib.getRealElement());
-        u.p("color = " + style.getColor());
-        
+
         // if the block has a hover style then restyle it
-        if(b) {
+        if(restyled) {
             Layout lt = LayoutFactory.getLayout(ib.getRealElement());
             if(lt instanceof InlineLayout) {
-                ((InlineLayout)lt).restyleHover(panel.getContext(), ib);
+                ((InlineLayout)lt).restyle(panel.getContext(), ib);
                 panel.repaint();
             }
         }
     }
+    
     private InlineBox findInlineBox(MouseEvent evt) {
         Box box = panel.findBox( evt.getX(), evt.getY() );
         if ( box == null ) return null;

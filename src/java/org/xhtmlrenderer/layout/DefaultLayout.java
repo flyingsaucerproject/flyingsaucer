@@ -449,18 +449,18 @@ public class DefaultLayout implements Layout {
         return false;
     }
 
-    public void restyleNormal(Context ctx, Box box) {
+    public void restyle(Context ctx, Box box) {
         box.color = ctx.css.getColor(box.getRealElement());
         box.setBorderColor(ctx.css.getBorderColor( box.getRealElement() ));
         box.border_style = ctx.css.getStringProperty( box.getRealElement(), "border-top-style" );
         box.background_color = ctx.css.getBackgroundColor( box.getRealElement() );
     }
-    public void restyleHover(Context c, Box box) {
+    /*public void restyleHover(Context c, Box box) {
         box.color = Color.black;
         box.setBorderColor(new BorderColor(new Color(.7f,.7f,1f)));
         box.border_style = "solid";
         box.background_color = new Color(.9f,.9f,.9f);
-    }
+    }*/
 
 
 }
@@ -469,6 +469,9 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/11/12 00:20:29  tobega
+ * Set up the HoverListener to work properly. Colors are changing!
+ *
  * Revision 1.15  2004/11/09 15:53:48  joshy
  * initial support for hover (currently disabled)
  * moved justification code into it's own class in a new subpackage for inline

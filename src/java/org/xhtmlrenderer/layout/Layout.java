@@ -39,8 +39,8 @@ public interface Layout {
      * @return      Returns
      */
     public Box layout( Context c, Element elem );
-    public void restyleNormal(Context c, Box box);
-    public void restyleHover(Context c, Box box);
+    public void restyle(Context c, Box box);
+    //public void restyleHover(Context c, Box box);
     public Renderer getRenderer();
 }
 
@@ -48,6 +48,9 @@ public interface Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/12 00:20:29  tobega
+ * Set up the HoverListener to work properly. Colors are changing!
+ *
  * Revision 1.7  2004/11/09 15:53:49  joshy
  * initial support for hover (currently disabled)
  * moved justification code into it's own class in a new subpackage for inline

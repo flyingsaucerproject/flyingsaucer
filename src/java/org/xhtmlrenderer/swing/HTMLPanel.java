@@ -70,7 +70,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
     //private int max_width = -1;
 
     /** Description of the Field */
-    protected Document doc;
+    protected Document doc = null;
     /** Description of the Field */
     protected Context c;
     /** Description of the Field */
@@ -168,13 +168,13 @@ public class HTMLPanel extends JPanel implements ComponentListener {
             ( (Graphics2D)g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         }
 
+        if ( doc == null ) {
+            return;
+        }
+
         // if this is the first time painting this document, then calc layout
         if ( body_box == null ) {
             calcLayout( g );
-        }
-
-        if ( doc == null ) {
-            return;
         }
 
         newContext( g );
@@ -283,6 +283,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
      */
     public Box findBox( Box box, int x, int y ) {
 
+        if(box == null) return null;
         Iterator it = box.getChildIterator();
         while ( it.hasNext() ) {
             Box bx = (Box)it.next();
@@ -772,6 +773,9 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2004/11/12 00:20:31  tobega
+ * Set up the HoverListener to work properly. Colors are changing!
+ *
  * Revision 1.23  2004/11/10 14:34:21  joshy
  * more hover support
  *
