@@ -5,7 +5,7 @@
  * Created on den 25 juli 2004, 12:18
  */
 
-package src.java.net.homelinux.tobe.css;
+package net.homelinux.tobe.css;
 
 import junit.framework.*;
 import org.w3c.dom.*;
@@ -36,7 +36,7 @@ public class RulesetSelectorTest extends TestCase {
     public void testAny() {
         System.out.println("testAny");
         Ruleset rules = new Ruleset();
-        Ruleset.Selector sel = rules.new Selector(Ruleset.Selector.DESCENDANT_AXIS, null);
+        Ruleset.Selector sel = rules.createSelector(Ruleset.Selector.DESCENDANT_AXIS, null);
         Element e = doc.createElement("e");
         assertTrue("selector for any should match 'e'",  sel.matches(e));
         Element f = doc.createElement("f");
@@ -47,7 +47,7 @@ public class RulesetSelectorTest extends TestCase {
     public void testNamed() {
         System.out.println("testNamed");
         Ruleset rules = new Ruleset();
-        Ruleset.Selector sel = rules.new Selector(Ruleset.Selector.DESCENDANT_AXIS, "e");
+        Ruleset.Selector sel = rules.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "e");
         Element e = doc.createElement("e");
         assertTrue("selector for 'e' should match "+e.getNodeName(),  sel.matches(e));
         Element f = doc.createElement("f");

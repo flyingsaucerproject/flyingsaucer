@@ -5,7 +5,7 @@
  * Created on den 25 juli 2004, 13:10
  */
 
-package src.java.net.homelinux.tobe.css;
+package net.homelinux.tobe.css;
 
 import junit.framework.*;
 

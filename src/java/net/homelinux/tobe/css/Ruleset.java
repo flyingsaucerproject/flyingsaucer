@@ -4,7 +4,7 @@
  * Created on den 25 juli 2004, 11:26
  */
 
-package src.java.net.homelinux.tobe.css;
+package net.homelinux.tobe.css;
 
 /**
  * Rulesets should be created by the CSS parser. A list of Rulesets make up a CSS.
@@ -28,7 +28,7 @@ public class Ruleset {
          * @param axis see values above.
          * @param elementName matches any element if null
          */
-        public Selector(int axis, String elementName) {
+        private Selector(int axis, String elementName) {
             _axis = axis;
             _name = elementName;
         }
@@ -42,13 +42,21 @@ public class Ruleset {
             return false;
         }
 
-        public void appendSelector(Selector s) {
-            if(chainedSelector == null) chainedSelector = s;
-            else chainedSelector.appendSelector(s);
+        public void appendChainedSelector(int axis, String elementName) {
+            if(chainedSelector == null) chainedSelector = new Selector(axis, elementName);
+            else chainedSelector.appendChainedSelector(axis, elementName);
         }
 
         public Selector getChainedSelector() {
             return chainedSelector;
+        }
+        
+        public Ruleset getRuleset() {
+            return Ruleset.this;
+        }
+        
+        public int getAxis() {
+            return _axis;
         }
 
         private Selector chainedSelector = null;
@@ -66,11 +74,20 @@ public class Ruleset {
      *  This method's signature may change
      */
     public java.util.List getPropertyDeclarations() {
-        return null;
+        return declarations;
     }
     
-    public void addSelector(Selector s) {
+    /** TODO: add property declarations to this ruleset
+     *  This method's signature may change
+     */
+    public void addPropertyDeclaration(String declaration) {
+        declarations.add(declaration);
+    }
+    
+    public Selector createSelector(int axis, String elementName) {
+        Selector s = new Selector(axis, elementName);
         selectors.add(s);
+        return s;
     }
     
     public java.util.List getSelectors() {
@@ -78,5 +95,6 @@ public class Ruleset {
     }
     
     private java.util.List selectors = new java.util.ArrayList();
+    private java.util.List declarations = new java.util.ArrayList();
     
 }

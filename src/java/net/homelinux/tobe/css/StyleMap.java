@@ -4,7 +4,7 @@
  * Created on den 25 juli 2004, 11:13
  */
 
-package src.java.net.homelinux.tobe.css;
+package net.homelinux.tobe.css;
 
 /**
  *
@@ -17,10 +17,10 @@ public class StyleMap {
  *
  * @author  Torbjörn Gannholm
  */
-    private class Mapper {
+    public class Mapper {
 
         /** Creates a new instance of Mapper */
-        public Mapper(java.util.List rulesets) {
+        Mapper(java.util.List rulesets) {
             for(java.util.Iterator i = rulesets.iterator(); i.hasNext();) {
                 Ruleset r = (Ruleset) i.next();
                 //at this point all selectors in a ruleset must be on the descendant axis
@@ -33,7 +33,7 @@ public class StyleMap {
         }
 
         /** Maps the children of the given node */
-        public void mapChildren(org.w3c.dom.Node node) {
+        void mapChildren(org.w3c.dom.Node node) {
             org.w3c.dom.NodeList children = node.getChildNodes();
             for(int i=0; i<children.getLength(); i++) {
                 org.w3c.dom.Node child = children.item(i);
@@ -43,19 +43,49 @@ public class StyleMap {
             }
         }
         
-        public void mapElement(org.w3c.dom.Element e) {
-            
+        private void mapElement(org.w3c.dom.Element e) {
+            Mapper childMapper = new Mapper(this);
+            if(immediateSiblingAxis != null) {
+                java.util.List tmp = immediateSiblingAxis;
+                immediateSiblingAxis = null;//clear immediately because it is only relevant for this element
+                for(java.util.Iterator i = immediateSiblingAxis.iterator(); i.hasNext();) {
+                    match((Ruleset.Selector) i.next(), e, childMapper);
+                }
+            }
+            for(java.util.Iterator i = childAxis.iterator(); i.hasNext();) {
+                match((Ruleset.Selector) i.next(), e, childMapper);
+            }
+            for(java.util.Iterator i = descendantAxis.iterator(); i.hasNext();) {
+                match((Ruleset.Selector) i.next(), e, childMapper);
+            }
+            link(e, childMapper);
+            childMapper.mapChildren(e);
+        }
+        
+        private void match(Ruleset.Selector sel, org.w3c.dom.Element e, Mapper child) {
+            if(!sel.matches(e)) return;
+            Ruleset.Selector chain = sel.getChainedSelector();
+            if(chain == null) {
+                child.propertyDeclarations.addAll(sel.getRuleset().getPropertyDeclarations());
+            } else if(chain.getAxis() == Ruleset.Selector.CHILD_AXIS) {
+                child.childAxis.add(chain);
+            } else if(chain.getAxis() == Ruleset.Selector.DESCENDANT_AXIS) {
+                child.descendantAxis.add(chain);
+            } else if(chain.getAxis() == Ruleset.Selector.IMMEDIATE_SIBLING_AXIS) {
+                //add it to this mapper!
+                if(immediateSiblingAxis == null) immediateSiblingAxis = new java.util.LinkedList();
+                immediateSiblingAxis.add(chain);
+            }
         }
 
 
         java.util.List descendantAxis = new java.util.LinkedList();
         java.util.List childAxis = new java.util.LinkedList();
-        java.util.List immediateSiblingAxis = new java.util.LinkedList();
+        java.util.List immediateSiblingAxis;
 
         java.util.List propertyDeclarations = new java.util.LinkedList();
     }
     
-    /** Creates a new instance of ElementStyleMap to map the given document. Should only be called by the Mapper. */
     private StyleMap() {
         
     }
@@ -66,23 +96,30 @@ public class StyleMap {
     }
     
     /** TODO: this should probably return a StyleSet */
-    public java.util.List getMappedStyle(org.w3c.dom.Element e) {
-        return null;
+    public java.util.List getMappedProperties(org.w3c.dom.Element e) {
+        Mapper m = (Mapper) map.get(e);
+        return m.propertyDeclarations;
     }
     
+    /** create a StyleMap from a DOM document */
     public static StyleMap createMap(org.w3c.dom.Document doc, java.util.List rulesets) {
         StyleMap map = new StyleMap();
-        map.map(doc, rulesets);
+        map.mapDocument(doc, rulesets);
         return map;
     }
     
-    private void map(org.w3c.dom.Document doc, java.util.List rulesets) {
+    private void mapDocument(org.w3c.dom.Document doc, java.util.List rulesets) {
         _doc = doc;
         docMapper = new Mapper(rulesets);
         docMapper.mapChildren(_doc);
     }
     
+    private void link(org.w3c.dom.Element e, Mapper m) {
+        map.put(e, m);
+    }
+    
     private org.w3c.dom.Document _doc;
     private Mapper docMapper;
+    private java.util.HashMap map = new java.util.HashMap();
 
 }
