@@ -39,7 +39,7 @@ public class CellGrid {
 
     /** Constructor for the CellGrid object  */
     public CellGrid() {
-        grid = new Cell[20][20];
+        grid = new Cell[255][255];
     }
 
     /**
@@ -172,6 +172,9 @@ public class CellGrid {
 /*
  * $Id$
  * $Log$
+ * Revision 1.6  2005/02/03 23:15:28  pdoubleya
+ * upped max grid size, was blowing up on pretty small tables...check this.
+ *
  * Revision 1.5  2005/01/29 20:22:25  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
