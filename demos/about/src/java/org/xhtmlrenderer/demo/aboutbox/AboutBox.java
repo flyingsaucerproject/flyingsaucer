@@ -19,19 +19,26 @@
  * }}} 
  */
 
-package org.joshy.html.app.aboutbox;
+package org.xhtmlrenderer.demo.aboutbox;
 
-import java.awt.event.*;
-import javax.swing.*;
-import java.awt.*;
-import java.io.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.io.File;
 import java.net.URL;
-import javax.xml.parsers.*;
-import org.w3c.dom.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
 
-import org.joshy.html.*;
-import org.joshy.u;
-import org.joshy.html.app.browser.*;
+import org.xhtmlrenderer.*;
+import org.xhtmlrenderer.swing.*;
+import org.xhtmlrenderer.util.u;
 
 public class AboutBox extends JDialog implements Runnable {
     JScrollPane scroll;
@@ -52,8 +59,8 @@ public class AboutBox extends JDialog implements Runnable {
         scroll.setVerticalScrollBarPolicy(scroll.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(scroll.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.setPreferredSize(new Dimension(w,h));
-        panel.setViewportComponent(scroll);
-        panel.setJScrollPane(scroll);
+        //panel.setViewportComponent(scroll);
+        //panel.setJScrollPane(scroll);
         getContentPane().add(scroll,"Center");
         close_button = new JButton("Close");
         getContentPane().add(close_button,"South");
@@ -145,7 +152,7 @@ public class AboutBox extends JDialog implements Runnable {
         
         launch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                AboutBox ab = new AboutBox("About Flying Saucer","demo:demos/about/index.xhtml");
+                AboutBox ab = new AboutBox("About Flying Saucer","demo:demos/index.xhtml");
                 ab.setVisible(true);
             }
         });

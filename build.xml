@@ -62,7 +62,21 @@
         </javac>
     </target>
     
-    <target name="compile.all" depends="compile, compile.browser">
+    <target name="compile.about" depends="compile">
+        <javac
+            srcdir="demos/about/src/java"
+            destdir="build/classes"
+            debug="on"
+            source="1.4">
+            <classpath>
+                <fileset dir="lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+    
+    <target name="compile.all" depends="compile, compile.browser, compile.about">
     </target>
     
     
@@ -80,7 +94,7 @@
         </javac>
     </target>
     
-    <target name="jars" depends="core-jar, browser-jar">
+    <target name="jars" depends="core-jar, browser-jar, about-jar">
     </target>
     
     <target name="core-jar" depends="compile" description="build core jar">
@@ -102,6 +116,27 @@
                 <include name="org/xhtmlrenderer/demo/browser/**"/>
             </fileset>
             <zipfileset dir="demos/browser/xhtml" prefix="demos/">
+                <include name="*.xhtml"/>
+                <include name="*.gif"/>
+                <include name="*.png"/>
+                <include name="splash/**"/>
+                <include name="about/**"/>
+            </zipfileset>
+            <zipfileset dir="demos/splash" prefix="demos/splash">
+                <include name="*.html"/>
+                <include name="images/**"/>
+            </zipfileset>
+        </jar>
+    </target>
+    
+    <target name="about-jar" depends="compile.about" description="build about jar">
+        <jar jarfile="build/about.jar" compress="true" 
+            manifest="src/packaging/manifest"
+            >
+            <fileset dir="build/classes">
+                <include name="org/xhtmlrenderer/demo/aboutbox/**"/>
+            </fileset>
+            <zipfileset dir="demos/about/xhtml" prefix="demos/">
                 <include name="*.xhtml"/>
                 <include name="*.gif"/>
                 <include name="*.png"/>
@@ -204,8 +239,8 @@
         </java>
     </target>
 
-    <target name="test-about" depends="jars">
-        <java classname="org.joshy.html.app.aboutbox.AboutBox" fork="true">
+    <target name="aboutbox" depends="jars">
+        <java classname="org.xhtmlrenderer.demo.aboutbox.AboutBox" fork="true">
             <classpath>
                 <fileset dir="lib"><include name="*.jar"/></fileset>
                 <fileset dir="build"><include name="*.jar"/></fileset>
