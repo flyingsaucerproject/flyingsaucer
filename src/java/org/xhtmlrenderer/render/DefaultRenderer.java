@@ -68,12 +68,12 @@ public class DefaultRenderer implements Renderer {
             //u.p("child = " + child);
             Renderer renderer = null;
             if ( child.isAnonymous() ) {
-                renderer = LayoutFactory.getAnonymousRenderer();
+                renderer = c.getRenderingContext().getLayoutFactory().getAnonymousRenderer();
             } else {
                 if(child.node == null) {
                     u.p("null node of child: " + child);
                 }
-                renderer = LayoutFactory.getRenderer( child.node );
+                renderer = c.getRenderer( child.node );
             }
             paintChild( c, child, renderer );
         }

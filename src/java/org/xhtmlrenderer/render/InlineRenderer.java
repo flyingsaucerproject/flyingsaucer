@@ -50,6 +50,7 @@ public class InlineRenderer extends BoxRenderer {
     * individually.
     */
     private void paintInlineContext( Context c, Box box ) {
+        //u.p("box = " + box);
         BlockBox block = (BlockBox)box;
         // translate into local coords
         // account for the origin of the containing box
@@ -85,7 +86,7 @@ public class InlineRenderer extends BoxRenderer {
     // containing line box though
 
     private void paintInline( Context c, InlineBox inline, int lx, int ly, LineBox line ) {
-        if ( InlineLayout.isReplaced( inline.node ) ) {
+        if ( InlineLayout.isReplaced(c, inline.node ) ) {
             paintReplaced(c,inline,line);
             debugInlines(c,inline,lx,ly);
             return;
@@ -137,7 +138,7 @@ public class InlineRenderer extends BoxRenderer {
     
     private void paintReplaced(Context c, InlineBox inline, LineBox line) {
         c.translate( line.x, line.y + ( line.baseline - inline.height ) );
-        Renderer rend = LayoutFactory.getRenderer( inline.node );
+        Renderer rend = c.getRenderer( inline.node );
         rend.paint( c, inline );
         c.translate( -line.x, -( line.y + ( line.baseline - inline.height ) ) );
     }
@@ -148,7 +149,7 @@ public class InlineRenderer extends BoxRenderer {
         int xoff = line.x + inline.x;
         int yoff = line.y + ( line.baseline - inline.height ) + inline.y;
         c.translate( xoff, yoff );
-        Renderer rend = LayoutFactory.getRenderer( inline.node );
+        Renderer rend = c.getRenderer( inline.node );
         rend.paint( c, inline.sub_block );
         c.translate( -xoff, -yoff );
         c.setExtents( oe );

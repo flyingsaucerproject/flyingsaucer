@@ -168,7 +168,7 @@ public class TableRenderer extends BoxRenderer {
 
             c.setExtents( new Rectangle( 0, 0, cell.width, cell.height ) );
 
-            Renderer rend = LayoutFactory.getRenderer( cell.node );
+            Renderer rend = c.getRenderer( cell.node );
 
             //u.p("doing cell: " + cell);
 

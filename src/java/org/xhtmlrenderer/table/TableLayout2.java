@@ -260,7 +260,7 @@ public class TableLayout2
 
                     // do child layout
 
-                    Layout layout = LayoutFactory.getLayout( cell.node );
+                    Layout layout = c.getLayout( cell.node );
 
                     //u.p("cell box = " + cell_box);
 
@@ -449,6 +449,14 @@ public class TableLayout2
 /*
    $Id$
    $Log$
+   Revision 1.5  2004/11/14 16:41:04  joshy
+   refactored layout factory
+
+   Issue number:
+   Obtained from:
+   Submitted by:
+   Reviewed by:
+
    Revision 1.4  2004/10/28 01:34:26  joshy
    moved more painting code into the renderers
 

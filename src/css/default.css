@@ -57,6 +57,9 @@ html {
 head {
     display: none;
 }
+
+html, blockquote, body, div, form, h1, h2, h3, h4, h5, h6, ol, p, ul, pre   { display: block }
+
 body {
     background-color: #ffffff;
     background-repeat: repeat;
@@ -150,6 +153,7 @@ del { text-decoration: line-through; }
 
 ul, ol {
     padding-left: 3em;
+    display: block;
 }
 li {
     display: list-item;
@@ -206,6 +210,7 @@ div {
 }
 
 img {
+    display: inline-block;
     border-top-width: 1px;
     border-right-width: 1px;
     border-bottom-width: 1px;
@@ -260,3 +265,5 @@ input {
     padding: 0px;
     vertical-align: baseline;
 }
+
+

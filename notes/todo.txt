@@ -32,6 +32,8 @@
 //build hover demo
 //build browser test of custom font from 1001fonts.com
 //copy text via mouse selection
+//fix crash on width = 0
+//fix threading/loop issue with hamlet
 
 redesign layout factory
     should support display property
@@ -43,8 +45,14 @@ redesign layout factory
     -floated divs work, but not floated spans. span should turn into a block when floated
     -make layoutfactory use display for generating layouts
     
--fix crash on width = 0
--fix threading/loop issue with hamlet
+    subclassing is okay
+    
+    turn into singleton on the renderingcontext, but make it replaceable
+    addElementLayout(String name, Layout)
+    addDisplayLayout(String name, Layout)
+    
+    
+    
 
 -table crashes on tbody
 -table crashes on empty tr
@@ -56,4 +64,6 @@ fix line breaking bugs
 --crash w/ width = 50%
 --% width for absolute layout
 --styles on each border side
+
+
 

@@ -35,7 +35,7 @@ public class LinkListener extends MouseAdapter {
                 node = node.getParentNode();
             }
 
-            if ( LayoutFactory.isLink(node)) {
+            if ( panel.getContext().getRenderingContext().getLayoutFactory().isLink(node)) {
                 u.p( "clicked on a link" );
                 box.clicked = true;
                 box.color = new Color( 255, 255, 0 );
@@ -62,7 +62,7 @@ public class LinkListener extends MouseAdapter {
                 node = node.getParentNode();
             }
             
-            if ( LayoutFactory.isLink(node) ) {
+            if ( panel.getContext().getRenderingContext().getLayoutFactory().isLink(node) ) {
                 u.p( "clicked on a link" );
                 box.clicked = true;
                 box.color = new Color( 255, 0, 0 );

@@ -44,7 +44,7 @@ public class HoverListener extends MouseInputAdapter {
             //u.p("prev calc style = " + style);
             //u.p("prev color = " + style.getColor());
             if(restyled) {
-                Layout lt = LayoutFactory.getLayout(prev.getRealElement());
+                Layout lt = panel.getContext().getLayout(prev.getRealElement());
                 if(lt instanceof InlineLayout) {
                     ((InlineLayout)lt).restyle(panel.getContext(), prev);
                     panel.repaint();
@@ -64,7 +64,7 @@ public class HoverListener extends MouseInputAdapter {
 
         // if the block has a hover style then restyle it
         if(restyled) {
-            Layout lt = LayoutFactory.getLayout(ib.getRealElement());
+            Layout lt = panel.getContext().getLayout(ib.getRealElement());
             if(lt instanceof InlineLayout) {
                 ((InlineLayout)lt).restyle(panel.getContext(), ib);
                 panel.repaint();

@@ -9,6 +9,7 @@ import org.xhtmlrenderer.css.bridge.TBStyleReference;
 import org.xhtmlrenderer.swing.*;
 import org.xhtmlrenderer.util.*;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.layout.LayoutFactory;
 import java.net.*;
 
 /* should all of these properties be here? should some only be specified by the
@@ -20,6 +21,7 @@ public class RenderingContext {
         getContext().ctx = this;
         getContext().css = new TBStyleReference(new NaiveUserAgent());
         XRLog.render( "Using CSS implementation from: " + getContext().css.getClass().getName() );
+        layout_factory = new LayoutFactory();
     }
     protected Context ctx;
     public Context getContext() {
@@ -95,7 +97,7 @@ public class RenderingContext {
     }
     
 
-    URL base_url;
+    protected URL base_url;
     public URL getBaseURL() {
         return base_url;
     }
@@ -103,18 +105,14 @@ public class RenderingContext {
         base_url = url;
     }
 
+    protected LayoutFactory layout_factory;
+    public LayoutFactory getLayoutFactory() {
+        return layout_factory;
+    }
+    public void setLayoutFactory(LayoutFactory layout_factory) {
+        this.layout_factory = layout_factory;
+    }
     
-    /* should we reverse the order of these to match name=value ? */
-    /*
-    public void addLayoutByDisplayValue(Layout layout, String display) {
-    }
-    public void addLayoutByElementName(Layout layout, String element_name) {
-    }
-    public void addRendererByDisplayValue(Layout layout, String display) {
-    }
-    public void addRendererByElementName(Layout layout, String element_name) {
-    }
-    */
     
     /* turn on validation */
     /*

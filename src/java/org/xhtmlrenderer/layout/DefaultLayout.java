@@ -100,14 +100,14 @@ public class DefaultLayout implements Layout {
             Node child = nl.item( i );
 
             // get the layout for this child
-            Layout layout = LayoutFactory.getLayout( child );
+            Layout layout = c.getLayout( child );
             if ( layout == null ) {
                 continue;
             }
             if ( layout instanceof NullLayout ) {
                 continue;
             }
-            if ( LayoutFactory.isBreak(child)) {//.getNodeName().equals( "br" ) ) {
+            if ( c.getRenderingContext().getLayoutFactory().isBreak(child)) {//.getNodeName().equals( "br" ) ) {
                 continue;
             }
             if ( child.getNodeType() == child.COMMENT_NODE ) {
@@ -269,17 +269,6 @@ public class DefaultLayout implements Layout {
     /*
      * =========== utility code =============
      */
-    /**
-     * Gets the layout attribute of the DefaultLayout object
-     *
-     * @param node  PARAM
-     * @return      The layout value
-     */
-     /*
-    public Layout getLayout( Node node ) {
-        return LayoutFactory.getLayout( node );
-    }
-    */
 
     /**
      * Gets the fixed attribute of the DefaultLayout object
@@ -418,8 +407,8 @@ public class DefaultLayout implements Layout {
      * @param node  PARAM
      * @return      The replaced value
      */
-    public static boolean isReplaced( Node node ) {
-        return LayoutFactory.isReplaced(node);
+    public static boolean isReplaced(Context c, Node node ) {
+        return c.getRenderingContext().getLayoutFactory().isReplaced(node);
     }
 
     /**
@@ -498,6 +487,14 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2004/11/14 16:40:58  joshy
+ * refactored layout factory
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.19  2004/11/12 18:51:00  joshy
  * fixed repainting issue for background-attachment: fixed
  * added static util methods and get minimum size to graphics 2d renderer

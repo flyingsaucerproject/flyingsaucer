@@ -92,7 +92,7 @@ public class BoxLayout extends DefaultLayout {
         // ie. if it's null.
         
         // this is to keep track of when we are inside of a form
-        if(LayoutFactory.isForm(elem)) {
+        if(c.getRenderingContext().getLayoutFactory().isForm(elem)) {
             if ( elem.hasAttribute( "name" ) ) {
                 String name = elem.getAttribute( "name" );
                 String action = elem.getAttribute( "action" );
@@ -160,7 +160,7 @@ public class BoxLayout extends DefaultLayout {
         setupFloat( c, block );
 
         this.contents_height = block.height;
-        if(LayoutFactory.isForm(elem)) {
+        if(c.getRenderingContext().getLayoutFactory().isForm(elem)) {
             if ( elem.hasAttribute( "name" ) ) {
                 c.setForm( null, null );
             }
@@ -466,6 +466,14 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2004/11/14 16:40:58  joshy
+ * refactored layout factory
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.18  2004/11/12 18:51:00  joshy
  * fixed repainting issue for background-attachment: fixed
  * added static util methods and get minimum size to graphics 2d renderer

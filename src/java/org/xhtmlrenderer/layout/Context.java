@@ -34,6 +34,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.swing.*;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.XRLog;
@@ -44,6 +45,7 @@ import org.xhtmlrenderer.css.FontResolverTest;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.extend.*;
 import org.sektor37.minium.*;
@@ -678,6 +680,13 @@ public class Context {
         rect.translate(canvas.getX(),canvas.getY());
         return rect;
     }
+    
+    public Layout getLayout(Node node) {
+        return ctx.getLayoutFactory().getLayout(this, node);
+    }
+    public Renderer getRenderer(Node node) {
+        return ctx.getLayoutFactory().getRenderer(this, node);
+    }
 
 }
 
@@ -685,6 +694,14 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/11/14 16:40:58  joshy
+ * refactored layout factory
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.16  2004/11/14 06:26:39  joshy
  * added better detection for width problems. should avoid most
  * crashes

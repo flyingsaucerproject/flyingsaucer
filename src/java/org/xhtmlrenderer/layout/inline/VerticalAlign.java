@@ -23,7 +23,7 @@ public class VerticalAlign {
         //int parent_height = FontUtil.lineHeight(c,parent);
         Font parent_font = FontUtil.getFont( c, parent );
         LineMetrics parent_metrics = null;
-        if ( !InlineLayout.isReplaced( node ) ) {
+        if ( !InlineLayout.isReplaced(c, node ) ) {
             if ( !InlineLayout.isFloatedBlock( node, c ) ) {
                 parent_metrics = parent_font.getLineMetrics( box.getText(), ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
             } else {
@@ -37,7 +37,7 @@ public class VerticalAlign {
         //u.p("parent strikethrough height = " + parent_metrics.getStrikethroughOffset());
         String vertical_align = c.css.getStringProperty( elem, "vertical-align" );
         // set the height of the box to the height of the font
-        if ( !InlineLayout.isReplaced( node ) ) {
+        if ( !InlineLayout.isReplaced(c, node ) ) {
             box.height = FontUtil.lineHeight( c, node );
             //u.p("set height of box: " + box.height + " == " + box);
         }

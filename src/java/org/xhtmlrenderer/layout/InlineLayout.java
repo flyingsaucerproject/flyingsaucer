@@ -129,13 +129,13 @@ public class InlineLayout extends BoxLayout {
                 // if there is a prev, and if the prev was part of this current node
                 if ( prev_inline != null && prev_inline.node == current_node ) {
                     // replaced elements aren't split, so done with this one
-                    if ( isReplaced( current_node ) ) {
+                    if ( isReplaced(c, current_node ) ) {
                         break;
                     }
                     if ( isFloatedBlock( current_node, c ) ) {
                         break;
                     }
-                    if ( LayoutFactory.isBreak( current_node ) ) {
+                    if ( c.getRenderingContext().getLayoutFactory().isBreak( current_node ) ) {
                         break;
                     }
                     // if no more unused text in this node
@@ -303,7 +303,7 @@ public class InlineLayout extends BoxLayout {
         Font font = FontUtil.getFont( c, node );
         
         // handle each case
-        if ( isReplaced( node ) ) {
+        if ( isReplaced(c, node ) ) {
             return LineBreaker.generateReplacedInlineBox( c, node, avail, prev, text, prev_align, font );
         }
         if ( isFloatedBlock( node, c ) ) {
@@ -312,7 +312,7 @@ public class InlineLayout extends BoxLayout {
         if ( LineBreaker.isFirstLetter( c, node, start ) ) {
             return LineBreaker.generateFirstLetterInlineBox( c, node, start, text, prev, prev_align, avail);
         }
-        if ( LayoutFactory.isBreak( node ) ) {
+        if ( c.getRenderingContext().getLayoutFactory().isBreak( node ) ) {
             return LineBreaker.generateBreakInlineBox( node );
         }
         if ( LineBreaker.isWhitespace( c, containing_block ) ) {
@@ -378,6 +378,14 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.23  2004/11/14 16:40:58  joshy
+* refactored layout factory
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.22  2004/11/14 06:26:39  joshy
 * added better detection for width problems. should avoid most
 * crashes

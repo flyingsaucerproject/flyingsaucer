@@ -336,7 +336,7 @@ public class TableLayout
 
         // lay out the cell's contents
 
-        Layout layout = LayoutFactory.getLayout( cell );
+        Layout layout = c.getLayout( cell );
 
         Box cell_contents = layout.layout( c, (Element)cellbox.node );
 
@@ -522,6 +522,14 @@ public class TableLayout
 /*
    $Id$
    $Log$
+   Revision 1.6  2004/11/14 16:41:04  joshy
+   refactored layout factory
+
+   Issue number:
+   Obtained from:
+   Submitted by:
+   Reviewed by:
+
    Revision 1.5  2004/10/28 01:34:26  joshy
    moved more painting code into the renderers
 

@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.layout;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -35,6 +36,7 @@ import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.table.TableCellLayout;
 import org.xhtmlrenderer.table.TableLayout2;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.u;
 
 /**
 * Returns the appropriate layout for a given node. Currently this hard codes
@@ -50,17 +52,13 @@ import org.xhtmlrenderer.util.XRLog;
 
 public class LayoutFactory {
     /** Description of the Field */
-    private static HashMap element_map = new HashMap();
-    /**
-    * Gets the renderer attribute of the LayoutFactory object
-     *
-     * @param node  PARAM
-     * @return      The renderer value
-     */
-     public static Renderer getRenderer( Node node ) {
-        return getLayout( node ).getRenderer();
-    }
+    private Map element_map = new HashMap();
+    private Map display_map = new HashMap();
 
+
+    public LayoutFactory() {
+        initializeLayouts();
+    }
     /**
     * <p>
     *
@@ -74,9 +72,19 @@ public class LayoutFactory {
     * @param elem_name  The string name of the element to be added
     * @param layout     The layout to associate with the specified element
     */
-    public static void addCustomLayout( String elem_name, Layout layout ) {
-        element_map.put( elem_name, layout );
+    public void addCustomLayout( String elem_name, Layout layout ) {
+        addElementLayout(elem_name, layout);
     }
+    
+    /* add a new layout by display name */
+    public void addDisplayLayout( String display_name, Layout layout) {
+        display_map.put( display_name, layout );
+    }
+    /** add a new layout by element name. */
+    public void addElementLayout( String element_name, Layout layout) {
+        element_map.put( element_name, layout );
+    }
+
 
     /**
     * <p>
@@ -88,13 +96,7 @@ public class LayoutFactory {
     * @see         org.xhtmlrenderer.layout.Layout
     */
 
-    public static Layout getLayout( Node elem ) {
-        // pull from the hasthable first
-        Layout lyt = getCustomLayout( elem );
-        if ( lyt != null ) {
-            return lyt;
-        }
-
+    public Layout getLayout(Context c, Node elem ) {
         // we have to do the inputs manually since they don't depend on
         // the element name
         if ( elem.getNodeType() == elem.ELEMENT_NODE ) {
@@ -137,6 +139,15 @@ public class LayoutFactory {
             }
         }
 
+
+
+        // do normal layout resolution next
+        Layout lyt = getCustomLayout(c, elem );
+        if ( lyt != null ) {
+            return lyt;
+        }
+
+
         // skip whitespace only nodes
         if ( elem.getNodeType() == elem.TEXT_NODE ) {
             if ( elem.getNodeValue().trim().equals( "" ) ) {
@@ -172,87 +183,23 @@ public class LayoutFactory {
         return new InlineLayout();
     }
 
-    public static Renderer getAnonymousRenderer() {
+
+
+    /**
+    * Gets the renderer attribute of the LayoutFactory object
+     *
+     * @param node  PARAM
+     * @return      The renderer value
+     */
+    public Renderer getRenderer(Context c, Node node ) {
+        return getLayout(c, node ).getRenderer();
+    }
+
+    public Renderer getAnonymousRenderer() {
         return new AnonymousBoxLayout().getRenderer();
     }
 
-    /**
-     * Initialize the standard layouts. Called by a static initializer.
-     */
-
-    private static void initializeLayouts() {
-        //System.out.println( "initalizing layouts" );
-        InlineLayout inline = new InlineLayout();
-        addCustomLayout( "div", inline );
-        addCustomLayout( "p", inline );
-        addCustomLayout( "span", inline );
-        addCustomLayout( "u", inline );
-        addCustomLayout( "pre", inline );
-        addCustomLayout( "b", inline );
-        addCustomLayout( "i", inline );
-        addCustomLayout( "big", inline );
-        addCustomLayout( "small", inline );
-        addCustomLayout( "em", inline );
-        addCustomLayout( "strong", inline );
-        addCustomLayout( "dfn", inline );
-        addCustomLayout( "code", inline );
-        addCustomLayout( "samp", inline );
-        addCustomLayout( "kbd", inline );
-        addCustomLayout( "var", inline );
-        addCustomLayout( "cite", inline );
-        addCustomLayout( "ins", inline );
-        addCustomLayout( "del", inline );
-        addCustomLayout( "sup", inline );
-        addCustomLayout( "sub", inline );
-        addCustomLayout( "a", inline );
-        addCustomLayout( "h1", inline );
-        addCustomLayout( "h2", inline );
-        addCustomLayout( "h3", inline );
-        addCustomLayout( "h4", inline );
-        addCustomLayout( "h5", inline );
-        addCustomLayout( "h6", inline );
-
-        addCustomLayout( "ol", new ListLayout() );
-        addCustomLayout( "ul", new ListLayout() );
-        addCustomLayout( "li", inline );
-        addCustomLayout( "img", new ImageLayout() );
-        addCustomLayout( "table", new TableLayout2() );
-        addCustomLayout( "td", new TableCellLayout() );
-        addCustomLayout( "th", new TableCellLayout() );
-
-        addCustomLayout( "body", inline );
-        addCustomLayout( "head", inline );
-
-        addCustomLayout( "br", inline );
-        //addCustomLayout("font",inline);
-        addCustomLayout( "hr", new NullLayout() );
-        addCustomLayout( "form", inline );
-        addCustomLayout( "select", new InputSelect() );
-        addCustomLayout( "option", new NullLayout() );
-        addCustomLayout( "textarea", new InputTextArea() );
-
-    }
-
-
-    /**
-    * Gets the customLayout attribute of the LayoutFactory class
-    *
-    * @param elem  Description of the Parameter
-    * @return      The customLayout value
-    */
-
-    private static Layout getCustomLayout( Node elem ) {
-        if ( element_map.containsKey( elem.getNodeName() ) ) {
-            return (Layout)element_map.get( elem.getNodeName() );
-        }
-        return null;
-    }
-    static {
-        initializeLayouts();
-    }
-    
-    
-    public static boolean isBreak( Node node ) {
+    public boolean isBreak( Node node ) {
 
         if ( node instanceof Element ) {
 
@@ -266,11 +213,11 @@ public class LayoutFactory {
         return false;
     }
     
-    public static boolean isLink( Node node ) {
+    public boolean isLink( Node node ) {
          return node.getNodeName().equals( "a" );
     }
 
-    public static boolean isReplaced( Node node ) {
+    public boolean isReplaced( Node node ) {
         // all images are replaced (because they have intrinsic sizes)
         if ( node.getNodeName().equals( "img" ) ) {
             return true;
@@ -295,12 +242,68 @@ public class LayoutFactory {
         return false;
     }
 
-    public static boolean isForm(Element elem) {
+    public boolean isForm(Element elem) {
         if ( elem.getNodeName().equals( "form" ) ) {
             return true;
         }
         return false;
     }
+
+
+    /* -------------- internal utility functions ----------------- */
+
+    /**
+    * Gets the customLayout attribute of the LayoutFactory class
+    *
+    * @param elem  Description of the Parameter
+    * @return      The customLayout value
+    */
+
+    private Layout getCustomLayout(Context c, Node node ) {
+        
+        if ( element_map.containsKey( node.getNodeName() ) ) {
+            return (Layout)element_map.get( node.getNodeName() );
+        }
+        
+        if(node instanceof Element) {
+            Element elem =  (Element)node;
+            String display = c.css.getStringProperty( elem, "display", false);
+            if ( display_map.containsKey( display ) ) {
+                return (Layout)display_map.get( display );
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Initialize the standard layouts. Called by a static initializer.
+     */
+
+    private void initializeLayouts() {
+        InlineLayout inline = new InlineLayout();
+        addDisplayLayout("block",inline);
+        addDisplayLayout("inline",inline);
+        addDisplayLayout("list-item", inline);
+        addDisplayLayout("none",inline);
+
+        addCustomLayout( "ol", new ListLayout() );
+        addCustomLayout( "ul", new ListLayout() );
+        addCustomLayout( "img", new ImageLayout() );
+        addCustomLayout( "table", new TableLayout2() );
+        addCustomLayout( "td", new TableCellLayout() );
+        addCustomLayout( "th", new TableCellLayout() );
+        addCustomLayout( "br", inline );
+        addCustomLayout( "hr", new NullLayout() );
+        addCustomLayout( "form", inline );
+        addCustomLayout( "select", new InputSelect() );
+        addCustomLayout( "option", new NullLayout() );
+        addCustomLayout( "textarea", new InputTextArea() );
+
+    }
+
+    
+    
 
 
 }
@@ -309,6 +312,14 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.12  2004/11/14 16:40:58  joshy
+* refactored layout factory
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.11  2004/11/03 15:17:04  joshy
 * added intial support for absolute positioning
 *

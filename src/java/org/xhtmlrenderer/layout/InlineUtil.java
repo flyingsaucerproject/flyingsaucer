@@ -120,7 +120,7 @@ public class InlineUtil {
                     //return curr;
                 }
 
-                if ( InlineLayout.isReplaced( curr ) ) {
+                if ( InlineLayout.isReplaced(c, curr ) ) {
                     //u.p("adding: " + curr);
                     list.add( curr );
                     node = curr;
@@ -136,7 +136,7 @@ public class InlineUtil {
                     //return curr;
                 }
 
-                if ( LayoutFactory.isBreak( curr ) ) {
+                if ( c.getRenderingContext().getLayoutFactory().isBreak( curr ) ) {
                     //u.p("adding: " + curr);
                     list.add( curr );
                     node = curr;
@@ -156,7 +156,7 @@ public class InlineUtil {
                 //u.p("about to test: " + curr);
                 // if it's a floating block we don't want to recurse
                 if ( !InlineLayout.isFloatedBlock( curr, c ) &&
-                        !InlineLayout.isReplaced( curr ) ) {
+                        !InlineLayout.isReplaced(c, curr ) ) {
                     curr = curr.getFirstChild();
                     //u.p("going to first child " + curr);
                     continue;
@@ -212,6 +212,14 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/14 16:40:58  joshy
+ * refactored layout factory
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.9  2004/11/09 16:24:30  joshy
  * moved float code into separate class
  *

@@ -101,7 +101,7 @@ public class FloatUtil {
      * @return            Returns
      */
     public static InlineBox generateFloatedBlockInlineBox( Context c, Node node, int avail, InlineBox prev, String text, InlineBox prev_align, Font font ) {
-        Layout layout = LayoutFactory.getLayout( node );
+        Layout layout = c.getLayout( node );
         Rectangle oe = c.getExtents();
         c.setExtents( new Rectangle( oe ) );
         BlockBox block = (BlockBox)layout.layout( c, (Element)node );

@@ -27,23 +27,8 @@ import org.xhtmlrenderer.render.*;
  *
  * @author   empty
  */
-public class ListLayout extends BoxLayout {
 
-
-    /*
-     * public void paintChild(Context c, Box box, Layout layout) {
-     * u.p("list paint child extents = " + c.getExtents());
-     * int y1 = c.getExtents().y;
-     * super.paintChild(c,box,layout);
-     * int y2 = c.getExtents().y;
-     * int y = y1;//(y1 + y2) / 2;
-     * int x = c.getExtents().x;
-     * //c.getGraphics().fillOval(x,y,8,8);
-     * //
-     * //    c.getExtents().x+c.getCursor().x-10,
-     * //    y-2,8,8);
-     * }
-     */
+ public class ListLayout extends BoxLayout {
      public Renderer getRenderer() {
          return new ListRenderer();
      }
@@ -53,6 +38,14 @@ public class ListLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/14 16:40:59  joshy
+ * refactored layout factory
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/10/27 13:17:01  joshy
  * beginning to split out rendering code
  * Issue number:

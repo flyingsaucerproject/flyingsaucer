@@ -234,7 +234,7 @@ public class LineBreaker {
         //u.p("generating replaced Inline Box");
 
         // get the layout for the replaced element
-        Layout layout = LayoutFactory.getLayout( node );
+        Layout layout = c.getLayout( node );
         BlockBox block = (BlockBox)layout.layout( c, (Element)node );
         //u.p("got a block box from the sub layout: " + block);
         Rectangle bounds = new Rectangle( block.x, block.y, block.width, block.height );
@@ -370,7 +370,7 @@ public class LineBreaker {
 
         box.y = 0;// it's relative to the line
         try {
-            if ( !InlineLayout.isReplaced( node ) ) {
+            if ( !InlineLayout.isReplaced(c, node ) ) {
                 if ( !InlineLayout.isFloatedBlock( node, c ) ) {
                     box.width = FontUtil.len( c, node, text.substring( start, end ), font );
                 } else {
@@ -387,7 +387,7 @@ public class LineBreaker {
             throw ex;
         }
         //u.p("box.x = " + box.x);
-        if ( InlineLayout.isReplaced( node ) ) {
+        if ( InlineLayout.isReplaced(c, node ) ) {
             box.height = bounds.height;
         } else if ( InlineLayout.isFloatedBlock( node, c ) ) {
             box.height = bounds.height;
@@ -399,7 +399,7 @@ public class LineBreaker {
 
         box.setText(text);
         
-        if ( !InlineLayout.isReplaced( node ) ) {
+        if ( !InlineLayout.isReplaced(c, node ) ) {
             if ( !InlineLayout.isFloatedBlock( node, c ) ) {
                 FontUtil.setupTextDecoration( c, node, box );
                 if ( box.getText() == null ) {
@@ -526,6 +526,14 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2004/11/14 16:40:58  joshy
+ * refactored layout factory
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.19  2004/11/10 14:54:43  joshy
  * code cleanup on aisle 6
  * Issue number:
