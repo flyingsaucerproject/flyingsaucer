@@ -42,6 +42,7 @@ body, #fs {
 	padding: 5px;
 	background: transparent;
 	font-size: medium;
+	vertical-align: top;
 }
 #fs ul#menu {
 	background: #1777A4;
@@ -65,3 +66,9 @@ body, #fs {
 #fs #menu a:visited {
 	color:#ffffFF;
 	}
+#fs #menu img {
+	padding: 3px;
+	vertical-align:middle;
+	background-color: white;
+	}
+	
