@@ -25,6 +25,7 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.block.Relative;
+import org.xhtmlrenderer.layout.content.BlockContent;
 import org.xhtmlrenderer.layout.inline.TextDecoration;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.render.BlockBox;
@@ -243,7 +244,8 @@ public class LineBreaker {
 
         // get the layout for the replaced element
         Layout layout = c.getLayout(node);
-        BlockBox block = (BlockBox) layout.layout(c, (Element) node);
+        //TODO: temporary hack
+        BlockBox block = (BlockBox) layout.layout(c, new BlockContent((Element) node, c.css.getStyle(node)));
         //u.p("got a block box from the sub layout: " + block);
         Rectangle bounds = new Rectangle(block.x, block.y, block.width, block.height);
         //u.p("bounds = " + bounds);
@@ -544,6 +546,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2004/12/09 00:11:52  tobega
+ * Almost ready for Content-based inline generation.
+ *
  * Revision 1.29  2004/12/05 18:11:38  tobega
  * Now uses style cache for pseudo-element styles. Also started preparing to replace inline node handling with inline content handling.
  *

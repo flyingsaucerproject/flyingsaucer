@@ -21,6 +21,7 @@ package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.Context;
 
 /**
  * Created by IntelliJ IDEA.
@@ -48,7 +49,7 @@ public class TextContent implements Content {
         return _style;
     }
 
-    public String getText() {
+    public Object getContent(Context c) {
         return _sb.toString();
     }
 
@@ -57,7 +58,7 @@ public class TextContent implements Content {
     }
 
     public String toString() {
-        return "TextContent:\nStyle: " + _style + "\nText: " + getText();
+        return "TextContent:\nStyle: " + _style + "\nText: " + _sb.toString();
     }
 
 }

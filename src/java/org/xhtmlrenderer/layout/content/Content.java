@@ -21,6 +21,7 @@ package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.Context;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,7 +33,12 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 public interface Content {
     public Element getElement();
 
-    public String getText();
+    /**
+     * @param c
+     * @return either a String (for TextContent) or a List of Content objects.
+     *         The List may be headed by FirstLineStyle and/or FirstLetterStyle if these are applicable
+     */
+    public Object getContent(Context c);
 
     public CalculatedStyle getStyle();
 }

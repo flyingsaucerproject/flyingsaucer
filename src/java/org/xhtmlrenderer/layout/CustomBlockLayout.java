@@ -22,6 +22,7 @@ package org.xhtmlrenderer.layout;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 
@@ -50,19 +51,20 @@ public class CustomBlockLayout extends BoxLayout {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param elem PARAM
+     * @param c       PARAM
+     * @param content PARAM
      * @return Returns
      */
-    public Box layout(Context c, Element elem) {
-        BlockBox block = (BlockBox) createBox(c, elem);
+    public Box layout(Context c, Content content) {
+        //TODO: temporary hack
+        BlockBox block = (BlockBox) createBox(c, content.getElement());
         // load the image
 
         Border border = getBorder(c, block);
         Border padding = getPadding(c, block);
         Border margin = getMargin(c, block);
 
-        Dimension dim = this.getIntrinsicDimensions(c, elem);
+        Dimension dim = this.getIntrinsicDimensions(c, content.getElement());
 
         // calculate new contents
         block.width = (int) dim.getWidth();
@@ -98,6 +100,9 @@ public class CustomBlockLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/09 00:11:51  tobega
+ * Almost ready for Content-based inline generation.
+ *
  * Revision 1.5  2004/12/05 00:48:57  tobega
  * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
  *

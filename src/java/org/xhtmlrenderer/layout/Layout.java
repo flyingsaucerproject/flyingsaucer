@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Element;
+import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Renderer;
 
@@ -27,19 +27,21 @@ import org.xhtmlrenderer.render.Renderer;
 /**
  * Description of the Interface
  *
- * @author   empty
+ * @author empty
  */
 public interface Layout {
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      Returns
+     * @param c       PARAM
+     * @param content PARAM
+     * @return Returns
      */
-    public Box layout( Context c, Element elem );
+    public Box layout(Context c, Content content);
+
     public void restyle(Context c, Box box);
+
     //public void restyleHover(Context c, Box box);
     public Renderer getRenderer();
 }
@@ -48,6 +50,9 @@ public interface Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/12/09 00:11:51  tobega
+ * Almost ready for Content-based inline generation.
+ *
  * Revision 1.8  2004/11/12 00:20:29  tobega
  * Set up the HoverListener to work properly. Colors are changing!
  *

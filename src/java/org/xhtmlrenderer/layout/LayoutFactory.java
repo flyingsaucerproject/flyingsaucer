@@ -98,7 +98,7 @@ public class LayoutFactory {
         //u.p("getting layout for node: " + elem);
         // we have to do the inputs manually since they don't depend on
         // the element name
-        if (elem.getNodeType() == elem.ELEMENT_NODE) {
+        if (elem.getNodeType() == Node.ELEMENT_NODE) {
             if (elem.getNodeName().equals("input")) {
                 Element el = (Element) elem;
                 String type = el.getAttribute("type");
@@ -328,6 +328,9 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.22  2004/12/09 00:11:51  tobega
+* Almost ready for Content-based inline generation.
+*
 * Revision 1.21  2004/12/08 00:42:35  tobega
 * More cleaning of use of Node, more preparation for Content-based inline generation. Also fixed 2 irritating bugs!
 *

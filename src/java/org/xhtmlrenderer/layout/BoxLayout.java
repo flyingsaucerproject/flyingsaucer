@@ -26,6 +26,8 @@ import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Fixed;
 import org.xhtmlrenderer.layout.block.FloatUtil;
 import org.xhtmlrenderer.layout.block.Relative;
+import org.xhtmlrenderer.layout.content.BlockContent;
+import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.u;
 
@@ -72,12 +74,13 @@ public class BoxLayout extends DefaultLayout {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param elem PARAM
+     * @param c       PARAM
+     * @param content PARAM
      * @return Returns
      */
-    public Box layout(Context c, Element elem) {
-        BlockBox block = (BlockBox) createBox(c, elem);
+    public Box layout(Context c, Content content) {
+        //TODO: temporary hack
+        BlockBox block = (BlockBox) createBox(c, content.getElement());
         return layout(c, block);
     }
 
@@ -237,6 +240,7 @@ public class BoxLayout extends DefaultLayout {
             Node child = nl.item(i);
 
             // get the layout for this child
+            //Aha! if child is not an element, we get a NullLayout or an AnonymousBlockLayout back
             Layout layout = c.getLayout(child);
             if (layout == null) {
                 continue;
@@ -261,7 +265,8 @@ public class BoxLayout extends DefaultLayout {
                 //c.parent_box = box;
                 c.placement_point = new Point(0, box.height);
                 c.getBlockFormattingContext().translate(0, box.height);
-                child_box = layout.layout(c, child_elem);
+                //TODO: below is a temporary hack
+                child_box = layout.layout(c, new BlockContent(child_elem, c.css.getStyle(child_elem)));
                 c.getBlockFormattingContext().translate(0, -box.height);
                 child_box.list_count = c.getListCounter();
             } else {
@@ -357,6 +362,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2004/12/09 00:11:51  tobega
+ * Almost ready for Content-based inline generation.
+ *
  * Revision 1.34  2004/12/08 00:42:34  tobega
  * More cleaning of use of Node, more preparation for Content-based inline generation. Also fixed 2 irritating bugs!
  *

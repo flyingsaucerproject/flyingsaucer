@@ -20,6 +20,7 @@ public class InlineRenderer extends BoxRenderer {
             paintInlineContext(c, box);
             return;
         }
+        //TODO: wouldn't the box itself know if it contained a block layout?
         if (LayoutUtil.isBlockLayout(box.getElement(), c)) {
             super.paintComponent(c, box);
             return;
@@ -37,6 +38,7 @@ public class InlineRenderer extends BoxRenderer {
         if (box.isAnonymous()) {
             return;
         }
+        //TODO: wouldn't the box itself know if it was block layout?
         if (LayoutUtil.isBlockLayout(box.getElement(), c)) {
             super.paintChildren(c, box);
         }

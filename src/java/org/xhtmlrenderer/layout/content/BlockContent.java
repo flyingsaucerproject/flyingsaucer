@@ -21,6 +21,7 @@ package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.Context;
 
 /**
  * Created by IntelliJ IDEA.
@@ -29,7 +30,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
  * Time: 23:47:41
  * To change this template use File | Settings | File Templates.
  */
-public class BlockContent {
+public class BlockContent implements Content {
     private Element _elem;
     private CalculatedStyle _style;
 
@@ -46,8 +47,8 @@ public class BlockContent {
         return _style;
     }
 
-    public String getText() {
-        return _elem.getNodeValue();
+    public Object getContent(Context c) {
+        return ContentUtil.getInlineContentList(_elem, c);
     }
 
     public String toString() {

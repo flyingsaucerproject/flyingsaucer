@@ -19,36 +19,37 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Element;
+import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class NullLayout extends DefaultLayout {
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param elem  PARAM
-     * @return      Returns
+     * @param c       PARAM
+     * @param content PARAM
+     * @return Returns
      */
-    public Box layout( Context c, Element elem ) {
+    public Box layout(Context c, Content content) {
 
-        return new Box( 0, 0, 0, 0 );
+        return new Box(0, 0, 0, 0);
     }
 
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public void paint( Context c, Box box ) { }
+    public void paint(Context c, Box box) {
+    }
 
 }
 
@@ -56,6 +57,9 @@ public class NullLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/09 00:11:52  tobega
+ * Almost ready for Content-based inline generation.
+ *
  * Revision 1.4  2004/10/23 13:46:47  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

@@ -40,6 +40,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.Layout;
+import org.xhtmlrenderer.layout.content.BlockContent;
+import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Renderer;
 
@@ -74,23 +76,24 @@ public class TableLayout2 extends TableLayout {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param elem PARAM
+     * @param c       PARAM
+     * @param content PARAM
      * @return Returns
      */
-    public Box layout(Context c, Element elem) {
+    public Box layout(Context c, Content content) {
         // create the table box
-        TableBox table_box = (TableBox) createBox(c, elem);
+        //TODO: temporary hack?
+        TableBox table_box = (TableBox) createBox(c, content.getElement());
 
         // set up the border spacing
-        float border_spacing = c.css.getStyle(elem).getFloatProperty("border-spacing");
+        float border_spacing = content.getStyle().getFloatProperty("border-spacing");
         table_box.spacing = new Point((int) border_spacing,
                 (int) border_spacing);
 
         // set up the width
         int fixed_width = c.getExtents().width;
-        if (c.css.getStyle(elem).hasProperty("width")) {
-            fixed_width = (int) c.css.getStyle(elem).getFloatPropertyRelative("width", c.getExtents().width);
+        if (content.getStyle().hasProperty("width")) {
+            fixed_width = (int) content.getStyle().getFloatPropertyRelative("width", c.getExtents().width);
         }
         int orig_fixed_width = fixed_width;
 
@@ -100,7 +103,7 @@ public class TableLayout2 extends TableLayout {
         // create the table
         // table is just for calculations. it's not a real box
         Table table = new Table();
-        table.addTable(c, elem);
+        table.addTable(c, content.getElement());
 
         //calculate the widths
         table.calculateWidths(fixed_width, c);
@@ -175,7 +178,8 @@ public class TableLayout2 extends TableLayout {
                     //u.p("doing child layout on: " + layout + " for " + cell_box.node);
                     //u.p("cell_box properly = " + cell_box);
                     c.setSubBlock(true);
-                    Box cell_contents = layout.layout(c, (Element) cell_box.getNode());
+                    //TODO: temporary hack
+                    Box cell_contents = layout.layout(c, new BlockContent((Element) cell_box.getNode(), c.css.getStyle(cell_box.getNode())));
                     c.setSubBlock(false);
                     cell_box.sub_box = cell_contents;
                     cell_box.height = cell_box.sub_box.height;
@@ -288,6 +292,9 @@ public class TableLayout2 extends TableLayout {
 /*
    $Id$
    $Log$
+   Revision 1.9  2004/12/09 00:11:53  tobega
+   Almost ready for Content-based inline generation.
+
    Revision 1.8  2004/12/05 00:49:00  tobega
    Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
 

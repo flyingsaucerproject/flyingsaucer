@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Element;
+import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.BodyRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Renderer;
@@ -35,13 +35,13 @@ public class BodyLayout extends InlineLayout {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param elem PARAM
+     * @param c       PARAM
+     * @param content PARAM
      * @return Returns
      */
 
-    public Box layout(Context c, Element elem) {
-        Box box = super.layout(c, elem);
+    public Box layout(Context c, Content content) {
+        Box box = super.layout(c, content);
         // u.p("done laying it all out");
         // u.p("\n=====================\n\n\n");
         return box;
@@ -58,6 +58,9 @@ public class BodyLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/12/09 00:11:51  tobega
+ * Almost ready for Content-based inline generation.
+ *
  * Revision 1.10  2004/12/08 00:42:34  tobega
  * More cleaning of use of Node, more preparation for Content-based inline generation. Also fixed 2 irritating bugs!
  *

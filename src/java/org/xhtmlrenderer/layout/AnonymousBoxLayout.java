@@ -40,6 +40,7 @@ package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.layout.content.BlockContent;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
 
@@ -119,7 +120,8 @@ public class AnonymousBoxLayout extends InlineLayout {
         this.parent = parent;
         this.text = text;
         //Box box = new AnonymousBlockBox(text);
-        Box box = super.layout(c, parent);//BoxLayout
+        //TODO: temporary hack
+        Box box = super.layout(c, new BlockContent(parent, c.css.getStyle(parent)));//BoxLayout
         //u.p("AnonymousBoxLayout.layout: returning: " + box);
         return box;
     }
@@ -144,6 +146,9 @@ public class AnonymousBoxLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/09 00:11:51  tobega
+ * Almost ready for Content-based inline generation.
+ *
  * Revision 1.5  2004/12/08 00:42:34  tobega
  * More cleaning of use of Node, more preparation for Content-based inline generation. Also fixed 2 irritating bugs!
  *

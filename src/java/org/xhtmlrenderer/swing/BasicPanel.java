@@ -28,6 +28,7 @@ import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
 import org.xhtmlrenderer.layout.BodyLayout;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.content.BlockContent;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
@@ -48,7 +49,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
-import org.xhtmlrenderer.util.x;//hmm, IntelliJ sees references to x below as being x in Component!
+
+//hmm, IntelliJ sees references to x below as being x in Component!
 
 
 /**
@@ -234,7 +236,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         XRLog.layout(Level.FINEST, "layout = " + layout);
 
         getRenderingContext().getTextRenderer().setupGraphics(getContext().getGraphics());
-        body_box = layout.layout(getContext(), html);
+        //TODO: maybe temporary hack
+        Context c = getContext();
+        body_box = layout.layout(getContext(), new BlockContent(html, c.css.getStyle(html)));
 
         XRLog.layout(Level.FINEST, "is a fixed child: " + body_box.isChildrenExceedBounds());
         
@@ -807,6 +811,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/12/09 00:11:52  tobega
+ * Almost ready for Content-based inline generation.
+ *
  * Revision 1.11  2004/12/06 02:52:22  tobega
  * re-inserted reference to Class x, which IntelliJ thought was unused
  *

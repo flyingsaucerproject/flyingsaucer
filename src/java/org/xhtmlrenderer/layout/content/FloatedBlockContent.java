@@ -21,6 +21,7 @@ package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.Context;
 
 /**
  * Created by IntelliJ IDEA.
@@ -46,8 +47,8 @@ public class FloatedBlockContent implements Content {
         return _style;
     }
 
-    public String getText() {
-        return _elem.getNodeValue();
+    public Object getContent(Context c) {
+        return ContentUtil.getInlineContentList(_elem, c);
     }
 
     public String toString() {

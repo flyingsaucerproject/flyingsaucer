@@ -70,6 +70,7 @@ public class LayoutUtil {
      * @param c    PARAM
      * @return The blockLayout value
      */
+    //TODO: should be possible to remove this now
     public static boolean isBlockLayout(Element elem, Context c) {
         NodeList children = elem.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {

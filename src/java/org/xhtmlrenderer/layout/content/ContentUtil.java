@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004 Torbjörn Gannholm, Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -53,43 +53,38 @@ public class ContentUtil {
     /**
      * Gets the inline content of a sequence of nodes
      *
-     * @param root           PARAM
-     * @param elem           PARAM
-     * @param c              PARAM
-     * @param stop_at_blocks PARAM
-     * @return The inlineNodeList value
+     * @param elem PARAM
+     * @param c    PARAM
+     * @return A list of content.
+     *         If it contains BlockContent, it will only contain AnonymousBlockContent and BlockContent objects
      */
-    public static List getInlineContentList(Node root, Element elem, Context c, boolean stop_at_blocks) {
-        List contentList = new LinkedList();
-        if (root == null) {
-            throw new NullPointerException("Trying to get ContentList for null root node");
-        }
+    public static List getInlineContentList(Element elem, Context c) {
+        List inlineList = new LinkedList();
+        List blockList = null;
         if (elem == null) {
             throw new NullPointerException("Trying to get ContentList for null element");
         }
         if (!elem.hasChildNodes()) {
             //u.p("it's empty");
-            return contentList;
+            return inlineList;
         }
 
         // u.p("starting at: " + root);
-        Node curr = root;
+        Node curr = elem;
         TextContent textContent = null;
         CalculatedStyle style = c.css.getStyle(elem);
-        if (root == elem || root == elem.getFirstChild()) {
-            if (mayHaveFirstLine(style)) {
-                //put in a marker if there is first-line styling
-                CascadedStyle firstLine = c.css.getPseudoElementStyle(curr, "first-line");
-                if (firstLine != null) {
-                    contentList.add(new FirstLineStyle(firstLine));
-                }
+        if (mayHaveFirstLine(style)) {
+            //put in a marker if there is first-line styling
+            CascadedStyle firstLine = c.css.getPseudoElementStyle(curr, "first-line");
+            if (firstLine != null) {
+                inlineList.add(new FirstLineStyle(firstLine));
             }
-            if (mayHaveFirstLetter(style)) {
-                //put in a marker if there is first-letter styling
-                CascadedStyle firstLetter = c.css.getPseudoElementStyle(curr, "first-letter");
-                if (firstLetter != null) {
-                    contentList.add(new FirstLetterStyle(firstLetter));
-                }
+        }
+        if (mayHaveFirstLetter(style)) {
+            //put in a marker if there is first-letter styling
+            CascadedStyle firstLetter = c.css.getPseudoElementStyle(curr, "first-letter");
+            if (firstLetter != null) {
+                inlineList.add(new FirstLetterStyle(firstLetter));
             }
         }
         while (true) {
@@ -115,10 +110,10 @@ public class ContentUtil {
                 if (LayoutUtil.isReplaced(c, curr)) {
                     // u.p("adding replaced: " + curr);
                     if (textContent != null) {
-                        contentList.add(textContent);
+                        inlineList.add(textContent);
                         textContent = null;
                     }
-                    contentList.add(new ReplacedContent((Element) curr, elementStyle));
+                    inlineList.add(new ReplacedContent((Element) curr, elementStyle));
                     break handling;
                 }
 
@@ -126,21 +121,25 @@ public class ContentUtil {
                 if (LayoutUtil.isFloated(elementStyle)) {
                     // u.p("adding floated block: " + curr);
                     if (textContent != null) {
-                        contentList.add(textContent);
+                        inlineList.add(textContent);
                         textContent = null;
                     }
-                    contentList.add(new FloatedBlockContent((Element) curr, elementStyle));
+                    inlineList.add(new FloatedBlockContent((Element) curr, elementStyle));
                     break handling;
                 }
 
                 if (LayoutUtil.isBlockNode(curr, c)) {
                     if (textContent != null) {
-                        contentList.add(textContent);
+                        inlineList.add(textContent);
                         textContent = null;
                     }
-                    contentList.add(new BlockContent((Element) curr, elementStyle));
+                    if (blockList == null) blockList = new LinkedList();
+                    //TODO: handle run-in here
+                    blockList.add(new AnonymousBlockContent(elem, c.css.getStyle(elem), inlineList));
+                    inlineList = new LinkedList();
+                    blockList.add(new BlockContent((Element) curr, elementStyle));
                 }
-                //TODO: handle run-in separately
+                //TODO: handle run-in content separately
                 //TODO: how about Absolute and Fixed children?
             }
 
@@ -154,12 +153,12 @@ public class ContentUtil {
                     String content = derived.getStringProperty(CSSName.CONTENT);
                     if (!content.equals("")) {
                         if (textContent != null) {
-                            contentList.add(textContent);
+                            inlineList.add(textContent);
                             textContent = null;
                         }
                         textContent = new TextContent((Element) curr, derived);
                         textContent.append(content.replaceAll("\\\\A", "\n"));
-                        contentList.add(textContent);
+                        inlineList.add(textContent);
                         textContent = null;
                     }
                     //do not reset style here, because if this element is empty, we will not have changed context
@@ -173,7 +172,7 @@ public class ContentUtil {
                         !LayoutUtil.isReplaced(c, curr)) {
                     //new element, new style
                     if (textContent != null) {
-                        contentList.add(textContent);
+                        inlineList.add(textContent);
                         textContent = null;
                     }
                     style = null;
@@ -187,8 +186,8 @@ public class ContentUtil {
                 // not the node being examined. this only matters when we
                 // start the loop at the root of a floated block
 
-                if (LayoutUtil.isFloatedBlock(root, c)) {
-                    if (root == elem) {
+                if (LayoutUtil.isFloatedBlock(curr, c)) {
+                    if (curr == elem) {
                         //ok, the style should already be set and textContent should be null
                         curr = curr.getFirstChild();
                         continue;
@@ -204,38 +203,20 @@ public class ContentUtil {
                     String content = derived.getStringProperty(CSSName.CONTENT);
                     if (!content.equals("")) {
                         if (textContent != null) {
-                            contentList.add(textContent);
+                            inlineList.add(textContent);
                             textContent = null;
                         }
                         textContent = new TextContent((Element) curr, derived);
                         textContent.append(content.replaceAll("\\\\A", "\n"));
-                        contentList.add(textContent);
+                        inlineList.add(textContent);
                         textContent = null;
                     }
                 }
-                if (curr == elem) {
-                    //elem was empty, that can happen, right?
-                    return contentList;
-                }
-            }
-
-            if (curr.getNextSibling() != null) {
-                //ok, the style should still apply
-                curr = curr.getNextSibling();
-                // u.p("going to next sibling: " + curr);
-                continue;
             }
 
             // keep going up until we get another sibling
             // or we are at elem.
             while (true) {
-                curr = curr.getParentNode();
-                //new element, new style
-                if (textContent != null) {
-                    contentList.add(textContent);
-                    textContent = null;
-                }
-                style = null;
 
                 if (curr.getNodeType() == Node.ELEMENT_NODE) {
                     //check for :after content
@@ -249,7 +230,7 @@ public class ContentUtil {
                             //textContent must be null here
                             textContent = new TextContent((Element) curr, derived);
                             textContent.append(content.replaceAll("\\\\A", "\n"));
-                            contentList.add(textContent);
+                            inlineList.add(textContent);
                             textContent = null;
                         }
                     }
@@ -258,10 +239,13 @@ public class ContentUtil {
                 // u.p("going to parent: " + curr);
                 // if we are at the top then return null
                 if (curr == elem) {
-                    // u.p("at the top again. returning null");
-                    // u.p("returning the list");
-                    // u.p(list);
-                    return contentList;
+                    if (blockList != null) {//this was block content
+                        if (inlineList.size() != 0) {
+                            blockList.add(new AnonymousBlockContent(elem, c.css.getStyle(elem), inlineList));
+                        }
+                        return blockList;
+                    }
+                    return inlineList;
                     //return null;
                 }
 
@@ -270,6 +254,14 @@ public class ContentUtil {
                     // u.p("going to next sibling: " + curr);
                     break;
                 }
+
+                curr = curr.getParentNode();
+                //new element, new style
+                if (textContent != null) {
+                    inlineList.add(textContent);
+                    textContent = null;
+                }
+                style = null;
 
             }
 
@@ -327,6 +319,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2004/12/09 00:11:50  tobega
+ * Almost ready for Content-based inline generation.
+ *
  * Revision 1.1  2004/12/08 00:42:30  tobega
  * More cleaning of use of Node, more preparation for Content-based inline generation. Also fixed 2 irritating bugs!
  *

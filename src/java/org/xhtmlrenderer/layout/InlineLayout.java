@@ -23,6 +23,9 @@ package org.xhtmlrenderer.layout;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
+import org.xhtmlrenderer.layout.content.BlockContent;
+import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.layout.inline.*;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.XRLog;
@@ -49,10 +52,19 @@ public class InlineLayout extends BoxLayout {
         if (LayoutUtil.isHiddenNode(box.getElement(), c)) {
             return box;
         }
-        if (!box.isAnonymous()) {
-            if (LayoutUtil.isBlockLayout(box.getElement(), c)) {
-                // u.p("doing up block for: " + box);
-                return super.layoutChildren(c, box);//Would this ever be called? tobe
+
+        //TODO: probably a temporary hack, may have a Content-object in the box that can be called instead
+        List contentList = ContentUtil.getInlineContentList(box.getElement(), c);
+        if (contentList.size() == 0) return box;//we can do this if there is no content, right?
+
+        if (!box.isAnonymous()) {//this check should really be unnecessary now. tobe 2004-12-09
+            //This where the magic decision of creating AnonymousBlockBox is
+            //if (LayoutUtil.isBlockLayout(box.getElement(), c)) {
+
+            Object last = contentList.get(contentList.size() - 1);
+            if (last instanceof AnonymousBlockContent || last instanceof BlockContent) {//this should be block layed out
+                //TODO: why not pass in the content list here?
+                return super.layoutChildren(c, box);
             }
         }
         
@@ -371,6 +383,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.41  2004/12/09 00:11:51  tobega
+* Almost ready for Content-based inline generation.
+*
 * Revision 1.40  2004/12/08 00:42:34  tobega
 * More cleaning of use of Node, more preparation for Content-based inline generation. Also fixed 2 irritating bugs!
 *

@@ -20,10 +20,10 @@
 package org.xhtmlrenderer.layout;
 
 
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.DefaultRenderer;
 import org.xhtmlrenderer.render.Renderer;
@@ -44,13 +44,14 @@ public class DefaultLayout implements Layout {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param elem PARAM
+     * @param c       PARAM
+     * @param content PARAM
      * @return Returns
      */
 
-    public Box layout(Context c, Element elem) {
-        Box box = createBox(c, elem);
+    public Box layout(Context c, Content content) {
+        //TODO: temporary hack
+        Box box = createBox(c, content.getElement());
         return box;//layoutChildren( c, box );
     }
 
@@ -185,6 +186,9 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2004/12/09 00:11:51  tobega
+ * Almost ready for Content-based inline generation.
+ *
  * Revision 1.26  2004/12/05 00:48:57  tobega
  * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
  *

@@ -25,6 +25,8 @@ import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.layout.BoxLayout;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.Layout;
+import org.xhtmlrenderer.layout.content.BlockContent;
+import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.util.x;
@@ -86,14 +88,14 @@ public class TableLayout
      * this is the core layout code of the table. it should be heavily
      * overhauled.
      *
-     * @param c    PARAM
-     * @param elem PARAM
+     * @param c       PARAM
+     * @param content PARAM
      * @return Returns
      */
 
-    public Box layout(Context c, Element elem) {
-
-        TableBox table = (TableBox) createBox(c, elem);
+    public Box layout(Context c, Content content) {
+        //TODO: temporary hack?
+        TableBox table = (TableBox) createBox(c, content.getElement());
 
         // calculate the available space
 
@@ -103,7 +105,7 @@ public class TableLayout
 
         getBorder(c, table);
 
-        float border_spacing = c.css.getStyle(elem).getFloatProperty("border-spacing");
+        float border_spacing = content.getStyle().getFloatProperty("border-spacing");
 
         table.spacing = new Point((int) border_spacing, (int) border_spacing);
 
@@ -122,7 +124,7 @@ public class TableLayout
 
         //u.p("fixed width = " + fixed_width);
 
-        int col_count = getColumnCount(elem);
+        int col_count = getColumnCount(content.getElement());
 
         //u.p("col count = " + col_count);
 
@@ -142,7 +144,7 @@ public class TableLayout
 
         // calculate how wide each column should be and return the total
 
-        leftover_width -= calculateColumnWidths(c, elem, col_widths);
+        leftover_width -= calculateColumnWidths(c, content.getElement(), col_widths);
 
         // distribute the remaining space to the unset columns
 
@@ -152,7 +154,7 @@ public class TableLayout
 
         table.width = fixed_width;
 
-        layoutTableRows(c, table, elem, col_widths, orig_fixed_width);
+        layoutTableRows(c, table, content.getElement(), col_widths, orig_fixed_width);
 
         return table;
     }
@@ -338,7 +340,7 @@ public class TableLayout
 
         Layout layout = c.getLayout(cell);
 
-        Box cell_contents = layout.layout(c, (Element) cellbox.getNode());
+        Box cell_contents = layout.layout(c, new BlockContent((Element) cellbox.getNode(), c.css.getStyle(cellbox.getNode())));
 
         cellbox.sub_box = cell_contents;
 
@@ -519,6 +521,9 @@ public class TableLayout
 /*
    $Id$
    $Log$
+   Revision 1.8  2004/12/09 00:11:53  tobega
+   Almost ready for Content-based inline generation.
+
    Revision 1.7  2004/12/05 00:49:00  tobega
    Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
 
