@@ -40,10 +40,28 @@
                     <include name="*.jar"/>
                 </fileset>
             </classpath>
+            <exclude name="net/homelinux/**"/>
+            <exclude name="**/TobeRuleBank**"/>
+            <exclude name="**/test/**"/>
         </javac>
         <copy todir="build/classes/org/joshy/html/css" file="src/java/org/joshy/html/css/default.css"/>
     </target>
 
+    <target name="compile-tobe" description="compile tobe's stuff" depends="compile, init">
+        <javac
+            srcdir="src/java"
+            destdir="build/classes"
+            debug="on">
+            <classpath>
+                <fileset dir="lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+            <include name="net/homelinux/**"/>
+        </javac>
+        <copy todir="build/classes/org/joshy/html/css" file="src/java/org/joshy/html/css/default.css"/>
+    </target>
+    
     <target name="jar" depends="compile" description="jar">
         <jar
             basedir="build/classes"

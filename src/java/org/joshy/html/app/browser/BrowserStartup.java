@@ -44,6 +44,7 @@ public class BrowserStartup {
     protected JFrame frame;
     protected HistoryManager history;
     protected JFrame validation_console = null;
+    protected BrowserActions actions;
     
     protected ValidationHandler error_handler =  new ValidationHandler();
     public BrowserStartup() {
@@ -53,6 +54,9 @@ public class BrowserStartup {
     
     public void init() {
         logger.info("creating UI");
+        actions = new BrowserActions(this);
+        actions.init();
+        
         panel = new BrowserPanel(this);
         panel.init();
         panel.createLayout();

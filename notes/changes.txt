@@ -1,4 +1,7 @@
+8/01/2004
+    moved most event handlers into the BrowserActions class
 7/30/2004
-
+    added key combos for the menus
+7/29/2004
     added directory list
     updated the wiki

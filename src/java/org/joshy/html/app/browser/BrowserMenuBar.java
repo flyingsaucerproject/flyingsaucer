@@ -11,17 +11,16 @@ import java.io.File;
 
 public class BrowserMenuBar extends JMenuBar {
     public static Logger logger = Logger.getLogger("app.browser");
+    BrowserStartup root;
+    
     
     JMenu file;
-    JMenuItem quit;
-    JMenuItem open_file;
     JMenu edit;
-    JMenuItem copy;
     JMenu view;
+    JMenu go;
     JMenuItem view_source;
     JMenu debug;
     JMenu demos;
-    BrowserStartup root;
     
     public BrowserMenuBar(BrowserStartup root) {
         this.root = root;
@@ -29,27 +28,39 @@ public class BrowserMenuBar extends JMenuBar {
     
     public void init() {
         file = new JMenu("File");
-        open_file = new JMenuItem("Open File...");
-        quit = new JMenuItem("Quit");
+        
         debug = new JMenu("Debug");
         demos = new JMenu("Demos");
+        
+        edit = new JMenu("Edit");
+        
         view = new JMenu("View");
         view_source = new JMenuItem("Page Source");
-        edit = new JMenu("Edit");
-        copy = new JMenuItem("Copy");
+        view_source.setEnabled(false);
+        view.add(root.actions.stop);
+        view.add(root.actions.reload);
         
+        go = new JMenu("Go");
     }
     
+    
     public void createLayout() {
-        file.add(open_file);
-        file.add(quit);
+        file.add(root.actions.open_file);
+        file.add(root.actions.quit);
         add(file);
         
-        edit.add(copy);
+        edit.add(root.actions.cut);
+        edit.add(root.actions.copy);
+        edit.add(root.actions.paste);
         add(edit);
         
         view.add(view_source);
         add(view);
+        
+        go.add(root.actions.forward);
+        go.add(root.actions.backward);
+
+        add(go);
         
         demos.add(new LoadAction("Borders","demo:demos/border.xhtml"));
         demos.add(new LoadAction("Backgrounds","demo:demos/background.xhtml"));
@@ -131,23 +142,6 @@ public class BrowserMenuBar extends JMenuBar {
     }
     
     public void createActions() {
-        open_file.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    FileDialog fd = new FileDialog(root.frame,"Open a local file",FileDialog.LOAD);
-                    fd.show();
-                    String file = fd.getDirectory() + fd.getFile();
-                    root.panel.loadPage(file);
-                } catch (Exception ex) {
-                    logger.info("error:" + ex);
-                }
-            }
-        });
-        quit.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                System.exit(0);
-            }
-        });
         SelectionMouseListener ma = new SelectionMouseListener();
         root.panel.view.addMouseListener(ma);
         root.panel.view.addMouseMotionListener(ma);
@@ -171,5 +165,19 @@ public class BrowserMenuBar extends JMenuBar {
         
     }
 
+}
+
+class EmptyAction extends AbstractAction {
+    public EmptyAction(String name, int accel) {
+        this(name);
+        putValue(Action.ACCELERATOR_KEY,
+            KeyStroke.getKeyStroke(accel,
+                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+    }
+    public EmptyAction(String name) {
+        super(name);
+    }
+    public void actionPerformed(ActionEvent evt) {
+    }
 }
 

@@ -29,7 +29,7 @@ public class BrowserPanel extends JPanel {
 
     
     public void init() {
-        forward = new JButton("Forward");
+        forward = new JButton();
         backward = new JButton("Back");
         stop = new JButton("Stop");
         reload = new JButton("Reload");
@@ -96,6 +96,13 @@ public class BrowserPanel extends JPanel {
     
     String current_url = null;
     
+    public void createActions() {
+        backward.setAction(root.actions.backward);
+        forward.setAction(root.actions.forward);
+        reload.setAction(root.actions.reload);
+        url.setAction(root.actions.load);
+        updateButtons();
+    }
 
     
     public void goForward() {
@@ -124,66 +131,17 @@ public class BrowserPanel extends JPanel {
         status.setText(txt);
     }
         
-    public void createActions() {
-        backward.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    goBack();
-                    view.repaint();
-                } catch (Exception ex) {
-                    u.p(ex);
-                }
-            }
-        });
-        forward.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    goForward();
-                    view.repaint();
-                } catch (Exception ex) {
-                    u.p(ex);
-                }
-            }
-        });
-
-        
-        
-        reload.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    reloadPage();
-                    view.repaint();
-                } catch (Exception ex) {
-                    u.p(ex);
-                }
-            }
-        });
-        
-        url.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    String url_text = url.getText();
-                    loadPage(url_text);
-                    view.repaint();
-                } catch (Exception ex) {
-                    u.p(ex);
-                }
-            }
-        });
-
-        updateButtons();
-    }
     
     protected void updateButtons() {
        if(root.history.hasPrevious()) {
-           backward.setEnabled(true);
+           root.actions.backward.setEnabled(true);
        } else {
-           backward.setEnabled(false);
+           root.actions.backward.setEnabled(false);
        }
        if(root.history.hasNext()) {
-           forward.setEnabled(true);
+           root.actions.forward.setEnabled(true);
        } else {
-           forward.setEnabled(false);
+           root.actions.forward.setEnabled(false);
        }
     }
     
