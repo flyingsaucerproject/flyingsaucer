@@ -29,7 +29,7 @@ package net.homelinux.tobe.renderer;
 public interface UserAgentCallback {
     
     /** returns null if UserAgent does not wish to access the URI */
-    public java.io.InputStream getInputStreamForURI(java.net.URI uri);
+    public java.io.Reader getReaderForURI(java.net.URI uri);
     
     /** UserAgent should consider if it should answer truthfully or not for privacy reasons */
     public boolean isVisited(java.net.URI uri);

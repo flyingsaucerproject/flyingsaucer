@@ -253,7 +253,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
                 try {
                     long st = System.currentTimeMillis();
                     java.net.URI uri = new java.net.URI(file);
-                    _doc = new XRDocument(HTMLTest.this, getInputStreamForURI(uri), resolveURI(uri));
+                    _doc = new XRDocument(HTMLTest.this, getReaderForURI(uri), resolveURI(uri));
                     
                     long el = System.currentTimeMillis() - st;
                     System.out.println("TIME: loadDocument(" + file + ")  " + el + "ms, render may take longer");
@@ -280,7 +280,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
                 try {
                     long st = System.currentTimeMillis();
                     java.net.URI uri = new java.net.URI(url.toString());
-                    _doc = new XRDocument(HTMLTest.this, getInputStreamForURI(uri), uri);
+                    _doc = new XRDocument(HTMLTest.this, getReaderForURI(uri), uri);
                     
                     long el = System.currentTimeMillis() - st;
                     System.out.println("TIME: loadDocument(" + url + ")  " + el + "ms, render may take longer");
@@ -305,7 +305,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
         return _baseURI.resolve(uri);
     }
     
-    public java.io.InputStream getInputStreamForURI(java.net.URI uri) {
+    public java.io.Reader getReaderForURI(java.net.URI uri) {
         java.io.InputStream is = null;
         try {
             is = _baseURI.resolve(uri).toURL().openStream();
@@ -316,7 +316,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
         catch(java.io.IOException e) {
             
         }
-        return is;
+        return new java.io.InputStreamReader(is);
     }
     
     public boolean isVisited(java.net.URI uri) {
@@ -403,7 +403,7 @@ class ClickMouseListener extends MouseAdapter {
             if(elem.hasAttribute("href")) {
                 java.net.URI uri = new java.net.URI(elem.getAttribute("href"));
                 uri = _doc.getURI().resolve(uri);
-                java.io.InputStream is = getInputStreamForURI(uri);
+                java.io.Reader is = getReaderForURI(uri);
                 _doc = new XRDocument(HTMLTest.this, is, uri);
                 panel.setDocument(_doc);
             }

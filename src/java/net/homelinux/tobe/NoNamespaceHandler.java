@@ -93,10 +93,34 @@ System.err.println("NoNamespace class!");
         return uris;
     }
     
+    /* Not a good idea. NO good way of witing a selector. Use UserAgent defaults and css defaults
     public java.io.Reader getDefaultStylesheet() {
-        
-        return null;
+        java.io.Reader reader = null;
+        try {
 
+            //Object marker = new org.xhtmlrenderer.DefaultCSSMarker();
+            
+            //if(marker.getClass().getResourceAsStream("default.css") != null) {
+            if(this.getClass().getResourceAsStream("nonamespace.css") != null) {
+
+            //reader = new java.io.InputStreamReader(marker.getClass().getResource("default.css").openStream());
+            reader = new java.io.InputStreamReader(this.getClass().getResource("nonamespace.css").openStream());
+            } else {
+                System.err.println("Could not find css for "+this.getClass().getName());
+            }
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+
+        }
+        
+        return reader;
+
+    }*/
+    
+    public java.io.Reader getDefaultStylesheet() {
+        return null;
     }
     
 }

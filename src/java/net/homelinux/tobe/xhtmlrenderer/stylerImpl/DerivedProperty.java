@@ -33,7 +33,7 @@ import org.w3c.dom.css.CSSValue;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 
-import org.joshy.html.css.RuleNormalizer;
+import org.xhtmlrenderer.css.RuleNormalizer;
 
 
 /**

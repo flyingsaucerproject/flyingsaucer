@@ -23,61 +23,58 @@ package net.homelinux.tobe.browser;
 
 import java.io.*;
 import org.w3c.dom.*;
-import javax.xml.parsers.*;
 import org.xhtmlrenderer.util.u;
 import net.homelinux.tobe.renderer.XRDocument;
 import net.homelinux.tobe.renderer.UserAgentCallback;
 
 public class DirectoryLister {
+    
+    StringBuffer sb;
 
     public XRDocument list(UserAgentCallback ua, File file) throws Exception {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.newDocument();
+        sb = new StringBuffer();
         
-        Element html = doc.createElement("html");
-        Element head = doc.createElement("head");
-        html.appendChild(head);
-        Element style = doc.createElement("style");
-        head.appendChild(style);
-        StringBuffer stysb = new StringBuffer();
-        stysb.append("table { background-color: #ddffdd; }");
-        stysb.append(".dir { font-weight: bold; color: #ff9966; }");
-        stysb.append(".file { font-weight: normal; color: #003333; }");
-        style.appendChild(doc.createTextNode(stysb.toString()));
-        Element body = doc.createElement("body");
-        Element p = doc.createElement("p");
-        body.appendChild(p);
-        html.appendChild(body);
-        doc.appendChild(html);
-        
-        p.appendChild(doc.createTextNode("the file " + file.toString() + " is"));
-        //u.p("listing file: " + file);
+        sb.append("<html xmlns='http://www.w3.org/1999/xhtml'>");
+        sb.append("<head>");
+            sb.append("<title>Directory listing of ").append(file.toString()).append("</title>");
+            sb.append("<style type='text/css'>");
+                sb.append("body { background-color: #ddffdd; }");
+                sb.append(".dir { font-weight: bold; color: #ff9966; }");
+                sb.append(".file { font-weight: normal; color: #003333; }");
+            sb.append("</style>");
+        sb.append("</head>");
+        sb.append("<body>");
+            sb.append("<h1>Directory listing of ").append(file.toString()).append("</h1>");
         
         if(file.isDirectory()) {
-            //u.p("is dir");
-            Element table = doc.createElement("table");
+            //sb.append("<table>");
             File[] files = file.listFiles();
             for(int i=0; i<files.length; i++) {
-                //u.p("doing: " + files[i]);
-                Element tr = doc.createElement("tr");
+                //sb.append("<tr>");
+                sb.append("<p>");
                 if(files[i].isDirectory()) {
-                    tr.appendChild(td(files[i].getName(),"dir",doc));
+                    td(files[i].getName(),"dir");
                 } else {
-                    tr.appendChild(td(files[i].getName(),"file",doc));
+                    td(files[i].getName(),"file");
                 }
-                table.appendChild(tr);
+                //sb.append("</tr>");
+                sb.append("</p>");
             }
-            body.appendChild(table);
+            //sb.append("</table>");
         }
+        sb.append("</body>");
+        sb.append("</html>");
         
-        return new XRDocument(ua, doc, file.toURI());
+        XRDocument doc = new XRDocument(ua, new StringReader(sb.toString()), file.toURI());
+        sb = null;
+        return doc;
     }
     
-    public Element td(String str, String cls, Document doc) {
-        Element td = doc.createElement("td");
-        td.setAttribute("class",cls);
-        td.appendChild(doc.createTextNode(str));
-        return td;
+    private void td(String str, String cls) {
+        //sb.append("<td class='").append(cls).append("'>");
+        sb.append("<span class='").append(cls).append("'>");
+            sb.append(str);
+        //sb.append("</td>");
+        sb.append("</span>");
     }
 }

@@ -239,7 +239,7 @@ public class BrowserPanel extends JPanel implements DocumentListener, UserAgentC
             if(!short_url.startsWith("/")) {
                 short_url = "/" + short_url;
             }
-            InputStream is = marker.getClass().getResourceAsStream(short_url);
+            InputStreamReader is = new InputStreamReader(marker.getClass().getResourceAsStream(short_url));
             ref = new URI(marker.getClass().getResource(short_url).toString());
             doc = new XRDocument(this,is,ref);
         } else if(url_text.startsWith("http")) {
@@ -257,7 +257,7 @@ public class BrowserPanel extends JPanel implements DocumentListener, UserAgentC
 
         } else {
             ref = new File(url_text).toURI();
-            doc = new XRDocument(this, getInputStreamForURI(ref), ref);
+            doc = new XRDocument(this, getReaderForURI(ref), ref);
         }
         loadPage(doc,ref);
 
@@ -269,7 +269,7 @@ public class BrowserPanel extends JPanel implements DocumentListener, UserAgentC
     
     private XRDocument loadUriDocument(URI uri) {
         XRDocument doc = null;
-        InputStream is = getInputStreamForURI(uri);
+        Reader is = getReaderForURI(uri);
         String path = uri.getPath();
         System.out.println("URI path "+path);
         if(path.endsWith(".xml") || path.endsWith(".xhtml")) {
@@ -384,8 +384,10 @@ public class BrowserPanel extends JPanel implements DocumentListener, UserAgentC
     }
  
     //Methods for UserAgentCallback
-    /** this is where we could implement some security about which URIs to load */
-    public java.io.InputStream getInputStreamForURI(java.net.URI uri) {
+    /** this is where we could implement some security about which URIs to load <br />
+     * Also, we should analyze the InputStream and make it into a correct reader
+     */
+    public java.io.Reader getReaderForURI(java.net.URI uri) {
         java.io.InputStream is = null;
         try {
             URI baseURI = root.history.getCurrentURI();
@@ -397,7 +399,7 @@ public class BrowserPanel extends JPanel implements DocumentListener, UserAgentC
         catch(java.io.IOException e) {
             
         }
-        return is;
+        return new InputStreamReader(is);
     }
     
     net.homelinux.tobe.renderer.NamespaceHandler xhtmlHandler = new net.homelinux.tobe.XhtmlNamespaceHandler();

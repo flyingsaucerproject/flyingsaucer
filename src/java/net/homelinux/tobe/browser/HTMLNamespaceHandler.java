@@ -19,7 +19,7 @@ public class HTMLNamespaceHandler extends XhtmlNamespaceHandler {
     
     public String getElementStyling(org.w3c.dom.Element e) {
         StringBuffer sb = new StringBuffer();
-        String s = e.getAttribute("style");
+        String s = e.getAttribute("style").toLowerCase();
         if(!s.equals("")) {
             sb.append(s);
             if(!s.endsWith(";")) sb.append(";");

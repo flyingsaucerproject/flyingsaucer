@@ -53,7 +53,7 @@ public class XRDocument implements net.homelinux.tobe.xhtmlrenderer.AttributeRes
     private java.util.HashMap _nsHandlers = new java.util.HashMap();
     
     /** Creates a new instance of Document */
-    public XRDocument(UserAgentCallback ua, java.io.InputStream is, java.net.URI uri) {
+    public XRDocument(UserAgentCallback ua, java.io.Reader reader, java.net.URI uri) {
         _ua = ua;
         _uri = uri;
         
@@ -63,7 +63,7 @@ public class XRDocument implements net.homelinux.tobe.xhtmlrenderer.AttributeRes
         try{
             DocumentBuilder builder = fact.newDocumentBuilder();
             _doc = builder.newDocument();
-            SAXSource source = new SAXSource(new InputSource(is));
+            SAXSource source = new SAXSource(new InputSource(reader));
             Result result = new SAXResult(new DocumentProcessor(this));
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer t = tf.newTransformer();
@@ -90,7 +90,7 @@ public class XRDocument implements net.homelinux.tobe.xhtmlrenderer.AttributeRes
     }
     
     /** Creates a new instance of XRDocument with a custom XMLReader */
-    public XRDocument(UserAgentCallback ua, XMLReader xmlReader, java.io.InputStream is, java.net.URI uri) {
+    public XRDocument(UserAgentCallback ua, XMLReader xmlReader, java.io.Reader reader, java.net.URI uri) {
         _ua = ua;
         _uri = uri;
         
@@ -100,7 +100,7 @@ public class XRDocument implements net.homelinux.tobe.xhtmlrenderer.AttributeRes
         try{
             DocumentBuilder builder = fact.newDocumentBuilder();
             _doc = builder.newDocument();
-            SAXSource source = new SAXSource(xmlReader, new InputSource(is));
+            SAXSource source = new SAXSource(xmlReader, new InputSource(reader));
             Result result = new SAXResult(new DocumentProcessor(this));
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer t = tf.newTransformer();

@@ -198,9 +198,8 @@ long st = System.currentTimeMillis();
                 uri = baseUri.resolve(uris[i]);
                 sheet = _stylesheetFactory.getStylesheet(uri);
                 if(sheet == null) {
-                    java.io.InputStream is = _userAgent.getInputStreamForURI(uri);
-                    if(is != null) {
-                        reader = new InputStreamReader(is);
+                    reader = _userAgent.getReaderForURI(uri);
+                    if(reader != null) {
                         sheet = _stylesheetFactory.parse(Stylesheet.AUTHOR, reader);
                         _stylesheetFactory.putStylesheet(uri, sheet);
                     }
