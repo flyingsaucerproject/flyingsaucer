@@ -201,7 +201,7 @@ import org.xhtmlrenderer.util.XRLog;
         String[] uris = _nsh.getStylesheetURIs(_doc);
         if(uris != null) {
             for(int i=0; i<uris.length; i++) {
-                java.net.URL baseUrl = _context.getBaseURL();
+                java.net.URL baseUrl = _context.getRenderingContext().getBaseURL();
                 try {
                     uri = new java.net.URL(baseUrl,uris[i]).toString();
                     sheet = _stylesheetFactory.getStylesheet(uri);
@@ -222,7 +222,7 @@ import org.xhtmlrenderer.util.XRLog;
             }
         }
         
-        uri = _context.getBaseURL().toString();
+        uri = _context.getRenderingContext().getBaseURL().toString();
         sheet = _stylesheetFactory.getStylesheet(uri);
         if(sheet == null) {
             String inlineStyle = _nsh.getInlineStyle(_doc);

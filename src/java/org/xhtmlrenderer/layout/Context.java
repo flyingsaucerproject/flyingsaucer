@@ -130,7 +130,9 @@ public class Context {
     private boolean sub_block = false;
     
     public RenderingContext ctx;
-
+    public RenderingContext getRenderingContext() {
+        return ctx;
+    }
     private TextRenderer text_renderer;
     public TextRenderer getTextRenderer() {
         return text_renderer;
@@ -393,16 +395,6 @@ public class Context {
         this.extents = rect;
     }
 
-
-    /**
-     * Sets the baseURL attribute of the Context object
-     *
-     * @param base_url  The new baseURL value
-     */
-    public void setBaseURL( URL base_url ) {
-        ctx.setBaseURL(base_url);
-    }
-
     /**
      * Sets the maxWidth attribute of the Context object
      *
@@ -537,15 +529,6 @@ public class Context {
      */
     public int getYoff() {
         return this.yoff;
-    }
-
-    /**
-     * Gets the baseURL attribute of the Context object
-     *
-     * @return   The baseURL value
-     */
-    public URL getBaseURL() {
-        return ctx.getBaseURL();
     }
 
     /**
@@ -727,6 +710,13 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/11/12 02:50:59  joshy
+ * finished moving base url
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.11  2004/11/12 02:47:33  joshy
  * moved baseurl to rendering context
  * Issue number:

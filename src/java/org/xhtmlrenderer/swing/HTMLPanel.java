@@ -448,7 +448,7 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
     public void setDocumentRelative( String filename )
         throws Exception {
         if ( getContext() != null && ( !filename.startsWith( "http" ) ) ) {
-            URL base = new URL( getContext().getBaseURL(), filename );
+            URL base = new URL( getRenderingContext().getBaseURL(), filename );
             XRLog.load( "Loading URL " + base );
             Document dom = x.loadDocument( base );
             //URL base = new File(filename).toURL();
@@ -464,7 +464,7 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
         this.url = url;
 
         //have to do this first
-        getContext().setBaseURL( url );
+        getRenderingContext().setBaseURL( url );
         StaticXhtmlAttributeResolver ar = new StaticXhtmlAttributeResolver() {
             public boolean isHover(org.w3c.dom.Element e) {
                 if(e == hovered_element) {
@@ -675,6 +675,13 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2004/11/12 02:50:59  joshy
+ * finished moving base url
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.27  2004/11/12 02:23:59  joshy
  * added new APIs for rendering context, xhtmlpanel, and graphics2drenderer.
  * initial support for font mapping additions

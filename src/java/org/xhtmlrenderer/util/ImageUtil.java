@@ -53,7 +53,7 @@ public class ImageUtil {
 
             //u.p("src = " + src);
 
-            URL base = c.getBaseURL();
+            URL base = c.getRenderingContext().getBaseURL();
 
             if ( base != null ) {
 
@@ -84,6 +84,13 @@ public class ImageUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/12 02:50:59  joshy
+ * finished moving base url
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 14:06:57  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
