@@ -60,10 +60,10 @@ public class InlineRenderer extends BoxRenderer {
         }
 
         for (int i = 0; i < box.getChildCount(); i++) {
-            if (box.restyle) {
-                restyle(c, box);
-                //box.restyle = false;
-            }
+            //if (box.restyle) {
+            restyle(c, box);
+            //box.restyle = false;
+            //}
             if (i == 0 && block != null && block.firstLineStyle != null) c.pushStyle(block.firstLineStyle);
             // get the line box
             paintLine(c, (LineBox) box.getChild(i));
@@ -92,10 +92,6 @@ public class InlineRenderer extends BoxRenderer {
             }
 
             InlineBox box = (InlineBox) child;
-            if (box.restyle) {
-                restyle(c, box);
-                //box.restyle = false;
-            }
             paintInline(c, box, lx, ly, line);
         }
         if (c.debugDrawLineBoxes()) {
@@ -126,13 +122,17 @@ public class InlineRenderer extends BoxRenderer {
         if (inline.pushstyles != null) {
             for (Iterator i = inline.pushstyles.iterator(); i.hasNext();) {
                 StylePush sp = (StylePush) i.next();
-                c.pushStyle(sp.getStyle());
+                c.pushStyle(c.css.getCascadedStyle(sp.getElement()));
                 if (inline.hover) {
                     CascadedStyle hs = c.css.getPseudoElementStyle(sp.getElement(), "hover");
                     if (hs != null) c.pushStyle(hs);
                 }
             }
         }
+        //if (box.restyle) {
+        restyle(c, inline);
+        //box.restyle = false;
+        //}
 
         handleRelativePre(c, inline);
         paintPadding(c, line, inline);

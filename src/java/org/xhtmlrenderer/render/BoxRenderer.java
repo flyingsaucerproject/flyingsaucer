@@ -31,17 +31,17 @@ public class BoxRenderer extends DefaultRenderer {
         //set the current style
         CascadedStyle hoverStyle = null;
         if (block.content.getStyle() != null) {
-            c.pushStyle(block.content.getStyle());
+            c.pushStyle(c.css.getCascadedStyle(block.content.getElement()));
             if (block.hover) {
                 hoverStyle = c.css.getPseudoElementStyle(block.content.getElement(), "hover");
                 if (hoverStyle != null) c.pushStyle(hoverStyle);
             }
         }
 
-        if (box.restyle) {
-            restyle(c, box);
-            //box.restyle = false;
-        }
+        //if (box.restyle) {
+        restyle(c, box);
+        //box.restyle = false;
+        //}
 
         // copy the bounds to we don't mess it up
         Rectangle oldBounds = new Rectangle(c.getExtents());

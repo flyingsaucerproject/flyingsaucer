@@ -29,10 +29,10 @@ public class DefaultRenderer implements Renderer {
         //Rectangle contents = layoutChildren(c,elem);
         //c.cursor = old_cursor;
         XRLog.render(Level.WARNING, "Using default renderer for " + box.getClass().getName());
-        if (box.restyle) {
-            restyle(c, box);
-            //box.restyle = false;
-        }
+        //if (box.restyle) {
+        restyle(c, box);
+        //box.restyle = false;
+        //}
         paintBackground(c, box);
         paintComponent(c, box);
         paintChildren(c, box);

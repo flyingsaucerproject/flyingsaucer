@@ -35,8 +35,6 @@ import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.Xx;
-import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.ErrorHandler;
 
 import javax.swing.*;
@@ -382,11 +380,11 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
             
             // skip if it's text only so that we can
             // hit the parent instead
-            if (bx instanceof InlineBox) {
+            /*if (bx instanceof InlineBox) {
                 if (!bx.isInlineElement()) {
                     continue;
                 }
-            }
+            }*/
             
             // skip line boxes
             if (bx instanceof LineBox) {
@@ -871,6 +869,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/12/22 05:32:57  tobega
+ * Hover is working
+ *
  * Revision 1.17  2004/12/14 01:56:23  joshy
  * fixed layout width bugs
  * fixed extra border on document bug
