@@ -450,21 +450,22 @@ public class LineBreaker {
         InlineLayout.setupRelative( c, box );
 
         
-        /*
+        
         // if first line then do extra setup        
         if(c.isFirstLine()) {
             //u.p("node = " + node);
             //u.p("block elem = " + getNearestBlockElement(node,c));
             // if there is a first line pseudo class
-            CalculatedStyle cs = c.css.getPseudoElementStyle(getNearestBlockElement(node,c),"first-line");
+            CascadedStyle pseudo = c.css.getPseudoElementStyle(getNearestBlockElement(node,c),"first-line");
+            CalculatedStyle normal = c.css.getStyle(box.getRealElement());
+            CalculatedStyle merged = new CalculatedStyle(normal,pseudo);
+            //CalculatedStyle cs = c.css.getPseudoElementStyle(getNearestBlockElement(node,c),"first-line");
             //u.p("cs = " + cs);
             //u.p("weight = " + cs.propertyByName("font-weight").computedValue().asString());
             //u.p("===========");
-            if(cs != null) {
-                styleInlineBox(c,cs,box);
-            }
+            styleInlineBox(c,merged,box);
         }
-        */
+        
 
         // adjust width based on borders and padding
         box.width += box.totalHorizontalPadding();
@@ -552,6 +553,14 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/11/08 23:53:27  joshy
+ * update for first-line support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.10  2004/11/08 23:15:56  tobega
  * Changed pseudo-element styling to just return CascadedStyle
  *
