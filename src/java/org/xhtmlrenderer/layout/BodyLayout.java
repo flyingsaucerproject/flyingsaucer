@@ -40,9 +40,11 @@ public class BodyLayout extends InlineLayout {
      * @param elem  PARAM
      * @return      Returns
      */
+     /*
     public Box layout( Context c, Element elem ) {
         return super.layout( c, elem );
     }
+    */
     
     public Renderer getRenderer() {
         return new BodyRenderer();
@@ -54,6 +56,14 @@ public class BodyLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/27 15:46:38  joshy
+ * lots of cleanup to make the code clearer
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/11/12 02:42:18  joshy
  * context cleanup
  * Issue number:

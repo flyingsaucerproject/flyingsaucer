@@ -20,9 +20,13 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.Font;
+import java.awt.font.LineMetrics;
+import java.awt.*;
+import java.awt.geom.*;
 import org.xhtmlrenderer.util.*;
 import org.xhtmlrenderer.layout.*;
 import java.awt.FontMetrics;
+import org.xhtmlrenderer.css.style.*;
 
 
 /**
@@ -259,13 +263,39 @@ public class InlineBox extends Box {
         //u.p("getting advance: " + x + " chars = " + chars);
         return fm.charsWidth(chars,0,x);
     }
+    
+    
+    public LineMetrics line_metrics;
+    public Rectangle2D text_bounds;
 
+    private CalculatedStyle style;
+    public void setStyle(CalculatedStyle style) {
+        this.style = style;
+    }
+    public CalculatedStyle getStyle() {
+        return this.style;
+    }
+    public CalculatedStyle getStyle(Context c) {
+        if(this.style == null) {
+            setStyle(c.css.getStyle(getRealElement()));
+        }
+        return getStyle();
+    }
+    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/11/27 15:46:40  joshy
+ * lots of cleanup to make the code clearer
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.14  2004/11/23 15:19:23  joshy
  * split breaking into it's own class
  * added support for the other values of whitespace (pre, pre-line, etc)

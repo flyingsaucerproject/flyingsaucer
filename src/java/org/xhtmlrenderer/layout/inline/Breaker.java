@@ -16,12 +16,12 @@ public class Breaker {
     public static boolean breakText(Context c, InlineBox inline, InlineBox prev, InlineBox prev_align, int avail, int max, Font font) {
         boolean db = false;
         if(db) {
-         u.p("=========================");
-         u.p("breaking: " + inline);
-         //u.p("breaking : '" + inline.getSubstring() + "'");
-         //u.p("avail = " + avail);
-         //u.p("max = " + max);
-         //u.p("prev align = " + prev_align);
+             u.p("=========================");
+             u.p("breaking: " + inline);
+             //u.p("breaking : '" + inline.getSubstring() + "'");
+             //u.p("avail = " + avail);
+             //u.p("max = " + max);
+             //u.p("prev align = " + prev_align);
         }
         
         inline.setFont(font);

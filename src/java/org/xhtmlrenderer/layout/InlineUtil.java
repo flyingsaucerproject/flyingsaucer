@@ -38,27 +38,6 @@ public class InlineUtil {
     /**
      * Description of the Method
      *
-     * @param c           PARAM
-     * @param elem        PARAM
-     * @param width       PARAM
-     * @param first_line  PARAM
-     * @return            Returns
-     */
-    public static int doTextIndent( Context c, Element elem, int width, LineBox first_line ) {
-        if ( c.css.hasProperty( elem, CSSName.TEXT_INDENT ) ) {
-            float indent = c.css.getFloatProperty( elem, CSSName.TEXT_INDENT, width );
-            width = width - (int)indent;
-            first_line.x = first_line.x + (int)indent;
-        }
-        return width;
-    }
-
-
-
-
-    /**
-     * Description of the Method
-     *
      * @param node_list  PARAM
      * @return           Returns
      */
@@ -227,6 +206,14 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/11/27 15:46:38  joshy
+ * lots of cleanup to make the code clearer
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.14  2004/11/18 23:29:38  joshy
  * fixed xml bug
  * Issue number:

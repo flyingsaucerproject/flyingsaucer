@@ -81,7 +81,9 @@ public class LineBreaker {
                 next_space = text.length();
             }
 
-            Font font = FontUtil.getFont( c, node );
+            CalculatedStyle style = c.css.getStyle(getElement(node));
+            Font font = FontUtil.getFont( c, style, node);
+            //Font font = FontUtil.getFont( c, node );
 
             int len2 = FontUtil.len( c, node, text.substring( start, next_space ), font );
             // if this won't fit, then break and use the previous span
@@ -420,7 +422,15 @@ public class LineBreaker {
         }
 
         // do vertical alignment
-        VerticalAlign.setupVerticalAlign( c, node, box );
+        
+/*        Element elem = null;
+        if(node instanceof Element) {
+            elem = (Element)node;
+        } else {
+            elem = (Element)node.getParentNode();
+        }*/
+        CalculatedStyle style = box.getStyle(c);//c.css.getStyle(elem);
+        VerticalAlign.setupVerticalAlign( c, style, box );
         box.setFont( font );//FontUtil.getFont(c,node));
         if ( node.getNodeType() == node.TEXT_NODE ) {
             box.color = c.css.getColor( (Element)node.getParentNode(), true );
@@ -485,7 +495,7 @@ public class LineBreaker {
     }
     
     
-    private static Element getElement(Node node) {
+    public static Element getElement(Node node) {
         Element elem = null;
         if(node instanceof Element) {
             elem = (Element)node;
@@ -505,9 +515,10 @@ public class LineBreaker {
         // u.p("prev align = " + prev_align);
         // u.p("avail = " + avail);
         
-        Font font = FontUtil.getFont(c, node);
-        int len = FontUtil.len( c, node, text.substring(start,end), font);
+        CalculatedStyle style = c.css.getStyle(getElement(node));
+        Font font = FontUtil.getFont(c, style, node);
         InlineBox box = newBox( c, node, start, end, prev, text, prev_align, font );
+        int len = FontUtil.len( c, node, text.substring(start,end), font);
         Element elem = getElement(node);
         CascadedStyle ps = c.css.getPseudoElementStyle(elem,"first-letter");
         CalculatedStyle parent = c.css.getStyle(elem);
@@ -539,6 +550,14 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2004/11/27 15:46:39  joshy
+ * lots of cleanup to make the code clearer
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.24  2004/11/23 02:41:59  joshy
  * fixed vertical-align support for first-letter pseudos
  * tested first-line w/ new breaking routines

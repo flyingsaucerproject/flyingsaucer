@@ -94,7 +94,6 @@ public class BoxLayout extends DefaultLayout {
             c.setBlockFormattingContext(bfc);
             set_bfc = true;
             old_bfc = null;
-            //u.p("extents here = " + c.getExtents());
             bfc.setWidth((int) c.getExtents().getWidth());
         }
 
@@ -237,9 +236,7 @@ public class BoxLayout extends DefaultLayout {
             } else {
                 // create anonymous block box
                 // prepare the node list of the text children
-                //child_box = new AnonymousBlockBox(child);
                 // call layout
-                //u.p("doing an anonymous block for: " + child);
                 child_box = ( (AnonymousBoxLayout)layout ).layout( c, elem, child );
 
                 // skip text children if the prev_child == anonymous block box
@@ -330,6 +327,14 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2004/11/27 15:46:38  joshy
+ * lots of cleanup to make the code clearer
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.26  2004/11/18 19:10:04  joshy
  * added bottom support to absolute positioning
  *

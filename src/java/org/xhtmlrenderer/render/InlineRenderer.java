@@ -50,17 +50,17 @@ public class InlineRenderer extends BoxRenderer {
     * individually.
     */
     private void paintInlineContext( Context c, Box box ) {
-        //u.p("box = " + box);
         BlockBox block = (BlockBox)box;
         // translate into local coords
         // account for the origin of the containing box
         c.translate( box.x, box.y );
         // for each line box
-        //c.getGraphics().setColor( Color.black );
+
         for ( int i = 0; i < block.getChildCount(); i++ ) {
             // get the line box
             paintLine( c, (LineBox)block.getChild( i ) );
         }
+
         // translate back to parent coords
         c.translate( -box.x, -box.y );
     }
@@ -71,6 +71,7 @@ public class InlineRenderer extends BoxRenderer {
         // get x and y
         int lx = line.x;
         int ly = line.y + line.baseline;
+
         // for each inline box
         for ( int j = 0; j < line.getChildCount(); j++ ) {
             paintInline( c, (InlineBox)line.getChild( j ), lx, ly, line );
@@ -79,6 +80,7 @@ public class InlineRenderer extends BoxRenderer {
             GraphicsUtil.drawBox( c.getGraphics(), line, Color.blue );
         }
     }
+
 
     // Inlines are drawn vertically relative to the baseline of the containing
     // line box, not relative to the origin of the line.
@@ -116,18 +118,21 @@ public class InlineRenderer extends BoxRenderer {
         debugInlines(c,inline,lx,ly);        
         handleRelativePost(c,inline);
     }
+
     
     private void handleRelativePre(Context c, InlineBox inline) {
         if ( inline.relative ) {
             c.translate( inline.left, inline.top );
         }
     }
+
     
     private void handleRelativePost(Context c, InlineBox inline) {
         if ( inline.relative ) {
             c.translate( -inline.left, -inline.top );
         }
     }
+
     
     private void debugInlines(Context c, InlineBox inline, int lx, int ly) {
         if ( c.debugDrawInlineBoxes() ) {
@@ -135,6 +140,7 @@ public class InlineRenderer extends BoxRenderer {
                 inline.width - 2, inline.height - 2 ), Color.green );
         }
     }
+
     
     private void paintReplaced(Context c, InlineBox inline, LineBox line) {
         c.translate( line.x, line.y + ( line.baseline - inline.height ) );
@@ -142,6 +148,7 @@ public class InlineRenderer extends BoxRenderer {
         rend.paint( c, inline );
         c.translate( -line.x, -( line.y + ( line.baseline - inline.height ) ) );
     }
+
     
     private void paintFloat(Context c, InlineBox inline, LineBox line) {
         Rectangle oe = c.getExtents();
@@ -155,6 +162,7 @@ public class InlineRenderer extends BoxRenderer {
         c.setExtents( oe );
     }
 
+    
     public static void paintSelection( Context c, InlineBox inline, int lx, int ly ) {
         if ( c.inSelection( inline ) ) {
             int dw = inline.width - 2;
@@ -170,9 +178,6 @@ public class InlineRenderer extends BoxRenderer {
                     0, 0, new Color( 235, 235, 255 ),
                     0, inline.height / 2, new Color( 190, 190, 235 ),
                     true ) );
-            //FontMetrics fm = c.getGraphics().getFontMetrics( inline.getFont() );
-            //int top = ly + inline.y - fm.getAscent();
-            //int height = fm.getAscent() + fm.getDescent();
             LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), inline.getFont(), "Test");
             int top = ly + inline.y - (int)Math.ceil(lm.getAscent());
             int height = (int)Math.ceil(lm.getAscent() + lm.getDescent());
@@ -194,17 +199,15 @@ public class InlineRenderer extends BoxRenderer {
         Color oldcolor = c.getGraphics().getColor();
         c.getGraphics().setColor( inline.color );
         Font cur_font = c.getGraphics().getFont();
-        //LineMetrics lm = cur_font.getLineMetrics( text, ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
         LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), cur_font, text);
 
-        //u.p("lm descent = " + lm.getDescent());
         iy-= (int)lm.getDescent();
         
         //draw the line
         if ( text != null && text.length() > 0 ) {
-            //c.getGraphics().drawString( text, ix, iy );
             c.getTextRenderer().drawString( c.getGraphics(), text, ix, iy );
         }
+
         //draw any text decoration
         int stringWidth = (int)Math.ceil(c.getTextRenderer().
             getLogicalBounds(c.getGraphics(),
@@ -221,13 +224,11 @@ public class InlineRenderer extends BoxRenderer {
             float down = lm.getStrikethroughOffset();
             float thick = lm.getStrikethroughThickness();
             g.fillRect( ix, iy + (int)down, stringWidth, (int)thick );
-            //g.fillRect( ix, iy + (int)down, g.getFontMetrics().stringWidth( text ), (int)thick );
         }
 
         if ( inline.overline ) {
             float down = lm.getAscent();
             float thick = lm.getUnderlineThickness();
-            //g.fillRect( ix, iy - (int)down, g.getFontMetrics().stringWidth( text ), (int)thick );
             g.fillRect( ix, iy - (int)down, stringWidth, (int)thick );
         }
 
@@ -236,10 +237,7 @@ public class InlineRenderer extends BoxRenderer {
             g.setColor(Color.red);
             g.drawLine(ix,iy, ix+inline.width, iy);
             iy += (int)Math.ceil(lm.getDescent());
-            //iy += lm.getDescent();
             g.drawLine(ix,iy, ix+inline.width, iy);
-            //iy -= lm.getDescent();
-            //iy -= lm.getAscent();
             iy -= (int)Math.ceil(lm.getDescent());
             iy -= (int)Math.ceil(lm.getAscent());
             g.drawLine(ix,iy, ix+inline.width, iy);
@@ -251,40 +249,16 @@ public class InlineRenderer extends BoxRenderer {
     
     public void paintPadding(Context c, LineBox line,  InlineBox inline) {
         // paint the background
-        //u.p("painting the padding: " + inline);
-        //int padding_xoff = inline.totalLeftPadding();
         int padding_xoff = 0;
         int padding_yoff = inline.totalTopPadding();
-        // u.p("========");
-        // u.p("padding yoff = " + padding_yoff);
-        // u.p("baseline = " + line.baseline);
-        // u.p("y = " + inline.y);
-        // u.p("height = " + inline.height);
         
-        int ty = line.baseline
-             -inline.y 
-             - inline.height 
-            - padding_yoff
-            + line.y
-            ;
-        // u.p("ty = " + ty);
+        int ty = line.baseline -inline.y - inline.height - padding_yoff + line.y;
         
         LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), inline.getFont(), inline.getSubstring());
-        // u.p("lm descent = " + lm.getDescent());
         ty += (int)lm.getDescent();
-        /*
-            padding yoff = 6
-            baseline = 21
-            y = 5
-            height = 26
-            ty = -16
-        */
         c.translate(-padding_xoff, ty);
-        //u.p("line = " + line);
-        //u.p("inline = " + inline);
         int old_width = inline.width;
         int old_height = inline.height;
-        //inline.width += inline.totalHorizontalPadding();
         inline.height += inline.totalVerticalPadding();
         paintBackground(c,inline);
         paintBorder(c,inline);

@@ -27,6 +27,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 
 /**
  * Description of the Class
@@ -79,7 +80,9 @@ public class ListItemPainter {
         // calculations for bullets
         int rad = 8;// change this to use the glyph height
         int baseline = box.height;// change this to use the real baseline
-        Font font = FontUtil.getFont(c, box.getRealElement());
+        CalculatedStyle style = c.css.getStyle(box.getRealElement());
+        Font font = FontUtil.getFont(c, style, box.node);
+        //Font font = FontUtil.getFont(c, box.getRealElement());
         int h = FontUtil.lineHeight(c, box.getRealElement());
         rad = h/3;
         int x = box.x - rad - rad/2;
@@ -148,8 +151,8 @@ public class ListItemPainter {
             text = toRoman( box.list_count ).toUpperCase() + ".";
         }
 
-
-        Font font = FontUtil.getFont(c, box.getRealElement());
+        CalculatedStyle style = c.css.getStyle(box.getRealElement());
+        Font font = FontUtil.getFont(c, style, box.node);
         LineMetrics lm = font.getLineMetrics( text, ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
         int w = FontUtil.len(c,text,font);
         int h = FontUtil.lineHeight(c, box.getRealElement());
@@ -200,6 +203,14 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/27 15:46:40  joshy
+ * lots of cleanup to make the code clearer
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/11/10 16:28:53  joshy
  * fixes for list items
  *  bullets and numbers are sized correctly now

@@ -24,6 +24,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.font.LineMetrics;
+import java.awt.geom.*;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.InlineBox;
@@ -75,7 +76,8 @@ public class FontUtil {
      */
     public static int lineHeight( Context c, Node node ) {
         //int val = c.getGraphics().getFontMetrics( getFont( c, node ) ).getHeight();
-        int val = (int)Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont( c, node ), "Test" ).getHeight());
+        CalculatedStyle style = c.css.getStyle(LineBreaker.getElement(node));
+        int val = (int)Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont( c, style, node ), "Test" ).getHeight());
         Element elem = null;
         if(node instanceof Element) {
             elem = (Element)node;
@@ -96,6 +98,14 @@ public class FontUtil {
         } else {
             //return c.getGraphics().getFontMetrics( box.getFont() ).getHeight();
             return (int)Math.ceil(c.getTextRenderer().getLineMetrics(c.getGraphics(), box.getFont(), "Test").getHeight());
+        }
+    }
+
+    public static int lineHeight(Context c, InlineBox box) {
+        if(box.line_metrics != null) {
+            return (int)box.line_metrics.getHeight();
+        } else {
+            return lineHeight(c,box.node);
         }
     }
 
@@ -135,28 +145,13 @@ public class FontUtil {
 
 
     /**
-     * Description of the Method
-     *
-     * @param c     PARAM
-     * @param node  PARAM
-     * @param box   PARAM
-     */
-
-    /**
-     * Description of the Method
-     *
-     * @param c     PARAM
-     * @param node  PARAM
-     * @param box   PARAM
-     */
-
-    /**
      * Gets the font attribute of the FontUtil class
      *
      * @param c  PARAM
      * @param e  PARAM
      * @return   The font value
      */
+     /*
     public static Font getFont( Context c, Node e ) {
         //Font f = c.getGraphics().getFont();
 
@@ -169,12 +164,6 @@ public class FontUtil {
             Element el = (Element)e.getParentNode();
             return getElementFont( c, el );
         }
-/*
-        if ( e.getNodeType() == e.ELEMENT_NODE ) {
-            Element el = (Element)e;
-            return getElementFont( c, el );
-        }
-        */
         u.p("here");
         u.p("big error in getFont(). Got a node that is neither txt nor element" );
         u.p("probably returning a bad font!");
@@ -183,6 +172,16 @@ public class FontUtil {
         //u.dump_stack();
         return f;
     }
+    */
+    
+    public static Font getFont( Context c, InlineBox box) {
+        if(box.getFont() != null) {
+            return box.getFont();
+        }
+        CalculatedStyle style = c.css.getStyle(LineBreaker.getElement(box.node));
+        return getFont(c, style, box.node);
+    }
+    
     public static Font getFont( Context c, CalculatedStyle style, Node e ) {
         //u.p("testing node: " + e);
         // if plain text then get the styling from the parent node
@@ -208,6 +207,7 @@ public class FontUtil {
      * @param el  PARAM
      * @return    The elementFont value
      */
+     /*
     public static Font getElementFont( Context c, Element el ) {
         // TODO: need to discuss what sort of caching should be going on here, because relative
         // datatypes like EM and EX depend in part on the 'current' font for an element (PWW 14/08/04)
@@ -244,6 +244,7 @@ public class FontUtil {
         c.getGraphics().setColor( c.css.getColor( el ) );
         return f;
     }
+    */
 
     public static Font getElementFont( Context c, CalculatedStyle style, Element el ) {
         // TODO: need to discuss what sort of caching should be going on here, because relative
@@ -282,12 +283,41 @@ public class FontUtil {
         //joshy: this shouldn't matter. c.getGraphics().setColor( c.css.getColor( el ) );
         return f;
     }
+    
+    
+    public static LineMetrics getLineMetrics(Context c, InlineBox box) {
+        return c.getTextRenderer().getLineMetrics(c.getGraphics(), 
+            box.getFont(), box.getSubstring());
+    }
+    
+    public static Rectangle2D getTextBounds(Context c, InlineBox box) {
+        CalculatedStyle style = c.css.getStyle(LineBreaker.getElement(box.node));
+        return c.getTextRenderer().getLogicalBounds(c.getGraphics(), 
+            getFont( c, style, box.node ), box.getSubstring() );
+    }
+    
+    public static float getDescent(Context c, InlineBox box, Font font) {
+        if(box.line_metrics != null) {
+            return box.line_metrics.getDescent();
+        } else {
+            FontMetrics fm = c.getGraphics().getFontMetrics( font );
+            return fm.getDescent();
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/11/27 15:46:38  joshy
+ * lots of cleanup to make the code clearer
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.16  2004/11/23 02:41:59  joshy
  * fixed vertical-align support for first-letter pseudos
  * tested first-line w/ new breaking routines

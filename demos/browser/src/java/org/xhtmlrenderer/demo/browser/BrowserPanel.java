@@ -80,7 +80,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     /**
      * Description of the Field
      */
-    JLabel status;
+    BrowserStatus status;
     /**
      * Description of the Field
      */
@@ -140,7 +140,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
             u.p(ex);
         }
         view.setErrorHandler(root.error_handler);
-        status = new JLabel("Status");
+        status = new BrowserStatus();
+        status.init();
 
         int text_width = 200;
         view.setPreferredSize(new Dimension(text_width, text_width));
@@ -387,7 +388,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * @param txt The new status value
      */
     public void setStatus(String txt) {
-        status.setText(txt);
+        status.text.setText(txt);
     }
 
     /**
@@ -498,6 +499,14 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/11/27 15:46:37  joshy
+ * lots of cleanup to make the code clearer
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.10  2004/11/17 14:58:17  joshy
  * added actions for font resizing
  *

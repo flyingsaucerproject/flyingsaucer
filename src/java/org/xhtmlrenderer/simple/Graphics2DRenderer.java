@@ -87,7 +87,7 @@ public class Graphics2DRenderer {
         g.dispose();
         return buff;
     }
-    
+        
     public static BufferedImage renderToImage(URL url, int width) throws Exception {
         Graphics2DRenderer g2r = new Graphics2DRenderer();
         g2r.setDocument(url);

@@ -416,7 +416,7 @@
 
     <!-- Runs a speed test after a compile -->
     <target name="test.css-speed" depends="compile">
-        <java classname="org.xhtmlrenderer.test.CSSSpeedTest" 
+        <java classname="org.xhtmlrenderer.test.HamletSpeedTest" 
               fork="${java-exec.fork.tests}">
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
@@ -695,6 +695,14 @@
 $Id$
 
 $Log$
+Revision 1.74  2004/11/27 15:46:37  joshy
+lots of cleanup to make the code clearer
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.73  2004/11/16 15:19:29  pdoubleya
 Exclude abstract FSCssTestCase from junit test suite.
 
