@@ -27,6 +27,7 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.AttributeResolver;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -120,11 +121,25 @@ public class Matcher {
     }
 
     private void link(org.w3c.dom.Element e, Mapper m) {
-        _map.put(e, m);
+        _map.put(e, new SoftReference(m));
+    }
+
+    private Mapper getMapper(org.w3c.dom.Element e) {
+        if (_map == null) {
+            _map = new java.util.HashMap();
+        }
+        Mapper m = null;
+        SoftReference ref = (SoftReference) _map.get(e);
+        if (ref != null) m = (Mapper) ref.get();
+        if (m != null) return m;
+        matchElement(e);
+        ref = (SoftReference) _map.get(e);
+        if (ref != null) m = (Mapper) ref.get();
+        return m;
     }
 
     private void newMaps() {
-        _map = new java.util.WeakHashMap();
+        _map = new java.util.HashMap();
         _csCache = new java.util.HashMap();
         _peMap = new java.util.HashMap();
         //_elStyle = new java.util.HashMap();
@@ -510,16 +525,6 @@ public class Matcher {
         return _focusElements.contains(e);
     }
 
-    private Mapper getMapper(org.w3c.dom.Element e) {
-        if (_map == null) {
-            _map = new java.util.WeakHashMap();
-        }
-        Mapper m = (Mapper) _map.get(e);
-        if (m == null) matchElement(e);
-        m = (Mapper) _map.get(e);
-        return m;
-    }
-
 
     private java.util.Iterator getMatchedRulesets(final List mappedSelectors) {
         return new java.util.Iterator() {
@@ -580,7 +585,7 @@ public class Matcher {
     private org.xhtmlrenderer.extend.AttributeResolver _attRes;
     private org.xhtmlrenderer.css.sheet.StylesheetFactory _styleFactory;
 
-    private java.util.WeakHashMap _map;
+    private java.util.HashMap _map;
     private java.util.HashMap _peMap;
     private java.util.HashMap _csCache;
     //private java.util.HashMap _elStyle;
