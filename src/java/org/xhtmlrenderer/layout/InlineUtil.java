@@ -54,73 +54,6 @@ public class InlineUtil {
     }
 
 
-    /**
-     * Sets up all required code for a floated block
-     *
-     * @param c                PARAM
-     * @param inline           PARAM
-     * @param line             PARAM
-     * @param full_width       PARAM
-     * @param enclosing_block  PARAM
-     */
-    public static void handleFloated( Context c, InlineBox inline, LineBox line,
-                                      int full_width, Element enclosing_block ) {
-        BlockFormattingContext bfc = c.getBlockFormattingContext();
-        
-        // joshy: ??? i don't know what this is for. nesting?
-        if ( inline.node == enclosing_block ) {
-            return;
-        }
-        // joshy: ??? i don't know what this is for. nesting?
-        // we must make sure not to grab the float from the containing
-        // block incase it is floated.
-        if ( inline.node.getNodeType() == inline.node.TEXT_NODE ) {
-            if ( inline.node.getParentNode() == enclosing_block ) {
-                return;
-            }
-        }
-
-        
-        // calculate the float property
-        String float_val = c.css.getStringProperty( inline.node, CSSName.FLOAT, false );
-        if ( float_val == null ) {
-            float_val = "none";
-        }
-        if ( float_val.equals( "none" ) ) {
-            return;
-        }
-        
-        
-        // mark as floated
-        inline.floated = true;
-        
-        if ( float_val.equals( "left" ) ) {
-            // move the inline to the left
-            //inline.x = 0 - inline.width;
-            // the inline's own width is already included in the left float distance
-            // so you must subtract off the width twice
-            inline.x = bfc.getLeftFloatDistance(line) - inline.width - inline.width;
-            // add the float to the containing block
-            //bfc.addLeftFloat(inline);
-        }
-        
-        
-        
-        if( float_val.equals( "right" ) ) {
-            // move the inline to the right
-            // don't subtract off the inline's own width, because it's
-            // already included in the right float distance
-            inline.x = full_width - bfc.getRightFloatDistance(line);
-            //bfc.addRightFloat(inline);
-        }
-        
-        // shrink the line width to account for the possible floats
-        //u.p("accounting for the left float");
-        line.width -= bfc.getLeftFloatDistance(line);
-        //u.p("accounting for right float");
-        line.width -= bfc.getRightFloatDistance(line);
-        //line.width = line.width - inline.width;
-    }
 
 
     /**
@@ -279,6 +212,14 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/09 16:24:30  joshy
+ * moved float code into separate class
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/11/08 20:50:59  joshy
  * improved float support
  *

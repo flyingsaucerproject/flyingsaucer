@@ -106,7 +106,7 @@ public class InlineLayout extends BoxLayout {
         TextUtil.stripWhitespace( c, current_node, elem );
         // adjust the first line for tabs
         
-        remaining_width = adjustForTab( c, prev_line, remaining_width );
+        remaining_width = FloatUtil.adjustForTab( c, prev_line, remaining_width );
         while ( current_node != null ) {
             // loop until no more text in this node
             while ( true ) {
@@ -191,7 +191,7 @@ public class InlineLayout extends BoxLayout {
                     curr_line.y = prev_line.y + prev_line.height;
                     curr_line.setParent(prev_line.getParent());
                     //u.p("set parent to: " + curr_line.getParent());
-                    remaining_width = adjustForTab( c, curr_line, remaining_width );
+                    remaining_width = FloatUtil.adjustForTab( c, curr_line, remaining_width );
                     curr_line.width = 0;
                 }
                 
@@ -216,7 +216,7 @@ public class InlineLayout extends BoxLayout {
                 
                 //u.p("curr line: " + curr_line);
                 //u.p("parent = " + curr_line.getParent());
-                InlineUtil.handleFloated( c, new_inline, curr_line, bounds.width, elem );
+                FloatUtil.handleFloated( c, new_inline, curr_line, bounds.width, elem );
                 // calc new width of the line
                 curr_line.width += new_inline.width;
                 // reduce the available width
@@ -236,7 +236,7 @@ public class InlineLayout extends BoxLayout {
                     curr_line.y = prev_line.y + prev_line.height;
                     curr_line.setParent(prev_line.getParent());
                     //u.p("set parent to: " + curr_line.getParent());
-                    remaining_width = adjustForTab( c, curr_line, remaining_width );
+                    remaining_width = FloatUtil.adjustForTab( c, curr_line, remaining_width );
                     curr_line.width = 0;
                 }
                 
@@ -257,11 +257,6 @@ public class InlineLayout extends BoxLayout {
         block.height = bounds.height;
         block.x = 0;
         block.y = 0;
-        /*
-        // old float code
-        c.getLeftTab().y += c.placement_point.y;
-        c.getRightTab().y += c.placement_point.y;
-        */
         return block;
     }
 
@@ -275,13 +270,6 @@ public class InlineLayout extends BoxLayout {
      * @return                 Returns
      */
      
-     /* the new way of doing floats */
-     private int adjustForTab( Context c, LineBox prev_line, int remaining_width ) {
-         BlockFormattingContext bfc = c.getBlockFormattingContext();
-         remaining_width -= bfc.getLeftFloatDistance(prev_line);
-         remaining_width -= bfc.getRightFloatDistance(prev_line);
-         return remaining_width;
-     }
      
     /**
     * Get the longest inline possible.
@@ -318,7 +306,7 @@ public class InlineLayout extends BoxLayout {
             return LineBreaker.generateReplacedInlineBox( c, node, avail, prev, text, prev_align, font );
         }
         if ( isFloatedBlock( node, c ) ) {
-            return LineBreaker.generateFloatedBlockInlineBox( c, node, avail, prev, text, prev_align, font );
+            return FloatUtil.generateFloatedBlockInlineBox( c, node, avail, prev, text, prev_align, font );
         }
         if ( LineBreaker.isFirstLetter( c, node, start ) ) {
             return LineBreaker.generateFirstLetterInlineBox( c, node, start, text, prev, prev_align, avail);
@@ -401,6 +389,14 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.19  2004/11/09 16:24:29  joshy
+* moved float code into separate class
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.18  2004/11/09 16:07:57  joshy
 * moved vertical align code
 *

@@ -216,38 +216,6 @@ public class LineBreaker {
         return box;
     }
 
-// change this to use the existing block instead of a new one
-    /**
-     * Description of the Method
-     *
-     * @param c           PARAM
-     * @param node        PARAM
-     * @param avail       PARAM
-     * @param prev        PARAM
-     * @param text        PARAM
-     * @param prev_align  PARAM
-     * @param font        PARAM
-     * @return            Returns
-     */
-    public static InlineBox generateFloatedBlockInlineBox( Context c, Node node, int avail, InlineBox prev, String text, InlineBox prev_align, Font font ) {
-        Layout layout = LayoutFactory.getLayout( node );
-        Rectangle oe = c.getExtents();
-        c.setExtents( new Rectangle( oe ) );
-        BlockBox block = (BlockBox)layout.layout( c, (Element)node );
-        Rectangle bounds = new Rectangle( block.x, block.y, block.width, block.height );
-        c.setExtents( oe );
-        InlineBox box = newBox( c, node, 0, 0, prev, text, bounds, prev_align, font );
-        box.sub_block = block;
-        box.width = bounds.width;
-        box.height = bounds.height;
-        box.break_after = false;
-        box.floated = true;
-        if ( box.width > avail ) {
-            box.break_before = true;
-            box.x = 0;
-        }
-        return box;
-    }
 
     // change this to use the existing block instead of a new one
     /**
@@ -354,7 +322,7 @@ public class LineBreaker {
      * @param font        PARAM
      * @return            Returns
      */
-    private static InlineBox newBox( Context c, Node node, int start, int end, InlineBox prev, String text, InlineBox prev_align, Font font ) {
+    public static InlineBox newBox( Context c, Node node, int start, int end, InlineBox prev, String text, InlineBox prev_align, Font font ) {
         return newBox( c, node, start, end, prev, text, null, prev_align, font );
     }
 
@@ -374,7 +342,7 @@ public class LineBreaker {
      * @param font        PARAM
      * @return            Returns
      */
-    private static InlineBox newBox( Context c, Node node, int start, int end, InlineBox prev, String text, Rectangle bounds, InlineBox prev_align, Font font ) {
+    public static InlineBox newBox( Context c, Node node, int start, int end, InlineBox prev, String text, Rectangle bounds, InlineBox prev_align, Font font ) {
         //u.p("newBox node = " + node.getNodeName() + " start = " + start + " end = " + end +
         //" prev = " + prev + " text = " + text + " bounds = " + bounds + " prev_align = " + prev_align);
         //u.p("Making box for: "  + node);
@@ -561,6 +529,14 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/11/09 16:24:30  joshy
+ * moved float code into separate class
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.16  2004/11/09 16:07:57  joshy
  * moved vertical align code
  *
