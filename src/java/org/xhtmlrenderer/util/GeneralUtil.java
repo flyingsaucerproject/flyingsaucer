@@ -27,33 +27,42 @@ import java.net.URL;
 /**
  * Description of the Class
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class GeneralUtil {
     /**
      * Description of the Method
      *
-     * @param obj       PARAM
-     * @param resource  PARAM
-     * @return          Returns
+     * @param obj      PARAM
+     * @param resource PARAM
+     * @return Returns
      */
-    public static InputStream openStreamFromClasspath( Object obj, String resource ) {
+    public static InputStream openStreamFromClasspath(Object obj, String resource) {
         InputStream readStream = null;
         try {
             ClassLoader loader = obj.getClass().getClassLoader();
-            if ( loader == null ) {
-                readStream = ClassLoader.getSystemResourceAsStream( resource );
+            if (loader == null) {
+                readStream = ClassLoader.getSystemResourceAsStream(resource);
             } else {
-                readStream = loader.getResourceAsStream( resource );
+                readStream = loader.getResourceAsStream(resource);
             }
-            if ( readStream == null ) {
-                URL stream = resource.getClass().getResource( resource );
+            if (readStream == null) {
+                URL stream = resource.getClass().getResource(resource);
                 readStream = stream.openStream();
             }
-        } catch ( Exception ex ) {
-            XRLog.exception( "Could not open stream from CLASSPATH: " + resource, ex );
+        } catch (Exception ex) {
+            XRLog.exception("Could not open stream from CLASSPATH: " + resource, ex);
         }
         return readStream;
+    }
+
+    public static void dumpShortException(Exception ex) {
+        System.out.println(ex.getMessage() + ", " + ex.getClass());
+        StackTraceElement[] stes = ex.getStackTrace();
+        for (int i = 0; i < stes.length && i < 5; i++) {
+            StackTraceElement ste = stes[i];
+            System.out.println("  " + ste.getClassName() + "." + ste.getMethodName() + "(ln " + ste.getLineNumber() + ")");
+        }
     }
 }
 
@@ -61,6 +70,9 @@ public class GeneralUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/01/24 14:33:47  pdoubleya
+ * Added exception dump.
+ *
  * Revision 1.5  2004/10/23 14:06:56  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
