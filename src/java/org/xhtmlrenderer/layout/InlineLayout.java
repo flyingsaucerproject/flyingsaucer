@@ -21,6 +21,7 @@
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.util.List;
+import java.util.ArrayList;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
@@ -177,7 +178,7 @@ public class InlineLayout extends BoxLayout {
                 if ( new_inline.break_before && !new_inline.floated ) {
                     // finish up the current line
                     remaining_width = bounds.width;
-                    saveLine( curr_line, prev_line, elem, bounds.width, bounds.x, c, block );
+                    saveLine( curr_line, prev_line, elem, bounds.width, bounds.x, c, block , false);
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = new LineBox();
@@ -221,7 +222,7 @@ public class InlineLayout extends BoxLayout {
                     // then remaining_width = max_width
                     remaining_width = bounds.width;
                     // save the line
-                    saveLine( curr_line, prev_line, elem, bounds.width, bounds.x, c, block );
+                    saveLine( curr_line, prev_line, elem, bounds.width, bounds.x, c, block , false);
                     // increase bounds height to account for the new line
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
@@ -246,7 +247,7 @@ public class InlineLayout extends BoxLayout {
             current_node = InlineUtil.nextTextNode( inline_node_list );
             TextUtil.stripWhitespace( c, current_node, elem );
         }
-        saveLine( curr_line, prev_line, elem, bounds.width, bounds.x, c, block );
+        saveLine( curr_line, prev_line, elem, bounds.width, bounds.x, c, block , true);
         bounds.height += curr_line.height;
         block.width = bounds.width;
         block.height = bounds.height;
@@ -351,18 +352,10 @@ public class InlineLayout extends BoxLayout {
     * @param block             PARAM
     */
     private void saveLine( LineBox line_to_save, LineBox prev_line, Element containing_block, int width, int x,
-            Context c, BlockBox block ) {
+            Context c, BlockBox block, boolean last ) {
         c.setFirstLine(false);
         // account for text-align
-        String text_align = c.css.getStringProperty( containing_block, "text-align", true );
-        if ( text_align != null ) {
-            if ( text_align.equals( "right" ) ) {
-                line_to_save.x = x + width - line_to_save.width;
-            }
-            if ( text_align.equals( "center" ) ) {
-                line_to_save.x = x + ( width - line_to_save.width ) / 2;
-            }
-        }
+        adjustTextAlignment(c,line_to_save, containing_block, width, x, last);
         // set the y
         line_to_save.y = prev_line.y + prev_line.height;
         
@@ -373,7 +366,100 @@ public class InlineLayout extends BoxLayout {
         FontUtil.setupVerticalAlign( c, containing_block, line_to_save );
         block.addChild( line_to_save );
     }
+
+    private static void adjustTextAlignment(Context c, LineBox line_to_save, Element containing_block, int width, int x, boolean last) {
+        String text_align = c.css.getStringProperty( containing_block, "text-align", true );
+        if(text_align == null) {
+            return;
+        }
+        if ( text_align.equals( "right" ) ) {
+            line_to_save.x = x + width - line_to_save.width;
+        }
+        if ( text_align.equals( "center" ) ) {
+            line_to_save.x = x + ( width - line_to_save.width ) / 2;
+        }
+        if (text_align.equals("justify")) {
+            if(!last) {
+                justifyLine(c,line_to_save,containing_block,width);
+            }
+        }
+    }
     
+    private static void justifyLine(Context c, LineBox line, Element elem, int width) {
+        if(line.width > width) {
+            return;
+        }
+        //u.p("line width = " + line.width);
+        //u.p("available width = " + width);
+        //u.p("inlines = " + line.getChildCount());
+        //u.p("word count = " + wordCount((InlineBox)line.getChild(0)));
+        //int extra = width - line.width;
+        //u.p("extra = " + extra);
+        /*
+        int word_count = 0;
+        for(int i=0; i<line.getChildCount();i++) {
+            word_count += wordCount((InlineBox)line.getChild(i));
+        }
+        if(word_count < 2) {
+            return;
+        }
+        //u.p("final word count = " + word_count);
+        int spacer = extra/(word_count-1);
+        //u.p("spacer = " + spacer);
+        */
+        
+        // split each inline box into words
+        List temp_list = new ArrayList();
+        for(int i=0; i<line.getChildCount();i++) {
+            splitInlineBox(c,(InlineBox)line.getChild(i),temp_list);
+        }
+        // clear out all inlines
+        line.removeAllChildren();
+        // add in all of the new inlines
+        line.width = 0;
+        for(int i=0; i<temp_list.size(); i++) {
+            InlineBox box = (InlineBox)temp_list.get(i);
+            line.width += box.width;
+            line.addChild(box);
+        }
+        
+        int extra = width - line.width;
+        int spaces = (line.getChildCount()-1);
+        float spacer = extra / (float)spaces;
+        // now realign them
+        int total_lengths = 0;
+        for(int i=0; i<line.getChildCount(); i++) {
+            InlineBox box = (InlineBox)line.getChild(i);
+            box.x = total_lengths + (int)(spacer * (float)i);
+            total_lengths += box.width;
+        }
+    }
+    
+    private static void splitInlineBox(Context c, InlineBox box, List temp_list) {
+        String[] words = words(box);
+        // don't split if only one word
+        if(words.length < 2) { 
+            temp_list.add(box);
+            return; 
+        }
+        for(int i=0; i<words.length; i++) {
+            InlineBox copy = new InlineBox(box);
+            copy.setSubstring(words[i]);
+            copy.width = FontUtil.len(c,copy);
+            temp_list.add(copy);
+        }
+    }
+    
+    private static String[] words(InlineBox box) {
+        String text = box.getSubstring();
+        String[] words = text.split("\\s");
+        return words;
+    }
+    private static int wordCount(InlineBox box) {
+        String text = box.getSubstring();
+        String[] words = text.split("\\s");
+        return words.length;
+    }
     
     public Renderer getRenderer() {
         return new InlineRenderer();
@@ -384,6 +470,14 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.16  2004/11/09 02:04:23  joshy
+* support for text-align: justify
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.15  2004/11/08 20:50:59  joshy
 * improved float support
 *

@@ -6,16 +6,16 @@
 //right floats
 //paragraph extending floats
 //resize inlines with padding and borders
+//fix gap in splash page
+//small caps
+//move text up to baseline
+//match up baselines of text w/ baseline vertical alignment
 boolean to turn off layout threading
 easier headless interface
-fix gap in splash page
 fix fixed background clipping error
 fix list item vertical positioning
-//small caps
 floated divs work, but not floated spans. span should turn into a block
         when floated.
-//move text up to baseline
-match up baselines of text w/ baseline vertical alignment
 justified text
 make layoutfactory use display for generating layouts
 build table demo

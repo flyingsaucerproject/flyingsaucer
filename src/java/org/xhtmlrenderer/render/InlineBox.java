@@ -28,6 +28,18 @@ import java.awt.Font;
  * @author   empty
  */
 public class InlineBox extends Box {
+    
+    public InlineBox() {
+    }
+    public InlineBox(InlineBox box) {
+        super(box);
+        sub_block = box.sub_block;
+        font = box.font;
+        text = box.text;
+        underline = box.underline;
+        overline = box.overline;
+        strikethrough = box.strikethrough;
+    }
 
     // if we are an inline block, then this is
 
@@ -143,6 +155,11 @@ public class InlineBox extends Box {
         String txt = text.substring( start_index, end_index );
         return txt;
     }
+    public void setSubstring(String text) {
+        this.text = text;
+        start_index = 0;
+        end_index = text.length();
+    }
 
     /**
      * Gets the font attribute of the InlineBox object
@@ -169,6 +186,14 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/09 02:04:24  joshy
+ * support for text-align: justify
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/11/09 00:36:54  tobega
  * Fixed some NPEs
  *

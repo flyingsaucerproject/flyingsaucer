@@ -58,6 +58,9 @@ public class FontUtil {
     public static int len( Context c, String str, Font font ) {
         return c.getGraphics().getFontMetrics( font ).stringWidth( str );
     }
+    public static int len(Context c, InlineBox box) {
+        return c.getGraphics().getFontMetrics(box.getFont()).stringWidth(box.getSubstring());
+    }
 
     /**
      * Description of the Method
@@ -482,6 +485,14 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/09 02:04:23  joshy
+ * support for text-align: justify
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.9  2004/11/09 00:36:08  joshy
  * fixed more text alignment
  * added menu item to show font metrics

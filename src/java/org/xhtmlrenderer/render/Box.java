@@ -37,6 +37,18 @@ import org.xhtmlrenderer.css.value.BorderColor;
  * @author   empty
  */
 public class Box {
+    public Box(Box box) {
+        this();
+        x = box.x;
+        y = box.y;
+        width = box.width;
+        height = box.height;
+        node = box.node;
+        border = box.border;
+        margin = box.margin;
+        padding = box.padding;
+        color = box.color;
+    }
     // dimensions stuff
     /** Description of the Field */
     public int x;
@@ -374,6 +386,10 @@ public class Box {
     public Iterator getChildIterator() {
         return boxes.iterator();
     }
+    
+    public void removeAllChildren() {
+        boxes.clear();
+    }
 
 
     // element stuff
@@ -550,6 +566,14 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/11/09 02:04:23  joshy
+ * support for text-align: justify
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.10  2004/11/08 15:10:10  joshy
  * added support for styling :first-letter inline boxes
  * updated the absolute positioning tests
