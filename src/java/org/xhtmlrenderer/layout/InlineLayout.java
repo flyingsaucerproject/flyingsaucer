@@ -152,30 +152,6 @@ public class InlineLayout extends BoxLayout {
                 if ( bounds.width < 1 ) {
                     u.p( "warning. width < 1 " + bounds.width );
                 }
-                /*
-                debug_counter++;
-                final int limit = 140;
-                if ( debug_counter > limit && bounds.width < 10 ) {
-                    u.on();
-                    u.p( "previous inline = " + prev_inline );
-                    u.p( "current line = " + curr_line );
-                    u.p( "lines = " );
-                    //u.p(block.boxes);
-                    u.p( "current node = " + current_node + " text= " + current_node.getNodeValue() );
-                    u.p( "rem width = " + remaining_width + " width " + bounds.width );
-                }
-                if ( debug_counter > limit + 3 && bounds.width < 10 ) {
-                    u.p( "element = " + elem );
-                    org.xhtmlrenderer.util.x.p( elem );
-                    u.p( "previous inline = " + prev_inline );
-                    u.p( "current inline = " + curr_line );
-                    u.p( "lines = " );
-                    //u.p(block.boxes);
-                    u.p( "db 1 hit" );
-                    System.exit( -1 );
-                    throw new InfiniteLoopError( "Infinite loop detected in InlineLayout" );
-                }
-                */
                 
                 
                 // look at current inline
@@ -184,6 +160,7 @@ public class InlineLayout extends BoxLayout {
                     curr_line, prev_inline, elem, prev_align_inline );
                 // if this inline needs to be on a new line
                 if ( new_inline.break_before && !new_inline.floated ) {
+                    // u.p("breaking before");
                     // finish up the current line
                     remaining_width = bounds.width;
                     saveLine( curr_line, prev_line, elem, bounds.width, bounds.x, c, block , false);
@@ -227,6 +204,7 @@ public class InlineLayout extends BoxLayout {
                 remaining_width = remaining_width - new_inline.width;
                 // if the last inline was at the end of a line, then go to next line
                 if ( new_inline.break_after ) {
+                    // u.p("breaking after");
                     // then remaining_width = max_width
                     remaining_width = bounds.width;
                     // save the line
@@ -287,8 +265,11 @@ public class InlineLayout extends BoxLayout {
     */
     private InlineBox calculateInline( Context c, Node node, int avail, int max_width,
             LineBox line, InlineBox prev, Element containing_block, InlineBox prev_align ) {
+                
+        
         // calculate the starting index
         int start = 0;
+        // if this is another box from the same node as the previous one
         if ( prev != null && prev.node == node ) {
             start = prev.end_index;
         }
@@ -299,35 +280,45 @@ public class InlineLayout extends BoxLayout {
         // size of the text
         text = TextUtil.transformText( c, node, text );
         
+        // u.p("calculating inline: text = " + text);
+        // u.p("avail space = " + avail + " max = " + max_width + "   start index = " + start);
+
         // get the current font. required for sizing
         Font font = FontUtil.getFont( c, node );
         
         // handle each case
         if ( isReplaced(c, node ) ) {
+            // u.p("is replaced");
             return LineBreaker.generateReplacedInlineBox( c, node, avail, prev, text, prev_align, font );
         }
         if ( isFloatedBlock( node, c ) ) {
+            // u.p("is floated block");
             return FloatUtil.generateFloatedBlockInlineBox( c, node, avail, prev, text, prev_align, font );
         }
         if ( LineBreaker.isFirstLetter( c, node, start ) ) {
+            // u.p("is first letter");
             return LineBreaker.generateFirstLetterInlineBox( c, node, start, text, prev, prev_align, avail);
         }
         if ( c.getRenderingContext().getLayoutFactory().isBreak( node ) ) {
+            // u.p("is break");
             return LineBreaker.generateBreakInlineBox( node );
         }
         if ( LineBreaker.isWhitespace( c, containing_block ) ) {
+            // u.p("is whitespace");
             return LineBreaker.generateWhitespaceInlineBox( c, node, start, prev, text, prev_align, font );
         }
         // ==== unbreakable long word =====
         if ( LineBreaker.isUnbreakableLine( c, node, start, text, avail, font ) ) {
+            // u.p("is unbreakable");
             return LineBreaker.generateUnbreakableInlineBox( c, node, start, text, prev, prev_align, font );
         }
         // rest of this string can fit on the line
         if ( LineBreaker.canFitOnLine( c, node, start, text, avail, font ) ) {
-            //u.p("can fit on line");
+            // u.p("can fit on line");
             return LineBreaker.generateRestOfTextNodeInlineBox( c, node, start, text, prev, prev_align, font );
         }
         // normal multiline break
+        // u.p("normal multi line break");
         return LineBreaker.generateMultilineBreak( c, node, start, text, prev, prev_align, avail );
     }
     
@@ -378,6 +369,14 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.24  2004/11/15 14:33:09  joshy
+* fixed line breaking bug with certain kinds of unbreakable lines
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.23  2004/11/14 16:40:58  joshy
 * refactored layout factory
 *

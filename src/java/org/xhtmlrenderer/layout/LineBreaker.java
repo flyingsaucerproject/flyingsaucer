@@ -64,12 +64,9 @@ public class LineBreaker {
             // debugging code
             dbcount++;
             //u.off();
-            u.on();
-            if ( dbcount > 50 ) {
-                u.on();
-            }
+            //u.on(); if ( dbcount > 50 ) { u.on(); }
             if ( dbcount > 100 ) {
-                u.on();
+                //u.on();
                 u.p( "db 2 hit" );
                 u.p( "text = " + text );
                 u.p( "end = " + end );
@@ -158,19 +155,26 @@ public class LineBreaker {
      * @param font        PARAM
      * @return            Returns
      */
-    public static InlineBox generateUnbreakableInlineBox( Context c, Node node, int start, String text, InlineBox prev, InlineBox prev_align, Font font ) {
+    public static InlineBox generateUnbreakableInlineBox( Context c, Node node, int start, String text, 
+                InlineBox prev, InlineBox prev_align, Font font ) {
+        //u.p("generating unbreakable inline: start = " + start + " text = " + text);
+        
+        //joshy: redundant code w/ isUnbreakable. clean up
+        //extract first word
         int first_word_index = text.indexOf( " ", start );
         if ( first_word_index == -1 ) {
             first_word_index = text.length();
         }
         String first_word = text.substring( start, first_word_index );
         first_word = first_word.trim();
+        
+        //u.p("first word = " + first_word);
         InlineBox box = newBox( c, node, start, first_word_index, prev, text, prev_align, font );
         // move back to the left margin since this is on it's own line
         box.x = 0;
         box.break_before = true;
-        //u.p("unbreakable long word returning: " + box);
-        box.break_after = true;
+        //u.p("generate unbreakable returning: " + box);
+        box.break_after = false;
         return box;
     }
 
@@ -279,12 +283,17 @@ public class LineBreaker {
      * @return       The unbreakableLine value
      */
     public static boolean isUnbreakableLine( Context c, Node node, int start, String text, int avail, Font font ) {
+        //u.p("isUnbreakableLine( start = " + start + " text = " + text + " avail = " + avail + " font = " + font);
+
+        // extract the first real word from the text
         int first_word_index = text.indexOf( " ", start );
         if ( first_word_index == -1 ) {
             first_word_index = text.length();
         }
         String first_word = text.substring( start, first_word_index );
         first_word = first_word.trim();
+        
+        // if the first word could fit in the available space, then return true
         if ( avail < FontUtil.len( c, node, first_word, font ) ) {
             return true;
         } else {
@@ -526,6 +535,14 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2004/11/15 14:33:10  joshy
+ * fixed line breaking bug with certain kinds of unbreakable lines
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.20  2004/11/14 16:40:58  joshy
  * refactored layout factory
  *

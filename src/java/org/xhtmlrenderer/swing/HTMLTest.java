@@ -59,7 +59,7 @@ public class HTMLTest extends JFrame {
     /** Description of the Field */
     private final XHTMLPanel panel;
     /** Description of the Field */
-    public final static int text_width = 600;
+    //public final static int text_width = 600;
     /** Description of the Field */
     private final static String BASE_TITLE = "Flying Saucer";
 
@@ -73,11 +73,13 @@ public class HTMLTest extends JFrame {
         throws Exception {
         super( BASE_TITLE );
         panel = new XHTMLPanel();
-        panel.setPreferredSize( new Dimension( text_width, text_width ) );
+        int width = 360;
+        int height = 500;
+        panel.setPreferredSize( new Dimension( width, height ) );
         JScrollPane scroll = new JScrollPane( panel );
         scroll.setVerticalScrollBarPolicy( scroll.VERTICAL_SCROLLBAR_ALWAYS );
         scroll.setHorizontalScrollBarPolicy( scroll.HORIZONTAL_SCROLLBAR_ALWAYS );
-        scroll.setPreferredSize( new Dimension( text_width, text_width ) );
+        scroll.setPreferredSize( new Dimension( width, height ) );
         panel.addMouseListener( new LinkListener( panel ) );
         HoverListener hov = new HoverListener(panel);
         panel.addMouseListener(hov);
@@ -101,6 +103,7 @@ public class HTMLTest extends JFrame {
         view.add( new RefreshPageAction() );
         view.add( new ReloadPageAction() );
 
+        /*
         JMenu test = new JMenu( "Test" );
         mb.add( test );
         test.setMnemonic( 'T' );
@@ -128,7 +131,7 @@ public class HTMLTest extends JFrame {
         addFileLoadAction( test, "XML-like", demoRootDir + "/xml.xhtml" );
         addFileLoadAction( test, "XML", demoRootDir + "/xml.xml" );
         addFileLoadAction( test, "pseudo-element", "/home/tobe/Projekt/xhtmlrenderer/test.xhtml" );
-
+        */
         JMenu debug = new JMenu( "Debug" );
         mb.add( debug );
         debug.setMnemonic( 'D' );
@@ -142,14 +145,14 @@ public class HTMLTest extends JFrame {
         debugShow.add( new JCheckBoxMenuItem( new InlineBoxesAction() ) );
         debugShow.add( new JCheckBoxMenuItem( new FontMetricsAction() ) );
         
-        
+        /*
         JMenu anti = new JMenu("Anti Aliasing");
         anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("None", TextRenderer.NONE) ) );
         anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Low (Default)", TextRenderer.LOW) ) );
         anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Medium", TextRenderer.MEDIUM) ) );
         anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Highest", TextRenderer.HIGH) ) );
         debug.add( anti );
-
+        */
         debug.add( new ShowDOMInspectorAction() );
 /*
         debug.add(
@@ -217,7 +220,7 @@ public class HTMLTest extends JFrame {
         final JFrame frame = new HTMLTest( args );
         frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         frame.pack();
-        frame.setSize( text_width, 300 );
+        //frame.setSize( text_width, 300 );
         frame.show();
     }
 
@@ -377,7 +380,7 @@ public class HTMLTest extends JFrame {
                 inspectorFrame.getContentPane().add( inspector );
 
                 inspectorFrame.pack();
-                inspectorFrame.setSize( text_width, 600 );
+                inspectorFrame.setSize( 400, 600 );
                 inspectorFrame.show();
             } else {
                 inspector.setForDocument( panel.doc, panel.getRenderingContext().getContext(), panel.getRenderingContext().getContext().css );
@@ -449,6 +452,14 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2004/11/15 14:33:10  joshy
+ * fixed line breaking bug with certain kinds of unbreakable lines
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.18  2004/11/14 21:33:49  joshy
  * new font rendering interface support
  * Issue number:
