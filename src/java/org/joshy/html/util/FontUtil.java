@@ -50,7 +50,7 @@ public static Font getElementFont(Context c, Element el) {
     }
     
     if(el.getParentNode().getNodeType() == el.DOCUMENT_NODE) {
-        u.p("ended up at the top somehow!: ");
+        //u.p("ended up at the top somehow!: ");
         return c.getGraphics().getFont().deriveFont((float)10);
     }
     

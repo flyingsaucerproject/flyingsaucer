@@ -165,26 +165,36 @@ public static InlineBox generateFloatedBlockInlineBox(Context c, Node node, int 
 
     // change this to use the existing block instead of a new one
 public static InlineBox generateReplacedInlineBox(Context c, Node node, int avail, InlineBox prev, String text, InlineBox prev_align) {
-    //u.p("replaced element");
+    //u.p("generating replaced Inline Box");
+    
     // get the layout for the replaced element
     Layout layout = LayoutFactory.getLayout(node);
     BlockBox block = (BlockBox)layout.layout(c,(Element)node);
+    //u.p("got a block box from the sub layout: " + block);
     Rectangle bounds = new Rectangle(block.x,block.y,block.width,block.height);
+    //u.p("bounds = " + bounds);
     /* joshy: change this to just modify the existing block instead of creating
     a  new one*/
+    
     // create new inline
     InlineBox box = newBox(c,node,0,0,prev,text, bounds, prev_align);
     //joshy: activate this: box.block = block
-
+    //u.p("created a new inline box");
+    box.replaced = true;
+    box.sub_block = block;
+    block.setParent(box);
+    
     // set up the extents
     box.width = bounds.width;
     box.height = bounds.height;
     box.break_after = false;
+    
     // if it won't fit on this line, then put it on the next one
     if(box.width > avail) {
         box.break_before = true;
         box.x = 0;
     }
+    
     // return
     //u.p("last replaced = " + box);
     return box;

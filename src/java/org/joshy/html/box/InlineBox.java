@@ -52,7 +52,7 @@ public class InlineBox extends Box{
     }
     
     public String toString() {
-        return "text = \"" + getText() +
+        return "InlineBox text = \"" + getText() +
             "\" bnds = " + x + "," + y + " - " + width + "x"+height +
             " start = " + this.start_index + " end = " + this.end_index +
             " baseline = " + this.baseline + " vset = " + this.vset;

@@ -7,6 +7,7 @@ import org.joshy.html.box.*;
 
 public class BodyLayout extends BoxLayout {
     public Box layout(Context c, Element elem) {
+        //u.p("---------------------------------\nstarting the body layout");
         c.setLeftTab(new Point(0,0));
         c.setRightTab(new Point(0,0));
         return super.layout(c,elem);

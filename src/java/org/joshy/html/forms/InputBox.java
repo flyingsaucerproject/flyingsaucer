@@ -6,7 +6,9 @@ import javax.swing.*;
 public class InputBox extends BlockBox {
     public JComponent component;
     
-    
+    public String toString() {
+        return "InputBox: " + super.toString();
+    }
 }
 
 

@@ -103,7 +103,7 @@ public class BoxLayout extends Layout {
             //u.p("setting width: " + block.width);
         }
     }
-
+    
     // calculate the height based on css and available space
     public void adjustHeight(Context c, BlockBox block) {
         if(!block.isElement()) { return; }
@@ -165,8 +165,8 @@ public class BoxLayout extends Layout {
     
 
     public void paint(Context c, Box box) {
-        BlockBox block = (BlockBox)box;
         //u.p("BoxLayout.paint " + box);//+box.getElement().getNodeName()+") " + block);
+        BlockBox block = (BlockBox)box;
 
         // copy the bounds to we don't mess it up
         Rectangle oldBounds = new Rectangle(c.getExtents());

@@ -70,6 +70,7 @@ public class LayoutFactory {
             if(elem.getNodeName().equals("br")) { return new InlineLayout(); }
             if(elem.getNodeName().equals("font")) { return new InlineLayout(); }
             if(elem.getNodeName().equals("hr")) { return new NullLayout(); }
+            if(elem.getNodeName().equals("form")) { return new FormLayout(); }
             if(elem.getNodeName().equals("input")) { 
                 Element el = (Element)elem;
                 if(el.getAttribute("type").equals("text")) {

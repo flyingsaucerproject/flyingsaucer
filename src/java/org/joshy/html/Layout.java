@@ -224,6 +224,9 @@ public class Layout {
         if(node.getNodeName().equals("img")) {
             return true;
         }
+        if(node.getNodeName().equals("input")) {
+            return true;
+        }
         return false;
     }
 

@@ -93,6 +93,11 @@ public class HTMLTest extends JFrame {
                 frame.show();
             }
         });
+        debug.add(new AbstractAction("Print Box Tree") {
+            public void actionPerformed(ActionEvent evt) {
+                panel.printTree();
+            }
+        });
 
 
         setJMenuBar(mb);

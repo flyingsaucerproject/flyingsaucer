@@ -30,7 +30,7 @@ public class AnonymousBoxLayout extends InlineLayout {
         this.text = text;
         //Box box = new AnonymousBlockBox(text);
         Box box = super.layout(c,parent);
-        u.p("AnonymousBoxLayout.layout: returning: " + box);
+        //u.p("AnonymousBoxLayout.layout: returning: " + box);
         return box;
     }
     public Box layoutChildren(Context c, Box box) {

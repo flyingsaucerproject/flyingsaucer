@@ -337,10 +337,27 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
     public void componentHidden(ComponentEvent e) { }
     public void componentMoved(ComponentEvent e) { }
     public void componentResized(ComponentEvent e) {
-        //u.p("resized: " + e);
         calcLayout();
     }
     public void componentShown(ComponentEvent e) { }
 
+    
+    public void printTree() {
+        printTree(this.body_box);
+    }
+    private void printTree(Box box) {
+        u.p("Box = " + box);
+        Iterator it = box.getChildIterator();
+        while(it.hasNext()) {
+            Box bx = (Box)it.next();
+            printTree(bx);
+        }
+        if(box instanceof InlineBox) {
+            InlineBox ib = (InlineBox)box;
+            if(ib.sub_block != null) {
+                printTree(ib.sub_block);
+            }
+        }
+    }
 }
 

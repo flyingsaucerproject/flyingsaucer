@@ -61,7 +61,9 @@ public class InlinePainter {
         if(InlineLayout.isReplaced(inline.node)) {
             //u.p("painting a replaced block: " + inline);
             c.getGraphics().translate( line.x,  line.y+(line.baseline-inline.height));
-            ImageLayout layout = (ImageLayout)LayoutFactory.getLayout(inline.node);
+            Layout layout = (Layout)LayoutFactory.getLayout(inline.node);
+            //u.p("inline node = " + inline.node);
+            //u.p("got the layout: " + layout);
             layout.paint(c,inline);
             c.getGraphics().translate(-line.x,-(line.y+(line.baseline-inline.height)));
             return;
