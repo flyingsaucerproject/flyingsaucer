@@ -21,6 +21,7 @@
 package org.xhtmlrenderer.util;
 
 import java.io.*;
+import java.net.*;
 
 
 /**
@@ -37,11 +38,19 @@ public class GeneralUtil {
      */
     public static InputStream openStreamFromClasspath( String resource ) {
         InputStream readStream = null;
-        ClassLoader loader = new Object().getClass().getClassLoader();
-        if ( loader == null ) {
-            readStream = ClassLoader.getSystemResourceAsStream( resource );
-        } else {
-            readStream = loader.getResourceAsStream( resource );
+        try {
+            ClassLoader loader = resource.getClass().getClassLoader();
+            if ( loader == null ) {
+                readStream = ClassLoader.getSystemResourceAsStream( resource );
+            } else {
+                readStream = loader.getResourceAsStream( resource );
+            }
+            if ( readStream == null ) {
+                URL stream = resource.getClass().getResource( resource );
+                readStream = stream.openStream();
+            }
+        } catch ( Exception ex ) {
+            XRLog.exception("Could not open stream from CLASSPATH: " + resource, ex );
         }
         return readStream;
     }
@@ -51,6 +60,9 @@ public class GeneralUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2004/10/18 17:10:13  pdoubleya
+ * Added additional condition, and error check.
+ *
  * Revision 1.1  2004/10/13 23:00:32  pdoubleya
  * Added to CVS.
  *
