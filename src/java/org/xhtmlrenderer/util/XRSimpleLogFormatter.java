@@ -20,6 +20,7 @@
  */
 package org.xhtmlrenderer.util;
 
+import java.io.*;
 import java.util.logging.*;
 import java.text.MessageFormat;
 
@@ -31,17 +32,20 @@ import java.text.MessageFormat;
  * @author   Patrick Wright
  */
 public class XRSimpleLogFormatter extends Formatter {
-    private final static String defaultFmt = "{1}:\n  {4}\n";
     private final static String msgFmt;
+    private final static String exmsgFmt;
     private final MessageFormat mformat;
+    private final MessageFormat exmformat;
     
     static {
-        msgFmt = Configuration.valueFor("xr.simple-log-format", defaultFmt).trim() + "\n";
+        msgFmt = Configuration.valueFor("xr.simple-log-format", "{1}:\n  {5}\n").trim() + "\n";
+        exmsgFmt = Configuration.valueFor("xr.simple-exception-log-format", "{1}:\n  {5}\n{8}").trim() + "\n";
     }
     
     public XRSimpleLogFormatter() {
         super();
         mformat = new MessageFormat(msgFmt);
+        exmformat = new MessageFormat(exmsgFmt);
     }
     
     /**
@@ -51,14 +55,36 @@ public class XRSimpleLogFormatter extends Formatter {
      * @return        Returns
      */
     public String format( LogRecord record ) {
+        
+        Throwable th = record.getThrown();
+        String thName = ""; 
+        String thMessage = ""; 
+        String trace = null;
+        if ( th != null ) {
+            StringWriter sw = new StringWriter();
+            th.printStackTrace(new PrintWriter(sw));
+            trace = sw.toString();
+            
+            thName = th.getClass().getName();
+            thMessage = th.getMessage();
+        }
         String args[] = { 
             String.valueOf(record.getMillis()),
             record.getLoggerName(),
+            record.getLevel().toString(),
             record.getSourceClassName(),
             record.getSourceMethodName(),
-            record.getMessage()       
+            record.getMessage(),       
+            thName,       
+            thMessage,       
+            trace       
         };
-        String log = mformat.format(args);
+        String log = null;
+        if ( th == null ) {
+          log = mformat.format(args);
+        } else {
+          log = exmformat.format(args);
+        }
         return log;
     }
 
@@ -98,6 +124,9 @@ public class XRSimpleLogFormatter extends Formatter {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2004/10/14 12:53:26  pdoubleya
+ * Added handling for exception messages with stack trace and separate message format.
+ *
  * Revision 1.1  2004/10/14 11:13:22  pdoubleya
  * Added to CVS.
  *
