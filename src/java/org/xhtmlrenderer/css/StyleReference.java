@@ -81,7 +81,7 @@ public interface StyleReference {
     /**
      * Handle the pseudoElements, may return null
      */
-    public CascadedStyle getPseudoElementStyle(Element e, String pseudoElement);
+    public CascadedStyle getPseudoElementStyle(Node node, String pseudoElement);
 
     /**
      * get the CalculatedStyle once for the element, then query that
@@ -100,6 +100,9 @@ public interface StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/12/05 14:35:38  tobega
+ * Cleaned up some usages of Node (and removed unused stuff) in layout code. The goal is to pass "better" objects than Node wherever possible in an attempt to shake out the bugs in tree-traversal (probably often unnecessary tree-traversal)
+ *
  * Revision 1.10  2004/12/05 00:48:54  tobega
  * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
  *

@@ -4,11 +4,11 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">-->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
-<head>
-<title>Joshua's Homepage</title>
-<style type="text/css">
+    <head>
+        <title>Joshua's Homepage</title>
+        <style type="text/css">
     p { 
-        background-color: #ff0000; 
+        background-color: #ff0000;
         border-right-width: 3px; 
         border-top-width: 3px; 
         border-style: solid; 
@@ -44,62 +44,96 @@
 
     .test11 span { display: block; padding: 10px 10px; font-weight: normal; background-color: white }
 
-</style>
-</head>
-<body>
+        </style>
+    </head>
+    <body>
 
-<p class="expl">All paragraphs should have a 3px border on the top and right.
+        <p class="expl">All paragraphs should have a 3px border on the top and right.
 They should all be blue instead of red, except where marked.</p>
 
 
-<h3>no selector</h3>
+        <h3>no selector</h3>
 
-<p>selector = "p"  (background should be red)</p>
-
-
-
-<h3>conditional selectors</h3>
-
-<p class="test1">class selector = "p.test1"</p>
-
-<p id="test3">id selector = "p#test3"</p>
+        <p>selector = "p"  (background should be red)</p>
 
 
-<h3>descendant selectors</h3>
+        <h3>conditional selectors</h3>
 
-<p class="test2">nested selector = "p span" <span>span</span> (span should be bold and
-background red)</p>
-<p>normal <b>bold <i>bold italic (should be white) </i> bold <i>also white</i></b> normal</p>
+        <p class="test1">class selector = "p.test1"</p>
 
-
-<h3>wild card selectors</h3>
-
-<p id="test4">selector = "#test4"</p>
-
-<p class="test5">selector = ".test5"</p>
+        <p id="test3">id selector = "p#test3"</p>
 
 
-<h3>multiple selectors</h3>
+        <h3>descendant selectors</h3>
 
-<p class="test6">test6 of multi select selector = "p.test6, p.test7"</p>
+        <p class="test2">nested selector = "p span"
+            <span>span</span> (span should be bold and
+background blue)
+        </p>
+        <p>normal
+            <b>bold
+                <i>bold italic (should be white) </i> bold
+                <i>also white</i>
+            </b> normal
+        </p>
 
-<p class="test7">test7 of multi select selector = "p.test6, p.test7"</p>
 
-<p class="test8">A chained ConditionalSelector <span class="test8">Should be bold</span></p>
+        <h3>wild card selectors</h3>
 
-<div class="testbox"><p>indented</p><p>also indented</p><p>also indented</p></div>
+        <p id="test4">selector = "#test4"</p>
 
-<div class="testbox2"><p>indented</p><p>also indented</p><p>also indented</p></div>
+        <p class="test5">selector = ".test5"</p>
 
-<div class="testbold"><p>bold indented</p><p>also bold indented</p><p>also bold indented</p></div>
 
-<p class="test9">normal <span>blue bold padded</span> normal <span>blue bold padded</span> normal</p>
+        <h3>multiple selectors</h3>
 
-<p class="test9a">normal <span>blue bold padded</span> normal <span>blue bold padded</span> normal</p>
+        <p class="test6">test6 of multi select selector = "p.test6, p.test7"</p>
 
-<p class="test10">normal <span>indented</span><span>also indented</span><span>also indented</span></p>
+        <p class="test7">test7 of multi select selector = "p.test6, p.test7"</p>
 
-<p class="test11">normal <span>indented</span><span>also indented</span><span>also indented</span></p>
+        <p class="test8">A chained ConditionalSelector
+            <span class="test8">Should be bold</span>
+        </p>
 
-</body>
+        <div class="testbox">
+            <p>indented</p>
+            <p>also indented</p>
+            <p>also indented</p>
+        </div>
+
+        <div class="testbox2">
+            <p>indented</p>
+            <p>also indented</p>
+            <p>also indented</p>
+        </div>
+
+        <div class="testbold">
+            <p>bold indented</p>
+            <p>also bold indented</p>
+            <p>also bold indented</p>
+        </div>
+
+        <p class="test9">normal
+            <span>blue bold padded</span> normal
+            <span>blue bold padded</span> normal
+        </p>
+
+        <p class="test9a">normal
+            <span>blue bold padded</span> normal
+            <span>blue bold padded</span> normal
+        </p>
+
+        <p class="test10">normal
+            <span>indented</span>
+            <span>also indented</span>
+            <span>also indented</span>
+        </p>
+
+        <p class="test11">normal
+            <span>indented</span>
+            <span>also indented</span>
+            <span>also indented</span>
+        </p>
+
+    </body>
 </html>

@@ -78,16 +78,16 @@ public class ListItemPainter {
         // save the old AntiAliasing setting, then force it on
         Object aa_key = c.getGraphics().getRenderingHint(RenderingHints.KEY_ANTIALIASING);
         c.getGraphics().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                           RenderingHints.VALUE_ANTIALIAS_ON);
+                RenderingHints.VALUE_ANTIALIAS_ON);
         
         
         // calculations for bullets
         int rad = 8;// change this to use the glyph height
-        int baseline = box.height;// change this to use the real baseline
+        //not used: int baseline = box.height;// change this to use the real baseline
         CalculatedStyle style = c.css.getStyle(box.getRealElement());
-        Font font = FontUtil.getFont(c, style, box.getNode());
+        //not used: Font font = FontUtil.getFont(c, style);
         //Font font = FontUtil.getFont(c, box.getRealElement());
-        int h = FontUtil.lineHeight(c, box.getRealElement());
+        int h = FontUtil.lineHeight(c, style);
         rad = h / 3;
         int x = box.x - rad - rad / 2;
         int y = box.y + (h - rad / 2) / 2;
@@ -106,7 +106,7 @@ public class ListItemPainter {
 
         // restore the old AntiAliasing setting
         c.getGraphics().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                           aa_key);
+                aa_key);
 
 
 
@@ -159,10 +159,10 @@ public class ListItemPainter {
         }
 
         CalculatedStyle style = c.css.getStyle(box.getRealElement());
-        Font font = FontUtil.getFont(c, style, box.getNode());
+        Font font = FontUtil.getFont(c, style);
         LineMetrics lm = font.getLineMetrics(text, ((Graphics2D) c.getGraphics()).getFontRenderContext());
         int w = FontUtil.len(c, text, font);
-        int h = FontUtil.lineHeight(c, box.getRealElement());
+        int h = FontUtil.lineHeight(c, style);
         int x = box.x - w - 2;
         int y = box.y + h;
         y -= (int) lm.getDescent();
@@ -210,6 +210,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/12/05 14:35:40  tobega
+ * Cleaned up some usages of Node (and removed unused stuff) in layout code. The goal is to pass "better" objects than Node wherever possible in an attempt to shake out the bugs in tree-traversal (probably often unnecessary tree-traversal)
+ *
  * Revision 1.7  2004/12/05 05:18:02  joshy
  * made bullets be anti-aliased
  * fixed bug in link listener that caused NPEs

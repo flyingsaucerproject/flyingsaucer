@@ -1,8 +1,8 @@
 package org.xhtmlrenderer.layout.inline;
 
 
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.render.InlineBox;
 
@@ -22,13 +22,14 @@ public class WhitespaceStripper {
     public InlineBox createInline(Context c, Node node, String text, InlineBox prev, InlineBox prev_align, int avail, int max, Font font) {
         InlineBox inline = new InlineBox();
         inline.setNode(node);
-        inline.whitespace = getWhitespace(c, node);
+        CalculatedStyle style = c.css.getStyle(node);
+        inline.whitespace = getWhitespace(style);
         
         // prepare a new inline with a substring that goes
         // from the end of the previous (if applicable) to the
         // end of the master string
         if (prev == null || prev.getNode() != node) {
-            text = stripWhitespace(c, node, prev, text);
+            text = stripWhitespace(style, prev, text);
             inline.setMasterText(text);
             inline.setSubstring(0, text.length());
         } else {
@@ -47,9 +48,9 @@ public class WhitespaceStripper {
     // this function strips all whitespace from the text according to the
     // CSS 2.1 spec on whitespace handling. It accounts for the different
     // whitespace settings like normal, nowrap, pre, etc
-    public String stripWhitespace(Context c, Node node, InlineBox prev, String text) {
+    public String stripWhitespace(CalculatedStyle style, InlineBox prev, String text) {
 
-        String whitespace = getWhitespace(c, node);
+        String whitespace = getWhitespace(style);
         //u.p("stripWhitespace: text = -" + text + "-");
         //u.p("whitespace = " + whitespace);
         
@@ -114,15 +115,9 @@ public class WhitespaceStripper {
         return;
     }
 
-    public String getWhitespace(Context c, Node node) {
-        Element e = null;
-        if (node instanceof Element) {
-            e = (Element) node;
-        } else {
-            e = (Element) node.getParentNode();
-        }
-        String whitespace = c.css.getStyle(e).getStringProperty("white-space");
-        if (whitespace == null) {
+    public String getWhitespace(CalculatedStyle style) {
+        String whitespace = style.getStringProperty("white-space");
+        if (whitespace == null) {//should never happen
             whitespace = "normal";
         }
         return whitespace;

@@ -161,11 +161,17 @@ public class TBStyleReference implements StyleReference {
     /**
      * Gets the pseudoElementStyle attribute of the TBStyleReference object
      *
-     * @param e             PARAM
+     * @param node          PARAM
      * @param pseudoElement PARAM
      * @return The pseudoElementStyle value
      */
-    public CascadedStyle getPseudoElementStyle(Element e, String pseudoElement) {
+    public CascadedStyle getPseudoElementStyle(Node node, String pseudoElement) {
+        Element e = null;
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            e = (Element) node;
+        } else {
+            e = (Element) node.getParentNode();
+        }
         return _tbStyleMap.getPECascadedStyle(e, pseudoElement);
     }
 
@@ -290,6 +296,9 @@ public class TBStyleReference implements StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2004/12/05 14:35:38  tobega
+ * Cleaned up some usages of Node (and removed unused stuff) in layout code. The goal is to pass "better" objects than Node wherever possible in an attempt to shake out the bugs in tree-traversal (probably often unnecessary tree-traversal)
+ *
  * Revision 1.20  2004/12/05 00:48:53  tobega
  * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
  *

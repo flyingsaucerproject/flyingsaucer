@@ -306,8 +306,8 @@ public class InlineLayout extends BoxLayout {
         // u.p("avail space = " + avail + " max = " + max_width + "   start index = " + start);
 
         // get the current font. required for sizing
-        CalculatedStyle style = c.css.getStyle(LineBreaker.getElement(node));
-        Font font = FontUtil.getFont(c, style, node);
+        CalculatedStyle style = c.css.getStyle(node);
+        Font font = FontUtil.getFont(c, style);
         
         // handle each case
         if (LayoutUtil.isReplaced(c, node)) {
@@ -389,7 +389,7 @@ public class InlineLayout extends BoxLayout {
         line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(line_to_save);
 
 
-        VerticalAlign.setupVerticalAlign(c, containing_block, line_to_save);
+        VerticalAlign.setupVerticalAlign(line_to_save);
         block.addChild(line_to_save);
     }
 
@@ -412,6 +412,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.36  2004/12/05 14:35:39  tobega
+* Cleaned up some usages of Node (and removed unused stuff) in layout code. The goal is to pass "better" objects than Node wherever possible in an attempt to shake out the bugs in tree-traversal (probably often unnecessary tree-traversal)
+*
 * Revision 1.35  2004/12/05 00:48:57  tobega
 * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
 *

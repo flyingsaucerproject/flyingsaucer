@@ -82,11 +82,11 @@ public class LineBreaker {
                 next_space = text.length();
             }
 
-            CalculatedStyle style = c.css.getStyle(getElement(node));
-            Font font = FontUtil.getFont(c, style, node);
+            CalculatedStyle style = c.css.getStyle(node);
+            Font font = FontUtil.getFont(c, style);
             //Font font = FontUtil.getFont( c, node );
 
-            int len2 = FontUtil.len(c, node, text.substring(start, next_space), font);
+            int len2 = FontUtil.len(c, text.substring(start, next_space), font);
             // if this won't fit, then break and use the previous span
             if (len2 > avail) {
                 InlineBox box = newBox(c, node, start, end, prev, text, prev_align, font);
@@ -118,7 +118,7 @@ public class LineBreaker {
         // if the rest of text can fit on the current line
         // if length of remaining text < available width
         //u.p("avail = " + avail + " len = " + FontUtil.len(c,node,text.substring(start)));
-        if (FontUtil.len(c, node, text.substring(start), font) < avail) {
+        if (FontUtil.len(c, text.substring(start), font) < avail) {
             return true;
         } else {
             return false;
@@ -298,7 +298,7 @@ public class LineBreaker {
         first_word = first_word.trim();
         
         // if the first word could fit in the available space, then return true
-        if (avail < FontUtil.len(c, node, first_word, font)) {
+        if (avail < FontUtil.len(c, first_word, font)) {
             return true;
         } else {
             return false;
@@ -389,7 +389,7 @@ public class LineBreaker {
         try {
             if (!LayoutUtil.isReplaced(c, node)) {
                 if (!LayoutUtil.isFloatedBlock(node, c)) {
-                    box.width = FontUtil.len(c, node, text.substring(start, end), font);
+                    box.width = FontUtil.len(c, text.substring(start, end), font);
                 } else {
                     box.width = bounds.width;
                 }
@@ -409,7 +409,8 @@ public class LineBreaker {
         } else if (LayoutUtil.isFloatedBlock(node, c)) {
             box.height = bounds.height;
         } else {
-            box.height = FontUtil.lineHeight(c, node);
+            CalculatedStyle style = c.css.getStyle(node);
+            box.height = FontUtil.lineHeight(c, style);
         }
 
         box.break_after = true;
@@ -490,23 +491,12 @@ public class LineBreaker {
             return false;
         }
         //u.p("it's the first child");
-        CascadedStyle cs = c.css.getPseudoElementStyle(getElement(node), "first-letter");
+        CascadedStyle cs = c.css.getPseudoElementStyle(node, "first-letter");
         if (cs != null) {
             return true;
             //return false;
         }
         return false;
-    }
-
-
-    public static Element getElement(Node node) {
-        Element elem = null;
-        if (node instanceof Element) {
-            elem = (Element) node;
-        } else {
-            elem = (Element) node.getParentNode();
-        }
-        return elem;
     }
 
     public static InlineBox generateFirstLetterInlineBox(Context c, Node node, int start, String text,
@@ -520,13 +510,12 @@ public class LineBreaker {
         // u.p("prev align = " + prev_align);
         // u.p("avail = " + avail);
         
-        CalculatedStyle style = c.css.getStyle(getElement(node));
-        Font font = FontUtil.getFont(c, style, node);
+        CalculatedStyle style = c.css.getStyle(node);
+        Font font = FontUtil.getFont(c, style);
         InlineBox box = newBox(c, node, start, end, prev, text, prev_align, font);
-        int len = FontUtil.len(c, node, text.substring(start, end), font);
-        Element elem = getElement(node);
-        CascadedStyle ps = c.css.getPseudoElementStyle(elem, "first-letter");
-        CalculatedStyle parent = c.css.getStyle(elem);
+        //not used: int len = FontUtil.len(c, text.substring(start, end), font);
+        CascadedStyle ps = c.css.getPseudoElementStyle(node, "first-letter");
+        CalculatedStyle parent = c.css.getStyle(node);
         CalculatedStyle cs = null;
         if (ps != null) {
             cs = new CalculatedStyle(parent, ps);
@@ -543,7 +532,7 @@ public class LineBreaker {
     public static void styleInlineBox(Context c, CalculatedStyle style, InlineBox box) {
         box.color = style.getColor();
         TextDecoration.setupTextDecoration(style, box.getNode(), box);
-        Font font = FontUtil.getFont(c, style, box.getNode());
+        Font font = FontUtil.getFont(c, style);
         box.setFont(font);
         box.width = FontUtil.len(c, box.getSubstring(), font);
         box.height = FontUtil.lineHeight(c, style, box);
@@ -555,6 +544,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2004/12/05 14:35:39  tobega
+ * Cleaned up some usages of Node (and removed unused stuff) in layout code. The goal is to pass "better" objects than Node wherever possible in an attempt to shake out the bugs in tree-traversal (probably often unnecessary tree-traversal)
+ *
  * Revision 1.27  2004/12/05 00:48:58  tobega
  * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
  *
