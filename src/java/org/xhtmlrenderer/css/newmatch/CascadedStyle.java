@@ -1,5 +1,4 @@
 /*
- *
  * CascadedStyle.java
  * Copyright (c) 2004 Patrick Wright, Torbjörn Gannholm
  *
@@ -18,46 +17,54 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-
 package org.xhtmlrenderer.css.newmatch;
 
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
-/** Holds a MatchedProperty for each unique property name */
+
+/**
+ * Holds a MatchedProperty for each unique property name
+ *
+ * @author   empty
+ */
 public class CascadedStyle {
 
-    /** The main Map of MatchedProperties keyed by property name, after cascade takes place. */
+    /**
+     * The main Map of MatchedProperties keyed by property name, after cascade
+     * takes place.
+     */
     private java.util.Map _cascadedPropertiesByName;
 
     /**
-     * @param forElement  PARAM
-     * @param iter        PARAM should contain PropertyDeclaration in order of specificity
+     * @param iter        PARAM should contain PropertyDeclaration in order of
+     *      specificity
      */
-    public CascadedStyle(java.util.Iterator iter) {
+    public CascadedStyle( java.util.Iterator iter ) {
         this();
-        
+
         //do a bucket-sort on importance and origin
         //properties should already be in order of specificity
         java.util.List[] buckets = new java.util.List[PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT];
-        for(int i=0; i<buckets.length; i++) {
+        for ( int i = 0; i < buckets.length; i++ ) {
             buckets[i] = new java.util.LinkedList();
         }
 
         while ( iter.hasNext() ) {
-            PropertyDeclaration prop = (PropertyDeclaration) iter.next();
-            buckets[prop.getImportanceAndOrigin()].add(prop);
+            PropertyDeclaration prop = (PropertyDeclaration)iter.next();
+            buckets[prop.getImportanceAndOrigin()].add( prop );
         }
-        
-        for(int i=0; i<buckets.length; i++) {
-            for(java.util.Iterator it = buckets[i].iterator(); it.hasNext();) {
-                PropertyDeclaration prop = (PropertyDeclaration) it.next();
+
+        for ( int i = 0; i < buckets.length; i++ ) {
+            for ( java.util.Iterator it = buckets[i].iterator(); it.hasNext();  ) {
+                PropertyDeclaration prop = (PropertyDeclaration)it.next();
                 //System.err.println("matched "+prop.getName());
-                _cascadedPropertiesByName.put(prop.getName(), prop);
+                _cascadedPropertiesByName.put( prop.getName(), prop );
             }
         }
     }
 
 
+    /** Constructor for the CascadedStyle object */
     protected CascadedStyle() {
         _cascadedPropertiesByName = new java.util.TreeMap();
     }
@@ -84,9 +91,31 @@ public class CascadedStyle {
         return prop;
     }
 
+    /**
+     * Gets the matchedPropertyDeclarations attribute of the CascadedStyle
+     * object
+     *
+     * @return   The matchedPropertyDeclarations value
+     */
     public java.util.Iterator getMatchedPropertyDeclarations() {
         return _cascadedPropertiesByName.values().iterator();
-    }    
+    }
 
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/11/15 12:42:22  pdoubleya
+ * Across this checkin (all may not apply to this particular file)
+ * Changed default/package-access members to private.
+ * Changed to use XRRuntimeException where appropriate.
+ * Began move from System.err.println to std logging.
+ * Standard code reformat.
+ * Removed some unnecessary SAC member variables that were only used in initialization.
+ * CVS log section.
+ *
+ *
+ */
 

@@ -1,5 +1,4 @@
 /*
- *
  * TBStyleReference.java
  * Copyright (c) 2004 Torbj�rn Gannholm
  *
@@ -18,122 +17,79 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-
 package org.xhtmlrenderer.css.bridge;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.io.*;
-import java.io.IOException;
-import java.net.URL;
 import java.util.*;
-import java.util.logging.*;
 
-import org.w3c.css.sac.InputSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.css.CSSPrimitiveValue;
-//import org.w3c.dom.css.CSSStyleSheet;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
 
 import org.xhtmlrenderer.css.Border;
-//import org.joshy.html.Context;
-//import org.joshy.html.css.JStyle;
 import org.xhtmlrenderer.css.StyleReference;
-import org.xhtmlrenderer.layout.*;
-
-import org.xhtmlrenderer.css.style.DerivedProperty;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetFactory;
-
-import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.AttributeResolver;
-
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.DerivedProperty;
 import org.xhtmlrenderer.css.value.BorderColor;
+import org.xhtmlrenderer.extend.AttributeResolver;
+import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
-/** Does not really implement StyleReference, but anyway */
- public class TBStyleReference implements StyleReference {
 
+/**
+ * Does not really implement StyleReference, but anyway
+ *
+ * @author   empty
+ */
+public class TBStyleReference implements StyleReference {
     /** The Context this StyleReference operates in; used for property resolution. */
     private Context _context;
-    
+
+    /** Description of the Field */
     private UserAgentCallback _userAgent;
-    
-    //private XRDocument _doc;
+
+    /** Description of the Field */
     private NamespaceHandler _nsh;
+
+    /** Description of the Field */
     private Document _doc;
+
+    /** Description of the Field */
     private AttributeResolver _attRes;
-    
+
+    /** Description of the Field */
     private StylesheetFactory _stylesheetFactory;
-
-   /** Whether elements in the current document have been checked for style attributes */
-    //private boolean _elementStyleAttributesPulled;
-    
-    /** Map from Element to XRStyleRules created from style attribute on it */
-    //private Map _elementXRStyleMap;
-
-    /**
-     * ASK: holdover from Josh's processing code...apparently used as a trap to
-     * make sure the same <code><style></code> elements within a document were
-     * not read more than once.
-     */
-    //private List _inlineStyleElements;
 
     /**
      * Instance of our element-styles matching class. Will be null if new rules
      * have been added since last match.
      */
     private org.xhtmlrenderer.css.newmatch.Matcher _tbStyleMap;
-    
+
+    /** Description of the Field */
     private org.xhtmlrenderer.css.style.Styler _styler;
 
-    
     /** seems to need a list of XRStyleRules.... */
-    //private List _xrStyleRuleList;
     private List _stylesheets;
 
     /**
-     * Map from XRStyleRules to the Rulesets that contain them. Rulesets are passed
-     * to Tobe's matching routine, hence...
-     */
-    //private Map _ruleSetMap;
-
-    /**
-     * Instantiates a new XRStyleReference for a given Context.
+     * Default constructor for initializing members.
      *
-     * @param context  Context instance used for property resolution when
-     *      necessary.
+     * @param userAgent  PARAM
      */
-    /*public TBStyleReference(Context context, UserAgentCallback userAgent, Document doc) {
-        this(userAgent);
-        setDocumentContext(context, doc);
-    }*/
-
-    /** Default constructor for initializing members. */
-    public TBStyleReference(UserAgentCallback userAgent) {
+    public TBStyleReference( UserAgentCallback userAgent ) {
         _userAgent = userAgent;
-        //_inlineStyleElements = new ArrayList();
-        //_ruleSetMap = new HashMap();
-        //_elementXRStyleMap = new HashMap();
         _stylesheetFactory = new StylesheetFactory();
-    }
-    
-    public void setDocumentContext(Context context, NamespaceHandler nsh, AttributeResolver ar, Document doc) {
-        _context = context;
-        _nsh = nsh;
-        _doc = doc;
-        _attRes = ar;
-        
-        parseStylesheets();
-        matchStyles();
     }
 
 
@@ -144,7 +100,7 @@ import org.xhtmlrenderer.util.XRLog;
      * @param elem  The DOM Element to find the property for
      * @param prop  The property name
      * @return      True if the Element, or an ancestor, has the property
-     *      defined.
+1     *      defined.
      */
     public boolean hasProperty( Element elem, String prop ) {
         return hasProperty( (Node)elem, prop, false );
@@ -177,113 +133,42 @@ import org.xhtmlrenderer.util.XRLog;
      * @return         True if the Node has the property defined.
      */
     public boolean hasProperty( Node node, String prop, boolean inherit ) {
-        return _styler.getCalculatedStyle((Element) node).hasProperty( prop );
+        return _styler.getCalculatedStyle( (Element)node ).hasProperty( prop );
     }
-    
-    private void parseStylesheets() {
-        java.io.Reader reader;
-        _stylesheets = new LinkedList();
-        long st = System.currentTimeMillis();
-        
-        String uri = _nsh.getNamespace();
-        Stylesheet sheet = (Stylesheet) _stylesheetFactory.getStylesheet(uri);
-        if(sheet == null) {
-            reader = _nsh.getDefaultStylesheet();
-            if(reader != null) {
-                sheet = _stylesheetFactory.parse(Stylesheet.USER_AGENT, reader);
-                _stylesheetFactory.putStylesheet(uri, sheet);
-            }
-        }
-        if(sheet != null){
-            _stylesheets.add(sheet);
-        }
-        
-        String[] uris = _nsh.getStylesheetURIs(_doc);
-        if(uris != null) {
-            for(int i=0; i<uris.length; i++) {
-                java.net.URL baseUrl = _context.getRenderingContext().getBaseURL();
-                try {
-                    uri = new java.net.URL(baseUrl,uris[i]).toString();
-                    sheet = _stylesheetFactory.getStylesheet(uri);
-                    if(sheet == null) {
-                        reader = _userAgent.getReaderForURI(uri);
-                        if(reader != null) {
-                            sheet = _stylesheetFactory.parse(Stylesheet.AUTHOR, reader);
-                            _stylesheetFactory.putStylesheet(uri, sheet);
-                        }
-                    }
-                    if(sheet != null){
-                        _stylesheets.add(sheet);
-                    }
-                }
-                catch(java.net.MalformedURLException e) {
-                    XRLog.exception("bad URL for associated stylesheet", e);
-                }
-            }
-        }
-        
-        uri = _context.getRenderingContext().getBaseURL().toString();
-        sheet = _stylesheetFactory.getStylesheet(uri);
-        if(sheet == null) {
-            String inlineStyle = _nsh.getInlineStyle(_doc);
-            if(inlineStyle != null) {
-                reader = new java.io.StringReader(inlineStyle);
-                sheet = _stylesheetFactory.parse(Stylesheet.AUTHOR, reader);
-                _stylesheetFactory.putStylesheet(uri, sheet);
-            }
-        }
-        if(sheet != null){
-            _stylesheets.add(sheet);
-        }
-        
-        //here we should also get user stylesheet from userAgent
-        //
-        
-        long el = System.currentTimeMillis() - st;
-        XRLog.load("TIME: parse stylesheets  " + el + "ms");
-    }
-
 
     /**
-     * <p>
+     * Description of the Method
      *
-     * Attempts to match any styles loaded to Elements in the supplied Document,
-     * using CSS2 matching guidelines re: selection to prepare internal lookup
-     * routines for property lookup methods (e.g. {@link #getProperty(Element,
-     * String, boolean)}). This should be called after all stylesheets and
-     * styles are loaded, but before any properties are retrieved. </p>
-     *
-     * @param document  A DOM Document, e.g. XHTML instance to match on.
+     * @param e  PARAM
+     * @return   Returns
      */
-    private void matchStyles( ) {
-        long st = System.currentTimeMillis();
-        try {
-            
-            XRLog.match("No of stylesheets = "+_stylesheets.size());            
-            List sortedXRRules = new ArrayList();
-            Iterator iter = _stylesheets.iterator();
+    public boolean wasHoverRestyled( Element e ) {
+        boolean isHoverStyled = _tbStyleMap.isHoverStyled( e );
+        //XRLog.general("Element "+e+" tested for hover styling "+isHoverStyled);
+        if ( _tbStyleMap.isHoverStyled( e ) ) {
+            _styler.restyleTree( e );
+            return true;
+        }
+        return false;
+    }
 
-            _tbStyleMap = new org.xhtmlrenderer.css.newmatch.Matcher(_doc, _attRes, _stylesheets.iterator());
-            _tbStyleMap.setStylesheetFactory(_stylesheetFactory);
-            
-        // now we have a match-map, apply against our entire Document....restyleTree() is recursive
-        Element root = _doc.getDocumentElement();
-        _styler = new org.xhtmlrenderer.css.style.Styler();
-        _styler.setMatcher(_tbStyleMap);
-        _styler.styleTree(root);
-        //_styler.restyleTree( root );
-        //_styler.setViewportRectangle(_context.getViewport().getBounds());
-        }
-        catch(RuntimeException re) {
-            re.printStackTrace();
-            throw re;
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-        }
-                     long el = System.currentTimeMillis() - st;
-                    XRLog.match("TIME: match styles  " + el + "ms");
-   }
+    /**
+     * Sets the documentContext attribute of the TBStyleReference object
+     *
+     * @param context  The new documentContext value
+     * @param nsh      The new documentContext value
+     * @param ar       The new documentContext value
+     * @param doc      The new documentContext value
+     */
+    public void setDocumentContext( Context context, NamespaceHandler nsh, AttributeResolver ar, Document doc ) {
+        _context = context;
+        _nsh = nsh;
+        _doc = doc;
+        _attRes = ar;
+
+        parseStylesheets();
+        matchStyles();
+    }
 
 
     /**
@@ -293,7 +178,7 @@ import org.xhtmlrenderer.util.XRLog;
      * @return      The background-color Color property
      */
     public Color getBackgroundColor( Element elem ) {
-        return _styler.getCalculatedStyle(elem).getBackgroundColor( );
+        return _styler.getCalculatedStyle( elem ).getBackgroundColor();
     }
 
 
@@ -303,8 +188,8 @@ import org.xhtmlrenderer.util.XRLog;
      * @param elem  The DOM element to find the property for.
      * @return      The border-color Color property
      */
-    public BorderColor getBorderColor(Element elem) {
-        return _styler.getCalculatedStyle(elem).getBorderColor( );
+    public BorderColor getBorderColor( Element elem ) {
+        return _styler.getCalculatedStyle( elem ).getBorderColor();
     }
 
 
@@ -314,8 +199,8 @@ import org.xhtmlrenderer.util.XRLog;
      * @param elem  The DOM element to find the property for.
      * @return      The Border property (for widths)
      */
-    public Border getBorderWidth(Element elem) {
-        return _styler.getCalculatedStyle(elem).getBorderWidth( );
+    public Border getBorderWidth( Element elem ) {
+        return _styler.getCalculatedStyle( elem ).getBorderWidth();
     }
 
 
@@ -327,7 +212,7 @@ import org.xhtmlrenderer.util.XRLog;
      * @return      The CSS color Color property
      */
     public Color getColor( Element elem ) {
-        return _styler.getCalculatedStyle(elem).getColor( );
+        return _styler.getCalculatedStyle( elem ).getColor();
     }
 
 
@@ -341,7 +226,7 @@ import org.xhtmlrenderer.util.XRLog;
      * @return         The foreground Color property
      */
     public Color getColor( Element elem, boolean inherit ) {
-        return _styler.getCalculatedStyle(elem).getColor( );
+        return _styler.getCalculatedStyle( elem ).getColor();
     }
 
 
@@ -352,13 +237,13 @@ import org.xhtmlrenderer.util.XRLog;
      * parent and ancestor elements.
      *
      * @param elem     The DOM element to find the property for.
+     * @param prop     The property name
      * @param inherit  If true and property not found on this element, searches
      *      through element ancestors for property
-     * @param prop     The property name
      * @return         The named property as a Point
      */
     public Point getFloatPairProperty( Element elem, String prop, boolean inherit ) {
-        DerivedProperty xrProp = _styler.getCalculatedStyle(elem).propertyByName( prop );
+        DerivedProperty xrProp = _styler.getCalculatedStyle( elem ).propertyByName( prop );
 
         if ( xrProp.computedValue().isValueList() ) {
             CSSValueList vl = (CSSValueList)xrProp.computedValue().cssValue();
@@ -452,7 +337,7 @@ import org.xhtmlrenderer.util.XRLog;
      * @return              The named property as a float
      */
     public float getFloatProperty( Node node, String prop, float parent_value, boolean inherit ) {
-        return _styler.getCalculatedStyle((Element) node).propertyByName( prop ).computedValue().asFloat();
+        return _styler.getCalculatedStyle( (Element)node ).propertyByName( prop ).computedValue().asFloat();
     }
 
 
@@ -462,8 +347,8 @@ import org.xhtmlrenderer.util.XRLog;
      * @param elem  The DOM element to find the property for.
      * @return      The margin property as a Border (for widths)
      */
-    public Border getMarginWidth(Element elem) {
-        return _styler.getCalculatedStyle(elem).getMarginWidth( );
+    public Border getMarginWidth( Element elem ) {
+        return _styler.getCalculatedStyle( elem ).getMarginWidth();
     }
 
 
@@ -473,8 +358,8 @@ import org.xhtmlrenderer.util.XRLog;
      * @param elem  The DOM element to find the property for.
      * @return      The padding property as a Border (for widths)
      */
-    public Border getPaddingWidth(Element elem) {
-        return _styler.getCalculatedStyle(elem).getPaddingWidth( );
+    public Border getPaddingWidth( Element elem ) {
+        return _styler.getCalculatedStyle( elem ).getPaddingWidth();
     }
 
 
@@ -488,7 +373,7 @@ import org.xhtmlrenderer.util.XRLog;
      * @return         The property value as CSSValue
      */
     public CSSValue getProperty( Element elem, String prop, boolean inherit ) {
-        return _styler.getCalculatedStyle(elem).propertyByName( prop ).computedValue().cssValue();
+        return _styler.getCalculatedStyle( elem ).propertyByName( prop ).computedValue().cssValue();
     }
 
 
@@ -501,7 +386,7 @@ import org.xhtmlrenderer.util.XRLog;
      * @return      The property value as String array
      */
     public String[] getStringArrayProperty( Element elem, String prop ) {
-        return _styler.getCalculatedStyle(elem).propertyByName( prop ).computedValue().asStringArray();
+        return _styler.getCalculatedStyle( elem ).propertyByName( prop ).computedValue().asStringArray();
     }
 
 
@@ -561,6 +446,155 @@ import org.xhtmlrenderer.util.XRLog;
         return _getStringProperty( node, prop, false );
     }
 
+    /**
+     * Gets the derivedPropertiesMap attribute of the TBStyleReference object
+     *
+     * @param e  PARAM
+     * @return   The derivedPropertiesMap value
+     */
+    public java.util.Map getDerivedPropertiesMap( Element e ) {
+        org.xhtmlrenderer.css.style.CalculatedStyle cs = _styler.getCalculatedStyle( e );
+        java.util.LinkedHashMap props = new java.util.LinkedHashMap();
+        for ( java.util.Iterator i = cs.getAvailablePropertyNames().iterator(); i.hasNext();  ) {
+            String propName = (String)i.next();
+            props.put( propName, cs.propertyByName( propName ).computedValue().cssValue() );
+        }
+        return props;
+    }
+
+    /**
+     * Gets the firstLetterStyle attribute of the TBStyleReference object
+     *
+     * @param e  PARAM
+     * @return   The firstLetterStyle value
+     */
+    public CalculatedStyle getFirstLetterStyle( Element e ) {
+        return null;//not supported yet
+    }
+
+    /**
+     * Gets the pseudoElementStyle attribute of the TBStyleReference object
+     *
+     * @param e              PARAM
+     * @param pseudoElement  PARAM
+     * @return               The pseudoElementStyle value
+     */
+    public CascadedStyle getPseudoElementStyle( Element e, String pseudoElement ) {
+        return _tbStyleMap.getPECascadedStyle( e, pseudoElement );
+    }
+
+    /**
+     * Gets the style attribute of the TBStyleReference object
+     *
+     * @param e  PARAM
+     * @return   The style value
+     */
+    public CalculatedStyle getStyle( Element e ) {
+        return _styler.getCalculatedStyle( e );
+    }
+
+    /**
+     * Loads all stylesheets and inline styles associated with the current
+     * document. Default (user agent) stylesheet is loaded as well. Sheets are
+     * loaded into _stylesheets List, and cached in the StyleSheetFactory by
+     * URI.
+     */
+    private void parseStylesheets() {
+        java.io.Reader reader;
+        _stylesheets = new LinkedList();
+        long st = System.currentTimeMillis();
+
+        String uri = _nsh.getNamespace();
+        Stylesheet sheet = (Stylesheet)_stylesheetFactory.getStylesheet( uri );
+        if ( sheet == null ) {
+            reader = _nsh.getDefaultStylesheet();
+            if ( reader != null ) {
+                sheet = _stylesheetFactory.parse( Stylesheet.USER_AGENT, reader );
+                _stylesheetFactory.putStylesheet( uri, sheet );
+            }
+        }
+        if ( sheet != null ) {
+            _stylesheets.add( sheet );
+        }
+
+        String[] uris = _nsh.getStylesheetURIs( _doc );
+        if ( uris != null ) {
+            for ( int i = 0; i < uris.length; i++ ) {
+                java.net.URL baseUrl = _context.getRenderingContext().getBaseURL();
+                try {
+                    uri = new java.net.URL( baseUrl, uris[i] ).toString();
+                    sheet = _stylesheetFactory.getStylesheet( uri );
+                    if ( sheet == null ) {
+                        reader = _userAgent.getReaderForURI( uri );
+                        if ( reader != null ) {
+                            sheet = _stylesheetFactory.parse( Stylesheet.AUTHOR, reader );
+                            _stylesheetFactory.putStylesheet( uri, sheet );
+                        }
+                    }
+                    if ( sheet != null ) {
+                        _stylesheets.add( sheet );
+                    }
+                } catch ( java.net.MalformedURLException e ) {
+                    XRLog.exception( "bad URL for associated stylesheet", e );
+                }
+            }
+        }
+
+        uri = _context.getRenderingContext().getBaseURL().toString();
+        sheet = _stylesheetFactory.getStylesheet( uri );
+        if ( sheet == null ) {
+            String inlineStyle = _nsh.getInlineStyle( _doc );
+            if ( inlineStyle != null ) {
+                reader = new java.io.StringReader( inlineStyle );
+                sheet = _stylesheetFactory.parse( Stylesheet.AUTHOR, reader );
+                _stylesheetFactory.putStylesheet( uri, sheet );
+            }
+        }
+        if ( sheet != null ) {
+            _stylesheets.add( sheet );
+        }
+
+        //here we should also get user stylesheet from userAgent
+
+        long el = System.currentTimeMillis() - st;
+        XRLog.load( "TIME: parse stylesheets  " + el + "ms" );
+    }
+
+
+    /**
+     * <p>
+     *
+     * Attempts to match any styles loaded to Elements in the supplied Document,
+     * using CSS2 matching guidelines re: selection to prepare internal lookup
+     * routines for property lookup methods (e.g. {@link #getProperty(Element,
+     * String, boolean)}). This should be called after all stylesheets and
+     * styles are loaded, but before any properties are retrieved. </p>
+     */
+    private void matchStyles() {
+        long st = System.currentTimeMillis();
+        try {
+
+            XRLog.match( "No of stylesheets = " + _stylesheets.size() );
+            List sortedXRRules = new ArrayList();
+            Iterator iter = _stylesheets.iterator();
+
+            _tbStyleMap = new org.xhtmlrenderer.css.newmatch.Matcher( _doc, _attRes, _stylesheets.iterator() );
+            _tbStyleMap.setStylesheetFactory( _stylesheetFactory );
+
+            // now we have a match-map, apply against our entire Document....restyleTree() is recursive
+            Element root = _doc.getDocumentElement();
+            _styler = new org.xhtmlrenderer.css.style.Styler();
+            _styler.setMatcher( _tbStyleMap );
+            _styler.styleTree( root );
+        } catch ( RuntimeException re ) {
+            throw new XRRuntimeException( "Failed on matchStyles(), unknown RuntimeException.", re );
+        } catch ( Exception e ) {
+            throw new XRRuntimeException( "Failed on matchStyles(), unknown Exception.", e );
+        }
+        long el = System.currentTimeMillis() - st;
+        XRLog.match( "TIME: match styles  " + el + "ms" );
+    }
+
 
     /**
      * Returns the value of a property as a String, inheriting the value from
@@ -574,56 +608,45 @@ import org.xhtmlrenderer.util.XRLog;
      */
     //Tobe: this is actually called with a non-element!
     private String _getStringProperty( Node node, String prop, boolean inherit ) {
-        Element elem = nearestElementAncestor(node);
+        Element elem = nearestElementAncestor( node );
 
         if ( elem == null ) {
             return null;
         }
-        return _styler.getCalculatedStyle(elem).propertyByName( prop ).computedValue().asString();
+        return _styler.getCalculatedStyle( elem ).propertyByName( prop ).computedValue().asString();
     }
-    
-    private org.w3c.dom.Element nearestElementAncestor(Node node) {
-        while(node != null && node.getNodeType() != Node.ELEMENT_NODE){
+
+    /**
+     * Description of the Method
+     *
+     * @param node  PARAM
+     * @return      Returns
+     */
+    private org.w3c.dom.Element nearestElementAncestor( Node node ) {
+        while ( node != null && node.getNodeType() != Node.ELEMENT_NODE ) {
             node = node.getParentNode();
         }
-        
-        return (Element) node;
+
+        return (Element)node;
     }
-    
-    public java.util.Map getDerivedPropertiesMap(Element e) {
-        org.xhtmlrenderer.css.style.CalculatedStyle cs = _styler.getCalculatedStyle(e);
-        java.util.LinkedHashMap props = new java.util.LinkedHashMap();
-        for(java.util.Iterator i = cs.getAvailablePropertyNames().iterator(); i.hasNext();) {
-            String propName = (String) i.next();
-            props.put(propName, cs.propertyByName(propName).computedValue().cssValue());
-        }
-        return props;
-    }
-    
-    public CalculatedStyle getFirstLetterStyle(Element e) {
-        return null;//not supported yet
-    }
-    
-    public CascadedStyle getPseudoElementStyle(Element e, String pseudoElement) {
-        return _tbStyleMap.getPECascadedStyle(e, pseudoElement);
-    }
-    
-    public CalculatedStyle getStyle(Element e) {
-        return _styler.getCalculatedStyle(e);
-    }
-    
-    public boolean wasHoverRestyled(Element e) {
-        boolean isHoverStyled = _tbStyleMap.isHoverStyled(e);
-        //XRLog.general("Element "+e+" tested for hover styling "+isHoverStyled);
-        if(_tbStyleMap.isHoverStyled(e)) {
-            _styler.restyleTree(e);
-            return true;
-        }
-        return false;
-    }
-    
+
 }
 /*
  * :folding=java:collapseFolds=1:noTabs=true:tabSize=4:indentSize=4:
+ */
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.12  2004/11/15 12:42:22  pdoubleya
+ * Across this checkin (all may not apply to this particular file)
+ * Changed default/package-access members to private.
+ * Changed to use XRRuntimeException where appropriate.
+ * Began move from System.err.println to std logging.
+ * Standard code reformat.
+ * Removed some unnecessary SAC member variables that were only used in initialization.
+ * CVS log section.
+ *
+ *
  */
 

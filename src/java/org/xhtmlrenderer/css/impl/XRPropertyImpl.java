@@ -74,6 +74,7 @@ public class XRPropertyImpl implements XRProperty {
      * environment or not
      */
     private boolean _isResolved;
+
     /**
      * The property name to PropertyFactory mappings. The factories facilitate
      * creating XRProperties from a property definition. Note static block is at
@@ -104,8 +105,10 @@ public class XRPropertyImpl implements XRProperty {
      * @param sequence  PARAM
      */
     public XRPropertyImpl( CSSStyleDeclaration style, String propName, int sequence ) {
-        this( propName, sequence, new XRValueImpl( (CSSPrimitiveValue)style.getPropertyCSSValue( propName ),
-                style.getPropertyPriority( propName ) ) );
+        this ( propName, 
+               sequence, 
+               new XRValueImpl( (CSSPrimitiveValue)style.getPropertyCSSValue( propName ),
+                                 style.getPropertyPriority( propName ) ) );
     }
 
 
@@ -376,6 +379,15 @@ public class XRPropertyImpl implements XRProperty {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/15 12:42:22  pdoubleya
+ * Across this checkin (all may not apply to this particular file)
+ * Changed default/package-access members to private.
+ * Changed to use XRRuntimeException where appropriate.
+ * Began move from System.err.println to std logging.
+ * Standard code reformat.
+ * Removed some unnecessary SAC member variables that were only used in initialization.
+ * CVS log section.
+ *
  * Revision 1.5  2004/11/10 04:37:39  tobega
  * no message
  *

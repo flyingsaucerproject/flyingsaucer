@@ -1,5 +1,4 @@
 /*
- *
  * PropertyDeclaration.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
@@ -18,16 +17,23 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-
 package org.xhtmlrenderer.css.sheet;
 
 import org.xhtmlrenderer.css.impl.XRPropertyImpl;
 
+
 /**
- *
- * @author  Torbjörn Gannholm
+ * @author   Torbjörn Gannholm
  */
 public class PropertyDeclaration {
+    /** Description of the Field */
+    private org.xhtmlrenderer.css.XRProperty base;
+
+    /** Description of the Field */
+    private boolean important;
+
+    /** Description of the Field */
+    private int origin;
 
     /** ImportanceAndOrigin of stylesheet - user agent */
     public final static int CSS_DEFAULT = 0;
@@ -50,36 +56,78 @@ public class PropertyDeclaration {
     /** ImportanceAndOrigin of stylesheet - how many different */
     public final static int IMPORTANCE_AND_ORIGIN_COUNT = 6;
 
-    
-    org.xhtmlrenderer.css.XRProperty base;
-    boolean important;
-    int origin;
-    
-    /** Creates a new instance of PropertyDeclaration */
-    public PropertyDeclaration(org.xhtmlrenderer.css.XRProperty p, boolean imp, int orig) {
+    /**
+     * Creates a new instance of PropertyDeclaration
+     *
+     * @param p     PARAM
+     * @param imp   PARAM
+     * @param orig  PARAM
+     */
+    public PropertyDeclaration( org.xhtmlrenderer.css.XRProperty p, boolean imp, int orig ) {
         base = p;
         important = imp;
         origin = orig;
     }
-    
+
+    /**
+     * Gets the importanceAndOrigin attribute of the PropertyDeclaration object
+     *
+     * @return   The importanceAndOrigin value
+     */
     public int getImportanceAndOrigin() {
-        if(origin == Stylesheet.USER_AGENT) return PropertyDeclaration.USER_AGENT;
-        else if(origin == Stylesheet.USER) {
-            if(important) return PropertyDeclaration.USER_IMPORTANT;
+        if ( origin == Stylesheet.USER_AGENT ) {
+            return PropertyDeclaration.USER_AGENT;
+        } else if ( origin == Stylesheet.USER ) {
+            if ( important ) {
+                return PropertyDeclaration.USER_IMPORTANT;
+            }
             return PropertyDeclaration.USER_NORMAL;
-        }
-        else {
-            if(important) return PropertyDeclaration.AUTHOR_IMPORTANT;
+        } else {
+            if ( important ) {
+                return PropertyDeclaration.AUTHOR_IMPORTANT;
+            }
             return PropertyDeclaration.AUTHOR_NORMAL;
         }
     }
-    
+
+    /**
+     * Gets the name attribute of the PropertyDeclaration object
+     *
+     * @return   The name value
+     */
     public String getName() {
         return base.propertyName();
     }
-    
+
+    /**
+     * Gets the value attribute of the PropertyDeclaration object
+     *
+     * @return   The value value
+     */
     public org.w3c.dom.css.CSSValue getValue() {
         return base.specifiedValue().cssValue();
     }
-    
-}
+} // end clas
+
+/*
+
+ * $Id$
+
+ *
+
+ * $Log$
+ * Revision 1.2  2004/11/15 12:42:23  pdoubleya
+ * Across this checkin (all may not apply to this particular file)
+ * Changed default/package-access members to private.
+ * Changed to use XRRuntimeException where appropriate.
+ * Began move from System.err.println to std logging.
+ * Standard code reformat.
+ * Removed some unnecessary SAC member variables that were only used in initialization.
+ * CVS log section.
+ *
+
+ *
+
+*/
+
+
