@@ -234,6 +234,16 @@ public class BrowserPanel extends JPanel {
         } else if(url_text.startsWith("http")) {
             doc = builder.parse(url_text);
             ref = new File(url_text).toURL();
+        } else if(url_text.startsWith("file://")) {
+            File file = new File(new URI(url_text));
+            if(file.isDirectory()) {
+                doc = new DirectoryLister().list(file);
+                ref = file.toURL();
+            } else {
+                doc = builder.parse(file);
+                ref = file.toURL();
+            }
+            
         } else {
             doc = builder.parse(url_text);
             ref = new File(url_text).toURL();

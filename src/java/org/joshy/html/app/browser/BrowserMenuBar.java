@@ -7,6 +7,7 @@ import java.awt.event.*;
 import java.util.logging.*;
 import org.joshy.html.*;
 import org.joshy.html.swing.*;
+import java.io.File;
 
 public class BrowserMenuBar extends JMenuBar {
     public static Logger logger = Logger.getLogger("app.browser");
@@ -60,6 +61,12 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add(new LoadAction("Selectors","demo:demos/selectors.xhtml"));
         demos.add(new LoadAction("Images","demo:demos/image.xhtml"));
         demos.add(new LoadAction("Lists","demo:demos/list.xhtml"));
+        try {
+            demos.add(new LoadAction("File Listing (Win)","file:///c:"));
+            demos.add(new LoadAction("File Listing (Unix)","file:///"));
+        } catch (Exception ex) {
+            u.p(ex);
+        }
             
         add(demos);
         
