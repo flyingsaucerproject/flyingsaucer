@@ -529,7 +529,7 @@
     </target>
 
     <!-- Runs a speed test after a compile -->
-    <target name="test.css-speed" depends="compile">
+    <target name="test.css-speed" depends="compile" description="Test timing on loading Hamlet.xhtml multiple times.">
         <java classname="org.xhtmlrenderer.test.HamletSpeedTest"
             fork="${java-exec.fork.tests}">
             <sysproperty key="show-config" value="${show-config}"/>
@@ -627,7 +627,7 @@
             <syspropertyset>
                 <propertyref prefix="xr."/>
             </syspropertyset>
-            <sysproperty key="sun.java2D.opengl" value="false"/>
+            <sysproperty key="sun.java2D.opengl" value="true"/>
         </java>
     </target>
     
@@ -650,9 +650,9 @@
             </syspropertyset>
             <sysproperty key="sun.java2D.opengl" value="false"/>
         </java>
-      <nbprofile classname="org.xhtmlrenderer.test.SimplePageTest">
+      <!-- <nbprofile classname="org.xhtmlrenderer.test.SimplePageTest">
         <classpath refid="libraries-and-dest.all"/>
-      </nbprofile>
+      </nbprofile> -->
         
     </target>
 
@@ -870,6 +870,9 @@
 $Id$
 
 $Log$
+Revision 1.88  2005/03/24 23:11:09  pdoubleya
+Removed nbprofile call in simple test (used for profiling in NB).
+
 Revision 1.87  2005/03/23 17:24:56  pdoubleya
 Added elements/entities for XHTML resources.
 
