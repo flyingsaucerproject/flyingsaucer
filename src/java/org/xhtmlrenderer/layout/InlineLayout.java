@@ -76,9 +76,10 @@ public class InlineLayout extends BoxLayout {
         Rectangle bounds = new Rectangle();
         bounds.width = c.getExtents().width;
         Border border = LayoutUtil.getBorder(box, c.getCurrentStyle());
+        Border margin = c.getCurrentStyle().getMarginWidth();
         //below should maybe be done somewhere else?
-        bounds.width -= box.margin.left + border.left + box.padding.left +
-                box.padding.right + border.right + box.margin.right;
+        bounds.width -= margin.left + border.left + box.padding.left +
+                box.padding.right + border.right + margin.right;
         validateBounds(bounds);
         bounds.x = 0;
         bounds.y = 0;
@@ -487,6 +488,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.72  2004/12/27 09:40:47  tobega
+* Moved more styling to render stage. Now inlines have backgrounds and borders again.
+*
 * Revision 1.71  2004/12/27 07:43:31  tobega
 * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
 *

@@ -85,9 +85,10 @@ public class TableRenderer extends BoxRenderer {
         c.getGraphics().translate(table.x, table.y);
 
         Border border = LayoutUtil.getBorder(table, c.getCurrentStyle());
+        Border margin = c.getCurrentStyle().getMarginWidth();
 
-        c.getGraphics().translate(table.margin.left + border.left + table.padding.left,
-                table.margin.top + border.top + table.padding.top);
+        c.getGraphics().translate(margin.left + border.left + table.padding.left,
+                margin.top + border.top + table.padding.top);
 
         // loop over the rows
 
@@ -118,8 +119,8 @@ public class TableRenderer extends BoxRenderer {
 
         }
 
-        c.getGraphics().translate(-table.margin.left - border.left - table.padding.left,
-                -table.margin.top - border.top - table.padding.top);
+        c.getGraphics().translate(-margin.left - border.left - table.padding.left,
+                -margin.top - border.top - table.padding.top);
 
         c.getGraphics().translate(-table.x, -table.y);
 

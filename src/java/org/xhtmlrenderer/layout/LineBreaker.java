@@ -21,7 +21,6 @@ package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FloatedBlockContent;
 import org.xhtmlrenderer.layout.content.InlineBlockContent;
@@ -440,7 +439,7 @@ public class LineBreaker {
         VerticalAlign.setupVerticalAlign(c, style, box);
         box.setFont(font);//FontUtil.getFont(c,node));
         box.color = style.getColor();
-        Relative.setupRelative(box, c);
+        //Relative.setupRelative(box, c);
 
         
         
@@ -516,6 +515,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2004/12/27 09:40:47  tobega
+ * Moved more styling to render stage. Now inlines have backgrounds and borders again.
+ *
  * Revision 1.39  2004/12/27 07:43:31  tobega
  * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
  *

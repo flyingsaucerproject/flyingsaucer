@@ -5,7 +5,7 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BoxLayout;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.LayoutUtil;
+import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
@@ -47,7 +47,7 @@ public class BoxRenderer extends DefaultRenderer {
         Rectangle oldBounds = new Rectangle(c.getExtents());
 
 
-        if (block.relative) {
+        if (Relative.isRelative(c)) {
             paintRelative(c, block);
         } else if (block.fixed) {
             paintFixed(c, block);
@@ -105,9 +105,11 @@ public class BoxRenderer extends DefaultRenderer {
      * @param block PARAM
      */
     public void paintRelative(Context ctx, Box block) {
-        ctx.translate(block.left, block.top);
+        //ctx.translate(block.left, block.top);
+        Relative.translateRelative(ctx);
         paintNormal(ctx, block);
-        ctx.translate(-block.left, -block.top);
+        //ctx.translate(-block.left, -block.top);
+        Relative.untranslateRelative(ctx);
     }
 
     // adjustments for fixed painting
@@ -181,10 +183,10 @@ public class BoxRenderer extends DefaultRenderer {
     public void paintBackground(Context c, Box box) {
         Box block = box;
 
-        if (!LayoutUtil.shouldDrawBackground(block)) {
+        /*if (!LayoutUtil.shouldDrawBackground(block)) {
             //Uu.p("skipping: " + block);
             return;
-        }
+        }*/
 
 
         // cache the background color

@@ -45,7 +45,7 @@ public class BorderPainter {
         //Uu.p("checking: " + box);
         //Uu.p("hashcode = " + box.hashCode());
         //if (box.content != null && box.content instanceof TextContent && !box.isInlineElement()) return;
-        if (!LayoutUtil.shouldDrawBackground(box)) return;
+        //if (!LayoutUtil.shouldDrawBackground(box)) return;
         //if (box.border == null) return;
         Graphics g = ctx.getGraphics();
 
@@ -65,11 +65,12 @@ public class BorderPainter {
         String border_style = ctx.getCurrentStyle().getStringProperty(CSSName.BORDER_STYLE_TOP);
         //}
         Border border = LayoutUtil.getBorder(box, ctx.getCurrentStyle());
+        Border margin = ctx.getCurrentStyle().getMarginWidth();
 
-        Rectangle bounds = new Rectangle(box.x + box.margin.left,
-                box.y + box.margin.top,
-                box.width - box.margin.left - box.margin.right,
-                box.height - box.margin.top - box.margin.bottom);
+        Rectangle bounds = new Rectangle(box.x + margin.left,
+                box.y + margin.top,
+                box.width - margin.left - margin.right,
+                box.height - margin.top - margin.bottom);
         //Uu.p("box border style = " + box.border_style);
 
 
@@ -427,6 +428,9 @@ public void paintSimpleBorder( Graphics2D g, Rectangle bounds, Border border, Bo
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/12/27 09:40:48  tobega
+ * Moved more styling to render stage. Now inlines have backgrounds and borders again.
+ *
  * Revision 1.13  2004/12/27 07:43:32  tobega
  * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
  *

@@ -21,6 +21,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.DefaultLayout;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.util.Configuration;
 
@@ -54,17 +55,19 @@ public class BackgroundPainter {
 
         Border border = LayoutUtil.getBorder(block, c.getCurrentStyle());
         if (border == null) return;
-        Rectangle box = new Rectangle(block.x + block.margin.left + border.left,
-                block.y + block.margin.top + border.top,
-                block.width - block.margin.left - block.margin.right - border.left - border.right,
-                block.height - block.margin.top - border.top - border.bottom - block.margin.bottom);
+        Border margin = c.getCurrentStyle().getMarginWidth();
+        Rectangle box = new Rectangle(block.x + margin.left + border.left,
+                block.y + margin.top + border.top,
+                block.width - margin.left - margin.right - border.left - border.right,
+                block.height - margin.top - border.top - border.bottom - margin.bottom);
                  
         // paint the background
-        if (block.background_color != null) {
+        Color background_color = DefaultLayout.getBackgroundColor(c, block);
+        if (background_color != null) {
             // skip transparent background
-            if (!block.background_color.equals(transparent)) {
+            if (!background_color.equals(transparent)) {
                 //TODO. make conf controlled Uu.p("filling a background");
-                c.getGraphics().setColor(block.background_color);
+                c.getGraphics().setColor(background_color);
                 c.getGraphics().fillRect(box.x, box.y, box.width, box.height);
             }
         }
@@ -212,6 +215,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/12/27 09:40:48  tobega
+ * Moved more styling to render stage. Now inlines have backgrounds and borders again.
+ *
  * Revision 1.10  2004/12/27 07:43:32  tobega
  * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
  *

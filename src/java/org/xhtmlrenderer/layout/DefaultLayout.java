@@ -133,12 +133,13 @@ public class DefaultLayout implements Layout {
      * @return The margin value
      */
     public static Border getMargin(Context c, Box box) {
-        if (LayoutUtil.isBlockOrInlineElementBox(box)) {
+        Border margin = c.getCurrentStyle().getMarginWidth();
+        /*if (LayoutUtil.isBlockOrInlineElementBox(box)) {
             if (box.margin == null) {
                 box.margin = c.getCurrentStyle().getMarginWidth();
             }
-        }
-        return box.margin;
+        }*/
+        return margin;
     }
 
     public static Border getBorder(Context c, Box block) {
@@ -154,20 +155,24 @@ public class DefaultLayout implements Layout {
      * @return The backgroundColor value
      */
     public static Color getBackgroundColor(Context c, Box box) {
-        if (LayoutUtil.isBlockOrInlineElementBox(box)) {
-            if (box.background_color == null) {
-                CalculatedStyle style = c.getCurrentStyle();
-                if (style.isIdentifier(CSSName.BACKGROUND_COLOR)) {
-                    String value = style.getStringProperty("background-color");
-                    if (value.equals("transparent")) {
-                        box.background_color = new Color(0, 0, 0, 0);
-                        return box.background_color;
-                    }
-                }
-                box.background_color = style.getBackgroundColor();
+        Color bgc = new Color(0, 0, 0, 0);
+        //if (LayoutUtil.isBlockOrInlineElementBox(box)) {
+        //if (box.background_color == null) {
+        CalculatedStyle style = c.getCurrentStyle();
+        if (style.isIdentifier(CSSName.BACKGROUND_COLOR)) {
+            String value = style.getStringProperty("background-color");
+            if (value.equals("transparent")) {
+                //box.background_color = new Color(0, 0, 0, 0);
+                //return box.background_color;
+                return bgc;
             }
         }
-        return box.background_color;
+        //box.background_color = style.getBackgroundColor();
+        bgc = style.getBackgroundColor();
+        //           }
+        //       }
+        //return box.background_color;
+        return bgc;
     }
 
 
@@ -177,6 +182,9 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2004/12/27 09:40:47  tobega
+ * Moved more styling to render stage. Now inlines have backgrounds and borders again.
+ *
  * Revision 1.37  2004/12/27 07:43:31  tobega
  * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
  *

@@ -135,7 +135,7 @@ public class DefaultRenderer implements Renderer {
         box.color = style.getColor();
         //box.border_color = style.getBorderColor();
         //box.border_style = style.getStringProperty("border-top-style");
-        box.background_color = style.getBackgroundColor();
+        //box.background_color = style.getBackgroundColor();
         restyleChildren(box);
     }
 

@@ -44,7 +44,6 @@ import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 
 
@@ -96,10 +95,10 @@ public class AnonymousBoxLayout extends InlineLayout {
         //CHECK: an anonymous box shouldn't have stryles?
         //prepareBox(c, block);
         //HACK: set empty styles here
-        block.margin = new Border();
+        //block.margin = new Border();
         block.padding = new Border();
         //block.border = new Border();
-        block.background_color = new Color(0, 0, 0, 0);//transparent
+        //block.background_color = new Color(0, 0, 0, 0);//transparent
 
         // set up a float bfc
         //FloatUtil.preChildrenLayout(c, block);
@@ -239,6 +238,9 @@ public class AnonymousBoxLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/12/27 09:40:47  tobega
+ * Moved more styling to render stage. Now inlines have backgrounds and borders again.
+ *
  * Revision 1.11  2004/12/27 07:43:30  tobega
  * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
  *

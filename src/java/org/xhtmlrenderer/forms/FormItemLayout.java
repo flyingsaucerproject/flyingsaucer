@@ -107,10 +107,11 @@ public abstract class FormItemLayout extends CustomBlockLayout {
             coords.y += off;
 
             Border border = LayoutUtil.getBorder(box, c.getCurrentStyle());
-            coords.x -= box.margin.left;
+            Border margin = c.getCurrentStyle().getMarginWidth();
+            coords.x -= margin.left;
             coords.x -= border.left;
             coords.x -= box.padding.left;
-            coords.y -= box.margin.top;
+            coords.y -= margin.top;
             coords.y -= border.top;
             coords.y -= box.padding.top;
         }
@@ -177,6 +178,9 @@ public abstract class FormItemLayout extends CustomBlockLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/12/27 09:40:46  tobega
+ * Moved more styling to render stage. Now inlines have backgrounds and borders again.
+ *
  * Revision 1.10  2004/12/27 07:43:29  tobega
  * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
  *

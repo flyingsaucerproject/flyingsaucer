@@ -24,7 +24,6 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Fixed;
 import org.xhtmlrenderer.layout.block.FloatUtil;
-import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FirstLetterStyle;
@@ -163,7 +162,7 @@ public class BoxLayout extends DefaultLayout {
 
         // account for special positioning
         // need to add bfc/unbfc code for absolutes
-        Relative.setupRelative(block, c);
+        //Relative.setupRelative(block, c);
         // need to add bfc/unbfc code for absolutes
         Absolute.setupAbsolute(block, c);
         Fixed.setupFixed(c, block);
@@ -373,6 +372,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.56  2004/12/27 09:40:47  tobega
+ * Moved more styling to render stage. Now inlines have backgrounds and borders again.
+ *
  * Revision 1.55  2004/12/27 07:43:30  tobega
  * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
  *

@@ -317,11 +317,12 @@ public class Context {
      */
     public void translateInsets(Box box) {
         Border border = LayoutUtil.getBorder(box, getCurrentStyle());
+        Border margin = getCurrentStyle().getMarginWidth();
         if (box == null) {
             XRLog.render(Level.WARNING, "null box");
             return;//TODO: why?
         }
-        if (box.margin == null) {
+        if (margin == null) {
             XRLog.render(Level.WARNING, "translate insets: null margin on box of type " + box.getClass().getName() +
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
@@ -336,8 +337,8 @@ public class Context {
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
-        translate(box.margin.left + border.left + box.padding.left,
-                box.margin.top + border.top + box.padding.top);
+        translate(margin.left + border.left + box.padding.left,
+                margin.top + border.top + box.padding.top);
     }
 
     /**
@@ -347,7 +348,8 @@ public class Context {
      */
     public void untranslateInsets(Box box) {
         Border border = LayoutUtil.getBorder(box, getCurrentStyle());
-        if (box.margin == null) {
+        Border margin = getCurrentStyle().getMarginWidth();
+        if (margin == null) {
             XRLog.render(Level.WARNING, "translate insets: null margin on box of type " + box.getClass().getName() +
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
@@ -362,8 +364,8 @@ public class Context {
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
-        translate(-(box.margin.left + border.left + box.padding.left),
-                -(box.margin.top + border.top + box.padding.top));
+        translate(-(margin.left + border.left + box.padding.left),
+                -(margin.top + border.top + box.padding.top));
     }
 
 
@@ -824,6 +826,9 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2004/12/27 09:40:47  tobega
+ * Moved more styling to render stage. Now inlines have backgrounds and borders again.
+ *
  * Revision 1.37  2004/12/27 07:43:31  tobega
  * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
  *

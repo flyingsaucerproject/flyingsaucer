@@ -94,16 +94,16 @@ public class LayoutUtil {
 
     //TODO: move this to Box
     public static Border getBorder(Box box, CalculatedStyle style) {
-        Border border = null;
-        if (isBlockOrInlineElementBox(box)) {
-            if (border == null) {
-                border = style.getBorderWidth();
-                String border_style = style.getStringProperty(CSSName.BORDER_STYLE_TOP);
-                if (border_style.equals("none")) {
-                    border = new Border(0, 0, 0, 0);
-                }
-            }
+        Border border = new Border(0, 0, 0, 0);
+        //if (isBlockOrInlineElementBox(box)) {
+        //if (border == null) {
+        border = style.getBorderWidth();
+        String border_style = style.getStringProperty(CSSName.BORDER_STYLE_TOP);
+        if (border_style.equals("none")) {
+            border = new Border(0, 0, 0, 0);
         }
+        //}
+        //}
         return border;
     }
 

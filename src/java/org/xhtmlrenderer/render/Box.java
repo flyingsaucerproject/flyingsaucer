@@ -99,7 +99,7 @@ public class Box {
     /**
      * Description of the Field
      */
-    public boolean relative = false;
+    //public boolean relative = false;
     public boolean fixed = false;
     public boolean absolute = false;
 
@@ -155,7 +155,7 @@ public class Box {
     /**
      * Description of the Field
      */
-    public Border margin;
+    //public Border margin;
     /**
      * Description of the Field
      */
@@ -176,7 +176,7 @@ public class Box {
     /**
      * Description of the Field
      */
-    public Color background_color;
+    //public Color background_color;
     /**
      * Description of the Field
      */
@@ -266,8 +266,9 @@ public class Box {
      */
     public int totalHorizontalPadding(CalculatedStyle style) {
         int pd = 0;
-        if (this.margin != null) {
-            pd += this.margin.left + this.margin.right;
+        Border margin = style.getMarginWidth();
+        if (margin != null) {
+            pd += margin.left + margin.right;
         }
         if (this.padding != null) {
             pd += this.padding.left + this.padding.right;
@@ -287,8 +288,9 @@ public class Box {
      */
     public int totalVerticalPadding(CalculatedStyle style) {
         int pd = 0;
-        if (this.margin != null) {
-            pd += this.margin.top + this.margin.bottom;
+        Border margin = style.getMarginWidth();
+        if (margin != null) {
+            pd += margin.top + margin.bottom;
         }
         if (this.padding != null) {
             pd += this.padding.top + this.padding.bottom;
@@ -308,8 +310,9 @@ public class Box {
      */
     public int totalTopPadding(CalculatedStyle style) {
         int pd = 0;
-        if (this.margin != null) {
-            pd += this.margin.top;
+        Border margin = style.getMarginWidth();
+        if (margin != null) {
+            pd += margin.top;
         }
         if (this.padding != null) {
             pd += this.padding.top;
@@ -329,8 +332,9 @@ public class Box {
      */
     public int totalLeftPadding(CalculatedStyle style) {
         int pd = 0;
-        if (this.margin != null) {
-            pd += this.margin.left;
+        Border margin = style.getMarginWidth();
+        if (margin != null) {
+            pd += margin.left;
         }
         if (this.padding != null) {
             pd += this.padding.left;
@@ -344,8 +348,9 @@ public class Box {
 
     public int totalRightPadding(CalculatedStyle style) {
         int pd = 0;
-        if (this.margin != null) {
-            pd += this.margin.right;
+        Border margin = style.getMarginWidth();
+        if (margin != null) {
+            pd += margin.right;
         }
         if (this.padding != null) {
             pd += this.padding.right;
@@ -534,9 +539,9 @@ public class Box {
         sb.append("-box(" + x + "," + y + ")-(" + width + "x" + height + ")");
 
         // positioning info
-        if (relative) {
+        /*if (relative) {
             sb.append("-relative");
-        }
+        }*/
         if (fixed) {
             sb.append("-fixed");
         }
@@ -548,9 +553,9 @@ public class Box {
         // colors and insets
         sb.append("-colors(for" + getColorTestString(color));
         //sb.append("-bor" + getColorTestString(border_color));
-        sb.append("-bak" + getColorTestString(background_color) + ")");
+        //sb.append("-bak" + getColorTestString(background_color) + ")");
         //sb.append("-style(" + border_style + ")");
-        sb.append("-insets(mar" + getBorderTestString(margin));
+        //sb.append("-insets(mar" + getBorderTestString(margin));
         //sb.append("-bor" + getBorderTestString(border));
         sb.append("-pad" + getBorderTestString(padding) + ")");
 
@@ -617,6 +622,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2004/12/27 09:40:48  tobega
+ * Moved more styling to render stage. Now inlines have backgrounds and borders again.
+ *
  * Revision 1.30  2004/12/27 07:43:32  tobega
  * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
  *

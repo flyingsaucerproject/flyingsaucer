@@ -2,6 +2,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.TextDecoration;
 import org.xhtmlrenderer.util.GraphicsUtil;
@@ -128,6 +129,11 @@ public class InlineRenderer extends BoxRenderer {
                     CascadedStyle hs = c.css.getPseudoElementStyle(sp.getElement(), "hover");
                     if (hs != null) c.pushStyle(hs);
                 }
+                //Now we know that an inline element started here, handle borders and such?
+                Relative.translateRelative(c);
+                //TODO: push to current border-list (and paint left edge)
+                //HACK: this might do for now - tobe 2004-12-27
+                paintPadding(c, line, inline);
             }
         }
         //if (box.restyle) {
@@ -135,8 +141,8 @@ public class InlineRenderer extends BoxRenderer {
         //box.restyle = false;
         //}
 
-        handleRelativePre(c, inline);
-        paintPadding(c, line, inline);
+        //handleRelativePre(c, inline);
+        //paintPadding(c, line, inline);
         c.updateSelection(inline);
         
         // calculate the Xx and y relative to the baseline of the line (ly) and the
@@ -152,11 +158,13 @@ public class InlineRenderer extends BoxRenderer {
         paintSelection(c, inline, lx, ly);
         paintText(c, lx, ly, ix, iy, inline);
         debugInlines(c, inline, lx, ly);
-        handleRelativePost(c, inline);
+        //handleRelativePost(c, inline);
 
         if (inline.popstyles != null) {
             for (Iterator i = inline.popstyles.iterator(); i.hasNext();) {
                 StylePop sp = (StylePop) i.next();
+                //TODO: paint right edge and pop current border-list
+                Relative.untranslateRelative(c);
                 if (inline.hover) {
                     CascadedStyle hs = c.css.getPseudoElementStyle(sp.getElement(), "hover");
                     if (hs != null) c.popStyle();
@@ -167,7 +175,7 @@ public class InlineRenderer extends BoxRenderer {
     }
 
 
-    private void handleRelativePre(Context c, InlineBox inline) {
+    /*private void handleRelativePre(Context c, InlineBox inline) {
         if (inline.relative) {
             c.translate(inline.left, inline.top);
         }
@@ -178,7 +186,7 @@ public class InlineRenderer extends BoxRenderer {
         if (inline.relative) {
             c.translate(-inline.left, -inline.top);
         }
-    }
+    }*/
 
 
     private void debugInlines(Context c, InlineBox inline, int lx, int ly) {

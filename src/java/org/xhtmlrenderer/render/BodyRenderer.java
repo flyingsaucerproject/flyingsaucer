@@ -4,7 +4,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.LayoutUtil;
+import org.xhtmlrenderer.layout.DefaultLayout;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 
@@ -32,7 +32,7 @@ public class BodyRenderer extends InlineRenderer {
         Rectangle oldBounds = new Rectangle(c.getExtents());
 
 
-            paintNormal(c, block);
+        paintNormal(c, block);
 
         // move the origin down to account for the contents plus the margin, borders, and padding
         oldBounds.y = oldBounds.y + block.height;
@@ -55,9 +55,10 @@ public class BodyRenderer extends InlineRenderer {
             return;
         }
 
-        if (box.background_color != null) {
-            if (!box.background_color.equals(transparent)) {
-                c.getGraphics().setColor(box.background_color);
+        Color background_color = DefaultLayout.getBackgroundColor(c, box);
+        if (background_color != null) {
+            if (!background_color.equals(transparent)) {
+                c.getGraphics().setColor(background_color);
                 c.getGraphics().fillRect(0, 0, c.canvas.getWidth(), c.canvas.getHeight());
             }
             super.paintBackground(c, box);

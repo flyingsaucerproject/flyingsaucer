@@ -48,7 +48,7 @@ public class InlineBox extends Box {
         width = box.width;
         height = box.height;
         //border = box.border;
-        margin = box.margin;
+        //margin = box.margin;
         padding = box.padding;
         color = box.color;
         content = box.content;
@@ -162,7 +162,7 @@ public class InlineBox extends Box {
                 " start = " + this.start_index + " end = " + this.end_index +
                 " baseline = " + this.baseline + " vset = " + this.vset +
                 // CLN: (PWW 13/08/04)
-                " color: " + color + " background-color: " + background_color +
+                //" color: " + color + " background-color: " + background_color +
                 " font: " + font;
     }
 
@@ -339,6 +339,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2004/12/27 09:40:48  tobega
+ * Moved more styling to render stage. Now inlines have backgrounds and borders again.
+ *
  * Revision 1.23  2004/12/27 07:43:32  tobega
  * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
  *

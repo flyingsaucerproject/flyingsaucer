@@ -126,8 +126,9 @@ public class TableLayout
         int orig_fixed_width = fixed_width;
 
         Border border = LayoutUtil.getBorder(table, c.getCurrentStyle());
-        fixed_width -= table.margin.left + border.left + table.padding.left +
-                table.spacing.x + table.padding.right + border.right + table.margin.right;
+        Border margin = c.getCurrentStyle().getMarginWidth();
+        fixed_width -= margin.left + border.left + table.padding.left +
+                table.spacing.x + table.padding.right + border.right + margin.right;
 
         //Uu.p("fixed width = " + fixed_width);
 
@@ -271,10 +272,11 @@ public class TableLayout
         }
 
         Border border = LayoutUtil.getBorder(table, c.getCurrentStyle());
+        Border margin = c.getCurrentStyle().getMarginWidth();
 
         // Xx is always 0 (rel to the parent table)
 
-        rowbox.x = +table.margin.left + border.left +
+        rowbox.x = +margin.left + border.left +
                 table.padding.left;
 
         // y is prev row.y + prev row.height
@@ -453,8 +455,9 @@ public class TableLayout
         RowBox prev_row = new RowBox(0, 0, 0, 0);
 
         Border border = LayoutUtil.getBorder(table, c.getCurrentStyle());
+        Border margin = c.getCurrentStyle().getMarginWidth();
 
-        prev_row.y = table.margin.top + border.top +
+        prev_row.y = margin.top + border.top +
                 table.padding.top - fudge;
 
         // loop through all of the table rows
@@ -475,7 +478,7 @@ public class TableLayout
 
         table.height = prev_row.y + prev_row.height + table.spacing.y +
                 table.padding.bottom + border.bottom +
-                table.margin.bottom;
+                margin.bottom;
 
         table.width = orig_fixed_width;
 
@@ -536,6 +539,9 @@ public class TableLayout
 /*
    $Id$
    $Log$
+   Revision 1.14  2004/12/27 09:40:49  tobega
+   Moved more styling to render stage. Now inlines have backgrounds and borders again.
+
    Revision 1.13  2004/12/27 07:43:33  tobega
    Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
 
