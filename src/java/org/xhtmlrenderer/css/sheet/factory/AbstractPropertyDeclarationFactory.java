@@ -29,6 +29,7 @@ import org.w3c.dom.css.CSSValueList;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.util.XRLog;
 
 
 /**
@@ -61,8 +62,7 @@ public abstract class AbstractPropertyDeclarationFactory implements PropertyDecl
 
         Object attr[] = extractStyleAttributes( style, cssName );
         CSSValue cssValue = (CSSValue)attr[0];
-        String priority = (String)attr[1];
-        boolean important = ( (Boolean)attr[2] ).booleanValue();
+        boolean important = ( (Boolean)attr[1] ).booleanValue();
 
         // split out declations into multiple primitive values.
         // our CSSValue may be primitive or may be a list
@@ -85,8 +85,29 @@ public abstract class AbstractPropertyDeclarationFactory implements PropertyDecl
             }
         }
         
-        return doBuildDeclarations( pvalues, priority, important, cssName, origin );
+        return doBuildDeclarations( pvalues, important, cssName, origin );
     }
+    
+    public final Iterator buildDeclarations( CSSValue cssValue, CSSName cssName, int origin, boolean important ) {
+        CSSPrimitiveValue pvalues[] = null;
+
+        // primitive or list
+        if ( cssValue.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
+            pvalues = new CSSPrimitiveValue[1];
+            pvalues[0] = (CSSPrimitiveValue)cssValue;
+        } else {
+            CSSValueList list = (CSSValueList)cssValue;
+            pvalues = new CSSPrimitiveValue[list.getLength()];
+            for (int i = 0; i < list.getLength(); i++) {
+                CSSPrimitiveValue pvalue = (CSSPrimitiveValue)list.item(i);
+                pvalues[i] = pvalue;
+            }
+        }
+        
+        //XRLog.cssParse("Building declarations for: " + cssName);
+        return doBuildDeclarations( pvalues, important, cssName, origin );
+    }
+    
 
     /**
      * Internal version of {@link #buildDeclarations(org.w3c.dom.css.CSSStyleDeclaration, CSSName, int)},
@@ -103,7 +124,6 @@ public abstract class AbstractPropertyDeclarationFactory implements PropertyDecl
      *      margin property.
      */
     protected abstract Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
-                                                     String priority,
                                                      boolean important,
                                                      CSSName cssName,
                                                      int origin );
@@ -170,10 +190,9 @@ public abstract class AbstractPropertyDeclarationFactory implements PropertyDecl
      */
     protected Object[] extractStyleAttributes( CSSStyleDeclaration style, CSSName cssName ) {
         CSSValue cssValue = style.getPropertyCSSValue( cssName.toString() );
-        String priority = style.getPropertyPriority( cssName.toString() );
         Boolean important = Boolean.valueOf(
                     style.getPropertyPriority( cssName.toString() ).compareToIgnoreCase( "important" ) == 0 );
-        return new Object[]{cssValue, priority, important};
+        return new Object[]{cssValue, important};
     }
 }// end class
 
@@ -181,6 +200,9 @@ public abstract class AbstractPropertyDeclarationFactory implements PropertyDecl
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 12:14:20  pdoubleya
+ * Removed priority as a parameter, added alternate build when only CSSValue is available; could be used in a SAC DocumentHandler after the CSSValue is initialized from a property.
+ *
  * Revision 1.3  2005/01/24 19:00:57  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *

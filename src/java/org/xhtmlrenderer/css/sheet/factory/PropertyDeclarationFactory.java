@@ -22,7 +22,7 @@ package org.xhtmlrenderer.css.sheet.factory;
 
 import java.util.Iterator;
 import org.w3c.dom.css.CSSStyleDeclaration;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 
 
@@ -47,15 +47,18 @@ public interface PropertyDeclarationFactory {
      * @return          Iterator of one or more PropertyDeclaration instances
      *      representing the exploded values.
      */
-    Iterator buildDeclarations( CSSStyleDeclaration style, 
-                                CSSName cssName,
-                                int origin );
+    Iterator buildDeclarations( CSSStyleDeclaration style, CSSName cssName, int origin );
+
+    Iterator buildDeclarations( CSSValue cssValue, CSSName cssName, int origin, boolean important );
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 12:14:22  pdoubleya
+ * Removed priority as a parameter, added alternate build when only CSSValue is available; could be used in a SAC DocumentHandler after the CSSValue is initialized from a property.
+ *
  * Revision 1.3  2005/01/24 19:01:00  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *

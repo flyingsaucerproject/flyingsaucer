@@ -68,7 +68,6 @@ public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclar
      *      margin property.
      */
     protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
-                                            String priority,
                                             boolean important,
                                             CSSName cssName,
                                             int origin ) {
@@ -152,6 +151,9 @@ public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/01/29 12:14:21  pdoubleya
+ * Removed priority as a parameter, added alternate build when only CSSValue is available; could be used in a SAC DocumentHandler after the CSSValue is initialized from a property.
+ *
  * Revision 1.2  2005/01/24 19:00:58  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *
