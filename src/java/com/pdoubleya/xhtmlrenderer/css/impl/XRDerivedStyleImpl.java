@@ -25,15 +25,17 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.*;
 import java.util.logging.*;
-import org.joshy.html.Border;
 
+import org.joshy.html.Border;
 import org.joshy.html.Context;
+import org.joshy.html.css.RuleNormalizer;
 
 import com.pdoubleya.xhtmlrenderer.css.XRDerivedStyle;
 import com.pdoubleya.xhtmlrenderer.css.XRElement;
 import com.pdoubleya.xhtmlrenderer.css.XRProperty;
 import com.pdoubleya.xhtmlrenderer.css.XRRule;
 import com.pdoubleya.xhtmlrenderer.css.XRStyleRule;
+import com.pdoubleya.xhtmlrenderer.css.XRValue;
 import com.pdoubleya.xhtmlrenderer.css.constants.CSSName;
 import com.pdoubleya.xhtmlrenderer.css.value.BorderColor;
 import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
@@ -146,7 +148,7 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
      *
      * @param fromRule  PARAM
      */
-    public synchronized void mergeProperties( XRRule fromRule ) {
+    public void mergeProperties( XRRule fromRule ) {
         Iterator iter = fromRule.listXRProperties();
         while ( iter.hasNext() ) {
             XRProperty prop = (XRProperty)iter.next();
@@ -161,7 +163,7 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
      * @param propName  PARAM
      * @return          Returns
      */
-    public synchronized boolean hasProperty( String propName ) {
+    public boolean hasProperty( String propName ) {
         return _derivedPropertiesByName.get( propName ) != null;
     }
 
@@ -176,13 +178,33 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
      * @param context   PARAM
      * @return          Returns
      */
-    public synchronized XRProperty propertyByName( Context context, String propName ) {
+    public XRProperty propertyByName( Context context, String propName ) {
         // HERE: when we get the property, check if it is resolved
         // if not, call resolve() and pass it our parent's reference
         // or just our XRElement
         XRProperty prop = (XRProperty)_derivedPropertiesByName.get( propName );
+
+        // but the property may not be defined for this Element
         if ( prop == null ) {
-            throw new RuntimeException( "Property '" + propName + "' was requested, but was never defined in CSS, or was never matched to this element. Properties for this element: " + _derivedPropertiesByName.keySet() );
+            XRValue val = null;
+            
+            // if it is inheritable (like color) and we are not root, ask our parent
+            // for the value
+            if ( CSSName.propertyInherits(propName) && _xrElement.parentXRElement() != null ) {
+                // get a copy
+                prop = _xrElement.parentXRElement().derivedStyle().propertyByName(context, propName).copyForInherit();
+            } else {
+                // otherwise, use the initial value (defined by the CSS2 Spec)
+                String initialValue = CSSName.initialValue(propName);
+                if ( initialValue == null ) {
+                    throw new RuntimeException("Property '" + propName + "' has no initial values assigned.");
+                }
+                initialValue = RuleNormalizer.convertIdent(propName, initialValue);
+                DefaultCSSPrimitiveValue cssval = new DefaultCSSPrimitiveValue(initialValue);
+                XRValueImpl xrVal = new XRValueImpl(cssval, "");
+                prop = new XRPropertyImpl(propName, 100, xrVal);
+            }
+            _derivedPropertiesByName.put(propName, prop);
         }
         prop.resolveValue( context, _xrElement );
         return prop;
@@ -197,7 +219,7 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
      * @param context  PARAM
      * @return         The borderWidth value
      */
-    public synchronized Border getBorderWidth( Context context ) {
+    public Border getBorderWidth( Context context ) {
         if ( _drvBorderWidth == null ) {
             Border border = new Border();
             // ASK: why is Josh forcing to an int in CSSAccessor? don't we want float/pixels?
@@ -219,7 +241,7 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
      * @param context  PARAM
      * @return         The marginWidth value
      */
-    public synchronized Border getMarginWidth( Context context ) {
+    public Border getMarginWidth( Context context ) {
         if ( _drvMarginWidth == null ) {
             Border border = new Border();
             // ASK: why is Josh forcing to an int in CSSAccessor? don't we want float/pixels?
@@ -241,7 +263,7 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
      * @param context  PARAM
      * @return         The paddingWidth value
      */
-    public synchronized Border getPaddingWidth( Context context ) {
+    public Border getPaddingWidth( Context context ) {
         if ( _drvPaddingWidth == null ) {
             Border border = new Border();
             // ASK: why is Josh forcing to an int in CSSAccessor? don't we want float/pixels?
@@ -263,7 +285,7 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
      * @param context  PARAM
      * @return         The backgroundColor value
      */
-    public synchronized Color getBackgroundColor( Context context ) {
+    public Color getBackgroundColor( Context context ) {
         if ( _drvBackgroundColor == null ) {
             _drvBackgroundColor = propertyByName( context, CSSName.BACKGROUND_COLOR ).actualValue().asColor();
             sDbgLogger.finest( "Background color: " + _drvBackgroundColor );
@@ -280,7 +302,7 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
      * @param context  PARAM
      * @return         The borderColor value
      */
-    public synchronized BorderColor getBorderColor( Context context ) {
+    public BorderColor getBorderColor( Context context ) {
         if ( _drvBorderColor == null ) {
             BorderColor bcolor = new BorderColor();
             bcolor.topColor = propertyByName( context, CSSName.BORDER_COLOR_TOP ).actualValue().asColor();
@@ -301,7 +323,7 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
      * @param context  PARAM
      * @return         The color value
      */
-    public synchronized Color getColor( Context context ) {
+    public Color getColor( Context context ) {
         if ( _drvColor == null ) {
             _drvColor = propertyByName( context, CSSName.COLOR ).actualValue().asColor();
             sDbgLogger.finest( "Color: " + _drvColor );
