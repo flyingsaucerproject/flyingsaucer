@@ -189,6 +189,8 @@ class XhtmlForm {
                 }
                 cc = null;//don't return it
                 components.put( e, text );
+            } else if ( type.equals( "hidden" ) ) {
+                // TODO: hidden form fields.
             } else {
                 XRLog.layout( "unknown input type " + type );
             }
