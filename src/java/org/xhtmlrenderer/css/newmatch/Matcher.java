@@ -27,7 +27,9 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.AttributeResolver;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -52,9 +54,16 @@ public class Matcher {
         private Mapper() {
         }
 
-        //should now preserve sort order of rules
-        void mapChild(org.w3c.dom.Element e) {
+        /**
+         * Side effect: creates and stores a Mapper for the element
+         *
+         * @param e
+         * @return The selectors that matched, sorted according to specificity (more correct: preserves the sort order from Matcher creation)
+         */
+        List mapChild(org.w3c.dom.Element e) {
             Mapper childMapper = new Mapper();
+            java.util.HashMap pseudoSelectors = new java.util.HashMap();
+            java.util.List mappedSelectors = new java.util.LinkedList();
             for (int i = 0; i < axes.size(); i++) {
                 Selector sel = (Selector) axes.get(i);
                 if (sel.getAxis() == Selector.DESCENDANT_AXIS) {
@@ -67,10 +76,10 @@ public class Matcher {
                 //Assumption: if it is a pseudo-element, it does not also have dynamic pseudo-class
                 String pseudoElement = sel.getPseudoElement();
                 if (pseudoElement != null) {
-                    java.util.List l = (java.util.List) childMapper.pseudoSelectors.get(pseudoElement);
+                    java.util.List l = (java.util.List) pseudoSelectors.get(pseudoElement);
                     if (l == null) {
                         l = new java.util.LinkedList();
-                        childMapper.pseudoSelectors.put(pseudoElement, l);
+                        pseudoSelectors.put(pseudoElement, l);
                     }
                     l.add(sel);
                     continue;
@@ -84,21 +93,19 @@ public class Matcher {
                 if (!sel.matchesDynamic(e, _attRes)) continue;
                 Selector chain = sel.getChainedSelector();
                 if (chain == null) {
-                    childMapper.mappedSelectors.add(sel);
+                    mappedSelectors.add(sel);
                 } else if (chain.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
                     throw new RuntimeException();
                 } else {
                     childMapper.axes.add(chain);
                 }
             }
+            resolvePseudoElements(e, pseudoSelectors);
             link(e, childMapper);
+            return mappedSelectors;
         }
 
         java.util.List axes = new java.util.ArrayList();
-
-        java.util.List mappedSelectors = new java.util.LinkedList();
-
-        java.util.HashMap pseudoSelectors = new java.util.HashMap();
 
     }
 
@@ -392,22 +399,23 @@ public class Matcher {
 
     public CascadedStyle matchElement(org.w3c.dom.Element e) {
         org.w3c.dom.Node parent = e.getParentNode();
+        List matchedSelectors;
         if (parent.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
             Mapper m = getMapper((org.w3c.dom.Element) parent);
-            m.mapChild(e);
+            matchedSelectors = m.mapChild(e);
         } else {//has to be document or fragment node
-            docMapper.mapChild(e);
+            matchedSelectors = docMapper.mapChild(e);
         }
-        return createCascadedStyle(e);
+        return createCascadedStyle(e, matchedSelectors);
     }
 
-    CascadedStyle createCascadedStyle(org.w3c.dom.Element e) {
+    CascadedStyle createCascadedStyle(org.w3c.dom.Element e, List matchedSelectors) {
         CascadedStyle cs = null;
         org.xhtmlrenderer.css.sheet.Ruleset elementStyling = getElementStyle(e);
         String fingerprint = null;
         if (elementStyling == null) {//try to re-use a CascadedStyle
             StringBuffer sb = new StringBuffer();
-            for (java.util.Iterator i = getMatchedRulesets(e); i.hasNext();) {
+            for (java.util.Iterator i = getMatchedRulesets(matchedSelectors); i.hasNext();) {
                 sb.append(i.next().hashCode());
                 sb.append(":");
             }
@@ -418,7 +426,7 @@ public class Matcher {
 
         if (cs == null) {
             java.util.List propList = new java.util.LinkedList();
-            for (java.util.Iterator i = getMatchedRulesets(e); i.hasNext();) {
+            for (java.util.Iterator i = getMatchedRulesets(matchedSelectors); i.hasNext();) {
                 org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
                 for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
                     propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
@@ -447,19 +455,15 @@ public class Matcher {
      */
     public CascadedStyle getPECascadedStyle(org.w3c.dom.Element e, String pseudoElement) {
         java.util.Map elm = (java.util.Map) _peMap.get(e);
-        if (elm == null && e != null) {
-            elm = resolvePseudoElements(e);
-            _peMap.put(e, elm);
-        }
         if (elm == null) return null;
         return (CascadedStyle) elm.get(pseudoElement);
 
     }
 
-    private java.util.Map resolvePseudoElements(org.w3c.dom.Element e) {
+    private void resolvePseudoElements(org.w3c.dom.Element e, HashMap pseudoSelectors) {
+        java.util.Iterator si = pseudoSelectors.entrySet().iterator();
+        if (!si.hasNext()) return;
         java.util.Map pelm = new java.util.HashMap();
-        Mapper m = getMapper(e);
-        java.util.Iterator si = m.pseudoSelectors.entrySet().iterator();
         while (si.hasNext()) {
             java.util.Map.Entry me = (java.util.Map.Entry) si.next();
             String fingerprint = null;
@@ -487,7 +491,7 @@ public class Matcher {
 
             pelm.put(me.getKey(), cs);
         }
-        return pelm;
+        _peMap.put(e, pelm);
     }
 
     public boolean isVisitedStyled(org.w3c.dom.Element e) {
@@ -517,10 +521,9 @@ public class Matcher {
     }
 
 
-    private java.util.Iterator getMatchedRulesets(org.w3c.dom.Element e) {
-        final Mapper m = getMapper(e);
+    private java.util.Iterator getMatchedRulesets(final List mappedSelectors) {
         return new java.util.Iterator() {
-            java.util.Iterator selectors = m.mappedSelectors.iterator();
+            java.util.Iterator selectors = mappedSelectors.iterator();
 
             public boolean hasNext() {
                 return selectors.hasNext();

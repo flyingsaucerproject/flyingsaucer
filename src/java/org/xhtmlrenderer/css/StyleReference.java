@@ -33,7 +33,6 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -114,7 +113,9 @@ public class StyleReference {
         _attRes = ar;
 
         List infos = getStylesheets();
-        matchStyles(infos);
+        XRLog.match("media = " + _context.getMedia());
+        _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(_attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
+        _styler = new org.xhtmlrenderer.css.style.Styler();
     }
 
     /**
@@ -227,36 +228,6 @@ public class StyleReference {
         return infos;
     }
 
-
-    /**
-     * <p/>
-     * <p/>
-     * Attempts to match any styles loaded to Elements in the supplied Document,
-     * using CSS2 matching guidelines re: selection to prepare internal lookup
-     * routines for property lookup methods. This should be called after all stylesheets and
-     * styles are found, but before any properties are retrieved. </p>
-     * The linked stylesheets are lazy-loaded by the matcher if needed
-     *
-     * @param infos the list of StylesheetInfos. Any needed stylesheets not in cache will be loaded by matcher
-     */
-    private void matchStyles(List infos) {
-        long st = System.currentTimeMillis();
-        try {
-
-            XRLog.match("No of stylesheets = " + infos.size());
-            System.out.println("media = " + _context.getMedia());
-            _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(_attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
-
-            _styler = new org.xhtmlrenderer.css.style.Styler();
-        } catch (RuntimeException re) {
-            throw new XRRuntimeException("Failed on matchStyles(), unknown RuntimeException.", re);
-        } catch (Exception e) {
-            throw new XRRuntimeException("Failed on matchStyles(), unknown Exception.", e);
-        }
-        long el = System.currentTimeMillis() - st;
-        XRLog.match("TIME: match styles  " + el + "ms");
-    }
-
 }
 
 /*
@@ -266,6 +237,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/01/04 10:19:11  tobega
+ * resolve selectors to styles direcly on match, should reduce memory footprint and not affect speed very much.
+ *
  * Revision 1.16  2005/01/03 23:40:40  tobega
  * Cleaned out unnecessary styling/matching code. styling/matching is now called during boxing/rendering rather than as a separate stage.
  *
