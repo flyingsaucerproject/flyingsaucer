@@ -214,6 +214,10 @@ public class InlineLayout extends BoxLayout {
                 // don't count floats, absolutes, and inline-blocks
                 if (isNormalInline(currentContent)) {
                     adjustLineHeight(curr_line, new_inline);
+                } else if (currentContent instanceof FloatedBlockContent) {
+                    //HACK: tobe 2004-12-21, floats need to affext size of containing block, though
+                    //TODO: rethink float handling
+                    bounds.height += new_inline.height;
                 }
 
                 // calc new width of the line
@@ -483,6 +487,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.66  2004/12/21 06:58:40  tobega
+* Fixed bug in WhitespaceStripper. Started a hack to handle floats better, but it didn't solve everything, we need to think more about handling floats.
+*
 * Revision 1.65  2004/12/20 23:25:31  tobega
 * Cleaned up handling of absolute boxes and went back to correct use of anonymous boxes in ContentUtil
 *

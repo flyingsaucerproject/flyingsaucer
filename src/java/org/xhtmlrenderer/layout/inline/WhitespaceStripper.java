@@ -7,10 +7,8 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.StylePop;
 import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.content.TextContent;
-import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Font;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -101,7 +99,7 @@ public class WhitespaceStripper {
                 continue;
             }
             //Here we have some other object, just add it with preceding styles
-            allWhitespace = false;
+            //let's try removing this and see: allWhitespace = false;
             stripped.addAll(pendingStylePushes);
             pendingStylePushes.clear();
             stripped.add(o);
@@ -121,16 +119,12 @@ public class WhitespaceStripper {
 
 
     private static void stripWhitespaceContent(List list) {
-        List remove_list = new ArrayList();
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) instanceof TextContent) {
-                remove_list.add(list.get(i));
+        for (Iterator i = list.iterator(); i.hasNext();) {
+            if (i.next() instanceof TextContent) {
+                i.remove();
             }
         }
 
-        for (int i = 0; i < remove_list.size(); i++) {
-            list.remove(remove_list.get(i));
-        }
     }
 
     /**
