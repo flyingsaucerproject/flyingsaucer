@@ -270,7 +270,8 @@ import org.xhtmlrenderer.util.XRLog;
         Element root = _doc.getDocumentElement();
         _styler = new org.xhtmlrenderer.css.style.Styler();
         _styler.setMatcher(_tbStyleMap);
-        _styler.restyleTree( root );
+        _styler.styleTree(root);
+        //_styler.restyleTree( root );
         //_styler.setViewportRectangle(_context.getViewport().getBounds());
         }
         catch(RuntimeException re) {

@@ -114,7 +114,7 @@ public class Matcher {
                 }
             }
             link(e, childMapper);
-            //childMapper.mapChildren(e); No, let the styler request the recursion
+            //childMapper.mapChildren();// No, let the styler request the recursion
         }
         
         /** the node connected to this mapper */
@@ -319,6 +319,7 @@ XRLog.match("Matcher created with "+sorter.size()+" selectors");
     }
     
     public CascadedStyle matchElement(org.w3c.dom.Element e) {
+        //TODO: eliminate need to go back to parent.
         org.w3c.dom.Node parent = e.getParentNode();
         if(parent.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
             Mapper m = getMapper((org.w3c.dom.Element)parent);
@@ -371,14 +372,17 @@ XRLog.match("Matcher created with "+sorter.size()+" selectors");
         if(_csMap == null) _csMap = new java.util.HashMap();
         CascadedStyle cs = (CascadedStyle)_csMap.get(e);
         if(cs != null) return cs;
-        
-        cs = createCascadedStyle(e);
+        //HACK: this if-statement can be removed when matchElement does not need to go back to parent
+        if(getMapper(e) != null) {
+            cs = createCascadedStyle(e);
+        } else {
+            cs = matchElement(e);
+        }
         return cs;
 }
 
     /** May return null */
     public CascadedStyle getPECascadedStyle(org.w3c.dom.Element e, String pseudoElement) {
-        if(_peMap == null) _peMap = new java.util.HashMap();
         java.util.Map elm = (java.util.Map) _peMap.get(e);
         if(elm == null) {
             elm = resolvePseudoElements(e);

@@ -495,16 +495,16 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         c.setBaseURL( url );
         u.p("doc = " + doc);
         u.p("Url = " + url);
-        StaticXhtmlAttributeResolver ar = new StaticXhtmlAttributeResolver() {
+        StaticXhtmlAttributeResolver ar = new StaticXhtmlAttributeResolver();/* {
             public boolean isHover(org.w3c.dom.Element e) {
-                u.p("checking e");
+                //u.p("checking e");
                 if(e == hovered_element) {
                     u.p("e = hovered");
                     return true;
                 }
                 return false;
             }
-        };
+        };*/
         c.css.setDocumentContext(c, new XhtmlNamespaceHandler(), ar, doc);
         //c.css.setDocumentContext(c, null, null, doc);
 
@@ -773,6 +773,9 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2004/11/12 01:39:07  tobega
+ * no message
+ *
  * Revision 1.24  2004/11/12 00:20:31  tobega
  * Set up the HoverListener to work properly. Colors are changing!
  *

@@ -88,6 +88,55 @@ public class Styler {
      * Applies matches to Element and its children, recursively. StyleMap should
      * have been re-loaded before calling this.
      *
+     * TODO: change matchElement, then this method is not needed
+     *
+     * @param elem  PARAM
+     */
+    public void styleTree( org.w3c.dom.Element elem ) {
+            CalculatedStyle parent = null;
+
+            if ( elem.getOwnerDocument().getDocumentElement() == elem ) {
+                _styleCache = new java.util.HashMap();
+                parent = new CurrentBoxStyle(_rect);
+            } else {
+                org.w3c.dom.Node pnode = elem.getParentNode();
+                if(pnode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) parent = getCalculatedStyle( (org.w3c.dom.Element) pnode );
+                if ( parent == null ) {
+                    throw new RuntimeException( "Applying matches to elements, found an element with no mapped parent; can't continue." );
+                }
+            }
+            //org.xhtmlrenderer.css.newmatch.CascadedStyle matched = _matcher.matchElement(elem);
+            org.xhtmlrenderer.css.newmatch.CascadedStyle matched = _matcher.getCascadedStyle(elem);
+            
+            CalculatedStyle cs = null;
+            StringBuffer sb = new StringBuffer();
+            sb.append(parent.hashCode()).append(":").append(matched.hashCode());
+            String fingerprint = sb.toString();
+            cs = (CalculatedStyle) _styleCache.get(fingerprint);
+            
+            if(cs == null) {
+                cs = new CalculatedStyle(parent, matched);
+                _styleCache.put(fingerprint, cs);
+            }
+            _styleMap.put( elem, cs );
+            //System.err.println(elem.getNodeName()+" "+cs);
+
+            // apply rules from style attribute on element, if any
+        // elementStyling is now responsibility of Matcher
+
+        org.w3c.dom.NodeList nl = elem.getChildNodes();
+        for ( int i = 0, len = nl.getLength(); i < len; i++ ) {
+            org.w3c.dom.Node n = nl.item( i );
+            if ( n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE ) {
+                restyleTree( (org.w3c.dom.Element)n );
+            }
+        }
+    }
+
+    /**
+     * Applies matches to Element and its children, recursively. StyleMap should
+     * have been re-loaded before calling this.
+     *
      * @param elem  PARAM
      */
     public void restyleTree( org.w3c.dom.Element elem ) {
