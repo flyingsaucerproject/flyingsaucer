@@ -31,6 +31,8 @@ public class Styler implements net.homelinux.tobe.xhtmlrenderer.Styler {
     
     java.util.HashMap _styleMap = new java.util.HashMap();
     
+    java.util.HashMap _styleCache = new java.util.HashMap();
+    
     net.homelinux.tobe.xhtmlrenderer.Matcher _matcher;
     
     java.awt.Rectangle _rect;
@@ -62,6 +64,7 @@ public class Styler implements net.homelinux.tobe.xhtmlrenderer.Styler {
             // from root to leaves, we should always find a parent
             // this means, however, that root will have a null parent
             if ( elem.getOwnerDocument().getDocumentElement() == elem ) {
+                _styleCache = new java.util.HashMap();
                 parent = new CurrentBoxStyle(_rect);
             } else {
                 org.w3c.dom.Node pnode = elem.getParentNode();
@@ -71,7 +74,16 @@ public class Styler implements net.homelinux.tobe.xhtmlrenderer.Styler {
                 }
             }
             net.homelinux.tobe.xhtmlrenderer.CascadedStyle matched = _matcher.getCascadedStyle(elem);
-            net.homelinux.tobe.xhtmlrenderer.stylerImpl.CalculatedStyle cs = new CalculatedStyle(parent, matched);
+            
+            StringBuffer sb = new StringBuffer();
+            sb.append(parent).append(":").append(matched);
+            String fingerprint = sb.toString();
+            net.homelinux.tobe.xhtmlrenderer.stylerImpl.CalculatedStyle cs = (net.homelinux.tobe.xhtmlrenderer.stylerImpl.CalculatedStyle) _styleCache.get(fingerprint);
+            
+            if(cs == null) {
+                cs = new CalculatedStyle(parent, matched);
+                _styleCache.put(fingerprint, cs);
+            }
             _styleMap.put( elem, cs );
 
         // apply rules from style attribute on element, if any
