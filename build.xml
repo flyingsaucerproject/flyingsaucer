@@ -164,7 +164,7 @@
             classpath="build/classes"
             fork="true"
             >
-            <arg value="demos/paragraph.xhtml"/>
+            <arg value="demos/browser/xhtml/paragraph.xhtml"/>
             <classpath>
                 <fileset dir="lib">
                     <include name="*.jar"/>
