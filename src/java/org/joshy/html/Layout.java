@@ -38,6 +38,7 @@ public class Layout {
         //u.p("Layout.layoutChildren: " + box);
 
         Element elem = (Element)box.node;
+    if(isHiddenNode(elem,c)) return box;
         // prepare for the list items
         int old_counter = c.getListCounter();
         c.setListCounter(0);

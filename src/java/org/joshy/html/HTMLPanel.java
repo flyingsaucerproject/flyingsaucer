@@ -233,10 +233,12 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         
         if ( 1 == 0 ) {
           c.css = new CSSBank();
-        } else {
+        } else if ( 1 == 0 ) {
           // NOTE: currently context is externalized from StyleReference even
           // though it original design they had an ownership relationship (PWW 14/08/04)
           c.css = new XRStyleReference(c);
+        } else {
+            c.css = new net.homelinux.tobe.xhtmlrenderer.bridge.TBStyleReference(c);
         }
         System.out.println("Using CSS implementation from: " + c.css.getClass().getName());
 

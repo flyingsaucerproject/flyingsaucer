@@ -357,10 +357,12 @@ public class Matcher implements net.homelinux.tobe.xhtmlrenderer.Matcher {
    }
     
     private net.homelinux.tobe.xhtmlrenderer.Ruleset getElementStyle(org.w3c.dom.Element e) {
-        if(_elStyle == null) return null;
+        if(_elStyle == null || _attRes == null) return null;
         net.homelinux.tobe.xhtmlrenderer.Ruleset rs = (net.homelinux.tobe.xhtmlrenderer.Ruleset) _elStyle.get(e);
+        String style = _attRes.getElementStyling(e);
+        if(style == null || style.equals("")) return null;
         if(rs == null) {
-            rs = _styleFactory.parseStyleDeclaration(net.homelinux.tobe.xhtmlrenderer.Stylesheet.AUTHOR, _attRes.getElementStyling(e));
+            rs = _styleFactory.parseStyleDeclaration(net.homelinux.tobe.xhtmlrenderer.Stylesheet.AUTHOR, style);
             _elStyle.put(e, rs);
         }
         return rs;

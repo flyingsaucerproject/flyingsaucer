@@ -75,10 +75,11 @@ public class Styler implements net.homelinux.tobe.xhtmlrenderer.Styler {
             }
             net.homelinux.tobe.xhtmlrenderer.CascadedStyle matched = _matcher.getCascadedStyle(elem);
             
+            net.homelinux.tobe.xhtmlrenderer.stylerImpl.CalculatedStyle cs = null;
             StringBuffer sb = new StringBuffer();
             sb.append(parent).append(":").append(matched);
             String fingerprint = sb.toString();
-            net.homelinux.tobe.xhtmlrenderer.stylerImpl.CalculatedStyle cs = (net.homelinux.tobe.xhtmlrenderer.stylerImpl.CalculatedStyle) _styleCache.get(fingerprint);
+            cs = (net.homelinux.tobe.xhtmlrenderer.stylerImpl.CalculatedStyle) _styleCache.get(fingerprint);
             
             if(cs == null) {
                 cs = new CalculatedStyle(parent, matched);

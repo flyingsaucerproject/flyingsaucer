@@ -243,6 +243,7 @@ public class TBStyleReference implements StyleReference {
             Iterator iter = _stylesheets.iterator();
 
             _tbStyleMap = new net.homelinux.tobe.xhtmlrenderer.matcherImpl.Matcher(document, new StaticHtmlAttributeResolver(), _stylesheets.iterator());
+            _tbStyleMap.setStylesheetFactory(new StylesheetFactory());
             
         }
 
@@ -474,7 +475,8 @@ public class TBStyleReference implements StyleReference {
     public void parseElementStyling( Element elem )
         throws IOException {
 
-    /*    _matchedSinceLastParse = false;
+    /* should not be done here!
+     _matchedSinceLastParse = false;
 
         // Pull attribute
         Node styleNode = elem.getAttributes().getNamedItem("style");

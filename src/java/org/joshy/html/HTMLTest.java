@@ -74,6 +74,7 @@ public class HTMLTest extends JFrame {
         addFileLoadAction(test, "extended", "demos/extended.xhtml");
         addFileLoadAction(test, "XML-like", "demos/xml.xhtml");
         addFileLoadAction(test, "XML", "demos/xml.xml");
+        addFileLoadAction(test, "Element styling", "demos/element-style.xhtml");
 
         JMenu debug = new JMenu("Debug");
         mb.add(debug);
@@ -102,6 +103,7 @@ public class HTMLTest extends JFrame {
         menu.add(new AbstractAction(display) {
             public void actionPerformed(ActionEvent evt) {
                 loadDocument(file);
+        
             }
         });
     }

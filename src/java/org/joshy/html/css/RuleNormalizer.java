@@ -290,7 +290,7 @@ public class RuleNormalizer {
             prop.equals("background-color") ||
             prop.equals("border-color")) {
                 String value =  rule.getStyle().getPropertyValue(prop);
-                rule.getStyle().setProperty(prop,getColorHex(value),null);
+                rule.getStyle().setProperty(prop,getColorHex(value),rule.getStyle().getPropertyPriority(prop));
             return;
         }
         if(prop.equals("padding")) {
@@ -321,6 +321,7 @@ public class RuleNormalizer {
         //u.p("prop = " + prop);
         CSSStyleDeclaration dec = rule.getStyle();
         CSSValue val = dec.getPropertyCSSValue(prop);
+        String prio = dec.getPropertyPriority(prop);
         //u.p("value = " + val);
         CSSValueList list = (CSSValueList)val;
         CSSValue top, bottom, left, right;
@@ -355,30 +356,31 @@ public class RuleNormalizer {
             left = list;//.item(0);
             right = list;//.item(0);
         }
-        dec.setProperty(before+"-top"+after,top.getCssText(),null);
-        dec.setProperty(before+"-bottom"+after,bottom.getCssText(),null);
-        dec.setProperty(before+"-left"+after,left.getCssText(),null);
-        dec.setProperty(before+"-right"+after,right.getCssText(),null);
+        dec.setProperty(before+"-top"+after,top.getCssText(),prio);
+        dec.setProperty(before+"-bottom"+after,bottom.getCssText(),prio);
+        dec.setProperty(before+"-left"+after,left.getCssText(),prio);
+        dec.setProperty(before+"-right"+after,right.getCssText(),prio);
     }
     
     private void expandBorder(CSSStyleRule rule) {
         CSSStyleDeclaration dec = rule.getStyle();
         CSSValue val = dec.getPropertyCSSValue("border");
+        String prio = dec.getPropertyPriority("border");
         CSSValueList list = (CSSValueList)val;
         CSSValue a, b, c;
         if(val.getCssValueType() == val.CSS_VALUE_LIST) {
             for(int i=0; i<list.getLength(); i++) {
                 CSSValue v = list.item(i);
                 if(isDimension(v.getCssText())) {
-                    dec.setProperty("border-width",v.getCssText(),null);
+                    dec.setProperty("border-width",v.getCssText(),prio);
                     expandProperty("border-width",rule);
                 }
                 if(isColor(v.getCssText())) {
-                    dec.setProperty("border-color",v.getCssText(),null);
+                    dec.setProperty("border-color",v.getCssText(),prio);
                     expandProperty("border-color",rule);
                 }
                 if(isBorderStyle(v.getCssText())) {
-                    dec.setProperty("border-style",v.getCssText(),null);
+                    dec.setProperty("border-style",v.getCssText(),prio);
                     expandProperty("border-style",rule);
                 }
             }
@@ -388,6 +390,7 @@ public class RuleNormalizer {
     private void expandBackgroundPosition(CSSStyleRule rule) {
         CSSStyleDeclaration dec = rule.getStyle();
         CSSValue val = dec.getPropertyCSSValue("background-position");
+        String prio = dec.getPropertyPriority("background-position");
         if(val.getCssValueType() == val.CSS_VALUE_LIST) {
             //u.p("val = " + val);
             return;
@@ -395,10 +398,10 @@ public class RuleNormalizer {
         if(val.getCssValueType() == val.CSS_PRIMITIVE_VALUE) {
             //u.p("val = " + val);
             String str = val.getCssText();
-            if(str.startsWith("top")) { dec.setProperty("background-position","50% 0%",null); }
-            if(str.startsWith("bottom")) { dec.setProperty("background-position","50% 100%",null); }
-            if(str.startsWith("left")) { dec.setProperty("background-position","0% 50%",null); }
-            if(str.startsWith("right")) { dec.setProperty("background-position","100% 50%",null); }
+            if(str.startsWith("top")) { dec.setProperty("background-position","50% 0%",prio); }
+            if(str.startsWith("bottom")) { dec.setProperty("background-position","50% 100%",prio); }
+            if(str.startsWith("left")) { dec.setProperty("background-position","0% 50%",prio); }
+            if(str.startsWith("right")) { dec.setProperty("background-position","100% 50%",prio); }
             return;
         }
 

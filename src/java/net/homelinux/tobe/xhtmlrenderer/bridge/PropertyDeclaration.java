@@ -36,6 +36,8 @@ public class PropertyDeclaration implements net.homelinux.tobe.xhtmlrenderer.Pro
     /** Creates a new instance of PropertyDeclaration */
     public PropertyDeclaration(com.pdoubleya.xhtmlrenderer.css.XRProperty p, boolean imp, int orig) {
         base = p;
+        important = imp;
+        origin = orig;
     }
     
     public int getImportanceAndOrigin() {
