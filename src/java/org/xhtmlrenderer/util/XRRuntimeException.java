@@ -31,9 +31,6 @@ import java.util.logging.*;
  * @author   Patrick Wright
  */
 public class XRRuntimeException extends RuntimeException {
-    /** Logger used for all log messages. */
-    private final static Logger sLogger = Logger.getLogger( "plumbing.exception" );
-
     /**
      * Instantiates a new Exception with a "reason" message.
      *
@@ -62,7 +59,7 @@ public class XRRuntimeException extends RuntimeException {
      * @param msg  Message for the log.
      */
     private void log( String msg ) {
-        sLogger.log( Level.WARNING, "Unhandled exception. " + msg );
+        XRLog.exception("Unhandled exception. " + msg );
     }
 
     /**
@@ -74,7 +71,7 @@ public class XRRuntimeException extends RuntimeException {
      *      IOException.
      */
     private void log( String msg, Throwable cause ) {
-        sLogger.log( Level.WARNING, "Unhandled exception. " + msg, cause );
+        XRLog.exception("Unhandled exception. " + msg, cause );
     }
 }
 
@@ -82,6 +79,9 @@ public class XRRuntimeException extends RuntimeException {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2004/10/14 12:54:54  pdoubleya
+ * Use XRLog for logging.
+ *
  * Revision 1.1  2004/10/13 23:00:33  pdoubleya
  * Added to CVS.
  *

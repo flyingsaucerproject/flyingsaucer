@@ -30,10 +30,10 @@ import org.xhtmlrenderer.util.u;
 import java.awt.Graphics2D;
 import java.awt.font.*;
 import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.util.*;
 import org.xhtmlrenderer.layout.InlineLayout;
 import java.util.logging.*;
 public class FontUtil {
-    public static Logger logger = Logger.getLogger("layout");
 
 public static int len(Context c, Node node, String str, Font font) {
     return c.getGraphics().getFontMetrics(font).stringWidth(str);
@@ -303,16 +303,16 @@ public static void setupVerticalAlign(Context c, Node node, LineBox box) {
 
 public static void dumpFontMetrics(Font font, Graphics g) {
     FontMetrics fm = g.getFontMetrics(font);
-    logger.info("Font: " + font.toString());
-    logger.info("FontMetrics: " + fm.toString());
-    logger.info("Ascent: " + fm.getAscent());
-    logger.info("Descent: " + fm.getDescent());
-    logger.info("Height: " + fm.getHeight());
-    logger.info("Leading: " + fm.getLeading());
-    logger.info("Max Advance: " + fm.getMaxAdvance());
-    logger.info("Max Ascent: " + fm.getMaxAscent());
-    logger.info("Max Char Bounds: " + fm.getMaxCharBounds(g));
-    logger.info("Max Descent: " + fm.getMaxDescent());
-    logger.info("hasUniformLineMetrics: " + fm.hasUniformLineMetrics());
+    XRLog.layout("Font: " + font.toString());
+    XRLog.layout("FontMetrics: " + fm.toString());
+    XRLog.layout("Ascent: " + fm.getAscent());
+    XRLog.layout("Descent: " + fm.getDescent());
+    XRLog.layout("Height: " + fm.getHeight());
+    XRLog.layout("Leading: " + fm.getLeading());
+    XRLog.layout("Max Advance: " + fm.getMaxAdvance());
+    XRLog.layout("Max Ascent: " + fm.getMaxAscent());
+    XRLog.layout("Max Char Bounds: " + fm.getMaxCharBounds(g));
+    XRLog.layout("Max Descent: " + fm.getMaxDescent());
+    XRLog.layout("hasUniformLineMetrics: " + fm.hasUniformLineMetrics());
 }
 }
