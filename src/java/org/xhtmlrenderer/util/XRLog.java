@@ -46,10 +46,41 @@ public class XRLog {
     /** Description of the Field */
     private final static String CASCADE = "plumbing.cascade";
     /** Description of the Field */
+    private final static String CSS_PARSE = "plumbing.css-parse";
+    /** Description of the Field */
     private final static String LAYOUT = "plumbing.layout";
     /** Description of the Field */
     private final static String RENDER = "plumbing.render";
 
+    /**
+     * Description of the Method
+     *
+     * @param msg  PARAM
+     */
+    public static void cssParse( String msg ) {
+        cssParse( Level.INFO, msg );
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param level  PARAM
+     * @param msg    PARAM
+     */
+    public static void cssParse( Level level, String msg ) {
+        log( CSS_PARSE, level, msg );
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param level  PARAM
+     * @param msg    PARAM
+     * @param th     PARAM
+     */
+    public static void cssParse( Level level, String msg, Throwable th ) {
+        log( CSS_PARSE, level, msg, th );
+    }
     /**
      * Description of the Method
      *
@@ -385,6 +416,9 @@ public class XRLog {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/01/29 12:18:15  pdoubleya
+ * Added cssParse logging.
+ *
  * Revision 1.5  2005/01/24 19:01:10  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *
