@@ -44,7 +44,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.apache.xpath.XPathAPI;
-import org.xhtmlrenderer.DefaultCSSMarker;
 import org.xhtmlrenderer.css.CSSBank;
 import org.xhtmlrenderer.css.XRStyleSheet;
 import org.xhtmlrenderer.css.bridge.XRStyleReference;
@@ -97,6 +96,15 @@ public class HTMLPanel extends JPanel implements ComponentListener {
     /** Constructor for the HTMLPanel object */
     public HTMLPanel() {
         c = new Context();
+        if ( true ) {
+            // NOTE: currently context is externalized from StyleReference even
+            // though it original design they had an ownership relationship (PWW 14/08/04)
+            c.css = new XRStyleReference( c );
+        } /*else {
+            c.css = new TBStyleReference(new NaiveUserAgent());
+        }*/
+        XRLog.render( "Using CSS implementation from: " + c.css.getClass().getName() );
+
         layout = new BodyLayout();
         layout_thread = new LayoutThread(this);
         setLayout( new AbsoluteLayoutManager() );
@@ -483,40 +491,11 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         resetScrollPosition();
         this.doc = doc;
 
-        Element html = (Element)doc.getDocumentElement();
-
-        if ( 1 == 0 ) {
-            c.css = new CSSBank();
-        } else {
-            // NOTE: currently context is externalized from StyleReference even
-            // though it original design they had an ownership relationship (PWW 14/08/04)
-            c.css = new XRStyleReference( c );
-        }
-        XRLog.render( "Using CSS implementation from: " + c.css.getClass().getName() );
-
+        //have to do this first
         c.setBaseURL( url );
-
-        try {
-            Object marker = new DefaultCSSMarker();
-
-            String defaultStyleSheetLocation = Configuration.valueFor( "xr.css.user-agent-default-css" );
-            if ( marker.getClass().getResourceAsStream( defaultStyleSheetLocation ) != null ) {
-                URL stream = marker.getClass().getResource( defaultStyleSheetLocation );
-                String str = u.inputstream_to_string( stream.openStream() );
-                c.css.parse( new StringReader( str ),
-                        XRStyleSheet.USER_AGENT );
-            } else {
-                XRLog.exception(
-                        "Can't load default CSS from " + defaultStyleSheetLocation + "." +
-                        "This file must be on your CLASSPATH. Please check before continuing." );
-            }
-
-            c.css.parseDeclaredStylesheets( html );
-            c.css.parseLinkedStyles( html );
-            c.css.parseInlineStyles( html );
-        } catch ( Exception ex ) {
-            XRLog.exception( "Could not parse CSS in the XHTML source: declared, linked or inline.", ex );
-        }
+        
+        //c.css.setDocumentContext(c, new XhtmlNamespaceHandler(), new StaticXhtmlAttributeResolver(), doc);
+        c.css.setDocumentContext(c, null, null, doc);
 
         calcLayout();
         repaint();
@@ -777,6 +756,9 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2004/11/04 21:51:17  tobega
+ * Preparation for new matching/styling code
+ *
  * Revision 1.18  2004/11/03 23:54:34  joshy
  * added hamlet and tables to the browser
  * more support for absolute layout

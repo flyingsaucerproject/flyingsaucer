@@ -78,8 +78,10 @@ public class SpeedTest {
         //c.canvas = this;
 
         c.css = new CSSBank();
+        
+        c.css.setDocumentContext(c,  null, null,  html.getOwnerDocument());
 
-        Object marker = new DefaultCSSMarker();
+        /*Object marker = new DefaultCSSMarker();
 
         //u.p("getting: " + marker.getClass().getResource("default.css"));
 
@@ -87,7 +89,7 @@ public class SpeedTest {
 
         c.css.parse( new InputStreamReader( stream ) );
 
-        c.css.parseInlineStyles( html );
+        c.css.parseInlineStyles( html );*/
 
         c.graphics = g;
 
@@ -137,6 +139,9 @@ public class SpeedTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/04 21:51:49  tobega
+ * Preparation for new matching/styling code
+ *
  * Revision 1.4  2004/10/23 14:01:42  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

@@ -29,6 +29,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.value.BorderColor;
 
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.extend.AttributeResolver;
+import org.xhtmlrenderer.extend.NamespaceHandler;
+
 
 /**
  * <p>
@@ -329,7 +333,7 @@ public interface StyleReference {
      *
      * @param document  PARAM
      */
-    void matchStyles( Document document );
+    //void matchStyles( Document document );
 
 
     /**
@@ -340,8 +344,8 @@ public interface StyleReference {
      *      information.
      * @exception IOException  Throws
      */
-    void parse( Reader reader )
-        throws IOException;
+    //void parse( Reader reader )
+    //    throws IOException;
 
 
     /**
@@ -356,8 +360,8 @@ public interface StyleReference {
      *      precedence of rules derived from the parse sheet.
      * @exception IOException  Throws
      */
-    void parse( Reader reader, int origin )
-        throws IOException;
+    //void parse( Reader reader, int origin )
+    //    throws IOException;
 
     /**
      * Parses the CSS style information from the source parameter, and loads
@@ -366,8 +370,8 @@ public interface StyleReference {
      * @param source           A String containing CSS style rules
      * @exception IOException  Throws
      */
-    void parse( String source )
-        throws IOException;
+    //void parse( String source )
+    //    throws IOException;
 
     /**
      * Same as {@link #parse(Reader, int)} for a String datasource.
@@ -376,8 +380,8 @@ public interface StyleReference {
      * @param origin           See {@link #parse(Reader, int)}
      * @exception IOException  {@link #parse(Reader, int)}
      */
-    public void parse( String source, int origin )
-        throws IOException;
+    //public void parse( String source, int origin )
+    //    throws IOException;
 
     /**
      * Parses the CSS style information from a <?xml-stylesheet?> PI and loads
@@ -387,8 +391,8 @@ public interface StyleReference {
      *      tags.
      * @exception IOException  Throws
      */
-    public void parseDeclaredStylesheets( Element root )
-        throws IOException;
+    //public void parseDeclaredStylesheets( Element root )
+    //    throws IOException;
 
     /**
      * Parses the CSS style information from a "
@@ -398,8 +402,8 @@ public interface StyleReference {
      * @param elem             The Element from which to pull a style attribute.
      * @exception IOException  Throws
      */
-    void parseLinkedStyles( Element elem )
-        throws IOException;
+    //void parseLinkedStyles( Element elem )
+    //    throws IOException;
 
     /**
      * Parses the CSS style information from a "<style>" Element (for example in
@@ -408,8 +412,8 @@ public interface StyleReference {
      * @param elem             The Element from which to pull a style attribute.
      * @exception IOException  Throws
      */
-    void parseInlineStyles( Element elem )
-        throws IOException;
+    //void parseInlineStyles( Element elem )
+    //    throws IOException;
 
 
     /**
@@ -420,8 +424,19 @@ public interface StyleReference {
      * @param elem             The Element from which to pull a style attribute.
      * @exception IOException  Throws
      */
-    void parseElementStyling( Element elem )
-        throws IOException;
+    //void parseElementStyling( Element elem )
+    //    throws IOException;
+    
+    
+    /**
+     * Does what is needed to handle a new document (called when a new document is loaded).
+     *
+     * @param context   layout context
+     * @param nsh       NamespaceHandler for the document
+     * @param ar        AttributeResolver for the document
+     * @param doc       DOM document
+     **/
+    public void setDocumentContext(Context context, NamespaceHandler nsh, AttributeResolver ar, Document doc);
 
 }// end interface
 
@@ -429,6 +444,9 @@ public interface StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/04 21:50:54  tobega
+ * Preparation for new matching/styling code
+ *
  * Revision 1.3  2004/10/23 13:03:46  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

@@ -102,8 +102,10 @@ public class CSSSpeedTest {
         Point origin = new Point( 0, 0 );
 
         Point last = new Point( 0, 0 );
+        
+        c.css.setDocumentContext(c, null, null, html.getOwnerDocument());
 
-        Object marker = new DefaultCSSMarker();
+        /*Object marker = new DefaultCSSMarker();
 
         String defaultStyleSheetLocation = Configuration.valueFor( "xr.css.user-agent-default-css" );
         if ( marker.getClass().getResourceAsStream( defaultStyleSheetLocation ) != null ) {
@@ -116,7 +118,7 @@ public class CSSSpeedTest {
                     "This file must be on your CLASSPATH. Please check before continuing." );
         }
 
-        c.css.parseInlineStyles( html );
+        c.css.parseInlineStyles( html );*/
 
         c.graphics = g;
 
@@ -163,6 +165,9 @@ public class CSSSpeedTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/04 21:51:35  tobega
+ * Preparation for new matching/styling code
+ *
  * Revision 1.9  2004/10/23 14:01:42  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

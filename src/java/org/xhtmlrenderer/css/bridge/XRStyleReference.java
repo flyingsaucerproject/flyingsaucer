@@ -72,6 +72,10 @@ import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.XRLog;
 
+import org.xhtmlrenderer.DefaultCSSMarker;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.u;
+
 
 /**
  * <p>
@@ -235,7 +239,7 @@ public class XRStyleReference implements StyleReference {
      *
      * @param document  A DOM Document, e.g. XHTML instance to match on.
      */
-    public void matchStyles( Document document ) {
+    private void matchStyles( Document document ) {
         if ( _tbStyleMap == null ) {
             if ( !_elementStyleAttributesPulled ) {
                 try {
@@ -293,7 +297,7 @@ public class XRStyleReference implements StyleReference {
      *      precedence of rules derived from the parse sheet.
      * @exception IOException  On errors reading the Reader.
      */
-    public void parse( Reader reader, int origin )
+    private void parse( Reader reader, int origin )
         throws IOException {
 
         // TODO: need sheet sequence and origin
@@ -308,7 +312,7 @@ public class XRStyleReference implements StyleReference {
      * @param reader           See {@link #parse(Reader, int)}
      * @exception IOException  See {@link #parse(Reader, int)}
      */
-    public void parse( Reader reader )
+    private void parse( Reader reader )
         throws IOException {
         parse( reader, XRStyleSheet.USER_AGENT );
     }
@@ -321,7 +325,7 @@ public class XRStyleReference implements StyleReference {
      * @exception IOException  {@link #parse(Reader, int)}
      */
     // TODO: add origin to these parse calls everywhere
-    public void parse( String source, int origin )
+    private void parse( String source, int origin )
         throws IOException {
 
         parse( new StringReader( source ), origin );
@@ -337,7 +341,7 @@ public class XRStyleReference implements StyleReference {
      * @param source           See {@link #parse(Reader, int)}
      * @exception IOException  {@link #parse(Reader, int)}
      */
-    public void parse( String source )
+    private void parse( String source )
         throws IOException {
         parse( source, XRStyleSheet.USER_AGENT );
     }
@@ -351,7 +355,7 @@ public class XRStyleReference implements StyleReference {
      *      tags.
      * @exception IOException  Throws
      */
-    public void parseDeclaredStylesheets( Element root )
+    private void parseDeclaredStylesheets( Element root )
         throws IOException {
         try {
             NodeList nl = XPathAPI.selectNodeList( root, "//processing-instruction('xml-stylesheet')" );
@@ -380,7 +384,7 @@ public class XRStyleReference implements StyleReference {
      *      tags.
      * @exception IOException  Throws
      */
-    public void parseLinkedStyles( Element root )
+    private void parseLinkedStyles( Element root )
         throws IOException {
         try {
             NodeList nl = XPathAPI.selectNodeList( root, "//link[@type='text/css']/@href" );
@@ -401,7 +405,7 @@ public class XRStyleReference implements StyleReference {
      * @param href             PARAM
      * @exception IOException  Throws
      */
-    public void parseStylesheet( String href )
+    private void parseStylesheet( String href )
         throws IOException {
         try {
             // HACK: need clean way to check if this is local reference...local references will need to be resolved to server reference, won't they?
@@ -451,7 +455,7 @@ public class XRStyleReference implements StyleReference {
      *      information from the element.
      */
     // CLEAN: the throws is a holdover because we are linking the mthod calls, not needed (PWW 13/08/04)
-    public void parseInlineStyles( Element elem )
+    private void parseInlineStyles( Element elem )
         throws IOException {
 
         if ( elem.getNodeName().equals( "style" ) ) {
@@ -491,7 +495,7 @@ public class XRStyleReference implements StyleReference {
      * @param elem             The Element from which to pull a style attribute.
      * @exception IOException  Throws
      */
-    public void parseElementStyling( Element elem )
+    private void parseElementStyling( Element elem )
         throws IOException {
 
         _matchedSinceLastParse = false;
@@ -548,10 +552,10 @@ public class XRStyleReference implements StyleReference {
      * @param propName  PARAM
      * @return          The xRProperty value
      */
-    public XRProperty getXRProperty( Element elem, String propName ) {
+    /*public XRProperty getXRProperty( Element elem, String propName ) {
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( elem );
         return xrElement.derivedStyle().propertyByName( _context, propName );
-    }
+    }*/
 
 
     /**
@@ -1155,12 +1159,43 @@ public class XRStyleReference implements StyleReference {
         }
     }
 
+    public void setDocumentContext(Context context, org.xhtmlrenderer.extend.NamespaceHandler nsh, org.xhtmlrenderer.extend.AttributeResolver ar, Document doc) {
+        _context = context;
+        Element html = (Element)doc.getDocumentElement();
+
+        try {
+            Object marker = new DefaultCSSMarker();
+
+            String defaultStyleSheetLocation = Configuration.valueFor( "xr.css.user-agent-default-css" );
+            if ( marker.getClass().getResourceAsStream( defaultStyleSheetLocation ) != null ) {
+                URL stream = marker.getClass().getResource( defaultStyleSheetLocation );
+                String str = u.inputstream_to_string( stream.openStream() );
+                parse( new StringReader( str ),
+                        XRStyleSheet.USER_AGENT );
+            } else {
+                XRLog.exception(
+                        "Can't load default CSS from " + defaultStyleSheetLocation + "." +
+                        "This file must be on your CLASSPATH. Please check before continuing." );
+            }
+
+            parseDeclaredStylesheets( html );
+            parseLinkedStyles( html );
+            parseInlineStyles( html );
+        } catch ( Exception ex ) {
+            XRLog.exception( "Could not parse CSS in the XHTML source: declared, linked or inline.", ex );
+        }
+
+    }
+    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/04 21:50:37  tobega
+ * Preparation for new matching/styling code
+ *
  * Revision 1.7  2004/10/23 13:06:54  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
