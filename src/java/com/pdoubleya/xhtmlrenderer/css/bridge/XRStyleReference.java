@@ -137,20 +137,17 @@ public class XRStyleReference implements StyleReference {
      */
     private StyleMap _tbStyleMap;
 
-    /**
-     * One-one map from JStyle rules to XRStyleRules, required because StyleMap
-     * works with JStyle instances.
-     */
-    private Map _jstyleXRStyleRuleMap;
-
     /** One-one map from DOM Elements to XRElements. */
     private Map _nodeXRElementMap;
+    
+    /** seems to need a list of XRStyleRules.... */
+    private List _xrStyleRuleList;
 
     /**
-     * Map from JStyles to the Rulesets that contain them. Rulesets are passed
+     * Map from XRStyleRules to the Rulesets that contain them. Rulesets are passed
      * to Tobe's matching routine, hence...
      */
-    private Map _jStyleRuleSetMap;
+    private Map _ruleSetMap;
 
     /**
      * Instantiates a new XRStyleReference for a given Context.
@@ -166,8 +163,8 @@ public class XRStyleReference implements StyleReference {
     /** Default constructor for initializing members. */
     private XRStyleReference() {
         _inlineStyleElements = new ArrayList();
-        _jstyleXRStyleRuleMap = new HashMap();
-        _jStyleRuleSetMap = new HashMap();
+        _xrStyleRuleList = new LinkedList();
+        _ruleSetMap = new HashMap();
         _nodeXRElementMap = new HashMap();
         _elementXRStyleMap = new HashMap();
     }
@@ -258,20 +255,17 @@ public class XRStyleReference implements StyleReference {
             // The sort is on origin, specificity, and sequence...in principle, this means
             // that rules appearing later in the sort always override rules appearing higher
             List sortedXRRules = new ArrayList();
-            Iterator iter = _jstyleXRStyleRuleMap.values().iterator();
+            Iterator iter = _xrStyleRuleList.iterator();
             while ( iter.hasNext() ) {
                 sortedXRRules.add( iter.next() );
             }
             Collections.sort( sortedXRRules, XRStyleRuleImpl.STYLE_RULE_COMPARATOR );
 
-            // The sort is on XRStyleRule, but matching code still works against JStyles...
-            // so we have to reverse the lookup to get the JStyles, in order
             List sortedRulesets = new ArrayList();
             iter = sortedXRRules.iterator();
             while ( iter.hasNext() ) {
-                JStyle jStyle = ( (XRStyleRule)iter.next() ).asJStyle();
-
-                Ruleset rs = (Ruleset)_jStyleRuleSetMap.get( jStyle );
+                
+                Ruleset rs = (Ruleset)_ruleSetMap.get( iter.next() );
                 sortedRulesets.add( rs );
             }
 
@@ -348,6 +342,26 @@ public class XRStyleReference implements StyleReference {
         parse( source, XRStyleSheet.USER_AGENT );
     }
 
+
+    /**
+     * Parses the CSS style information from a <?xml-stylesheet?> PI
+     *  and loads these rules into the associated RuleBank.
+     *
+     * @param root             Root of the document for which to search for link tags.
+     * @exception IOException  Throws
+     */
+    public void parseDeclaredStylesheets( Element root )
+    throws IOException {
+        try {
+            NodeList nl = XPathAPI.selectNodeList(root, "//processing-instruction('xml-stylesheet')");
+            for ( int i=0, len=nl.getLength(); i < len; i++ ) {
+                Node piNode = nl.item(i);
+                System.out.println(piNode.getNodeValue());
+            }
+        } catch ( Exception ex ) {
+            ex.printStackTrace();   
+        }
+    }
 
     /**
      * Parses the CSS style information from a "<link>" Elements (for example in
@@ -885,15 +899,12 @@ public class XRStyleReference implements StyleReference {
             _nodeXRElementMap.put( elem, xrElement );
         }
 
-        // StyleMap will return a List of JStyles matched to the element, 
-        // in the same sort order we originally passed in. We use the JStyles
-        // to look up our XRStyleRules and apply them as matches
+        // StyleMap will return a List of XRStyleRules matched to the element, 
+        // in the same sort order we originally passed in.
         List styleList = _tbStyleMap.getMappedProperties( elem );
         Iterator iter = styleList.iterator();
         while ( iter.hasNext() ) {
-            JStyle style = (JStyle)iter.next();
-            XRStyleRule rule = (XRStyleRule)_jstyleXRStyleRuleMap.get( style );
-
+            XRStyleRule rule = (XRStyleRule)iter.next();
             xrElement.addMatchedStyle( rule );
         }
         // apply rules from style attribute on element, if any
@@ -991,14 +1002,15 @@ public class XRStyleReference implements StyleReference {
      */
     // CLN: * Taken from TobeRuleBank (PWW 08/07/2004)
     // Tobe fixed 2004-08-26
-    private void addRule( JStyle rule ) {
+    private void addRule( XRStyleRule rule ) {
         _tbStyleMap = null;//New rule means we have to remap elements to their styles
         Ruleset rs = new Ruleset();
         rs.setStyleDeclaration( rule );
-        _jStyleRuleSetMap.put( rule, rs );
+        _ruleSetMap.put( rule, rs );
 
-        for ( int i = 0; i < rule.selector_list.getLength(); i++ ) {
-            Selector selector = rule.selector_list.item( i );
+        org.w3c.css.sac.SelectorList selector_list = rule.selectorsAsSACList();
+	for ( int i = 0; i < selector_list.getLength(); i++ ) {
+            Selector selector = selector_list.item( i );
             net.homelinux.tobe.css.Selector s = addSelector(rs, selector);
         }
     }
@@ -1038,9 +1050,8 @@ public class XRStyleReference implements StyleReference {
         Iterator rules = sheet.styleRules();
         while ( rules.hasNext() ) {
             XRStyleRule styleRule = (XRStyleRule)rules.next();
-            JStyle jStyle = styleRule.asJStyle();
-            addRule( jStyle );
-            _jstyleXRStyleRuleMap.put( jStyle, styleRule );
+            addRule( styleRule );
+            _xrStyleRuleList.add( styleRule );
         }
         return sheet;
     }

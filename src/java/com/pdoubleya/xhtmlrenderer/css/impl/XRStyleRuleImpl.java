@@ -29,8 +29,6 @@ import org.w3c.css.sac.SelectorList;
 import org.w3c.dom.css.CSSRule;
 import org.w3c.dom.css.CSSStyleRule;
 
-import org.joshy.html.css.JStyle;
-
 import com.pdoubleya.xhtmlrenderer.css.XRStyleRule;
 import com.pdoubleya.xhtmlrenderer.css.XRStyleSheet;
 import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
@@ -72,9 +70,6 @@ public class XRStyleRuleImpl extends XRSheetRuleImpl implements XRStyleRule {
 
     /** The specificity for this selector. */
     private int _specificity;
-
-    /** The unique JStyle associated with this XRStyleRule */
-    private JStyle _jStyle;
 
 
     /**
@@ -196,14 +191,7 @@ public class XRStyleRuleImpl extends XRSheetRuleImpl implements XRStyleRule {
     }
 
 
-    /**
-     * @return   Returns
-     */
-    public JStyle asJStyle() {
-        if ( _jStyle == null ) {
-            _jStyle = new JStyle();
-            _jStyle.sheet = _sheet;
-
+    public SelectorList selectorsAsSACList() {
             SelectorList list = null;
 
             try {
@@ -213,12 +201,8 @@ public class XRStyleRuleImpl extends XRSheetRuleImpl implements XRStyleRule {
             } catch ( IOException ex ) {
                 ex.printStackTrace();
             }
-            _jStyle.selector_list = list;
-
-            _jStyle.rule = _domStyleRule;
-            _jStyle.declaration = _domStyleRule.getStyle();
-        }
-        return _jStyle;
+            
+            return list;
     }
 
 

@@ -20,7 +20,7 @@
  */
 package com.pdoubleya.xhtmlrenderer.css;
 
-import org.joshy.html.css.JStyle;
+import org.w3c.css.sac.SelectorList;
 
 
 /**
@@ -49,14 +49,8 @@ public interface XRStyleRule extends XRSheetRule {
     int selectorSpecificity();
 
 
-    /**
-     * Generates a unique JStyle that shadows this XRStyleRule, e.g. contains
-     * the same information. Multiple calls to this will return the same JStyle
-     * instance.
-     *
-     * @return   Returns
-     */
-    JStyle asJStyle();
+    SelectorList selectorsAsSACList();
+    
 }// end interface
 
 
