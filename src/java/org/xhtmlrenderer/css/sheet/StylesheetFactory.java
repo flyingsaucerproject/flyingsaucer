@@ -19,17 +19,17 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import com.steadystate.css.parser.CSSOMParser;
 import org.w3c.css.sac.InputSource;
+import org.w3c.dom.css.CSSImportRule;
 import org.w3c.dom.css.CSSStyleRule;
 import org.w3c.dom.css.CSSStyleSheet;
-import org.w3c.dom.css.CSSImportRule;
-import com.steadystate.css.parser.CSSOMParser;
-
+import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
-import org.xhtmlrenderer.extend.UserAgentCallback;
 
 import java.io.Reader;
+import java.net.URL;
 
 
 /**
@@ -37,30 +37,40 @@ import java.io.Reader;
  * parser instance for all sheets. Sheets are cached by URI using a LRU test,
  * but timestamp of file is not checked.
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 // ASK: tested for multi-thread access? (PW 12-11-04)
 // TODO: add timestamp check (PW 12-11-04)
 public class StylesheetFactory {
 
-    /** the UserAgentCallback to resolve uris */
+    /**
+     * the UserAgentCallback to resolve uris
+     */
     private UserAgentCallback _userAgent;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private CSSOMParser parser = new CSSOMParser();
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private int _cacheCapacity = 16;
-    
-    /** an LRU cache */
-    private java.util.LinkedHashMap _cache =
-        new java.util.LinkedHashMap( _cacheCapacity, 0.75f, true ) {
-            protected boolean removeEldestEntry( java.util.Map.Entry eldest ) {
-                return size() > _cacheCapacity;
-            }
-        };
 
-    /** Creates a new instance of StylesheetFactory */
+    /**
+     * an LRU cache
+     */
+    private java.util.LinkedHashMap _cache =
+            new java.util.LinkedHashMap(_cacheCapacity, 0.75f, true) {
+                protected boolean removeEldestEntry(java.util.Map.Entry eldest) {
+                    return size() > _cacheCapacity;
+                }
+            };
+
+    /**
+     * Creates a new instance of StylesheetFactory
+     */
     public StylesheetFactory(UserAgentCallback userAgent) {
         _userAgent = userAgent;
     }
@@ -68,20 +78,21 @@ public class StylesheetFactory {
     /**
      * Description of the Method
      *
-     * @param origin  PARAM
-     * @param reader  PARAM
-     * @return        Returns
+     * @param origin PARAM
+     * @param uri
+     * @param reader PARAM
+     * @return Returns
      */
-    public Stylesheet parse( int origin, java.io.Reader reader ) {
-        InputSource is = new InputSource( reader );
+    public Stylesheet parse(int origin, String uri, java.io.Reader reader) {
+        InputSource is = new InputSource(reader);
         CSSStyleSheet style = null;
         try {
-            style = parser.parseStyleSheet( is );
-        } catch ( java.io.IOException e ) {
-            throw new XRRuntimeException( "IOException on parsing style seet from a Reader; don't know the URI.", e );
+            style = parser.parseStyleSheet(is);
+        } catch (java.io.IOException e) {
+            throw new XRRuntimeException("IOException on parsing style seet from a Reader; don't know the URI.", e);
         }
 
-        Stylesheet sheet = new Stylesheet(origin);
+        Stylesheet sheet = new Stylesheet(origin, uri);
         pullRulesets(style, sheet);
 
         return sheet;
@@ -90,14 +101,14 @@ public class StylesheetFactory {
     /**
      * Description of the Method
      *
-     * @param origin  PARAM
-     * @param uri  PARAM
-     * @return        Returns null if uri could not be loaded
-     * TODO: what about relative uris? what are they relative to? how resolve?
+     * @param origin PARAM
+     * @param uri    PARAM
+     * @return Returns null if uri could not be loaded
+     *         TODO: what about relative uris? what are they relative to? how resolve?
      */
-    public Stylesheet parse( int origin, String uri ) {
+    public Stylesheet parse(int origin, String uri) {
         Reader r = _userAgent.getReaderForURI(uri);
-        if(r != null) return parse(origin, r);
+        if (r != null) return parse(origin, uri, r);
         return null;
     }
 
@@ -105,27 +116,32 @@ public class StylesheetFactory {
      * Given the SAC sheet input, extracts all CSSStyleRules and loads Rulesets
      * from them.
      *
-     * @param cssSheet  The SAC CSSStyleSheet instance that holds the sheet rules
-     *      and etc. from which rules are taken. Usually the output of a SAC parser.
-     * @param stylesheet  stylesheet to which rules are added
+     * @param cssSheet   The SAC CSSStyleSheet instance that holds the sheet rules
+     *                   and etc. from which rules are taken. Usually the output of a SAC parser.
+     * @param stylesheet stylesheet to which rules are added
      */
-    private void pullRulesets( org.w3c.dom.css.CSSStyleSheet cssSheet, Stylesheet stylesheet ) {
+    private void pullRulesets(org.w3c.dom.css.CSSStyleSheet cssSheet, Stylesheet stylesheet) {
         org.w3c.dom.css.CSSRuleList rl = cssSheet.getCssRules();
         int nr = rl.getLength();
-        for ( int i = 0; i < nr; i++ ) {
-            if ( rl.item( i ).getType() == org.w3c.dom.css.CSSRule.IMPORT_RULE ) {
+        for (int i = 0; i < nr; i++) {
+            if (rl.item(i).getType() == org.w3c.dom.css.CSSRule.IMPORT_RULE) {
                 //note: the steadystate parser does not fetch and load imported stylesheets
                 CSSImportRule cssir = (CSSImportRule) rl.item(i);
                 String href = cssir.getHref();
-                Stylesheet imported = getStylesheet(href);
-                if(imported == null) {
-                    imported = parse(stylesheet.getOrigin(), href);
-                    if(imported != null) putStylesheet(href, imported);
+                String uri = null;
+                try {
+                    uri = new java.net.URL(new URL(stylesheet.getURI()), href).toString();
+                    Stylesheet imported = getStylesheet(uri);
+                    if (imported == null) {
+                        imported = parse(stylesheet.getOrigin(), uri);
+                        if (imported != null) putStylesheet(uri, imported);
+                    }
+                    if (imported != null) stylesheet.addRulesets(imported);
+                } catch (java.net.MalformedURLException e) {
+                    XRLog.exception("bad URL for imported stylesheet", e);
                 }
-                if(imported != null) stylesheet.addRulesets(imported);
-            }
-            else if ( rl.item( i ).getType() == org.w3c.dom.css.CSSRule.STYLE_RULE ) {
-                stylesheet.addRuleset( new Ruleset( (org.w3c.dom.css.CSSStyleRule)rl.item( i ), stylesheet.getOrigin() ) );
+            } else if (rl.item(i).getType() == org.w3c.dom.css.CSSRule.STYLE_RULE) {
+                stylesheet.addRuleset(new Ruleset((org.w3c.dom.css.CSSStyleRule) rl.item(i), stylesheet.getOrigin()));
             }
         }
     }
@@ -133,41 +149,41 @@ public class StylesheetFactory {
     /**
      * Description of the Method
      *
-     * @param origin            PARAM
-     * @param styleDeclaration  PARAM
-     * @return                  Returns
+     * @param origin           PARAM
+     * @param styleDeclaration PARAM
+     * @return Returns
      */
-    public Ruleset parseStyleDeclaration( int origin, String styleDeclaration ) {
+    public Ruleset parseStyleDeclaration(int origin, String styleDeclaration) {
         try {
-            java.io.StringReader reader = new java.io.StringReader( "* {" + styleDeclaration + "}" );
-            InputSource is = new InputSource( reader );
-            CSSStyleSheet style = parser.parseStyleSheet( is );
+            java.io.StringReader reader = new java.io.StringReader("* {" + styleDeclaration + "}");
+            InputSource is = new InputSource(reader);
+            CSSStyleSheet style = parser.parseStyleSheet(is);
             reader.close();
-            return new Ruleset( (CSSStyleRule)style.getCssRules().item( 0 ), Stylesheet.AUTHOR );
-        } catch ( Exception ex ) {
+            return new Ruleset((CSSStyleRule) style.getCssRules().item(0), Stylesheet.AUTHOR);
+        } catch (Exception ex) {
             throw new XRRuntimeException("Cannot parse style declaration from string.", ex);
         }
     }
 
     /**
-     * Adds a stylesheet to the factory cache. Will overwrite older entry for 
+     * Adds a stylesheet to the factory cache. Will overwrite older entry for
      * same key.
      *
-     * @param key    Key to use to reference sheet later; must be unique in factory.
-     * @param sheet  The sheet to cache.
+     * @param key   Key to use to reference sheet later; must be unique in factory.
+     * @param sheet The sheet to cache.
      */
-    public void putStylesheet( Object key, Stylesheet sheet ) {
-        _cache.put( key, sheet );
+    public void putStylesheet(Object key, Stylesheet sheet) {
+        _cache.put(key, sheet);
     }
 
     /**
      * Returns a cached sheet by its key; null if no entry for that key.
      *
-     * @param key  The key for this sheet; same as key passed to putStylesheet();
-     * @return     The stylesheet 
+     * @param key The key for this sheet; same as key passed to putStylesheet();
+     * @return The stylesheet
      */
-    public Stylesheet getStylesheet( Object key ) {
-        return (Stylesheet)_cache.get( key );
+    public Stylesheet getStylesheet(Object key) {
+        return (Stylesheet) _cache.get(key);
     }
 }
 
@@ -175,6 +191,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/15 22:22:08  tobega
+ * Now handles @import stylesheets
+ *
  * Revision 1.5  2004/11/15 20:06:31  tobega
  * Should now handle @import stylesheets, at least those with absolute urls
  *

@@ -30,50 +30,75 @@ import java.util.Iterator;
  * Stylesheet is immutable; after instantiation, you can query the origin and
  * the {@link Ruleset}, but not modify either of them.
  *
- * @author   Torbjörn Gannholm
- * @author   Patrick Wright
+ * @author Torbjörn Gannholm
+ * @author Patrick Wright
  */
 public class Stylesheet {
-    /** Description of the Field */
+    /**
+     * The origin of the stylesheet - USER_AGENT, USER or AUTHOR
+     */
     private int _origin;
 
-    /** Description of the Field */
+    /**
+     * The uri for this stylesheet
+     */
+    private String _uri;
+
+    /**
+     * Description of the Field
+     */
     private java.util.List _rulesets;
 
-    /** Origin of stylesheet - user agent */
+    /**
+     * Origin of stylesheet - user agent
+     */
     public final static int USER_AGENT = 0;
 
-    /** Origin of stylesheet - user */
+    /**
+     * Origin of stylesheet - user
+     */
     public final static int USER = 1;
 
-    /** Origin of stylesheet - author */
+    /**
+     * Origin of stylesheet - author
+     */
     public final static int AUTHOR = 2;
 
     /**
      * Creates a new instance of Stylesheet
      *
-     * @param origin  One of the integer constants USER_AGENT, USER or AUTHOR,
-     *      indicates where the sheet originated and thus its precedence in the
-     *      cascade.
+     * @param origin One of the integer constants USER_AGENT, USER or AUTHOR,
+     *               indicates where the sheet originated and thus its precedence in the
+     * @param uri
      */
-    public Stylesheet( int origin ) {
+    public Stylesheet(int origin, String uri) {
         _origin = origin;
+        _uri = uri;
         _rulesets = new java.util.LinkedList();
     }
 
     /**
      * Gets the origin attribute of the Stylesheet object
      *
-     * @return   The origin value
+     * @return The origin value
      */
     public int getOrigin() {
         return _origin;
     }
 
     /**
+     * Gets the URI of the Stylesheet object
+     *
+     * @return The URI
+     */
+    public String getURI() {
+        return _uri;
+    }
+
+    /**
      * Returns the Rulesets loaded from the source stylesheet.
      *
-     * @return   The rulesets value
+     * @return The rulesets value
      */
     public java.util.Iterator getRulesets() {
         return _rulesets.iterator();
@@ -92,7 +117,7 @@ public class Stylesheet {
      * TODO: where do we keep track of @media? In Ruleset?
      */
     void addRulesets(Stylesheet s) {
-        for(Iterator i = s.getRulesets(); i.hasNext();) {
+        for (Iterator i = s.getRulesets(); i.hasNext();) {
             Ruleset r = (Ruleset) i.next();
             _rulesets.add(r);
         }
@@ -103,6 +128,9 @@ public class Stylesheet {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/15 22:22:08  tobega
+ * Now handles @import stylesheets
+ *
  * Revision 1.4  2004/11/15 20:06:31  tobega
  * Should now handle @import stylesheets, at least those with absolute urls
  *

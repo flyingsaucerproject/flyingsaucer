@@ -19,17 +19,12 @@
  */
 package org.xhtmlrenderer.css.bridge;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.util.*;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
-
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -45,29 +40,47 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 
 /**
  * Does not really implement StyleReference, but anyway
  *
- * @author   empty
+ * @author empty
  */
 public class TBStyleReference implements StyleReference {
-    /** The Context this StyleReference operates in; used for property resolution. */
+    /**
+     * The Context this StyleReference operates in; used for property resolution.
+     */
     private Context _context;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private UserAgentCallback _userAgent;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private NamespaceHandler _nsh;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Document _doc;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private AttributeResolver _attRes;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private StylesheetFactory _stylesheetFactory;
 
     /**
@@ -76,18 +89,22 @@ public class TBStyleReference implements StyleReference {
      */
     private org.xhtmlrenderer.css.newmatch.Matcher _tbStyleMap;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private org.xhtmlrenderer.css.style.Styler _styler;
 
-    /** seems to need a list of XRStyleRules.... */
+    /**
+     * seems to need a list of XRStyleRules....
+     */
     private List _stylesheets;
 
     /**
      * Default constructor for initializing members.
      *
-     * @param userAgent  PARAM
+     * @param userAgent PARAM
      */
-    public TBStyleReference( UserAgentCallback userAgent ) {
+    public TBStyleReference(UserAgentCallback userAgent) {
         _userAgent = userAgent;
         _stylesheetFactory = new StylesheetFactory(userAgent);
     }
@@ -97,13 +114,13 @@ public class TBStyleReference implements StyleReference {
      * Checks whether a property is defined at all for an Element, inherited or
      * not.
      *
-     * @param elem  The DOM Element to find the property for
-     * @param prop  The property name
-     * @return      True if the Element, or an ancestor, has the property
-1     *      defined.
+     * @param elem The DOM Element to find the property for
+     * @param prop The property name
+     * @return True if the Element, or an ancestor, has the property
+     *         1     *      defined.
      */
-    public boolean hasProperty( Element elem, String prop ) {
-        return hasProperty( (Node)elem, prop, false );
+    public boolean hasProperty(Element elem, String prop) {
+        return hasProperty((Node) elem, prop, false);
     }
 
 
@@ -111,14 +128,14 @@ public class TBStyleReference implements StyleReference {
      * Checks whether a property is defined at all for an Element, searching
      * ancestor Elements for the property if requested.
      *
-     * @param elem     The DOM Element to find the property for
-     * @param prop     The property name
-     * @param inherit  If true, searches ancestors for the Element for the
-     *      property as well.
-     * @return         True if the Element has the property defined.
+     * @param elem    The DOM Element to find the property for
+     * @param prop    The property name
+     * @param inherit If true, searches ancestors for the Element for the
+     *                property as well.
+     * @return True if the Element has the property defined.
      */
-    public boolean hasProperty( Element elem, String prop, boolean inherit ) {
-        return hasProperty( (Node)elem, prop, false );
+    public boolean hasProperty(Element elem, String prop, boolean inherit) {
+        return hasProperty((Node) elem, prop, false);
     }
 
 
@@ -126,27 +143,27 @@ public class TBStyleReference implements StyleReference {
      * Checks whether a property is defined at all for an Node, searching
      * ancestor Nodes for the property if requested.
      *
-     * @param node     The DOM Node to find the property for
-     * @param prop     The property name
-     * @param inherit  If true, searches ancestors for the Node for the property
-     *      as well.
-     * @return         True if the Node has the property defined.
+     * @param node    The DOM Node to find the property for
+     * @param prop    The property name
+     * @param inherit If true, searches ancestors for the Node for the property
+     *                as well.
+     * @return True if the Node has the property defined.
      */
-    public boolean hasProperty( Node node, String prop, boolean inherit ) {
-        return _styler.getCalculatedStyle( (Element)node ).hasProperty( prop );
+    public boolean hasProperty(Node node, String prop, boolean inherit) {
+        return _styler.getCalculatedStyle((Element) node).hasProperty(prop);
     }
 
     /**
      * Description of the Method
      *
-     * @param e  PARAM
-     * @return   Returns
+     * @param e PARAM
+     * @return Returns
      */
-    public boolean wasHoverRestyled( Element e ) {
-        boolean isHoverStyled = _tbStyleMap.isHoverStyled( e );
+    public boolean wasHoverRestyled(Element e) {
+        boolean isHoverStyled = _tbStyleMap.isHoverStyled(e);
         //XRLog.general("Element "+e+" tested for hover styling "+isHoverStyled);
-        if ( _tbStyleMap.isHoverStyled( e ) ) {
-            _styler.restyleTree( e );
+        if (_tbStyleMap.isHoverStyled(e)) {
+            _styler.restyleTree(e);
             return true;
         }
         return false;
@@ -155,12 +172,12 @@ public class TBStyleReference implements StyleReference {
     /**
      * Sets the documentContext attribute of the TBStyleReference object
      *
-     * @param context  The new documentContext value
-     * @param nsh      The new documentContext value
-     * @param ar       The new documentContext value
-     * @param doc      The new documentContext value
+     * @param context The new documentContext value
+     * @param nsh     The new documentContext value
+     * @param ar      The new documentContext value
+     * @param doc     The new documentContext value
      */
-    public void setDocumentContext( Context context, NamespaceHandler nsh, AttributeResolver ar, Document doc ) {
+    public void setDocumentContext(Context context, NamespaceHandler nsh, AttributeResolver ar, Document doc) {
         _context = context;
         _nsh = nsh;
         _doc = doc;
@@ -174,33 +191,33 @@ public class TBStyleReference implements StyleReference {
     /**
      * Returns the background Color assigned to an Element
      *
-     * @param elem  The DOM element to find the property for.
-     * @return      The background-color Color property
+     * @param elem The DOM element to find the property for.
+     * @return The background-color Color property
      */
-    public Color getBackgroundColor( Element elem ) {
-        return _styler.getCalculatedStyle( elem ).getBackgroundColor();
+    public Color getBackgroundColor(Element elem) {
+        return _styler.getCalculatedStyle(elem).getBackgroundColor();
     }
 
 
     /**
      * Returns the border Color assigned to an Element
      *
-     * @param elem  The DOM element to find the property for.
-     * @return      The border-color Color property
+     * @param elem The DOM element to find the property for.
+     * @return The border-color Color property
      */
-    public BorderColor getBorderColor( Element elem ) {
-        return _styler.getCalculatedStyle( elem ).getBorderColor();
+    public BorderColor getBorderColor(Element elem) {
+        return _styler.getCalculatedStyle(elem).getBorderColor();
     }
 
 
     /**
      * Returns the border width (all sides) assigned to an Element
      *
-     * @param elem  The DOM element to find the property for.
-     * @return      The Border property (for widths)
+     * @param elem The DOM element to find the property for.
+     * @return The Border property (for widths)
      */
-    public Border getBorderWidth( Element elem ) {
-        return _styler.getCalculatedStyle( elem ).getBorderWidth();
+    public Border getBorderWidth(Element elem) {
+        return _styler.getCalculatedStyle(elem).getBorderWidth();
     }
 
 
@@ -208,11 +225,11 @@ public class TBStyleReference implements StyleReference {
      * Returns the foreground Color assigned to an Element, searching ancestor
      * Elements for an inheritable value if not found on the Element.
      *
-     * @param elem  The DOM element to find the property for.
-     * @return      The CSS color Color property
+     * @param elem The DOM element to find the property for.
+     * @return The CSS color Color property
      */
-    public Color getColor( Element elem ) {
-        return _styler.getCalculatedStyle( elem ).getColor();
+    public Color getColor(Element elem) {
+        return _styler.getCalculatedStyle(elem).getColor();
     }
 
 
@@ -220,13 +237,13 @@ public class TBStyleReference implements StyleReference {
      * Returns the foreground Color assigned to an Element, searching ancestor
      * Elements for an inheritable value if requested.
      *
-     * @param elem     The DOM element to find the property for.
-     * @param inherit  If true and property not found on this element, searches
-     *      through element ancestors for property
-     * @return         The foreground Color property
+     * @param elem    The DOM element to find the property for.
+     * @param inherit If true and property not found on this element, searches
+     *                through element ancestors for property
+     * @return The foreground Color property
      */
-    public Color getColor( Element elem, boolean inherit ) {
-        return _styler.getCalculatedStyle( elem ).getColor();
+    public Color getColor(Element elem, boolean inherit) {
+        return _styler.getCalculatedStyle(elem).getColor();
     }
 
 
@@ -236,28 +253,26 @@ public class TBStyleReference implements StyleReference {
      * true, searches for an inheritable property by that name assigned to
      * parent and ancestor elements.
      *
-     * @param elem     The DOM element to find the property for.
-     * @param prop     The property name
-     * @param inherit  If true and property not found on this element, searches
-     *      through element ancestors for property
-     * @return         The named property as a Point
+     * @param elem    The DOM element to find the property for.
+     * @param prop    The property name
+     * @param inherit If true and property not found on this element, searches
+     *                through element ancestors for property
+     * @return The named property as a Point
      */
-    public Point getFloatPairProperty( Element elem, String prop, boolean inherit ) {
-        DerivedProperty xrProp = _styler.getCalculatedStyle( elem ).propertyByName( prop );
+    public Point getFloatPairProperty(Element elem, String prop, boolean inherit) {
+        DerivedProperty xrProp = _styler.getCalculatedStyle(elem).propertyByName(prop);
 
-        if ( xrProp.computedValue().isValueList() ) {
-            CSSValueList vl = (CSSValueList)xrProp.computedValue().cssValue();
+        if (xrProp.computedValue().isValueList()) {
+            CSSValueList vl = (CSSValueList) xrProp.computedValue().cssValue();
 
             Point pt = new Point();
 
-            pt.setLocation(
-                    ( (CSSPrimitiveValue)vl.item( 0 ) ).getFloatValue( CSSPrimitiveValue.CSS_PERCENTAGE ),
-                    ( (CSSPrimitiveValue)vl.item( 1 ) ).getFloatValue( CSSPrimitiveValue.CSS_PERCENTAGE )
-                     );
+            pt.setLocation(((CSSPrimitiveValue) vl.item(0)).getFloatValue(CSSPrimitiveValue.CSS_PERCENTAGE),
+                    ((CSSPrimitiveValue) vl.item(1)).getFloatValue(CSSPrimitiveValue.CSS_PERCENTAGE));
 
             return pt;
         } else {
-            XRLog.layout( "Property : " + xrProp + " is not a value list " + xrProp.computedValue().cssValue().getClass().getName() );
+            XRLog.layout("Property : " + xrProp + " is not a value list " + xrProp.computedValue().cssValue().getClass().getName());
         }
         return null;
     }
@@ -268,12 +283,12 @@ public class TBStyleReference implements StyleReference {
      * searching ancestor Elements for an inheritable value if not found on the
      * Element.
      *
-     * @param elem  The DOM Element to find the property for
-     * @param prop  The property name
-     * @return      The named property as a float
+     * @param elem The DOM Element to find the property for
+     * @param prop The property name
+     * @return The named property as a float
      */
-    public float getFloatProperty( Element elem, String prop ) {
-        return getFloatProperty( (Node)elem, prop, 0F, false );
+    public float getFloatProperty(Element elem, String prop) {
+        return getFloatProperty((Node) elem, prop, 0F, false);
     }
 
 
@@ -281,14 +296,14 @@ public class TBStyleReference implements StyleReference {
      * Returns the value of a property matched to an element cast as a float,
      * inheriting the value from the nearest ancestor if requested
      *
-     * @param elem     The DOM Element to find the property for
-     * @param prop     The property name
-     * @param inherit  If true, searches ancestor Elements for the property if
-     *      not defined on this Element.
-     * @return         The named property as a float
+     * @param elem    The DOM Element to find the property for
+     * @param prop    The property name
+     * @param inherit If true, searches ancestor Elements for the property if
+     *                not defined on this Element.
+     * @return The named property as a float
      */
-    public float getFloatProperty( Element elem, String prop, boolean inherit ) {
-        return getFloatProperty( (Node)elem, prop, 0F, inherit );
+    public float getFloatProperty(Element elem, String prop, boolean inherit) {
+        return getFloatProperty((Node) elem, prop, 0F, inherit);
     }
 
 
@@ -298,13 +313,13 @@ public class TBStyleReference implements StyleReference {
      * (e.g. if the property is a percentage), and inheriting the value if
      * necessary.
      *
-     * @param elem          The DOM Element to find the property for
-     * @param prop          The property name
-     * @param parent_value  The Element's parent value for the same property
-     * @return              The named property as a float
+     * @param elem         The DOM Element to find the property for
+     * @param prop         The property name
+     * @param parent_value The Element's parent value for the same property
+     * @return The named property as a float
      */
-    public float getFloatProperty( Element elem, String prop, float parent_value ) {
-        return getFloatProperty( (Node)elem, prop, parent_value, false );
+    public float getFloatProperty(Element elem, String prop, float parent_value) {
+        return getFloatProperty((Node) elem, prop, parent_value, false);
     }
 
 
@@ -314,15 +329,15 @@ public class TBStyleReference implements StyleReference {
      * (e.g. if the property is a percentage), inheriting the value if
      * requested.
      *
-     * @param elem          The DOM Element to find the property for
-     * @param prop          The property name
-     * @param parent_value  The Element's parent value for the same property
-     * @param inherit       If true, inherits the value from the Element's
-     *      parent
-     * @return              The named property as a float
+     * @param elem         The DOM Element to find the property for
+     * @param prop         The property name
+     * @param parent_value The Element's parent value for the same property
+     * @param inherit      If true, inherits the value from the Element's
+     *                     parent
+     * @return The named property as a float
      */
-    public float getFloatProperty( Element elem, String prop, float parent_value, boolean inherit ) {
-        return getFloatProperty( (Node)elem, prop, parent_value, inherit );
+    public float getFloatProperty(Element elem, String prop, float parent_value, boolean inherit) {
+        return getFloatProperty((Node) elem, prop, parent_value, inherit);
     }
 
 
@@ -330,36 +345,36 @@ public class TBStyleReference implements StyleReference {
      * Same as <code>getFloatProperty(Element, String, float, boolean)</code>,
      * but for Node elements
      *
-     * @param node          The DOM Node to find the property for
-     * @param prop          The property name
-     * @param parent_value  The Node's parent value for the same property
-     * @param inherit       If true, inherits the value from the Node's parent
-     * @return              The named property as a float
+     * @param node         The DOM Node to find the property for
+     * @param prop         The property name
+     * @param parent_value The Node's parent value for the same property
+     * @param inherit      If true, inherits the value from the Node's parent
+     * @return The named property as a float
      */
-    public float getFloatProperty( Node node, String prop, float parent_value, boolean inherit ) {
-        return _styler.getCalculatedStyle( (Element)node ).propertyByName( prop ).computedValue().asFloat();
+    public float getFloatProperty(Node node, String prop, float parent_value, boolean inherit) {
+        return _styler.getCalculatedStyle((Element) node).propertyByName(prop).computedValue().asFloat();
     }
 
 
     /**
      * Returns the margin width (all sides) assigned to an Element
      *
-     * @param elem  The DOM element to find the property for.
-     * @return      The margin property as a Border (for widths)
+     * @param elem The DOM element to find the property for.
+     * @return The margin property as a Border (for widths)
      */
-    public Border getMarginWidth( Element elem ) {
-        return _styler.getCalculatedStyle( elem ).getMarginWidth();
+    public Border getMarginWidth(Element elem) {
+        return _styler.getCalculatedStyle(elem).getMarginWidth();
     }
 
 
     /**
      * Returns the padding width (all sides) assigned to an Element
      *
-     * @param elem  The DOM element to find the property for.
-     * @return      The padding property as a Border (for widths)
+     * @param elem The DOM element to find the property for.
+     * @return The padding property as a Border (for widths)
      */
-    public Border getPaddingWidth( Element elem ) {
-        return _styler.getCalculatedStyle( elem ).getPaddingWidth();
+    public Border getPaddingWidth(Element elem) {
+        return _styler.getCalculatedStyle(elem).getPaddingWidth();
     }
 
 
@@ -367,13 +382,13 @@ public class TBStyleReference implements StyleReference {
      * Returns the value of a property as a W3C CSSValue instance, inheriting
      * from the parent element if requested.
      *
-     * @param elem     The DOM Element to find the property for
-     * @param prop     The property name
-     * @param inherit  If true, inherits the value from the Element's parent
-     * @return         The property value as CSSValue
+     * @param elem    The DOM Element to find the property for
+     * @param prop    The property name
+     * @param inherit If true, inherits the value from the Element's parent
+     * @return The property value as CSSValue
      */
-    public CSSValue getProperty( Element elem, String prop, boolean inherit ) {
-        return _styler.getCalculatedStyle( elem ).propertyByName( prop ).computedValue().cssValue();
+    public CSSValue getProperty(Element elem, String prop, boolean inherit) {
+        return _styler.getCalculatedStyle(elem).propertyByName(prop).computedValue().cssValue();
     }
 
 
@@ -381,12 +396,12 @@ public class TBStyleReference implements StyleReference {
      * Returns the value of a property as a String array, for example, for
      * font-family declarations, inheriting the property if nece.
      *
-     * @param elem  The DOM Element to find the property for
-     * @param prop  The property name
-     * @return      The property value as String array
+     * @param elem The DOM Element to find the property for
+     * @param prop The property name
+     * @return The property value as String array
      */
-    public String[] getStringArrayProperty( Element elem, String prop ) {
-        return _styler.getCalculatedStyle( elem ).propertyByName( prop ).computedValue().asStringArray();
+    public String[] getStringArrayProperty(Element elem, String prop) {
+        return _styler.getCalculatedStyle(elem).propertyByName(prop).computedValue().asStringArray();
     }
 
 
@@ -394,12 +409,12 @@ public class TBStyleReference implements StyleReference {
      * Returns the value of a property as a String, inheriting the property if
      * necessary.
      *
-     * @param elem  The DOM Element to find the property for
-     * @param prop  The property name
-     * @return      The property value as String
+     * @param elem The DOM Element to find the property for
+     * @param prop The property name
+     * @return The property value as String
      */
-    public String getStringProperty( Element elem, String prop ) {
-        return _getStringProperty( (Node)elem, prop, false );
+    public String getStringProperty(Element elem, String prop) {
+        return _getStringProperty((Node) elem, prop, false);
     }
 
 
@@ -407,14 +422,14 @@ public class TBStyleReference implements StyleReference {
      * Returns the value of a property as a String, inheriting the value from
      * the Element's parent if requested.
      *
-     * @param elem     The DOM Element to find the property for
-     * @param prop     The property name
-     * @param inherit  If true, inherits the property from the Element's parent
-     *      if necessary.
-     * @return         The property value as String
+     * @param elem    The DOM Element to find the property for
+     * @param prop    The property name
+     * @param inherit If true, inherits the property from the Element's parent
+     *                if necessary.
+     * @return The property value as String
      */
-    public String getStringProperty( Element elem, String prop, boolean inherit ) {
-        return _getStringProperty( (Node)elem, prop, inherit );
+    public String getStringProperty(Element elem, String prop, boolean inherit) {
+        return _getStringProperty((Node) elem, prop, inherit);
     }
 
 
@@ -423,12 +438,12 @@ public class TBStyleReference implements StyleReference {
      * searching ancestor Elements for an inheritable value if not found on the
      * Element.
      *
-     * @param node  The DOM Node to find the property for
-     * @param prop  The property name
-     * @return      The property value as String
+     * @param node The DOM Node to find the property for
+     * @param prop The property name
+     * @return The property value as String
      */
-    public String getStringProperty( Node node, String prop ) {
-        return _getStringProperty( node, prop, false );
+    public String getStringProperty(Node node, String prop) {
+        return _getStringProperty(node, prop, false);
     }
 
 
@@ -436,28 +451,28 @@ public class TBStyleReference implements StyleReference {
      * Returns the value of a property as a String, inheriting the value from
      * the Node's parent if requested.
      *
-     * @param node     The DOM Node to find the property for.
-     * @param prop     The property name
-     * @param inherit  If true, inherits the property from the Element's parent
-     *      if necessary
-     * @return         The property value as String
+     * @param node    The DOM Node to find the property for.
+     * @param prop    The property name
+     * @param inherit If true, inherits the property from the Element's parent
+     *                if necessary
+     * @return The property value as String
      */
-    public String getStringProperty( Node node, String prop, boolean inherit ) {
-        return _getStringProperty( node, prop, false );
+    public String getStringProperty(Node node, String prop, boolean inherit) {
+        return _getStringProperty(node, prop, false);
     }
 
     /**
      * Gets the derivedPropertiesMap attribute of the TBStyleReference object
      *
-     * @param e  PARAM
-     * @return   The derivedPropertiesMap value
+     * @param e PARAM
+     * @return The derivedPropertiesMap value
      */
-    public java.util.Map getDerivedPropertiesMap( Element e ) {
-        org.xhtmlrenderer.css.style.CalculatedStyle cs = _styler.getCalculatedStyle( e );
+    public java.util.Map getDerivedPropertiesMap(Element e) {
+        org.xhtmlrenderer.css.style.CalculatedStyle cs = _styler.getCalculatedStyle(e);
         java.util.LinkedHashMap props = new java.util.LinkedHashMap();
-        for ( java.util.Iterator i = cs.getAvailablePropertyNames().iterator(); i.hasNext();  ) {
-            String propName = (String)i.next();
-            props.put( propName, cs.propertyByName( propName ).computedValue().cssValue() );
+        for (java.util.Iterator i = cs.getAvailablePropertyNames().iterator(); i.hasNext();) {
+            String propName = (String) i.next();
+            props.put(propName, cs.propertyByName(propName).computedValue().cssValue());
         }
         return props;
     }
@@ -465,32 +480,32 @@ public class TBStyleReference implements StyleReference {
     /**
      * Gets the firstLetterStyle attribute of the TBStyleReference object
      *
-     * @param e  PARAM
-     * @return   The firstLetterStyle value
+     * @param e PARAM
+     * @return The firstLetterStyle value
      */
-    public CalculatedStyle getFirstLetterStyle( Element e ) {
+    public CalculatedStyle getFirstLetterStyle(Element e) {
         return null;//not supported yet
     }
 
     /**
      * Gets the pseudoElementStyle attribute of the TBStyleReference object
      *
-     * @param e              PARAM
-     * @param pseudoElement  PARAM
-     * @return               The pseudoElementStyle value
+     * @param e             PARAM
+     * @param pseudoElement PARAM
+     * @return The pseudoElementStyle value
      */
-    public CascadedStyle getPseudoElementStyle( Element e, String pseudoElement ) {
-        return _tbStyleMap.getPECascadedStyle( e, pseudoElement );
+    public CascadedStyle getPseudoElementStyle(Element e, String pseudoElement) {
+        return _tbStyleMap.getPECascadedStyle(e, pseudoElement);
     }
 
     /**
      * Gets the style attribute of the TBStyleReference object
      *
-     * @param e  PARAM
-     * @return   The style value
+     * @param e PARAM
+     * @return The style value
      */
-    public CalculatedStyle getStyle( Element e ) {
-        return _styler.getCalculatedStyle( e );
+    public CalculatedStyle getStyle(Element e) {
+        return _styler.getCalculatedStyle(e);
     }
 
     /**
@@ -505,94 +520,94 @@ public class TBStyleReference implements StyleReference {
         long st = System.currentTimeMillis();
 
         String uri = _nsh.getNamespace();
-        Stylesheet sheet = (Stylesheet)_stylesheetFactory.getStylesheet( uri );
-        if ( sheet == null ) {
+        Stylesheet sheet = (Stylesheet) _stylesheetFactory.getStylesheet(uri);
+        if (sheet == null) {
             reader = _nsh.getDefaultStylesheet();
-            if ( reader != null ) {
-                sheet = _stylesheetFactory.parse( Stylesheet.USER_AGENT, reader );
-                _stylesheetFactory.putStylesheet( uri, sheet );
+            if (reader != null) {
+                sheet = _stylesheetFactory.parse(Stylesheet.USER_AGENT, uri, reader);
+                _stylesheetFactory.putStylesheet(uri, sheet);
             }
         }
-        if ( sheet != null ) {
-            _stylesheets.add( sheet );
+        if (sheet != null) {
+            _stylesheets.add(sheet);
         }
 
-        String[] uris = _nsh.getStylesheetURIs( _doc );
-        if ( uris != null ) {
-            for ( int i = 0; i < uris.length; i++ ) {
+        String[] uris = _nsh.getStylesheetURIs(_doc);
+        if (uris != null) {
+            for (int i = 0; i < uris.length; i++) {
                 java.net.URL baseUrl = _context.getRenderingContext().getBaseURL();
                 try {
-                    uri = new java.net.URL( baseUrl, uris[i] ).toString();
-                    sheet = _stylesheetFactory.getStylesheet( uri );
-                    if ( sheet == null ) {
-                        reader = _userAgent.getReaderForURI( uri );
-                        if ( reader != null ) {
-                            sheet = _stylesheetFactory.parse( Stylesheet.AUTHOR, reader );
-                            _stylesheetFactory.putStylesheet( uri, sheet );
+                    uri = new java.net.URL(baseUrl, uris[i]).toString();
+                    sheet = _stylesheetFactory.getStylesheet(uri);
+                    if (sheet == null) {
+                        reader = _userAgent.getReaderForURI(uri);
+                        if (reader != null) {
+                            sheet = _stylesheetFactory.parse(Stylesheet.AUTHOR, uri, reader);
+                            _stylesheetFactory.putStylesheet(uri, sheet);
                         }
                     }
-                    if ( sheet != null ) {
-                        _stylesheets.add( sheet );
+                    if (sheet != null) {
+                        _stylesheets.add(sheet);
                     }
-                } catch ( java.net.MalformedURLException e ) {
-                    XRLog.exception( "bad URL for associated stylesheet", e );
+                } catch (java.net.MalformedURLException e) {
+                    XRLog.exception("bad URL for associated stylesheet", e);
                 }
             }
         }
 
         uri = _context.getRenderingContext().getBaseURL().toString();
-        sheet = _stylesheetFactory.getStylesheet( uri );
-        if ( sheet == null ) {
-            String inlineStyle = _nsh.getInlineStyle( _doc );
-            if ( inlineStyle != null ) {
-                reader = new java.io.StringReader( inlineStyle );
-                sheet = _stylesheetFactory.parse( Stylesheet.AUTHOR, reader );
-                _stylesheetFactory.putStylesheet( uri, sheet );
+        sheet = _stylesheetFactory.getStylesheet(uri);
+        if (sheet == null) {
+            String inlineStyle = _nsh.getInlineStyle(_doc);
+            if (inlineStyle != null) {
+                reader = new java.io.StringReader(inlineStyle);
+                sheet = _stylesheetFactory.parse(Stylesheet.AUTHOR, uri, reader);
+                _stylesheetFactory.putStylesheet(uri, sheet);
             }
         }
-        if ( sheet != null ) {
-            _stylesheets.add( sheet );
+        if (sheet != null) {
+            _stylesheets.add(sheet);
         }
 
         //here we should also get user stylesheet from userAgent
 
         long el = System.currentTimeMillis() - st;
-        XRLog.load( "TIME: parse stylesheets  " + el + "ms" );
+        XRLog.load("TIME: parse stylesheets  " + el + "ms");
     }
 
 
     /**
-     * <p>
-     *
+     * <p/>
+     * <p/>
      * Attempts to match any styles loaded to Elements in the supplied Document,
      * using CSS2 matching guidelines re: selection to prepare internal lookup
      * routines for property lookup methods (e.g. {@link #getProperty(Element,
-     * String, boolean)}). This should be called after all stylesheets and
+            * String, boolean)}). This should be called after all stylesheets and
      * styles are loaded, but before any properties are retrieved. </p>
      */
     private void matchStyles() {
         long st = System.currentTimeMillis();
         try {
 
-            XRLog.match( "No of stylesheets = " + _stylesheets.size() );
+            XRLog.match("No of stylesheets = " + _stylesheets.size());
             List sortedXRRules = new ArrayList();
             Iterator iter = _stylesheets.iterator();
 
-            _tbStyleMap = new org.xhtmlrenderer.css.newmatch.Matcher( _doc, _attRes, _stylesheets.iterator() );
-            _tbStyleMap.setStylesheetFactory( _stylesheetFactory );
+            _tbStyleMap = new org.xhtmlrenderer.css.newmatch.Matcher(_doc, _attRes, _stylesheets.iterator());
+            _tbStyleMap.setStylesheetFactory(_stylesheetFactory);
 
             // now we have a match-map, apply against our entire Document....restyleTree() is recursive
             Element root = _doc.getDocumentElement();
             _styler = new org.xhtmlrenderer.css.style.Styler();
-            _styler.setMatcher( _tbStyleMap );
-            _styler.styleTree( root );
-        } catch ( RuntimeException re ) {
-            throw new XRRuntimeException( "Failed on matchStyles(), unknown RuntimeException.", re );
-        } catch ( Exception e ) {
-            throw new XRRuntimeException( "Failed on matchStyles(), unknown Exception.", e );
+            _styler.setMatcher(_tbStyleMap);
+            _styler.styleTree(root);
+        } catch (RuntimeException re) {
+            throw new XRRuntimeException("Failed on matchStyles(), unknown RuntimeException.", re);
+        } catch (Exception e) {
+            throw new XRRuntimeException("Failed on matchStyles(), unknown Exception.", e);
         }
         long el = System.currentTimeMillis() - st;
-        XRLog.match( "TIME: match styles  " + el + "ms" );
+        XRLog.match("TIME: match styles  " + el + "ms");
     }
 
 
@@ -600,37 +615,38 @@ public class TBStyleReference implements StyleReference {
      * Returns the value of a property as a String, inheriting the value from
      * the Node's parent if requested.
      *
-     * @param node     The DOM Node to find the property for.
-     * @param prop     The property name
-     * @param inherit  If true, inherits the property from the Element's parent
-     *      if necessary
-     * @return         The property value as String
+     * @param node    The DOM Node to find the property for.
+     * @param prop    The property name
+     * @param inherit If true, inherits the property from the Element's parent
+     *                if necessary
+     * @return The property value as String
      */
     //Tobe: this is actually called with a non-element!
-    private String _getStringProperty( Node node, String prop, boolean inherit ) {
-        Element elem = nearestElementAncestor( node );
+    private String _getStringProperty(Node node, String prop, boolean inherit) {
+        Element elem = nearestElementAncestor(node);
 
-        if ( elem == null ) {
+        if (elem == null) {
             return null;
         }
-        return _styler.getCalculatedStyle( elem ).propertyByName( prop ).computedValue().asString();
+        return _styler.getCalculatedStyle(elem).propertyByName(prop).computedValue().asString();
     }
 
     /**
      * Description of the Method
      *
-     * @param node  PARAM
-     * @return      Returns
+     * @param node PARAM
+     * @return Returns
      */
-    private org.w3c.dom.Element nearestElementAncestor( Node node ) {
-        while ( node != null && node.getNodeType() != Node.ELEMENT_NODE ) {
+    private org.w3c.dom.Element nearestElementAncestor(Node node) {
+        while (node != null && node.getNodeType() != Node.ELEMENT_NODE) {
             node = node.getParentNode();
         }
 
-        return (Element)node;
+        return (Element) node;
     }
 
 }
+
 /*
  * :folding=java:collapseFolds=1:noTabs=true:tabSize=4:indentSize=4:
  */
@@ -638,6 +654,9 @@ public class TBStyleReference implements StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/11/15 22:22:08  tobega
+ * Now handles @import stylesheets
+ *
  * Revision 1.13  2004/11/15 19:46:13  tobega
  * Refactoring in preparation for handling @import stylesheets
  *
