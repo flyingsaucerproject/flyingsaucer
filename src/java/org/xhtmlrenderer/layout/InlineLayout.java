@@ -72,12 +72,13 @@ public class InlineLayout extends BoxLayout {
         int remaining_width = bounds.width;
         
         
-        // account for text-indent
         LineBox curr_line = new LineBox();
+        c.setFirstLine(true);
         curr_line.setParent(box);
         curr_line.x = bounds.x;
         //curr_line.width = remaining_width;
         curr_line.width = 0;
+        // account for text-indent
         Element elem = block.getElement();
         remaining_width = InlineUtil.doTextIndent( c, elem, remaining_width, curr_line );
         LineBox prev_line = new LineBox();
@@ -346,6 +347,7 @@ public class InlineLayout extends BoxLayout {
     */
     private void saveLine( LineBox line_to_save, LineBox prev_line, Element containing_block, int width, int x,
             Context c, BlockBox block ) {
+        c.setFirstLine(false);
         // account for text-align
         String text_align = c.css.getStringProperty( containing_block, "text-align", true );
         if ( text_align != null ) {
@@ -377,6 +379,14 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.14  2004/11/08 16:56:51  joshy
+* added first-line pseudo-class support
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.13  2004/11/08 15:10:10  joshy
 * added support for styling :first-letter inline boxes
 * updated the absolute positioning tests

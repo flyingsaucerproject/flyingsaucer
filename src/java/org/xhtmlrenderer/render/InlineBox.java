@@ -120,9 +120,7 @@ public class InlineBox extends Box {
      * @param font  The new font value
      */
     public void setFont( Font font ) {
-
         this.font = font;
-
     }
 
     /**
@@ -131,9 +129,7 @@ public class InlineBox extends Box {
      * @param text  The new text value
      */
     public void setText( String text ) {
-
         this.text = text;
-
     }
 
 
@@ -143,9 +139,7 @@ public class InlineBox extends Box {
      * @return   The substring value
      */
     public String getSubstring() {
-
         String txt = text.substring( start_index, end_index );
-
         return txt;
     }
 
@@ -155,7 +149,6 @@ public class InlineBox extends Box {
      * @return   The font value
      */
     public Font getFont() {
-
         return font;
     }
 
@@ -166,7 +159,6 @@ public class InlineBox extends Box {
      * @return   The text value
      */
     public String getText() {
-
         return this.text;
     }
 
@@ -176,6 +168,14 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/08 16:56:52  joshy
+ * added first-line pseudo-class support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/11/04 15:35:45  joshy
  * initial float support
  * includes right and left float

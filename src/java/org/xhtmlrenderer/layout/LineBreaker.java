@@ -387,22 +387,11 @@ public class LineBreaker {
         BoxLayout.getBorder(c,box);
         BoxLayout.getMargin(c,box);
         BoxLayout.getPadding(c,box);
-        //        u.p("background = " + box.background_color);
-        //        u.p("border = " + box.border);
-        /*
-         * if(prev!= null && !prev.break_after) {
-         * box.x = prev.x + prev.width;
-         * } else {
-         * box.x = 0;
-         * }
-         */
+
         // use the prev_align to calculate the x
         if ( prev_align != null && !prev_align.break_after ) {
-            //u.p("moving over w/ prev = " + prev);
-            //u.p("moving over w/ prev align = " + prev_align);
             box.x = prev_align.x + prev_align.width;
         } else {
-            //u.p("setting x to 0");
             box.x = 0;
         }
 
@@ -436,6 +425,7 @@ public class LineBreaker {
         box.break_after = true;
 
         box.setText(text);
+        
         if ( !InlineLayout.isReplaced( node ) ) {
             if ( !InlineLayout.isFloatedBlock( node, c ) ) {
                 FontUtil.setupTextDecoration( c, node, box );
@@ -455,11 +445,32 @@ public class LineBreaker {
         }
         InlineLayout.setupRelative( c, box );
 
-        //u.p("box.x = " + box.x);
-        //u.p("returning box: " + box);
-        //u.p("colo r= " + box.color);
+        
+        // if first line then do extra setup        
+        if(c.isFirstLine()) {
+            //u.p("node = " + node);
+            //u.p("block elem = " + getNearestBlockElement(node,c));
+            // if there is a first line pseudo class
+            CalculatedStyle cs = c.css.getPseudoElementStyle(getNearestBlockElement(node,c),"first-line");
+            //u.p("cs = " + cs);
+            //u.p("weight = " + cs.propertyByName("font-weight").computedValue().asString());
+            //u.p("===========");
+            if(cs != null) {
+                styleInlineBox(c,cs,box);
+            }
+        }
+
         return box;
     }
+    
+    public static Element getNearestBlockElement(Node node, Context c) {
+        if(DefaultLayout.isBlockNode(node,c)) {
+            return (Element)node;
+        } else {
+            return getNearestBlockElement(node.getParentNode(),c);
+        }
+    }
+    
 
     public static boolean isFirstLetter(Context c, Node node, int start) {
         //u.p("looking at node: " + node);
@@ -474,16 +485,13 @@ public class LineBreaker {
             return false;
         }
         //u.p("it's the first child");
-        Element elem = getElement(node);
-        //u.p("elem = " + elem);
-        CalculatedStyle cs = c.css.getPseudoElementStyle(elem,"first-letter");
-        //u.p("cs = " + cs);
+        CalculatedStyle cs = c.css.getPseudoElementStyle(getElement(node),"first-letter");
         if(cs != null) {
-            //u.p("there is a pseudo");
             return true;
         }
         return false;
     }
+    
     
     private static Element getElement(Node node) {
         Element elem = null;
@@ -531,6 +539,14 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/08 16:56:52  joshy
+ * added first-line pseudo-class support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/11/08 15:10:10  joshy
  * added support for styling :first-letter inline boxes
  * updated the absolute positioning tests

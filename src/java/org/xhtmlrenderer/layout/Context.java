@@ -829,12 +829,28 @@ public class Context {
     public void setBlockFormattingContext(BlockFormattingContext bfc) {
         this.bfc = bfc;
     }
+    
+    public void setFirstLine(boolean first_line) {
+        this.first_line = first_line;
+    }
+    private boolean first_line = false;
+    public boolean isFirstLine() {
+        return first_line;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/08 16:56:51  joshy
+ * added first-line pseudo-class support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/11/03 23:54:33  joshy
  * added hamlet and tables to the browser
  * more support for absolute layout
