@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.css.style;
 
+import org.xhtmlrenderer.layout.SharedContext;
+
 
 
 /**
@@ -30,7 +32,9 @@ package org.xhtmlrenderer.css.style;
 public class EmptyStyle extends CalculatedStyle {
 
     /** Creates a new instance of EmptyStyle  */
-    public EmptyStyle() { }
+    public EmptyStyle( SharedContext context ) {
+        super( context );
+    }
 
 }
 

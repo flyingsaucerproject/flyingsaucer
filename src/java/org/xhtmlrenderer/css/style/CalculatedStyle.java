@@ -30,6 +30,7 @@ import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.value.BorderColor;
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -52,6 +53,13 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * @author   Patrick Wright
  */
 public class CalculatedStyle {
+
+    /**
+     * The Context this StyleReference operates in; used for property
+     * resolution.
+     */
+    private SharedContext _context;
+
     /** The parent-style we inherit from  */
     private CalculatedStyle _parent;
 
@@ -83,7 +91,8 @@ public class CalculatedStyle {
      * Default constructor; as the instance is immutable after use, don't use
      * this for class instantiation externally.
      */
-    protected CalculatedStyle() {
+    protected CalculatedStyle( SharedContext context ) {
+        _context = context;
         _derivedPropertiesById = new DerivedProperty[CSSName.countCSSNames()];
     }
 
@@ -95,8 +104,8 @@ public class CalculatedStyle {
      * @param parent   PARAM
      * @param matched  PARAM
      */
-    CalculatedStyle( CalculatedStyle parent, CascadedStyle matched ) {
-        this();
+    CalculatedStyle( CalculatedStyle parent, CascadedStyle matched, SharedContext context ) {
+        this( context );
         _parent = parent;
 
         derive( matched );
@@ -148,7 +157,7 @@ public class CalculatedStyle {
                         new org.xhtmlrenderer.css.impl.DefaultCSSPrimitiveValue( initialValue );
 
                 // ASK: a default value should always be absolute?
-                DerivedValue xrVal = new DerivedValue( cssName, cssval, _parent );
+                DerivedValue xrVal = new DerivedValue( cssName, cssval, this );
                 prop = new DerivedProperty( cssName, xrVal );
             }
             _derivedPropertiesById[cssName.getAssignedID()] = prop;
@@ -299,6 +308,15 @@ public class CalculatedStyle {
     }
 
     /**
+     * Returns the context for this style.
+     *
+     * @return Returns the context.
+     */
+    public SharedContext getContext() {
+        return _context;
+    }
+
+    /**
      * @param parentWidth
      * @param parentHeight
      * @return              The "background-position" property as a Point
@@ -331,6 +349,15 @@ public class CalculatedStyle {
         DerivedValue value = prop.computedValue();
         float floatProportionalHeight = value.getFloatProportionalHeight( parentHeight );
         return floatProportionalHeight;
+    }
+
+    /**
+     * Returns the parent style.
+     *
+     * @return Returns the parent style
+     */
+    public CalculatedStyle getParent() {
+        return _parent;
     }
 
     /**
@@ -433,7 +460,7 @@ public class CalculatedStyle {
      */
     private DerivedProperty deriveProperty( CSSName cssName, org.w3c.dom.css.CSSPrimitiveValue value ) {
         // Start assuming our computed value is the same as the specified value
-        DerivedValue specified = new DerivedValue( cssName, value, _parent );
+        DerivedValue specified = new DerivedValue( cssName, value, this );
         DerivedValue computed = specified;
 
         if ( !specified.hasAbsoluteUnit() ) {
@@ -460,6 +487,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/03/24 23:16:33  pdoubleya
+ * Added use of SharedContext (Kevin).
+ *
  * Revision 1.14  2005/02/03 23:15:50  pdoubleya
  * .
  *

@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.css.style;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.layout.SharedContext;
 
 
 /**
@@ -44,7 +45,7 @@ public class Styler {
      * @param matched  PARAM
      * @return         The derivedStyle value
      */
-    public CalculatedStyle getDerivedStyle( CalculatedStyle parent, CascadedStyle matched ) {
+    public CalculatedStyle getDerivedStyle( CalculatedStyle parent, CascadedStyle matched, SharedContext context ) {
         CalculatedStyle cs = null;
         StringBuffer sb = new StringBuffer();
         sb.append( parent.hashCode() ).append( ":" ).append( matched.hashCode() );
@@ -52,7 +53,7 @@ public class Styler {
         cs = (CalculatedStyle)_styleCache.get( fingerprint );
 
         if ( cs == null ) {
-            cs = new CalculatedStyle( parent, matched );
+            cs = new CalculatedStyle( parent, matched, context );
             _styleCache.put( fingerprint, cs );
         }
         return cs;
@@ -63,6 +64,9 @@ public class Styler {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/03/24 23:13:23  pdoubleya
+ * Added use of SharedContext (Kevin).
+ *
  * Revision 1.14  2005/01/29 20:19:22  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

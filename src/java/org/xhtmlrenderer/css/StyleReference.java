@@ -174,7 +174,7 @@ public class StyleReference {
      * @return         The derivedStyle value
      */
     public CalculatedStyle getDerivedStyle( CalculatedStyle parent, CascadedStyle matched ) {
-        return _styler.getDerivedStyle( parent, matched );
+        return _styler.getDerivedStyle( parent, matched, _context );
     }
 
     /**
@@ -247,6 +247,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/03/24 23:18:38  pdoubleya
+ * Added use of SharedContext (Kevin).
+ *
  * Revision 1.24  2005/01/29 20:19:22  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
