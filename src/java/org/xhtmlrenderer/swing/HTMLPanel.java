@@ -495,7 +495,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         c.setBaseURL( url );
         u.p("doc = " + doc);
         u.p("Url = " + url);
-        StaticXhtmlAttributeResolver ar = new StaticXhtmlAttributeResolver();/* {
+        StaticXhtmlAttributeResolver ar = new StaticXhtmlAttributeResolver() {
             public boolean isHover(org.w3c.dom.Element e) {
                 //u.p("checking e");
                 if(e == hovered_element) {
@@ -504,7 +504,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
                 }
                 return false;
             }
-        };*/
+        };
         c.css.setDocumentContext(c, new XhtmlNamespaceHandler(), ar, doc);
         //c.css.setDocumentContext(c, null, null, doc);
 
@@ -773,6 +773,9 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2004/11/12 01:42:26  tobega
+ * oops
+ *
  * Revision 1.25  2004/11/12 01:39:07  tobega
  * no message
  *
