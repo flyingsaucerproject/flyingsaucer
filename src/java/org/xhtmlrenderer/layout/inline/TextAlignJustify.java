@@ -5,6 +5,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineTextBox;
 import org.xhtmlrenderer.render.LineBox;
 
 import java.util.ArrayList;
@@ -51,7 +52,12 @@ public class TextAlignJustify {
         }
     }
 
-    private static void splitInlineBox(Context c, InlineBox box, List temp_list) {
+    private static void splitInlineBox(Context c, InlineBox ibox, List temp_list) {
+        if (!(ibox instanceof InlineTextBox)) {
+            temp_list.add(ibox.copy());
+            return;
+        }
+        InlineTextBox box = (InlineTextBox) ibox;
         String[] words = words(box);
         // don't split if only one word
         if (words.length < 2) {
@@ -60,7 +66,7 @@ public class TextAlignJustify {
         }
         int currentWordPosition = box.start_index + box.getSubstring().indexOf(words[0]);
         for (int i = 0; i < words.length; i++) {
-            InlineBox copy = new InlineBox(box);
+            InlineTextBox copy = (InlineTextBox) box.copy();
             copy.setSubstring(currentWordPosition, currentWordPosition + words[i].length());//was: (words[i]);
             currentWordPosition = currentWordPosition + words[i].length() + 1;//skip the space too
             copy.width = FontUtil.len(c, copy);
@@ -68,7 +74,7 @@ public class TextAlignJustify {
         }
     }
 
-    private static String[] words(InlineBox box) {
+    private static String[] words(InlineTextBox box) {
         String text = box.getSubstring();
         String[] words = text.split("\\s");
         return words;

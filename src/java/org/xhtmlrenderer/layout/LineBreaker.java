@@ -23,6 +23,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 
 import javax.swing.*;
@@ -64,7 +65,7 @@ public class LineBreaker {
          * a  new one
          */
         // create new inline (null text is safe!)
-        InlineBox box = new InlineBox();
+        InlineBox box = new InlineBlockBox();
         box.content = content;
         //box.width = bounds.width;
         //box.height = bounds.height;
@@ -115,6 +116,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.49  2005/01/06 09:49:38  tobega
+ * More cleanup, aiming to remove Content reference in box
+ *
  * Revision 1.48  2005/01/06 01:26:00  tobega
  * More cleanup
  *

@@ -22,6 +22,7 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineTextBox;
 
 import java.awt.*;
 import java.awt.font.LineMetrics;
@@ -53,7 +54,7 @@ public class FontUtil {
         return (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), font, str).getWidth());
     }
 
-    public static int len(Context c, InlineBox box) {
+    public static int len(Context c, InlineTextBox box) {
         //return c.getGraphics().getFontMetrics(box.getFont()).stringWidth(box.getSubstring());
         return (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont(c), box.getSubstring()).getWidth());
     }
@@ -71,15 +72,6 @@ public class FontUtil {
             val = (int) style.getFloatPropertyRelative(CSSName.LINE_HEIGHT, val);
         }
         return val;
-    }
-
-    public static int lineHeight(Context c, CalculatedStyle style, InlineBox box) {
-        if (style.hasProperty(CSSName.LINE_HEIGHT)) {
-            return (int) style.propertyByName(CSSName.LINE_HEIGHT).computedValue().asFloat();
-        } else {
-            //return c.getGraphics().getFontMetrics( box.getFont() ).getHeight();
-            return (int) Math.ceil(c.getTextRenderer().getLineMetrics(c.getGraphics(), getFont(c), "Test").getHeight());
-        }
     }
 
     public static int lineHeight(Context c, InlineBox box) {
@@ -131,11 +123,13 @@ public class FontUtil {
 
 
     public static LineMetrics getLineMetrics(Context c, InlineBox box) {
+        String sample = "Test";
+        if ((box instanceof InlineTextBox) && !((InlineTextBox) box).getSubstring().equals("")) sample = ((InlineTextBox) box).getSubstring();
         return c.getTextRenderer().getLineMetrics(c.getGraphics(),
-                getFont(c), box.getSubstring());
+                getFont(c), sample);
     }
 
-    public static Rectangle2D getTextBounds(Context c, InlineBox box) {
+    public static Rectangle2D getTextBounds(Context c, InlineTextBox box) {
         CalculatedStyle style = c.getCurrentStyle();
         return c.getTextRenderer().getLogicalBounds(c.getGraphics(),
                 getFont(c, style), box.getSubstring());
@@ -155,6 +149,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/01/06 09:49:37  tobega
+ * More cleanup, aiming to remove Content reference in box
+ *
  * Revision 1.23  2005/01/05 17:56:34  tobega
  * Reduced memory more, especially by using WeakHashMap for caching Mappers. Look over other caching to use similar schemes (cache when memory available).
  *

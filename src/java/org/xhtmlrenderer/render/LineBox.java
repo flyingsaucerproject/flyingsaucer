@@ -21,7 +21,6 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.layout.inline.WhitespaceStripper;
 
 
@@ -49,14 +48,10 @@ public class LineBox extends Box {
      */
     public int baseline;// relative to Xx,y
 
-    /**
-     * Adds a feature to the Child attribute of the Box object
-     *
-     * @param child The feature to be added to the Child attribute
-     */
-    public void addInlineChild(Context c, InlineBox child) {
-        if (child == null) throw new NullPointerException("trying to add null child");
-        if (getChildCount() == 0 && child.content instanceof TextContent) {//first box on line
+    public void addInlineChild(Context c, InlineBox ib) {
+        if (ib == null) throw new NullPointerException("trying to add null child");
+        if (getChildCount() == 0 && ib instanceof InlineTextBox) {//first box on line
+            InlineTextBox child = (InlineTextBox) ib;
             if (child.getSubstring().startsWith(WhitespaceStripper.SPACE)) {
                 String whitespace = c.getCurrentStyle().getStringProperty(CSSName.WHITE_SPACE);
                 if (whitespace.equals("normal") ||
@@ -66,9 +61,9 @@ public class LineBox extends Box {
             }
             if (child.getSubstring().equals("")) return;
         }
-        child.setParent(this);
-        addChild(child);
-        if (child.isChildrenExceedBounds()) {
+        ib.setParent(this);
+        addChild(ib);
+        if (ib.isChildrenExceedBounds()) {
             setChildrenExceedBounds(true);
         }
     }
@@ -89,6 +84,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/01/06 09:49:38  tobega
+ * More cleanup, aiming to remove Content reference in box
+ *
  * Revision 1.7  2005/01/05 01:10:16  tobega
  * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
  *

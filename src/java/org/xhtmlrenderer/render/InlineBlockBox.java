@@ -24,6 +24,30 @@ public class InlineBlockBox extends InlineBox {
         super();
     }
 
+    public InlineBox copy() {
+        InlineBlockBox newBox = new InlineBlockBox();
+        InlineBlockBox box = this;
+        newBox.x = box.x;
+        newBox.y = box.y;
+        newBox.width = box.width;
+        newBox.height = box.height;
+        //border = box.border;
+        //margin = box.margin;
+        //padding = box.padding;
+        //color = box.color;
+        newBox.content = box.content;
+        newBox.sub_block = box.sub_block;
+        //font = box.font;
+        newBox.underline = box.underline;
+        newBox.overline = box.overline;
+        newBox.strikethrough = box.strikethrough;
+        return newBox;
+    }
+
+    public boolean isEndOfParentContent() {
+        return true;
+    }
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("InlineBlockBox:");

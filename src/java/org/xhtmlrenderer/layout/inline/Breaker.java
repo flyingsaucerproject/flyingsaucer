@@ -3,12 +3,13 @@ package org.xhtmlrenderer.layout.inline;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineTextBox;
 import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
 
 public class Breaker {
-    public static void breakText(Context c, InlineBox inline, InlineBox prev_align, int avail, int max, Font font) {
+    public static void breakText(Context c, InlineTextBox inline, InlineBox prev_align, int avail, int max, Font font) {
         boolean db = false;
         if (db) {
             Uu.p("=========================");

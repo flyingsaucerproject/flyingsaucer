@@ -3,7 +3,7 @@ package org.xhtmlrenderer.demo.browser.actions;
 import org.xhtmlrenderer.demo.browser.BrowserStartup;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineTextBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.swing.BasicPanel;
 
@@ -43,8 +43,8 @@ public class CopySelectionAction extends AbstractAction {
             if (root instanceof LineBox) {
                 sb.append("\n");
             }
-            if (root instanceof InlineBox) {
-                InlineBox ib = (InlineBox) root;
+            if (root instanceof InlineTextBox) {
+                InlineTextBox ib = (InlineTextBox) root;
                 int start = 0;
                 int end = ib.getSubstring().length();
                 if (ib == current) {

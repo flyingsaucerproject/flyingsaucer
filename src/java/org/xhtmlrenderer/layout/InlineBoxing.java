@@ -28,6 +28,7 @@ import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.*;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineTextBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
@@ -117,8 +118,9 @@ public class InlineBoxing {
             if (currentContent.getStyle() != null) c.pushStyle(currentContent.getStyle());
 
             // loop until no more text in this node
-            while (true) {
-
+            InlineBox new_inline;
+            do {
+                new_inline = null;
                 if (currentContent instanceof AbsolutelyPositionedContent) {
                     // Uu.p("this might be a problem, but it could just be an absolute block");
                     //     result = new BoxLayout().layout(c,content);
@@ -141,22 +143,23 @@ public class InlineBoxing {
 
                 // test if there is no more text in the current text node
                 // if there is a prev, and if the prev was part of this current node
-                if (prev_inline != null && prev_inline.content == currentContent) {
+                /*if (prev_inline != null && prev_inline.content == currentContent) {
                     if (isEndOfBlock(prev_inline, currentContent)) {
                         break;
                     }
-                }
+                }*/
 
                 currentStyle = c.getCurrentStyle();
 
                 // look at current inline
                 // break off the longest section that will fit
-                InlineBox new_inline = calculateInline(c, currentContent, remaining_width, bounds.width,
-                        prev_inline, prev_align_inline, isFirstLetter, box.firstLetterStyle, box.firstLineStyle);
+                new_inline = calculateInline(c, currentContent, remaining_width, bounds.width,
+                        prev_inline, prev_align_inline, isFirstLetter, box.firstLetterStyle, box.firstLineStyle,
+                        curr_line);
                 // Uu.p("got back inline: " + new_inline);
-                
+
                 // if this inline needs to be on a new line
-                if (prev_align_inline != null && new_inline.break_before && !new_inline.floated) {
+                if (prev_align_inline != null && new_inline.break_before /*&& !new_inline.floated*/) {
                     // Uu.p("break before");
                     remaining_width = bounds.width;
                     saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, false);
@@ -167,6 +170,7 @@ public class InlineBoxing {
                     //have to discard it and recalculate, particularly if this was the first line
                     //HACK: is my thinking straight? - tobe
                     prev_align_inline.break_after = true;
+                    new_inline = null;
                     continue;
                 }
 
@@ -176,8 +180,8 @@ public class InlineBoxing {
                 curr_line.addInlineChild(c, new_inline);
 
                 // skipp empty inlines
-                if (isNormalInline(currentContent)) {
-                    if (new_inline.getSubstring().equals("")) break;
+                if (new_inline instanceof InlineTextBox) {
+                    if (((InlineTextBox) new_inline).getSubstring().equals("")) break;
                 }
                 // Uu.p("current line = " + curr_line);
 
@@ -188,7 +192,7 @@ public class InlineBoxing {
 
                 // calc new height of the line
                 // don't count floats, absolutes, and inline-blocks
-                if (isNormalInline(currentContent)) {
+                if (new_inline instanceof InlineTextBox) {
                     adjustLineHeight(curr_line, new_inline);
                 }
 
@@ -221,7 +225,7 @@ public class InlineBoxing {
                 }
 
                 prev_inline = new_inline;
-            }
+            } while (new_inline != null && !new_inline.isEndOfParentContent());
 
             if (currentContent.getStyle() != null) c.popStyle();
 
@@ -268,27 +272,24 @@ public class InlineBoxing {
     }
 
 
-    private static boolean isEndOfBlock(InlineBox prev_inline, Content content) {
-        // replaced elements aren't split, so done with this one
-        if (content instanceof InlineBlockContent) {
-            return true;
-        }
-        if (content instanceof FloatedBlockContent) {
-            return true;
-        }
-        if (content instanceof AbsolutelyPositionedContent) {
-            return true;
-        }
-        /*if (c.getRenderingContext().getLayoutFactory().isBreak(current_node)) {//not needed with content
-            return true;
-        }*/
-        // if no more unused text in this node
-        // Uu.p("looking for skip to next node");
-        if (prev_inline.end_index >= prev_inline.getMasterText().length()) {
-            return true;
-        }
-        return false;
-    }
+    /*not needed private static boolean isEndOfBlock(InlineBox prev_inline, Content content) {
+         // replaced elements aren't split, so done with this one
+         if (content instanceof InlineBlockContent) {
+             return true;
+         }
+         if (content instanceof FloatedBlockContent) {
+             return true;
+         }
+         if (content instanceof AbsolutelyPositionedContent) {
+             return true;
+         }
+         // if no more unused text in this node
+         // Uu.p("looking for skip to next node");
+         if (prev_inline.end_index >= prev_inline.getMasterText().length()) {
+             return true;
+         }
+         return false;
+     } */
 
     public static void finishBlock(Box block, LineBox curr_line, Rectangle bounds) {
         bounds.height += curr_line.height;
@@ -299,7 +300,7 @@ public class InlineBoxing {
     }
 
 
-    public static boolean isNormalInline(Content currentContent) {
+    /*public static boolean isNormalInline(Content currentContent) {
         if (!(currentContent instanceof InlineBlockContent)) {
             if (!(currentContent instanceof FloatedBlockContent)) {
                 if (!(currentContent instanceof AbsolutelyPositionedContent)) {
@@ -308,7 +309,7 @@ public class InlineBoxing {
             }
         }
         return false;
-    }
+    }*/
 
     public static boolean isOutsideFlow(Content currentContent) {
         if (currentContent instanceof FloatedBlockContent) {
@@ -335,7 +336,8 @@ public class InlineBoxing {
      * @return Returns
      */
     private static InlineBox calculateInline(Context c, Content content, int avail, int max_width,
-                                             InlineBox prev, InlineBox prev_align, boolean isFirstLetter, CascadedStyle firstLetterStyle, CascadedStyle firstLineStyle) {
+                                             InlineBox prev, InlineBox prev_align, boolean isFirstLetter, CascadedStyle firstLetterStyle, CascadedStyle firstLineStyle,
+                                             LineBox curr_line) {
 
         if (c.isFirstLine() && firstLineStyle != null) c.pushStyle(firstLineStyle);
 
@@ -350,7 +352,7 @@ public class InlineBoxing {
             result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align);
         } else if (content instanceof FloatedBlockContent) {
             //Uu.p("calcinline: is floated block");
-            result = FloatUtil.generateFloatedBlockInlineBox(c, content, avail, prev_align, font);
+            result = FloatUtil.generateFloatedBlockInlineBox(c, content, avail, curr_line);
         } else {
 
             //OK, now we should have only TextContent left, fail fast if not
@@ -375,7 +377,7 @@ public class InlineBoxing {
             text = TextUtil.transformText(text, style);
             int end = text.length();
 
-            InlineBox inline = new InlineBox();
+            InlineTextBox inline = new InlineTextBox();
             inline.content = textContent;
 
             //Here we must set MasterText, it might have been restyled
@@ -453,6 +455,9 @@ public class InlineBoxing {
 * $Id$
 *
 * $Log$
+* Revision 1.4  2005/01/06 09:49:38  tobega
+* More cleanup, aiming to remove Content reference in box
+*
 * Revision 1.3  2005/01/06 00:58:41  tobega
 * Cleanup of code. Aiming to get rid of references to Content in boxes
 *

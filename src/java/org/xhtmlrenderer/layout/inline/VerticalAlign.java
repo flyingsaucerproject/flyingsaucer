@@ -17,12 +17,7 @@ public class VerticalAlign {
         // Uu.p("setup vert align: " + box);
         //Content content = box.content;
 
-        //not used: CalculatedStyle parent_style = c.css.getStyle(LineBreaker.getElement(parent));
-        Font parent_font = FontUtil.getFont(c, style);
-        LineMetrics parent_metrics = null;
-        String sample = "Test";
-        if (box.getSubstring() != null && !box.getSubstring().equals("")) sample = box.getSubstring();
-        parent_metrics = parent_font.getLineMetrics(sample, ((Graphics2D) c.getGraphics()).getFontRenderContext());
+        LineMetrics parent_metrics = FontUtil.getLineMetrics(c, box);
 
         // the height of the font
         float parent_height = parent_metrics.getHeight();

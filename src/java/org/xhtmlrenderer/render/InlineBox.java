@@ -19,9 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.layout.content.TextContent;
-import org.xhtmlrenderer.util.Uu;
-
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
@@ -32,29 +29,14 @@ import java.util.List;
  *
  * @author empty
  */
-public class InlineBox extends Box {
+public abstract class InlineBox extends Box {
 
     public InlineBox() {
     }
 
-    public InlineBox(InlineBox box) {
-        this();
-        x = box.x;
-        y = box.y;
-        width = box.width;
-        height = box.height;
-        //border = box.border;
-        //margin = box.margin;
-        //padding = box.padding;
-        //color = box.color;
-        content = box.content;
-        master = box.master;
-        sub_block = box.sub_block;
-        //font = box.font;
-        underline = box.underline;
-        overline = box.overline;
-        strikethrough = box.strikethrough;
-    }
+    public abstract InlineBox copy();
+
+    public abstract boolean isEndOfParentContent();
 
     //might need to push styles before rendering this box
     public List pushstyles;
@@ -157,8 +139,8 @@ public class InlineBox extends Box {
      */
     public String toString() {
 
-        return "InlineBox text = \"" + getSubstring() +
-                "\" bnds = " + x + "," + y + " - " + width + "Xx" + height +
+        return "InlineBox " +
+                "bnds = " + x + "," + y + " - " + width + "Xx" + height +
                 " start = " + this.start_index + " end = " + this.end_index +
                 " baseline = " + this.baseline + " vset = " + this.vset;// +
         // CLN: (PWW 13/08/04)
@@ -189,100 +171,6 @@ public class InlineBox extends Box {
     /*public void setFont(Font font) {
         this.font = font;
     }*/
-
-    /**
-     * Gets the substring attribute of the InlineBox object
-     *
-     * @return The substring value
-     */
-    public String getSubstring() {
-        // new code for whitepsace handling
-        if (getMasterText() != null) {
-            if (start_index == -1 || end_index == -1) {
-                throw new RuntimeException("negative index in InlineBox");
-                //return getMasterText();
-            }
-            if (end_index < start_index) {
-                throw new RuntimeException("end is less than start");
-                //Uu.p("warning: end is less than start: " + end_index + " < " + start_index);
-                //Uu.p("master = " + getMasterText());
-                //return getMasterText();
-            }
-            return getMasterText().substring(start_index, end_index);
-        } else {
-            if (content instanceof TextContent) {
-                throw new RuntimeException("No master text set!");
-                //XRLog.render(Level.WARNING, "No master text set!");
-            }
-            return "";
-        }
-
-    }
-
-// --Commented out by Inspection START (2005-01-05 01:07):
-//    /* not used: public void setSubstring(String text) {
-//        this.master = text;
-//        start_index = 0;
-//        end_index = text.length();
-//    }*/
-//    public int getStart_index() {
-//        return start_index;
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:07)
-
-// --Commented out by Inspection START (2005-01-05 01:07):
-//    public void setStart_index(int start_index) {
-//        this.start_index = start_index;
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:07)
-
-// --Commented out by Inspection START (2005-01-05 01:07):
-//    public int getEnd_index() {
-//        return end_index;
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:07)
-
-// --Commented out by Inspection START (2005-01-05 01:07):
-//    public void setEnd_index(int end_index) {
-//        this.end_index = end_index;
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:07)
-
-    public void setSubstring(int start, int end) {
-        if (end < start) {
-            Uu.p("setting substring to: " + start + " " + end);
-            throw new RuntimeException("set substring length too long: " + this);
-        } else if (end < 0 || start < 0) {
-            throw new RuntimeException("Trying to set negative index to inline box");
-        }
-        start_index = start;
-        end_index = end;
-    }
-
-// --Commented out by Inspection START (2005-01-05 01:07):
-//    public void setSubstringLength(int len) {
-//        end_index = start_index + len;
-//        if (end_index > getMasterText().length()) {
-//            Uu.p("just set substring length to : " + len);
-//            Uu.p("so indexes = " + start_index + " -> " + end_index);
-//            Uu.p("longer than master: " + getMasterText());
-//            throw new RuntimeException("set substring length too long: " + this);
-//        }
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:07)
-
-    private String master;
-
-    public void setMasterText(String master) {
-        //Uu.p("set master text to: \"" + master + "\"");
-        this.master = master;
-    }
-
-    public String getMasterText() {
-        return master;
-    }
-
-    public String whitespace = "normal";
 
     //TODO: find a way to find the font
     /*public int getTextIndex(int x, Graphics g) {
@@ -353,6 +241,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/01/06 09:49:38  tobega
+ * More cleanup, aiming to remove Content reference in box
+ *
  * Revision 1.29  2005/01/05 17:56:35  tobega
  * Reduced memory more, especially by using WeakHashMap for caching Mappers. Look over other caching to use similar schemes (cache when memory available).
  *

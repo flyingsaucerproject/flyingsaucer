@@ -22,7 +22,9 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
-import org.xhtmlrenderer.layout.content.*;
+import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
+import org.xhtmlrenderer.layout.content.StylePop;
+import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.util.GraphicsUtil;
 
 import java.awt.*;
@@ -108,19 +110,21 @@ public class InlineRendering {
     // They *are* drawn horizontally (Xx) relative to the origin of the
     // containing line box though
 
-    static void paintInline(Context c, InlineBox inline, int lx, int ly, LineBox line) {
+    static void paintInline(Context c, InlineBox ib, int lx, int ly, LineBox line) {
+
+        if (ib.floated) {
+            paintFloat(c, ib);
+            debugInlines(c, ib, lx, ly);
+            return;
+        }
         // Uu.p("paintInline: " + inline);
-        if (inline.content instanceof InlineBlockContent) {
-            paintReplaced(c, inline, line);
-            debugInlines(c, inline, lx, ly);
+        if (ib instanceof InlineBlockBox) {
+            paintReplaced(c, ib, line);
+            debugInlines(c, ib, lx, ly);
             return;
         }
 
-        if (inline.content instanceof FloatedBlockContent) {
-            paintFloat(c, inline);
-            debugInlines(c, inline, lx, ly);
-            return;
-        }
+        InlineTextBox inline = (InlineTextBox) ib;
 
         if (inline.pushstyles != null) {
             for (Iterator i = inline.pushstyles.iterator(); i.hasNext();) {
@@ -259,7 +263,7 @@ public class InlineRendering {
     }
 
 
-    public static void paintText(Context c, int lx, int ly, int ix, int iy, InlineBox inline) {
+    public static void paintText(Context c, int lx, int ly, int ix, int iy, InlineTextBox inline) {
         String text = inline.getSubstring();
         Graphics g = c.getGraphics();
         //adjust font for current settings
@@ -324,7 +328,7 @@ public class InlineRendering {
 
         int ty = line.baseline - inline.y - inline.height - padding_yoff + line.y;
 
-        LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), FontUtil.getFont(c), inline.getSubstring());
+        LineMetrics lm = FontUtil.getLineMetrics(c, inline);
         ty += (int) lm.getDescent();
         c.translate(-padding_xoff, ty);
         int old_width = inline.width;
