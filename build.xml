@@ -212,4 +212,24 @@
         </java>
     </target>
 
+    <target name="unit-tests" depends="diff-tests">
+    </target>
+
+    <target name="diff-tests" depends="core-jar">
+        <java classname="org.xhtmlrenderer.test.DocumentDiffTest" fork="true">
+            <classpath>
+                <fileset dir="lib"><include name="*.jar"/></fileset>
+                <fileset dir="build"><include name="*.jar"/></fileset>
+            </classpath>
+        </java>
+    </target>
+    <target name="generate-diff-tests" depends="core-jar">
+        <java classname="org.xhtmlrenderer.test.DocumentDiffGenerate" fork="true">
+            <classpath>
+                <fileset dir="lib"><include name="*.jar"/></fileset>
+                <fileset dir="build"><include name="*.jar"/></fileset>
+            </classpath>
+        </java>
+    </target>
+
 </project>

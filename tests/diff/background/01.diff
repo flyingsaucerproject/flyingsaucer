@@ -1,0 +1,8 @@
+box:-element:html-value:null-(0,0)-(200x52)
+ box:-element:head-value:null-(0,0)-(0x0)
+ box:-element:body-value:null-(0,0)-(200x52)
+  box:-element:p-value:null-(0,0)-(194x46)
+   line:-element:p-value:null-(0,0)-(178x19)
+    inline:-element:#text-value:this paragraph should be inside of a one pixel black border-(0,-3)-(178x16)
+   line:-element:p-value:null-(0,19)-(143x19)
+    inline:-element:#text-value:this paragraph should be inside of a one pixel black border-(0,-3)-(143x16)

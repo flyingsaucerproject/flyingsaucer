@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.awt.Dimension;
 import java.util.Iterator;
+import org.joshy.u;
 
 public class Box {
     // dimensions stuff
@@ -141,6 +142,12 @@ public class Box {
     public Element getElement() {
         return (Element)node;
     }
+    public Node getClosestNode() {
+        if(node != null) {
+            return node;
+        }
+        return getParent().getClosestNode();
+    }
     public boolean isElement() {
         if(node.getNodeType() == node.ELEMENT_NODE) {
             return true;
@@ -224,6 +231,23 @@ public class Box {
         if(this.border != null) { pd+= this.border.left; }
         return pd;
     }
+    
+    
+    public String getTestString() {
+        StringBuffer sb = new StringBuffer();
+        if(this instanceof LineBox) {
+            sb.append("line:");
+        } else if(this instanceof InlineBox) {
+            sb.append("inline:");
+        } else {
+            sb.append("box:");
+        }
+        sb.append("-element:"+this.getClosestNode().getNodeName());
+        sb.append("-value:"+this.getClosestNode().getNodeValue());
+        sb.append("-("+x+","+y+")-("+width+"x"+height+")");
+        return sb.toString();
+    }
+    
     
     public String toString() {
         StringBuffer sb = new StringBuffer();

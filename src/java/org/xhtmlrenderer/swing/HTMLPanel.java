@@ -59,6 +59,9 @@ public class HTMLPanel extends JPanel implements ComponentListener
    public Document doc;
    public Context c;
    public Box body_box = null;
+   public Box getRootBox() {
+       return body_box;
+   }
    private JScrollPane enclosingScrollPane;
    BodyLayout layout;
    private Dimension intrinsic_size;
