@@ -17,7 +17,7 @@ public class StyleMap {
  *
  * @author  Torbjörn Gannholm
  */
-    public class Mapper {
+    private class Mapper {
 
         /** Creates a new instance of Mapper */
         Mapper(java.util.List rulesets) {
@@ -32,9 +32,19 @@ public class StyleMap {
             descendantAxis.addAll(parent.descendantAxis);
         }
 
-        /** Maps the children of the given node */
-        void mapChildren(org.w3c.dom.Node node) {
-            org.w3c.dom.NodeList children = node.getChildNodes();
+        /** Maps the children of the given document */
+        void mapChildren(org.w3c.dom.Document doc) {
+            org.w3c.dom.NodeList children = doc.getChildNodes();
+            mapElements(children);
+        }
+
+        /** Maps the children of the given element */
+        private void mapChildren(org.w3c.dom.Element e) {
+            org.w3c.dom.NodeList children = e.getChildNodes();
+            mapElements(children);
+        }
+        
+        private void mapElements(org.w3c.dom.NodeList children) {
             for(int i=0; i<children.getLength(); i++) {
                 org.w3c.dom.Node child = children.item(i);
                 if(child.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
@@ -49,29 +59,29 @@ public class StyleMap {
                 java.util.List tmp = immediateSiblingAxis;
                 immediateSiblingAxis = null;//clear immediately because it is only relevant for this element
                 for(java.util.Iterator i = tmp.iterator(); i.hasNext();) {
-                    match((Ruleset.Selector) i.next(), e, childMapper);
+                    match((Selector) i.next(), e, childMapper);
                 }
             }
             for(java.util.Iterator i = childAxis.iterator(); i.hasNext();) {
-                match((Ruleset.Selector) i.next(), e, childMapper);
+                match((Selector) i.next(), e, childMapper);
             }
             for(java.util.Iterator i = descendantAxis.iterator(); i.hasNext();) {
-                match((Ruleset.Selector) i.next(), e, childMapper);
+                match((Selector) i.next(), e, childMapper);
             }
             link(e, childMapper);
             childMapper.mapChildren(e);
         }
         
-        private void match(Ruleset.Selector sel, org.w3c.dom.Element e, Mapper child) {
+        private void match(Selector sel, org.w3c.dom.Element e, Mapper child) {
             if(!sel.matches(e, _attRes)) return;
-            Ruleset.Selector chain = sel.getChainedSelector();
+            Selector chain = sel.getChainedSelector();
             if(chain == null) {
                 child.propertyDeclarations.addAll(sel.getRuleset().getPropertyDeclarations());
-            } else if(chain.getAxis() == Ruleset.Selector.CHILD_AXIS) {
+            } else if(chain.getAxis() == Selector.CHILD_AXIS) {
                 child.childAxis.add(chain);
-            } else if(chain.getAxis() == Ruleset.Selector.DESCENDANT_AXIS) {
+            } else if(chain.getAxis() == Selector.DESCENDANT_AXIS) {
                 child.descendantAxis.add(chain);
-            } else if(chain.getAxis() == Ruleset.Selector.IMMEDIATE_SIBLING_AXIS) {
+            } else if(chain.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
                 //add it to this mapper!
                 if(immediateSiblingAxis == null) immediateSiblingAxis = new java.util.LinkedList();
                 immediateSiblingAxis.add(chain);

@@ -48,18 +48,18 @@ public class StyleMapTest extends TestCase {
         java.util.List l = new java.util.LinkedList();
         
         Ruleset r = new Ruleset();
-        Ruleset.Selector s = r.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "root");
+        Selector s = r.createSelector(Selector.DESCENDANT_AXIS, "root");
         r.addPropertyDeclaration("rootProperty");
         l.add(r);
         
         r = new Ruleset();
-        s = r.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "first");
+        s = r.createSelector(Selector.DESCENDANT_AXIS, "first");
         r.addPropertyDeclaration("firstProperty");
         l.add(r);
         
         r = new Ruleset();
-        s = r.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "first");
-        s.appendChainedSelector(Ruleset.Selector.DESCENDANT_AXIS, "first");
+        s = r.createSelector(Selector.DESCENDANT_AXIS, "first");
+        s.appendChainedSelector(Selector.DESCENDANT_AXIS, "first");
         r.addPropertyDeclaration("firstfirstProperty");
         l.add(r);
         
@@ -105,20 +105,20 @@ public class StyleMapTest extends TestCase {
         java.util.List l = new java.util.LinkedList();
         
         Ruleset r = new Ruleset();
-        Ruleset.Selector s = r.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "root");
-        s.appendChainedSelector(Ruleset.Selector.CHILD_AXIS, "first");
+        Selector s = r.createSelector(Selector.DESCENDANT_AXIS, "root");
+        s.appendChainedSelector(Selector.CHILD_AXIS, "first");
         r.addPropertyDeclaration("childProperty");
         l.add(r);
         
         r = new Ruleset();
-        s = r.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "first");
-        s.appendChainedSelector(Ruleset.Selector.CHILD_AXIS, "first");
+        s = r.createSelector(Selector.DESCENDANT_AXIS, "first");
+        s.appendChainedSelector(Selector.CHILD_AXIS, "first");
         r.addPropertyDeclaration("firstChildProperty");
         l.add(r);
         
         r = new Ruleset();
-        s = r.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "root");
-        s.appendChainedSelector(Ruleset.Selector.CHILD_AXIS, "second");
+        s = r.createSelector(Selector.DESCENDANT_AXIS, "root");
+        s.appendChainedSelector(Selector.CHILD_AXIS, "second");
         r.addPropertyDeclaration("noChildProperty");
         l.add(r);
         
@@ -158,14 +158,14 @@ public class StyleMapTest extends TestCase {
         java.util.List l = new java.util.LinkedList();
         
         Ruleset r = new Ruleset();
-        Ruleset.Selector s = r.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "root");
-        s.appendChainedSelector(Ruleset.Selector.IMMEDIATE_SIBLING_AXIS, "first");
+        Selector s = r.createSelector(Selector.DESCENDANT_AXIS, "root");
+        s.appendChainedSelector(Selector.IMMEDIATE_SIBLING_AXIS, "first");
         r.addPropertyDeclaration("noProperty");
         l.add(r);
         
         r = new Ruleset();
-        s = r.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "first");
-        s.appendChainedSelector(Ruleset.Selector.IMMEDIATE_SIBLING_AXIS, "second");
+        s = r.createSelector(Selector.DESCENDANT_AXIS, "first");
+        s.appendChainedSelector(Selector.IMMEDIATE_SIBLING_AXIS, "second");
         r.addPropertyDeclaration("siblingProperty");
         l.add(r);
         

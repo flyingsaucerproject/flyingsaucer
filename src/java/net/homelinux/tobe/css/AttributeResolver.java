@@ -18,7 +18,7 @@ package net.homelinux.tobe.css;
  */
 public interface AttributeResolver {
     
-    /** may return null */
+    /** may return null. Required to return null if attribute does not exist and not null if attribute exists. */
     public String getAttributeValue(org.w3c.dom.Element e, String attrName);
     
     /** may return null */
