@@ -178,14 +178,6 @@ public class InlineLayout extends BoxLayout {
                         prev_inline, prev_align_inline, isFirstLetter, box.firstLetterStyle, box.firstLineStyle);
                 // Uu.p("got back inline: " + new_inline);
                 
-                // skipp empty inlines
-                if (isNormalInline(currentContent)) {
-                    if (new_inline.getSubstring().equals("")) break;
-                }
-                // Uu.p("current line = " + curr_line);
-
-                isFirstLetter = false;
-
                 // if this inline needs to be on a new line
                 if (new_inline.break_before && !new_inline.floated) {
                     // Uu.p("break before");
@@ -201,29 +193,32 @@ public class InlineLayout extends BoxLayout {
                     continue;
                 }
 
+                // save the new inline to the list
+                // Uu.p("adding inline child: " + new_inline);
+                //the inline might be discarded after this, if it is first whitespace on line.
+                curr_line.addInlineChild(c, new_inline);
+
+                // skipp empty inlines
+                if (isNormalInline(currentContent)) {
+                    if (new_inline.getSubstring().equals("")) break;
+                }
+                // Uu.p("current line = " + curr_line);
+
                 isFirstLetter = false;
                 new_inline.pushstyles = pendingPushStyles;
                 pendingPushStyles = null;
-
-                // save the new inline to the list
-                // Uu.p("adding inline child: " + new_inline);
-                curr_line.addInlineChild(c, new_inline);
 
 
                 // calc new height of the line
                 // don't count floats, absolutes, and inline-blocks
                 if (isNormalInline(currentContent)) {
                     adjustLineHeight(curr_line, new_inline);
+                    // calc new width of the line
+                    curr_line.width += new_inline.width;
                 } else if (currentContent instanceof FloatedBlockContent) {
-                    //HACK: tobe 2004-12-21, floats need to affext size of containing block, though
-                    //TODO: rethink float handling
-                    bounds.height += new_inline.height;
-                    //HACK: only handle "clear: both"
-                    curr_line.y += new_inline.height;
+                    //int leftFloat = c.getBlockFormattingContext().getLeftFloatDistance(curr_line);
+                    //curr_line.x += new_inline.width;
                 }
-
-                // calc new width of the line
-                curr_line.width += new_inline.width;
                 // reduce the available width
                 remaining_width = remaining_width - new_inline.width;
 
@@ -489,6 +484,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.68  2004/12/24 08:46:49  tobega
+* Starting to get some semblance of order concerning floats. Still needs more work.
+*
 * Revision 1.67  2004/12/21 20:20:28  tobega
 * More hack to make Alice look ok at least
 *

@@ -268,7 +268,7 @@ public class BoxLayout extends DefaultLayout {
             Content currentContent = (Content) o;
 
             Box child_box = null;
-            if (!(currentContent instanceof AnonymousBlockContent)) {
+            /*if (!(currentContent instanceof AnonymousBlockContent)) {
                 //TODO:handle run-ins. For now, treat them as blocks
                 Layout layout = c.getLayout(currentContent.getElement());
                 // update the counter for printing OL list items
@@ -285,7 +285,25 @@ public class BoxLayout extends DefaultLayout {
                 AnonymousBlockContent anonymous = (AnonymousBlockContent) currentContent;
                 Layout layout = new AnonymousBoxLayout();
                 child_box = layout.layout(c, anonymous);
+            } */
+            Layout layout;
+            if (!(currentContent instanceof AnonymousBlockContent)) {
+                //TODO:handle run-ins. For now, treat them as blocks
+                layout = c.getLayout(currentContent.getElement());
+            } else { //AnonymousBlockContent, fail fast if not
+                AnonymousBlockContent anonymous = (AnonymousBlockContent) currentContent;
+                layout = new AnonymousBoxLayout();
             }
+            // update the counter for printing OL list items
+            c.setListCounter(c.getListCounter() + 1);
+
+            // execute the layout and get the return bounds
+            //c.parent_box = box;
+            c.placement_point = new Point(0, box.height);
+            c.getBlockFormattingContext().translate(0, box.height);
+            child_box = layout.layout(c, currentContent);
+            c.getBlockFormattingContext().translate(0, -box.height);
+            child_box.list_count = c.getListCounter();
 
             box.addChild(child_box);
             // set the child_box location
@@ -355,6 +373,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.54  2004/12/24 08:46:49  tobega
+ * Starting to get some semblance of order concerning floats. Still needs more work.
+ *
  * Revision 1.53  2004/12/20 23:25:31  tobega
  * Cleaned up handling of absolute boxes and went back to correct use of anonymous boxes in ContentUtil
  *
