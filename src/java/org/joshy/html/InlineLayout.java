@@ -348,7 +348,7 @@ private void saveLine(LineBox line_to_save, LineBox prev_line, Element containin
     //line_to_save.x = x;
 
     // account for text-align
-    String text_align = c.css.getStringProperty(containing_block,"text-align");
+    String text_align = c.css.getStringProperty(containing_block,"text-align",true);
     //u.p("text-align = " + text_align);
     if(text_align != null) {
         if(text_align.equals("right")) {

@@ -2,7 +2,9 @@
 * {
 
     text-transform: none;
-    text-align: left;
+    /*
+    text-align: inherit;
+    */
     background-image: none;
     background-repeat: none;
     border-style: none;
@@ -54,6 +56,9 @@ body {
     margin: 0px;
     border-width: 0px;
     display: block;
+    text-align: left;
+    font-size: 12pt;
+
 }
 
 p {
@@ -62,7 +67,7 @@ p {
     padding-right: 3px;
     padding-bottom: 3px;
     padding-left: 3px;
-    text-align: left;
+    /*text-align: left;*/
     text-decoration: none;
 }
 

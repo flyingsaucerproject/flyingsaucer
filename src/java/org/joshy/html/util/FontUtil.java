@@ -135,9 +135,9 @@ public static Font getElementFont(Context c, Element el) {
 
     Element par = (Element)el.getParentNode();
 
-    float parent_size = c.css.getFloatProperty(par,"font-size");
+    float parent_size = c.css.getFloatProperty(par,"font-size",true);
 
-    float size = c.css.getFloatProperty(el,"font-size",parent_size);
+    float size = c.css.getFloatProperty(el,"font-size",parent_size,true);
 
 
 
