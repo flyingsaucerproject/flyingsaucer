@@ -402,6 +402,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/01/09 00:29:27  tobega
+ * Removed XPath usages from core classes. Also happened to find and fix a layout-bug that I introduced a while ago.
+ *
  * Revision 1.28  2005/01/07 00:29:27  tobega
  * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
  *

@@ -10,7 +10,7 @@ import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
-import java.awt.*;
+import java.awt.Image;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashMap;
@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
 /**
  * Represents a form object
  */
-public class XhtmlForm {
+class XhtmlForm {
     protected LinkedHashMap components = new LinkedHashMap();
 
     public JComponent addComponent(Context c, Element e) {

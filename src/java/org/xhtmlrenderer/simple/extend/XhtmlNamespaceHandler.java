@@ -21,9 +21,9 @@
 
 package org.xhtmlrenderer.simple.extend;
 
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.layout.Context;
@@ -33,7 +33,7 @@ import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Image;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -96,36 +96,17 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
         return href;
     }
 
-    //xpath needs prefix for element when namespace-aware
-    org.apache.xml.utils.PrefixResolver pres = new org.apache.xml.utils.PrefixResolver() {
-        public java.lang.String getNamespaceForPrefix(java.lang.String prefix) {
-            return _namespace;
-        }
-
-        public java.lang.String getNamespaceForPrefix(java.lang.String prefix,
-                                                      org.w3c.dom.Node context) {
-            return _namespace;
-        }
-
-        public java.lang.String getBaseIdentifier() {
-            return null;
-        }
-
-        public boolean handlesNullPrefixes() {
-            return true;
-        }
-    };
-
     public String getDocumentTitle(org.w3c.dom.Document doc) {
-        String title = "";
+        String title = "TITLE UNKNOWN";
         try {
-            //org.apache.xpath.objects.XObject xo = XPathAPI.eval(doc.getDocumentElement(), "//xh:head/xh:title/text()", pres);
-            org.apache.xpath.objects.XObject xo = XPathAPI.eval(doc.getDocumentElement(), "//head/title/text()");
-            org.w3c.dom.NodeList nl = xo.nodelist();
-            if (nl.getLength() == 0) {
-                System.err.println("Apparently no title element for this document.");
-                title = "TITLE UNKNOWN";
-            } else {
+            for (int i = 0; i < 1; i++) {//smart HACK
+                Element html = doc.getDocumentElement();
+                NodeList nl = html.getElementsByTagName("head");
+                if (nl.getLength() == 0) break;
+                nl = ((Element) nl.item(0)).getElementsByTagName("title");
+                if (nl.getLength() == 0) break;
+                nl = ((Element) nl.item(0)).getChildNodes();
+                if (nl.getLength() == 0) break;
                 title = nl.item(0).getNodeValue();
             }
         } catch (Exception ex) {
@@ -137,35 +118,34 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
 
     public InlineStyleInfo[] getInlineStyle(org.w3c.dom.Document doc) {
         List list = new ArrayList();
-        try {
-            //org.apache.xpath.objects.XObject xo = XPathAPI.eval(doc.getDocumentElement(), "//xh:style[@type='text/css']", pres);
-            //NOTE: type is required and we only handle css
-            org.apache.xpath.objects.XObject xo = XPathAPI.eval(doc.getDocumentElement(), "//style[@type='text/css']");
-            org.w3c.dom.NodeList nl = xo.nodelist();
-            for (int i = 0, len = nl.getLength(); i < len; i++) {
-                StringBuffer style = new StringBuffer();
-                org.w3c.dom.Element elem = (org.w3c.dom.Element) nl.item(i);
-                String m = elem.getAttribute("media");
-                if ("".equals(m)) m = "all";//default for HTML is "screen", but that is silly and firefox assumes "all"
-                StylesheetInfo info = new StylesheetInfo();
-                info.setMedia(m);
-                info.setType(elem.getAttribute("type"));//I'd be surprised if this was not text/css!
-                info.setTitle(elem.getAttribute("title"));
-                info.setOrigin(StylesheetInfo.AUTHOR);
-                org.w3c.dom.NodeList children = elem.getChildNodes();
-                for (int j = 0; j < children.getLength(); j++) {
-                    org.w3c.dom.Node txt = children.item(j);
-                    if (txt.getNodeType() == org.w3c.dom.Node.TEXT_NODE) {
-                        style.append(txt.getNodeValue());
-                    }
+        org.w3c.dom.NodeList nl = null;
+        for (int i = 0; i < 1; i++) {//smart HACK
+            Element html = doc.getDocumentElement();
+            nl = html.getElementsByTagName("head");
+            if (nl.getLength() == 0) break;
+            nl = ((Element) nl.item(0)).getElementsByTagName("style");
+        }
+        for (int i = 0, len = nl.getLength(); i < len; i++) {
+            StringBuffer style = new StringBuffer();
+            org.w3c.dom.Element elem = (org.w3c.dom.Element) nl.item(i);
+            String m = elem.getAttribute("media");
+            if ("".equals(m)) m = "all";//default for HTML is "screen", but that is silly and firefox seems to assume "all"
+            StylesheetInfo info = new StylesheetInfo();
+            info.setMedia(m);
+            info.setType(elem.getAttribute("type"));
+            info.setTitle(elem.getAttribute("title"));
+            info.setOrigin(StylesheetInfo.AUTHOR);
+            org.w3c.dom.NodeList children = elem.getChildNodes();
+            for (int j = 0; j < children.getLength(); j++) {
+                org.w3c.dom.Node txt = children.item(j);
+                if (txt.getNodeType() == org.w3c.dom.Node.TEXT_NODE) {
+                    style.append(txt.getNodeValue());
                 }
-                InlineStyleInfo isi = new InlineStyleInfo();
-                isi.setInfo(info);
-                isi.setStyle(style.toString());
-                list.add(isi);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            InlineStyleInfo isi = new InlineStyleInfo();
+            isi.setInfo(info);
+            isi.setStyle(style.toString());
+            list.add(isi);
         }
 
         InlineStyleInfo[] infos = new InlineStyleInfo[list.size()];
@@ -181,31 +161,31 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
         StylesheetInfo[] refs = super.getStylesheetLinks(doc);
         list.addAll(java.util.Arrays.asList(refs));
         //get the link elements
-        try {
-            //this namespace handling is horrible!
-            //org.apache.xpath.objects.XObject xo = XPathAPI.eval(doc.getDocumentElement(), "//xh:link[@type='text/css']/@xh:href", pres);
-            org.apache.xpath.objects.XObject xo = XPathAPI.eval(doc.getDocumentElement(), "//link[contains(@rel,'stylesheet')]");
-            org.w3c.dom.NodeList nl = xo.nodelist();
-            for (int i = 0, len = nl.getLength(); i < len; i++) {
-                StylesheetInfo info = new StylesheetInfo();
-                info.setOrigin(StylesheetInfo.AUTHOR);
-                org.w3c.dom.Element link = (org.w3c.dom.Element) nl.item(i);
-                String a = link.getAttribute("rel");
-                if (a.indexOf("alternate") != -1) continue;//DON'T get alternate stylesheets
-                a = link.getAttribute("type");
-                if ("".equals(a)) a = "text/css";//HACK: is not entirely correct because default may be set by META tag or HTTP headers
-                info.setType(a);
-                a = link.getAttribute("href");
-                info.setUri(a);
-                a = link.getAttribute("media");
-                if ("".equals(a)) a = "screen";//the default in HTML
-                info.setMedia(a);
-                a = link.getAttribute("title");
-                info.setTitle(a);
-                if (info.getType().equals("text/css")) list.add(info);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        org.w3c.dom.NodeList nl = null;
+        for (int i = 0; i < 1; i++) {//smart HACK
+            Element html = doc.getDocumentElement();
+            nl = html.getElementsByTagName("head");
+            if (nl.getLength() == 0) break;
+            nl = ((Element) nl.item(0)).getElementsByTagName("link");
+        }
+        for (int i = 0, len = nl.getLength(); i < len; i++) {
+            Element link = (Element) nl.item(i);
+            if (!link.getAttribute("rel").equals("stylesheet")) continue;
+            StylesheetInfo info = new StylesheetInfo();
+            info.setOrigin(StylesheetInfo.AUTHOR);
+            String a = link.getAttribute("rel");
+            if (a.indexOf("alternate") != -1) continue;//DON'T get alternate stylesheets
+            a = link.getAttribute("type");
+            if ("".equals(a)) a = "text/css";//HACK: is not entirely correct because default may be set by META tag or HTTP headers
+            info.setType(a);
+            a = link.getAttribute("href");
+            info.setUri(a);
+            a = link.getAttribute("media");
+            if ("".equals(a)) a = "screen";//the default in HTML
+            info.setMedia(a);
+            a = link.getAttribute("title");
+            info.setTitle(a);
+            if (info.getType().equals("text/css")) list.add(info);
         }
 
         refs = new StylesheetInfo[list.size()];

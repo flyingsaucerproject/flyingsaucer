@@ -21,8 +21,10 @@
 
 package org.xhtmlrenderer.swing;
 
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.ProcessingInstruction;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.layout.Context;
@@ -90,13 +92,16 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
         //get the processing-instructions (actually for XmlDocuments)
         //type and href are required to be set
         try {
-            org.w3c.dom.NodeList nl = XPathAPI.selectNodeList(doc.getDocumentElement(), "//processing-instruction('xml-stylesheet')");
+            NodeList nl = doc.getChildNodes();
             for (int i = 0, len = nl.getLength(); i < len; i++) {
+                Node node = nl.item(i);
+                if (node.getNodeType() != Node.PROCESSING_INSTRUCTION_NODE) continue;
+                ProcessingInstruction piNode = (ProcessingInstruction) node;
+                if (!piNode.getTarget().equals("xml-stylesheet")) continue;
                 StylesheetInfo info = new StylesheetInfo();
                 info = new StylesheetInfo();
                 info.setOrigin(StylesheetInfo.AUTHOR);
-                org.w3c.dom.Node piNode = nl.item(i);
-                String pi = piNode.getNodeValue();
+                String pi = piNode.getData();
                 Matcher m = _alternatePattern.matcher(pi);
                 if (m.matches()) {
                     int start = m.end();

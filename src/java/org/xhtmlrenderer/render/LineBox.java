@@ -59,7 +59,7 @@ public class LineBox extends Box {
                         whitespace.equals("pre-line"))
                     child.setSubstring(child.start_index + 1, child.end_index);
             }
-            if (child.getSubstring().equals("")) return;
+            //dangerous: we lose pushStyles! if (child.getSubstring().equals("")) return;
         }
         ib.setParent(this);
         addChild(ib);
@@ -84,6 +84,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/01/09 00:29:28  tobega
+ * Removed XPath usages from core classes. Also happened to find and fix a layout-bug that I introduced a while ago.
+ *
  * Revision 1.8  2005/01/06 09:49:38  tobega
  * More cleanup, aiming to remove Content reference in box
  *

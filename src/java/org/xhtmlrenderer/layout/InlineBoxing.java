@@ -34,7 +34,8 @@ import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -187,10 +188,10 @@ public class InlineBoxing {
                     continue;
                 }
 
-                if (new_inline instanceof InlineTextBox) {
+                /* not useful and may be harmful if (new_inline instanceof InlineTextBox) {
                     if (((InlineTextBox) new_inline).getSubstring().equals("")) break;
                     start = ((InlineTextBox) new_inline).end_index;
-                }
+                }*/
 
                 // save the new inline to the list
                 // Uu.p("adding inline child: " + new_inline);
@@ -471,6 +472,9 @@ public class InlineBoxing {
 * $Id$
 *
 * $Log$
+* Revision 1.7  2005/01/09 00:29:28  tobega
+* Removed XPath usages from core classes. Also happened to find and fix a layout-bug that I introduced a while ago.
+*
 * Revision 1.6  2005/01/07 12:42:08  tobega
 * Hacked improved support for custom components (read forms). Creates trouble with the image demo. Anyway, components work and are usually in the right place.
 *
