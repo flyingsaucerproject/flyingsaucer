@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import java.util.Iterator;
 
 
 /**
@@ -85,12 +86,26 @@ public class Stylesheet {
     void addRuleset(Ruleset r) {
         _rulesets.add(r);
     }
+
+    /**
+     * Set the imported stylesheet Rulesets to this stylesheet. Should usually only be called by StylesheetFactory.
+     * TODO: where do we keep track of @media? In Ruleset?
+     */
+    void addRulesets(Stylesheet s) {
+        for(Iterator i = s.getRulesets(); i.hasNext();) {
+            Ruleset r = (Ruleset) i.next();
+            _rulesets.add(r);
+        }
+    }
 } // end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/15 20:06:31  tobega
+ * Should now handle @import stylesheets, at least those with absolute urls
+ *
  * Revision 1.3  2004/11/15 19:46:14  tobega
  * Refactoring in preparation for handling @import stylesheets
  *

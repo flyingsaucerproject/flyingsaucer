@@ -22,11 +22,14 @@ package org.xhtmlrenderer.css.sheet;
 import org.w3c.css.sac.InputSource;
 import org.w3c.dom.css.CSSStyleRule;
 import org.w3c.dom.css.CSSStyleSheet;
+import org.w3c.dom.css.CSSImportRule;
 import com.steadystate.css.parser.CSSOMParser;
 
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+
+import java.io.Reader;
 
 
 /**
@@ -85,6 +88,20 @@ public class StylesheetFactory {
     }
 
     /**
+     * Description of the Method
+     *
+     * @param origin  PARAM
+     * @param uri  PARAM
+     * @return        Returns null if uri could not be loaded
+     * TODO: what about relative uris? what are they relative to? how resolve?
+     */
+    public Stylesheet parse( int origin, String uri ) {
+        Reader r = _userAgent.getReaderForURI(uri);
+        if(r != null) return parse(origin, r);
+        return null;
+    }
+
+    /**
      * Given the SAC sheet input, extracts all CSSStyleRules and loads Rulesets
      * from them.
      *
@@ -96,10 +113,20 @@ public class StylesheetFactory {
         org.w3c.dom.css.CSSRuleList rl = cssSheet.getCssRules();
         int nr = rl.getLength();
         for ( int i = 0; i < nr; i++ ) {
-            if ( rl.item( i ).getType() != org.w3c.dom.css.CSSRule.STYLE_RULE ) {
-                continue;
+            if ( rl.item( i ).getType() == org.w3c.dom.css.CSSRule.IMPORT_RULE ) {
+                //note: the steadystate parser does not fetch and load imported stylesheets
+                CSSImportRule cssir = (CSSImportRule) rl.item(i);
+                String href = cssir.getHref();
+                Stylesheet imported = getStylesheet(href);
+                if(imported == null) {
+                    imported = parse(stylesheet.getOrigin(), href);
+                    if(imported != null) putStylesheet(href, imported);
+                }
+                if(imported != null) stylesheet.addRulesets(imported);
             }
-            stylesheet.addRuleset( new Ruleset( (org.w3c.dom.css.CSSStyleRule)rl.item( i ), stylesheet.getOrigin() ) );
+            else if ( rl.item( i ).getType() == org.w3c.dom.css.CSSRule.STYLE_RULE ) {
+                stylesheet.addRuleset( new Ruleset( (org.w3c.dom.css.CSSStyleRule)rl.item( i ), stylesheet.getOrigin() ) );
+            }
         }
     }
 
@@ -148,6 +175,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/15 20:06:31  tobega
+ * Should now handle @import stylesheets, at least those with absolute urls
+ *
  * Revision 1.4  2004/11/15 19:46:14  tobega
  * Refactoring in preparation for handling @import stylesheets
  *
