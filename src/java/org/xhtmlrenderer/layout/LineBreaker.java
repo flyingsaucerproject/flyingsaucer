@@ -433,9 +433,6 @@ public class LineBreaker {
             }
         }
         
-        //CascadedStyle hover = c.css.getPseudoClassStyle(getNearestBlockElement(node,c),"hover");
-        //u.p("hover style = " + hover);
-        
         
 
         // adjust width based on borders and padding
@@ -529,6 +526,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/11/10 14:31:15  joshy
+ * removed commented out lines
+ *
  * Revision 1.17  2004/11/09 16:24:30  joshy
  * moved float code into separate class
  *
