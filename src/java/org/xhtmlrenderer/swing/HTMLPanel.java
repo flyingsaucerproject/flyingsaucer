@@ -41,7 +41,7 @@ import org.xhtmlrenderer.layout.*;
 
 import org.xhtmlrenderer.css.*;
 
-import org.xhtmlrenderer.css.DefaultCSSMarker;
+import org.xhtmlrenderer.DefaultCSSMarker;
 
 import java.awt.Graphics2D;
 
@@ -277,7 +277,8 @@ public class HTMLPanel extends JPanel implements ComponentListener {
             Object marker = new DefaultCSSMarker();
 
             //u.p("getting: " + marker.getClass().getResource("default.css"));
-            String def = "/resources/css/default.css";
+            //String def = "/resources/css/default.css";
+            String def = "default.css";
 
             if(marker.getClass().getResourceAsStream(def) != null) {
 

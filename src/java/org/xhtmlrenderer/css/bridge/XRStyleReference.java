@@ -66,9 +66,9 @@ import org.xhtmlrenderer.util.LoggerUtil;
 
 import com.steadystate.css.parser.CSSOMParser;
 
-import net.homelinux.tobe.css.AttributeResolver;
-import net.homelinux.tobe.css.Ruleset;
-import net.homelinux.tobe.css.StyleMap;
+import org.xhtmlrenderer.css.match.AttributeResolver;
+import org.xhtmlrenderer.css.match.Ruleset;
+import org.xhtmlrenderer.css.match.StyleMap;
 
 import org.apache.xpath.XPathAPI;
 
@@ -953,8 +953,8 @@ public class XRStyleReference implements StyleReference {
      * @param rs         The feature to be added to the ChainedSelector attribute
      * @param selector  The feature to be added to the ChainedSelector attribute
      */
-    private net.homelinux.tobe.css.Selector addSelector(Ruleset rs, Selector selector) {
-            net.homelinux.tobe.css.Selector s = null;
+    private org.xhtmlrenderer.css.match.Selector addSelector(Ruleset rs, Selector selector) {
+            org.xhtmlrenderer.css.match.Selector s = null;
             if ( selector.getSelectorType() == Selector.SAC_DIRECT_ADJACENT_SELECTOR ) {
                 s = addSelector(rs, ( (SiblingSelector)selector ).getSelector());
                 addChainedSelector(s, selector);
@@ -969,7 +969,7 @@ public class XRStyleReference implements StyleReference {
                 s = addSelector(rs, ( (ConditionalSelector)selector ).getSimpleSelector());
                 addConditions( s, cond );
             } else if ( selector.getSelectorType() == Selector.SAC_ELEMENT_NODE_SELECTOR ) {
-                s = rs.createSelector( net.homelinux.tobe.css.Selector.DESCENDANT_AXIS, ( (ElementSelector)selector ).getLocalName() );
+                s = rs.createSelector( org.xhtmlrenderer.css.match.Selector.DESCENDANT_AXIS, ( (ElementSelector)selector ).getLocalName() );
             } else System.err.println("bad selector in addSelector");
 
             return s;
@@ -984,7 +984,7 @@ public class XRStyleReference implements StyleReference {
      */
     // CLN: Taken from TobeRuleBank (PWW 08/07/2004)
     // Tobe fixed 2004-08-26
-    private void addChainedSelector( net.homelinux.tobe.css.Selector s, Selector selector ) {
+    private void addChainedSelector( org.xhtmlrenderer.css.match.Selector s, Selector selector ) {
         int axis = 0;
         SimpleSelector simple = null;
         switch ( selector.getSelectorType() ) {
@@ -1034,7 +1034,7 @@ public class XRStyleReference implements StyleReference {
         org.w3c.css.sac.SelectorList selector_list = rule.selectorsAsSACList();
 	for ( int i = 0; i < selector_list.getLength(); i++ ) {
             Selector selector = selector_list.item( i );
-            net.homelinux.tobe.css.Selector s = addSelector(rs, selector);
+            org.xhtmlrenderer.css.match.Selector s = addSelector(rs, selector);
         }
     }
 
@@ -1085,7 +1085,7 @@ public class XRStyleReference implements StyleReference {
      * @param cond  The feature to be added to the Conditions attribute
      */
     // CLN: Taken from TobeRuleBank (PWW 08/07/2004)
-    private void addConditions( net.homelinux.tobe.css.Selector s, Condition cond ) {
+    private void addConditions( org.xhtmlrenderer.css.match.Selector s, Condition cond ) {
         switch ( cond.getConditionType() ) {
             case Condition.SAC_AND_CONDITION:
                 CombinatorCondition comb = (CombinatorCondition)cond;
