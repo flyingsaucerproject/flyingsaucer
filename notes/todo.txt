@@ -4,12 +4,12 @@ checklist for the 0.03 release
 
 //suport the border shorthand: 1px solid black;
 //transparent background image bug
-fix image crop bug
+//fix image crop bug
+//htmlPanel option to set anti-aliasing
+//add page down to the browser
 ---
-htmlPanel option to set anti-aliasing
 cleanup html panel api (?)
 fix forms padding
-add page down to the browser
 view source on browser app
 -------
 cleanup the about API

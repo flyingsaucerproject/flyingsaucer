@@ -44,8 +44,8 @@ public class BrowserPanel extends JPanel {
         scroll.setVerticalScrollBarPolicy(scroll.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(scroll.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setPreferredSize(new Dimension(text_width,text_width));
-        scroll.getVerticalScrollBar().setBlockIncrement(10);
-        scroll.getVerticalScrollBar().setUnitIncrement(50);
+        scroll.getVerticalScrollBar().setBlockIncrement(100);
+        scroll.getVerticalScrollBar().setUnitIncrement(15);
         view.setViewportComponent(scroll);
         view.setJScrollPane(scroll);
         
@@ -104,6 +104,40 @@ public class BrowserPanel extends JPanel {
         reload.setAction(root.actions.reload);
         url.setAction(root.actions.load);
         updateButtons();
+        view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
+            put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN,0),"pagedown");
+        view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
+            put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP,0),"pageup");
+        view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
+            put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,0),"down");
+        view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
+            put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,0),"up");
+
+        view.getActionMap().put("pagedown",new AbstractAction() {
+            public void actionPerformed(ActionEvent evt) {
+                JScrollBar sb = scroll.getVerticalScrollBar();
+                sb.getModel().setValue(sb.getModel().getValue()+sb.getBlockIncrement());
+            }
+        });
+        view.getActionMap().put("pageup",new AbstractAction() {
+            public void actionPerformed(ActionEvent evt) {
+                JScrollBar sb = scroll.getVerticalScrollBar();
+                sb.getModel().setValue(sb.getModel().getValue()-sb.getBlockIncrement());
+            }
+        });
+        view.getActionMap().put("down",new AbstractAction() {
+            public void actionPerformed(ActionEvent evt) {
+                JScrollBar sb = scroll.getVerticalScrollBar();
+                sb.getModel().setValue(sb.getModel().getValue()+sb.getUnitIncrement());
+            }
+        });
+        view.getActionMap().put("up",new AbstractAction() {
+            public void actionPerformed(ActionEvent evt) {
+                JScrollBar sb = scroll.getVerticalScrollBar();
+                sb.getModel().setValue(sb.getModel().getValue()-sb.getUnitIncrement());
+            }
+        });
+        
     }
 
     
@@ -183,9 +217,9 @@ public class BrowserPanel extends JPanel {
         
         if(url_text.startsWith("demo:")) {
             DemoMarker marker = new DemoMarker();
-            u.p("marker = " + marker);
+            //u.p("marker = " + marker);
             String short_url = url_text.substring(5);
-            u.p("sub = " + short_url);
+            //u.p("sub = " + short_url);
             if(!short_url.startsWith("/")) {
                 short_url = "/" + short_url;
             }

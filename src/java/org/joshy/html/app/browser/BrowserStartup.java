@@ -66,8 +66,6 @@ public class BrowserStartup {
         menu.init();
         menu.createLayout();
         menu.createActions();
-        
-        
     }
     
     public static void main(String[] args) throws Exception { 

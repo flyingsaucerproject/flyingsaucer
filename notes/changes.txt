@@ -2,6 +2,9 @@
     fixed a few minor bugs in the sample about box html
     background-attachment no longer inherits
     changed default background-attachment to scroll
+    fixed bug where tiled backgrounds bleed out of the canvas
+    added boolean to control anti-aliasing
+    added page up/down and arrow up/down to the browser
 08/02/2004
     added normalization for "border: length style color"
     changed unit increment on the scroll bar to 50

@@ -128,13 +128,20 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         this.pane = pane;
     }
     
+    public void setAntiAliased(boolean anti_aliased) {
+        this.anti_aliased = anti_aliased;
+    }
+    private boolean anti_aliased = true;
+    
     public void paintComponent(Graphics g) {
         //g.setColor(Color.blue);
         //g.drawLine(0,0,50,50);
         //u.p("paint() size = " + this.getSize());
         //u.p("viewport size = " + this.viewport.getSize());
         //u.p("w/o scroll = " + this.viewport.getViewportBorderBounds());
-        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        if(anti_aliased) {
+            ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        }
         doPaint(g);
     }
 
