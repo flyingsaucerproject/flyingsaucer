@@ -43,8 +43,13 @@ public class ImageLayout extends BoxLayout {
         
         Image img = getImage(c,elem);
         // calculate new contents
-        block.width = img.getWidth(null);
-        block.height = img.getHeight(null);
+        if(img != null) {
+            block.width = img.getWidth(null);
+            block.height = img.getHeight(null);
+        } else {
+            block.width = 50;
+            block.height = 50;
+        }
         //Rectangle contents = new Rectangle(0,0,img.getWidth(null),img.getHeight(null));
                 /*
         block.width = this.getMargin(c,elem).left + this.getBorder(c,elem).left + this.getPadding(c,elem).left +
@@ -144,7 +149,9 @@ public class ImageLayout extends BoxLayout {
     
     public void paintComponent(Context c, Box box) {
         Image img = getImage(c,box.node);
-        c.getGraphics().drawImage(img,box.x,box.y,null);
+        if(img != null) {
+            c.getGraphics().drawImage(img,box.x,box.y,null);
+        }
     }
 
     /*

@@ -86,12 +86,14 @@ class BrowserMenuBar extends JMenuBar {
         add(view);
         
         demos.add(new LoadAction("Borders","demos/border.xhtml"));
+        demos.add(new LoadAction("Backgrounds","demos/background.xhtml"));
         demos.add(new LoadAction("Paragraph","demos/paragraph.xhtml"));
         demos.add(new LoadAction("Line Breaking","demos/breaking.xhtml"));
         demos.add(new LoadAction("Forms","demos/forms.xhtml"));
         demos.add(new LoadAction("Headers","demos/header.xhtml"));
         demos.add(new LoadAction("Nested Divs","demos/nested.xhtml"));
         demos.add(new LoadAction("Selectors","demos/selectors.xhtml"));
+        demos.add(new LoadAction("Images","demos/image.xhtml"));
             
         add(demos);
         
