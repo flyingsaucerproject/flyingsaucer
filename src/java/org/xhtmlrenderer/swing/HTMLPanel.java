@@ -231,6 +231,8 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
         // but that's the hit you get from using fixed layout
         if(body_box.isChildrenExceedBounds()) {
             setOpaque(false);
+        } else {
+            setOpaque(true);
         }
 
         getRenderingContext().root_box = body_box;
@@ -673,6 +675,15 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2004/11/12 20:54:08  joshy
+ * fixed bug where setOpaque would become false for a page with fixed content and then never
+ * become true again on another normal page
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.31  2004/11/12 18:51:01  joshy
  * fixed repainting issue for background-attachment: fixed
  * added static util methods and get minimum size to graphics 2d renderer
