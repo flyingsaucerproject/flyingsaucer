@@ -3,6 +3,8 @@ package org.xhtmlrenderer.layout;
 import org.w3c.dom.*;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.css.*;
+import org.w3c.dom.css.CSSPrimitiveValue;
+import org.w3c.dom.css.CSSValue;
 
 public class LayoutUtil {
 
@@ -210,4 +212,16 @@ public class LayoutUtil {
         }
         return false;
     }
+    
+    
+    public static boolean hasIdent(Context c, Element elem, String property, boolean inherit) {
+        CSSValue prop = c.css.getProperty(elem, property, inherit);
+        CSSPrimitiveValue pval = (CSSPrimitiveValue) prop;
+        //u.p("prim type = " + pval.getPrimitiveType());
+        if (pval.getPrimitiveType() == pval.CSS_IDENT) {
+            return true;
+        }
+        return false;
+    }
+
 }

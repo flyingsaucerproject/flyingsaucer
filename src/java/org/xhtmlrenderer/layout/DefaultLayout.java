@@ -85,6 +85,99 @@ public class DefaultLayout implements Layout {
         box.border_style = ctx.css.getStringProperty( box.getRealElement(), "border-top-style" );
         box.background_color = ctx.css.getBackgroundColor( box.getRealElement() );
     }
+    
+    
+    /* prepare box and it's support code. */
+    /**
+     * Pre-load the most common css properties into the box. Eventually
+     * we will need to depend on this code being here.
+     *
+     * @param box PARAM
+     * @param c   PARAM
+     */
+    public void prepareBox(Context c, Box box ) {
+        getBorder(c, box);
+        getPadding(c, box);
+        getMargin(c, box);
+        getBackgroundColor(c, box);
+    }
+    
+        /**
+     * Gets the listItem attribute of the BoxLayout object
+     *
+     * @param c   PARAM
+     * @param box PARAM
+     * @return The listItem value
+     */
+    public static boolean isListItem(Context c, Box box) {
+        String display = c.css.getStringProperty((Element) box.node, "display", false);
+        //u.p("display = " + display);
+        if (display.equals("list-item")) {
+            return true;
+        }
+        return false;
+    }
+
+    // === caching accessors =========
+    /**
+     * Gets the padding attribute of the BoxLayout object
+     *
+     * @param c   PARAM
+     * @param box PARAM
+     * @return The padding value
+     */
+    public static Border getPadding(Context c, Box box) {
+        if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
+            if (box.padding == null) {
+                box.padding = c.css.getPaddingWidth(box.getRealElement());
+            }
+        }
+        return box.padding;
+    }
+
+
+    /**
+     * Gets the margin attribute of the BoxLayout object
+     *
+     * @param c   PARAM
+     * @param box PARAM
+     * @return The margin value
+     */
+    public static Border getMargin(Context c, Box box) {
+        if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
+            if (box.margin == null) {
+                box.margin = c.css.getMarginWidth(box.getRealElement());
+            }
+        }
+        return box.margin;
+    }
+
+    public static Border getBorder(Context c, Box block) {
+        Border border = LayoutUtil.getBorder(c, block);
+        return border;
+    }
+    /**
+     * Gets the backgroundColor attribute of the BoxLayout object
+     *
+     * @param c   PARAM
+     * @param box PARAM
+     * @return The backgroundColor value
+     */
+    public static Color getBackgroundColor(Context c, Box box) {
+        if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
+            if (box.background_color == null) {
+                Object obj = c.css.getProperty(box.getRealElement(), "background-color", false);
+                //u.p("got : " + obj);
+                if (obj.toString().equals("transparent")) {
+                    box.background_color = new Color(0, 0, 0, 0);
+                    return box.background_color;
+                }
+                box.background_color = c.css.getBackgroundColor(box.getRealElement());
+            }
+        }
+        return box.background_color;
+    }
+
 
 }
 
@@ -92,6 +185,14 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2004/11/18 02:51:15  joshy
+ * moved more code out of the box into custom classes
+ * added more preload logic to the default layout's preparebox method
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.22  2004/11/18 02:37:25  joshy
  * moved most of default layout into layout util or box layout
  *
