@@ -11,11 +11,13 @@ public class BlockFormattingContext {
     private int width;
     private List left_floats, right_floats;
     private Map offset_map;
+    private List abs_bottom;
     public BlockFormattingContext(Box master) {
         this.master = master;
         left_floats = new ArrayList();
         right_floats = new ArrayList();
         offset_map = new HashMap();
+        abs_bottom = new ArrayList();
     }
     public Box getMaster() {
         return master;
@@ -206,6 +208,26 @@ public class BlockFormattingContext {
         }
         Point ptp = getAbsoluteCoords(box.getParent());
         return new Point(pt.x+ptp.x,pt.y+ptp.y);
+    }
+    
+    public void addAbsoluteBottomBox(Box box) {
+        abs_bottom.add(box);
+        offset_map.put(box,getOffset());
+    }
+    
+    
+    public void doFinalAdjustments() {
+        //u.p("Doing final adjustments: " + this);
+        //u.p("Final height = " + getHeight());
+        for(int i=0; i<abs_bottom.size(); i++) {
+            Box box = (Box)abs_bottom.get(i);
+            //u.p("finishing up box: " + box);
+            if(box.bottom_set) {
+                Point off = (Point)offset_map.get(box);
+                //u.p("offset = " + off);
+                box.y = getY() + getHeight() - box.height - box.top + off.y;
+            }
+        }
     }
     
     public String toString() {

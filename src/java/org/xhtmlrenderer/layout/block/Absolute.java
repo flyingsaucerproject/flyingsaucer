@@ -2,22 +2,10 @@ package org.xhtmlrenderer.layout.block;
 
 import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.util.*;
 
 public class Absolute {
     
-     public static void positionAbsoluteChild(Context c, Box child_box) {
-        BlockFormattingContext bfc = c.getBlockFormattingContext();
-        // handle the left and right
-        if(child_box.right_set) {
-            child_box.x = -bfc.getX() + bfc.getWidth() - child_box.right - child_box.width
-                          - bfc.getMaster().totalRightPadding();
-        } else {
-            child_box.x = bfc.getX() + child_box.left;
-        }
-        // handle the top
-        child_box.y = bfc.getY() + child_box.top;
-    }
-
     public static void setupAbsolute(Context c, Box box) {
         String position = LayoutUtil.getPosition(c, box);
         if (position.equals("absolute")) {
@@ -55,10 +43,12 @@ public class Absolute {
             */
             
             if (c.css.hasProperty(box.node, "bottom", false)) {
-                box.top = -(int) c.css.getFloatProperty(box.node, "bottom", 0, false);
+                box.top = (int) c.css.getFloatProperty(box.node, "bottom", 0, false);
+                box.bottom_set = true;
             }
             if (c.css.hasProperty(box.node, "top", false)) {
                 box.top = (int) c.css.getFloatProperty(box.node, "top", 0, false);
+                box.top_set = true;
             }
             box.setAbsolute(true);
             
@@ -69,4 +59,31 @@ public class Absolute {
         }
     }
     
+     public static void positionAbsoluteChild(Context c, Box child_box) {
+        BlockFormattingContext bfc = c.getBlockFormattingContext();
+        // handle the left and right
+        if(child_box.right_set) {
+            child_box.x = -bfc.getX() + bfc.getWidth() - child_box.right - child_box.width
+                          - bfc.getMaster().totalRightPadding();
+        } else {
+            child_box.x = bfc.getX() + child_box.left;
+        }
+        
+        // handle the top and bottom
+        if(child_box.bottom_set) {
+            // can't actually do this part yet, so save for later
+            bfc.addAbsoluteBottomBox(child_box);
+            /*
+            // bottom positioning
+            child_box.y = bfc.getY() + bfc.getHeight() - child_box.height - child_box.top + 50;
+            u.p("bfc = " + bfc);
+            u.p("bfc.height = " + bfc.getHeight());
+            u.p("final child box = " + child_box);
+            */
+        } else {
+            // top positioning
+            child_box.y = bfc.getY() + child_box.top;
+        }
+    }
+
 }

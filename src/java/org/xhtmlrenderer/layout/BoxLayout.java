@@ -138,6 +138,7 @@ public class BoxLayout extends DefaultLayout {
         this.contents_height = block.height;
         
         if (set_bfc) {
+            c.getBlockFormattingContext().doFinalAdjustments();
             c.setBlockFormattingContext(old_bfc);
         }
         
@@ -329,6 +330,15 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2004/11/18 19:10:04  joshy
+ * added bottom support to absolute positioning
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.25  2004/11/18 18:49:48  joshy
  * fixed the float issue.
  * commented out more dead code
