@@ -1,5 +1,5 @@
 /* this applies to all elements */
-* {
+html {
     /* type and positioning */
     display: inline;
     position: static;
