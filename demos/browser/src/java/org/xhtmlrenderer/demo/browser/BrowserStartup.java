@@ -19,121 +19,135 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.util.logging.Logger;
-import javax.swing.JFrame;
-
-import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.swing.HTMLPanel;
 import org.xhtmlrenderer.util.u;
+
+import javax.swing.*;
+import java.util.logging.Logger;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class BrowserStartup {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public BrowserPanel panel;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected BrowserMenuBar menu;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected JFrame frame;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected HistoryManager history;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected JFrame validation_console = null;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected BrowserActions actions;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected ValidationHandler error_handler = new ValidationHandler();
-    /** Description of the Field */
-    public static Logger logger = Logger.getLogger( "app.browser" );
+    /**
+     * Description of the Field
+     */
+    public static Logger logger = Logger.getLogger("app.browser");
 
-    /** Constructor for the BrowserStartup object */
+    /**
+     * Constructor for the BrowserStartup object
+     */
     public BrowserStartup() {
-        logger.info( "starting up" );
+        logger.info("starting up");
         history = new HistoryManager();
     }
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     public void init() {
-        logger.info( "creating UI" );
-        actions = new BrowserActions( this );
+        logger.info("creating UI");
+        actions = new BrowserActions(this);
         actions.init();
 
-        panel = new BrowserPanel( this, new FrameBrowserPanelListener() );
+        panel = new BrowserPanel(this, new FrameBrowserPanelListener());
         panel.init();
         panel.createLayout();
         panel.createActions();
 
-        menu = new BrowserMenuBar( this );
+        menu = new BrowserMenuBar(this);
         menu.init();
         menu.createLayout();
         menu.createActions();
 
         try {
-            panel.loadPage( "demo:demos/splash/splash.html" );
-        } catch ( Exception ex ) {
-            u.p( ex );
+            panel.loadPage("demo:demos/splash/splash.html");
+        } catch (Exception ex) {
+            u.p(ex);
         }
     }
 
     /**
      * The main program for the BrowserStartup class
      *
-     * @param args           The command line arguments
-     * @exception Exception  Throws
+     * @param args The command line arguments
+     * @throws Exception Throws
      */
-    public static void main( String[] args )
-        throws Exception {
+    public static void main(String[] args)
+            throws Exception {
         JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         BrowserStartup bs = new BrowserStartup();
         bs.frame = frame;
         bs.init();
-        frame.setJMenuBar( bs.menu );
-        frame.getContentPane().add( bs.panel );
+        frame.setJMenuBar(bs.menu);
+        frame.getContentPane().add(bs.panel);
         frame.pack();
-        frame.setSize( 600, 700 );
+        frame.setSize(600, 700);
         frame.show();
-        if ( args.length > 0 ) {
-            bs.panel.loadPage( args[0] );
+        if (args.length > 0) {
+            bs.panel.loadPage(args[0]);
         }
     }
 
     /**
      * Description of the Class
      *
-     * @author   empty
+     * @author empty
      */
     class FrameBrowserPanelListener implements BrowserPanelListener {
         /**
          * Description of the Method
          *
-         * @param url    PARAM
-         * @param title  PARAM
+         * @param url   PARAM
+         * @param title PARAM
          */
-        public void pageLoadSuccess( String url, String title ) {
-            frame.setTitle( title + ( title.length() > 0 ? " - " : "" ) + "Flying Saucer" );
+        public void pageLoadSuccess(String url, String title) {
+            frame.setTitle(title + (title.length() > 0 ? " - " : "") + "Flying Saucer");
         }
     }
 
 }
 
 
-
-
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/16 07:25:20  tobega
+ * Renamed HTMLPanel to BasicPanel
+ *
  * Revision 1.5  2004/11/16 03:43:25  joshy
  * first pass at printing support
  * Issue number:

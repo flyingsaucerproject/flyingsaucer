@@ -19,94 +19,100 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Container;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.io.*;
-import java.io.File;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.apache.xpath.XPathAPI;
-import org.xhtmlrenderer.css.bridge.TBStyleReference;
-import org.xhtmlrenderer.extend.*;
 import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
 import org.xhtmlrenderer.layout.BodyLayout;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.u;
-import org.xhtmlrenderer.util.x;
 import org.xml.sax.ErrorHandler;
-import java.awt.Shape;
+
+import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.io.File;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Description of the Class
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
-public abstract class HTMLPanel extends JPanel implements ComponentListener {
+public abstract class BasicPanel extends JPanel implements ComponentListener {
 
     //private int html_height = -1;
     //private int max_width = -1;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected Document doc = null;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected Box body_box = null;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected ErrorHandler error_handler;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected BodyLayout layout;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Map documentListeners;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private JScrollPane enclosingScrollPane;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Dimension intrinsic_size;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private boolean anti_aliased = true;
 
-    /** Constructor for the HTMLPanel object */
-    public HTMLPanel() {
+    /**
+     * Constructor for the BasicPanel object
+     */
+    public BasicPanel() {
 
         layout = new BodyLayout();
         layout_thread = new LayoutThread(this);
-        setLayout( new AbsoluteLayoutManager() );
+        setLayout(new AbsoluteLayoutManager());
         documentListeners = new HashMap();
     }
-    
+
     public void setThreadedLayout(boolean threaded) {
         layout_thread.setThreadedLayout(threaded);
     }
 
     protected RenderingContext ctx;
+
     public RenderingContext getRenderingContext() {
         return ctx;
     }
+
     public void setRenderingContext(RenderingContext ctx) {
         this.ctx = ctx;
     }
@@ -116,17 +122,19 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
      * component. If listener l is null, no exception is thrown and no action is
      * performed.
      *
-     * @param listener  Contains the DocumentListener for DocumentEvent data.
+     * @param listener Contains the DocumentListener for DocumentEvent data.
      */
-    public void addDocumentListener( DocumentListener listener ) {
-        this.documentListeners.put( listener, listener );
+    public void addDocumentListener(DocumentListener listener) {
+        this.documentListeners.put(listener, listener);
     }
 
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     public void resetScrollPosition() {
-        if ( this.enclosingScrollPane != null ) {
-            this.enclosingScrollPane.getVerticalScrollBar().setValue( 0 );
+        if (this.enclosingScrollPane != null) {
+            this.enclosingScrollPane.getVerticalScrollBar().setValue(0);
         }
     }
 
@@ -138,10 +146,10 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
     public void addNotify() {
         super.addNotify();
         Container p = getParent();
-        if ( p instanceof JViewport ) {
+        if (p instanceof JViewport) {
             Container vp = p.getParent();
-            if ( vp instanceof JScrollPane ) {
-                setEnclosingScrollPane( (JScrollPane)vp );
+            if (vp instanceof JScrollPane) {
+                setEnclosingScrollPane((JScrollPane) vp);
             }
         }
     }
@@ -152,35 +160,36 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
      */
     public void removeNotify() {
         super.removeNotify();
-        setEnclosingScrollPane( null );
+        setEnclosingScrollPane(null);
     }
 
 
     /**
      * Description of the Method
      *
-     * @param g  PARAM
+     * @param g PARAM
      */
-    public void paintComponent( Graphics g ) {
-        if ( anti_aliased ) {
+    public void paintComponent(Graphics g) {
+        if (anti_aliased) {
             //( (Graphics2D)g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         }
 
-        if ( doc == null ) {
+        if (doc == null) {
             return;
         }
 
         // if this is the first time painting this document, then calc layout
-        if ( body_box == null ) {
-            calcLayout( g );
+        if (body_box == null) {
+            calcLayout(g);
         }
 
-        newContext( (Graphics2D) g );
+        newContext((Graphics2D) g);
         layout_thread.startRender(g);
     }
 
 
-    /** Recalculate the layout of the panel. Normally
+    /**
+     * Recalculate the layout of the panel. Normally
      * developers should never need to call this. Call
      * repaint or validate instead.
      */
@@ -198,39 +207,40 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
      * Recalculate the layout of the panel. Only
      * called by paintComponent(). Use calcLayout() instead.
      *
-     * @param g  PARAM
+     * @param g PARAM
      */
-    protected void calcLayout( Graphics g ) {
+    protected void calcLayout(Graphics g) {
         layout_thread.startLayout(g);
     }
 
 
     protected LayoutThread layout_thread;
+
     public void startLayout(Graphics g) {
         this.removeAll();
-        if ( g == null ) {
+        if (g == null) {
             return;
         }
-        if ( doc == null ) {
+        if (doc == null) {
             return;
         }
 
-        Element html = (Element)doc.getDocumentElement();
+        Element html = (Element) doc.getDocumentElement();
         //Element body = x.child( html, "body" );
         //body = html;
 
         // set up CSS
-        newContext( (Graphics2D)g );
-        getContext().setMaxWidth( 0 );
+        newContext((Graphics2D) g);
+        getContext().setMaxWidth(0);
         //long start_time = new java.util.Date().getTime();
         //u.p("layout = " + layout);
         getRenderingContext().getTextRenderer().setupGraphics(getContext().getGraphics());
-        body_box = layout.layout( getContext(), html );
+        body_box = layout.layout(getContext(), html);
         //u.p("is a fixed child: " + body_box.isChildrenExceedBounds());
         // if there is a fixed child then we need to set opaque to false
         // so that the entire viewport will be repainted. this is slower
         // but that's the hit you get from using fixed layout
-        if(body_box.isChildrenExceedBounds()) {
+        if (body_box.isChildrenExceedBounds()) {
             setOpaque(false);
         } else {
             setOpaque(true);
@@ -240,44 +250,44 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
         //u.p("after layout: " + body_box);
         //long end_time = new java.util.Date().getTime();
 
-        if ( enclosingScrollPane != null ) {
-            if ( this.body_box != null ) {
-                this.enclosingScrollPane.getViewport().setBackground( body_box.background_color );
+        if (enclosingScrollPane != null) {
+            if (this.body_box != null) {
+                this.enclosingScrollPane.getViewport().setBackground(body_box.background_color);
             }
         }
 
-        intrinsic_size = new Dimension( getContext().getMaxWidth(), layout.contents_height );
-        if(enclosingScrollPane != null) {
+        intrinsic_size = new Dimension(getContext().getMaxWidth(), layout.contents_height);
+        if (enclosingScrollPane != null) {
             //u.p("enclosing scroll pane = " + this.enclosingScrollPane);
             int view_height = this.enclosingScrollPane.getViewport().getHeight();
         
             // resize the outter most box incase it is too small for the viewport
-            if(intrinsic_size.getHeight() < view_height) {
-                if(body_box != null) {
+            if (intrinsic_size.getHeight() < view_height) {
+                if (body_box != null) {
                     body_box.height = view_height;
                 }
             }
         }
-        
-        
-        if ( !intrinsic_size.equals( this.getSize() ) ) {
-            this.setPreferredSize( intrinsic_size );
+
+
+        if (!intrinsic_size.equals(this.getSize())) {
+            this.setPreferredSize(intrinsic_size);
             this.revalidate();
         }
 
         this.fireDocumentLoaded();
     }
-    
+
     public Dimension getIntrinsicSize() {
         return intrinsic_size;
     }
 
 
     boolean inside = false;
+
     protected void doRender() {
-        layout.getRenderer().paint(
-            getRenderingContext().getContext(),
-            body_box );
+        layout.getRenderer().paint(getRenderingContext().getContext(),
+                body_box);
     }
     /* ========= The box finding routines. Should probably move out to another
      class */
@@ -285,28 +295,28 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
     /**
      * Description of the Method
      *
-     * @param x  PARAM
-     * @param y  PARAM
-     * @return   Returns
+     * @param x PARAM
+     * @param y PARAM
+     * @return Returns
      */
-    public Box findBox( int x, int y ) {
-        return findBox( this.body_box, x, y );
+    public Box findBox(int x, int y) {
+        return findBox(this.body_box, x, y);
     }
 
     /**
      * Description of the Method
      *
-     * @param box  PARAM
-     * @param x    PARAM
-     * @param y    PARAM
-     * @return     Returns
+     * @param box PARAM
+     * @param x   PARAM
+     * @param y   PARAM
+     * @return Returns
      */
-    public Box findBox( Box box, int x, int y ) {
+    public Box findBox(Box box, int x, int y) {
 
-        if(box == null) return null;
+        if (box == null) return null;
         Iterator it = box.getChildIterator();
-        while ( it.hasNext() ) {
-            Box bx = (Box)it.next();
+        while (it.hasNext()) {
+            Box bx = (Box) it.next();
             int tx = x;
             int ty = y;
             tx -= bx.x;
@@ -316,21 +326,21 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
 
             // test the contents
             Box retbox = null;
-            retbox = findBox( bx, tx, ty );
-            if ( retbox != null ) {
+            retbox = findBox(bx, tx, ty);
+            if (retbox != null) {
                 return retbox;
             }
 
             // test the box itself
             int tty = y;
-            if ( bx instanceof InlineBox ) {
-                InlineBox ibx = (InlineBox)bx;
-                LineBox lbx = (LineBox)box;
+            if (bx instanceof InlineBox) {
+                InlineBox ibx = (InlineBox) bx;
+                LineBox lbx = (LineBox) box;
                 int off = lbx.baseline + ibx.y - ibx.height;
                 tty -= off;
             }
 
-            if ( bx.contains( x - bx.x, tty - bx.y ) ) {
+            if (bx.contains(x - bx.x, tty - bx.y)) {
                 return bx;
             }
         }
@@ -342,29 +352,29 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
     /**
      * Description of the Method
      *
-     * @param x  PARAM
-     * @param y  PARAM
-     * @return   Returns
+     * @param x PARAM
+     * @param y PARAM
+     * @return Returns
      */
-    public int findBoxX( int x, int y ) {
-        return findBoxX( this.body_box, x, y );
+    public int findBoxX(int x, int y) {
+        return findBoxX(this.body_box, x, y);
     }
 
 
     /**
      * Description of the Method
      *
-     * @param box  PARAM
-     * @param x    PARAM
-     * @param y    PARAM
-     * @return     Returns
+     * @param box PARAM
+     * @param x   PARAM
+     * @param y   PARAM
+     * @return Returns
      */
-    public int findBoxX( Box box, int x, int y ) {
+    public int findBoxX(Box box, int x, int y) {
         //u.p("findBox(" + box + " at ("+x+","+y+")");
         Iterator it = box.getChildIterator();
 
-        while ( it.hasNext() ) {
-            Box bx = (Box)it.next();
+        while (it.hasNext()) {
+            Box bx = (Box) it.next();
             int tx = x;
             int ty = y;
             tx -= bx.x;
@@ -373,15 +383,15 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
             ty -= bx.totalTopPadding();
 
             // test the contents
-            int retbox = findBoxX( bx, tx, ty );
-            if ( retbox != -1 ) {
+            int retbox = findBoxX(bx, tx, ty);
+            if (retbox != -1) {
                 return retbox;
             }
 
             int tty = y;
-            if ( bx instanceof InlineBox ) {
-                InlineBox ibx = (InlineBox)bx;
-                LineBox lbx = (LineBox)box;
+            if (bx instanceof InlineBox) {
+                InlineBox ibx = (InlineBox) bx;
+                LineBox lbx = (LineBox) box;
                 //u.p("inline = " + ibx);
                 //u.p("inline y = " + ibx.y);
                 //u.p("inline height = " + ibx.height);
@@ -393,7 +403,7 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
 
             // test the box itself
             //u.p("bx test = " + bx + " " + x +","+y);
-            if ( bx.contains( x - bx.x, tty - bx.y ) ) {
+            if (bx.contains(x - bx.x, tty - bx.y)) {
                 return x - bx.x;
             }
         }
@@ -404,169 +414,175 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
     /**
      * Description of the Method
      *
-     * @param e  PARAM
+     * @param e PARAM
      */
-    public void componentHidden( ComponentEvent e ) { }
+    public void componentHidden(ComponentEvent e) {
+    }
 
     /**
      * Description of the Method
      *
-     * @param e  PARAM
+     * @param e PARAM
      */
-    public void componentMoved( ComponentEvent e ) { }
+    public void componentMoved(ComponentEvent e) {
+    }
 
     /**
      * Description of the Method
      *
-     * @param e  PARAM
+     * @param e PARAM
      */
-    public void componentResized( ComponentEvent e ) {
+    public void componentResized(ComponentEvent e) {
         calcLayout();
     }
 
     /**
      * Description of the Method
      *
-     * @param e  PARAM
+     * @param e PARAM
      */
-    public void componentShown( ComponentEvent e ) { }
+    public void componentShown(ComponentEvent e) {
+    }
 
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     public void printTree() {
-        printTree( this.body_box, "" );
+        printTree(this.body_box, "");
     }
 
     /**
-     * Sets the documentRelative attribute of the HTMLPanel object
+     * Sets the documentRelative attribute of the BasicPanel object
      *
-     * @param filename       The new documentRelative value
-     * @exception Exception  Throws
+     * @param filename The new documentRelative value
+     * @throws Exception Throws
      */
-    protected void setDocumentRelative( String filename )
-        throws Exception {
-        if ( getContext() != null && ( !filename.startsWith( "http" ) ) ) {
-            URL base = new URL( getRenderingContext().getBaseURL(), filename );
-            XRLog.load( "Loading URL " + base );
-            Document dom = x.loadDocument( base );
+    protected void setDocumentRelative(String filename)
+            throws Exception {
+        if (getContext() != null && (!filename.startsWith("http"))) {
+            URL base = new URL(getRenderingContext().getBaseURL(), filename);
+            XRLog.load("Loading URL " + base);
+            Document dom = x.loadDocument(base);
             //URL base = new File(filename).toURL();
-            setDocument( dom, base );
+            setDocument(dom, base);
             return;
         }
-        setDocument( x.loadDocument( filename ), new File( filename ).toURL() );
+        setDocument(x.loadDocument(filename), new File(filename).toURL());
     }
-    
+
     public void setDocument(Document doc, URL url) {
         resetScrollPosition();
         this.doc = doc;
         this.url = url;
 
         //have to do this first
-        getRenderingContext().setBaseURL( url );
+        getRenderingContext().setBaseURL(url);
         StaticXhtmlAttributeResolver ar = new StaticXhtmlAttributeResolver() {
             public boolean isHover(org.w3c.dom.Element e) {
-                if(e == hovered_element) {
+                if (e == hovered_element) {
                     return true;
                 }
                 return false;
             }
         };
-        getRenderingContext().getStyleReference().setDocumentContext(
-                getContext(), new XhtmlNamespaceHandler(), ar, doc);
+        getRenderingContext().getStyleReference().setDocumentContext(getContext(), new XhtmlNamespaceHandler(), ar, doc);
 
         calcLayout();
         repaint();
     }
 
     /**
-     * Sets the errorHandler attribute of the HTMLPanel object
+     * Sets the errorHandler attribute of the BasicPanel object
      *
-     * @param error_handler  The new errorHandler value
+     * @param error_handler The new errorHandler value
      */
-    public void setErrorHandler( ErrorHandler error_handler ) {
+    public void setErrorHandler(ErrorHandler error_handler) {
         this.error_handler = error_handler;
     }
 
 
     protected URL url;
+
     public URL getURL() {
         return this.url;
     }
-    
 
 
     /**
-     * Sets the antiAliased attribute of the HTMLPanel object
+     * Sets the antiAliased attribute of the BasicPanel object
      *
-     * @param anti_aliased  The new antiAliased value
+     * @param anti_aliased The new antiAliased value
      */
-    public void setAntiAliased( boolean anti_aliased ) {
+    public void setAntiAliased(boolean anti_aliased) {
         this.anti_aliased = anti_aliased;
     }
 
 
     /**
-     * Sets the size attribute of the HTMLPanel object
+     * Sets the size attribute of the BasicPanel object
      *
-     * @param d  The new size value
+     * @param d The new size value
      */
-    public void setSize( Dimension d ) {
+    public void setSize(Dimension d) {
         //u.p("set size called");
-        super.setSize( d );
+        super.setSize(d);
         this.calcLayout();
     }
 
     /**
-     * Gets the rootBox attribute of the HTMLPanel object
+     * Gets the rootBox attribute of the BasicPanel object
      *
-     * @return   The rootBox value
+     * @return The rootBox value
      */
     public Box getRootBox() {
         return body_box;
     }
 
     /**
-     * Gets the context attribute of the HTMLPanel object
+     * Gets the context attribute of the BasicPanel object
      *
-     * @return   The context value
+     * @return The context value
      */
     public Context getContext() {
         return getRenderingContext().getContext();
     }
-    
+
     public Document getDocument() {
         return doc;
     }
 
     /**
-     * Gets the documentTitle attribute of the HTMLPanel object
+     * Gets the documentTitle attribute of the BasicPanel object
      *
-     * @return   The documentTitle value
+     * @return The documentTitle value
      */
     public String getDocumentTitle() {
         String title = "";
         try {
             Element root = this.doc.getDocumentElement();
             Node node =
-                    (Node)XPathAPI.selectSingleNode( root, "//head/title/text()" );
-            if ( node == null ) {
-                XRLog.exception( "Apparently no title element for this document." );
+                    (Node) XPathAPI.selectSingleNode(root, "//head/title/text()");
+            if (node == null) {
+                XRLog.exception("Apparently no title element for this document.");
                 title = "TITLE UNKNOWN";
             } else {
                 title = node.getNodeValue();
             }
-        } catch ( Exception ex ) {
-            XRLog.exception( "Error retrieving document title. " + ex.getMessage() );
+        } catch (Exception ex) {
+            XRLog.exception("Error retrieving document title. " + ex.getMessage());
             title = "";
         }
         return title;
     }
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     protected void fireDocumentLoaded() {
         Iterator it = this.documentListeners.keySet().iterator();
-        while ( it.hasNext() ) {
-            DocumentListener list = (DocumentListener)it.next();
+        while (it.hasNext()) {
+            DocumentListener list = (DocumentListener) it.next();
             list.documentLoaded();
         }
     }
@@ -575,29 +591,29 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
     /**
      * Description of the Method
      *
-     * @param url            PARAM
-     * @return               Returns
-     * @exception Exception  Throws
+     * @param url PARAM
+     * @return Returns
+     * @throws Exception Throws
      */
-    protected Document loadDocument( final URL url )
-        throws Exception {
+    protected Document loadDocument(final URL url)
+            throws Exception {
         /*
          * XRDocument xrDoc = XRDocumentFactory.loadDocument(null, url);
          * return xrDoc.getDOMDocument();
          */
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = fact.newDocumentBuilder();
-        builder.setErrorHandler( error_handler );
-        return builder.parse( url.openStream() );
+        builder.setErrorHandler(error_handler);
+        return builder.parse(url.openStream());
     }
 
 
     /**
      * Description of the Method
      *
-     * @param g  PARAM
+     * @param g PARAM
      */
-    private void newContext( Graphics2D g ) {
+    private void newContext(Graphics2D g) {
         //u.p("new context begin");
         //Point origin = new Point( 0, 0 );
         //Point last = new Point( 0, 0 );
@@ -608,17 +624,17 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
         //c.canvas_graphics = g.create();
         //c.setExtents(new Rectangle(0,0,this.getWidth(),this.getHeight()));
         //u.p("viewport size = " + viewport.getSize());
-        if ( enclosingScrollPane != null ) {
+        if (enclosingScrollPane != null) {
             Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
-            getContext().setExtents( new Rectangle( 0,0, bnds.width, bnds.height) );
+            getContext().setExtents(new Rectangle(0, 0, bnds.width, bnds.height));
         } else {
-            getContext().setExtents( new Rectangle( getWidth(), getHeight() ) );//200, 200 ) );
+            getContext().setExtents(new Rectangle(getWidth(), getHeight()));//200, 200 ) );
         }
 
         //getContext().setExtents(new Rectangle(0,0,viewport.getWidth(),viewport.getHeight()));
         getContext().viewport = this.enclosingScrollPane;
         //getContext().cursor = last;
-        getContext().setMaxWidth( 0 );
+        getContext().setMaxWidth(0);
         //u.p("new context end");
         //u.p("c = " + c);
     }
@@ -626,21 +642,21 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
     /**
      * Description of the Method
      *
-     * @param box  PARAM
-     * @param tab  PARAM
+     * @param box PARAM
+     * @param tab PARAM
      */
-    private void printTree( Box box, String tab ) {
+    private void printTree(Box box, String tab) {
         //u.p( tab + "Box = " + box );
         Iterator it = box.getChildIterator();
-        while ( it.hasNext() ) {
-            Box bx = (Box)it.next();
-            printTree( bx, tab + " " );
+        while (it.hasNext()) {
+            Box bx = (Box) it.next();
+            printTree(bx, tab + " ");
         }
 
-        if ( box instanceof InlineBox ) {
-            InlineBox ib = (InlineBox)box;
-            if ( ib.sub_block != null ) {
-                printTree( ib.sub_block, tab + " " );
+        if (box instanceof InlineBox) {
+            InlineBox ib = (InlineBox) box;
+            if (ib.sub_block != null) {
+                printTree(ib.sub_block, tab + " ");
             }
         }
     }
@@ -650,25 +666,26 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
      * ensure that any enclosing {@link JScrollPane} works correctly with this
      * panel. This method can be safely invoked with a <tt>null</tt> scrollPane.
      *
-     * @param scrollPane  the enclosing {@link JScrollPane} or <tt>null</tt> if
-     *      the panel is no longer enclosed in a {@link JScrollPane}.
+     * @param scrollPane the enclosing {@link JScrollPane} or <tt>null</tt> if
+     *                   the panel is no longer enclosed in a {@link JScrollPane}.
      */
-    private void setEnclosingScrollPane( JScrollPane scrollPane ) {
+    private void setEnclosingScrollPane(JScrollPane scrollPane) {
         // if a scrollpane is already installed we remove it.
-        if ( enclosingScrollPane != null ) {
-            enclosingScrollPane.removeComponentListener( this );
+        if (enclosingScrollPane != null) {
+            enclosingScrollPane.removeComponentListener(this);
         }
 
         enclosingScrollPane = scrollPane;
 
-        if ( enclosingScrollPane != null ) {
-            enclosingScrollPane.addComponentListener( this );
+        if (enclosingScrollPane != null) {
+            enclosingScrollPane.addComponentListener(this);
         }
     }
+
     public Rectangle getFixedRectangle() {
         return enclosingScrollPane.getViewportBorderBounds();
     }
-    
+
     public Element hovered_element = null;
 }
 
@@ -676,6 +693,9 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.1  2004/11/16 07:25:13  tobega
+ * Renamed HTMLPanel to BasicPanel
+ *
  * Revision 1.33  2004/11/14 21:33:49  joshy
  * new font rendering interface support
  * Issue number:
@@ -824,7 +844,7 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
  * removed debugging code
  *
  * Revision 1.11  2004/10/26 00:13:14  joshy
- * added threaded layout support to the HTMLPanel
+ * added threaded layout support to the BasicPanel
  *
  *
  * Issue number:
