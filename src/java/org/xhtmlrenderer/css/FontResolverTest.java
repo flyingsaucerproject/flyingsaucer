@@ -24,6 +24,7 @@ import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.u;
+import java.awt.Toolkit;
 
 /**
  * Description of the Class
@@ -91,7 +92,7 @@ public class FontResolverTest extends FontResolver {
         // if we get here then no font worked, so just return default sans
         //u.p("pulling out: -" + available_fonts_hash.get("SansSerif") + "-");
         try {
-            Font fnt = createFont( (Font)available_fonts_hash.get( "SansSerif" ), size, weight, style, variant );
+            Font fnt = createFont(c, (Font)available_fonts_hash.get( "SansSerif" ), size, weight, style, variant );
             instance_hash.put( getFontInstanceHashName( "SansSerif", size, weight, style, variant ), fnt );
             //u.p("subbing in base sans : " + fnt);
             return fnt;
@@ -111,7 +112,9 @@ public class FontResolverTest extends FontResolver {
      * @param style      PARAM
      * @return           Returns
      */
-    protected Font createFont( Font root_font, float size, String weight, String style, String variant ) {
+    protected Font createFont(Context c, Font root_font, float size, String weight, String style, String variant ) {
+        //u.p("creating font: " + root_font + " size = " + size + 
+        //    " weight = " + weight + " style = " + style + " variant = " + variant);
         int font_const = Font.PLAIN;
         if ( weight != null && weight.equals( "bold" ) ) {
             font_const = font_const | Font.BOLD;
@@ -119,7 +122,14 @@ public class FontResolverTest extends FontResolver {
         if ( style != null && style.equals( "italic" ) ) {
             font_const = font_const | Font.ITALIC;
         }
-
+        
+        // scale relative to java's default 72.0 dpi
+        float dpi = c.getRenderingContext().getDPI();
+        float dpiscale = dpi/72f;
+        // scale vs font scale value too
+        float scale = c.getRenderingContext().getTextRenderer().getFontScale();
+        
+        size = size * dpiscale * scale;
         Font fnt = root_font.deriveFont( font_const, size );
         if ( variant != null) {
             if( variant.equals("small-caps")) {
@@ -190,7 +200,7 @@ public class FontResolverTest extends FontResolver {
             }
 
             // now that we have a root font, we need to create the correct version of it
-            Font fnt = createFont( root_font, size, weight, style, variant );
+            Font fnt = createFont(c, root_font, size, weight, style, variant );
 
             // add the font to the hash so we don't have to do this again
             instance_hash.put( font_instance_name, fnt );
@@ -219,6 +229,14 @@ public class FontResolverTest extends FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/15 16:33:29  joshy
+ * added font scaling support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/11/12 02:23:56  joshy
  * added new APIs for rendering context, xhtmlpanel, and graphics2drenderer.
  * initial support for font mapping additions

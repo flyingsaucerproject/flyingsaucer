@@ -45,7 +45,12 @@ public class MiniumTextRenderer implements TextRenderer {
         return renderer.getLogicalBounds(graphics,font,string);
     }
 
+    protected float scale = 1.0f;
     public void setFontScale(float scale) {
+        this.scale = scale;
+    }
+    public float getFontScale() {
+        return this.scale;
     }
 
     /* set to -1 for no antialiasing. set to 0 for all antialising.

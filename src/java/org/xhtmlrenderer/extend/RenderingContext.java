@@ -73,7 +73,7 @@ public class RenderingContext {
     /* uses system default by default (can we get that?) */
     /* this should fix the reason firefox looks different */
     
-    private float dpi = 72;
+    private float dpi = Toolkit.getDefaultToolkit().getScreenResolution();
     
     public void setDPI(float dpi) {
         this.dpi = dpi;

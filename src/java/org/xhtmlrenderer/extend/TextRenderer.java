@@ -12,6 +12,7 @@ public interface TextRenderer {
     public LineMetrics getLineMetrics(Graphics2D graphics, Font font, String string);
     public Rectangle2D getLogicalBounds(Graphics2D graphics, Font font, String string);
     public void setFontScale(float scale);
+    public float getFontScale();
 
     /* set to -1 for no antialiasing. set to 0 for all antialising.
     else, set to the threshold font size. does not take font scaling
