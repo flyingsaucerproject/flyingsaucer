@@ -159,7 +159,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
             //u.p("bad first graphics");
             return;
         }
-        u.p("layout");
+        //u.p("layout");
         //u.p("size = " + this.getSize());
         //u.dump_stack();
         if(doc == null) { return; }

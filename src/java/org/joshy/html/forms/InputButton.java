@@ -16,7 +16,7 @@ public class InputButton extends FormItemLayout {
     }
     
     public JComponent createComponent(Element elem) {
-        u.p("created a button");
+        //u.p("created a button");
         JButton comp = new JButton();
         String label = elem.getAttribute("value");
         comp.setText(label);
