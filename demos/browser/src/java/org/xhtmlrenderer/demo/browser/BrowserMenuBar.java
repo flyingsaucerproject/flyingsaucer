@@ -145,6 +145,7 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add( new LoadAction( "Images", "demo:demos/image.xhtml" ) );
         demos.add( new LoadAction( "Lists", "demo:demos/list.xhtml" ) );
         //demos.add( new LoadAction( "Tables", "demo:demos/table.xhtml"));
+        demos.add( new LoadAction( "Link", "demo:demos/link.xhtml"));
         demos.add( new LoadAction( "Hamlet", "demo:demos/hamlet.xhtml"));
         demos.add( new LoadAction( "Alice", "demo:demos/alice/alice.xhtml"));
         demos.add( new LoadAction( "Financial Report", "demo:demos/report.xhtml"));
@@ -488,10 +489,8 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
- * Revision 1.19  2004/11/17 00:44:54  joshy
- * fixed bug in the history manager
- * added cursor support to the link listener
- *
+ * Revision 1.20  2004/11/17 00:45:58  joshy
+ * added link demo
  *
  * Issue number:
  * Obtained from:
