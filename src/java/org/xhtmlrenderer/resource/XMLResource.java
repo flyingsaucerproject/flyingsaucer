@@ -23,7 +23,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
-import javax.xml.parsers.SAXParserFactory; 
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.parsers.SAXParser;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -152,6 +153,16 @@ public class XMLResource extends AbstractResource {
             }
         }
         if ( xmlReader == null ) {
+			try {
+				XRLog.load(Level.WARNING, "falling back on the default parser");
+				SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+				xmlReader = parser.getXMLReader();
+				xmlReaderClass = "SAXParserFactory default";
+            } catch ( Exception ex ) {
+                XRLog.general(ex.getMessage());
+            }
+        }
+        if ( xmlReader == null ) {
             throw new XRRuntimeException("Could not instantiate any SAX 2 parser, including JDK default. " +
                     "The name of the class to use should have been read from the org.xml.sax.driver System " +
                     "property, which is set to: " + System.getProperty("org.xml.sax.driver"));
@@ -272,6 +283,16 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/04/03 21:51:31  joshy
+ * fixed code that gets the XMLReader on the mac
+ * added isMacOSX() to GeneralUtil
+ * added app name and single menu bar to browser
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.7  2005/03/28 18:33:03  pdoubleya
  * Don't show stack trace if XML can't be loaded.
  *

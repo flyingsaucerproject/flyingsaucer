@@ -24,7 +24,7 @@ import org.xhtmlrenderer.util.Uu;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.logging.Logger;
-
+import org.xhtmlrenderer.util.GeneralUtil;
 
 /**
  * Description of the Class
@@ -109,8 +109,13 @@ public class BrowserStartup {
      */
     public static void main(String[] args)
             throws Exception {
-                //System.out.println(new URI("images/Stop24.gif"));
-        JFrame frame = new JFrame();
+		if(GeneralUtil.isMacOSX()) {
+			 System.setProperty("apple.laf.useScreenMenuBar", "true");
+			 System.setProperty("com.apple.mrj.application.apple.menu.about.name","FS Browser");
+		}
+		
+		//System.out.println(new URI("images/Stop24.gif"));
+		JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         final BrowserStartup bs = new BrowserStartup();
         bs.frame = frame;
@@ -156,6 +161,16 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/04/03 21:51:31  joshy
+ * fixed code that gets the XMLReader on the mac
+ * added isMacOSX() to GeneralUtil
+ * added app name and single menu bar to browser
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.10  2005/03/28 19:18:47  pdoubleya
  * Fixed to update layout on resize.
  *

@@ -182,12 +182,29 @@ public class GeneralUtil {
         }
         return s;
     }
+	
+	public static boolean isMacOSX() {
+		if(System.getProperty("os.name").toLowerCase().startsWith("mac os x")) {
+			return true;
+		}
+		return false;
+	}
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/04/03 21:51:31  joshy
+ * fixed code that gets the XMLReader on the mac
+ * added isMacOSX() to GeneralUtil
+ * added app name and single menu bar to browser
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2005/02/02 11:17:18  pdoubleya
  * Added trackBack() method.
  *
