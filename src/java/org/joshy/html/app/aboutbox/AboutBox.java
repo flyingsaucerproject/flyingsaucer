@@ -19,6 +19,7 @@ public class AboutBox extends JDialog implements Runnable {
     
     public AboutBox(String text, String url) {
         super();
+        u.p("starting the about box");
         setTitle(text);
         HTMLPanel panel = new HTMLPanel();
         int w = 400;
