@@ -117,7 +117,8 @@ public class ImageLayout extends BoxLayout {
     */
     
     public void paint(Context c, Box box) {
-        InlineBox block = (InlineBox)box;
+        //u.p("box = " + box);
+        Box block = box;
         // set the contents size
         //Rectangle contents = layout(c,elem);
         

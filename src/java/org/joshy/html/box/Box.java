@@ -94,6 +94,9 @@ public class Box {
     public int background_position_vertical = 0;
     public int background_position_horizontal = 0;
     public boolean clicked = false;
+    
+    // list stuff
+    public int list_count = -1;
 
     // children stuff
     private List boxes;

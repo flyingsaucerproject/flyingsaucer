@@ -38,12 +38,14 @@ public class Layout {
         //u.p("Layout.layoutChildren: " + box);
 
         Element elem = (Element)box.node;
+        // prepare for the list items
+        int old_counter = c.getListCounter();
+        c.setListCounter(0);
 
         // for each child
         NodeList nl = elem.getChildNodes();
         for(int i=0; i<nl.getLength(); i++) {
             Node child = nl.item(i);
-
 
             // get the layout for this child
             Layout layout = getLayout(child);
@@ -54,12 +56,17 @@ public class Layout {
 
             Box child_box = null;
             if(child.getNodeType() == child.ELEMENT_NODE) {
+                // update the counter for printing OL list items
+                c.setListCounter(c.getListCounter()+1);
+                //u.p("elem = " + child.getNodeName() + "  counter = " + c.getListCounter());
+                
                 Element child_elem = (Element)child;
                 // execute the layout and get the return bounds
                 //u.p("doing element layout: " + layout);
                 c.parent_box = box;
                 c.placement_point = new Point(0,box.height);
                 child_box = layout.layout(c,child_elem);
+                child_box.list_count = c.getListCounter();
                 //u.p("child box = " + child_box);
             } else {
                 //u.p("we have to do an anonymous text block on this: " + child.getNodeValue());
@@ -114,6 +121,9 @@ public class Layout {
             //u.p("final child box was: " + child_box);
         }
         c.addMaxWidth(box.width);
+        
+        c.setListCounter(old_counter);
+
         return box;
     }
 

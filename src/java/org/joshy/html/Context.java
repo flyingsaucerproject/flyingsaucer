@@ -237,5 +237,12 @@ public class Context {
         return in_selection;
     }
     
-    
+
+    protected int list_counter;
+    public void setListCounter(int counter) {
+        this.list_counter = counter;
+    }
+    public int getListCounter() {
+        return list_counter;
+    }
 }

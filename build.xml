@@ -310,6 +310,12 @@
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
         </java>
     </target>
+    <target name="test-list" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/list.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
     
     <target name="test-speed" depends="test-css-speed">
     </target>
@@ -347,4 +353,11 @@
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
         </java>
     </target>
+    
+    <target name="test-about" depends="compile">
+        <java classname="org.joshy.html.app.aboutbox.AboutBox" classpath="build/classes" fork="true">
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+    
 </project>

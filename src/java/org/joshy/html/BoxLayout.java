@@ -163,6 +163,15 @@ public class BoxLayout extends Layout {
         return block;
     }
     
+    public boolean isListItem(Context c, Box box) {
+        String display = c.css.getStringProperty((Element)box.node,"display",false);
+        //u.p("display = " + display);
+        if(display.equals("list-item")) {
+            return true;
+        }
+        return false;
+    }
+
 
     public void paint(Context c, Box box) {
         //u.p("BoxLayout.paint " + box);//+box.getElement().getNodeName()+") " + block);
@@ -181,6 +190,10 @@ public class BoxLayout extends Layout {
             paintNormal(c,block);
         }
 
+        //u.p("here it's : " + c.getListCounter());
+        if(isListItem(c,box)) {
+            paintListItem(c,box);
+        }
 
         // move the origin down to account for the contents plus the margin, borders, and padding
         oldBounds.y = oldBounds.y + block.height;
@@ -190,6 +203,7 @@ public class BoxLayout extends Layout {
             GraphicsUtil.drawBox(c.getGraphics(),block,Color.red);
         }
     }
+    
     
     
     public void paintNormal(Context c, BlockBox block) {
@@ -311,6 +325,17 @@ public class BoxLayout extends Layout {
         bp.paint(c, block);
     }
 
+    public void paintListItem(Context c, Box box) {
+        String type = c.css.getStringProperty(box.node,"list-style-type");
+        if(type.equals("disc")) {
+            int rad = 8;  // change this to use the glyph height
+            int baseline = box.height; // change this to use the real baseline
+            c.getGraphics().fillOval(box.x-rad-2,box.y+baseline/2 - rad/2 + 2,rad,rad);
+        }
+        if(type.equals("decimal")) {
+            c.getGraphics().drawString(""+box.list_count,box.x-15, box.y+box.height/2+8);
+        }
+    }
     
     // === caching accessors =========
 

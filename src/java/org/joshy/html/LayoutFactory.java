@@ -50,7 +50,7 @@ public class LayoutFactory {
             if(elem.getNodeName().equals("del")) { return new InlineLayout(); }
             if(elem.getNodeName().equals("sup")) { return new InlineLayout(); }
             if(elem.getNodeName().equals("sub")) { return new InlineLayout(); }
-
+            
             if(elem.getNodeName().equals("a")) { return new InlineLayout(); }
             if(elem.getNodeName().equals("h1")) { return new InlineLayout(); }
             if(elem.getNodeName().equals("h2")) { return new InlineLayout(); }
@@ -58,15 +58,20 @@ public class LayoutFactory {
             if(elem.getNodeName().equals("h4")) { return new InlineLayout(); }
             if(elem.getNodeName().equals("h5")) { return new InlineLayout(); }
             if(elem.getNodeName().equals("h6")) { return new InlineLayout(); }
-
+            
+            // list stuff
+            if(elem.getNodeName().equals("ol")) { return new ListLayout(); }
             if(elem.getNodeName().equals("ul")) { return new ListLayout(); }
             if(elem.getNodeName().equals("li")) { return new InlineLayout(); }
+            
+            // image stuff
             if(elem.getNodeName().equals("img")) { return new ImageLayout(); }
-
+            
+            // table stuff
             if(elem.getNodeName().equals("table")) { return new TableLayout2(); }
             if(elem.getNodeName().equals("td")) { return new TableCellLayout(); }
             if(elem.getNodeName().equals("th")) { return new TableCellLayout(); }
-
+            
             if(elem.getNodeName().equals("br")) { return new InlineLayout(); }
             if(elem.getNodeName().equals("font")) { return new InlineLayout(); }
             if(elem.getNodeName().equals("hr")) { return new NullLayout(); }
