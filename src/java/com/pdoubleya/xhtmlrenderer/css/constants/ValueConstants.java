@@ -28,6 +28,9 @@ import java.util.*;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
 
+import com.pdoubleya.xhtmlrenderer.css.XRValue;
+
+
 
 /** 
  * Utility class for working with <code>CSSValue</code> instances.
@@ -47,15 +50,26 @@ public class ValueConstants {
      */
     public static boolean isAbsoluteUnit(CSSValue cssValue) {
         // WARN: this will fail if not a primitive value
-        if ( !( cssValue instanceof CSSPrimitiveValue )) return false;
+        if ( !( cssValue.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE )) 
+            return false;
         
+        // HACK: in case someone passes an instance of XRValue
+        short type = 0;
+        if ( cssValue instanceof XRValue ) {
+            CSSValue nested = ((XRValue)cssValue).cssValue();
+            type = ((CSSPrimitiveValue)nested).getPrimitiveType();
+        } else {
+            type = ((CSSPrimitiveValue)cssValue).getPrimitiveType();
+        }
+
         // TODO: check this list...
-        switch ( ((CSSPrimitiveValue)cssValue).getPrimitiveType() ) {
+        switch ( type ) {
             // relative length or size
             case CSSPrimitiveValue.CSS_EMS:
             case CSSPrimitiveValue.CSS_EXS:
             case CSSPrimitiveValue.CSS_PERCENTAGE:
                 return false;
+            
             // length
             case CSSPrimitiveValue.CSS_IN:
             case CSSPrimitiveValue.CSS_CM:
@@ -70,7 +84,6 @@ public class ValueConstants {
             // ?
             case CSSPrimitiveValue.CSS_ATTR:
             case CSSPrimitiveValue.CSS_DIMENSION:
-            case CSSPrimitiveValue.CSS_IDENT:
             case CSSPrimitiveValue.CSS_NUMBER:
             case CSSPrimitiveValue.CSS_RECT:
 
@@ -93,10 +106,13 @@ public class ValueConstants {
             // URI
             case CSSPrimitiveValue.CSS_URI:
 
+            case CSSPrimitiveValue.CSS_IDENT:
             case CSSPrimitiveValue.CSS_STRING:
                 return true;
+                
             case CSSPrimitiveValue.CSS_UNKNOWN:
             default:
+            System.out.println(cssValue.getCssText() + ", returning false");
                 return false;
         }
     }
@@ -126,7 +142,16 @@ public class ValueConstants {
      *
      * @return   The length value
      */
-    public static boolean isNumber(int cssPrimitiveType) {
+    public static boolean isNumber(CSSPrimitiveValue cssValue) {
+        return isNumber(cssValue.getPrimitiveType());   
+    }
+
+    /**
+     * Gets the length attribute of the XRValueImpl object
+     *
+     * @return   The length value
+     */
+    public static boolean isNumber(short cssPrimitiveType) {
         switch ( cssPrimitiveType ) {
             // fall thru on all these
             // relative length or size
