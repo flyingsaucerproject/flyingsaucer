@@ -178,7 +178,11 @@ public class Matcher {
 
     private int appendStylesheet(StylesheetInfo si, int count, java.util.TreeMap sorter, String media) {
         if (!si.appliesToMedia(media)) return count;
-        Stylesheet ss = _styleFactory.getStylesheet(si);
+        Stylesheet ss = si.getStylesheet();
+        if (ss == null) {
+            ss = _styleFactory.getStylesheet(si);
+            si.setStylesheet(ss);
+        }
         if (ss == null) return count;//couldn't load it
         for (java.util.Iterator rulesets = ss.getRulesets(); rulesets.hasNext();) {
             Object obj = rulesets.next();

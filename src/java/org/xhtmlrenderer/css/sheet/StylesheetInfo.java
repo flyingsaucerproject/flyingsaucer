@@ -92,6 +92,15 @@ public class StylesheetInfo {
         this.title = title;
     }
 
+    public Stylesheet getStylesheet() {
+        return stylesheet;
+    }
+
+    public void setStylesheet(Stylesheet stylesheet) {
+        this.stylesheet = stylesheet;
+    }
+
+    private Stylesheet stylesheet = null;//just to be able to attach "dummy" stylesheets. Also might save a lookup if it's already looked up
     private String title;
     private String uri;
     private String media;

@@ -21,9 +21,7 @@ package org.xhtmlrenderer.css.sheet;
 
 import com.steadystate.css.parser.CSSOMParser;
 import org.w3c.css.sac.InputSource;
-import org.w3c.dom.css.CSSImportRule;
-import org.w3c.dom.css.CSSStyleRule;
-import org.w3c.dom.css.CSSStyleSheet;
+import org.w3c.dom.css.*;
 import org.w3c.dom.stylesheets.MediaList;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.util.XRLog;
@@ -93,7 +91,8 @@ public class StylesheetFactory {
         }
 
         Stylesheet sheet = new Stylesheet(info);
-        pullRulesets(style, sheet);
+        CSSRuleList rl = style.getCssRules();
+        pullRulesets(rl, sheet, info);
 
         return sheet;
     }
@@ -115,33 +114,46 @@ public class StylesheetFactory {
      * Given the SAC sheet input, extracts all CSSStyleRules and loads Rulesets
      * from them.
      *
-     * @param cssSheet   The SAC CSSStyleSheet instance that holds the sheet rules
-     *                   and etc. from which rules are taken. Usually the output of a SAC parser.
+     * @param rl         The DOM-Level-2-Style CSSRuleList instance that holds the sheet rules
+     *                   and etc. from which rules are taken.
      * @param stylesheet stylesheet to which rules are added
+     * @param sheetInfo
      */
-    private void pullRulesets(org.w3c.dom.css.CSSStyleSheet cssSheet, Stylesheet stylesheet) {
-        org.w3c.dom.css.CSSRuleList rl = cssSheet.getCssRules();
+    private void pullRulesets(CSSRuleList rl, Stylesheet stylesheet, StylesheetInfo sheetInfo) {
         int nr = rl.getLength();
         for (int i = 0; i < nr; i++) {
-            if (rl.item(i).getType() == org.w3c.dom.css.CSSRule.IMPORT_RULE) {
+            if (rl.item(i).getType() == org.w3c.dom.css.CSSRule.STYLE_RULE) {
+                stylesheet.addRuleset(new Ruleset((org.w3c.dom.css.CSSStyleRule) rl.item(i), stylesheet.getOrigin()));
+            } else if (rl.item(i).getType() == org.w3c.dom.css.CSSRule.IMPORT_RULE) {
                 //note: the steadystate parser does not fetch and load imported stylesheets
                 CSSImportRule cssir = (CSSImportRule) rl.item(i);
                 String href = cssir.getHref();
-                MediaList media = cssir.getMedia();
+                MediaList mediaList = cssir.getMedia();
+                String media = mediaList.getMediaText();
+                if (media.equals("")) media = sheetInfo.getMedia();
                 String uri = null;
                 try {
                     uri = new java.net.URL(new URL(stylesheet.getURI()), href).toString();
                     StylesheetInfo info = new StylesheetInfo();
                     info.setOrigin(stylesheet.getOrigin());
                     info.setUri(uri);
-                    info.setMedia(media.getMediaText());
+                    info.setMedia(media);
                     info.setType("text/css");
                     stylesheet.addStylesheet(info);
                 } catch (java.net.MalformedURLException e) {
                     XRLog.exception("bad URL for imported stylesheet", e);
                 }
-            } else if (rl.item(i).getType() == org.w3c.dom.css.CSSRule.STYLE_RULE) {
-                stylesheet.addRuleset(new Ruleset((org.w3c.dom.css.CSSStyleRule) rl.item(i), stylesheet.getOrigin()));
+            } else if (rl.item(i).getType() == org.w3c.dom.css.CSSRule.MEDIA_RULE) {
+                //create a "dummy" stylesheet
+                CSSMediaRule cssmr = (CSSMediaRule) rl.item(i);
+                StylesheetInfo info = new StylesheetInfo();
+                info.setMedia(cssmr.getMedia().getMediaText());
+                info.setOrigin(stylesheet.getOrigin());
+                info.setType("text/css");
+                Stylesheet mr = new Stylesheet(info);
+                info.setStylesheet(mr);//there, the "dummy" connection is made
+                pullRulesets(cssmr.getCssRules(), mr, info);
+                stylesheet.addStylesheet(info);
             }
         }
     }
@@ -214,6 +226,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/30 23:47:57  tobega
+ * At-media rules should now work (not tested). Also fixed at-import rules, which got broken at previous modification.
+ *
  * Revision 1.8  2004/11/29 23:25:40  tobega
  * Had to redo thinking about Stylesheets and StylesheetInfos. Now StylesheetInfos are passed around instead of Stylesheets because any Stylesheet should only be linked to its URI. Bonus: the external sheets get lazy-loaded only if needed for the medium.
  *

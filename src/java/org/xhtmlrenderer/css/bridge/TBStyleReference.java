@@ -543,20 +543,24 @@ public class TBStyleReference implements StyleReference {
         infos.addAll(Arrays.asList(refs));
 
         String baseUri = _context.getRenderingContext().getBaseURL().toString();
-        uri = baseUri + "?-fs-media-?" + _context.media;
+        uri = _context.media + "?-fs-media-?" + baseUri;
         info = new StylesheetInfo();
-        info.setUri(uri);
+        info.setUri(baseUri);
         info.setType("text/css");
         info.setOrigin(StylesheetInfo.AUTHOR);
         info.setMedia(_context.media);
-        if (!_stylesheetFactory.containsStylesheet(uri)) {
+        Stylesheet sheet = null;
+        if (_stylesheetFactory.containsStylesheet(uri)) {
+            sheet = _stylesheetFactory.getCachedStylesheet(uri);
+        } else {
             String inlineStyle = _nsh.getInlineStyle(_doc, _context.media);
             if (inlineStyle != null) {
                 reader = new java.io.StringReader(inlineStyle);
-                Stylesheet sheet = _stylesheetFactory.parse(reader, info);
+                sheet = _stylesheetFactory.parse(reader, info);
                 _stylesheetFactory.putStylesheet(uri, sheet);
             }
         }
+        info.setStylesheet(sheet);//add it here because matcher cannot look it up, uri:s are in a twist
         infos.add(info);
 
         //here we should also get user stylesheet from userAgent
@@ -646,6 +650,9 @@ public class TBStyleReference implements StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/11/30 23:47:56  tobega
+ * At-media rules should now work (not tested). Also fixed at-import rules, which got broken at previous modification.
+ *
  * Revision 1.16  2004/11/29 23:25:37  tobega
  * Had to redo thinking about Stylesheets and StylesheetInfos. Now StylesheetInfos are passed around instead of Stylesheets because any Stylesheet should only be linked to its URI. Bonus: the external sheets get lazy-loaded only if needed for the medium.
  *
