@@ -36,6 +36,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.*;
 
 /**
  * Description of the Class
@@ -77,9 +78,15 @@ public class BrowserMenuBar extends JMenuBar {
      */
     JMenu demos;
     /**
+     *
+     */
+    private String lastDemoOpened;
+
+    /**
      * Description of the Field
      */
     public static Logger logger = Logger.getLogger("app.browser");
+    private Map allDemos;
 
     /**
      * Constructor for the BrowserMenuBar object
@@ -144,26 +151,36 @@ public class BrowserMenuBar extends JMenuBar {
 
         add(go);
 
+        demos.add(new NextDemoAction());
+        demos.add(new PriorDemoAction());
+        demos.add(new JSeparator());
         // CLEAN
-        demos.add(new LoadAction("Inheritance", "demo:demos/inherit.xhtml"));
-        demos.add(new LoadAction("Borders", "demo:demos/border.xhtml"));
-        demos.add(new LoadAction("Backgrounds", "demo:demos/background.xhtml"));
-        demos.add(new LoadAction("Paragraph", "demo:demos/paragraph.xhtml"));
-        demos.add(new LoadAction("Line Breaking", "demo:demos/breaking.xhtml"));
-        demos.add(new LoadAction("Forms", "demo:demos/forms.xhtml"));
-        demos.add(new LoadAction("Headers", "demo:demos/header.xhtml"));
-        demos.add(new LoadAction("Nested Divs", "demo:demos/nested.xhtml"));
-        demos.add(new LoadAction("Selectors", "demo:demos/selectors.xhtml"));
-        demos.add(new LoadAction("Images", "demo:demos/image.xhtml"));
-        demos.add(new LoadAction("Lists", "demo:demos/list.xhtml"));
-        //demos.add( new LoadAction( "Tables", "demo:demos/table.xhtml"));
-        demos.add(new LoadAction("Link", "demo:demos/link.xhtml"));
-        demos.add(new LoadAction("Hamlet", "demo:demos/hamlet.xhtml"));
-        demos.add(new LoadAction("Alice", "demo:demos/alice/alice.xhtml"));
-        demos.add(new LoadAction("Game Screen", "demo:demos/game/index.xhtml"));
-        demos.add(new LoadAction("Financial Report", "demo:demos/report.xhtml"));
-        demos.add(new LoadAction("Rollovers with :hover ", "demo:demos/hover.xhtml"));
-        demos.add(new LoadAction("Pseudo-elements ", "demo:demos/pseudo-elements.xhtml"));
+        allDemos = new LinkedHashMap();
+        allDemos.put("Paragraph", "demo:demos/paragraph.xhtml");
+        allDemos.put("Line Breaking", "demo:demos/breaking.xhtml");
+        allDemos.put("Selectors", "demo:demos/selectors.xhtml");
+        allDemos.put("Inheritance", "demo:demos/inherit.xhtml");
+        allDemos.put("Borders", "demo:demos/border.xhtml");
+        allDemos.put("Headers", "demo:demos/header.xhtml");
+        allDemos.put("Lists", "demo:demos/list.xhtml");
+        allDemos.put("Backgrounds", "demo:demos/background.xhtml");
+        allDemos.put("Images", "demo:demos/image.xhtml");
+        allDemos.put("Nested Divs", "demo:demos/nested.xhtml");
+        allDemos.put("Rollovers with :hover ", "demo:demos/hover.xhtml");
+        allDemos.put("Pseudo-elements ", "demo:demos/pseudo-elements.xhtml");
+        allDemos.put("Forms", "demo:demos/forms.xhtml");
+        // TODO: tables broken!
+        // allDemos.put("Tables", "demo:demos/table.xhtml");
+        allDemos.put("Link", "demo:demos/link.xhtml");
+        allDemos.put("Game Screen", "demo:demos/game/index.xhtml");
+        allDemos.put("Financial Report", "demo:demos/report.xhtml");
+        allDemos.put("Alice", "demo:demos/alice/alice.xhtml");
+        allDemos.put("Hamlet (the whole thing)", "demo:demos/hamlet.xhtml");
+
+        for (Iterator iter = allDemos.keySet().iterator(); iter.hasNext();) {
+            String s = (String) iter.next();
+            demos.add(new LoadAction(s, (String) allDemos.get(s)));
+        }
         try {
             //demos.add(new LoadAction("File Listing (Win)","file:///c:"));
             //demos.add(new LoadAction("File Listing (Unix)","file:///"));
@@ -421,7 +438,79 @@ public class BrowserMenuBar extends JMenuBar {
             root.panel.view.repaint();
         }
     }
+    class NextDemoAction extends AbstractAction {
 
+        public NextDemoAction() {
+            super("Next Demo Page");
+            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_N));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_MASK));
+        }
+        /**
+         * Invoked when an action occurs.
+         */
+        public void actionPerformed(ActionEvent e) {
+            String nextPage = null;
+            for (Iterator iter = allDemos.keySet().iterator(); iter.hasNext();) {
+                String s = (String) iter.next();
+                if ( s.equals(lastDemoOpened)) {
+                    if ( iter.hasNext()) {
+                        nextPage = (String)iter.next();
+                        break;
+                    }
+                }
+            }
+            if ( nextPage == null ) {
+                // go to first page
+                Iterator iter = allDemos.keySet().iterator();
+                nextPage = (String) iter.next();
+            }
+
+            try {
+                root.panel.loadPage((String) allDemos.get(nextPage));
+                lastDemoOpened = nextPage;
+            } catch (Exception ex) {
+                Uu.p(ex);
+            }
+        }
+
+    }
+
+
+    class PriorDemoAction extends AbstractAction {
+
+        public PriorDemoAction() {
+            super("Prior Demo Page");
+            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_P));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.ALT_MASK));
+        }
+        /**
+         * Invoked when an action occurs.
+         */
+        public void actionPerformed(ActionEvent e) {
+            String priorPage = null;
+            for (Iterator iter = allDemos.keySet().iterator(); iter.hasNext();) {
+                String s = (String) iter.next();
+                if ( s.equals(lastDemoOpened)) {
+                    break;
+                }
+                priorPage = s;
+            }
+            if ( priorPage == null ) {
+                // go to last page
+                Iterator iter = allDemos.keySet().iterator();
+                while (iter.hasNext()) {
+                    priorPage = (String) iter.next();
+                }
+            }
+
+            try {
+                root.panel.loadPage((String) allDemos.get(priorPage));
+                lastDemoOpened = priorPage;
+            } catch (Exception ex) {
+                Uu.p(ex);
+            }
+        }
+    }
     /**
      * Description of the Class
      *
@@ -433,6 +522,8 @@ public class BrowserMenuBar extends JMenuBar {
          */
         protected String url;
 
+        private String pageName;
+
         /**
          * Constructor for the LoadAction object
          *
@@ -441,6 +532,7 @@ public class BrowserMenuBar extends JMenuBar {
          */
         public LoadAction(String name, String url) {
             super(name);
+            pageName = name;
             this.url = url;
         }
 
@@ -452,6 +544,7 @@ public class BrowserMenuBar extends JMenuBar {
         public void actionPerformed(ActionEvent evt) {
             try {
                 root.panel.loadPage(url);
+                lastDemoOpened = pageName;
             } catch (Exception ex) {
                 Uu.p(ex);
             }
@@ -520,6 +613,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/01/25 11:51:39  pdoubleya
+ * Added next and prior page; refactored demos into Map for manipulation.
+ *
  * Revision 1.26  2004/12/29 10:39:38  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *
