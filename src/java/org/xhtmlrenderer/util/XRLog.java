@@ -9,6 +9,15 @@ on the standard configuration for logging, but gives easier access
 to the various logs (plumbing.load, .init, .render)
 */
 public class XRLog {
+    
+    static {
+        try {
+          new LogStartupConfig();
+        } catch (Exception ex) {
+          throw new XRRuntimeException("Could not initialize logs.");
+        }    
+    }
+    
     private static final String EXCEPTION = "plumbing.exception";
     private static final String GENERAL = "plumbing.general";
     private static final String INIT = "plumbing.init";
@@ -17,6 +26,13 @@ public class XRLog {
     private static final String CASCADE = "plumbing.cascade";
     private static final String LAYOUT = "plumbing.layout";
     private static final String RENDER = "plumbing.render";
+    
+    /** Same purpose as Logger.getLogger(), except that the static
+    initialization for XRLog will initialize the LogManager with logging
+    levels and other configuration. Use this instead of Logger.getLogger() */
+    public static Logger getLogger(String log) {
+        return Logger.getLogger(log);
+    }
     
     public static void cascade(String msg) { cascade(Level.INFO, msg); } 
     public static void cascade(Level level, String msg) { log(CASCADE, level, msg); } 
@@ -50,11 +66,11 @@ public class XRLog {
     public static void render(Level level, String msg, Throwable th) { log(RENDER, level, msg, th); } 
     
     public static void log(String where, Level level, String msg) {
-        Logger.getLogger(where).log(level, msg); 
+        getLogger(where).log(level, msg); 
     } 
 
     public static void log(String where, Level level, String msg, Throwable th) {
-        Logger.getLogger(where).log(level, msg, th); 
+        getLogger(where).log(level, msg, th); 
     } 
     
     public static void main(String args[]) {
