@@ -32,15 +32,20 @@ import org.xhtmlrenderer.extend.*;
 
 /**
  * <p>
+ * Graphics2DRenderer supports headless rendering of XHTML documents, and is useful
+ * for rendering documents directly to images.</p> 
  *
- * Graphics2DRenderer supports headless rendering of XHTML documents. It
- * supports the setDocument, layout, and render methods XHTMLPanel, but the
- * easiest way to use it is with the static utility methods. For example, to
- * render a document in an image that is 600 pixels wide use the renderToImage
- * method like this:</p> <pre>
- *URL url = new URL("test.xhtml");
- *BufferedImage img = Graphics2DRenderer.renderToImage( url, width);
- *</pre> <p>
+ * <p>Graphics2DRenderer supports the {@link XHTMLPanel#setDocument(Document)}, 
+ * {@link XHTMLPanel#layout()}, and {@link XHTMLPanel#render()} methods from 
+ * {@link XHTMLPanel}, as well as easy-to-use static utility methods. 
+ * For example, to render a document in an image that is 600 pixels wide use the 
+ * {@link #renderToImage(URL, int)} method like this:</p> 
+ * <pre>
+ * URL url = new URL("test.xhtml");
+ * BufferedImage img = Graphics2DRenderer.renderToImage( url, width);
+ * </pre>
+ *
+ * <p>
  *
  * </p>
  *
@@ -197,3 +202,12 @@ public class Graphics2DRenderer {
 
 }
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.7  2005/03/24 23:11:41  pdoubleya
+ * Comments.
+ *
+ *
+ */
