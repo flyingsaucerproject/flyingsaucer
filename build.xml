@@ -110,6 +110,7 @@
       <include name="*.png"/>
       <include name="splash/**"/>
       <include name="about/**"/>
+      <include name="alice/**"/>
     </patternset>
       
     <!-- zip file reference for all XHTML in the demos directory, and supporting files -->
@@ -608,6 +609,13 @@
 $Id$
 
 $Log$
+Revision 1.61  2004/11/05 18:48:41  joshy
+added alice demo to the browser
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.60  2004/11/05 18:45:14  joshy
 support for floated blocks (not just inline blocks)
 

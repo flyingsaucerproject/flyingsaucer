@@ -139,6 +139,7 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add( new LoadAction( "Lists", "demo:demos/list.xhtml" ) );
         demos.add( new LoadAction( "Tables", "demo:demos/table.xhtml"));
         demos.add( new LoadAction( "Hamlet", "demo:demos/hamlet.xhtml"));
+        demos.add( new LoadAction( "Alice", "demo:demos/alice/alice.xhtml"));
         try {
             //demos.add(new LoadAction("File Listing (Win)","file:///c:"));
             //demos.add(new LoadAction("File Listing (Unix)","file:///"));
@@ -398,6 +399,13 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/05 18:48:42  joshy
+ * added alice demo to the browser
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/11/03 23:54:32  joshy
  * added hamlet and tables to the browser
  * more support for absolute layout
