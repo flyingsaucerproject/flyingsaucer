@@ -160,7 +160,7 @@ public interface Context {
 
     void popBFC();
 
-    void setBlockFormattingContext(BlockFormattingContext bfc);
+    //void setBlockFormattingContext(BlockFormattingContext bfc);
 
     boolean isSubBlock();
 
