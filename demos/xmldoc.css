@@ -2,6 +2,12 @@ meta {
 	display: none;
 }
 
+section {
+	background-color: #ffffcc;
+	color: black;
+        font-size: 12pt;
+}
+
 pre {
 
     margin-left: 30px;
