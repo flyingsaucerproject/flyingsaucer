@@ -2,6 +2,7 @@ package org.joshy.html.css;
 
 import java.awt.Font;
 import org.joshy.html.Context;
+import org.joshy.u;
 
 public class FontResolver {
 
@@ -10,6 +11,8 @@ public class FontResolver {
     }
     
     public Font resolveFont(Font baseFont, String[] families, float size, String weight, String style) {
+        u.on();
+        u.p("resolving font from families: " + families);
         Font f = baseFont;
         
         f = f.deriveFont((float)size);

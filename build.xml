@@ -210,7 +210,7 @@
 
     <target name="test-test" depends="compile">
         <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
-            <arg value="demos/splash/splash.html"/>
+            <arg value="test.html"/>
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
         </java>
     </target>

@@ -3,6 +3,7 @@ package org.joshy.html.css;
 import java.awt.*;
 import org.joshy.html.Context;
 import java.util.HashMap;
+import org.joshy.u;
 
 public class FontResolverTest extends FontResolver {
     String[] available_fonts;
@@ -60,7 +61,7 @@ public class FontResolverTest extends FontResolver {
             font = "Monospaced";
         }
         
-        
+
         // assemble a font instance hash name
         String font_instance_name = getFontInstanceHashName(font,size,weight,style);
         //u.p("looking for font: " + font_instance_name);
@@ -99,7 +100,8 @@ public class FontResolverTest extends FontResolver {
     }
     
     public Font resolveFont(Context c, String[] families, float size, String weight, String style) {
-        
+        //u.p("familes = ");
+        //u.p(families);
         // for each font family
         if(families != null) {
             for(int i=0; i<families.length; i++) {
@@ -111,10 +113,10 @@ public class FontResolverTest extends FontResolver {
         // if we get here then no font worked, so just return default sans
         //u.p("pulling out: -" + available_fonts_hash.get("SansSerif") + "-");
         try {
-        Font fnt = createFont((Font)available_fonts_hash.get("SansSerif"),size,weight,style);
-        instance_hash.put(getFontInstanceHashName("SansSerif",size,weight,style),fnt);
-        //u.p("subbing in base sans : " + fnt);
-        return fnt;
+            Font fnt = createFont((Font)available_fonts_hash.get("SansSerif"),size,weight,style);
+            instance_hash.put(getFontInstanceHashName("SansSerif",size,weight,style),fnt);
+            //u.p("subbing in base sans : " + fnt);
+            return fnt;
         } catch (Exception ex) {
             org.joshy.u.p("exception: " + ex);
             return c.getGraphics().getFont();
