@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.layout.block;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
@@ -9,8 +10,9 @@ import org.xhtmlrenderer.render.Box;
 public class FloatUtil {
 
     public static void preChildrenLayout(Context c, Box block) {
+        CalculatedStyle style = c.css.getStyle(block.getNode());
         //boolean set_bfc_float = false;
-        if (LayoutUtil.isFloated(c, block.getNode())) {
+        if (LayoutUtil.isFloated(style)) {
             BlockFormattingContext bfc = new BlockFormattingContext(block);
             //set_bfc_float = true;
             bfc.setWidth(block.width);
@@ -19,14 +21,16 @@ public class FloatUtil {
     }
 
     public static void postChildrenLayout(Context c, Box block) {
-        if (LayoutUtil.isFloated(c, block.getNode())) {
+        CalculatedStyle style = c.css.getStyle(block.getNode());
+        if (LayoutUtil.isFloated(style)) {
             c.getBlockFormattingContext().doFinalAdjustments();
             c.popBFC();
         }
     }
 
     public static void setupFloat(Context c, Box box) {
-        if (LayoutUtil.isFloated(c, box.getNode())) {
+        CalculatedStyle style = c.css.getStyle(box.getNode());
+        if (LayoutUtil.isFloated(style)) {
             // u.p("==== setup float ====");
             String float_val = c.css.getStyle(box.getNode()).getStringProperty(CSSName.FLOAT);
             if (float_val == null) {

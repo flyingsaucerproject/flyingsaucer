@@ -22,6 +22,7 @@ package org.xhtmlrenderer.table;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
 
@@ -103,7 +104,8 @@ public class Table {
             return false;
         }
         // check the display value
-        if (LayoutUtil.getDisplay(c, (Element) node).equals("table-row-group")) {
+        CalculatedStyle style = c.css.getStyle(node);
+        if (LayoutUtil.getDisplay(style).equals("table-row-group")) {
             return true;
         }
         return false;
@@ -115,7 +117,8 @@ public class Table {
             return false;
         }
         // check the display value
-        if (LayoutUtil.getDisplay(c, (Element) node).equals("table-row")) {
+        CalculatedStyle style = c.css.getStyle(node);
+        if (LayoutUtil.getDisplay(style).equals("table-row")) {
             return true;
         }
         return false;
@@ -179,7 +182,8 @@ public class Table {
             return false;
         }
         // check the display value
-        if (LayoutUtil.getDisplay(c, (Element) node).equals("table-cell")) {
+        CalculatedStyle style = c.css.getStyle(node);
+        if (LayoutUtil.getDisplay(style).equals("table-cell")) {
             return true;
         }
         return false;
@@ -372,6 +376,9 @@ public class Table {
 /*
    $Id$
    $Log$
+   Revision 1.8  2004/12/06 02:55:44  tobega
+   More cleaning of use of Node, more preparation for Content-based inline generation.
+
    Revision 1.7  2004/12/05 00:48:59  tobega
    Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
 

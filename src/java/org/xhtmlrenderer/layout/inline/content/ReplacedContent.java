@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.layout.inline.content;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,15 +29,25 @@ import org.w3c.dom.Element;
  * Time: 17:07:42
  * To change this template use File | Settings | File Templates.
  */
-public class ReplacedContent {
+public class ReplacedContent implements Content {
     private Element _elem;
+    private CalculatedStyle _style;
 
-    public ReplacedContent(Element e) {
+    public ReplacedContent(Element e, CalculatedStyle style) {
         _elem = e;
+        _style = style;
     }
 
     public Element getElement() {
         return _elem;
+    }
+
+    public CalculatedStyle getStyle() {
+        return _style;
+    }
+
+    public String getText() {
+        return _elem.getNodeValue();
     }
 
     public String toString() {

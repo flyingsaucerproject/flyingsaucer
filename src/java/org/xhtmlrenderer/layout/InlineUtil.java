@@ -24,9 +24,7 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.inline.content.FloatedBlockContent;
-import org.xhtmlrenderer.layout.inline.content.ReplacedContent;
-import org.xhtmlrenderer.layout.inline.content.TextContent;
+import org.xhtmlrenderer.layout.inline.content.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -210,7 +208,7 @@ public class InlineUtil {
 
         // u.p("starting at: " + root);
         Node curr = root;
-        TextContent text = null;
+        TextContent textContent = null;
         CalculatedStyle style = null;
         while (true) {
             // u.p("now list = " + list);
@@ -220,31 +218,34 @@ public class InlineUtil {
             // skip first time if root was the element
             handling: if (curr != elem) {
                 if (curr.getNodeType() == curr.TEXT_NODE) {
-                    // u.p("adding text: " + curr);
-                    if (text == null) text = new TextContent(style);
-                    text.append(curr.getNodeValue());
+                    // u.p("adding textContent: " + curr);
+                    String text = curr.getNodeValue();
+                    if (textContent == null) textContent = new TextContent((Element) curr.getParentNode(), style);
+                    textContent.append(text);
                     break handling;
                 }
 
                 //TODO: what if a replaced element has :before and/or :after content?
                 if (LayoutUtil.isReplaced(c, curr)) {
                     // u.p("adding replaced: " + curr);
-                    if (text != null) {
-                        contentList.add(text);
-                        text = null;
+                    if (textContent != null) {
+                        contentList.add(textContent);
+                        textContent = null;
                     }
-                    contentList.add(new ReplacedContent((Element) curr));
+                    CalculatedStyle replacedStyle = c.css.getStyle(curr);
+                    contentList.add(new ReplacedContent((Element) curr, replacedStyle));
                     break handling;
                 }
 
                 //TODO: what if a floated block has :before and/or :after content?
                 if (LayoutUtil.isFloatedBlock(curr, c)) {
                     // u.p("adding floated block: " + curr);
-                    if (text != null) {
-                        contentList.add(text);
-                        text = null;
+                    if (textContent != null) {
+                        contentList.add(textContent);
+                        textContent = null;
                     }
-                    contentList.add(new FloatedBlockContent((Element) curr));
+                    CalculatedStyle floatedStyle = c.css.getStyle(curr);
+                    contentList.add(new FloatedBlockContent((Element) curr, floatedStyle));
                     break handling;
                 }
 
@@ -258,6 +259,24 @@ public class InlineUtil {
             }
 
             if (curr.getNodeType() == Node.ELEMENT_NODE) {
+                //put in a marker if there is first-line styling
+                CascadedStyle firstLine = c.css.getPseudoElementStyle(curr, "first-line");
+                if (firstLine != null) {
+                    if (textContent != null) {
+                        contentList.add(textContent);
+                        textContent = null;
+                    }
+                    contentList.add(new FirstLineStyle(firstLine));
+                }
+                //put in a marker if there is first-letter styling
+                CascadedStyle firstLetter = c.css.getPseudoElementStyle(curr, "first-letter");
+                if (firstLetter != null) {
+                    if (textContent != null) {
+                        contentList.add(textContent);
+                        textContent = null;
+                    }
+                    contentList.add(new FirstLetterStyle(firstLetter));
+                }
                 //<br/> handling should be done by :before content
                 CascadedStyle before = c.css.getPseudoElementStyle(curr, "before");
                 if (before != null) {
@@ -265,14 +284,14 @@ public class InlineUtil {
                     CalculatedStyle derived = c.css.getDerivedStyle(parentStyle, before);
                     String content = derived.getStringProperty(CSSName.CONTENT);
                     if (!content.equals("")) {
-                        if (text != null) {
-                            contentList.add(text);
-                            text = null;
+                        if (textContent != null) {
+                            contentList.add(textContent);
+                            textContent = null;
                         }
-                        text = new TextContent(derived);
-                        text.append(content.replaceAll("\\\\A", "\n"));
-                        contentList.add(text);
-                        text = null;
+                        textContent = new TextContent((Element) curr, derived);
+                        textContent.append(content.replaceAll("\\\\A", "\n"));
+                        contentList.add(textContent);
+                        textContent = null;
                     }
                     //do not reset style here, because if this element is empty, we will not have changed context
                 }
@@ -284,9 +303,9 @@ public class InlineUtil {
                 if (!LayoutUtil.isFloatedBlock(curr, c) &&
                         !LayoutUtil.isReplaced(c, curr)) {
                     //new element, new style
-                    if (text != null) {
-                        contentList.add(text);
-                        text = null;
+                    if (textContent != null) {
+                        contentList.add(textContent);
+                        textContent = null;
                     }
                     style = null;
 
@@ -301,7 +320,7 @@ public class InlineUtil {
 
                 if (LayoutUtil.isFloatedBlock(root, c)) {
                     if (root == elem) {
-                        //ok, the style should already be set and text should be null
+                        //ok, the style should already be set and textContent should be null
                         curr = curr.getFirstChild();
                         continue;
                     }
@@ -315,14 +334,14 @@ public class InlineUtil {
                     CalculatedStyle derived = c.css.getDerivedStyle(parentStyle, after);
                     String content = derived.getStringProperty(CSSName.CONTENT);
                     if (!content.equals("")) {
-                        if (text != null) {
-                            contentList.add(text);
-                            text = null;
+                        if (textContent != null) {
+                            contentList.add(textContent);
+                            textContent = null;
                         }
-                        text = new TextContent(derived);
-                        text.append(content.replaceAll("\\\\A", "\n"));
-                        contentList.add(text);
-                        text = null;
+                        textContent = new TextContent((Element) curr, derived);
+                        textContent.append(content.replaceAll("\\\\A", "\n"));
+                        contentList.add(textContent);
+                        textContent = null;
                     }
                 }
                 if (curr == elem) {
@@ -343,9 +362,9 @@ public class InlineUtil {
             while (true) {
                 curr = curr.getParentNode();
                 //new element, new style
-                if (text != null) {
-                    contentList.add(text);
-                    text = null;
+                if (textContent != null) {
+                    contentList.add(textContent);
+                    textContent = null;
                 }
                 style = null;
 
@@ -358,11 +377,11 @@ public class InlineUtil {
                         CalculatedStyle derived = c.css.getDerivedStyle(parentStyle, after);
                         String content = derived.getStringProperty(CSSName.CONTENT);
                         if (!content.equals("")) {
-                            //text must be null here
-                            text = new TextContent(derived);
-                            text.append(content.replaceAll("\\\\A", "\n"));
-                            contentList.add(text);
-                            text = null;
+                            //textContent must be null here
+                            textContent = new TextContent((Element) curr, derived);
+                            textContent.append(content.replaceAll("\\\\A", "\n"));
+                            contentList.add(textContent);
+                            textContent = null;
                         }
                     }
                 }
@@ -395,6 +414,9 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2004/12/06 02:55:43  tobega
+ * More cleaning of use of Node, more preparation for Content-based inline generation.
+ *
  * Revision 1.18  2004/12/06 00:19:15  tobega
  * Worked on handling :before and :after. Got sidetracked by BasicPanel causing layout to be done twice: solved. If solution causes problems, check BasicPanel.setSize
  *

@@ -4,17 +4,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.Box;
 
 public class LayoutUtil {
 
-    public static String getDisplay(Context c, Element e) {
+    public static String getDisplay(CalculatedStyle style) {
         // u.p("checking: " + child);
-        String display = c.css.getStyle(e).getStringProperty("display");
+        String display = style.getStringProperty("display");
         // u.p("display = " + display);
         
         // override for floated
-        if (isFloated(c, e)) {
+        if (isFloated(style)) {
             return "block";
         }
 
@@ -73,7 +74,8 @@ public class LayoutUtil {
         NodeList children = elem.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
-            if (isBlockNode(child, c) && !isFloated(c, child)) {
+            CalculatedStyle style = c.css.getStyle(child);
+            if (isBlockNode(child, c) && !isFloated(style)) {
                 //u.p("this layout is block");
                 return true;
             }
@@ -105,18 +107,18 @@ public class LayoutUtil {
      * @return The floated value
      */
     public static boolean isFloated(Box inline, Context c) {
-        return isFloated(c, inline.getNode());
+        CalculatedStyle style = c.css.getStyle(inline.getNode());
+        return isFloated(style);
     }
 
     /**
      * Gets the floated attribute of the DefaultLayout class
      *
-     * @param node PARAM
-     * @param c    PARAM
+     * @param style
      * @return The floated value
      */
-    public static boolean isFloated(Context c, Node node) {
-        String float_val = c.css.getStyle(node).getStringProperty("float");
+    public static boolean isFloated(CalculatedStyle style) {
+        String float_val = style.getStringProperty("float");
         if (float_val == null) {
             return false;
         }
@@ -137,24 +139,24 @@ public class LayoutUtil {
      * @return The blockNode value
      */
     public static boolean isBlockNode(Node child, Context c) {
-        //need this as a sensible default
-        if (child == child.getOwnerDocument().getDocumentElement()) return true;
         if (child instanceof Element) {
-            String display = getDisplay(c, (Element) child);
+            CalculatedStyle style = c.css.getStyle(child);
+            String display = getDisplay(style);
             if (display != null &&
                     (display.equals("block") ||
                     display.equals("table") ||
                     display.equals("table-cell"))
             ) {
-                if (isFloated(c, (Element) child)) {
+                /*que? if (isFloated(style)) {
                     return true;
                 }
-                if (!isFloated(c, (Element) child)) {
+                if (!isFloated(style)) {
                     //u.p(child.getNodeName() + " is a block");
                     return true;
                 } else {
                     // u.p("isBlockNode() found a floated block");
-                }
+                }*/
+                return true;
             }
         }
         return false;
@@ -169,8 +171,8 @@ public class LayoutUtil {
      */
     public static boolean isHiddenNode(Node child, Context c) {
         if (child instanceof Element) {
-            Element el = (Element) child;
-            String display = getDisplay(c, el);//c.css.getStringProperty( el, "display", false );
+            CalculatedStyle style = c.css.getStyle(child);
+            String display = getDisplay(style);//c.css.getStringProperty( el, "display", false );
             if (display != null && display.equals("none")) {
                 return true;
             }
@@ -200,9 +202,9 @@ public class LayoutUtil {
             return false;
         }
 
-        Element el = (Element) node;
+        CalculatedStyle style = c.css.getStyle(node);
         //not used: String display = getDisplay(c, el);
-        if (isFloated(c, node)) {
+        if (isFloated(style)) {
             return true;
         }
         return false;
@@ -231,7 +233,8 @@ public class LayoutUtil {
 
 
     public static boolean isListItem(Context c, Box box) {
-        String display = getDisplay(c, (Element) box.getNode());
+        CalculatedStyle style = c.css.getStyle(box.getNode());
+        String display = getDisplay(style);
         if (display.equals("list-item")) {
             return true;
         }

@@ -21,6 +21,7 @@ package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.forms.*;
 import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.table.TableCellLayout;
@@ -142,7 +143,8 @@ public class LayoutFactory {
 
 
         // check for floats
-        if (LayoutUtil.isFloated(c, elem)) {
+        CalculatedStyle style = c.css.getStyle(elem);
+        if (LayoutUtil.isFloated(style)) {
             //u.p("in layout factory, found a floated element. forcing display: block");
             return getCustomLayout(c, elem, "block");
         }
@@ -329,6 +331,9 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.19  2004/12/06 02:55:43  tobega
+* More cleaning of use of Node, more preparation for Content-based inline generation.
+*
 * Revision 1.18  2004/12/05 00:48:58  tobega
 * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
 *

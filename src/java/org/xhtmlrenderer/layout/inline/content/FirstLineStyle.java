@@ -1,5 +1,5 @@
 /*
- * TextContent.java
+ * FirstLetterStyle.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -19,45 +19,23 @@
  */
 package org.xhtmlrenderer.layout.inline.content;
 
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 
 /**
  * Created by IntelliJ IDEA.
  * User: tobe
- * Date: 2004-dec-05
- * Time: 16:23:09
+ * Date: 2004-dec-06
+ * Time: 03:21:52
  * To change this template use File | Settings | File Templates.
  */
-public class TextContent implements Content {
-    private Element _elem;//will need this for handling dynamic content!
-    private CalculatedStyle _style;
-    private StringBuffer _sb;
+public class FirstLineStyle {
+    private CascadedStyle _style;
 
-    public TextContent(Element e, CalculatedStyle style) {
-        _elem = e;
+    public FirstLineStyle(CascadedStyle style) {
         _style = style;
-        _sb = new StringBuffer();
     }
 
-    public Element getElement() {
-        return _elem;
-    }
-
-    public CalculatedStyle getStyle() {
+    public CascadedStyle getStyle() {
         return _style;
     }
-
-    public String getText() {
-        return _sb.toString();
-    }
-
-    public void append(String text) {
-        _sb.append(text);
-    }
-
-    public String toString() {
-        return "TextContent:\nStyle: " + _style + "\nText: " + getText();
-    }
-
 }

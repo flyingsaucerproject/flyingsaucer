@@ -20,8 +20,8 @@
 
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.util.u;
 
 /**
@@ -34,20 +34,12 @@ public class TextUtil {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param node PARAM
-     * @param text PARAM
+     * @param text  PARAM
+     * @param style
      * @return Returns
      */
-    public static String transformText(Context c, Node node, String text) {
-        Element el = null;
-        if (node instanceof Element) {
-            el = (Element) node;
-        } else {
-            el = (Element) node.getParentNode();
-        }
-
-        String text_transform = c.css.getStyle(el).getStringProperty("text-transform");
+    public static String transformText(String text, CalculatedStyle style) {
+        String text_transform = style.getStringProperty(CSSName.TEXT_TRANSFORM);
         if (text_transform != null) {
             if (text_transform.equals("lowercase")) {
                 text = text.toLowerCase();
@@ -59,7 +51,7 @@ public class TextUtil {
                 text = capitalizeWords(text);
             }
         }
-        String variant = c.css.getStyle(el).getStringProperty("font-variant");
+        String variant = style.getStringProperty(CSSName.FONT_VARIANT);
         if (variant != null) {
             if (variant.equals("small-caps")) {
                 text = text.toUpperCase();
@@ -115,76 +107,15 @@ public class TextUtil {
         return sb.toString();
     }
 
-
-    /**
-     * Description of the Method
-     *
-     * @param c                PARAM
-     * @param node             PARAM
-     * @param containing_block PARAM
-     */
-    public static void stripWhitespace(Context c, Node node, Element containing_block) {
-
-
-        String white_space = c.css.getStyle(containing_block).getStringProperty("white-space");
-        // if doing preformatted whitespace
-        if (white_space != null && white_space.equals("pre")) {
-            return;
-        }
-
-
-        if (node == null) {
-            return;
-        }
-
-        if (node.getNodeType() != node.TEXT_NODE) {
-            return;
-        }
-
-        String text = node.getNodeValue();
-        //text = text.trim();
-
-        /*
-         * if(text.indexOf("\n") > 0) {
-         * u.p("before text = " + text);
-         * StringBuffer sb = new StringBuffer();
-         * int m = 0;
-         * int n = 0;
-         * while((n = text.indexOf("\n",m)) > 0) {
-         * String span = text.substring(m,n);
-         * u.p("span = " + span);
-         * sb.append(span);
-         * // add a space to replace the \n
-         * sb.append(" ");
-         * m = n+1;
-         * }
-         * sb.append(text.substring(m));
-         * text = sb.toString();
-         * u.p("after text = " + text);
-         * }
-         */
-        // spaces at the start of the string -> nothing
-
-        text = text.replaceAll("^\\s+", "");
-        // spaces at the start of lines -> ""
-        //text = text.replaceAll("\n(\\s*)","");
-        // all \n -> a single space
-        text = text.replaceAll("\n", " ");
-        // all extra spaces -> single space
-        text = text.replaceAll("\\s+", " ");
-        // add one space to the end
-        //text = text+" ";
-        //u.p(text);
-        node.setNodeValue(text);
-    }
-
-
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/12/06 02:55:43  tobega
+ * More cleaning of use of Node, more preparation for Content-based inline generation.
+ *
  * Revision 1.6  2004/12/05 00:48:58  tobega
  * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
  *

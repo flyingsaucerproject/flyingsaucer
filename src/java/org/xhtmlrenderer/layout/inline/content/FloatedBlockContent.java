@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.layout.inline.content;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,15 +29,25 @@ import org.w3c.dom.Element;
  * Time: 17:14:08
  * To change this template use File | Settings | File Templates.
  */
-public class FloatedBlockContent {
+public class FloatedBlockContent implements Content {
     private Element _elem;
+    private CalculatedStyle _style;
 
-    public FloatedBlockContent(Element e) {
+    public FloatedBlockContent(Element e, CalculatedStyle style) {
         _elem = e;
+        _style = style;
     }
 
     public Element getElement() {
         return _elem;
+    }
+
+    public CalculatedStyle getStyle() {
+        return _style;
+    }
+
+    public String getText() {
+        return _elem.getNodeValue();
     }
 
     public String toString() {

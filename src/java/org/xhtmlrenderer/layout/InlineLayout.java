@@ -25,7 +25,6 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.inline.*;
 import org.xhtmlrenderer.render.*;
-import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.u;
 
@@ -95,10 +94,7 @@ public class InlineLayout extends BoxLayout {
         }
 
         Node current_node = InlineUtil.nextTextNode(inline_node_list);
-        if (!Configuration.isTrue("xr.layout.whitespace.experimental", false)) {
-            TextUtil.stripWhitespace(c, current_node, elem);
-        }
-        
+
         // adjust the first line for float tabs
         remaining_width = FloatUtil.adjustForTab(c, prev_line, remaining_width);
 
@@ -122,7 +118,7 @@ public class InlineLayout extends BoxLayout {
                 // test if there is no more text in the current text node
                 // if there is a prev, and if the prev was part of this current node
                 if (prev_inline != null && prev_inline.getNode() == current_node) {
-                    if (isEndOfBlock(c, current_node, prev_inline)) {
+                    if (isEndOfBlock(c, current_node, prev_inline)) {//c and node can be replaced by content object
                         break;
                     }
                 }
@@ -190,9 +186,6 @@ public class InlineLayout extends BoxLayout {
 
 
             current_node = InlineUtil.nextTextNode(inline_node_list);
-            if (!Configuration.isTrue("xr.layout.whitespace.experimental", false)) {
-                TextUtil.stripWhitespace(c, current_node, elem);
-            }
         }
         
         // save the final line
@@ -238,26 +231,19 @@ public class InlineLayout extends BoxLayout {
 
     public boolean isEndOfBlock(Context c, Node current_node, InlineBox prev_inline) {
         // replaced elements aren't split, so done with this one
-        if (LayoutUtil.isReplaced(c, current_node)) {
+        if (LayoutUtil.isReplaced(c, current_node)) {//if(content instanceof ReplacedContent)
             return true;
         }
-        if (LayoutUtil.isFloatedBlock(current_node, c)) {
+        if (LayoutUtil.isFloatedBlock(current_node, c)) {//if(content instanceof FloatedBlockContent)
             return true;
         }
-        if (c.getRenderingContext().getLayoutFactory().isBreak(current_node)) {
+        if (c.getRenderingContext().getLayoutFactory().isBreak(current_node)) {//not needed with content
             return true;
         }
         // if no more unused text in this node
         // u.p("looking for skip to next node");
-        if (Configuration.isTrue("xr.layout.whitespace.experimental", false)) {
-            if (prev_inline.end_index >= prev_inline.getMasterText().length()) {
-                return true;
-            }
-        } else {
-            if (prev_inline.end_index >= current_node.getNodeValue().length()) {
-                // then break
-                return true;
-            }
+        if (prev_inline.end_index >= prev_inline.getMasterText().length()) {
+            return true;
         }
         return false;
     }
@@ -290,79 +276,52 @@ public class InlineLayout extends BoxLayout {
         // calculate the starting index
         int start = 0;
         // if this is another box from the same node as the previous one
-        if (prev != null && prev.getNode() == node) {
+        if (prev != null && prev.getNode() == node) {//prev != null && prev.getContent() == content
             start = prev.end_index;
         }
         // get the text of the node
-        String text = node.getNodeValue();
+        String text = node.getNodeValue();//content.getText()
 
         // transform the text if required (like converting to caps)
         // this must be done before any measuring since it might change the
         // size of the text
         //u.p("text from the node = \"" + text + "\"");
-        text = TextUtil.transformText(c, node, text);
+        CalculatedStyle style = c.css.getStyle(node);//content.getStyle()
+        text = TextUtil.transformText(text, style);
 
         // u.p("calculating inline: text = " + text);
         // u.p("avail space = " + avail + " max = " + max_width + "   start index = " + start);
 
         // get the current font. required for sizing
-        CalculatedStyle style = c.css.getStyle(node);
         Font font = FontUtil.getFont(c, style);
         
         // handle each case
-        if (LayoutUtil.isReplaced(c, node)) {
+        if (LayoutUtil.isReplaced(c, node)) {//content instanceof ReplacedContent
             //u.p("is replaced");
             return LineBreaker.generateReplacedInlineBox(c, node, avail, prev, text, prev_align, font);
         }
         
         //u.p("calc inline on node : " + node);
-        if (LayoutUtil.isFloatedBlock(node, c)) {
+        if (LayoutUtil.isFloatedBlock(node, c)) {//content instanceof ReplacedContent
             //u.p("calcinline: is floated block");
             return FloatUtil.generateFloatedBlockInlineBox(c, node, avail, prev, text, prev_align, font);
         }
 
-        if (LineBreaker.isFirstLetter(c, node, start)) {
+        if (LineBreaker.isFirstLetter(c, node, start)) {//TODO:should be handled earlier and differently
             //u.p("is first letter");
             return LineBreaker.generateFirstLetterInlineBox(c, node, start, text, prev, prev_align, avail);
         }
 
-        if (c.getRenderingContext().getLayoutFactory().isBreak(node)) {
+        if (c.getRenderingContext().getLayoutFactory().isBreak(node)) {//not needed
             // u.p("is break");
             return LineBreaker.generateBreakInlineBox(node);
         }        
         
         // new whitespace code
-        if (Configuration.isTrue("xr.layout.whitespace.experimental", false)) {
-            WhitespaceStripper whitespace = new WhitespaceStripper();
-            // u.p("calling whitespace stripper on node: " + node);
-            // u.p(" prev = " + prev);
-            return whitespace.createInline(c, node, text, prev, prev_align, avail, max_width, font);
-
-        } else {
-
-            if (LineBreaker.isWhitespace(c, containing_block)) {
-                // u.p("is whitespace");
-                return LineBreaker.generateWhitespaceInlineBox(c, node, start, prev, text, prev_align, font);
-            }
-            
-            // ==== unbreakable long word =====
-            if (LineBreaker.isUnbreakableLine(c, node, start, text, avail, font)) {
-                // u.p("is unbreakable");
-                return LineBreaker.generateUnbreakableInlineBox(c, node, start, text, prev, prev_align, font);
-            }
-            
-            // rest of this string can fit on the line
-            if (LineBreaker.canFitOnLine(c, node, start, text, avail, font)) {
-                // u.p("can fit on line");
-                return LineBreaker.generateRestOfTextNodeInlineBox(c, node, start, text, prev, prev_align, font);
-            }
-            
-            // normal multiline break
-            // u.p("normal multi line break");
-            return LineBreaker.generateMultilineBreak(c, node, start, text, prev, prev_align, avail);
-
-        }
-
+        WhitespaceStripper whitespace = new WhitespaceStripper();
+        // u.p("calling whitespace stripper on node: " + node);
+        // u.p(" prev = " + prev);
+        return whitespace.createInline(c, node, text, prev, prev_align, avail, max_width, font);
     }
 
 
@@ -412,6 +371,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.39  2004/12/06 02:55:43  tobega
+* More cleaning of use of Node, more preparation for Content-based inline generation.
+*
 * Revision 1.38  2004/12/06 00:19:15  tobega
 * Worked on handling :before and :after. Got sidetracked by BasicPanel causing layout to be done twice: solved. If solution causes problems, check BasicPanel.setSize
 *

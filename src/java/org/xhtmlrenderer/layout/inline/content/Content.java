@@ -1,5 +1,5 @@
 /*
- * TextContent.java
+ * Content.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -25,39 +25,14 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 /**
  * Created by IntelliJ IDEA.
  * User: tobe
- * Date: 2004-dec-05
- * Time: 16:23:09
+ * Date: 2004-dec-06
+ * Time: 02:20:48
  * To change this template use File | Settings | File Templates.
  */
-public class TextContent implements Content {
-    private Element _elem;//will need this for handling dynamic content!
-    private CalculatedStyle _style;
-    private StringBuffer _sb;
+public interface Content {
+    public Element getElement();
 
-    public TextContent(Element e, CalculatedStyle style) {
-        _elem = e;
-        _style = style;
-        _sb = new StringBuffer();
-    }
+    public String getText();
 
-    public Element getElement() {
-        return _elem;
-    }
-
-    public CalculatedStyle getStyle() {
-        return _style;
-    }
-
-    public String getText() {
-        return _sb.toString();
-    }
-
-    public void append(String text) {
-        _sb.append(text);
-    }
-
-    public String toString() {
-        return "TextContent:\nStyle: " + _style + "\nText: " + getText();
-    }
-
+    public CalculatedStyle getStyle();
 }
