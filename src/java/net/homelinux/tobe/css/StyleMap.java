@@ -101,14 +101,14 @@ public class StyleMap {
         return m.propertyDeclarations;
     }
     
-    /** create a StyleMap from a DOM document. If IDResolver is null, then identity conditions cannot match */
-    public static StyleMap createMap(org.w3c.dom.Document doc, java.util.List rulesets, IDResolver idr) {
+    /** create a StyleMap from a DOM document. If ClassAndIDResolver is null, then identity conditions cannot match */
+    public static StyleMap createMap(org.w3c.dom.Document doc, java.util.List rulesets, ClassAndIDResolver idr) {
         StyleMap map = new StyleMap();
         map.mapDocument(doc, rulesets, idr);
         return map;
     }
     
-    private void mapDocument(org.w3c.dom.Document doc, java.util.List rulesets, IDResolver idr) {
+    private void mapDocument(org.w3c.dom.Document doc, java.util.List rulesets, ClassAndIDResolver idr) {
         _doc = doc;
         _idr = idr;
         docMapper = new Mapper(rulesets);
@@ -121,7 +121,7 @@ public class StyleMap {
     
     private org.w3c.dom.Document _doc;
     private Mapper docMapper;
-    private IDResolver _idr;
+    private ClassAndIDResolver _idr;
     private java.util.HashMap map = new java.util.HashMap();
 
 }

@@ -38,13 +38,13 @@ public class Ruleset {
         /** Check if the given Element matches this selector.
          * Note: the parser should give all class
          */
-        public boolean matches(org.w3c.dom.Element e, IDResolver idr) {
+        public boolean matches(org.w3c.dom.Element e, ClassAndIDResolver idr) {
             //TODO: resolve question of how CSS should handle namespaces. Unfortunately getLocalName is null if no namespace.
             if(_name == null || _name.equals(e.getLocalName()) || (e.getLocalName() == null && _name.equals(e.getNodeName()))) {
                 //TODO: handle conditions
                 if(_id != null) {
                     if(idr == null) return false;
-                    if(!idr.getID(e).equals(_id)) return false;
+                    if(!_id.equals(idr.getID(e))) return false;
                 }
                 return true;
             }

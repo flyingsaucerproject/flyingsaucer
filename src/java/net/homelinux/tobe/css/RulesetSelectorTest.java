@@ -60,8 +60,10 @@ public class RulesetSelectorTest extends TestCase {
         Ruleset rules = new Ruleset();
         Ruleset.Selector sel = rules.createSelector(Ruleset.Selector.DESCENDANT_AXIS, "e");
         sel.setIDCondition("eid");
-        IDResolver eid = new IDResolver() { public String getID(org.w3c.dom.Element e){ return "eid";}};
-        IDResolver fid = new IDResolver() { public String getID(org.w3c.dom.Element e){ return "fid";}};
+        ClassAndIDResolver eid = new ClassAndIDResolver() { public String getID(org.w3c.dom.Element e){ return "eid";}
+            public String getClass(org.w3c.dom.Element e){ return null;}};
+        ClassAndIDResolver fid = new ClassAndIDResolver() { public String getID(org.w3c.dom.Element e){ return "fid";}
+            public String getClass(org.w3c.dom.Element e){ return null;}};
         Element e = doc.createElement("e");
         assertTrue("selector for 'e#eid' should match e#eid",  sel.matches(e, eid));
         assertFalse("selector for 'e#eid' should not match e#fid",  sel.matches(e, fid));
