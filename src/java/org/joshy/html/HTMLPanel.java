@@ -70,6 +70,7 @@ import org.apache.xpath.XPathAPI;
 import org.joshy.html.forms.*;
 
 import com.pdoubleya.xhtmlrenderer.css.bridge.XRStyleReference;
+import com.pdoubleya.xhtmlrenderer.css.XRStyleSheet;
 import org.joshy.html.css.StyleReference;
 
 public class HTMLPanel extends JPanel implements  ComponentListener {
@@ -225,7 +226,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
 
         Element html = (Element)doc.getDocumentElement();
 
-        if ( 1 == 1 ) {
+        if ( 1 == 0 ) {
           c.css = new CSSBank();
         } else {
           // NOTE: currently context is externalized from StyleReference even
@@ -254,7 +255,8 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
 
                 //u.p("loaded: " + str);
 
-                c.css.parse(new StringReader(str));//BufferInputStream(str));
+                c.css.parse(new StringReader(str),
+                            XRStyleSheet.USER_AGENT);//BufferInputStream(str));
 
             } else {
 
@@ -262,6 +264,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
 
             }
 
+            c.css.parseLinkedStyles(html);
             c.css.parseInlineStyles(html);
 
         } catch (Exception ex) {
