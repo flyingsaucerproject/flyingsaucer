@@ -23,7 +23,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.FontResolver;
-import org.xhtmlrenderer.css.FontResolverTest;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
@@ -178,7 +177,7 @@ public class Context {
      * Constructor for the Context object
      */
     public Context() {
-        font_resolver = new FontResolverTest();
+        font_resolver = new FontResolver();
         /*
         // set up text rendering code
         TextRendererFactory text_renderer_factory = TextRendererFactory.newOversamplingInstance();
@@ -556,7 +555,7 @@ public class Context {
     }
     
     public void flushFonts() {
-        font_resolver = new FontResolverTest();
+        font_resolver = new FontResolver();
     }
 
 
@@ -749,6 +748,14 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2004/11/18 02:58:06  joshy
+ * collapsed the font resolver and font resolver test into one class, and removed
+ * the other
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.20  2004/11/17 14:58:18  joshy
  * added actions for font resizing
  *
