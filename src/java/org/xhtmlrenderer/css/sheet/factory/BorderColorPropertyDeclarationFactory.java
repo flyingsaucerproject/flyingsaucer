@@ -152,57 +152,6 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
         return declarations.iterator();
     }
 
-    /*
-     * // CAREFUL: note that with steadyState parser impl, their value class impl
-     * // both primitive and value list interfaces! use getCssValueType(), not instanceof!!
-     * if ( primVals.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE ) {
-     * // HACK: can use any color-property name here, just helps FSCssValue
-     * // figure out ident conversion (PWW 20-11-04)
-     * CSSPrimitiveValue primitive = new FSCssValue(CSSName.BORDER_COLOR_BOTTOM, (CSSPrimitiveValue)primVals);
-     * CSSPrimitiveValue primitives[] = {
-     * primitive,
-     * primitive,
-     * primitive,
-     * primitive};
-     * addProperties( declarations, primitives, ONE_TO_FOUR, origin, important );
-     * } else {
-     * // is a value list
-     * CSSValueList vList = (CSSValueList)primVals;
-     * // border-color explodes differently based on number of supplied values
-     * CSSPrimitiveValue p1, p2, p3, p4 = null;
-     * CSSPrimitiveValue primitives[] = null;
-     * String names[] = null;
-     * switch ( vList.getLength() ) {
-     * case 1:
-     * // bug in CSSValue implementation! should be a primitive value
-     * // not a list
-     * throw new XRRuntimeException( "'border-color' property has only one value, but SAC parser marked it as a value list." );
-     * case 2:
-     * p1 = new FSCssValue(CSSName.BORDER_COLOR_BOTTOM,(CSSPrimitiveValue)vList.item( 0 ));
-     * p2 = new FSCssValue(CSSName.BORDER_COLOR_BOTTOM,(CSSPrimitiveValue)vList.item( 1 ));
-     * primitives = new CSSPrimitiveValue[]{ p1, p1, p2, p2 };
-     * addProperties( declarations, primitives, TWO_TO_FOUR, origin, important );
-     * break;
-     * case 3:
-     * p1 = new FSCssValue(CSSName.BORDER_COLOR_BOTTOM,(CSSPrimitiveValue)vList.item( 0 ));
-     * p2 = new FSCssValue(CSSName.BORDER_COLOR_BOTTOM,(CSSPrimitiveValue)vList.item( 1 ));
-     * p3 = new FSCssValue(CSSName.BORDER_COLOR_BOTTOM,(CSSPrimitiveValue)vList.item( 2 ));
-     * primitives = new CSSPrimitiveValue[]{ p1, p2, p2, p3 };
-     * addProperties( declarations, primitives, THREE_TO_FOUR, origin, important );
-     * break;
-     * case 4:
-     * p1 = new FSCssValue(CSSName.BORDER_COLOR_BOTTOM,(CSSPrimitiveValue)vList.item( 0 ));
-     * p2 = new FSCssValue(CSSName.BORDER_COLOR_BOTTOM,(CSSPrimitiveValue)vList.item( 1 ));
-     * p3 = new FSCssValue(CSSName.BORDER_COLOR_BOTTOM,(CSSPrimitiveValue)vList.item( 2 ));
-     * p4 = new FSCssValue(CSSName.BORDER_COLOR_BOTTOM,(CSSPrimitiveValue)vList.item( 3 ));
-     * primitives = new CSSPrimitiveValue[]{ p1, p2, p3, p4 };
-     * addProperties( declarations, primitives, FOUR_TO_FOUR, origin, important );
-     * break;
-     * }
-     * }
-     * return declarations.iterator();
-     * }
-     */
     /**
      * Returns the singleton instance.
      *
@@ -220,6 +169,9 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/03/24 23:16:54  pdoubleya
+ * Removed commented block.
+ *
  * Revision 1.4  2005/01/29 20:24:25  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
