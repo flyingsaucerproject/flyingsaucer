@@ -131,10 +131,55 @@ my form fields?</h2>
     Field Access</a>  in the <a href="gettingstarted.html#hyperlinks">Getting Started Guide</a>.<br>
 </p>
 
+<br/>
+<br/>
 <h3>Developer's FAQ</h3>
 
 <h2>Configuration</h2>
-<p>To come...
+<p>The renderer works with a simple, <code>java.util.Properties</code>-based configuration system--no XML!
+Our <code>org.xhtmlrenderer.util.Confuration</code> class loads properties on first access and makes them available 
+at runtime.</p>
+
+<p>When you are using the renderer, <code>Configuration</code> needs to know where to find the properties
+file. If you are running from the renderer JAR file, our default properties will be read from there.
+If you have unpacked, or re-packed, the JAR, the location of the file is currently hard-coded
+as <code>/resources/conf/xhtmlrenderer.conf</code>. This path must be on the CLASSPATH as it is loaded as a
+system resource using a ClassLoader. You need to add the parent directory for <code>/resources</code> to
+your classpath, or include <code>/resources</code> in your JAR with no parent directory.</p>
+
+<p>You can change the default properties for the application right in the <code>.conf</code> file. However, 
+this is not a good idea, as you will have to merge your changes back on new releases. Plus, it
+will make reporting bugs more complicated. Instead, you can use one of two override mechanisms
+for changing the value of individual properties.</p>
+
+<p><b>Override with Second Conf File:</b>You can override properties by specifying the location
+of a second properties file as a System property when starting your app. Specifically, you need
+to define the System property <b>"xr-props"</b>. This should be the location of the second file
+relative to the CLASSPATH, e.g. 
+<pre>
+java -Dxr-props=resources/conf/myprops.conf
+</pre>
+Your override file should just re-assign values for properties originally given in 
+<conf>xhtmlrenderer.conf</conf>. Please see the documentation in that file for a 
+description of what each property affects.</p>
+
+
+<p><b>Override with System Properties:</b>You can also override properties one-by-one
+on the command line, using System properties. To override a property using the System 
+properties, just re-define the property on the command line. e.g. 
+<pre>
+java -Dxr.property-name=new_value
+</pre>
+</p>
+
+<p>You can override as many properties as you like. Note that overrides are driven
+by the property names in the default configuration file. Specifying a
+property name not in that file will have no effect--the property will not be
+loaded or available for lookup. Configuration is NOT used to control logging
+levels or output; see LogStartupConfig.</p>
+
+<p></p>
+<p></p>
 
 </div>
 </body>
