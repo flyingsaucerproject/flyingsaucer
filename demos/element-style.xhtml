@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--<!DOCTYPE html
+
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+
+
+    <head>
+
+        <title>Test: Headers</title>
+
+        <style type="text/css">
+
+            p.special { 
+
+                color: black !important;
+
+                }
+		
+	    p, p.normal {
+	    	color: black;
+		}
+	    
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Test element styling interaction with author !important</h1>
+
+        <p>Normal p is black</p>
+        <p style='color: blue;'>Element-styled p is blue</p>
+        <p class='normal'>Normal p is black</p>
+	<p class='normal' style='color: blue;'>Element-styled normal p is blue</p>
+        <p class='special'>Special p is black</p>
+        <p class='special' style='color: blue;'>*** Element-styled special p should still be black</p>
+        <p class='special' style='color: blue !important;'>*** Element-styled (!important) special p should be blue</p>
+        
+    </body>
+
+</html>
+
