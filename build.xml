@@ -341,4 +341,10 @@
         </java>
     </target>
     
+    <target name="test-moz-css" depends="compile">
+        <java classname="org.joshy.html.app.browser.BrowserStartup" classpath="build/classes" fork="true">
+            <arg value="demos/simple.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
 </project>

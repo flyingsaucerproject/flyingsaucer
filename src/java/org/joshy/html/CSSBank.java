@@ -31,6 +31,11 @@ public class CSSBank extends CSSAccessor {
         styles = new ArrayList();
         parser = new CSSParser(this);
         rule_bank = new RuleFinder();
+        //rule_bank = new MozRuleBank();
+    }
+    
+    public void setRuleBank(RuleBank rb) {
+        this.rule_bank = rb;
     }
     
     
@@ -63,10 +68,14 @@ public class CSSBank extends CSSAccessor {
     }
     
     public CSSValue getProperty(Element elem, String prop, boolean inherit) {
-        //u.p("looking at: " + elem.getNodeName() + " prop = " + prop + " inherit " + inherit);
+        if(elem.getNodeName().equals("a") && prop.equals("color")) {
+            //u.p("looking at: " + elem.getNodeName() + " prop = " + prop + " inherit " + inherit);
+        }
         //RuleFinder rf = new RuleFinder(this.styles);
         CSSStyleDeclaration style_dec = rule_bank.findRule(elem,prop,inherit);
-        //u.p("got style: " + style_dec);
+        if(elem.getNodeName().equals("a") && prop.equals("color")) {
+            //u.p("got style: " + style_dec);
+        }
         if(style_dec == null) {
             //u.p("print there is no style declaration at all for: " + elem.getNodeName());
             //u.p("looking for property: " + prop);

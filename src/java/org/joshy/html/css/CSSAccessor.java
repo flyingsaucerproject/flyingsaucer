@@ -173,6 +173,7 @@ public abstract class CSSAccessor {
 
     public Color getBackgroundColor(Element elem) {
         CSSValue val = getProperty(elem,"background-color",false);
+        //u.p("background for: " + elem.getNodeName() + " =  " + val);
         if(val == null) {
             return null;
         }
@@ -193,7 +194,14 @@ public abstract class CSSAccessor {
     public Color getColor(Element elem, boolean inherit) {
         //u.p("CSSBank.getColor("+elem.getNodeName() + ")");
         CSSValue val = getProperty(elem,"color",inherit);
-        //u.p("val = " + val);
+        if(elem.getNodeName().equals("a")) {
+            //u.p("val = " + val);
+        }
+        if(val == null) {
+            u.p("null returned on: " + elem.getNodeName());
+            u.p("property color");
+            System.exit(-1);
+        }
         if(val.getCssValueType() == val.CSS_PRIMITIVE_VALUE) {
             CSSPrimitiveValue pval = (CSSPrimitiveValue)val;
             if(pval.getPrimitiveType() == pval.CSS_RGBCOLOR) {

@@ -1,19 +1,40 @@
 * {
     color: #000000;
+}
+* {
+    display: inline;
+    position: static;
+    
+    /* background-color: transparent */
+    /*background-color: #cccccc; */
+    background-position: 0% 0%;
+    
     font-size: 12pt;
     font-weight: normal;
-    /*font-style: normal;*/
+    font-style: normal;  /* why was this commented out? jmm */
     font-family: sans-serif;
+    text-decoration: none;
+    white-space: normal;
+    vertical-align: baseline;
+    float: none;
+    
+    
     border-top-width: 0px;
     border-right-width: 0px;
     border-bottom-width: 0px;
     border-left-width: 0px;
     border-color: #000000;
     border-style: solid;
-    text-decoration: none;
-    display: inline;
-    position: static;
-    background-position: 0% 0%;
+    
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+    
 }
 body {
     background-color: #ffffff;

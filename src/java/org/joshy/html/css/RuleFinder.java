@@ -79,7 +79,7 @@ public class RuleFinder implements RuleBank {
     
     
     
-    private boolean matchSelector(Selector selector, Node node) {
+    protected boolean matchSelector(Selector selector, Node node) {
         if(selector.getSelectorType() == selector.SAC_ELEMENT_NODE_SELECTOR) {
             return matchElement((ElementSelector)selector,node);
         }

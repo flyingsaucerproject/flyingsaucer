@@ -1,5 +1,6 @@
 package org.joshy.html.app.browser;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.GridBagConstraints;
@@ -22,6 +23,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -41,27 +43,9 @@ public class BrowserStartup {
     BrowserMenuBar menu;
     JFrame frame;
     protected HistoryManager history;
+    JFrame validation_console = null;
     
-    ErrorHandler error_handler =  new ErrorHandler() {
-            public void error(SAXParseException ex) {
-                logger.info("error: " + print(ex));
-            }
-            public void fatalError(SAXParseException ex) {
-                logger.info("fatal error: " + print(ex));
-            }
-            public void warning(SAXParseException ex) {
-                logger.info("warning: " + print(ex));
-            }
-            public String print(SAXParseException ex) {
-                StringBuffer sb = new StringBuffer();
-                sb.append("Exception: " + ex.getMessage());
-                sb.append("failed at column : " + ex.getColumnNumber() +
-                " on line " + ex.getLineNumber());
-                sb.append("entity:\n" + ex.getPublicId() + "\n" + ex.getSystemId());
-                return sb.toString();
-            }
-        };
-        
+    ValidationHandler error_handler =  new ValidationHandler();
     public BrowserStartup() {
         logger.info("starting up");
         history = new HistoryManager();
@@ -82,7 +66,7 @@ public class BrowserStartup {
         
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception { 
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         BrowserStartup bs = new BrowserStartup();
@@ -93,6 +77,9 @@ public class BrowserStartup {
         frame.pack();
         frame.setSize(500,600);
         frame.show();
+        if(args.length > 0) {
+            bs.panel.loadPage(args[0]);
+        }
     }
     
 }
@@ -177,6 +164,31 @@ class BrowserMenuBar extends JMenuBar {
                 frame.pack();
                 frame.setSize(250,500);
                 frame.show();
+            }
+        });
+        debug.add(new AbstractAction("Validation Console") {
+            public void actionPerformed(ActionEvent evt) {
+                if(root.validation_console == null) {
+                    root.validation_console = new JFrame("Validation Console");
+                    JFrame frame = root.validation_console;
+                    JTextArea jta = new JTextArea();
+                    root.error_handler.setTextArea(jta);
+                    
+                    frame.getContentPane().setLayout(new BorderLayout());
+                    frame.getContentPane().add(new JScrollPane(jta),"Center");
+                    JButton close = new JButton("Close");
+                    frame.getContentPane().add(close,"South");
+                    close.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent evt) {
+                            root.validation_console.setVisible(false);
+                        }
+                    });
+                    
+                    
+                    frame.pack();
+                    frame.setSize(200,400);
+                }
+                root.validation_console.setVisible(true);
             }
         });
         

@@ -12,7 +12,7 @@ import org.w3c.dom.*;
 import java.io.File;
 import org.joshy.html.box.Box;
 import java.util.Date;
-import org.joshy.html.css.DefaultCSSMarker;
+import org.joshy.html.css.*;
 import java.io.*;
 
 public class CSSSpeedTest {
@@ -21,7 +21,6 @@ public class CSSSpeedTest {
         // load doc
         Document doc = x.loadDocument("demos/hamlet.xhtml");
         Element html = (Element)doc.getDocumentElement();
-        Element body = x.child(html,"body");
         
         // create buffer
         BufferedImage buff = new BufferedImage(500,500, BufferedImage.TYPE_4BYTE_ABGR);
@@ -32,10 +31,18 @@ public class CSSSpeedTest {
         
         // create context
         Context c = new Context();
+        c.css = new CSSBank();
+        runLoopTest(c,g,html);
+        c = new Context();
+        c.css = new CSSBank();
+        c.css.setRuleBank(new MozRuleBank());
+        runLoopTest(c,g,html);
+    }
+    
+    public static void runLoopTest(Context c, Graphics g, Element html) throws Exception {
+        Element body = x.child(html,"body");
         Point origin = new Point(0,0);
         Point last = new Point(0,0);
-        //c.canvas = this;
-        c.css = new CSSBank();
         Object marker = new DefaultCSSMarker();
         //u.p("getting: " + marker.getClass().getResource("default.css"));
         InputStream stream = marker.getClass().getResourceAsStream("default.css");
