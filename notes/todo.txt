@@ -92,7 +92,7 @@ fix n test tab alignment
 //javadoc graphic2drenderer
 //test docs uploaded
 make graphic2drenderer not use basicpanel
-fix float bugs w/ more than one float on a line
+//fix float bugs w/ more than one float on a line
 implement media support for printing and test it
     make financial table demo print differently
 fix bugs in unit tests and get them all to run properly

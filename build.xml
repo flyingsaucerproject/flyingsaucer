@@ -561,6 +561,7 @@
 
     <!-- Builds the core jar and runs diff tests -->
     <!-- this should almost never be called *** 
+    -->
     <target name="generate-diff-tests" depends="core-jar">
         <java classname="org.xhtmlrenderer.test.DocumentDiffGenerate" 
               fork="${java-exec.fork.tests}">
@@ -571,6 +572,7 @@
             </syspropertyset> 
         </java>
     </target>
+    <!--
     -->
 
     <!-- =================================================
@@ -696,6 +698,14 @@
 $Id$
 
 $Log$
+Revision 1.76  2004/11/30 21:23:18  joshy
+updated the unit tests
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.75  2004/11/30 00:37:20  joshy
 modified docs
 Issue number:

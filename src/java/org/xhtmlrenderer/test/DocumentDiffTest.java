@@ -39,7 +39,8 @@ import java.util.logging.*;
  * @author   empty
  */
 public class DocumentDiffTest {
-
+    public static final int width = 200;
+    public static final int height = 500;
     /**
      * Description of the Method
      *
@@ -59,10 +60,10 @@ public class DocumentDiffTest {
             if ( files[i].getName().endsWith( ".xhtml" ) ) {
                 String testfile = files[i].getAbsolutePath();
                 String difffile = testfile.substring( 0, testfile.length() - 6 ) + ".diff";
-                XRLog.log("unittests",Level.INFO,"test file = " + testfile );
+                XRLog.log("unittests",Level.WARNING,"test file = " + testfile );
                 //u.p( "diff file = " + difffile );
-                boolean is_correct = compareTestFile( testfile, difffile, 500, 500 );
-                u.p( "is correct = " + is_correct );
+                boolean is_correct = compareTestFile( testfile, difffile, width, height );
+                XRLog.log("unittests",Level.WARNING,"is correct = " + is_correct );
             }
         }
 
@@ -88,7 +89,7 @@ public class DocumentDiffTest {
                 String testfile = files[i].getAbsolutePath();
                 String difffile = testfile.substring( 0, testfile.length() - 6 ) + ".diff";
                 //u.p("test file = " + testfile);
-                generateTestFile( testfile, difffile, 500, 500 );
+                generateTestFile( testfile, difffile, width, height );
                 u.p( "generated = " + difffile );
             }
         }
@@ -134,7 +135,9 @@ public class DocumentDiffTest {
 
         //panel.setThreadedLayout(false);
         
-        renderer.layout(g, new Dimension(width,height));
+        Dimension dim = new Dimension(width,height);
+        System.out.println("dim = " + dim);
+        renderer.layout(g, dim);
         renderer.render(g);
         
         //panel.paintComponent( g );
@@ -162,21 +165,21 @@ public class DocumentDiffTest {
         try {
             din = u.file_to_string( diff );
         } catch (FileNotFoundException ex) {
+            XRLog.log("unittests",Level.WARNING,"diff file missing");
             return false;
         }
-        //u.p("tin = ");
-        //u.p(tin);
-        //u.p("din = ");
-        //u.p(din);
+        //XRLog.log("unittests",Level.WARNING,"tin = " + tin);
+        //XRLog.log("unittests",Level.WARNING,"din = " + din);
         if ( tin.equals( din ) ) {
             return true;
         }
-        u.p("warning not equals");
+        XRLog.log("unittests",Level.WARNING,"warning not equals");
         File dfile = new File("correct.diff");
         File tfile = new File("test.diff");
-        u.p("writing to " + dfile + " and " + tfile);
+        XRLog.log("unittests",Level.WARNING,"writing to " + dfile + " and " + tfile);
         u.string_to_file(tin,tfile);
         u.string_to_file(din,dfile);
+        System.exit(-1);
         return false;
     }
 
@@ -203,11 +206,11 @@ public class DocumentDiffTest {
      */
     public static void main( String[] args )
         throws Exception {
-        String testfile = "tests/diff/background/01.xhtml";
-        String difffile = "tests/diff/background/01.diff";
+        //String testfile = "tests/diff/background/01.xhtml";
+        //String difffile = "tests/diff/background/01.diff";
 
         DocumentDiffTest ddt = new DocumentDiffTest();
-        ddt.runTests( new File( "tests/diff" ), 500, 500 );
+        ddt.runTests( new File( "tests/diff" ), width, height );
     }
 
 }
@@ -216,6 +219,14 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/30 21:23:18  joshy
+ * updated the unit tests
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/11/30 20:28:28  joshy
  * support for multiple floats on a single line.
  *

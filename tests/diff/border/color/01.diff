@@ -1,83 +1,89 @@
-box:-element:html-box(0,0)-(200x771)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#ffffffff)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-none-scroll-0-0)-value:null
- box:-element:head-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-repeat-scroll-0-0)-value:null
- box:-element:body-box(0,0)-(200x771)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#ffffffff)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
-  box:-element:p-box(0,0)-(194x83)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(solid)-insets(mar(0,0,0,0)-bor(10,10,10,10)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
-   line:-element:p-box(0,0)-(145x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(145x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with a solid 10px black border except for the bottom is red. 
-   line:-element:p-box(0,19)-(168x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(168x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with a solid 10px black border except for the bottom is red. 
-   line:-element:p-box(0,38)-(115x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(115x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with a solid 10px black border except for the bottom is red. 
-  box:-element:p-box(0,83)-(194x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+box:-element:html-box(0,0)-(500x540)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-none-scroll-0-0)-value:null
+ box:-element:head-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak#0)-style(null)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(0,0,0,0))-backimg(null-null-null-0-0)-value:null
+ box:-element:body-box(0,0)-(500x540)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+  box:-element:p-box(0,0)-(494x66)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(solid)-insets(mar(0,0,0,0)-bor(10,10,10,10)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:p-box(0,0)-(441x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(441x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with a solid 10px black border
+        except for the bottom is red.
+        
+   line:-element:p-box(0,20)-(99x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(99x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with a solid 10px black border
+        except for the bottom is red.
+        
+  box:-element:p-box(0,66)-(494x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
    line:-element:p-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-  box:-element:p-box(0,89)-(194x102)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(outset)-insets(mar(0,0,0,0)-bor(10,10,10,10)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
-   line:-element:p-box(0,0)-(152x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(152x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an outset 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,19)-(164x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(164x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an outset 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,38)-(134x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(134x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an outset 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,57)-(38x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(38x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an outset 10px red border except for the bottom and left is green. 
-  box:-element:p-box(0,191)-(194x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+  box:-element:p-box(0,72)-(494x66)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(outset)-insets(mar(0,0,0,0)-bor(10,10,10,10)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:p-box(0,0)-(444x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(444x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an outset 10px red border
+        except for the bottom and left is green.
+        
+   line:-element:p-box(0,20)-(170x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(170x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an outset 10px red border
+        except for the bottom and left is green.
+        
+  box:-element:p-box(0,138)-(494x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
    line:-element:p-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-  box:-element:p-box(0,197)-(194x102)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(inset)-insets(mar(0,0,0,0)-bor(10,10,10,10)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
-   line:-element:p-box(0,0)-(152x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(152x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an inset 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,19)-(157x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(157x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an inset 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,38)-(134x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(134x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an inset 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,57)-(38x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(38x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an inset 10px red border except for the bottom and left is green. 
-  box:-element:p-box(0,299)-(194x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+  box:-element:p-box(0,144)-(494x66)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(inset)-insets(mar(0,0,0,0)-bor(10,10,10,10)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:p-box(0,0)-(435x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(435x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an inset 10px red border
+        except for the bottom and left is green.
+        
+   line:-element:p-box(0,20)-(170x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(170x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an inset 10px red border
+        except for the bottom and left is green.
+        
+  box:-element:p-box(0,210)-(494x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
    line:-element:p-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-  box:-element:p-box(0,305)-(194x102)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(ridge)-insets(mar(0,0,0,0)-bor(10,10,10,10)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
-   line:-element:p-box(0,0)-(152x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(152x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an ridge 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,19)-(158x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(158x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an ridge 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,38)-(134x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(134x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an ridge 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,57)-(38x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(38x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an ridge 10px red border except for the bottom and left is green. 
-  box:-element:p-box(0,407)-(194x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+  box:-element:p-box(0,216)-(494x66)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(ridge)-insets(mar(0,0,0,0)-bor(10,10,10,10)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:p-box(0,0)-(438x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(438x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an ridge 10px red border
+        except for the bottom and left is green.
+        
+   line:-element:p-box(0,20)-(170x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(170x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an ridge 10px red border
+        except for the bottom and left is green.
+        
+  box:-element:p-box(0,282)-(494x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
    line:-element:p-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-  box:-element:p-box(0,413)-(194x102)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(groove)-insets(mar(0,0,0,0)-bor(10,10,10,10)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
-   line:-element:p-box(0,0)-(152x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(152x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an groove 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,19)-(167x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(167x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an groove 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,38)-(134x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(134x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an groove 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,57)-(38x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(38x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an groove 10px red border except for the bottom and left is green. 
-  box:-element:p-box(0,515)-(194x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+  box:-element:p-box(0,288)-(494x66)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(groove)-insets(mar(0,0,0,0)-bor(10,10,10,10)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:p-box(0,0)-(450x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(450x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an groove 10px red border
+        except for the bottom and left is green.
+        
+   line:-element:p-box(0,20)-(170x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(170x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an groove 10px red border
+        except for the bottom and left is green.
+        
+  box:-element:p-box(0,354)-(494x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
    line:-element:p-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-  box:-element:p-box(0,521)-(194x102)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(double)-insets(mar(0,0,0,0)-bor(10,10,10,10)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
-   line:-element:p-box(0,0)-(152x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(152x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an double 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,19)-(168x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(168x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an double 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,38)-(134x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(134x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an double 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,57)-(38x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(38x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an double 10px red border except for the bottom and left is green. 
-  box:-element:p-box(0,623)-(194x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+  box:-element:p-box(0,360)-(494x66)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(double)-insets(mar(0,0,0,0)-bor(10,10,10,10)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:p-box(0,0)-(449x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(449x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an double 10px red border
+        except for the bottom and left is green.
+        
+   line:-element:p-box(0,20)-(170x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(170x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an double 10px red border
+        except for the bottom and left is green.
+        
+  box:-element:p-box(0,426)-(494x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
    line:-element:p-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-  box:-element:p-box(0,629)-(194x65)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(dashed)-insets(mar(0,0,0,0)-bor(1,1,1,1)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
-   line:-element:p-box(0,0)-(152x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(152x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an dashed 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,19)-(189x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(189x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an dashed 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,38)-(155x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(155x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an dashed 10px red border except for the bottom and left is green. 
-  box:-element:p-box(0,694)-(194x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+  box:-element:p-box(0,432)-(494x48)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(dashed)-insets(mar(0,0,0,0)-bor(1,1,1,1)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:p-box(0,0)-(454x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(454x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an dashed 10px red border
+        except for the bottom and left is green.
+        
+   line:-element:p-box(0,20)-(170x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(170x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an dashed 10px red border
+        except for the bottom and left is green.
+        
+  box:-element:p-box(0,480)-(494x6)-pos(0,0,0,0)-colors(for[null]-bor#ff000000-bak#0)-style(none)-insets(mar(0,0,0,0)-bor(0,0,0,0)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
    line:-element:p-box(0,0)-(0x0)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-  box:-element:p-box(0,700)-(194x65)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(dotted)-insets(mar(0,0,0,0)-bor(1,1,1,1)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
-   line:-element:p-box(0,0)-(189x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(189x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an dotted 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,19)-(164x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(164x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an dotted 10px red border except for the bottom and left is green. 
-   line:-element:p-box(0,38)-(135x19)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
-    inline:-element:#text-box(0,-3)-(135x16)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an dotted 10px red border except for the bottom and left is green. 
+  box:-element:p-box(0,486)-(494x48)-pos(0,0,0,0)-colors(for[null]-bor#ffff0000-bak#0)-style(dotted)-insets(mar(0,0,0,0)-bor(1,1,1,1)-pad(3,3,3,3))-backimg(null-repeat-scroll-0-0)-value:null
+   line:-element:p-box(0,0)-(446x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(446x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an dotted 10px red border
+        except for the bottom and left is green.
+        
+   line:-element:p-box(0,20)-(170x20)-pos(0,0,0,0)-colors(for[null]-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-null-null-0-0)-value:null
+    inline:-element:#text-box(0,3)-(170x20)-pos(0,0,0,0)-colors(for#ff000000-bor[null]-bak[null])-style(null)-insets(mar[null]-bor[null]-pad[null])-backimg(null-repeat-scroll-0-0)-value:This is a paragraph with an dotted 10px red border
+        except for the bottom and left is green.
+        
