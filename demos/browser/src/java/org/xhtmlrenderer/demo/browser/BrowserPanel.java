@@ -33,9 +33,11 @@ import java.awt.GridBagLayout;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.simple.FSScrollPane;
+import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
 
@@ -66,6 +68,10 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Field
      */
     JButton font_inc;
+    /**
+     * Description of the Field
+     */
+    JButton font_rst;
     /**
      * Description of the Field
      */
@@ -111,8 +117,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * @param listener PARAM
      */
     public BrowserPanel(BrowserStartup root, BrowserPanelListener listener) {
-        this.root = root;
-        this.listener = listener;
+      super();  
+      this.root = root;
+      this.listener = listener;
     }
     
     
@@ -121,14 +128,12 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      */
     public void init() {
         forward = new JButton();
-        backward = new JButton("Back");
-        stop = new JButton("Stop");
-        reload = new JButton("Reload");
+        backward = new JButton();
+        stop = new JButton();
+        reload = new JButton();
         url = new JTextField();
         view = new XHTMLPanel();
         scroll = new FSScrollPane(view);
-        font_inc = new JButton("A");
-        font_dec = new JButton("a");
         
         RenderingContext rc = view.getRenderingContext();
         try {
@@ -143,6 +148,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         
         int text_width = 200;
         view.setPreferredSize(new Dimension(text_width, text_width));
+
     }
     
     /**
@@ -163,21 +169,13 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         gbl.setConstraints(forward, c);
         add(forward);
         
-        c.gridx++;
+        /* c.gridx++;
         gbl.setConstraints(stop, c);
-        add(stop);
+        add(stop); */
         
         c.gridx++;
         gbl.setConstraints(reload, c);
         add(reload);
-        
-        c.gridx++;
-        gbl.setConstraints(font_inc, c);
-        add(font_inc);
-        
-        c.gridx++;
-        gbl.setConstraints(font_dec, c);
-        add(font_dec);
         
         c.gridx++;
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -211,10 +209,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         reload.setAction(root.actions.reload);
         url.setAction(root.actions.load);
         updateButtons();
-        
-        font_inc.setAction(root.actions.increase_font);
-        font_dec.setAction(root.actions.decrease_font);
-        
     }
     
     
@@ -224,7 +218,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     public void goForward() {
         root.history.goNext();
         view.setDocument(root.history.getCurrentDocument(), root.history.getCurrentURL());
-        //root.history.dumpHistory();
         updateButtons();
     }
     
@@ -236,7 +229,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     public void goBack()
     throws Exception {
         root.history.goPrevious();
-        //root.history.dumpHistory();
         view.setDocument(root.history.getCurrentDocument(), root.history.getCurrentURL());
         updateButtons();
     }
@@ -276,50 +268,52 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      */
     public void loadPage(String url_text)
     throws Exception {
-        logger.info("Loading Page: " + url_text);
-        current_url = url_text;
-        
-        Document doc = null;
-        URL ref = null;
-        
-        if (url_text.startsWith("demo:")) {
-            DemoMarker marker = new DemoMarker();
-            //Uu.p("marker = " + marker);
-            String short_url = url_text.substring(5);
-            //Uu.p("sub = " + short_url);
-            if (!short_url.startsWith("/")) {
-                short_url = "/" + short_url;
-            }
-            //InputSource source = new InputSource( new BufferedInputStream(  ) );
-            doc = XMLResource.load(marker.getClass().getResourceAsStream(short_url)).getDocument();
+        try {
             
-            ref = marker.getClass().getResource(short_url);
-            Uu.p("doc = " + doc);
-            Uu.p("ref = " + ref);
-        } else if (url_text.startsWith("http")) {
-            doc = XMLResource.load(new URL(url_text)).getDocument();
-            ref = new URL(url_text);
-        } else if (url_text.startsWith("file://")) {
-            File file = new File(new URI(url_text));
-            if (file.isDirectory()) {
-                doc = new DirectoryLister().list(file);
-                ref = file.toURL();
+            logger.info("Loading Page: " + url_text);
+            current_url = url_text;
+            
+            Document doc = null;
+            URL ref = null;
+            
+            if (url_text.startsWith("demo:")) {
+                DemoMarker marker = new DemoMarker();
+                String short_url = url_text.substring(5);
+                if (!short_url.startsWith("/")) {
+                    short_url = "/" + short_url;
+                }
+                doc = XMLResource.load(marker.getClass().getResourceAsStream(short_url)).getDocument();
+                
+                ref = marker.getClass().getResource(short_url);
+                Uu.p("doc = " + doc);
+                Uu.p("ref = " + ref);
+            } else if (url_text.startsWith("http")) {
+                doc = XMLResource.load(new URL(url_text)).getDocument();
+                ref = new URL(url_text);
+            } else if (url_text.startsWith("file://")) {
+                File file = new File(new URI(url_text));
+                if (file.isDirectory()) {
+                    doc = new DirectoryLister().list(file);
+                    ref = file.toURL();
+                } else {
+                    doc = XMLResource.load(file.toURL()).getDocument();
+                    ref = file.toURL();
+                }
+                
             } else {
-                doc = XMLResource.load(file.toURL()).getDocument();
-                ref = file.toURL();
+                doc = XMLResource.load(new InputSource(url_text)).getDocument();
+                ref = new File(url_text).toURL();
             }
             
-        } else {
-            doc = XMLResource.load(new InputSource(url_text)).getDocument();
-            ref = new File(url_text).toURL();
-        }
-        
-        Uu.p("going to load a page: " + doc + " " + ref);
-        loadPage(doc, ref);
-        
-        setStatus("Successfully loaded: " + url_text);
-        if (listener != null) {
-            listener.pageLoadSuccess(url_text, view.getDocumentTitle());
+            Uu.p("going to load a page: " + doc + " " + ref);
+            loadPage(doc, ref);
+            
+            setStatus("Successfully loaded: " + url_text);
+            if (listener != null) {
+                listener.pageLoadSuccess(url_text, view.getDocumentTitle());
+            }
+        } catch ( Exception ex ) {
+            XRLog.general(Level.SEVERE, "Could not load page for display.", ex);
         }
     }
     
@@ -328,8 +322,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Method
      */
     public void documentLoaded() {
-        //Uu.p("got a document loaded event");
-        //setupSubmitActions();
     }
     
     
@@ -341,93 +333,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     public void setStatus(String txt) {
         status.text.setText(txt);
     }
-    
-    /**
-     * Description of the Method
-     */
-    /*public void setupSubmitActions() {
-        //Uu.p("setup submit actions");
-        SharedContext cx = view.getContext();
-        Map forms = cx.getForms();
-        //Uu.p("forms = " + forms);
-        Iterator form_it = forms.keySet().iterator();
-        while (form_it.hasNext()) {
-            final String form_name = (String) form_it.next();
-            Map form = (Map) forms.get(form_name);
-            //Uu.p("got form: " + form_name);
-            Iterator fields = form.keySet().iterator();
-            while (fields.hasNext()) {
-                String field_name = (String) fields.next();
-                List field_list = (List) form.get(field_name);
-                //Uu.p("got field set: " + field_name);
-     
-                ButtonGroup bg = new ButtonGroup();
-                for (int i = 0; i < field_list.size(); i++) {
-                    SharedContext.FormComponent comp = (SharedContext.FormComponent) field_list.get(i);
-                    //Uu.p("got component: " + comp);
-     
-                    // bind radio buttons together
-                    if (comp.component instanceof JRadioButton) {
-                        bg.add((JRadioButton) comp.component);
-                    }
-     
-                    // add reset action listeners
-                    if (comp.component instanceof JButton) {
-                        //Uu.p("it's a jbutton");
-                        if (comp.element.getAttribute("type").equals("reset")) {
-                            ((JButton) comp.component).addActionListener(new ActionListener() {
-                                public void actionPerformed(ActionEvent evt) {
-                                    Uu.p("reset button hit");
-     
-                                    SharedContext ctx = view.getContext();
-                                    Iterator fields = ctx.getInputFieldComponents(form_name);
-                                    while (fields.hasNext()) {
-                                        List field_list = (List) fields.next();
-                                        for (int i = 0; i < field_list.size(); i++) {
-                                            SharedContext.FormComponent comp = (SharedContext.FormComponent) field_list.get(i);
-                                            comp.reset();
-                                        }
-                                    }
-     
-                                }
-                            });
-                        }
-                        if (comp.element.getAttribute("type").equals("submit")) {
-                            ((JButton) comp.component).addActionListener(new ActionListener() {
-                                public void actionPerformed(ActionEvent evt) {
-                                    Uu.p("submit button hit");
-                                    StringBuffer query = new StringBuffer();
-                                    query.append("?");
-                                    SharedContext ctx = view.getContext();
-                                    Iterator fields = ctx.getInputFieldComponents(form_name);
-                                    while (fields.hasNext()) {
-                                        List field = (List) fields.next();
-                                        for (int i = 0; i < field.size(); i++) {
-                                            SharedContext.FormComponent comp = (SharedContext.FormComponent) field.get(i);
-                                            if (comp.element.hasAttribute("value")) {
-                                                query.append(comp.element.getAttribute("name"));
-                                                query.append("=");
-                                                query.append(comp.element.getAttribute("value"));
-                                                query.append("&");
-                                            }
-                                        }
-                                    }
-                                    String url = ctx.getFormAction(form_name) + query.toString();
-                                    Uu.p("going to load: " + url);
-                                    try {
-                                        loadPage(url);
-                                    } catch (Exception ex) {
-                                        Uu.p(ex);
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        }
-    }*/
-    
     
     /**
      * Description of the Method
@@ -452,6 +357,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/03/28 20:02:01  pdoubleya
+ * Removed commented code, cleaned menu bar.
+ *
  * Revision 1.21  2005/02/05 11:35:59  pdoubleya
  * Load pages directly from XMLResource.
  *
