@@ -125,7 +125,6 @@
                 <include name="*.xhtml"/>
                 <include name="*.gif"/>
                 <include name="*.png"/>
-                <include name="splash/**"/>
                 <include name="about/**"/>
             </zipfileset>
             <zipfileset dir="demos/splash" prefix="demos/splash">
@@ -137,7 +136,7 @@
     
     <target name="about-jar" depends="compile.about" description="build about jar">
         <jar jarfile="build/about.jar" compress="true" 
-            manifest="src/packaging/manifest"
+            manifest="src/packaging/manifest.about"
             >
             <fileset dir="build/classes">
                 <include name="org/xhtmlrenderer/demo/aboutbox/**"/>
@@ -200,6 +199,9 @@
         <signjar jar="build/ss_css2.jar" alias="joshy" storepass="password" keystore="teststore"/>
         <signjar jar="build/xalan.jar" alias="joshy" storepass="password" keystore="teststore"/>
 
+    </target>
+    
+    <target name="dists" depends="jnlp-dist, src-dist, binary-dist">
     </target>
 
     <!-- =============  TESTS =================== -->
@@ -284,6 +286,13 @@
 $Id$
 
 $Log$
+Revision 1.44  2004/10/18 22:54:50  joshy
+added r4 distribution
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.43  2004/10/18 15:29:29  joshy
 split the layout into two classes
 made layout be an interface instead of a class.

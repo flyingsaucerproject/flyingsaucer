@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Created-By: Joshua Marinacci (joshua@marinacci.org)
-Main-Class: org.xhtmlrenderer.demo.browser.BrowserStartup
+Main-Class: org.xhtmlrenderer.demo.aboutbox.AboutBox
 Class-Path: joshy-common.jar ss_css2.jar core-renderer.jar xalan.jar

@@ -1,7 +1,7 @@
 last bit for R4
 
 --add javadocs online
-remove java.net stuff from javadocs pages
+--remove java.net stuff from javadocs pages
 build new news release
 link to RSS feed
 update src, binary, and java webstart links
@@ -22,12 +22,14 @@ The Flying Saucer Team is proud to present Beta Release 4 (R4) of our 100% Java 
 This release brings updates to the infrastructure with
 
     a new package heirarchy
+    a new unified CSS module
     automated unit tests to validate our rendering compliance
     new configuration and logging subsystem
     lots more code cleanup
     separate browser and about box sub projects
     
-
+This release paves the way for the new features and speed increases coming
+in R5.  Thanks for all of your support and please send us your feedback.
 
 
 
