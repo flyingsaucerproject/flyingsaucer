@@ -1,4 +1,4 @@
-h1,h2 {
+#fs h1, #fs h2 {
 	background: #FFFFFF url(images/scanbg.gif) left top;
 	border-top: 0px none #000000;
 	border-right: 0px none #000000;
@@ -14,21 +14,21 @@ h1,h2 {
 	word-spacing: normal;
 	letter-spacing: normal;
 }
-body {
+body, #fs {
 	background: #FFFFFF;
 	margin-right: 20px;
 	margin-left: 40px;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 }
-a {
+#fs a {
 	color: #0000FF;
 	text-decoration: none;
 }
-a:hover {
+#fs a:hover {
 	color: #FFFFFF;
 	background: #0099FF;
 }
-#menu li {
+#fs #menu li {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	color: #FFFFFF;
 	display: inline;
@@ -38,17 +38,17 @@ a:hover {
 	background: transparent;
 	font-size: medium;
 }
-ul#menu {
+#fs ul#menu {
 	background: #1777A4;
 	background: #FFFFFF url(images/scanbg.gif) left top;
 	padding: 10px;
 }
-#menu a {
+#fs #menu a {
 	color: #FFFFFF;
 	padding: 5px;
 	border: 1px none;
 }
-#menu a:hover {
+#fs #menu a:hover {
 	color: #000000;
 	background: #FFFFFF;
 	border: 1px solid #000000;
