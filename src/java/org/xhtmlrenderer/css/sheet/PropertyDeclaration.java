@@ -23,45 +23,61 @@ import org.xhtmlrenderer.css.impl.XRPropertyImpl;
 
 
 /**
+ * Represents a single property declared in a CSS rule set. A
+ * PropertyDeclaration is created from an {@link
+ * org.xhtmlrenderer.css.XRProperty} and is immutable. The declaration knows its
+ * origin, importance and specificity, and thus is prepared to be sorted out
+ * among properties of the same name, within a matched group, for the CSS
+ * cascade, into a {@link org.xhtmlrenderer.css.newmatch.CascadedStyle}.
+ *
  * @author   Torbjörn Gannholm
  */
 public class PropertyDeclaration {
-    /** Description of the Field */
+    /** The XRProperty instance we are wrapping. */
     private org.xhtmlrenderer.css.XRProperty base;
 
-    /** Description of the Field */
+    /** Whether the property was declared as important! by the user. */
     private boolean important;
 
-    /** Description of the Field */
+    /**
+     * Origin constant from the list defined in {@link Stylesheet}. See {@link
+     * Stylesheet#USER_AGENT}, {@link Stylesheet#USER}, and {@link
+     * Stylesheet#AUTHOR}.
+     */
     private int origin;
-
-    /** ImportanceAndOrigin of stylesheet - user agent */
-    public final static int CSS_DEFAULT = 0;
-
-    /** ImportanceAndOrigin of stylesheet - user agent */
-    public final static int USER_AGENT = 1;
-
-    /** ImportanceAndOrigin of stylesheet - user normal */
-    public final static int USER_NORMAL = 2;
-
-    /** ImportanceAndOrigin of stylesheet - author normal */
-    public final static int AUTHOR_NORMAL = 3;
-
-    /** ImportanceAndOrigin of stylesheet - author important */
-    public final static int AUTHOR_IMPORTANT = 4;
-
-    /** ImportanceAndOrigin of stylesheet - user important */
-    public final static int USER_IMPORTANT = 5;
 
     /** ImportanceAndOrigin of stylesheet - how many different */
     public final static int IMPORTANCE_AND_ORIGIN_COUNT = 6;
 
+    /** ImportanceAndOrigin of stylesheet - user agent */
+    private final static int CSS_DEFAULT = 0;
+
+    /** ImportanceAndOrigin of stylesheet - user agent */
+    private final static int USER_AGENT = 1;
+
+    /** ImportanceAndOrigin of stylesheet - user normal */
+    private final static int USER_NORMAL = 2;
+
+    /** ImportanceAndOrigin of stylesheet - author normal */
+    private final static int AUTHOR_NORMAL = 3;
+
+    /** ImportanceAndOrigin of stylesheet - author important */
+    private final static int AUTHOR_IMPORTANT = 4;
+
+    /** ImportanceAndOrigin of stylesheet - user important */
+    private final static int USER_IMPORTANT = 5;
+
     /**
-     * Creates a new instance of PropertyDeclaration
+     * Creates a new instance of PropertyDeclaration from an {@link
+     * org.xhtmlrenderer.css.XRProperty} instance.
      *
-     * @param p     PARAM
-     * @param imp   PARAM
-     * @param orig  PARAM
+     * @param p     The XRProperty instance to create the PropertyDeclaration
+     *      from.
+     * @param imp   True if property was declared important! and false if not.
+     * @param orig  int constant from {@link Stylesheet} for the origin of the
+     *      property declaration, that is, the origin of the style sheet where
+     *      it was declared. See {@link Stylesheet#USER_AGENT}, {@link
+     *      Stylesheet#USER}, and {@link Stylesheet#AUTHOR}.
      */
     public PropertyDeclaration( org.xhtmlrenderer.css.XRProperty p, boolean imp, int orig ) {
         base = p;
@@ -70,9 +86,19 @@ public class PropertyDeclaration {
     }
 
     /**
-     * Gets the importanceAndOrigin attribute of the PropertyDeclaration object
+     * Returns an int representing the combined origin and importance of the
+     * property as declared. The int is assigned such that default origin and
+     * importance is 0, and highest an important! property defined by the user
+     * (origin is Stylesheet.USER). The combined value would allow this property
+     * to be sequenced in the CSS cascade along with other properties matched to
+     * the same element with the same property name. In that sort, the highest
+     * sequence number returned from this method would take priority in the
+     * cascade, so that a user important! property would override a user
+     * non-important! property, and so on. The actual integer value returned by
+     * this method is unimportant, but has a lowest value of 0 and increments
+     * sequentially by 1 for each increase in origin/importance..
      *
-     * @return   The importanceAndOrigin value
+     * @return   See method javadoc.
      */
     public int getImportanceAndOrigin() {
         if ( origin == Stylesheet.USER_AGENT ) {
@@ -91,31 +117,35 @@ public class PropertyDeclaration {
     }
 
     /**
-     * Gets the name attribute of the PropertyDeclaration object
+     * Returns the CSS name of this property, e.g. "font-family".
      *
-     * @return   The name value
+     * @return   See desc.
      */
     public String getName() {
         return base.propertyName();
     }
 
     /**
-     * Gets the value attribute of the PropertyDeclaration object
+     * Returns the specified {@link org.w3c.dom.css.CSSValue} for this property.
+     * Specified means the value as entered by the user. Modifying the CSSValue
+     * returned here will result in indeterminate behavior--consider it
+     * immutable.
      *
-     * @return   The value value
+     * @return   See desc.
      */
     public org.w3c.dom.css.CSSValue getValue() {
         return base.specifiedValue().cssValue();
     }
-} // end clas
+}// end class
 
 /*
-
  * $Id$
-
  *
-
  * $Log$
+ * Revision 1.3  2004/11/16 10:39:34  pdoubleya
+ * Made members all private where appropriate.
+ * Comments.
+ *
  * Revision 1.2  2004/11/15 12:42:23  pdoubleya
  * Across this checkin (all may not apply to this particular file)
  * Changed default/package-access members to private.
@@ -125,9 +155,6 @@ public class PropertyDeclaration {
  * Removed some unnecessary SAC member variables that were only used in initialization.
  * CVS log section.
  *
-
  *
-
-*/
-
+ */
 
