@@ -26,9 +26,11 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     HTMLPanel view;
     JScrollPane scroll;
     BrowserStartup root;
+    BrowserPanelListener listener;
     
-    public BrowserPanel(BrowserStartup root) {
+    public BrowserPanel(BrowserStartup root, BrowserPanelListener listener) {
         this.root = root;
+        this.listener = listener;
     }
 
     
@@ -250,6 +252,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         loadPage(doc,ref);
         
         setStatus("Successfully loaded: " + url_text);
+        if ( listener != null ) {
+            listener.pageLoadSuccess(url_text, view.getDocumentTitle());
+        }
     }
     
     
