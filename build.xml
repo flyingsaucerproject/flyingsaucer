@@ -195,6 +195,7 @@
             <fileset dir="src/packaging/"><include name="aboutbox.jnlp"/></fileset>
         </copy>
         <signjar jar="build/core-renderer.jar" alias="joshy" storepass="password" keystore="teststore"/>
+        <signjar jar="build/about.jar" alias="joshy" storepass="password" keystore="teststore"/>
         <signjar jar="build/browser.jar" alias="joshy" storepass="password" keystore="teststore"/>
         <signjar jar="build/ss_css2.jar" alias="joshy" storepass="password" keystore="teststore"/>
         <signjar jar="build/xalan.jar" alias="joshy" storepass="password" keystore="teststore"/>
@@ -286,6 +287,14 @@
 $Id$
 
 $Log$
+Revision 1.45  2004/10/18 23:43:02  joshy
+final updates today
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.44  2004/10/18 22:54:50  joshy
 added r4 distribution
 Issue number:

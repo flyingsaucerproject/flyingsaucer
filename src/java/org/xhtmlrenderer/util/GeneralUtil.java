@@ -22,6 +22,7 @@ package org.xhtmlrenderer.util;
 
 import java.io.*;
 import java.net.*;
+import org.xhtmlrenderer.*;
 
 
 /**
@@ -39,7 +40,7 @@ public class GeneralUtil {
     public static InputStream openStreamFromClasspath( String resource ) {
         InputStream readStream = null;
         try {
-            ClassLoader loader = resource.getClass().getClassLoader();
+            ClassLoader loader = new DefaultCSSMarker().getClass().getClassLoader();
             if ( loader == null ) {
                 readStream = ClassLoader.getSystemResourceAsStream( resource );
             } else {
@@ -60,6 +61,14 @@ public class GeneralUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/10/18 23:43:02  joshy
+ * final updates today
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.2  2004/10/18 17:10:13  pdoubleya
  * Added additional condition, and error check.
  *
