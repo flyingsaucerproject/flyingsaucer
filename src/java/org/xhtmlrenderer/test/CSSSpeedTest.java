@@ -51,6 +51,8 @@ import java.util.Date;
 
 import org.xhtmlrenderer.css.*;
 
+import org.xhtmlrenderer.DefaultCSSMarker;
+
 import java.io.*;
 
 import org.xhtmlrenderer.css.bridge.XRStyleReference;

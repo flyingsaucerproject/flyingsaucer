@@ -34,7 +34,7 @@ import org.w3c.dom.*;
 import java.io.File;
 import org.xhtmlrenderer.render.Box;
 import java.util.Date;
-import org.xhtmlrenderer.css.DefaultCSSMarker;
+import org.xhtmlrenderer.DefaultCSSMarker;
 import java.io.*;
 
 public class SpeedTest {
