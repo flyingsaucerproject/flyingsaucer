@@ -38,7 +38,8 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import org.xhtmlrenderer.swing.DOMInspector;
 import org.xhtmlrenderer.util.u;
-
+import org.sektor37.minium.*;
+import java.util.Map;
 
 /**
  * Description of the Class
@@ -157,6 +158,15 @@ public class BrowserMenuBar extends JMenuBar {
         debugShow.add( new JCheckBoxMenuItem( new InlineBoxesAction() ) );
         debugShow.add( new JCheckBoxMenuItem( new FontMetricsAction() ) );
 
+        JMenu anti = new JMenu("Minium Anti Aliasing");
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Lowest (Default)",TextRenderingHints.DEFAULT_HINTS_FASTEST) ) );
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Low",TextRenderingHints.DEFAULT_HINTS_QUALITY_LOW) ) );
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Medium",TextRenderingHints.DEFAULT_HINTS_QUALITY_MEDIUM) ) );
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("High",TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGH) ) );
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Highest",TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGHEST) ) );
+        debug.add(anti);
+        
+        
         debug.add( new ShowDOMInspectorAction() );
         debug.add(
                     new AbstractAction( "Validation Console" ) {
@@ -362,6 +372,28 @@ public class BrowserMenuBar extends JMenuBar {
 
     }
 
+    class AntiAliasedAction extends AbstractAction {
+        boolean anti = false;
+        Map hint;
+        AntiAliasedAction(String text, Map hint) {
+            super( text );
+            anti = false;
+            this.hint = hint;
+        }
+    
+        public void actionPerformed( ActionEvent evt ) {
+            anti = !anti;
+            Map hints = null;
+            if(anti) {
+                hints = hint;
+            } else {
+                hints = TextRenderingHints.DEFAULT_HINTS_FASTEST;
+            }
+            root.panel.view.getContext().getTextRenderer().setTextRenderingHints(hints);
+            root.panel.view.repaint();
+        }
+    }
+
 }
 
 
@@ -402,10 +434,20 @@ class EmptyAction extends AbstractAction {
     public void actionPerformed( ActionEvent evt ) { }
 }
 
+
+
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/11/10 17:28:53  joshy
+ * initial support for anti-aliased text w/ minium
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.12  2004/11/10 04:53:59  tobega
  * cleaned up
  *

@@ -53,13 +53,16 @@ public class FontUtil {
      * @return      Returns
      */
     public static int len( Context c, Node node, String str, Font font ) {
-        return c.getGraphics().getFontMetrics( font ).stringWidth( str );
+        //return c.getGraphics().getFontMetrics( font ).stringWidth( str );
+        return (int)Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), font, str).getWidth());
     }
     public static int len( Context c, String str, Font font ) {
-        return c.getGraphics().getFontMetrics( font ).stringWidth( str );
+        //return c.getGraphics().getFontMetrics( font ).stringWidth( str );
+        return (int)Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), font, str).getWidth());
     }
     public static int len(Context c, InlineBox box) {
-        return c.getGraphics().getFontMetrics(box.getFont()).stringWidth(box.getSubstring());
+        //return c.getGraphics().getFontMetrics(box.getFont()).stringWidth(box.getSubstring());
+        return (int)Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), box.getFont(), box.getSubstring()).getWidth());
     }
 
     /**
@@ -70,7 +73,8 @@ public class FontUtil {
      * @return      Returns
      */
     public static int lineHeight( Context c, Node node ) {
-        int val = c.getGraphics().getFontMetrics( getFont( c, node ) ).getHeight();
+        //int val = c.getGraphics().getFontMetrics( getFont( c, node ) ).getHeight();
+        int val = (int)Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont( c, node ), "Test" ).getHeight());
         Element elem = null;
         if(node instanceof Element) {
             elem = (Element)node;
@@ -89,7 +93,8 @@ public class FontUtil {
         if(style.hasProperty("line-height")) {
             return (int)style.propertyByName("line-height").computedValue().asFloat();
         } else {
-            return c.getGraphics().getFontMetrics( box.getFont() ).getHeight();
+            //return c.getGraphics().getFontMetrics( box.getFont() ).getHeight();
+            return (int)Math.ceil(c.getTextRenderer().getLineMetrics(c.getGraphics(), box.getFont(), "Test").getHeight());
         }
     }
 
@@ -110,6 +115,7 @@ public class FontUtil {
      * @param font  PARAM
      * @param g     PARAM
      */
+     /*
     public static void dumpFontMetrics( Font font, Graphics g ) {
         FontMetrics fm = g.getFontMetrics( font );
         XRLog.layout( "Font: " + font.toString() );
@@ -124,6 +130,7 @@ public class FontUtil {
         XRLog.layout( "Max Descent: " + fm.getMaxDescent() );
         XRLog.layout( "hasUniformLineMetrics: " + fm.hasUniformLineMetrics() );
     }
+    */
 
 
     /**
@@ -312,6 +319,14 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/11/10 17:28:54  joshy
+ * initial support for anti-aliased text w/ minium
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.11  2004/11/09 16:07:57  joshy
  * moved vertical align code
  *

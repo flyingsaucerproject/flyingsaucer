@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.*;
+import java.awt.geom.*;
 import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.util.*;
 
@@ -88,8 +89,8 @@ public class DefaultRenderer implements Renderer {
     public void paintChild( Context c, Box box, Renderer layout ) {
         if(Configuration.isTrue("xr.renderer.viewport-repaint",false)) {
             if(c.getGraphics().getClip() != null) {
-                Rectangle oldclip = (Rectangle)c.getGraphics().getClip();
-                Rectangle box_rect = new Rectangle(box.x,box.y,box.width,box.height);
+                Rectangle2D oldclip = (Rectangle2D)c.getGraphics().getClip();
+                Rectangle2D box_rect = new Rectangle(box.x,box.y,box.width,box.height);
                 if(oldclip.intersects(box_rect)) {
                     layout.paint( c, box );
                 }

@@ -23,6 +23,7 @@ package org.xhtmlrenderer.render;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.u;
 
@@ -66,7 +67,7 @@ public class BackgroundPainter {
             int top_insets = box.y;
             int back_width = box.width;
             int back_height = box.height;
-            Rectangle oldclip = (Rectangle)c.getGraphics().getClip();
+            Rectangle2D oldclip = (Rectangle2D)c.getGraphics().getClip();
             Rectangle new_clip = new Rectangle( left_insets, top_insets, back_width, back_height );
             c.getGraphics().setClip( oldclip.createIntersection( new_clip ) );
 
@@ -205,6 +206,14 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/10 17:28:55  joshy
+ * initial support for anti-aliased text w/ minium
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/11/06 22:49:52  joshy
  * cleaned up alice
  * initial support for inline borders and backgrounds

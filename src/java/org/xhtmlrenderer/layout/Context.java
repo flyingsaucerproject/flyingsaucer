@@ -41,6 +41,7 @@ import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.u;
+import org.sektor37.minium.*;
 
 /**
  * Description of the Class
@@ -182,10 +183,37 @@ public class Context {
     /** Description of the Field */
     private boolean sub_block = false;
 
+    private TextRenderer text_renderer;
+    public TextRenderer getTextRenderer() {
+        return text_renderer;
+    }
 
     /** Constructor for the Context object */
     public Context() {
         font_resolver = new FontResolverTest();
+        
+        // set up text rendering code
+        TextRendererFactory text_renderer_factory = TextRendererFactory.newOversamplingInstance();
+        text_renderer = text_renderer_factory.newTextRenderer();
+
+        String text_renderer_quality = System.getProperty("org.xhtmlrenderer.minium.quality");
+        if (null == text_renderer_quality) {
+            text_renderer_quality = "lowest";
+        }
+
+        Map defaultHints;
+        if ("low".equals(text_renderer_quality)) {
+            defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_LOW;
+        } else if ("medium".equals(text_renderer_quality)) {
+            defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_MEDIUM;
+        } else if ("high".equals(text_renderer_quality)) {
+            defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGH;
+        } else if ("highest".equals(text_renderer_quality)) {
+            defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGHEST;
+        } else {
+            defaultHints = TextRenderingHints.DEFAULT_HINTS_FASTEST;
+        }
+        text_renderer.setTextRenderingHints(defaultHints);
     }
 
     /**
@@ -843,6 +871,14 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/10 17:28:54  joshy
+ * initial support for anti-aliased text w/ minium
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/11/09 00:36:08  joshy
  * fixed more text alignment
  * added menu item to show font metrics

@@ -35,6 +35,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
 import org.w3c.dom.Element;
+import java.util.Map;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
@@ -43,6 +44,7 @@ import org.xhtmlrenderer.layout.Layout;
 import org.xhtmlrenderer.layout.InlineLayout;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.u;
+import org.sektor37.minium.*;
 
 
 /**
@@ -138,6 +140,15 @@ public class HTMLTest extends JFrame {
         debugShow.add( new JCheckBoxMenuItem( new LineBoxOutlinesAction() ) );
         debugShow.add( new JCheckBoxMenuItem( new InlineBoxesAction() ) );
         debugShow.add( new JCheckBoxMenuItem( new FontMetricsAction() ) );
+        
+        
+        JMenu anti = new JMenu("Minium Anti Aliasing");
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Lowest (Default)",TextRenderingHints.DEFAULT_HINTS_FASTEST) ) );
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Low",TextRenderingHints.DEFAULT_HINTS_QUALITY_LOW) ) );
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Medium",TextRenderingHints.DEFAULT_HINTS_QUALITY_MEDIUM) ) );
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("High",TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGH) ) );
+        anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Highest",TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGHEST) ) );
+        debug.add(anti);
 
         debug.add( new ShowDOMInspectorAction() );
 
@@ -332,6 +343,28 @@ public class HTMLTest extends JFrame {
             panel.repaint();
         }
     }
+    
+    class AntiAliasedAction extends AbstractAction {
+        boolean anti = false;
+        Map hint;
+        AntiAliasedAction(String text, Map hint) {
+            super( text );
+            anti = false;
+            this.hint = hint;
+        }
+
+        public void actionPerformed( ActionEvent evt ) {
+            anti = !anti;
+            Map hints = null;
+            if(anti) {
+                hints = hint;
+            } else {
+                hints = TextRenderingHints.DEFAULT_HINTS_FASTEST;
+            }
+            panel.c.getTextRenderer().setTextRenderingHints(hints);
+            panel.repaint();
+        }
+    }
 
     /**
      * Description of the Class
@@ -439,6 +472,14 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/11/10 17:28:55  joshy
+ * initial support for anti-aliased text w/ minium
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.15  2004/11/10 04:46:12  tobega
  * no message
  *

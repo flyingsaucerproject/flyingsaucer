@@ -169,9 +169,12 @@ public class InlineRenderer extends BoxRenderer {
                     0, 0, new Color( 235, 235, 255 ),
                     0, inline.height / 2, new Color( 190, 190, 235 ),
                     true ) );
-            FontMetrics fm = c.getGraphics().getFontMetrics( inline.getFont() );
-            int top = ly + inline.y - fm.getAscent();
-            int height = fm.getAscent() + fm.getDescent();
+            //FontMetrics fm = c.getGraphics().getFontMetrics( inline.getFont() );
+            //int top = ly + inline.y - fm.getAscent();
+            //int height = fm.getAscent() + fm.getDescent();
+            LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), inline.getFont(), "Test");
+            int top = ly + inline.y - (int)Math.ceil(lm.getAscent());
+            int height = (int)Math.ceil(lm.getAscent() + lm.getDescent());
             c.getGraphics().fillRect(
                     lx + inline.x + xoff,
                     top,
@@ -190,42 +193,55 @@ public class InlineRenderer extends BoxRenderer {
         Color oldcolor = c.getGraphics().getColor();
         c.getGraphics().setColor( inline.color );
         Font cur_font = c.getGraphics().getFont();
-        LineMetrics lm = cur_font.getLineMetrics( text, ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
+        //LineMetrics lm = cur_font.getLineMetrics( text, ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
+        LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), cur_font, text);
 
         //u.p("lm descent = " + lm.getDescent());
         iy-= (int)lm.getDescent();
         
         //draw the line
         if ( text != null && text.length() > 0 ) {
-            c.getGraphics().drawString( text, ix, iy );
+            //c.getGraphics().drawString( text, ix, iy );
+            c.getTextRenderer().drawString( c.getGraphics(), text, ix, iy );
         }
         c.getGraphics().setColor( oldcolor );
         //draw any text decoration
+        int stringWidth = (int)Math.ceil(c.getTextRenderer().
+            getLogicalBounds(c.getGraphics(),
+             c.getGraphics().getFont(),
+             text).getWidth());
+ 
         if ( inline.underline ) {
             float down = lm.getUnderlineOffset();
             float thick = lm.getUnderlineThickness();
-            g.fillRect( ix, iy + (int)down, g.getFontMetrics().stringWidth( text ), (int)thick );
+            //g.fillRect( ix, iy + (int)down, g.getFontMetrics().stringWidth( text ), (int)thick );
+            g.fillRect( ix, iy + (int)down, stringWidth, (int)thick );
         }
 
         if ( inline.strikethrough ) {
             float down = lm.getStrikethroughOffset();
             float thick = lm.getStrikethroughThickness();
-            g.fillRect( ix, iy + (int)down, g.getFontMetrics().stringWidth( text ), (int)thick );
+            g.fillRect( ix, iy + (int)down, stringWidth, (int)thick );
+            //g.fillRect( ix, iy + (int)down, g.getFontMetrics().stringWidth( text ), (int)thick );
         }
 
         if ( inline.overline ) {
             float down = lm.getAscent();
             float thick = lm.getUnderlineThickness();
-            g.fillRect( ix, iy - (int)down, g.getFontMetrics().stringWidth( text ), (int)thick );
+            //g.fillRect( ix, iy - (int)down, g.getFontMetrics().stringWidth( text ), (int)thick );
+            g.fillRect( ix, iy + (int)down, stringWidth, (int)thick );
         }
 
         if ( c.debugDrawFontMetrics() ) {
             g.setColor(Color.red);
             g.drawLine(ix,iy, ix+inline.width, iy);
-            iy += lm.getDescent();
+            iy += (int)Math.ceil(lm.getDescent());
+            //iy += lm.getDescent();
             g.drawLine(ix,iy, ix+inline.width, iy);
-            iy -= lm.getDescent();
-            iy -= lm.getAscent();
+            //iy -= lm.getDescent();
+            //iy -= lm.getAscent();
+            iy -= (int)Math.ceil(lm.getDescent());
+            iy -= (int)Math.ceil(lm.getAscent());
             g.drawLine(ix,iy, ix+inline.width, iy);
         }
 
