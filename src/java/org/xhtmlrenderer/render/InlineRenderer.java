@@ -37,9 +37,9 @@ public class InlineRenderer extends BoxRenderer {
      */
     public void paintChildren(Context c, Box box) {
         //TODO: unravel the mysterious inheritance spaghetti
-        if (box instanceof AnonymousBlockBox) {
+        /*if (box instanceof AnonymousBlockBox) {
             return;
-        }
+        }*/
         if (isBlockLayedOut(box)) {
             super.paintChildren(c, box);
         }

@@ -293,6 +293,21 @@ public class ContentUtil {
             if (inlineList.size() != 0) {
                 blockList.add(new AnonymousBlockContent(parentElement, inlineList));
             }
+            //HACK: there should instead be a way of propagating firstLineStyles down through box-hierarchy
+            if (blockList.get(0) instanceof AnonymousBlockContent) {
+                inlineList = ((AnonymousBlockContent) blockList.get(0)).getChildContent(c);
+                blockList.remove(0);
+                if (firstLetterStyle != null) {
+                    inlineList.add(0, firstLetterStyle);
+                    firstLetterStyle = null;
+                }
+                if (firstLineStyle != null) {
+                    inlineList.add(0, firstLineStyle);
+                    firstLineStyle = null;
+                }
+                blockList.add(0, new AnonymousBlockContent(parentElement, inlineList));
+            }
+            //END-HACK
             if (firstLetterStyle != null) {
                 blockList.add(0, firstLetterStyle);
             }
@@ -439,6 +454,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/12/13 00:04:55  tobega
+ * Inserted a hack to make firstLine-styling of first anonymous block work. Should be replaced by better mechanism later.
+ *
  * Revision 1.14  2004/12/12 23:19:25  tobega
  * Tried to get hover working. Something happens, but not all that's supposed to happen.
  *
