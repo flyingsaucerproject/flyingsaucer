@@ -49,40 +49,31 @@ public class BorderColorPropertyExplosionTest extends AbstractPropertyExplosionT
         // string is left as 'transparent' in our normalization and
         // only converted to Color(0,0,0,0) when referenced (PWW 19-11-04)
         testVals = new HashMap();
-        testVals.put(CSSName.BORDER_COLOR_TOP, Color.BLACK);
-        testVals.put(CSSName.BORDER_COLOR_BOTTOM, Color.BLACK);
-        testVals.put(CSSName.BORDER_COLOR_RIGHT, Color.BLACK);
-        testVals.put(CSSName.BORDER_COLOR_LEFT, Color.BLACK);
+        testVals.put(CSSName.BORDER_COLOR_TOP, "black");
+        testVals.put(CSSName.BORDER_COLOR_BOTTOM, "black");
+        testVals.put(CSSName.BORDER_COLOR_RIGHT, "black");
+        testVals.put(CSSName.BORDER_COLOR_LEFT, "black");
         temp.put( "p#OneToFour", new Object[]{"{ border-color: black; }", testVals} );
 
         testVals = new HashMap();
-        Color aqua = Color.decode("#00ffff");
-        Color blue = Color.decode("#0000ff");
-        testVals.put(CSSName.BORDER_COLOR_TOP, aqua);
-        testVals.put(CSSName.BORDER_COLOR_BOTTOM, aqua);
-        testVals.put(CSSName.BORDER_COLOR_RIGHT, blue);
-        testVals.put(CSSName.BORDER_COLOR_LEFT, blue);
+        testVals.put(CSSName.BORDER_COLOR_TOP, "aqua");
+        testVals.put(CSSName.BORDER_COLOR_BOTTOM, "aqua");
+        testVals.put(CSSName.BORDER_COLOR_RIGHT, "blue");
+        testVals.put(CSSName.BORDER_COLOR_LEFT, "blue");
         temp.put( "p#TwoToFour", new Object[]{"{ border-color: aqua blue; }", testVals} );
 
         testVals = new HashMap();
-        Color fuchsia = Color.decode("#ff00ff");
-        Color gray = Color.decode("#808080");
-        Color green = Color.decode("#008000");
-        testVals.put(CSSName.BORDER_COLOR_TOP, fuchsia);
-        testVals.put(CSSName.BORDER_COLOR_RIGHT, gray);
-        testVals.put(CSSName.BORDER_COLOR_LEFT, gray);
-        testVals.put(CSSName.BORDER_COLOR_BOTTOM, green);
+        testVals.put(CSSName.BORDER_COLOR_TOP, "fuchsia");
+        testVals.put(CSSName.BORDER_COLOR_RIGHT, "gray");
+        testVals.put(CSSName.BORDER_COLOR_LEFT, "gray");
+        testVals.put(CSSName.BORDER_COLOR_BOTTOM, "green");
         temp.put( "p#ThreeToFour", new Object[]{"{ border-color: fuchsia gray green; }", testVals} );
 
         testVals = new HashMap();
-        Color lime = Color.decode("#00ff00");
-        Color maroon = Color.decode("#800000");
-        Color navy = Color.decode("#000080");
-        Color olive = Color.decode("#808000");
-        testVals.put(CSSName.BORDER_COLOR_TOP, lime);
-        testVals.put(CSSName.BORDER_COLOR_RIGHT, maroon);
-        testVals.put(CSSName.BORDER_COLOR_BOTTOM, navy);
-        testVals.put(CSSName.BORDER_COLOR_LEFT, olive);
+        testVals.put(CSSName.BORDER_COLOR_TOP, "lime");
+        testVals.put(CSSName.BORDER_COLOR_RIGHT, "maroon");
+        testVals.put(CSSName.BORDER_COLOR_BOTTOM, "navy");
+        testVals.put(CSSName.BORDER_COLOR_LEFT, "olive");
         temp.put( "p#FourToFour", new Object[]{"{ border-color: lime maroon navy olive; }", testVals} );
         return temp;
     }
@@ -101,6 +92,9 @@ public class BorderColorPropertyExplosionTest extends AbstractPropertyExplosionT
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/01/29 16:00:42  pdoubleya
+ * No longer use identifier-replaced values on PDs.
+ *
  * Revision 1.2  2005/01/24 14:32:29  pdoubleya
  * Cleaned imports, removed references to FSCSSTestCase.
  *

@@ -58,7 +58,7 @@ public class OutlinePropertyExplosionTest extends AbstractPropertyExplosionTest 
         Map testVals = new TreeMap();
 
         testVals = new HashMap();
-        testVals.put(CSSName.OUTLINE_COLOR, "#000000");
+        testVals.put(CSSName.OUTLINE_COLOR, "black");
         testVals.put(CSSName.OUTLINE_STYLE, "solid");
         testVals.put(CSSName.OUTLINE_WIDTH, "thick");
         appendTestPermutations(temp,
@@ -87,6 +87,9 @@ public class OutlinePropertyExplosionTest extends AbstractPropertyExplosionTest 
  *
 
  * $Log$
+ * Revision 1.3  2005/01/29 16:00:42  pdoubleya
+ * No longer use identifier-replaced values on PDs.
+ *
  * Revision 1.2  2005/01/24 14:32:31  pdoubleya
  * Cleaned imports, removed references to FSCSSTestCase.
  *

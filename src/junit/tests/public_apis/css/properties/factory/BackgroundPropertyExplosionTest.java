@@ -66,11 +66,12 @@ public class BackgroundPropertyExplosionTest extends AbstractPropertyExplosionTe
         // feel free to add other variations, where defaults are normally expected
         // if you leave a shorthand out.
         testVals = new HashMap();
-        testVals.put(CSSName.BACKGROUND_COLOR, "#808080");
+        testVals.put(CSSName.BACKGROUND_COLOR, "gray");
         testVals.put(CSSName.BACKGROUND_IMAGE, "url(chess.png)");
         testVals.put(CSSName.BACKGROUND_REPEAT, "repeat");
         testVals.put(CSSName.BACKGROUND_ATTACHMENT, "fixed");
-        testVals.put(CSSName.BACKGROUND_POSITION, "50% 50%"); // note that spec treats a single len as a horiz value with 50% height
+        testVals.put(CSSName.BACKGROUND_POSITION, "50% 50%"); 
+        // note that spec treats a single len as a horiz value with 50% height
         appendTestPermutations(temp,
                                "p#FullBackground",
                                CSSName.BACKGROUND_SHORTHAND,
@@ -78,7 +79,13 @@ public class BackgroundPropertyExplosionTest extends AbstractPropertyExplosionTe
                                testVals);
 
         testVals = new HashMap(testVals);
-        testVals.put(CSSName.BACKGROUND_POSITION, "100% 0%");
+        testVals.put(CSSName.BACKGROUND_COLOR, "gray");
+        testVals.put(CSSName.BACKGROUND_IMAGE, "url(chess.png)");
+        testVals.put(CSSName.BACKGROUND_REPEAT, "repeat");
+        testVals.put(CSSName.BACKGROUND_ATTACHMENT, "fixed");
+        testVals.put(CSSName.BACKGROUND_POSITION, "50% 50%"); 
+        // note that spec treats a single len as a horiz value with 50% height
+        testVals.put(CSSName.BACKGROUND_POSITION, "right top");
         appendTestPermutations(temp,
                                "p#FullBackgroundRT",
                                CSSName.BACKGROUND_SHORTHAND,
@@ -90,7 +97,7 @@ public class BackgroundPropertyExplosionTest extends AbstractPropertyExplosionTe
         temp.put( "p#BGPositions", new Object[]{"{ background: 50%; }", testVals});
 
         testVals = new HashMap();
-        testVals.put(CSSName.BACKGROUND_POSITION, "0% 0%");
+        testVals.put(CSSName.BACKGROUND_POSITION, "top left");
         temp.put( "p#BGPosTopLeft", new Object[]{"{ background: top left; }", testVals});
 
         return temp;
@@ -110,6 +117,9 @@ public class BackgroundPropertyExplosionTest extends AbstractPropertyExplosionTe
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/01/29 16:00:42  pdoubleya
+ * No longer use identifier-replaced values on PDs.
+ *
  * Revision 1.2  2005/01/24 14:32:29  pdoubleya
  * Cleaned imports, removed references to FSCSSTestCase.
  *

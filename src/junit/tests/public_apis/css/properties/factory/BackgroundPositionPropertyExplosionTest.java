@@ -58,13 +58,19 @@ public class BackgroundPositionPropertyExplosionTest extends AbstractPropertyExp
         Map testVals = new TreeMap();
 
         testVals = new HashMap();
-        testVals.put(CSSName.BACKGROUND_POSITION, "0% 0%");
+        testVals.put(CSSName.BACKGROUND_POSITION, "top left");
         temp.put( "p#TopLeft", new Object[]{"{ background-position: top left; }", testVals} );
+        
+        testVals = new HashMap();
+        testVals.put(CSSName.BACKGROUND_POSITION, "left top");
         temp.put( "p#LeftTop", new Object[]{"{ background-position: left top; }", testVals} );
 
         testVals = new HashMap();
-        testVals.put(CSSName.BACKGROUND_POSITION, "50% 50%");
+        testVals.put(CSSName.BACKGROUND_POSITION, "center");
         temp.put( "p#Center", new Object[]{"{ background-position: center; }", testVals} );
+
+        testVals = new HashMap();
+        testVals.put(CSSName.BACKGROUND_POSITION, "center center");
         temp.put( "p#CenterCenter", new Object[]{"{ background-position: center center; }", testVals} );
 
         testVals = new HashMap();
@@ -94,6 +100,9 @@ public class BackgroundPositionPropertyExplosionTest extends AbstractPropertyExp
  *
 
  * $Log$
+ * Revision 1.3  2005/01/29 16:00:42  pdoubleya
+ * No longer use identifier-replaced values on PDs.
+ *
  * Revision 1.2  2005/01/24 14:32:29  pdoubleya
  * Cleaned imports, removed references to FSCSSTestCase.
  *
