@@ -177,7 +177,7 @@ public class Matcher {
     }
 
     private int appendStylesheet(StylesheetInfo si, int count, java.util.TreeMap sorter, String media) {
-        if (!si.appliesToMedia(media)) ;//this is logical, and also how firefox does it
+        if (!si.appliesToMedia(media)) return count;//this is logical, and also how firefox does it
         Stylesheet ss = si.getStylesheet();
         if (ss == null) {
             ss = _styleFactory.getStylesheet(si);
