@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href='xmldoc.css' type='text/css'?>
+
+<doc xml:lang="en">
+
+
+
+<meta>
+
+<title>Test: XML</title>
+
+
+    </meta>
+
+    <section>
+
+    
+
+    <heading>The XML nodes below should be indented nicely and coloured blue</heading>
+
+<para>If you want to select a set of nodes from an XML document
+
+you should start with the top node and select on down.</para>
+
+
+
+
+
+<para>ex: if you have this XML</para>
+
+
+
+<node>&lt;root&gt;
+
+  <node>&lt;sub1&gt;
+
+    <node>&lt;sub2&gt;
+
+      <node>&lt;target&gt;the answer&lt;/target&gt;</node>
+
+    &lt;/sub2&gt;</node>
+
+  &lt;/sub1&gt;</node>
+
+&lt;/root&gt;</node>
+
+
+
+<para>then this XPATH</para>
+
+
+
+<pre>/root/sub1/sub2/target</pre>
+
+
+
+<para>will return this text</para>
+
+
+
+<pre>the answer</pre>
+
+
+
+</section>
+
+</doc>
+
+
+
