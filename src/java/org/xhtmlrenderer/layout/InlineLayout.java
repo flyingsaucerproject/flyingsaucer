@@ -290,7 +290,7 @@ public class InlineLayout extends BoxLayout {
         if (content instanceof FloatedBlockContent) {
             return true;
         }
-        if (content instanceof AbsoluteBlockContent) {
+        if (content instanceof AbsolutelyPositionedContent) {
             return true;
         }
         /*if (c.getRenderingContext().getLayoutFactory().isBreak(current_node)) {//not needed with content
@@ -316,7 +316,7 @@ public class InlineLayout extends BoxLayout {
     public static boolean isNormalInline(Content currentContent) {
         if (!(currentContent instanceof InlineBlockContent)) {
             if (!(currentContent instanceof FloatedBlockContent)) {
-                if (!(currentContent instanceof AbsoluteBlockContent)) {
+                if (!(currentContent instanceof AbsolutelyPositionedContent)) {
                     return true;
                 }
             }
@@ -328,7 +328,7 @@ public class InlineLayout extends BoxLayout {
         if (currentContent instanceof FloatedBlockContent) {
             return true;
         }
-        if (currentContent instanceof AbsoluteBlockContent) {
+        if (currentContent instanceof AbsolutelyPositionedContent) {
             return true;
         }
         return false;
@@ -365,7 +365,7 @@ public class InlineLayout extends BoxLayout {
         } else if (content instanceof FloatedBlockContent) {
             //Uu.p("calcinline: is floated block");
             result = FloatUtil.generateFloatedBlockInlineBox(c, content, avail, prev_align, font);
-        } else if (content instanceof AbsoluteBlockContent) {
+        } else if (content instanceof AbsolutelyPositionedContent) {
              // Uu.p("this might be a problem, but it could just be an absolute block");
         //     result = new BoxLayout().layout(c,content);
             result = Absolute.generateInlineBox(c, content, avail, prev_align, font);
@@ -479,6 +479,13 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.64  2004/12/16 17:33:15  joshy
+* moved back to abs pos content
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.63  2004/12/16 17:22:25  joshy
 * minor code cleanup
 * Issue number:

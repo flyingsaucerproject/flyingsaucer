@@ -123,7 +123,7 @@ public class ContentUtil {
                     inlineList.add(new TextContent(parentElement, textContent.toString()));
                     textContent = null;
                 }
-                inlineList.add(new AbsoluteBlockContent((Element) curr, style));
+                inlineList.add(new AbsolutelyPositionedContent((Element) curr, style));
                 c.popStyle();
                 continue;
             }
@@ -462,6 +462,13 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2004/12/16 17:33:15  joshy
+ * moved back to abs pos content
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.18  2004/12/16 15:53:09  joshy
  * fixes for absolute layout
  *

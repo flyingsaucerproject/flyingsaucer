@@ -73,7 +73,7 @@ public class LayoutUtil {
             return true;
         }
         
-        if (box.content instanceof AbsoluteBlockContent) {
+        if (box.content instanceof AbsolutelyPositionedContent) {
             return true;
         }
         

@@ -5,7 +5,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FloatedBlockContent;
-import org.xhtmlrenderer.layout.content.AbsoluteBlockContent;
+import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
 import org.xhtmlrenderer.layout.content.InlineBlockContent;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
@@ -26,7 +26,7 @@ public class VerticalAlign {
         LineMetrics parent_metrics = null;
         if (!(content instanceof InlineBlockContent)) {
             if (!(content instanceof FloatedBlockContent) &&
-                !(content instanceof AbsoluteBlockContent)) {
+                !(content instanceof AbsolutelyPositionedContent)) {
                 parent_metrics = parent_font.getLineMetrics(box.getSubstring(), ((Graphics2D) c.getGraphics()).getFontRenderContext());
             } else {
                 parent_metrics = parent_font.getLineMetrics("Test", ((Graphics2D) c.getGraphics()).getFontRenderContext());
@@ -42,7 +42,7 @@ public class VerticalAlign {
 
         // set the height of the box to the height of the font
         if (!(content instanceof InlineBlockContent) &&
-            !(content instanceof AbsoluteBlockContent)) {
+            !(content instanceof AbsolutelyPositionedContent)) {
             box.height = FontUtil.lineHeight(c, box);
         }
 
@@ -120,7 +120,7 @@ public class VerticalAlign {
             if (inline.floated) {
                 continue;
             }
-            if (inline.content instanceof AbsoluteBlockContent) {
+            if (inline.content instanceof AbsolutelyPositionedContent) {
                 // Uu.p("inline = " + inline);
                 continue;
             }
@@ -154,7 +154,7 @@ public class VerticalAlign {
         for (int i = 0; i < box.getChildCount(); i++) {
             InlineBox inline = (InlineBox) box.getChild(i);
             if (inline.floated ||
-                inline.content instanceof AbsoluteBlockContent) {
+                inline.content instanceof AbsolutelyPositionedContent) {
                     // Uu.p("skipping: " + inline);
                 // Uu.p("adjusting floated inline:");
                 // Uu.p("inline = " + inline);

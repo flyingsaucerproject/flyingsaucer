@@ -2,7 +2,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.content.AbsoluteBlockContent;
+import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
 import org.xhtmlrenderer.layout.content.FloatedBlockContent;
 import org.xhtmlrenderer.layout.content.InlineBlockContent;
 import org.xhtmlrenderer.layout.content.StylePop;
@@ -120,7 +120,7 @@ public class InlineRenderer extends BoxRenderer {
             return;
         }
 
-        if (inline.content instanceof AbsoluteBlockContent) {
+        if (inline.content instanceof AbsolutelyPositionedContent) {
             paintAbsolute(c, inline, line);
             debugInlines(c, inline, lx, ly);
             return;
