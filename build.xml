@@ -43,6 +43,7 @@
                 </fileset>
             </classpath>
             <include name="org/xhtmlrenderer/**"/>
+            <exclude name="com/pdoubleya/**"/>
         </javac>
         <mkdir dir="build/classes/resources/css"/>
         <copy todir="build/classes/resources/css/" file="src/css/default.css"/>
