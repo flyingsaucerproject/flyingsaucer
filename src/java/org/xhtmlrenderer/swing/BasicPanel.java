@@ -19,12 +19,25 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import org.apache.xpath.XPathAPI;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.extend.RenderingContext;
+import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
+import org.xhtmlrenderer.layout.BodyLayout;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.util.XRLog;
+import org.xml.sax.ErrorHandler;
+
+import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.print.PrinterGraphics;
@@ -35,81 +48,88 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.apache.xpath.XPathAPI;
-import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.extend.RenderingContext;
-import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
-import org.xhtmlrenderer.layout.BodyLayout;
-import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.x;
-import org.xml.sax.ErrorHandler;
 
 
 /**
  * A Swing {@link javax.swing.JPanel} that encloses the Flying Saucer renderer
  * for easy integration into Swing applications.
  *
- * @author   Joshua Marinacci
+ * @author Joshua Marinacci
  */
 public abstract class BasicPanel extends JPanel implements ComponentListener {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public Element hovered_element = null;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     protected Document doc = null;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     protected Box body_box = null;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     protected ErrorHandler error_handler;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     protected BodyLayout layout;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected RenderingContext ctx;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected LayoutThread layout_thread;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected URL url;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     boolean inside = false;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     private Map documentListeners;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     private JScrollPane enclosingScrollPane;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     private Dimension intrinsic_size;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     private boolean anti_aliased = true;
 
-    /** Constructor for the BasicPanel object  */
+    /**
+     * Constructor for the BasicPanel object
+     */
     public BasicPanel() {
 
         layout = new BodyLayout();
-        layout_thread = new LayoutThread( this );
-        setLayout( new AbsoluteLayoutManager() );
+        layout_thread = new LayoutThread(this);
+        setLayout(new AbsoluteLayoutManager());
         documentListeners = new HashMap();
         setBackground(Color.white);
     }
@@ -119,17 +139,19 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
      * component. If listener l is null, no exception is thrown and no action is
      * performed.
      *
-     * @param listener  Contains the DocumentListener for DocumentEvent data.
+     * @param listener Contains the DocumentListener for DocumentEvent data.
      */
-    public void addDocumentListener( DocumentListener listener ) {
-        this.documentListeners.put( listener, listener );
+    public void addDocumentListener(DocumentListener listener) {
+        this.documentListeners.put(listener, listener);
     }
 
 
-    /** Description of the Method  */
+    /**
+     * Description of the Method
+     */
     public void resetScrollPosition() {
-        if ( this.enclosingScrollPane != null ) {
-            this.enclosingScrollPane.getVerticalScrollBar().setValue( 0 );
+        if (this.enclosingScrollPane != null) {
+            this.enclosingScrollPane.getVerticalScrollBar().setValue(0);
         }
     }
 
@@ -141,10 +163,10 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     public void addNotify() {
         super.addNotify();
         Container p = getParent();
-        if ( p instanceof JViewport ) {
+        if (p instanceof JViewport) {
             Container vp = p.getParent();
-            if ( vp instanceof JScrollPane ) {
-                setEnclosingScrollPane( (JScrollPane)vp );
+            if (vp instanceof JScrollPane) {
+                setEnclosingScrollPane((JScrollPane) vp);
             }
         }
     }
@@ -155,78 +177,78 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
      */
     public void removeNotify() {
         super.removeNotify();
-        setEnclosingScrollPane( null );
+        setEnclosingScrollPane(null);
     }
 
 
     /**
      * Description of the Method
      *
-     * @param g  PARAM
+     * @param g PARAM
      */
-    public void paintComponent( Graphics g ) {
-        if ( anti_aliased ) {
+    public void paintComponent(Graphics g) {
+        if (anti_aliased) {
             // TODO:
             // ( (Graphics2D)g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         }
 
-        if ( doc == null ) {
+        if (doc == null) {
             return;
         }
 
         // if this is the first time painting this document, then calc layout
-        if ( body_box == null ) {
-            calcLayout( g );
+        if (body_box == null) {
+            calcLayout(g);
         }
 
-        newContext( (Graphics2D)g );
-        layout_thread.startRender( g );
+        newContext((Graphics2D) g);
+        layout_thread.startRender(g);
     }
 
     /**
      * Description of the Method
      *
-     * @param g  PARAM
+     * @param g PARAM
      */
-    public void startLayout( Graphics g ) {
+    public void startLayout(Graphics g) {
         this.removeAll();
-        if ( g == null ) {
+        if (g == null) {
             return;
         }
-        if ( doc == null ) {
+        if (doc == null) {
             return;
         }
 
-        Element html = (Element)doc.getDocumentElement();
+        Element html = (Element) doc.getDocumentElement();
         
         // CLEAN
         //Element body = x.child( html, "body" );
         //body = html;
 
         // set up CSS
-        newContext( (Graphics2D)g );
-        getContext().setMaxWidth( 0 );
+        newContext((Graphics2D) g);
+        getContext().setMaxWidth(0);
         
         // DEBUG
-        XRLog.layout( Level.FINEST, "layout = " + layout);
-        
-        getRenderingContext().getTextRenderer().setupGraphics( getContext().getGraphics() );
-        body_box = layout.layout( getContext(), html );
-        
-        XRLog.layout( Level.FINEST, "is a fixed child: " + body_box.isChildrenExceedBounds());
+        XRLog.layout(Level.FINEST, "layout = " + layout);
+
+        getRenderingContext().getTextRenderer().setupGraphics(getContext().getGraphics());
+        body_box = layout.layout(getContext(), html);
+
+        XRLog.layout(Level.FINEST, "is a fixed child: " + body_box.isChildrenExceedBounds());
         
         // if there is a fixed child then we need to set opaque to false
         // so that the entire viewport will be repainted. this is slower
         // but that's the hit you get from using fixed layout
-        if ( body_box.isChildrenExceedBounds() ) {
-            setOpaque( false );
+        if (body_box.isChildrenExceedBounds()) {
+            setOpaque(false);
         } else {
-            setOpaque( true );
+            setOpaque(true);
         }
 
         getRenderingContext().setRootBox(body_box);
-        
-        XRLog.layout( Level.FINEST, "after layout: " + body_box);
+
+        XRLog.layout(Level.FINEST, "after layout: " + body_box);
 
         
         /*
@@ -237,21 +259,21 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         }
         */
 
-        intrinsic_size = new Dimension( getContext().getMaxWidth(), layout.contents_height );
-        if ( enclosingScrollPane != null ) {
-            XRLog.layout( Level.FINEST, "enclosing scroll pane = " + this.enclosingScrollPane);
+        intrinsic_size = new Dimension(getContext().getMaxWidth(), layout.contents_height);
+        if (enclosingScrollPane != null) {
+            XRLog.layout(Level.FINEST, "enclosing scroll pane = " + this.enclosingScrollPane);
             int view_height = this.enclosingScrollPane.getViewport().getHeight();
 
             // resize the outter most box incase it is too small for the viewport
-            if ( intrinsic_size.getHeight() < view_height ) {
-                if ( body_box != null ) {
+            if (intrinsic_size.getHeight() < view_height) {
+                if (body_box != null) {
                     body_box.height = view_height;
                 }
             }
         }
 
-        if ( !intrinsic_size.equals( this.getSize() ) ) {
-            this.setPreferredSize( intrinsic_size );
+        if (!intrinsic_size.equals(this.getSize())) {
+            this.setPreferredSize(intrinsic_size);
             this.revalidate();
         }
 
@@ -265,30 +287,30 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Description of the Method
      *
-     * @param x  PARAM
-     * @param y  PARAM
-     * @return   Returns
+     * @param x PARAM
+     * @param y PARAM
+     * @return Returns
      */
-    public Box findBox( int x, int y ) {
-        return findBox( this.body_box, x, y );
+    public Box findBox(int x, int y) {
+        return findBox(this.body_box, x, y);
     }
 
     /**
      * Description of the Method
      *
-     * @param box  PARAM
-     * @param x    PARAM
-     * @param y    PARAM
-     * @return     Returns
+     * @param box PARAM
+     * @param x   PARAM
+     * @param y   PARAM
+     * @return Returns
      */
-    public Box findBox( Box box, int x, int y ) {
+    public Box findBox(Box box, int x, int y) {
 
-        if ( box == null ) {
+        if (box == null) {
             return null;
         }
         Iterator it = box.getChildIterator();
-        while ( it.hasNext() ) {
-            Box bx = (Box)it.next();
+        while (it.hasNext()) {
+            Box bx = (Box) it.next();
             int tx = x;
             int ty = y;
             tx -= bx.x;
@@ -298,21 +320,21 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
 
             // test the contents
             Box retbox = null;
-            retbox = findBox( bx, tx, ty );
-            if ( retbox != null ) {
+            retbox = findBox(bx, tx, ty);
+            if (retbox != null) {
                 return retbox;
             }
 
             // test the box itself
             int tty = y;
-            if ( bx instanceof InlineBox ) {
-                InlineBox ibx = (InlineBox)bx;
-                LineBox lbx = (LineBox)box;
+            if (bx instanceof InlineBox) {
+                InlineBox ibx = (InlineBox) bx;
+                LineBox lbx = (LineBox) box;
                 int off = lbx.baseline + ibx.y - ibx.height;
                 tty -= off;
             }
 
-            if ( bx.contains( x - bx.x, tty - bx.y ) ) {
+            if (bx.contains(x - bx.x, tty - bx.y)) {
                 return bx;
             }
         }
@@ -324,29 +346,29 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Description of the Method
      *
-     * @param x  PARAM
-     * @param y  PARAM
-     * @return   Returns
+     * @param x PARAM
+     * @param y PARAM
+     * @return Returns
      */
-    public int findBoxX( int x, int y ) {
-        return findBoxX( this.body_box, x, y );
+    public int findBoxX(int x, int y) {
+        return findBoxX(this.body_box, x, y);
     }
 
 
     /**
      * Description of the Method
      *
-     * @param box  PARAM
-     * @param x    PARAM
-     * @param y    PARAM
-     * @return     Returns
+     * @param box PARAM
+     * @param x   PARAM
+     * @param y   PARAM
+     * @return Returns
      */
-    public int findBoxX( Box box, int x, int y ) {
-        XRLog.layout( Level.FINEST, "findBox(" + box + " at ("+x+","+y+")");
+    public int findBoxX(Box box, int x, int y) {
+        XRLog.layout(Level.FINEST, "findBox(" + box + " at (" + x + "," + y + ")");
         Iterator it = box.getChildIterator();
 
-        while ( it.hasNext() ) {
-            Box bx = (Box)it.next();
+        while (it.hasNext()) {
+            Box bx = (Box) it.next();
             int tx = x;
             int ty = y;
             tx -= bx.x;
@@ -355,27 +377,27 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
             ty -= bx.totalTopPadding();
 
             // test the contents
-            int retbox = findBoxX( bx, tx, ty );
-            if ( retbox != -1 ) {
+            int retbox = findBoxX(bx, tx, ty);
+            if (retbox != -1) {
                 return retbox;
             }
 
             int tty = y;
-            if ( bx instanceof InlineBox ) {
-                InlineBox ibx = (InlineBox)bx;
-                LineBox lbx = (LineBox)box;
-                XRLog.layout( Level.FINEST, "inline = " + ibx);
-                XRLog.layout( Level.FINEST, "inline y = " + ibx.y);
-                XRLog.layout( Level.FINEST, "inline height = " + ibx.height);
-                XRLog.layout( Level.FINEST, "line = " + lbx);
+            if (bx instanceof InlineBox) {
+                InlineBox ibx = (InlineBox) bx;
+                LineBox lbx = (LineBox) box;
+                XRLog.layout(Level.FINEST, "inline = " + ibx);
+                XRLog.layout(Level.FINEST, "inline y = " + ibx.y);
+                XRLog.layout(Level.FINEST, "inline height = " + ibx.height);
+                XRLog.layout(Level.FINEST, "line = " + lbx);
                 int off = lbx.baseline + ibx.y - ibx.height;
-                XRLog.layout( Level.FINEST, "off = " + off);
+                XRLog.layout(Level.FINEST, "off = " + off);
                 tty -= off;
             }
 
             // test the box itself
-            XRLog.layout( Level.FINEST, "bx test = " + bx + " " + x +","+y);
-            if ( bx.contains( x - bx.x, tty - bx.y ) ) {
+            XRLog.layout(Level.FINEST, "bx test = " + bx + " " + x + "," + y);
+            if (bx.contains(x - bx.x, tty - bx.y)) {
                 return x - bx.x;
             }
         }
@@ -386,80 +408,85 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Description of the Method
      *
-     * @param e  PARAM
+     * @param e PARAM
      */
-    public void componentHidden( ComponentEvent e ) { }
+    public void componentHidden(ComponentEvent e) {
+    }
 
     /**
      * Description of the Method
      *
-     * @param e  PARAM
+     * @param e PARAM
      */
-    public void componentMoved( ComponentEvent e ) { }
+    public void componentMoved(ComponentEvent e) {
+    }
 
     /**
      * Description of the Method
      *
-     * @param e  PARAM
+     * @param e PARAM
      */
-    public void componentResized( ComponentEvent e ) {
+    public void componentResized(ComponentEvent e) {
         calcLayout();
     }
 
     /**
      * Description of the Method
      *
-     * @param e  PARAM
+     * @param e PARAM
      */
-    public void componentShown( ComponentEvent e ) { }
+    public void componentShown(ComponentEvent e) {
+    }
 
 
-    /** Description of the Method  */
+    /**
+     * Description of the Method
+     */
     public void printTree() {
-        printTree( this.body_box, "" );
+        printTree(this.body_box, "");
     }
 
     /**
      * Sets the threadedLayout attribute of the BasicPanel object
      *
-     * @param threaded  The new threadedLayout value
+     * @param threaded The new threadedLayout value
      */
-    public void setThreadedLayout( boolean threaded ) {
-        layout_thread.setThreadedLayout( threaded );
+    public void setThreadedLayout(boolean threaded) {
+        layout_thread.setThreadedLayout(threaded);
     }
 
     /**
      * Sets the renderingContext attribute of the BasicPanel object
      *
-     * @param ctx  The new renderingContext value
+     * @param ctx The new renderingContext value
      */
-    public void setRenderingContext( RenderingContext ctx ) {
+    public void setRenderingContext(RenderingContext ctx) {
         this.ctx = ctx;
     }
 
     /**
      * Sets the document attribute of the BasicPanel object
      *
-     * @param doc  The new document value
-     * @param url  The new document value
+     * @param doc The new document value
+     * @param url The new document value
      */
-    public void setDocument( Document doc, URL url ) {
+    public void setDocument(Document doc, URL url) {
         resetScrollPosition();
         this.doc = doc;
         this.url = url;
 
         //have to do this first
-        getRenderingContext().setBaseURL( url );
+        getRenderingContext().setBaseURL(url);
         StaticXhtmlAttributeResolver ar =
-            new StaticXhtmlAttributeResolver() {
-                public boolean isHover( org.w3c.dom.Element e ) {
-                    if ( e == hovered_element ) {
-                        return true;
+                new StaticXhtmlAttributeResolver() {
+                    public boolean isHover(org.w3c.dom.Element e) {
+                        if (e == hovered_element) {
+                            return true;
+                        }
+                        return false;
                     }
-                    return false;
-                }
-            };
-        getRenderingContext().getStyleReference().setDocumentContext( getContext(), new XhtmlNamespaceHandler(), ar, doc );
+                };
+        getRenderingContext().getStyleReference().setDocumentContext(getContext(), new XhtmlNamespaceHandler(), ar, doc);
 
         calcLayout();
         repaint();
@@ -468,9 +495,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Sets the errorHandler attribute of the BasicPanel object
      *
-     * @param error_handler  The new errorHandler value
+     * @param error_handler The new errorHandler value
      */
-    public void setErrorHandler( ErrorHandler error_handler ) {
+    public void setErrorHandler(ErrorHandler error_handler) {
         this.error_handler = error_handler;
     }
 
@@ -478,9 +505,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Sets the antiAliased attribute of the BasicPanel object
      *
-     * @param anti_aliased  The new antiAliased value
+     * @param anti_aliased The new antiAliased value
      */
-    public void setAntiAliased( boolean anti_aliased ) {
+    public void setAntiAliased(boolean anti_aliased) {
         this.anti_aliased = anti_aliased;
     }
 
@@ -488,18 +515,18 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Sets the size attribute of the BasicPanel object
      *
-     * @param d  The new size value
+     * @param d The new size value
      */
-    public void setSize( Dimension d ) {
-        XRLog.layout( Level.FINEST, "set size called");
-        super.setSize( d );
-        this.calcLayout();
+    public void setSize(Dimension d) {
+        XRLog.layout(Level.FINEST, "set size called");
+        super.setSize(d);
+        //this.calcLayout();//this causes a second layout to be done!
     }
 
     /**
      * Gets the renderingContext attribute of the BasicPanel object
      *
-     * @return   The renderingContext value
+     * @return The renderingContext value
      */
     public RenderingContext getRenderingContext() {
         return ctx;
@@ -508,7 +535,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Gets the intrinsicSize attribute of the BasicPanel object
      *
-     * @return   The intrinsicSize value
+     * @return The intrinsicSize value
      */
     public Dimension getIntrinsicSize() {
         return intrinsic_size;
@@ -517,7 +544,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Gets the uRL attribute of the BasicPanel object
      *
-     * @return   The uRL value
+     * @return The uRL value
      */
     public URL getURL() {
         return this.url;
@@ -526,7 +553,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Gets the rootBox attribute of the BasicPanel object
      *
-     * @return   The rootBox value
+     * @return The rootBox value
      */
     public Box getRootBox() {
         return body_box;
@@ -535,7 +562,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Gets the context attribute of the BasicPanel object
      *
-     * @return   The context value
+     * @return The context value
      */
     public Context getContext() {
         return getRenderingContext().getContext();
@@ -544,7 +571,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Gets the document attribute of the BasicPanel object
      *
-     * @return   The document value
+     * @return The document value
      */
     public Document getDocument() {
         return doc;
@@ -553,22 +580,22 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Gets the documentTitle attribute of the BasicPanel object
      *
-     * @return   The documentTitle value
+     * @return The documentTitle value
      */
     public String getDocumentTitle() {
         String title = "";
         try {
             Element root = this.doc.getDocumentElement();
             Node node =
-                    (Node)XPathAPI.selectSingleNode( root, "//head/title/text()" );
-            if ( node == null ) {
-                XRLog.exception( "Apparently no title element for this document." );
+                    (Node) XPathAPI.selectSingleNode(root, "//head/title/text()");
+            if (node == null) {
+                XRLog.exception("Apparently no title element for this document.");
                 title = "TITLE UNKNOWN";
             } else {
                 title = node.getNodeValue();
             }
-        } catch ( Exception ex ) {
-            XRLog.exception( "Error retrieving document title. " + ex.getMessage() );
+        } catch (Exception ex) {
+            XRLog.exception("Error retrieving document title. " + ex.getMessage());
             title = "";
         }
         return title;
@@ -577,14 +604,14 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Gets the fixedRectangle attribute of the BasicPanel object
      *
-     * @return   The fixedRectangle value
+     * @return The fixedRectangle value
      */
     public Rectangle getFixedRectangle() {
-        if(enclosingScrollPane != null) {
+        if (enclosingScrollPane != null) {
             return enclosingScrollPane.getViewportBorderBounds();
         } else {
             Dimension dim = getSize();
-            return new Rectangle(0,0,dim.width,dim.height);
+            return new Rectangle(0, 0, dim.width, dim.height);
         }
     }
 
@@ -607,31 +634,35 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
      * Recalculate the layout of the panel. Only called by paintComponent(). Use
      * calcLayout() instead.
      *
-     * @param g  PARAM
+     * @param g PARAM
      */
-    protected void calcLayout( Graphics g ) {
-        layout_thread.startLayout( g );
+    protected void calcLayout(Graphics g) {
+        layout_thread.startLayout(g);
     }
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     protected void doRender() {
         // paint the normal swing background first
         // but only if we aren't printing.
         Graphics g = getRenderingContext().getContext().getGraphics();
-        if(!(g instanceof PrinterGraphics)) {
+        if (!(g instanceof PrinterGraphics)) {
             g.setColor(getBackground());
-            g.fillRect(0,0,getWidth(),getHeight());
+            g.fillRect(0, 0, getWidth(), getHeight());
         }
         // start painting the box tree
-        layout.getRenderer().paint( getRenderingContext().getContext(),
-                body_box );
+        layout.getRenderer().paint(getRenderingContext().getContext(),
+                body_box);
     }
 
-    /** Description of the Method  */
+    /**
+     * Description of the Method
+     */
     protected void fireDocumentLoaded() {
         Iterator it = this.documentListeners.keySet().iterator();
-        while ( it.hasNext() ) {
-            DocumentListener list = (DocumentListener)it.next();
+        while (it.hasNext()) {
+            DocumentListener list = (DocumentListener) it.next();
             list.documentLoaded();
         }
     }
@@ -640,12 +671,12 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     /**
      * Description of the Method
      *
-     * @param url         PARAM
-     * @return            Returns
-     * @throws Exception  Throws
+     * @param url PARAM
+     * @return Returns
+     * @throws Exception Throws
      */
-    protected Document loadDocument( final URL url )
-        throws Exception {
+    protected Document loadDocument(final URL url)
+            throws Exception {
         /* CLEAN
          * XRDocument xrDoc = XRDocumentFactory.loadDocument(null, url);
          * return xrDoc.getDOMDocument();
@@ -653,45 +684,46 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         //Document dom = x.loadDocument( url );
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = fact.newDocumentBuilder();
-        builder.setErrorHandler( error_handler );
-        Document doc =  builder.parse( url.openStream() );
+        builder.setErrorHandler(error_handler);
+        Document doc = builder.parse(url.openStream());
         return doc;
     }
 
     /**
      * Sets the documentRelative attribute of the BasicPanel object
      *
-     * @param filename    The new documentRelative value
-     * @throws Exception  Throws
+     * @param filename The new documentRelative value
+     * @throws Exception Throws
      */
-    protected void setDocument(InputStream stream, URL url)  throws Exception {
+    protected void setDocument(InputStream stream, URL url) throws Exception {
         Document dom = x.loadDocument(stream);
-        setDocument(dom,url);
+        setDocument(dom, url);
     }
-    protected void setDocumentRelative( String filename )
-        throws Exception {
-        if ( getContext() != null && ( !filename.startsWith( "http" ) ) ) {
-            URL base = new URL( getRenderingContext().getBaseURL(), filename );
-            XRLog.load( "Loading URL " + base );
-            Document dom = x.loadDocument( base );
+
+    protected void setDocumentRelative(String filename)
+            throws Exception {
+        if (getContext() != null && (!filename.startsWith("http"))) {
+            URL base = new URL(getRenderingContext().getBaseURL(), filename);
+            XRLog.load("Loading URL " + base);
+            Document dom = x.loadDocument(base);
             
             // CLEAN
             // URL base = new File(filename).toURL();
             
-            setDocument( dom, base );
+            setDocument(dom, base);
             return;
         }
-        setDocument( x.loadDocument( filename ), new File( filename ).toURL() );
+        setDocument(x.loadDocument(filename), new File(filename).toURL());
     }
 
 
     /**
      * Description of the Method
      *
-     * @param g  PARAM
+     * @param g PARAM
      */
-    private void newContext( Graphics2D g ) {
-        XRLog.layout( Level.FINEST, "new context begin");
+    private void newContext(Graphics2D g) {
+        XRLog.layout(Level.FINEST, "new context begin");
         
         // CLEAN
         //Point origin = new Point( 0, 0 );
@@ -707,11 +739,11 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         //c.setExtents(new Rectangle(0,0,this.getWidth(),this.getHeight()));
         //XRLog.layout( Level.FINEST, "viewport size = " + viewport.getSize());
         
-        if ( enclosingScrollPane != null ) {
+        if (enclosingScrollPane != null) {
             Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
-            getContext().setExtents( new Rectangle( 0, 0, bnds.width, bnds.height ) );
+            getContext().setExtents(new Rectangle(0, 0, bnds.width, bnds.height));
         } else {
-            getContext().setExtents( new Rectangle( getWidth(), getHeight() ) );//200, 200 ) );
+            getContext().setExtents(new Rectangle(getWidth(), getHeight()));//200, 200 ) );
         }
 
         // CLEAN
@@ -722,28 +754,28 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         // CLEAN
         //getContext().cursor = last;
         
-        getContext().setMaxWidth( 0 );
-        XRLog.layout( Level.FINEST, "new context end");
+        getContext().setMaxWidth(0);
+        XRLog.layout(Level.FINEST, "new context end");
     }
 
     /**
      * Description of the Method
      *
-     * @param box  PARAM
-     * @param tab  PARAM
+     * @param box PARAM
+     * @param tab PARAM
      */
-    private void printTree( Box box, String tab ) {
-        XRLog.layout( Level.FINEST,  tab + "Box = " + box );
+    private void printTree(Box box, String tab) {
+        XRLog.layout(Level.FINEST, tab + "Box = " + box);
         Iterator it = box.getChildIterator();
-        while ( it.hasNext() ) {
-            Box bx = (Box)it.next();
-            printTree( bx, tab + " " );
+        while (it.hasNext()) {
+            Box bx = (Box) it.next();
+            printTree(bx, tab + " ");
         }
 
-        if ( box instanceof InlineBox ) {
-            InlineBox ib = (InlineBox)box;
-            if ( ib.sub_block != null ) {
-                printTree( ib.sub_block, tab + " " );
+        if (box instanceof InlineBox) {
+            InlineBox ib = (InlineBox) box;
+            if (ib.sub_block != null) {
+                printTree(ib.sub_block, tab + " ");
             }
         }
     }
@@ -753,19 +785,19 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
      * ensure that any enclosing {@link JScrollPane} works correctly with this
      * panel. This method can be safely invoked with a <tt>null</tt> scrollPane.
      *
-     * @param scrollPane  the enclosing {@link JScrollPane} or <tt>null</tt> if
-     *      the panel is no longer enclosed in a {@link JScrollPane}.
+     * @param scrollPane the enclosing {@link JScrollPane} or <tt>null</tt> if
+     *                   the panel is no longer enclosed in a {@link JScrollPane}.
      */
-    private void setEnclosingScrollPane( JScrollPane scrollPane ) {
+    private void setEnclosingScrollPane(JScrollPane scrollPane) {
         // if a scrollpane is already installed we remove it.
-        if ( enclosingScrollPane != null ) {
-            enclosingScrollPane.removeComponentListener( this );
+        if (enclosingScrollPane != null) {
+            enclosingScrollPane.removeComponentListener(this);
         }
 
         enclosingScrollPane = scrollPane;
 
-        if ( enclosingScrollPane != null ) {
-            enclosingScrollPane.addComponentListener( this );
+        if (enclosingScrollPane != null) {
+            enclosingScrollPane.addComponentListener(this);
         }
     }
 }
@@ -774,6 +806,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/12/06 00:19:15  tobega
+ * Worked on handling :before and :after. Got sidetracked by BasicPanel causing layout to be done twice: solved. If solution causes problems, check BasicPanel.setSize
+ *
  * Revision 1.9  2004/11/30 20:28:28  joshy
  * support for multiple floats on a single line.
  *

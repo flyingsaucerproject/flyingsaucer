@@ -49,4 +49,8 @@ public class TextContent {
         _sb.append(text);
     }
 
+    public String toString() {
+        return "TextContent:\nStyle: " + _style + "\nText: " + getText();
+    }
+
 }

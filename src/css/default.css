@@ -262,4 +262,7 @@ input {
     vertical-align: baseline;
 }
 
+/* ================= primarily for breaks ============ */
+br:before       { content: "\A" }
+:before, :after { white-space: pre-line }
 

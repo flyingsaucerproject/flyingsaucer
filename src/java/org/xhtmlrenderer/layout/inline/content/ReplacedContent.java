@@ -39,4 +39,8 @@ public class ReplacedContent {
         return _elem;
     }
 
+    public String toString() {
+        return "FloatedBlock: " + _elem.getNodeName();
+    }
+
 }

@@ -39,4 +39,8 @@ public class FloatedBlockContent {
         return _elem;
     }
 
+    public String toString() {
+        return "FloatedBlock: " + _elem.getNodeName();
+    }
+
 }

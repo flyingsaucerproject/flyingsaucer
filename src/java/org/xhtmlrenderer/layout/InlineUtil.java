@@ -263,14 +263,17 @@ public class InlineUtil {
                 if (before != null) {
                     CalculatedStyle parentStyle = c.css.getStyle(curr);
                     CalculatedStyle derived = c.css.getDerivedStyle(parentStyle, before);
-                    if (text != null) {
+                    String content = derived.getStringProperty(CSSName.CONTENT);
+                    if (!content.equals("")) {
+                        if (text != null) {
+                            contentList.add(text);
+                            text = null;
+                        }
+                        text = new TextContent(derived);
+                        text.append(content.replaceAll("\\\\A", "\n"));
                         contentList.add(text);
                         text = null;
                     }
-                    text = new TextContent(derived);
-                    text.append(derived.getStringProperty(CSSName.CONTENT));
-                    contentList.add(text);
-                    text = null;
                     //do not reset style here, because if this element is empty, we will not have changed context
                 }
             }
@@ -310,14 +313,17 @@ public class InlineUtil {
                 if (after != null) {
                     CalculatedStyle parentStyle = c.css.getStyle(curr);
                     CalculatedStyle derived = c.css.getDerivedStyle(parentStyle, after);
-                    if (text != null) {
+                    String content = derived.getStringProperty(CSSName.CONTENT);
+                    if (!content.equals("")) {
+                        if (text != null) {
+                            contentList.add(text);
+                            text = null;
+                        }
+                        text = new TextContent(derived);
+                        text.append(content.replaceAll("\\\\A", "\n"));
                         contentList.add(text);
                         text = null;
                     }
-                    text = new TextContent(derived);
-                    text.append(derived.getStringProperty(CSSName.CONTENT));
-                    contentList.add(text);
-                    text = null;
                 }
                 if (curr == elem) {
                     //elem was empty, that can happen, right?
@@ -350,11 +356,14 @@ public class InlineUtil {
                     if (after != null) {
                         CalculatedStyle parentStyle = c.css.getStyle(curr);
                         CalculatedStyle derived = c.css.getDerivedStyle(parentStyle, after);
-                        //text must be null here
-                        text = new TextContent(derived);
-                        text.append(derived.getStringProperty(CSSName.CONTENT));
-                        contentList.add(text);
-                        text = null;
+                        String content = derived.getStringProperty(CSSName.CONTENT);
+                        if (!content.equals("")) {
+                            //text must be null here
+                            text = new TextContent(derived);
+                            text.append(content.replaceAll("\\\\A", "\n"));
+                            contentList.add(text);
+                            text = null;
+                        }
                     }
                 }
 
@@ -386,6 +395,9 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/12/06 00:19:15  tobega
+ * Worked on handling :before and :after. Got sidetracked by BasicPanel causing layout to be done twice: solved. If solution causes problems, check BasicPanel.setSize
+ *
  * Revision 1.17  2004/12/05 19:42:43  tobega
  * Made recursion in InlineUtil easier to understand
  *
