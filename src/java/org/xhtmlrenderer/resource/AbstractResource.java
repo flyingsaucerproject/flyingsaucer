@@ -19,6 +19,10 @@
  */
 package org.xhtmlrenderer.resource;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.URL;
+import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xml.sax.InputSource;
 
 /**
@@ -30,10 +34,27 @@ public abstract class AbstractResource implements Resource {
     private long createTimeStamp;
     private long elapsedLoadTime;
     
+    private AbstractResource() {
+        this.createTimeStamp = System.currentTimeMillis();
+    }
+ 
     /** Creates a new instance of AbstractResource */
     public AbstractResource(InputSource source) {
+        this();
         this.inputSource = source;
-        this.createTimeStamp = System.currentTimeMillis();
+    }
+
+    public AbstractResource(URL url) {
+        this();
+        try {
+            this.inputSource = new InputSource(new BufferedInputStream(url.openStream()));
+        } catch ( Exception ex ) {
+            throw new XRRuntimeException("Can't open URL during load of XML resource.", ex);
+        }
+    }
+
+    public AbstractResource(InputStream is) {
+        this(new InputSource(new BufferedInputStream(is)));
     }
 
     public InputSource getResourceInputSource() {
@@ -57,6 +78,9 @@ public abstract class AbstractResource implements Resource {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/02/05 11:33:33  pdoubleya
+ * Added load() to XMLResource, and accept overloaded input: InputSource, stream, URL.
+ *
  * Revision 1.1  2005/02/03 20:39:35  pdoubleya
  * Added to CVS.
  *
