@@ -1,3 +1,27 @@
+last bit for R4
+
+add javadocs online
+remove java.net stuff from javadocs pages
+build new news release
+link to RSS feed
+update src, binary, and java webstart links
+create sub document links on FAQ page
+getting started guide
+    change class names and packages
+    update code for 'showing a page'
+        remove calls to setViewport blah
+        
+add changing default css
+    overide in document
+    change default.css
+    point to new default.css
+
+
+
+
+
+
+-------------
 
 known bugs
 //table cell and table widths don't work with percentages.

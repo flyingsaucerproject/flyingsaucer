@@ -21,37 +21,47 @@
 
 <h1>Getting Started with Flying Saucer
 </h1>
-<h2>The Basics: Showing a Page</h2>
+
+<ul>
+<li><a href="#show_page">The Basics: Showing a Page</a></li>
+<li><a href="#about_box">Creating an About Box in 60 seconds</a></li>
+<li><a href="#formaccess">Getting Access to Form Components</a></li>
+<li><a href="#formsubmission">Doing Form Submission</a></li>
+<li><a href="#hyperlinks">Following Hyperlinks</a></li>
+<li><a href="#docevents">Receiving Document Events</a></li>
+</ul>
+
+<h2><a name="show_page"></a>The Basics: Showing a Page</h2>
 <p>If you just want to show a webpage in your application then  start
-  with the <code>HTMLPanel</code>, in <code>org.joshy.html</code>. Here is a simple example: </p>
-<pre>import java.awt.*;
-import javax.swing.*;
-import org.joshy.html.*;
-public class PanelTest {
+  with the <code>HTMLPanel</code>, in <code>org.xhtmlrenderer.swing</code>. Here is a simple example: </p>
+<pre>import javax.swing.*;
+import org.xhtmlrenderer.swing.*;
+public class test {
    public static void main(String[] args) throws Exception {
+       
       HTMLPanel panel = new HTMLPanel();
-      panel.setPreferredSize(new Dimension(300,500));
-      panel.setDocument(&quot;test.xhtml&quot;);
+      panel.setDocument("test.xhtml");
    
       JScrollPane scroll = new JScrollPane(panel);
-      panel.setViewportComponent(scroll);
-      panel.setJScrollPane(scroll);
    
       JFrame frame = new JFrame();
       frame.getContentPane().add(scroll);
       frame.pack();
+      frame.setSize(400,400);
       frame.setVisible(true);
    }   
-}</pre>
+}
+</pre>
 <p><br>
-    First create an HTMLPanel and set it's preferred size. Call <code>setDocument()</code>  to set the html file that should be displayed. Then drop it into a scroll pane
-      and add the pane to a <code>JFrame</code>. The two calls in the middle to <code>setViewportComponent()</code>    and <code>setJScrollPane()</code> are important. Without them the <code>HTMLPanel </code>will not
-    resize properly.</p>
-<h2>  Creating an About Box in 60 seconds</h2>
+    First create an HTMLPanel and set it's preferred size. Call <code>setDocument()</code>  to set the path of
+    the xhtml file that should be displayed (relative to the current working directory). Then drop it into a 
+    <code>JScrollPane</code> and add the pane to a <code>JFrame</code>.</p>
+    
+<h2><a name="about_box"></a>Creating an About Box in 60 seconds</h2>
 <p>The  <code>AboutBox </code>is a prefab component which displays an html document and automatically
-  scrolls it. It is primarily useful for <em>Help-&gt;About</em> menu items. </p>
+  scrolls it. It is primarily useful for <em>Help-&gt;About</em> menu items and splash screens.</p>
 <p>Here is an example of adding an about box to a menu item's action listener. </p>
-<pre>import org.joshy.html.app.aboutbox.AboutBox;
+<pre>import org.xhtmlrenderer.demo.aboutbox.AboutBox;
 ......
 JMenuItem about = new JMenuItem(&quot;About...&quot;);
 about.addActionListener(new ActionListener() {
@@ -65,23 +75,26 @@ about.addActionListener(new ActionListener() {
 <h2><a name="formaccess"></a>Getting Access to Form Components</h2>
 <p>  If you want to access the Swing components for each form input field you
     can use the accessors on the <code>Context </code>object. <code>HTMLPanel.getContext().getFormFieldComponents()</code>.
-    Take a look at <code>org.joshy.html.app.browser.ResetAction.setupResets()</code> for
-  an example of pulling out each reset button and adding an <code>ActionListener</code>  to them.</p>
+    Take a look at <code>org.xhtmlrenderer.demo.browser.ResetAction.setupResets()</code> for
+  an example of pulling out each reset button and adding a standard AWT <code>ActionListener</code>  to them.</p>
 <p>If you want to access the actual DOM elements that make up the form you'll
   have to paw through your document tree (start with <code>HTMLPanel.getDocument()</code>).</p>
-<h2>Doing Form Submission.</h2>
+
+  
+<h2><a name="formsubmission"></a>Doing Form Submission.</h2>
 <p>Since network access is outside the scope of the core renderer, form submission
     is currently implemented as an <code>ActionListener</code> attached to the submit button
     in the browser application. Depending on your needs you can probably modify
-  that code. Take a look at <code>org.joshy.html.app.browser.SubmitAction.</code></p>
+  that code. Take a look at <code>org.xhtmlrenderer.demo.browser.SubmitAction.</code></p>
 <h2><a name="hyperlinks"></a>Following Hyperlinks</h2>
 <p>  To follow hyperlinks you will need a <code>MouseListener </code>which detects
   the mouse clicks, then determine if a link was clicked, and then load the document
-  specified by that link's href. See <code>org.joshy.html.app.browser.HyperlinkListener</code>  for the complete code.</p>
-<h2>Receiving Document Events<br>
+  specified by that link's href. See <code>org.xhtmlrenderer.demo.browser.HyperlinkListener</code>  for the complete code.</p>
+
+<h2><a name="docevents"></a>Receiving Document Events<br>
 </h2>
 <p>if you want to know when the document is loaded you'll need to implement the
-    <code>org.joshy.html.event.DocumentListener </code>interface, which currently
+    <code>org.xhtmlrenderer.event.DocumentListener </code>interface, which currently
     only has one method: <code>documentLoaded()</code><br>
 </p>
 </div>
