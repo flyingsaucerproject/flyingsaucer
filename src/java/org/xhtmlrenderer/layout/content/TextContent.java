@@ -34,6 +34,7 @@ import java.util.List;
 public class TextContent implements Content {
     private Element _elem;//will need this for handling dynamic content!
     private String _text;
+    private boolean removableWhitespace = false;
 
     TextContent(Element e, String text) {
         _elem = e;
@@ -64,4 +65,11 @@ public class TextContent implements Content {
         return "TextContent: " + _text;
     }
 
+    public boolean isRemovableWhitespace() {
+        return removableWhitespace;
+    }
+
+    public void setRemovableWhitespace(boolean removableWhitespace) {
+        this.removableWhitespace = removableWhitespace;
+    }
 }

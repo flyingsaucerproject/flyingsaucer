@@ -4,18 +4,16 @@ package org.xhtmlrenderer.layout.inline;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.content.StylePop;
 import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.util.*;
 
 import java.awt.Font;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 public class WhitespaceStripper {
@@ -40,7 +38,7 @@ public class WhitespaceStripper {
         // from the end of the previous (if applicable) to the
         // end of the master string
         if (prev == null || prev.content != content) {
-            String text = stripWhitespace(style, prev, content.getText());
+            String text = content.getText();//whitespace is already stripped earlier
             inline.setMasterText(text);
             inline.setSubstring(0, text.length());
         } else {
@@ -56,70 +54,6 @@ public class WhitespaceStripper {
     }
 
 
-    // this function strips all whitespace from the text according to the
-    // CSS 2.1 spec on whitespace handling. It accounts for the different
-    // whitespace settings like normal, nowrap, pre, etc
-    /**
-     * @deprecated whitespace should be stripped already in the content list
-     */
-    public static String stripWhitespace(CalculatedStyle style, InlineBox prev, String text) {
-
-        String whitespace = getWhitespace(style);
-        //Uu.p("stripWhitespace: text = -" + text + "-");
-        //Uu.p("whitespace = " + whitespace);
-        
-
-        // do step 1
-        if (whitespace.equals("normal") ||
-                whitespace.equals("nowrap") ||
-                whitespace.equals("pre-line")) {
-            text = linefeed_space_collapse.matcher(text).replaceAll(SPACE);
-        }
-        //Uu.p("step 1 = \"" + text + "\"");
-        
-
-        // do step 2
-        // pull out pre's for breaking
-        // still not sure here
-        
-
-        // do step 3
-        // convert line feeds to spaces
-        if (whitespace.equals("normal") ||
-                whitespace.equals("nowrap")) {
-            text = linefeed_to_space.matcher(text).replaceAll(SPACE);
-        }
-        //Uu.p("step 3 = \"" + text +"\"");
-        
-
-        // do step 4
-        if (whitespace.equals("normal") ||
-                whitespace.equals("nowrap") ||
-                whitespace.equals("pre-line")) {
-
-            text = tab_to_space.matcher(text).replaceAll(SPACE);
-            //Uu.p("step 4.1 = \"" + text + "\"");
-
-            text = space_collapse.matcher(text).replaceAll(SPACE);
-            //Uu.p("step 4.2 = \"" + text + "\"");
-
-            // collapse first space against prev inline
-            if (text.startsWith(SPACE) &&
-                    (prev != null) &&
-                    (prev.whitespace.equals("normal") ||
-                    prev.whitespace.equals("nowrap") ||
-                    prev.whitespace.equals("pre-line")) &&
-                    (prev.getSubstring().endsWith(SPACE))) {
-                text = text.substring(1, text.length());
-            }
-            //Uu.p("step 4.3 = \"" + text + "\"");
-
-        }
-
-        //Uu.p("final text = \"" + text + "\"");
-        return text;
-    }
-
     /**
      * Strips whitespace early in inline content generation.
      * This can be done because "whitespage" does not ally to :first-line and :first-letter.
@@ -133,6 +67,7 @@ public class WhitespaceStripper {
         List stripped = new LinkedList();
         List pendingStylePushes = new LinkedList();
         boolean collapse = false;
+        boolean allWhitespace = true;
 
         for (Iterator i = inlineContent.iterator(); i.hasNext();) {
             Object o = i.next();
@@ -143,17 +78,17 @@ public class WhitespaceStripper {
             }
             if (o instanceof TextContent) {
                 TextContent tc = (TextContent) o;
-                boolean collapseNext = stripWhitespace(c.getCurrentStyle(), collapse, tc);
-                if (tc.getText().equals("")) {
-                    //ignore it, let the next collapse with the previous
-                    continue;
-                } else {
-                    stripped.addAll(pendingStylePushes);
-                    pendingStylePushes.clear();
-                    stripped.add(tc);
-                    collapse = collapseNext;
-                    continue;
+                CalculatedStyle style = c.getCurrentStyle();
+                boolean collapseNext = stripWhitespace(style, collapse, tc);
+                if (!tc.isRemovableWhitespace()) {
+                    allWhitespace = false;
                 }
+                stripped.addAll(pendingStylePushes);
+                pendingStylePushes.clear();
+                stripped.add(tc);
+                collapse = collapseNext;
+                continue;
+
             }
             if (o instanceof StylePop) {
                 c.popStyle();
@@ -166,6 +101,7 @@ public class WhitespaceStripper {
                 continue;
             }
             //Here we have some other object, just add it with preceding styles
+            allWhitespace = false;
             stripped.addAll(pendingStylePushes);
             pendingStylePushes.clear();
             stripped.add(o);
@@ -176,42 +112,22 @@ public class WhitespaceStripper {
         stripped.addAll(pendingStylePushes);
         
         //Uu.p("final stripped = " + stripped);
-        if(isAllWhitespace(stripped)) {
+        if (allWhitespace) {
             stripWhitespaceContent(stripped);
         }
         return stripped;
     }
-    
-    
-    private static boolean isAllWhitespace(List list) {
-        for(int i=0; i<list.size(); i++) {
-            if(list.get(i) instanceof StylePush) {
-                continue;
-            }
-            if(list.get(i) instanceof StylePop) {
-                continue;
-            }
-            Content content = (Content)list.get(i);
-            if(!(content instanceof TextContent)) {
-                return false;
-            }
-            TextContent txt = (TextContent)content;
-            if(!txt.getText().trim().equals("")) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
+
+
     private static void stripWhitespaceContent(List list) {
         List remove_list = new ArrayList();
-        for(int i=0; i<list.size(); i++) {
-            if(list.get(i) instanceof TextContent) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) instanceof TextContent) {
                 remove_list.add(list.get(i));
             }
         }
-        
-        for(int i=0; i<remove_list.size(); i++) {
+
+        for (int i = 0; i < remove_list.size(); i++) {
             list.remove(remove_list.get(i));
         }
     }
@@ -272,6 +188,17 @@ public class WhitespaceStripper {
                 whitespace.equals("pre-line")));
 
         tc.setText(text);
+        if (text.trim().equals("")) {
+            if (whitespace.equals("normal") ||
+                    whitespace.equals("nowrap")) {
+                tc.setRemovableWhitespace(true);
+            } else if (whitespace.equals("pre") ||
+                    whitespace.equals("pre-wrap")) {
+                tc.setRemovableWhitespace(false);//actually unnecessary, is set to this by default
+            } else if (text.indexOf(EOL) < 0) {//and whitespace.equals("pre-line"), the only one left
+                tc.setRemovableWhitespace(true);
+            }
+        }
         return collapseNext;
     }
 
