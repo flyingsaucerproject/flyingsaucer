@@ -32,6 +32,10 @@ import org.joshy.u;
 
 import org.joshy.x;
 
+// CLEAN
+import com.pdoubleya.xhtmlrenderer.css.XRStyleSheet;
+import java.net.*;
+import org.apache.xpath.XPathAPI;
 
 
 public class CSSBank extends CSSAccessor {
@@ -102,6 +106,33 @@ public class CSSBank extends CSSAccessor {
         parse(source);   
     }
 
+    /**
+     * Parses the CSS style information from a "<link>" Elements (for example in
+     * XHTML), and loads these rules into the associated RuleBank.
+     *
+     * @param root             Root of the document for which to search for link tags.
+     * @exception IOException  Throws
+     */
+    public void parseLinkedStyles( Element root )
+    throws IOException {
+        try {
+            NodeList nl = XPathAPI.selectNodeList(root, "//link[@type='text/css']/@href");
+            for ( int i=0, len=nl.getLength(); i < len; i++ ) {
+                Node hrefNode = nl.item(i);
+                String href = hrefNode.getNodeValue();
+                URL url = new URL(href);
+                InputStream is = url.openStream();
+                BufferedInputStream bis = new BufferedInputStream(is);
+                InputStreamReader reader = new InputStreamReader(bis);
+                parse(reader, XRStyleSheet.AUTHOR);
+                is.close();
+            }
+        } catch ( Exception ex ) {
+            ex.printStackTrace();   
+        }
+    }
+        
+        
     public void parseInlineStyles(Element elem) throws IOException {
 
         parser.parseInlineStyles(elem);
