@@ -160,8 +160,19 @@ public class RuleNormalizer {
         //HACK: we need to rewrite all properties in expandProperty
         //that way, we keep good cascade in case some fool redefined part of a shorthand-property
         //The good solution would be to create a new CSSStyleRule entirely
+        String[] props = new String[length];
+        String[] cssValues = new String[length];
+        String[] cssPrios = new String[length];
         for(int i=0; i<length; i++) {
-            String prop = rule.getStyle().item(i);
+            props[i] = rule.getStyle().item(i);
+            cssValues[i] = rule.getStyle().getPropertyValue(props[i]);
+            cssPrios[i] = rule.getStyle().getPropertyPriority(props[i]);
+        }
+        
+        for(int i=0; i<length; i++) {
+            String prop = props[i];
+            //write it back, in case it was wrecked by previous expansion
+            rule.getStyle().setProperty(prop,  cssValues[i], cssPrios[i]);
             expandProperty(prop,rule);
 
         }
@@ -313,9 +324,10 @@ public class RuleNormalizer {
             //u.p("normalizing: " + prop);
             expandBorder(rule);
         }
-        else {//rewrite it. This is a HACK to keep the order.
+        /*already done
+         else {//rewrite it. This is a HACK to keep the order.
             rule.getStyle().setProperty(prop,rule.getStyle().getPropertyValue(prop),rule.getStyle().getPropertyPriority(prop));
-        }
+        }*/
     }
     
     
@@ -333,7 +345,7 @@ public class RuleNormalizer {
         CSSValueList list = (CSSValueList)val;
         CSSValue top, bottom, left, right;
         top = bottom = left = right = null;
-
+        
         if(val.getCssValueType() == val.CSS_VALUE_LIST) {
             if(list.getLength() == 2) {
                 //u.p("turning two into four");
