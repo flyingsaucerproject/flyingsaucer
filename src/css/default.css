@@ -262,6 +262,10 @@ input {
     vertical-align: baseline;
 }
 
+input, textarea, select {
+    display: inline-block;
+}
+
 /* ================= primarily for breaks ============ */
 br:before       { content: "\A" }
 :before, :after { white-space: pre-line }

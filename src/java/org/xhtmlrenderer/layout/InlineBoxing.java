@@ -156,7 +156,7 @@ public class InlineBoxing {
                 // Uu.p("got back inline: " + new_inline);
                 
                 // if this inline needs to be on a new line
-                if (new_inline.break_before && !new_inline.floated) {
+                if (prev_align_inline != null && new_inline.break_before && !new_inline.floated) {
                     // Uu.p("break before");
                     remaining_width = bounds.width;
                     saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, false);
@@ -453,6 +453,9 @@ public class InlineBoxing {
 * $Id$
 *
 * $Log$
+* Revision 1.2  2005/01/03 00:25:33  tobega
+* Managed to add some form support
+*
 * Revision 1.1  2005/01/02 09:32:41  tobega
 * Now using mostly static methods for layout
 *
