@@ -48,7 +48,7 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.resource.ResourceProviderFactory;
+import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -64,8 +64,10 @@ import org.xml.sax.InputSource;
 public abstract class BasicPanel extends JPanel implements ComponentListener, UserInterface {
     /** Description of the Field  */
     public Element hovered_element = null;
+
     /** Description of the Field */
     public Element active_element = null;
+    
     /** Description of the Field */
     public Element focus_element = null;
     
@@ -563,7 +565,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      */
     public void setDocument( InputStream stream, URL url, NamespaceHandler nsh )
     throws Exception {
-        Document dom = ResourceProviderFactory.newDefaultResourceProvider().newXMLResource(new InputSource(new BufferedInputStream(stream))).getDocument();
+        Document dom = XMLResource.load(stream).getDocument();
         
         setDocument( dom, url, nsh );
     }
@@ -782,12 +784,12 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         if ( getContext() != null && ( !filename.startsWith( "http" ) ) ) {
             URL base = new URL( getRenderingContext().getBaseURL(), filename );
             XRLog.load( "Loading URL " + base );
-            Document dom = ResourceProviderFactory.newDefaultResourceProvider().newXMLResource(base).getDocument();
+            Document dom = XMLResource.load(base).getDocument();
             
             setDocument( dom, base );
             return;
         }
-        Document dom = ResourceProviderFactory.newDefaultResourceProvider().newXMLResource(new InputSource(filename)).getDocument();
+        Document dom = XMLResource.load(new InputSource(filename)).getDocument();
 
         setDocument( dom, new File( filename ).toURL() );
     }
@@ -875,6 +877,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2005/02/05 11:33:49  pdoubleya
+ * Load pages directly from XMLResource.
+ *
  * Revision 1.38  2005/02/03 23:02:31  pdoubleya
  * Uses ResourceProvider for loading files.
  *

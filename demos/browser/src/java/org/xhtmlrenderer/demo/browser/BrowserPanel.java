@@ -24,20 +24,16 @@ import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.Xx;
-import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.logging.Logger;
-import org.xhtmlrenderer.resource.ResourceProviderFactory;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xml.sax.InputSource;
@@ -294,14 +290,14 @@ public class BrowserPanel extends JPanel implements DocumentListener {
             if (!short_url.startsWith("/")) {
                 short_url = "/" + short_url;
             }
-            InputSource source = new InputSource( new BufferedInputStream( marker.getClass().getResourceAsStream(short_url) ) );
-            doc = ResourceProviderFactory.newDefaultResourceProvider().newXMLResource(source).getDocument();
+            //InputSource source = new InputSource( new BufferedInputStream(  ) );
+            doc = XMLResource.load(marker.getClass().getResourceAsStream(short_url)).getDocument();
             
             ref = marker.getClass().getResource(short_url);
             Uu.p("doc = " + doc);
             Uu.p("ref = " + ref);
         } else if (url_text.startsWith("http")) {
-            doc = ResourceProviderFactory.newDefaultResourceProvider().newXMLResource(new URL(url_text)).getDocument();
+            doc = XMLResource.load(new URL(url_text)).getDocument();
             ref = new URL(url_text);
         } else if (url_text.startsWith("file://")) {
             File file = new File(new URI(url_text));
@@ -309,12 +305,12 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                 doc = new DirectoryLister().list(file);
                 ref = file.toURL();
             } else {
-                doc = ResourceProviderFactory.newDefaultResourceProvider().newXMLResource(file.toURL()).getDocument();
+                doc = XMLResource.load(file.toURL()).getDocument();
                 ref = file.toURL();
             }
             
         } else {
-            doc = ResourceProviderFactory.newDefaultResourceProvider().newXMLResource(new InputSource(url_text)).getDocument();
+            doc = XMLResource.load(new InputSource(url_text)).getDocument();
             ref = new File(url_text).toURL();
         }
         
@@ -456,6 +452,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/02/05 11:35:59  pdoubleya
+ * Load pages directly from XMLResource.
+ *
  * Revision 1.20  2005/02/03 23:19:43  pdoubleya
  * Uses ResourceProvider for loading files.
  *
