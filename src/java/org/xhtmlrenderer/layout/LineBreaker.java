@@ -237,6 +237,7 @@ public class LineBreaker {
         box.width = bounds.width;
         box.height = bounds.height;
         box.break_after = false;
+        box.floated = true;
         if ( box.width > avail ) {
             box.break_before = true;
             box.x = 0;
@@ -446,6 +447,7 @@ public class LineBreaker {
         InlineLayout.setupRelative( c, box );
 
         
+        /*
         // if first line then do extra setup        
         if(c.isFirstLine()) {
             //u.p("node = " + node);
@@ -459,6 +461,7 @@ public class LineBreaker {
                 styleInlineBox(c,cs,box);
             }
         }
+        */
 
         return box;
     }
@@ -487,7 +490,8 @@ public class LineBreaker {
         //u.p("it's the first child");
         CalculatedStyle cs = c.css.getPseudoElementStyle(getElement(node),"first-letter");
         if(cs != null) {
-            return true;
+          //  return true;
+          return false;
         }
         return false;
     }
@@ -539,6 +543,14 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/08 20:50:59  joshy
+ * improved float support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.7  2004/11/08 16:56:52  joshy
  * added first-line pseudo-class support
  *

@@ -26,6 +26,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.css.*;
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.style.*;
 import org.xhtmlrenderer.render.BackgroundPainter;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.BorderPainter;
@@ -37,6 +38,7 @@ import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.util.x;
+import org.xhtmlrenderer.css.constants.CSSName;
 
 
 /**
@@ -188,15 +190,33 @@ public class BoxLayout extends DefaultLayout {
                 }
                 return;
             }
-            //u.p("block = " + block);
-            //u.p("extents = " + c.getExtents());
+            // u.p("block = " + block);
+            // u.p("extents = " + c.getExtents());
+            // CalculatedStyle style = c.css.getStyle(elem);
+            // u.p("style = " + style);
+            // u.p("comp value = " + style.propertyByName("width").computedValue());
+            // u.p("width = " + style.propertyByName("width")
+            //     .computedValue().getFloatValue(CSSPrimitiveValue.CSS_PERCENTAGE));
+            // u.p("type = " + style.propertyByName("width")
+            //     .computedValue().getPrimitiveType());
+            
+            //float new_width = relativeHack(c.css.getFloatProperty( elem, "width", c.getExtents().width, false ),
+            //    c.getExtents().width);
             float new_width = c.css.getFloatProperty( elem, "width", c.getExtents().width, false );
             //u.p("new width = " + new_width);
             c.getExtents().width = (int)new_width;
             block.width = (int)new_width;
             block.auto_width = false;
-            //u.p("adjusdt width: = " + block);
+            //u.p("adjusted width: = " + block);
         }
+    }
+    
+    private float relativeHack(float width, float parent_width) {
+        u.p("calc width = " + width);
+        if(width > 0.0 && width <= 1.0) {
+            return width * parent_width;
+        }
+        return width;
     }
 
     // calculate the height based on css and available space
@@ -260,8 +280,20 @@ public class BoxLayout extends DefaultLayout {
     
     public void setupFloat( Context c, Box box ) {
         if( isFloated(box.node, c)) {
+            String float_val = c.css.getStringProperty( box.node, CSSName.FLOAT, false );
+            if ( float_val == null ) {
+                float_val = "none";
+            }
+            if ( float_val.equals( "none" ) ) {
+                return;
+            }
             box.floated = true;
-            c.getBlockFormattingContext().addLeftFloat(box);
+            if ( float_val.equals( "left" ) ) {
+                c.getBlockFormattingContext().addLeftFloat(box);
+            }
+            if ( float_val.equals( "right" ) ) {
+                c.getBlockFormattingContext().addRightFloat(box);
+            }
         }
     }
 
@@ -310,15 +342,13 @@ public class BoxLayout extends DefaultLayout {
         if((box.node.getNodeType()==Node.TEXT_NODE && 
            !DefaultLayout.isBlockNode(box.getRealElement(),c)) ||
            box.isElement()) {
-               
-               
-               //u.p("box = " + box);
-               //u.p("node type = " + box.node.getNodeType());
-               //u.p("text node == " + Node.TEXT_NODE);
-               //u.p("is block node = " + DefaultLayout.isBlockNode(box.getRealElement(),c));
-               //u.p("is element = " + box.isElement());
-               
-               return true;
+           // u.p("box = " + box);
+           // u.p("node type = " + box.node.getNodeType());
+           // u.p("text node == " + Node.TEXT_NODE);
+           // u.p("real element = " + box.getRealElement());
+           // u.p("is block node = " + DefaultLayout.isBlockNode(box.getRealElement(),c));
+           // u.p("is element = " + box.isElement());
+           return true;
         }
         return false;
     }
@@ -475,6 +505,14 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/11/08 20:50:58  joshy
+ * improved float support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.14  2004/11/08 15:10:10  joshy
  * added support for styling :first-letter inline boxes
  * updated the absolute positioning tests

@@ -26,6 +26,7 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.util.u;
 
 /**
  * Description of the Class
@@ -79,6 +80,7 @@ public class InlineUtil {
             }
         }
 
+        
         // calculate the float property
         String float_val = c.css.getStringProperty( inline.node, CSSName.FLOAT, false );
         if ( float_val == null ) {
@@ -95,34 +97,27 @@ public class InlineUtil {
         if ( float_val.equals( "left" ) ) {
             // move the inline to the left
             //inline.x = 0 - inline.width;
-            inline.x = bfc.getLeftFloatDistance(line) - inline.width;
+            // the inline's own width is already included in the left float distance
+            // so you must subtract off the width twice
+            inline.x = bfc.getLeftFloatDistance(line) - inline.width - inline.width;
             // add the float to the containing block
-            bfc.addLeftFloat(inline);
-            
-            /*
-            // adjust the left tab
-            c.getLeftTab().x = inline.width;
-            c.getLeftTab().y += inline.height;
-            */
+            //bfc.addLeftFloat(inline);
         }
+        
+        
         
         if( float_val.equals( "right" ) ) {
             // move the inline to the right
-            inline.x = full_width - inline.width - bfc.getRightFloatDistance(line);
-            bfc.addRightFloat(inline);
+            // don't subtract off the inline's own width, because it's
+            // already included in the right float distance
+            inline.x = full_width - bfc.getRightFloatDistance(line);
+            //bfc.addRightFloat(inline);
         }
-        /*
-        if ( float_val.equals( "right" ) ) {
-            // move the inline to the right
-            inline.x = full_width - inline.width;
-            // adjust the right tab
-            c.getRightTab().x = inline.width;
-            c.getRightTab().y += inline.height;
-        }
-        */
         
         // shrink the line width to account for the possible floats
+        //u.p("accounting for the left float");
         line.width -= bfc.getLeftFloatDistance(line);
+        //u.p("accounting for right float");
         line.width -= bfc.getRightFloatDistance(line);
         //line.width = line.width - inline.width;
     }
@@ -284,6 +279,14 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/08 20:50:59  joshy
+ * improved float support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.7  2004/11/06 01:50:41  joshy
  * support for line-height
  * cleaned up the alice demo

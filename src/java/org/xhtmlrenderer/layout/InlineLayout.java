@@ -47,6 +47,7 @@ public class InlineLayout extends BoxLayout {
     * @return     Returns
     */
     public Box layoutChildren( Context c, Box box ) {
+        //u.p("starting to lay out the children");
         if ( isHiddenNode( box.getElement(), c ) ) {
             return box;
         }
@@ -184,6 +185,7 @@ public class InlineLayout extends BoxLayout {
                     // adjust remaining width for floats
                     curr_line.y = prev_line.y + prev_line.height;
                     curr_line.setParent(prev_line.getParent());
+                    //u.p("set parent to: " + curr_line.getParent());
                     remaining_width = adjustForTab( c, curr_line, remaining_width );
                     curr_line.width = 0;
                 }
@@ -207,6 +209,8 @@ public class InlineLayout extends BoxLayout {
                     }
                 }
                 
+                //u.p("curr line: " + curr_line);
+                //u.p("parent = " + curr_line.getParent());
                 InlineUtil.handleFloated( c, new_inline, curr_line, bounds.width, elem );
                 // calc new width of the line
                 curr_line.width += new_inline.width;
@@ -226,6 +230,7 @@ public class InlineLayout extends BoxLayout {
                     // adjust remaining width for floats
                     curr_line.y = prev_line.y + prev_line.height;
                     curr_line.setParent(prev_line.getParent());
+                    //u.p("set parent to: " + curr_line.getParent());
                     remaining_width = adjustForTab( c, curr_line, remaining_width );
                     curr_line.width = 0;
                 }
@@ -379,6 +384,14 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.15  2004/11/08 20:50:59  joshy
+* improved float support
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.14  2004/11/08 16:56:51  joshy
 * added first-line pseudo-class support
 *

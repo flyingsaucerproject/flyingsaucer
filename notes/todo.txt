@@ -1,15 +1,54 @@
+//build hack for first-letter
+//right: for absolute layout
+//first-line pseudo
+//email guy about calendar text
+
 boolean to turn off layout threading
-fix fixed background clipping error
+easier headless interface
 fix gap in splash page
-build hack for first-letter
+fix fixed background clipping error
+fix list item vertical positioning
+right floats
+small caps
+justified text
+resize inlines with padding and borders
+make layoutfactory use display for generating layouts
+build table demo
+build calendar demo
+left-right-top w/ static pos
+fixed pos
+fix crash on width = 0
+
+--crash w/ width = 50%
+--% width for absolute layout
+--styles on each border side
+
 shrink-to-fit for absolute layout
 browser not refreshing when I change styles bug. (clear context?)
-//right: for absolute layout
-left and right auto for absolute layout
-crash w/ width = 50%
+multi floats on one line
+fixed pos w/ bottom align
+abs pos w/ bottom align
+initial printing (no media or paging support)
+copy text via mouse selection
+remove whitespace regex
+fix line breaking bugs
+--------------------
 
+table demo
+    look at eric myer's example
+    search for reports on the web
+    should be long
+    should have a header at the top in bigger letters
+    use alternating colors
+    have totals
+    have th column headers
+    
+build a calendar demo
+    month, days, selected day, events, years, days of the week,
+    should resize w/ the window
+    
 
------------------
+--------------------
 --------------------
 
 
