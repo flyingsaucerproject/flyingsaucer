@@ -1,0 +1,65 @@
+plan for floating
+
+when looping through text to create inline
+boxes, if we come across a replaced element
+that is set to float, first try to place the
+element on the line. if it can go on the line
+then float it. if it has to go on the next line
+then move it to the next line and float it.
+
+to float an element, set it's x to the current
+float tab for the correct float side.
+move the current linebox to the left or right.
+add it to the float tab, where appropriate.
+
+for each line box, reduce it's available width
+to account for the current vertical float tab.
+
+subtract from the vertical float tab if tab > 0
+
+
+--------
+
+floating block level elements.
+the element will have to become a new box and then
+floated as if it was an image. it needs an intrinsic
+w/h. i don't know what the w/h will be if it doesn't
+have them set via css. probably expand the width to the
+width of the containing block.
+
+the plan.
+
+
+modify the routine which figures out if we are doing a block or inline context
+    to skip floated blocks when searching for blocks.
+
+for the inline calculation
+    after the isReplaced add a isFloatedBlock() which does basically
+    the same thing.
+    
+    though it's really a block we will create an inlineblockbox which
+    is a subclass of inline and contains a reference to the real blockbox
+    inside of it.
+    
+    modify the paint routine to look for isFloatedBlock() and do the same
+    thing as isReplaced()
+
+---------
+
+* floating block level elements in a block context :
+
+the element must have an w/h set explicitly or set to the minimum size
+modify the test for block context routine to skip floated blocks
+modify the layout children in block mode to move floated block to the side
+add storage of tabs
+add shortening of block via tabs
+add decrement tab y for each time through
+store a block box for each child in the list of children (already there?)
+
+-----------
+
+floating elements and having the float continue down to the next enclosing
+block.
+
+first, we need to store the float tabs in the context
+then, when doing translations, the floats need to be translated as well

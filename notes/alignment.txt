@@ -1,0 +1,77 @@
+for each inline span on the line
+    set height rel to baseline if possible
+get highest of ones that are set
+get lowest of ones that are set
+set height
+of ones that aren't set, set y based on height
+
+
+
+baseline = set rel to baseline
+middle = parent font and parent baseline
+sub = rel to line's baseline
+super = rel to line's baseline
+text-top = rel to line's baseline and parent's font
+text-bottom = rel to line's baseline and parent's font
+top = rel to line's box (height)
+bottom = rel to line's box (height)
+
+at inline box creation time
+    need line and parent font height
+    if vertical align = baseline, middle, sub, super, text-top, text-bottom
+        then set the inline.y relative to the line.baseline
+        set the baseline too
+    calculate the height of the inline
+    
+    
+at save line time
+    get the top of the highest inline
+    get the bottom of the lowest inline
+    // top and bottom are dist from baseline
+    int top = 0;
+    int bot = 0;
+    int hi = 0;
+    for(int i=0; i<inlines.size(); i++) {
+        InlineBox inline = (InlineBox)inlines.get(i);
+        if(inline.vset) {
+            // compare the top of the box
+            if(inline.y < itop)
+                itop = inline.y;
+            }
+            // compare the bottom of the box
+            if(inline.y + inline.height > ibot) {
+                ibot = inline.y + inline.height;
+            }
+        } else {
+        // if it's not one of the baseline derived vertical aligns
+            // then just compare the straight height of the inline
+            if(inline.height > hi) {
+                hi = inline.height;
+            }
+        }
+    }
+    
+    if(bot-top > height) {
+        line.height = bot-top;
+    } else {
+        line.height = height;
+    }
+    
+    line.baseline = line.height - font.baseline
+    
+    // loop through all inlines to set the last ones
+    for(int i=0; i<inlines.size(); i++) {
+        InlineBox inline = (InlineBox)inlines.get(i);
+        if(!inline.vset) {
+            inline.vset;
+            if(inline.topalign) {
+                inline.y = -line.baseline;
+            }
+            if(inline.bottomalign) {
+                inline.y = line.height-line.baseline
+            }
+        }
+    }
+    
+    // done
+    

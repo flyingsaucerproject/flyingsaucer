@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+    <head>
+        <title>Joshua's Homepage</title>
+        <style type="text/css">
+            p.test {
+                font-size: 10pt;
+                }
+            .serif {
+                font-family: serif;
+                }
+            .sans-serif {
+                font-family: sans-serif;
+                }
+            .monospace {
+                font-family: monospace;
+                }
+            span.overline {
+                text-decoration: overline;
+                }
+            .uppercase {
+                text-transform: uppercase;
+                }
+            .lowercase {
+                text-transform: lowercase;
+                }
+            .capitalize {
+                text-transform: capitalize;
+                }
+                
+            p.big {
+                font-size: 30pt;
+                }                
+            span.big {
+                font-size: 200%;
+                }
+            span.bigger {
+                font-size: 400%;
+                }
+            span.double-percent {
+                font-size: 200%;
+                }
+            span.double-em {
+                font-size: 2em;
+                }
+        </style>
+    </head>
+    <body>
+    
+    <p class="test">LineBreakMeasurer is constructed with an iterator over styled text.
+    The iterator's range should be a single paragraph in the text. 
+    LineBreakMeasurer maintains a position in the text for the start 
+    of the next text segment. Initially, this position is the start 
+    of text.</p>
+    
+    <p class="serif">Text Sample: Serif</p>
+    <p class="sans-serif">Text Sample: Sans Serif</p>
+    <p class="monospace">Text Sample: Monospaced</p>
+
+    <p>this ismysuperdupercrazyasshugelylongwordofawordohasdfasdfasdfasdfasdfasdfasdfas end</p>
+    
+    <p>text <tt>tt</tt> and <b>b</b> and <i>i</i> and <big>big</big> and <small>small</small></p>
+    <p> text <em>em</em>, <strong>strong</strong>, <dfn>dfn</dfn>, <code>code</code>,
+        <samp>samp</samp>, <kbd>kbd</kbd>, <var>var</var>, <cite>cite</cite>,
+        and finally <a href="#">a link</a>
+        </p>
+    <p>nested styles <b>bold</b>, <i>italic</i>, and <b><i>bold-talic!</i></b></p>
+    <p>inserted <ins>text</ins> and deleted <del>text</del></p>
+    
+    <p>example of <sub>subscript</sub> and <sup>superscript</sup> text</p>
+    <p>example of <span class="big">big</span> and <span class="bigger">really big</span></p>
+    
+    <p class="uppercase">Uppercased Text (orig, mixed)</p>
+    <p class="lowercase">Lowercased Text (orig, mixed)</p>
+    <p class="capitalize">captialized text (orig, lower)</p>
+    
+    <p class="size">normal text <span class="double-percent">200%</span> and
+        <span class="double-em">2em</span> normal text</p>
+        
+    
+    </body>
+</html>

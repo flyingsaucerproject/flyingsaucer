@@ -1,0 +1,25 @@
+plan for absolute positioning
+
+the element is removed completely from the normal flow and is positioned relative to it's containing block
+
+in Layout.layoutChildren() it should no use the absolute child when calculating
+where to start the next block after the abs child.
+
+
+the containing block is not the immediate parent block, but the closest parent
+block with position: absolute or the viewport (perhaps i should default the
+body to position: absolute?)
+
+for relative and static elements the containing block is the immediate parent block.
+
+for position: fixed the containing block is the viewport only.
+
+i will need to modify the context object to contain a reference to the viewport
+block and to most immediate containing block.
+they will need to be stored in terms of the current translate.
+create a method c.translate(int,int) to translate the graphics, plus the viewport reference and the containing block reference.
+intialize containing block to 0.
+change all g.translate into c.translate
+
+create translatetocontainingblock and translateFromContainingBlock
+create translatetofixed and translatefromfixed

@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<project name="JoshyHTML" default="help" basedir=".">
+    <description>checkout, build, test, and package the SPPM project.</description>
+
+    <target name="help">
+        <echo message=" ant clean:     	clean up any compilation or distribution files made"/>
+        <echo message=" ant compile:   	compile the source"/>
+        <echo message=" ant test:            run the unit tests"/>
+    </target>
+
+    <target name="clean" description="clean">
+        <delete dir="build"/>
+        <delete>
+            <fileset dir=".">
+                <include name="**/*~"/>
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="init">
+        <mkdir dir="build/classes"/>
+    </target>
+
+    <target name="clean-compile" description="clean compile" depends="clean,compile">
+    </target>
+
+    <target name="zip" description="zip file" depends="jar">
+        <zip basedir="." zipfile="../htmlrender.zip">
+        </zip>
+    </target>
+
+    <target name="compile" description="compile" depends="init">
+        <javac
+            srcdir="src/java"
+            destdir="build/classes"
+            debug="on">
+            <classpath>
+                <fileset dir="lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+        <copy todir="build/classes/org/joshy/html/css" file="src/java/org/joshy/html/css/default.css"/>
+    </target>
+
+    <target name="jar" depends="compile" description="jar">
+        <jar
+            basedir="build/classes"
+            jarfile="build/htmlrender.jar"
+            compress="true"
+            manifest="src/packaging/manifest"
+        />
+    </target>
+
+
+    <target name="beta-dist" depends="jar" description="Play Distro">
+        <copy todir="build">
+            <fileset dir=".">
+                <include name="demos/*.xhtml"/>
+                <include name="image.png"/>
+            </fileset>
+            <fileset dir="lib">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="src/packaging">
+                <include name="readme.txt"/>
+            </fileset>
+        </copy>
+        <zip basedir="build" zipfile="build/htmlrender.zip">
+            <include name="htmlrender.jar"/>
+            <include name="*.jar"/>
+            <include name="demos/**"/>
+        </zip>
+    </target>
+    
+    <!-- =============  TESTS =================== -->
+    
+    <target name="test" depends="compile" description="Test">
+        <java
+            classname="org.joshy.html.HTMLTest"
+            classpath="build/classes"
+            fork="true"
+            >
+            <arg value="demos/paragraph.xhtml"/>
+            <classpath>
+                <fileset dir="lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="test-paragraph" depends="compile" description="Paragraph Test">
+        <java
+            classname="org.joshy.html.HTMLTest"
+            classpath="build/classes"
+            fork="true"
+            >
+            <arg value="demos/paragraph.xhtml"/>
+            <classpath>
+                <fileset dir="lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="test-header" depends="compile" >
+        <java
+            classname="org.joshy.html.HTMLTest"
+            classpath="build/classes"
+            fork="true"
+            >
+            <arg value="demos/header.xhtml"/>
+            <classpath>
+                <fileset dir="lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="test-breaking" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/breaking.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+
+    <target name="test-image" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/image.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+
+
+    <target name="test-box-sizing" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/box-sizing.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+
+
+    <target name="test-table" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/table.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+
+    <target name="whitespace" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/whitespace.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+
+    <target name="test-borders-padding" depends="compile" >
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/border.xhtml"/>
+            <classpath>
+                <fileset dir="lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="test-list" depends="compile" >
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/list.xhtml"/>
+            <classpath>
+                <fileset dir="lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="test-braincontent" depends="compile" >
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/content.xhtml"/>
+            <classpath>
+                <fileset dir="lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="test-text-alignment" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/text-alignment.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+
+    <target name="test-background" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/background.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+
+    <target name="test-selectors" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true"
+            jvm="c:/j2sdk1.4.2_03/bin/javaw.exe">
+            <arg value="demos/selectors.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+            <jvmarg value="-Xint"/>
+        </java>
+    </target>
+
+    <target name="test-nested" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/nested.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+
+    <target name="test-float" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/float.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+
+    <target name="test-relative" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/relative.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+
+    <target name="test-absolute" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/absolute.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+
+    <target name="test-aura" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/aura/index.htm"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+
+    <target name="test-inline-block" depends="compile" description="Test Layout Contexts">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/inline-block.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+    <target name="test-itunes" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/itunes/itunes1.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+    <target name="test-hamlet" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/hamlet.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+    <target name="test-link" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/link.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+    <target name="test-zen" depends="compile">
+        <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
+            <arg value="demos/zengarden.xhtml"/>
+            <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
+        </java>
+    </target>
+</project>

@@ -1,0 +1,37 @@
+fixed background notes
+
+if the background is fixed then it needs to start tiling
+at the corner of the canvas and it needs to tile. the tiling will
+start at the first y coord where y-img.height < box.y that is also
+a multiple of 0 (the top of the canvas) + the image heights.
+
+ box.y % img.height
+ 
+ box.y = 17
+ box.height = 45
+ img.height = 10
+ 
+should be at 10
+then at 20
+
+
+box.y + box.y%img.height
+
+img.height * n > box.y <
+img.height * n = box.y
+n = round up(box.y / img.height)
+n = round up(17/10)
+n = round up(1.7)
+n = 2
+draw.y = img.height*2;
+stop.y = round up(box.y + box.height / img.height) 
+stop.n = round up(6.2)
+stop.y = img.height * 7
+stop.y = 70
+
+loop from 20 to 70 step 10
+
+
+ 
+ 
+ 

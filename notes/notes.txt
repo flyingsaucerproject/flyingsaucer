@@ -1,0 +1,398 @@
+notes
+    
+
+=====================
+post-java.net release
+---------------------
+
+make a welcome post to the mailing list
+get the code into java.net's cvs
+make a mock chat app to use the renderer
+make getting started text
+make a large scale todo list broken up by topic
+
+----
+large scale todo
+    break all network/file access out into a networkloader interface, w/ a default implementation. attach to the context.
+    create unit test to simply load all test xhtmls
+    create list of missing css features
+    create list of remaining bugs
+    
+    make a plan to integrate rhino
+        how to hook in the interpreter
+        how to handle actions
+        how to parse the javascript out of the xhtml
+
+
+
+
+=====================
+
+
+
+distributed people work:
+
+We've all seen plenty of toolkits, platforms, and APIs for doing
+distributed computing. It's all variations on a theme. Divide the work to
+be done into small encapsulated chunks then send it out to everyone and get
+back the results. The key to really widespread distributed computing to
+create a standard chunk format that lets the client do work for any
+project, and perhaps more than one project at a time.
+
+Now what if we could flip this around? Instead of harnessing the work of
+many processors to do the work humans, what if we could get millions
+of humans to do the work of computers?
+
+Right now there is a project called <a href="http://www.pgdp.net/">the
+Distributed Proofreaders</a>. It's a group of people who proofread the
+Gutenberg texts by hand, comparing the existing OCRed text to a scan of the
+original book. Some tasks are much better suited for humans than computers,
+even if the human doing the work isn't personally involved. In this case,
+the computer has done basic Optical Character Recognition to generate the
+text, but even at 99% accuracy that's still about 5 errors per page.
+
+What makes this work so well is that the task can be broken up into chunks
+and distributed to different workers who know nothing about each other and
+very little about the task at hand. It doesn't matter which book you are
+working on as long as you can see the text, the scan, and maybe the title
+and author.
+
+My suggestion is that we make a platform for Distributed People. A standard
+way of breaking up tasks into small chunks and supplying any information the 
+person doing the work will need.  Then volunteers could download a client that
+presents them with a small piece of work, selected at random from the collection
+of projects they want to work on.
+
+The key here is creating a standard platform. This opens the doors to other
+distributed people tasks.  I'd love to have a great collection of public
+domain stock images, but most of the datasets out there have really bad
+meta data. Just entering the keywords would be a huge boon to these projects,
+and Distributed People could make it work.
+
+Here are some more examples:
+
+Reviewing a list of sites.
+Confirming whether an email is really spam.
+Proofreading the Wikipedia
+
+
+
+
+====================
+for next build 0.04
+    //implement relative loading of images properly
+    //support multi-context floats
+    //reduce number of refreshes on startup
+    //demo of a lot of text (shakespeare)
+    //do horizontal scrolling
+    //fix link bug
+    implement row spanning
+    support columns on tables
+    build new demo w/ css techniques for pretty helpfile
+    support clear on inline floats
+    update supported features list
+    make webpage for it
+    fix fixed positioning support (when canvas > body size)
+====================
+
+redocument layout algorithm
+    fix 0 space breaking issue (inf loop problem)
+    ?? make layout be an interface
+    move block and inline to separate classes
+    move more inset calculations to the box classes
+    move rendering logic into separate classes. all painting should be in painters
+    design code for canvas vs body vs viewport sizing
+    document the actual recursive bounds algorithm
+    move bounds and translate code to the context.
+    add mouse over, in, out, drag, etc support.
+    adjust mouse wheel and scrolling constants
+    add hover support to link
+    add hover support to any attribute
+    row spanning
+    implement the other (auto?) table layout algorithm
+    refactor, refactor, refactor.
+    split inline layout into multiple classes (line breaker class?)
+    design new tests for fixed, relative, static, absolute, and inline layout
+    plan name and homepage for the project (1950's flying saucer?)
+    launch it on java.net
+    implement selection
+    implement letter, word, and line spacing
+    proper fixed width and horizontal scrolling
+    
+    
+plan to release
+    create project at java.net and get it approved
+    create home page with description
+    
+        Flying Saucer is a 100% Java strictly compliant XHTML + CSS1/2/3 renderer. We are focusing
+        on strict compliance with the complete CSS standard, mainly for embedded applications
+        like the iTunes Music Store and other next gen thick clients. This means legacy /non-compliant
+        pages (ie, the general internet) will be supported through compatibility libs rather
+        than modifying the renderer itself. We aim to be the definitive open 100% Java renderer for
+        HTML content.
+        
+        If you want to contribute or just see what's going on then please join
+        the mailing list! [link]. We need developers, beta testers, doc writers, evangelists,
+        and users. Even if you are just curious please join it.
+        
+        This is a *very challenging project* and we need some top flight people to work on
+        it. In particular we want module owners for the following:
+            CSS (parsing, converting, optimizing, rendering new features)
+            HTML->XHTML converter (support for HTML 4.0 browsers)
+            Browser component (a standalone webbrowser based on Flying Saucer)
+            Javascript support (how do we plug in rhino)
+            Rendering compliance (research the latest standards, build it, test it)
+            I18N efforts (how do we make sure the whole thing is i18n-able)
+            forms (input, select, text area, etc)
+            object and plugin support (SVG, xforms, flash, pdf)
+            printing module (we can't print anything yet!)
+            network module (ssl, redirects, image loading, etc.)
+            performance and memory optimization (how do we make the whole thing as fast and light as possible)
+    
+
+
+
+
+
+============= old
+
+
+---- done -----
+
+//implement multiple adjacent spans and subspans
+//implement box width growing instead of shrinking
+//support p tag
+    a box w/ inline spans. (normal boxlayout will do it, i think)
+//convert ox,ox to an origin point
+//convert width,height to a dimension point
+//support h1 tag
+    //a span which always starts on a new line and has a large bold font (by 
+    //default. maybe we should assume that the style was set by previous CSS and 
+    //just use the font-size and font-weight in the tag to do style). it can wrap
+    //but anything after it must be on it's own line too.
+//create pure text demo with just p,b,i and h1s
+//support background color on any object
+//create non-nested div demo with just div boxes w/ colored borders and 
+//different sized margins
+//implement box width shrinking based on contents
+    if we draw the border after the contents then we can draw the
+    contents first, use the last.y to determine the height of the contents
+    and then draw the border of the box and set a new last.y for the next
+    object to use.
+//implement box height growing based on contents
+//reimplement backgrounds to work with box growing
+//skip comment nodes
+//put demos into demo directory
+//css parser
+//css cascading
+//line breaking algorithm (take 3!)
+
+
+//test same lineheights.
+//test different lineheights.
+//test an inline box too long for the line box
+
+//test horizontal alignment
+//test pre formatting
+// create fontutil
+
+
+==============
+for the 0.02 release
+//integrate the inline and box layouts again so that p is just a styled
+//version of div.
+//pre is styled version of div
+//make margins and padding work on boxes again
+//support images in inline layout as replaced elements w/ intrinsic extents
+//fix line spacing on headers
+//add u.start() and u.stop()
+//patch bug where bounds of body are too swmall
+//fix new bug w/ box sizing and drawing borders when non-standard box width
+//fix bug that is crashing paragraph demo
+//test all of the demos again
+//joshy:maybe fixed? //patch bug where normal line break goes into infinite loop
+//fix bug where size of html pane is always one refresh behind.
+//underline,strikethrough,overline
+//capitalize,lowercase,uppercase
+//<big>,<small>,<tt>
+//super and subscript
+//fixed line height/ baseline calcs
+//implement table w/o cell spanning
+//move some of the util code out of inline layout
+//    like captialize, lowercase, uppercase,
+//   like super,sub
+//    like underline,strikethrough,overline
+
+==============
+for the 0.03 release
+//implement width via css (px & %)
+//implement height via css (px)
+//turn on anti-aliasing
+//background image for body
+//fixed background image for body
+//partial background image for divs
+
+//create double clickable jar
+//create menu to run the demos
+//trim whitespace when doing breaking
+
+//add inlinebox.getText()
+//add inlinebox.setText()
+//merge bounds and origin into rect
+
+//support indent on paragraph/div
+//fix image test
+//fix table text
+
+//add other demos to menu
+
+//fix bug where text after subspan isn't on the next line down
+//    but on the same line (only where the break between subspans is
+//    right at the end)
+//fixed bug where width of transformed text is wrong
+//look up whitespace rules
+//redesign tiling for fixed image for body
+//util class w/ function to draw a rect in a color (draw a box too)
+//<a> tag (underlined)
+//create matrix of supported properties and features
+//    redesign vertical align code
+//        vertical-align: top, bottom, baseline
+//        make inline image set appropriate baseline for text around it.
+//    if element has a class it should look for attributes w/ that class, 
+//        but fall back to the classless rules if it can't find them.
+//    integrate default css into jar file
+//    fix cell/vs/table width bug
+//    named color support for the color property
+//    test nested boxes
+//    shorthand for margin, padding, border-width
+//debug menu
+//    draw boxes, lines, and inlines
+//rewrote inset/outset/ridge rendering
+//refactor CSS code into it's own package
+//em sizing on fonts
+//new testcases for text alignment (vert and horiz)
+//fixed bug that caused tables to always be at the origin
+//added support for fixed width columns specified by style on the
+//columns in the first row. distribute rest of width to other cells
+//plan for implementing floated elements w/ testcase
+//    left floating
+//    right floating
+//    relative positioning (just offset from normal)
+//    basic fixed positioning
+// move painting and boxes to their own packages
+// move border info to the boxes
+//implement break (<br/>)
+//fix text alignment (breaking test w/ right and centered text)
+//create file menu w/ quit
+//create new demo from existing good looking xhtml+css on the web
+//clean up accessor code in CSSBank and move to new class
+//create dom inspector
+// float blocks
+// move CSS getProperty code into it's own class
+// make a c.css.getPointProperty() to return two float values
+// make the body paint the whole canvas
+// make painting code use boxes
+//handle BR
+//anonymous text block support
+
+
+
+
+====================
+
+next features before a new release
+make itunes email demo work
+table
+    //clean up code
+    //spanning of cells
+    column support
+    //slew of unit tests
+    title
+    header
+    footer
+support clear on inline context
+make base url for loading images
+update supported features list
+
+
+
+
+
+
+
+
+update the supported features list
+make inline-block support
+to finish aura
+    fix extra space
+    make floated block work (not just floated image)
+    make floating carry down to next block.
+    support clear to turn off down floating
+    //fix drawing of extra line item bullets
+    stop extra refreshes
+    support horizontal scrolling
+
+inline block floating
+float blocks when in a block only context in addition to inline context
+
+==============
+
+for the 0.04 release
+
+
+new features:
+    positioning:
+        multiple floats in each direction
+        multiple floats w/ different sizes
+        floats that span their containing blocks
+        support for clear
+        static positioning (just codify and add defaults to css)
+        absolute positioning
+        fixed in nested w/ offset starting position
+        relative w/ px
+        relative w/ 'auto'
+        relative w/ 'inherit'
+        fixed w/ %
+        fixed w/ auto and inherit
+        do horizontal fixed calcs
+    background image
+        do full % position for horiz and vert
+            finish keyword substitution
+            finish % replication
+            finish rendering support for horiz
+        do % position w/ fixed
+    support acenders/descenders/baseline for vertical-align
+    tables: 
+        implement cell spanning
+        implement column widths
+        implement headers and titles
+    proper css cascading (ie, sort the rules properly)
+    design scaling system to convert other measurements into px
+    design percentage system to calc % w & h
+    new testcases for table
+    borders, margins, padding, on inline block
+    handle empty nodes
+new code features
+    move layout code into it's own package
+testing & docs
+    why don't class names with _ in them work? banned by spec?
+    test sub spans <p>asdf<b>asdf<i>asdf</i>asdf</b>asdf</p>
+    create outstanding bug list
+    
+for the 0.05 release
+    investigate advanced font metrics
+        line spacing
+        word spacing
+        letter spacing
+        sub pixel spacing
+        fractional metrics
+    review the box layout algorithm again. maybe need to redefine
+    way to click on a node (future rollover support)
+    margin collapsing
+    relative url for the doc for loading images
+    media cacher
+    major speedups needed. needs more caching, redfine the layout order
+    contents as innerbounds and orig/bnds as outerbounds (take 3)
+    implement anchor w/ rollover and mouse cursor and :hover
+    universal scaling (like +/- buttons in safari)
+    

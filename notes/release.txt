@@ -1,0 +1,77 @@
+Feb 5, 2004
+
+quick start:  ant test-box
+
+This is the first release of JoshyHTML, with a better name to be chosen later.
+It's goal is not to be a webbrowser, but an XHTML Strict + CSS renderer. There
+is no network code in it at all, in fact. It accepts a DOM and renders it in a
+scrolling panel. You could make a webbrowser out of it, but since it only
+supports XHTML Strict there would be a lot of work to massage the incoming html
+and css. Not impossible though.
+
+I have tried to minimize the tag specific code. I have used a CSS file for
+defaults as much as possible. For example, the code doesn't know that h1 tags
+are supposed to be bold and 20pts. It just knows to put a break after an h1 tag.
+The rest of the style comes from the default CSS file (test.css) which allows
+you to redefine the defaults if you want.
+
+======== Tags Supported ================
+Currently the browser supports the following tags:
+
+
+body, p, h1,h2,h3,h4,h5,h6, b, i, div, image, ul,li
+
+
+not supported yet:
+span, table, ol, code, pre, dt, em, a, address, or any of the other random
+inline tags.
+
+No style information can be specified via elements. You must use CSS.
+(actually, width is currently specified via the width attribute on divs,
+but that will go to CSS soon as well)
+
+
+img supports the src tag and can read anything that the javax.swing.ImageIcon
+can read (ie, gif, png, and jpg). 
+
+
+======== CSS Properties ==============
+div supports borders, margins, padding, and backgrounds with colors or images that tile ( the repeat, repeatx, repeaty properties work)
+all of the text elements (p, h1, b, i, etc) support foreground colors and font-style (normal and italic), font-weight (normal and bold), font-size (pt's only), and font-family (serif, sans-serif, and monospace)
+
+No other styling is provided yet. What should we work on first?
+
+No shorthand properties are supported yet. ie:
+
+div {
+    /* this won't work */
+    border-width: 1px 1px 1px 1px;
+    /* this will work */
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+}
+
+======= CSS specification ============
+Style via CSS can be specified with an inline <style> tag in the header or by modifying the defaults in test.css.
+
+
+======= CSS Selectors ================
+Selection of rules works by class and element. IDs and compound and pseudo class selectors do not work.
+
+/* these work */
+div {   }
+div.myclass { }
+.myclass { }
+*.myclass { }
+
+/* these don't work *
+
+#myid { }
+div p b { }
+a:hover { } 
+
+
+========= future work ================'
+I am looking for someone who would like to make a browser out of this, even if it's just used for things like help files. Anyone interested?

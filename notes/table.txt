@@ -1,0 +1,108 @@
+table notes
+
+
+create Table object
+
+Table.
+    addColumn(Element)
+    addTopCell(Element)
+    addCell(Element)
+    
+    calculateWidths()
+    
+    int[] getWidths()
+    
+    int getRowCount()
+    Row getRow(int row)
+    Iterator getRowIterator()
+
+    get header
+    get footer
+    get title
+    set title
+Row
+    Cell getCell(int col)
+    int getCellCount()
+    Iterator getCellIterator()
+
+Cell
+    getColumnSpan()
+    getRowSpan()
+    getWidth()
+    getHeight()
+    
+Box newBox()
+
+
+calculateWidths()
+    calculate total table width based on intrinsic size 
+        and enclosing  block
+    count total columns based on top row
+    create column width array
+    for each cell in top row
+        for each cell col span
+            col_width[i] = cell.width/cell.col_span
+        col_width[i] = cell
+        if cell spanned
+            col_width[i+] width = -1
+    count unset columns
+    distribute remaining space among columns
+
+rendering step
+TableBox Table.calculateBoxes()
+    TableBox = new TableBox()
+    create and add title box to table
+    create and add header box to table
+    for each row
+        for each cell
+            create cellbox
+            layout contents of the cell
+            box.w = cell.getWidth()
+            box.h = cell.getHeight()
+            box.x = table.getColumnX(cell.getColumn())
+            box.y = table.getRowY(cell.getRow())
+            add box to table
+    create and add footer box to table
+    create and add caption box to table
+    
+==============
+
+plan
+
+//implement table and table layout 2
+--- width calculations
+//test with one row of cells and explicit width for table
+//test with one row of cells with explict width on the cells
+//test with top row one fixed and one auto
+//test with two rows of cells with w/ on table
+//test with two rows of cells with w/ on top cells
+--- col spans
+//test with two rows of cells with col span on bottom
+//test with two rows of cells with col span on top
+//test with three rows of cells with second row span at end
+//test with three rows of cells with second row span at beginning
+--- row spans
+test with two rows of cells with row span at end
+test with two rows of cells with row span at beginning
+--- test spacing
+test w/ spacing = 10 and 3x3 grid of auto cells
+test w/ spacing = 10 and 3x3 grid of fixed cells
+--- table headers
+//add support for table headers (th)
+--- extra boxes
+research header/footer/caption/title stuff
+--- extents
+does table support padding? if not,
+test 2x2 auto w padding = 0
+test 2x2 auto w padding = 10
+test 2x2 fixed w padding = 10
+
+future stuff
+collapsing borders model vs separated borders model
+add a caption
+support using the thead, tbody, and tfoot elements
+align the caption
+table style layout on non-table elements
+support hiding the empty cells
+support sizing the cells to the grid, instead of to the contents,
+    if contents are smaller

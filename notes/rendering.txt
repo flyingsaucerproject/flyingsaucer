@@ -1,0 +1,51 @@
+plan for the new rendering model
+
+
+the first thing is to not do multiple passes.
+layout should not be called from paint.
+layout should return a block instead of a rectangle.
+the blocks should be saved as children
+paint should take a block instead of an element
+implement the rest of the caching later.
+
+
+//add a child list to Box
+//modify layout to use the child list on box
+//modify layout() and paint() to use boxes
+//modify box layout and inline layout to use the boxes
+
+
+//fix crash w/ tables (inline issue?)
+//fix bad rendering w/ lines
+//separate layout and paint into separate passes
+//fix bad rendering w/ lists
+//fix crash w/ inline images
+
+//fix nested boxes
+//fix bad table rendering
+//recativate replaced elements
+fix bad rendering w/ preformatted text
+//reactivate fixed
+//reactivate relative
+//reactivate float
+fix anonymous text block support
+
+
+define the origin and context flow
+
+the x and y of a box is relative to the inner bounds of the containing box
+the available width is relative to the inner bounds of the containing box
+painting:
+    the border and background are painted relative to the inner bounds of the containing box
+    the contents of a box are painted relative to the inner bounds of the box,
+    ie 0,0. (not the inner bounds of the containing box)
+    
+
+
+dealing with anonymous text blocks
+inserting a new tag to wrap the text blocks in seems like a bad idea since
+it would be hard to undo
+i will have to modify the inline layout's nexttext node search to look for
+block boundaries
+first i need to come up with a bunch of test cases for all possible scenarios
+
