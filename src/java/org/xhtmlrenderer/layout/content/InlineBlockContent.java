@@ -1,5 +1,5 @@
 /*
- * InlineContent.java
+ * InlineBlockContent.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -26,15 +26,13 @@ import org.xhtmlrenderer.layout.Context;
 import java.util.List;
 
 /**
- * Represents the content of an "inline"-display element.
- * This can never be returned in a content-list, instead, a StylePush and a StylePop marker
- * is placed in the list around its child contents.
+ * Represents the content of a replaced element (namespace-dependent)
  */
-class InlineContent implements Content {
+public class InlineBlockContent implements Content {
     private Element _elem;
     private CascadedStyle _style;
 
-    InlineContent(Element e, CascadedStyle style) {
+    InlineBlockContent(Element e, CascadedStyle style) {
         _elem = e;
         _style = style;
     }
@@ -52,7 +50,7 @@ class InlineContent implements Content {
     }
 
     public String toString() {
-        return "Block: " + _elem.getNodeName();
+        return "FloatedBlock: " + _elem.getNodeName();
     }
 
 }

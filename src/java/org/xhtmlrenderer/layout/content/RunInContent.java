@@ -1,5 +1,5 @@
 /*
- * ReplacedContent.java
+ * RunInContent.java
  * Copyright (c) 2004 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -26,14 +26,14 @@ import org.xhtmlrenderer.layout.Context;
 import java.util.List;
 
 /**
- * Represents the content of a replaced element (namespace-dependent)
+ * Represents run-in content
  */
-public class ReplacedContent implements Content {
+public class RunInContent implements Content {
     private Element _elem;
     private CascadedStyle _style;
 
-    ReplacedContent(Element e, CascadedStyle style) {
-        _elem = e;
+    RunInContent(Element parent, CascadedStyle style) {
+        _elem = parent;
         _style = style;
     }
 
@@ -41,16 +41,11 @@ public class ReplacedContent implements Content {
         return _elem;
     }
 
-    public CascadedStyle getStyle() {
-        return _style;
-    }
-
     public List getChildContent(Context c) {
         return ContentUtil.getChildContentList(c, this);
     }
 
-    public String toString() {
-        return "FloatedBlock: " + _elem.getNodeName();
+    public CascadedStyle getStyle() {
+        return _style;
     }
-
 }

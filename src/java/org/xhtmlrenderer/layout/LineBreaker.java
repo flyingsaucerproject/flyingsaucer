@@ -25,7 +25,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FloatedBlockContent;
-import org.xhtmlrenderer.layout.content.ReplacedContent;
+import org.xhtmlrenderer.layout.content.InlineBlockContent;
 import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.layout.inline.TextDecoration;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
@@ -393,7 +393,7 @@ public class LineBreaker {
 
         box.y = 0;// it's relative to the line
         try {
-            if (!(content instanceof ReplacedContent)) {
+            if (!(content instanceof InlineBlockContent)) {
                 if (!(content instanceof FloatedBlockContent)) {
                     box.width = FontUtil.len(c, text.substring(start, end), font);
                 } else {
@@ -410,7 +410,7 @@ public class LineBreaker {
             throw ex;
         }
         //u.p("box.x = " + box.x);
-        if (content instanceof ReplacedContent) {
+        if (content instanceof InlineBlockContent) {
             box.height = bounds.height;
         } else if (content instanceof FloatedBlockContent) {
             box.height = bounds.height;
@@ -423,7 +423,7 @@ public class LineBreaker {
         box.setText(text);
         box.setMasterText(text);
 
-        if (!(content instanceof ReplacedContent)) {
+        if (!(content instanceof InlineBlockContent)) {
             if (!(content instanceof FloatedBlockContent)) {
                 TextDecoration.setupTextDecoration(box);
                 if (box.getText() == null) {
@@ -547,6 +547,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2004/12/11 21:14:48  tobega
+ * Prepared for handling run-in content (OK, I know, a side-track). Still broken, won't even compile at the moment. Working hard to fix it, though.
+ *
  * Revision 1.31  2004/12/10 06:51:02  tobega
  * Shamefully, I must now check in painfully broken code. Good news is that Layout is much nicer, and we also handle :before and :after, and do :first-line better than before. Table stuff must be brought into line, but most needed is to fix Render. IMO Render should work with Boxes and Content. If Render goes for a node, that is wrong.
  *

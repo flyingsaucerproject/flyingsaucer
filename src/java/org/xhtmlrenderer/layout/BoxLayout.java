@@ -261,6 +261,7 @@ public class BoxLayout extends DefaultLayout {
 
             Box child_box = null;
             if (!(currentContent instanceof AnonymousBlockContent)) {
+                //TODO:handle run-ins. For now, treat them as blocks
                 Layout layout = c.getLayout(currentContent.getElement());
                 // update the counter for printing OL list items
                 c.setListCounter(c.getListCounter() + 1);
@@ -347,6 +348,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2004/12/11 21:14:48  tobega
+ * Prepared for handling run-in content (OK, I know, a side-track). Still broken, won't even compile at the moment. Working hard to fix it, though.
+ *
  * Revision 1.38  2004/12/11 18:18:10  tobega
  * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
  *

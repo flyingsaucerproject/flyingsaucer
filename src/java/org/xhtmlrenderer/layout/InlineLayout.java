@@ -58,8 +58,7 @@ public class InlineLayout extends BoxLayout {
             //This where the magic decision of creating AnonymousBlockBox is
             //if (LayoutUtil.isBlockLayout(box.getElement(), c)) {
 
-            Object last = contentList.get(contentList.size() - 1);
-            if (last instanceof AnonymousBlockContent || last instanceof BlockContent) {//this should be block layed out
+            if (ContentUtil.isBlockContent(contentList)) {//this should be block layed out
                 return super.layoutChildren(c, box);
             }
         }
@@ -104,7 +103,6 @@ public class InlineLayout extends BoxLayout {
         while (contentList.size() > 0) {
             Object o = contentList.get(0);
             contentList.remove(0);
-            //TODO: can we do this? contentIterator.remove();//chop it off, no need to keep it?
             if (o instanceof FirstLineStyle) {//can actually only be the first object in list
                 firstLineStyle = ((FirstLineStyle) o).getStyle();
                 continue;
@@ -166,7 +164,7 @@ public class InlineLayout extends BoxLayout {
                 // calc new height of the line
                 // don't count the inline towards the line height and
                 // line baseline if it's a floating inline.
-                if (!(currentContent instanceof ReplacedContent)) {
+                if (!(currentContent instanceof InlineBlockContent)) {
                     if (!(currentContent instanceof FloatedBlockContent)) {
                         adjustLineHeight(curr_line, new_inline);
                     }
@@ -248,7 +246,7 @@ public class InlineLayout extends BoxLayout {
 
     private boolean isEndOfBlock(InlineBox prev_inline, Content content) {
         // replaced elements aren't split, so done with this one
-        if (content instanceof ReplacedContent) {
+        if (content instanceof InlineBlockContent) {
             return true;
         }
         if (content instanceof FloatedBlockContent) {
@@ -295,7 +293,7 @@ public class InlineLayout extends BoxLayout {
         Font font = FontUtil.getFont(c, style);
 
         // handle each case
-        if (content instanceof ReplacedContent) {
+        if (content instanceof InlineBlockContent) {
             //u.p("is replaced");
             return LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align, font);
         }
@@ -390,6 +388,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.45  2004/12/11 21:14:48  tobega
+* Prepared for handling run-in content (OK, I know, a side-track). Still broken, won't even compile at the moment. Working hard to fix it, though.
+*
 * Revision 1.44  2004/12/11 18:18:11  tobega
 * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
 *

@@ -50,11 +50,10 @@ public class ContentUtil {
         List blockList = null;
         FirstLineStyle firstLineStyle = null;
         FirstLetterStyle firstLetterStyle = null;
-
-
         TextContent textContent = null;
         CascadedStyle parentStyle = parent.getStyle();
         Element parentElement = parent.getElement();
+
         if (mayHaveFirstLine(parentStyle)) {
             //put in a marker if there is first-line styling
             CascadedStyle firstLine = c.css.getPseudoElementStyle(parentElement, "first-line");
@@ -62,6 +61,7 @@ public class ContentUtil {
                 firstLineStyle = new FirstLineStyle(firstLine);
             }
         }
+
         if (mayHaveFirstLetter(parentStyle)) {
             //put in a marker if there is first-letter styling
             CascadedStyle firstLetter = c.css.getPseudoElementStyle(parentElement, "first-letter");
@@ -69,6 +69,7 @@ public class ContentUtil {
                 firstLetterStyle = new FirstLetterStyle(firstLetter);
             }
         }
+
         if (parentElement != null) {
             //TODO: before and after may be block!
             //<br/> handling should be done by :before content
@@ -76,14 +77,12 @@ public class ContentUtil {
             if (before != null && before.hasProperty(CSSName.CONTENT)) {
                 String content = before.propertyByName(CSSName.CONTENT).getValue().getCssText();
                 if (!content.equals("")) {
-                    if (textContent != null) {
-                        inlineList.add(textContent);
-                        textContent = null;
-                    }
+                    inlineList.add(new StylePush(before));
                     textContent = new TextContent((Element) parentElement);
                     textContent.append(content.replaceAll("\\\\A", "\n"));
                     inlineList.add(textContent);
                     textContent = null;
+                    inlineList.add(new StylePop());
                 }
                 //do not reset style here, because if this element is empty, we will not have changed context
             }
@@ -95,6 +94,7 @@ public class ContentUtil {
         //each child node can result in only one addition to content
         for (int i = 0; i < children.getLength(); i++) {
             Node curr = children.item(i);
+            if (curr.getNodeType() != Node.ELEMENT_NODE && curr.getNodeType() != Node.TEXT_NODE) continue;//must be a comment or pi or something
 
             if (curr.getNodeType() == Node.TEXT_NODE) {
                 String text = curr.getNodeValue();
@@ -103,7 +103,6 @@ public class ContentUtil {
                 continue;
             }
 
-            if (curr.getNodeType() != Node.ELEMENT_NODE) break;//must be a comment or pi or something
             Element elem = (Element) curr;
             CascadedStyle style = c.css.getCascadedStyle(elem);
 
@@ -111,18 +110,17 @@ public class ContentUtil {
                 continue;//at least for now, don't generate hidden content
             }
 
-            //TODO: this replaced thing is Namespace-dependent    
-            if (LayoutUtil.isReplaced(c, curr)) {
+            if (isAbsolute(style)) {
                 // u.p("adding replaced: " + curr);
                 if (textContent != null) {
                     inlineList.add(textContent);
                     textContent = null;
                 }
-                inlineList.add(new ReplacedContent((Element) curr, style));
+                inlineList.add(new InlineBlockContent((Element) curr, style));
                 continue;
             }
 
-            //TODO: check CSS-spec 9.7 for computing values for floats
+            //have to check for float here already. The element may still be replaced, though
             if (isFloated(style)) {
                 // u.p("adding floated block: " + curr);
                 if (textContent != null) {
@@ -139,8 +137,29 @@ public class ContentUtil {
                     inlineList.add(textContent);
                     textContent = null;
                 }
-                inlineList.add(new ReplacedContent(elem, style));
+                inlineList.add(new InlineBlockContent(elem, style));
                 continue;
+            }
+
+            if (isRunIn(style)) {
+                RunInContent runIn = new RunInContent(elem, style);
+                List childContent = runIn.getChildContent(c);
+                if (isBlockContent(childContent)) {
+                    if (textContent != null) {
+                        inlineList.add(textContent);
+                        textContent = null;
+                    }
+                    if (blockList == null) blockList = new LinkedList();
+                    if (inlineList.size() != 0) {
+                        blockList.addAll(resolveRunInContent(inlineList, parentElement, parentStyle));
+                        inlineList = new LinkedList();
+                    }
+                    blockList.add(runIn);
+                    continue;
+                } else {
+                    inlineList.add(runIn);
+                    continue;//resolve it when we can
+                }
             }
 
             if (isBlockLevel(style)) {
@@ -149,17 +168,27 @@ public class ContentUtil {
                     textContent = null;
                 }
                 if (blockList == null) blockList = new LinkedList();
-                //TODO: handle run-in here
                 if (inlineList.size() != 0) {
-                    blockList.add(new AnonymousBlockContent(parentElement, parentStyle, inlineList));
+                    blockList.addAll(resolveRunInContent(inlineList, parentElement, parentStyle));
                     inlineList = new LinkedList();
                 }
-                blockList.add(new BlockContent((Element) curr, style));
+                BlockContent block = new BlockContent(elem, style);
+                blockList.add(block);
                 continue;
             }
-            //TODO: handle run-in content separately
-            //TODO: how about Absolute and Fixed children?
+
             //TODO:list-items, tables, etc.
+
+            //TODO: this replaced thing is Namespace-dependent
+            if (LayoutUtil.isReplaced(c, curr)) {
+                // u.p("adding replaced: " + curr);
+                if (textContent != null) {
+                    inlineList.add(textContent);
+                    textContent = null;
+                }
+                inlineList.add(new InlineBlockContent((Element) curr, style));
+                continue;
+            }
 
             //if we get here, we have inline content, need to get into it.
             Content inline = new InlineContent(elem, style);
@@ -182,9 +211,8 @@ public class ContentUtil {
                     }
                 }
                 if (blockList == null) blockList = new LinkedList();
-                //TODO: handle run-in here
                 if (inlineList.size() != 0) {
-                    blockList.add(new AnonymousBlockContent(parentElement, parentStyle, inlineList));
+                    blockList.add(resolveRunInContent(inlineList, parentElement, parentStyle));
                     inlineList = new LinkedList();
                 }
                 //extract any trailing AnonymousBlock and put it in the inlineList
@@ -214,15 +242,28 @@ public class ContentUtil {
             if (after != null && after.hasProperty(CSSName.CONTENT)) {
                 String content = after.propertyByName(CSSName.CONTENT).getValue().getCssText();
                 if (!content.equals("")) {
+                    if (textContent != null) {
+                        inlineList.add(textContent);
+                        textContent = null;
+                    }
+                    inlineList.add(new StylePush(after));
                     textContent = new TextContent((Element) parentElement);
                     textContent.append(content.replaceAll("\\\\A", "\n"));
                     inlineList.add(textContent);
                     textContent = null;
+                    inlineList.add(new StylePop());
                 }
             }
         }
 
-        if (blockList == null) {//this was inline content
+        //have to check if there were run-ins pending
+        if (isBlockContent(inlineList)) {
+            if (blockList == null) blockList = new LinkedList();
+            blockList.addAll(resolveRunInContent(inlineList, parentElement, parentStyle));
+            inlineList = new LinkedList();
+        }
+
+        if (blockList == null) {
             if (firstLetterStyle != null) {
                 inlineList.add(0, firstLetterStyle);
             }
@@ -243,6 +284,27 @@ public class ContentUtil {
             return blockList;
         }
 
+    }
+
+    static List resolveRunInContent(List pendingInlines, Element parentElement, CascadedStyle parentStyle) {
+        List inline = new LinkedList();
+        List block = new LinkedList();
+        for (Iterator i = pendingInlines.iterator(); i.hasNext();) {
+            Object o = i.next();
+            if (o instanceof RunInContent) {
+                if (inline.size() != 0) {
+                    block.add(new AnonymousBlockContent(parentElement, parentStyle, inline));
+                    inline = new LinkedList();
+                }
+                block.add(o);
+            } else {
+                inline.add(o);
+            }
+        }
+        if (inline.size() != 0) {
+            block.add(new AnonymousBlockContent(parentElement, parentStyle, inline));
+        }
+        return block;
     }
 
     public static boolean mayHaveFirstLetter(CascadedStyle style) {
@@ -285,10 +347,32 @@ public class ContentUtil {
         return false;
     }
 
+    public static boolean isRunIn(CascadedStyle style) {
+        if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
+        String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
+        if (display.equals("run-in")) return true;
+        return false;
+    }
+
+    public static boolean isTable(CascadedStyle style) {
+        if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
+        String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
+        if (display.equals("table")) return true;
+        return false;
+    }
+
+    public static boolean isAbsolute(CascadedStyle style) {
+        if (!style.hasProperty(CSSName.POSITION)) return false;//default is inline
+        String position = style.propertyByName(CSSName.POSITION).getValue().getCssText();
+        if (position.equals("absolute")) return true;
+        if (position.equals("fixed")) return true;
+        return false;
+    }
+
     public static boolean isInlineBlock(CascadedStyle style) {
         if (!style.hasProperty(CSSName.DISPLAY)) return false;//default is inline
         String display = style.propertyByName(CSSName.DISPLAY).getValue().getCssText();
-        if (display.equals("none")) return true;
+        if (display.equals("inline-block")) return true;
         return false;
     }
 
@@ -312,6 +396,7 @@ public class ContentUtil {
         Object o = childContent.get(childContent.size() - 1);
         if (o instanceof BlockContent) return true;
         if (o instanceof AnonymousBlockContent) return true;
+        if (o instanceof RunInContent) return true;//if it has run-ins, it will be block, one way or another
         return false;
     }
 
@@ -321,6 +406,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/11 21:14:46  tobega
+ * Prepared for handling run-in content (OK, I know, a side-track). Still broken, won't even compile at the moment. Working hard to fix it, though.
+ *
  * Revision 1.4  2004/12/11 18:18:09  tobega
  * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
  *
