@@ -26,6 +26,7 @@ import java.util.*;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.XRValue;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
@@ -66,10 +67,12 @@ public class ValueConstants {
 
     /**
      * Returns true if the specified value was absolute (even if we have a
-     * computed value for it)
+     * computed value for it), meaning that either the value can be used
+     * directly (e.g. pixels) or there is a fixed context-independent conversion
+     * for it (e.g. inches).
      *
-     * @param cssValue  PARAM
-     * @return          The absoluteUnit value
+     * @param cssValue  The CSSValue instance to check.
+     * @return          See desc.
      */
     public static boolean isAbsoluteUnit( CSSValue cssValue ) {
         // WARN: this will fail if not a primitive value
@@ -161,20 +164,25 @@ public class ValueConstants {
     }
 
     /**
-     * Gets the length attribute of the XRValueImpl object
+     * Returns true if the value's type represents a number. Note, does not
+     * actually check the value, just the type, which is given us by the CSS
+     * unit type. This is a shorthand way of saying, did the user declare this
+     * as a number unit (like px)?
      *
-     * @param cssValue  PARAM
-     * @return          The length value
+     * @param cssValue  The CSSPrimitiveValue to check
+     * @return          See desc.
      */
     public static boolean isNumber( CSSPrimitiveValue cssValue ) {
         return isNumber( cssValue.getPrimitiveType() );
     }
 
     /**
-     * Gets the length attribute of the XRValueImpl object
+     * Returns true if the SAC primitive value type is a number unit--a unit
+     * that can only contain a numeric value. This is a shorthand way of saying,
+     * did the user declare this as a number unit (like px)?
      *
      * @param cssPrimitiveType  PARAM
-     * @return                  The length value
+     * @return                  See desc.
      */
     public static boolean isNumber( short cssPrimitiveType ) {
         switch ( cssPrimitiveType ) {
@@ -227,7 +235,7 @@ public class ValueConstants {
             List keys = new ArrayList( map.keySet() );
             Collections.sort( keys );
 
-            // then add to out static list, in the order the keys appear. this means
+            // then add to our static list, in the order the keys appear. this means
             // list.get(index) will return the item at index, which should be the description
             // for that constant
             Iterator iter = keys.iterator();
@@ -235,7 +243,7 @@ public class ValueConstants {
                 TYPE_DESCRIPTIONS.add( map.get( iter.next() ) );
             }
         } catch ( Exception ex ) {
-            ex.printStackTrace();
+            throw new XRRuntimeException( "Could not build static list of CSS type descriptions.", ex );
         }
     }
 }// end class
@@ -244,6 +252,9 @@ public class ValueConstants {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/11/16 10:38:21  pdoubleya
+ * Use XRR exception, added comments.
+ *
  * Revision 1.2  2004/10/23 13:09:13  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards
