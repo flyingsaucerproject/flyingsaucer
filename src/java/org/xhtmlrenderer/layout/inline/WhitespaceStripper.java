@@ -244,6 +244,10 @@ public class WhitespaceStripper {
 
     
     public void prepBox(Context c, InlineBox box, InlineBox prev_align, Font font) {
+        // u.p("box = " + box);
+        // u.p("prev align = " + prev_align);
+
+
         // prepare the font, colors, border, etc
         box.setFont(font);
         BoxLayout.getBackgroundColor(c,box);
@@ -268,10 +272,8 @@ public class WhitespaceStripper {
         
 
 
-        // u.p("box = " + box);
-        // u.p("prev align = " + prev_align);
+
         // ============ set x
-        
         // use the prev_align to calculate the x if not at start of
         // new line
         if ( prev_align != null && !prev_align.break_after && !box.break_before ) {
@@ -297,26 +299,18 @@ public class WhitespaceStripper {
         // =========== set width
         
         /*
-        try {
-            if ( !LayoutUtil.isReplaced(c, node ) ) {
-                if ( !LayoutUtil.isFloatedBlock( node, c ) ) {
-                    box.width = FontUtil.len( c, node, text.substring( start, end ), font );
-                } else {
-                    box.width = bounds.width;
-                }
+        if ( !LayoutUtil.isReplaced(c, node ) ) {
+            if ( !LayoutUtil.isFloatedBlock( node, c ) ) {
+                box.width = FontUtil.len( c, node, text.substring( start, end ), font );
             } else {
+                box.width = bounds.width;
+            }
+        } else {
                 */
         box.width = FontUtil.len(c , box.node, box.getSubstring(), font);
         // u.p("width = " + box.width + " from '"+box.getSubstring() +"'");
         /*
-                box.width = bounds.width;
-            }
-        } catch ( StringIndexOutOfBoundsException ex ) {
-            u.p( "ex" );
-            u.p( "start = " + start );
-            u.p( "end = " + end );
-            u.p( "text = " + node.getNodeValue() );
-            throw ex;
+            box.width = bounds.width;
         }
         //u.p("box.x = " + box.x);
         */
@@ -342,16 +336,9 @@ public class WhitespaceStripper {
         
         //box.break_after = true;
         // =========== setup text decorations
-        /*
-        if ( !LayoutUtil.isReplaced(c, node ) ) {
-            if ( !LayoutUtil.isFloatedBlock( node, c ) ) {
-                FontUtil.setupTextDecoration( c, node, box );
-                if ( box.getText() == null ) {
-                    return box;
-                }
-            }
+        if(TextDecoration.isDecoratable(c,box.node)) {
+            TextDecoration.setupTextDecoration( c, box.node, box );
         }
-        */
         
         
         // =========== setup vertical alignment

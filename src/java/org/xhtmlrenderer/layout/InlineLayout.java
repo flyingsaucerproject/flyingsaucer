@@ -393,7 +393,7 @@ public class InlineLayout extends BoxLayout {
     public void restyle(Context ctx, Box box) {
         super.restyle(ctx,box);
         if(box instanceof InlineBox) {
-            FontUtil.setupTextDecoration(ctx, box.node, (InlineBox)box );
+            TextDecoration.setupTextDecoration(ctx, box.node, (InlineBox)box );
         }
     }
 
@@ -403,6 +403,15 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.30  2004/11/23 02:11:24  joshy
+* re-enabled text-decoration
+* moved it to it's own class
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.29  2004/11/23 01:53:29  joshy
 * re-enabled vertical align
 * added unit tests for various text-align and indent forms

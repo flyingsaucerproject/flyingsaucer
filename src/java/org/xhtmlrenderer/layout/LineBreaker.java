@@ -411,7 +411,7 @@ public class LineBreaker {
         
         if ( !LayoutUtil.isReplaced(c, node ) ) {
             if ( !LayoutUtil.isFloatedBlock( node, c ) ) {
-                FontUtil.setupTextDecoration( c, node, box );
+                TextDecoration.setupTextDecoration( c, node, box );
                 if ( box.getText() == null ) {
                     return box;
                 }
@@ -523,7 +523,7 @@ public class LineBreaker {
     
     private static void styleInlineBox(Context c, CalculatedStyle style, InlineBox box) {
         box.color = style.getColor();
-        FontUtil.setupTextDecoration( style, box.node, box );
+        TextDecoration.setupTextDecoration( style, box.node, box );
         Font font = FontUtil.getFont( c, style, box.node);
         box.setFont( font );
         box.width = FontUtil.len( c, box.getSubstring(), font );
@@ -536,6 +536,15 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2004/11/23 02:11:25  joshy
+ * re-enabled text-decoration
+ * moved it to it's own class
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.22  2004/11/18 02:37:26  joshy
  * moved most of default layout into layout util or box layout
  *

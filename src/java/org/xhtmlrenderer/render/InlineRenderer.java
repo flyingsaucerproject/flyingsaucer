@@ -214,7 +214,7 @@ public class InlineRenderer extends BoxRenderer {
         if ( inline.underline ) {
             float down = lm.getUnderlineOffset();
             float thick = lm.getUnderlineThickness();
-            g.fillRect( ix, iy + (int)down, stringWidth, (int)thick );
+            g.fillRect( ix, iy - (int)down, stringWidth, (int)thick );
         }
 
         if ( inline.strikethrough ) {
@@ -228,7 +228,7 @@ public class InlineRenderer extends BoxRenderer {
             float down = lm.getAscent();
             float thick = lm.getUnderlineThickness();
             //g.fillRect( ix, iy - (int)down, g.getFontMetrics().stringWidth( text ), (int)thick );
-            g.fillRect( ix, iy + (int)down, stringWidth, (int)thick );
+            g.fillRect( ix, iy - (int)down, stringWidth, (int)thick );
         }
 
         c.getGraphics().setColor( oldcolor );

@@ -141,53 +141,6 @@ public class FontUtil {
      * @param node  PARAM
      * @param box   PARAM
      */
-    public static void setupTextDecoration( Context c, Node node, InlineBox box ) {
-        Element el = null;
-        if ( node instanceof Element ) {
-            el = (Element)node;
-        } else {
-            el = (Element)node.getParentNode();
-        }
-        
-        // set to defaults
-        box.underline = false;
-        box.strikethrough = false;
-        box.overline = false;
-        
-        // override based on settings
-        String text_decoration = c.css.getStringProperty( el, "text-decoration" );
-        if ( text_decoration != null && text_decoration.equals( "underline" ) ) {
-            box.underline = true;
-        }
-        if ( text_decoration != null && text_decoration.equals( "line-through" ) ) {
-            box.strikethrough = true;
-        }
-        if ( text_decoration != null && text_decoration.equals( "overline" ) ) {
-            box.overline = true;
-        }
-    }
-    public static void setupTextDecoration( CalculatedStyle style, Node node, InlineBox box ) {
-        Element el = null;
-        if ( node instanceof Element ) {
-            el = (Element)node;
-        } else {
-            el = (Element)node.getParentNode();
-        }
-        if(style.hasProperty("text-decoration")) {
-            DerivedProperty text_decoration = style.propertyByName("text-decoration");
-            DerivedValue dv = text_decoration.computedValue();
-            String td = dv.asString();
-            if ( td != null && td.equals( "underline" ) ) {
-                box.underline = true;
-            }
-            if ( td != null && td.equals( "line-through" ) ) {
-                box.strikethrough = true;
-            }
-            if ( td != null && td.equals( "overline" ) ) {
-                box.overline = true;
-            }
-        }
-    }
 
     /**
      * Description of the Method
@@ -335,6 +288,15 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/11/23 02:11:24  joshy
+ * re-enabled text-decoration
+ * moved it to it's own class
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.14  2004/11/18 23:29:37  joshy
  * fixed xml bug
  * Issue number:
