@@ -1,6 +1,6 @@
 /*
  * PropertyDeclaration.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004 Torbjörn Gannholm, Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,33 +19,33 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
-import java.util.*;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.sheet.factory.*;
 
+
 /**
  * Represents a single property declared in a CSS rule set. A
- * PropertyDeclaration is created from an CSSValue and is immutable. The declaration knows its
- * origin, importance and specificity, and thus is prepared to be sorted out
- * among properties of the same name, within a matched group, for the CSS
- * cascade, into a {@link org.xhtmlrenderer.css.newmatch.CascadedStyle}.
+ * PropertyDeclaration is created from an CSSValue and is immutable. The
+ * declaration knows its origin, importance and specificity, and thus is
+ * prepared to be sorted out among properties of the same name, within a matched
+ * group, for the CSS cascade, into a {@link
+ * org.xhtmlrenderer.css.newmatch.CascadedStyle}.
  *
- * @author Torbjörn Gannholm
+ * @author   Torbjörn Gannholm
+ * @author   Patrick Wright
  */
 public class PropertyDeclaration {
+    /** Description of the Field */
     private String propName;
 
+    /** Description of the Field */
     private CSSName cssName;
+    /** Description of the Field */
     private org.w3c.dom.css.CSSPrimitiveValue cssPrimitiveValue;
 
-    private final static Map PD_FACTORIES;
-    private final static PropertyDeclarationFactory DEFAULT_PD_FACTORY;
-
-    /**
-     * Whether the property was declared as important! by the user.
-     */
+    /** Whether the property was declared as important! by the user.  */
     private boolean important;
 
     /**
@@ -54,59 +54,79 @@ public class PropertyDeclaration {
      * Stylesheet#AUTHOR}.
      */
     private int origin;
+    /** Description of the Field */
+    private IdentValue _identVal;
 
-    /**
-     * ImportanceAndOrigin of stylesheet - how many different
-     */
+    /** Description of the Field */
+    private boolean identIsSet;
+
+    /** ImportanceAndOrigin of stylesheet - how many different  */
     public final static int IMPORTANCE_AND_ORIGIN_COUNT = 6;
 
-    /**
-     * ImportanceAndOrigin of stylesheet - user agent
-     */
+    /** Description of the Field */
+    private final static PropertyDeclarationFactory[] PROPERTY_FACTORIES;
+    /** Description of the Field */
+    private final static PropertyDeclarationFactory DEFAULT_PD_FACTORY;
+
+    /** ImportanceAndOrigin of stylesheet - user agent  */
     private final static int USER_AGENT = 1;
 
-    /**
-     * ImportanceAndOrigin of stylesheet - user normal
-     */
+    /** ImportanceAndOrigin of stylesheet - user normal  */
     private final static int USER_NORMAL = 2;
 
-    /**
-     * ImportanceAndOrigin of stylesheet - author normal
-     */
+    /** ImportanceAndOrigin of stylesheet - author normal  */
     private final static int AUTHOR_NORMAL = 3;
 
-    /**
-     * ImportanceAndOrigin of stylesheet - author important
-     */
+    /** ImportanceAndOrigin of stylesheet - author important  */
     private final static int AUTHOR_IMPORTANT = 4;
 
-    /**
-     * ImportanceAndOrigin of stylesheet - user important
-     */
+    /** ImportanceAndOrigin of stylesheet - user important  */
     private final static int USER_IMPORTANT = 5;
-    private IdentValue _identVal;
 
     /**
      * Creates a new instance of PropertyDeclaration from an {@link
      * CSSPrimitiveValue} instance.
      *
      * @param cssName
-     * @param value The CSSValue to wrap
-     * @param imp  True if property was declared important! and false if not.
-     * @param orig int constant from {@link Stylesheet} for the origin of the
-     *             property declaration, that is, the origin of the style sheet where
-     *             it was declared. See {@link StylesheetInfo#USER_AGENT}, {@link
-     *             StylesheetInfo#USER}, and {@link StylesheetInfo#AUTHOR}.
+     * @param value    The CSSValue to wrap
+     * @param imp      True if property was declared important! and false if
+     *      not.
+     * @param orig     int constant from {@link Stylesheet} for the origin of
+     *      the property declaration, that is, the origin of the style sheet
+     *      where it was declared. See {@link StylesheetInfo#USER_AGENT}, {@link
+     *      StylesheetInfo#USER}, and {@link StylesheetInfo#AUTHOR}.
      */
-    public PropertyDeclaration(CSSName cssName,
-                               org.w3c.dom.css.CSSPrimitiveValue value,
-                               boolean imp,
-                               int orig) {
+    public PropertyDeclaration( CSSName cssName,
+                                org.w3c.dom.css.CSSPrimitiveValue value,
+                                boolean imp,
+                                int orig ) {
         this.propName = cssName.toString();
         this.cssName = cssName;
         this.cssPrimitiveValue = value;
         this.important = imp;
         this.origin = orig;
+    }
+
+    /**
+     * Converts to a String representation of the object.
+     *
+     * @return   A string representation of the object.
+     */
+    public String toString() {
+        return getPropertyName() + ": " + getValue().toString();
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @return   Returns
+     */
+    public IdentValue asIdentValue() {
+        if ( !identIsSet ) {
+            _identVal = IdentValue.getByIdentString( cssPrimitiveValue.getCssText() );
+            identIsSet = true;
+        }
+        return _identVal;
     }
 
     /**
@@ -122,18 +142,18 @@ public class PropertyDeclaration {
      * this method is unimportant, but has a lowest value of 0 and increments
      * sequentially by 1 for each increase in origin/importance..
      *
-     * @return See method javadoc.
+     * @return   See method javadoc.
      */
     public int getImportanceAndOrigin() {
-        if (origin == StylesheetInfo.USER_AGENT) {
+        if ( origin == StylesheetInfo.USER_AGENT ) {
             return PropertyDeclaration.USER_AGENT;
-        } else if (origin == StylesheetInfo.USER) {
-            if (important) {
+        } else if ( origin == StylesheetInfo.USER ) {
+            if ( important ) {
                 return PropertyDeclaration.USER_IMPORTANT;
             }
             return PropertyDeclaration.USER_NORMAL;
         } else {
-            if (important) {
+            if ( important ) {
                 return PropertyDeclaration.AUTHOR_IMPORTANT;
             }
             return PropertyDeclaration.AUTHOR_NORMAL;
@@ -143,17 +163,20 @@ public class PropertyDeclaration {
     /**
      * Returns the CSS name of this property, e.g. "font-family".
      *
-     * @return See desc.
+     * @return   See desc.
      */
     public String getPropertyName() {
         return propName;
     }
-    
+
+    /**
+     * Gets the cSSName attribute of the PropertyDeclaration object
+     *
+     * @return   The cSSName value
+     */
     public CSSName getCSSName() {
         return cssName;
     }
-
-    public String toString() { return getPropertyName() + ": " + getValue().toString(); }
 
     /**
      * Returns the specified {@link org.w3c.dom.css.CSSValue} for this property.
@@ -161,64 +184,46 @@ public class PropertyDeclaration {
      * returned here will result in indeterminate behavior--consider it
      * immutable.
      *
-     * @return See desc.
+     * @return   See desc.
      */
     public org.w3c.dom.css.CSSPrimitiveValue getValue() {
         return cssPrimitiveValue;
     }
-    
-    public static PropertyDeclarationFactory newFactory(CSSName cssName) {
-        PropertyDeclarationFactory pdf = (PropertyDeclarationFactory)PD_FACTORIES.get(cssName);
+
+    /**
+     * Description of the Method
+     *
+     * @param cssName  PARAM
+     * @return         Returns
+     */
+    public static PropertyDeclarationFactory newFactory( CSSName cssName ) {
+        PropertyDeclarationFactory pdf = PROPERTY_FACTORIES[cssName.getAssignedID()];
         if ( pdf == null ) {
-            pdf = DEFAULT_PD_FACTORY;   
+            pdf = DEFAULT_PD_FACTORY;
         }
         return pdf;
     }
-    
+
     static {
         DEFAULT_PD_FACTORY = DefaultPropertyDeclarationFactory.instance();
-        
-        PD_FACTORIES = new HashMap();
 
-        PD_FACTORIES.put( CSSName.BACKGROUND_SHORTHAND, BackgroundPropertyDeclarationFactory.instance() );
-        PD_FACTORIES.put( CSSName.BACKGROUND_POSITION, BackgroundPositionPropertyDeclarationFactory.instance() );
-
-        PD_FACTORIES.put( CSSName.BORDER_SHORTHAND, BorderPropertyDeclarationFactory.instance() );
-        PD_FACTORIES.put( CSSName.BORDER_COLOR_SHORTHAND,
-                          BorderColorPropertyDeclarationFactory.instance() );
-
-        PD_FACTORIES.put( CSSName.BORDER_STYLE_SHORTHAND, BorderStylePropertyDeclarationFactory.instance() );
-        PD_FACTORIES.put( CSSName.BORDER_WIDTH_SHORTHAND, BorderWidthPropertyDeclarationFactory.instance() );
-
-        PD_FACTORIES.put( CSSName.BORDER_TOP_SHORTHAND,   BorderSidePropertyDeclarationFactory.instance() );
-        PD_FACTORIES.put( CSSName.BORDER_RIGHT_SHORTHAND, BorderSidePropertyDeclarationFactory.instance() );
-        PD_FACTORIES.put( CSSName.BORDER_BOTTOM_SHORTHAND,BorderSidePropertyDeclarationFactory.instance() );
-        PD_FACTORIES.put( CSSName.BORDER_LEFT_SHORTHAND,  BorderSidePropertyDeclarationFactory.instance() );
-
-        PD_FACTORIES.put( CSSName.FONT_SHORTHAND, FontPropertyDeclarationFactory.instance() );
-        PD_FACTORIES.put( CSSName.FONT_FAMILY, FontFamilyPropertyDeclarationFactory.instance() );
-
-        PD_FACTORIES.put( CSSName.LIST_STYLE_SHORTHAND,       
-                          ListStylePropertyDeclarationFactory.instance() );
-
-        PD_FACTORIES.put( CSSName.MARGIN_SHORTHAND,       
-                          MarginPropertyDeclarationFactory.instance() );
-
-        PD_FACTORIES.put( CSSName.OUTLINE_SHORTHAND,       
-                          OutlinePropertyDeclarationFactory.instance() );
-
-        PD_FACTORIES.put( CSSName.PADDING_SHORTHAND,       
-                          PaddingPropertyDeclarationFactory.instance() );
-    }
-
-    private boolean identIsSet;
-    public IdentValue asIdentValue() {
-        if ( !identIsSet ) {
-            _identVal = IdentValue.getByIdentString(cssPrimitiveValue.getCssText());
-            identIsSet = true;
-        }
-        return _identVal;
-
+        PROPERTY_FACTORIES = new PropertyDeclarationFactory[CSSName.countCSSNames()];
+        PROPERTY_FACTORIES[CSSName.BACKGROUND_SHORTHAND.getAssignedID()] = BackgroundPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BACKGROUND_POSITION.getAssignedID()] = BackgroundPositionPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_SHORTHAND.getAssignedID()] = BorderPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_COLOR_SHORTHAND.getAssignedID()] = BorderColorPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_STYLE_SHORTHAND.getAssignedID()] = BorderStylePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_WIDTH_SHORTHAND.getAssignedID()] = BorderWidthPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_TOP_SHORTHAND.getAssignedID()] = BorderSidePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_RIGHT_SHORTHAND.getAssignedID()] = BorderSidePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_BOTTOM_SHORTHAND.getAssignedID()] = BorderSidePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_LEFT_SHORTHAND.getAssignedID()] = BorderSidePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.FONT_SHORTHAND.getAssignedID()] = FontPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.FONT_FAMILY.getAssignedID()] = FontFamilyPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.LIST_STYLE_SHORTHAND.getAssignedID()] = ListStylePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.MARGIN_SHORTHAND.getAssignedID()] = MarginPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.OUTLINE_SHORTHAND.getAssignedID()] = OutlinePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.PADDING_SHORTHAND.getAssignedID()] = PaddingPropertyDeclarationFactory.instance();
     }
 }// end class
 
@@ -226,6 +231,9 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/01/29 12:07:37  pdoubleya
+ * Changed to use array for PD factories.
+ *
  * Revision 1.9  2005/01/25 14:45:56  pdoubleya
  * Added support for IdentValue mapping on property declarations. On both CascadedStyle and PropertyDeclaration you can now request the value as an IdentValue, for object-object comparisons. Updated 99% of references that used to get the string value of PD to return the IdentValue instead; remaining cases are for pseudo-elements where the PD content needs to be manipulated as a String.
  *
