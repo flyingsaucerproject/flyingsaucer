@@ -11,7 +11,7 @@ public class BrowserActions {
     public static Logger logger = Logger.getLogger("app.browser");
     Action open_file, quit;
     Action cut, copy, paste;
-    Action forward, backward, reload, load, stop;
+    Action forward, backward, refresh, reload, load, stop;
     BrowserStartup root;
     
     public BrowserActions(BrowserStartup root) {
@@ -20,6 +20,7 @@ public class BrowserActions {
     
     public void init() {
         stop = new EmptyAction("Stop");
+        setAccel(stop, KeyEvent.VK_ESCAPE);
         
         open_file = new AbstractAction() {
             public void actionPerformed(ActionEvent evt) {
@@ -35,6 +36,7 @@ public class BrowserActions {
         };
         open_file.putValue(Action.NAME,"Open File...");
         setAccel(open_file,KeyEvent.VK_O);
+        setMnemonic(open_file,new Integer(KeyEvent.VK_O));
         
         quit = new AbstractAction() {
             public void actionPerformed(ActionEvent evt) {
@@ -43,13 +45,17 @@ public class BrowserActions {
         };
         setName(quit,"Quit");
         setAccel(quit,KeyEvent.VK_Q);
+        setMnemonic(quit,new Integer(KeyEvent.VK_Q));
 
         cut = new EmptyAction("Cut",KeyEvent.VK_X);
         cut.setEnabled(false);
+        setMnemonic(cut,new Integer(KeyEvent.VK_T));
         copy = new EmptyAction("Copy",KeyEvent.VK_C);
         copy.setEnabled(false);
+        setMnemonic(copy,new Integer(KeyEvent.VK_C));
         paste = new EmptyAction("Paste",KeyEvent.VK_V);
         paste.setEnabled(false);
+        setMnemonic(paste,new Integer(KeyEvent.VK_P));
 
         
         
@@ -85,6 +91,18 @@ public class BrowserActions {
             KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
             InputEvent.ALT_MASK));
         
+        refresh = new EmptyAction("Refresh Page") {
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    root.panel.view.invalidate();
+                    root.panel.view.repaint();
+                } catch (Exception ex) {
+                    u.p(ex);
+                }
+            }
+        };
+        refresh.putValue(Action.ACCELERATOR_KEY,
+            KeyStroke.getKeyStroke("F5"));
 
         
         reload = new EmptyAction("Reload") {
@@ -97,6 +115,9 @@ public class BrowserActions {
                 }
             }
         };
+        reload.putValue(Action.ACCELERATOR_KEY,
+            KeyStroke.getKeyStroke(KeyEvent.VK_F5,
+            InputEvent.SHIFT_MASK));
         
         load = new AbstractAction("Load") {
             public void actionPerformed(ActionEvent evt) {
@@ -123,4 +144,7 @@ public class BrowserActions {
                 Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     }
 
+    public void setMnemonic(Action act, Integer mnem) {
+        act.putValue(Action.MNEMONIC_KEY,mnem);
+    }
 }
