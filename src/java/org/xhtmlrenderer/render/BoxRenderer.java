@@ -27,7 +27,7 @@ public class BoxRenderer extends DefaultRenderer {
         Box block = (Box) box;
 
         //set the current style
-        if (!(box instanceof AnonymousBlockBox))
+        if (block.content.getStyle() != null)
             c.pushStyle(block.content.getStyle());
 
         if (box.restyle) {
@@ -57,7 +57,7 @@ public class BoxRenderer extends DefaultRenderer {
         c.setExtents(oldBounds);
 
         //reset style
-        if (!(box instanceof AnonymousBlockBox))
+        if (block.content.getStyle() != null)
             c.popStyle();
 
         if (c.debugDrawBoxes()) {

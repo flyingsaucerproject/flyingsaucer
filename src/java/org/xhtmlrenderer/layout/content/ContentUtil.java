@@ -51,7 +51,7 @@ public class ContentUtil {
         List blockList = null;
         FirstLineStyle firstLineStyle = null;
         FirstLetterStyle firstLetterStyle = null;
-        TextContent textContent = null;
+        StringBuffer textContent = null;
         CascadedStyle parentStyle = parent.getStyle();
         Element parentElement = parent.getElement();
 
@@ -79,9 +79,9 @@ public class ContentUtil {
                 String content = ((CSSPrimitiveValue) before.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
                 if (!content.equals("")) {
                     inlineList.add(new StylePush(before));
-                    textContent = new TextContent((Element) parentElement);
+                    textContent = new StringBuffer();
                     textContent.append(content.replaceAll("\\\\A", "\n"));
-                    inlineList.add(textContent);
+                    inlineList.add(new TextContent(parentElement, textContent.toString()));
                     textContent = null;
                     inlineList.add(new StylePop());
                 }
@@ -99,7 +99,7 @@ public class ContentUtil {
 
             if (curr.getNodeType() == Node.TEXT_NODE) {
                 String text = curr.getNodeValue();
-                if (textContent == null) textContent = new TextContent((Element) curr.getParentNode());
+                if (textContent == null) textContent = new StringBuffer();
                 textContent.append(text);
                 continue;
             }
@@ -114,7 +114,7 @@ public class ContentUtil {
             if (isAbsoluteOrFixed(style)) {
                 // Uu.p("adding replaced: " + curr);
                 if (textContent != null) {
-                    inlineList.add(textContent);
+                    inlineList.add(new TextContent(parentElement, textContent.toString()));
                     textContent = null;
                 }
                 inlineList.add(new InlineBlockContent((Element) curr, style));
@@ -125,7 +125,7 @@ public class ContentUtil {
             if (isFloated(style)) {
                 // Uu.p("adding floated block: " + curr);
                 if (textContent != null) {
-                    inlineList.add(textContent);
+                    inlineList.add(new TextContent(parentElement, textContent.toString()));
                     textContent = null;
                 }
                 inlineList.add(new FloatedBlockContent((Element) curr, style));
@@ -135,7 +135,7 @@ public class ContentUtil {
             if (isInlineBlock(style)) {
                 //treat it like a replaced element
                 if (textContent != null) {
-                    inlineList.add(textContent);
+                    inlineList.add(new TextContent(parentElement, textContent.toString()));
                     textContent = null;
                 }
                 inlineList.add(new InlineBlockContent(elem, style));
@@ -147,7 +147,7 @@ public class ContentUtil {
                 List childContent = runIn.getChildContent(c);
                 if (isBlockContent(childContent)) {
                     if (textContent != null) {
-                        inlineList.add(textContent);
+                        inlineList.add(new TextContent(parentElement, textContent.toString()));
                         textContent = null;
                     }
                     if (blockList == null) blockList = new LinkedList();
@@ -165,7 +165,7 @@ public class ContentUtil {
 
             if (isBlockLevel(style)) {
                 if (textContent != null) {
-                    inlineList.add(textContent);
+                    inlineList.add(new TextContent(parentElement, textContent.toString()));
                     textContent = null;
                 }
                 if (blockList == null) blockList = new LinkedList();
@@ -184,7 +184,7 @@ public class ContentUtil {
             if (LayoutUtil.isReplaced(c, curr)) {
                 // Uu.p("adding replaced: " + curr);
                 if (textContent != null) {
-                    inlineList.add(textContent);
+                    inlineList.add(new TextContent(parentElement, textContent.toString()));
                     textContent = null;
                 }
                 inlineList.add(new InlineBlockContent((Element) curr, style));
@@ -193,7 +193,7 @@ public class ContentUtil {
 
             //if we get here, we have inline content, need to get into it.
             if (textContent != null) {
-                inlineList.add(textContent);
+                inlineList.add(new TextContent(parentElement, textContent.toString()));
                 textContent = null;
             }
             Content inline = new InlineContent(elem, style);
@@ -234,7 +234,7 @@ public class ContentUtil {
         }
 
         if (textContent != null) {
-            inlineList.add(textContent);
+            inlineList.add(new TextContent(parentElement, textContent.toString()));
             textContent = null;
         }
         if (parentElement != null) {
@@ -242,15 +242,15 @@ public class ContentUtil {
             CascadedStyle after = c.css.getPseudoElementStyle(parentElement, "after");
             if (after != null && after.hasProperty(CSSName.CONTENT)) {
                 String content = ((CSSPrimitiveValue) after.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
-                if (!content.equals("")) {
+                if (!content.equals("")) {//a worthwhile reduncancy-check
                     if (textContent != null) {
-                        inlineList.add(textContent);
+                        inlineList.add(new TextContent(parentElement, textContent.toString()));
                         textContent = null;
                     }
                     inlineList.add(new StylePush(after));
-                    textContent = new TextContent((Element) parentElement);
+                    textContent = new StringBuffer();
                     textContent.append(content.replaceAll("\\\\A", "\n"));
-                    inlineList.add(textContent);
+                    inlineList.add(new TextContent(parentElement, textContent.toString()));
                     textContent = null;
                     inlineList.add(new StylePop());
                 }
@@ -420,6 +420,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/12/12 18:06:51  tobega
+ * Made simple layout (inline and box) a bit easier to understand
+ *
  * Revision 1.11  2004/12/12 16:11:03  tobega
  * Fixed bug concerning order of inline content. Added a demo for pseudo-elements.
  *

@@ -38,6 +38,7 @@ import org.xhtmlrenderer.util.Uu;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -246,8 +247,20 @@ public class BoxLayout extends DefaultLayout {
 
         java.util.List contentList = block.content.getChildContent(c);
         if (contentList.size() == 0) return block;//we can do this if there is no content, right?
-        Iterator contentIterator = contentList.iterator();
+        layoutContent(c, box, contentList, block);
 
+        c.addMaxWidth(box.width);
+
+        c.setListCounter(old_counter);
+
+        c.unshrinkExtents(block);
+
+        return block;
+    }
+
+    public static void layoutContent(Context c, Box box, List contentList, BlockBox block) {
+        Iterator contentIterator = contentList.iterator();
+        //TODO: how does a block's firstLineStyle and firstLetterStyle propagate downwards?
         while (contentIterator.hasNext()) {
             Object o = contentIterator.next();
             if (o instanceof FirstLineStyle) {//can actually only be the first object in list
@@ -296,7 +309,7 @@ public class BoxLayout extends DefaultLayout {
             if (child_box.absolute) {
                 Absolute.positionAbsoluteChild(c, child_box);
             }
-            
+
             // skip adjusting the parent box if the child
             // doesn't affect flow layout
             if (LayoutUtil.isOutsideNormalFlow(child_box)) {
@@ -311,13 +324,6 @@ public class BoxLayout extends DefaultLayout {
             // increase the final layout height by the height of the child
             box.height += child_box.height;
         }
-        c.addMaxWidth(box.width);
-
-        c.setListCounter(old_counter);
-
-        c.unshrinkExtents(block);
-
-        return block;
     }
 
     //TODO: look over form handling. Should be handled through NamespaceHandler and DOM-events, I think
@@ -349,6 +355,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2004/12/12 18:06:51  tobega
+ * Made simple layout (inline and box) a bit easier to understand
+ *
  * Revision 1.44  2004/12/12 05:51:48  tobega
  * Now things run. But there is a lot to do before it looks as nice as it did. At least we now have :before and :after content and handling of breaks by css.
  *

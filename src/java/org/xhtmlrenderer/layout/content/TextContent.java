@@ -33,11 +33,11 @@ import java.util.List;
  */
 public class TextContent implements Content {
     private Element _elem;//will need this for handling dynamic content!
-    private StringBuffer _sb;
+    private String _text;
 
-    TextContent(Element e) {
+    TextContent(Element e, String text) {
         _elem = e;
-        _sb = new StringBuffer();
+        _text = text;
     }
 
     public Element getElement() {
@@ -53,15 +53,15 @@ public class TextContent implements Content {
     }
 
     public String getText() {
-        return _sb.toString();
+        return _text;
     }
 
-    public void append(String text) {
-        _sb.append(text);
+    public void setText(String text) {
+        _text = text;
     }
 
     public String toString() {
-        return "TextContent: " + _sb.toString();
+        return "TextContent: " + _text;
     }
 
 }

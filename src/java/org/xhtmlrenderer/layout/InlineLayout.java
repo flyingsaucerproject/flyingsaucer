@@ -55,19 +55,19 @@ public class InlineLayout extends BoxLayout {
         List contentList = box.content.getChildContent(c);
         if (contentList.size() == 0) return box;//we can do this if there is no content, right?
 
-        //TODO: unravel the mysteries of the layout hierarchy. Perhaps the Context should know if we are block-laying out or inline laying-out?
-        if (!box.isAnonymous()) {//this check should really be unnecessary when content layout is completed. tobe 2004-12-09
-            //This where the magic decision of creating AnonymousBlockBox is
-            //if (LayoutUtil.isBlockLayout(box.getElement(), c)) {
-
-            if (ContentUtil.isBlockContent(contentList)) {//this should be block layed out
-                return super.layoutChildren(c, box);
-            }
-        }
-        
-        // calculate the initial position and dimensions
-        //was:Box block = (Box) box;
         BlockBox block = (BlockBox) box;//I think this should work - tobe 2004-12-11
+
+        if (ContentUtil.isBlockContent(contentList)) {//this should be block layed out
+            BoxLayout.layoutContent(c, box, contentList, block);
+        } else {
+            layoutContent(c, box, contentList, block);
+        }
+
+
+        return block;
+    }
+
+    public static void layoutContent(Context c, Box box, List contentList, BlockBox block) {
         Rectangle bounds = new Rectangle();
         bounds.width = c.getExtents().width;
         bounds.width -= box.margin.left + box.border.left + box.padding.left +
@@ -86,7 +86,7 @@ public class InlineLayout extends BoxLayout {
         // account for text-indent
         CalculatedStyle parentStyle = c.getCurrentStyle();
         remaining_width = TextIndent.doTextIndent(parentStyle, remaining_width, curr_line);
-        
+
         // more setup
         LineBox prev_line = new LineBox();
         prev_line.setParent(box);
@@ -138,12 +138,12 @@ public class InlineLayout extends BoxLayout {
                     Uu.dump_stack();
                     System.exit(-1);
                 }
-                
+
                 // the crash warning code
                 if (bounds.width < 1) {
                     Uu.p("warning. width < 1 " + bounds.width);
                 }
-                
+
                 // test if there is no more text in the current text node
                 // if there is a prev, and if the prev was part of this current node
                 if (prev_inline != null && prev_inline.content == currentContent) {
@@ -173,12 +173,12 @@ public class InlineLayout extends BoxLayout {
                     curr_line = newLine(box, bounds, prev_line);
                     remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
                 }
-                
-                
+
+
                 // save the new inline to the list
                 curr_line.addChild(new_inline);
-                
-                
+
+
                 // calc new height of the line
                 // don't count the inline towards the line height and
                 // line baseline if it's a floating inline.
@@ -187,15 +187,15 @@ public class InlineLayout extends BoxLayout {
                         adjustLineHeight(curr_line, new_inline);
                     }
                 }
-                
+
                 // handle float
                 //FloatUtil.handleFloated( c, new_inline, curr_line, bounds.width, elem );
-                
+
                 // calc new width of the line
                 curr_line.width += new_inline.width;
                 // reduce the available width
                 remaining_width = remaining_width - new_inline.width;
-                
+
                 // if the last inline was at the end of a line, then go to next line
                 if (new_inline.break_after) {
                     // then remaining_width = max_width
@@ -209,8 +209,8 @@ public class InlineLayout extends BoxLayout {
                     curr_line = newLine(box, bounds, prev_line);
                     remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
                 }
-                
-                
+
+
                 // set the inline to use for left alignment
                 if (!(currentContent instanceof FloatedBlockContent)) {
                     prev_align_inline = new_inline;
@@ -222,14 +222,13 @@ public class InlineLayout extends BoxLayout {
             if (currentContent.getStyle() != null) c.popStyle();
 
         }
-        
+
         // save the final line
         saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, block, true);
         finishBlock(block, curr_line, bounds);
-        return block;
     }
 
-    private LineBox newLine(Box box, Rectangle bounds, LineBox prev_line) {
+    private static LineBox newLine(Box box, Rectangle bounds, LineBox prev_line) {
         LineBox curr_line = new LineBox();
         if (prev_line != null) {
             curr_line.setParent(prev_line.getParent());
@@ -245,7 +244,7 @@ public class InlineLayout extends BoxLayout {
     }
 
 
-    private void validateBounds(Rectangle bounds) {
+    private static void validateBounds(Rectangle bounds) {
         if (bounds.width <= 0) {
             bounds.width = 1;
             XRLog.exception("width < 1");
@@ -253,7 +252,7 @@ public class InlineLayout extends BoxLayout {
     }
 
 
-    public void adjustLineHeight(LineBox curr_line, InlineBox new_inline) {
+    public static void adjustLineHeight(LineBox curr_line, InlineBox new_inline) {
         // Uu.p("calcing new height of line");
         if (new_inline.height + new_inline.y > curr_line.height) {
             curr_line.height = new_inline.height + new_inline.y;
@@ -264,7 +263,7 @@ public class InlineLayout extends BoxLayout {
     }
 
 
-    private boolean isEndOfBlock(InlineBox prev_inline, Content content) {
+    private static boolean isEndOfBlock(InlineBox prev_inline, Content content) {
         // replaced elements aren't split, so done with this one
         if (content instanceof InlineBlockContent) {
             return true;
@@ -283,7 +282,7 @@ public class InlineLayout extends BoxLayout {
         return false;
     }
 
-    public void finishBlock(Box block, LineBox curr_line, Rectangle bounds) {
+    public static void finishBlock(Box block, LineBox curr_line, Rectangle bounds) {
         bounds.height += curr_line.height;
         block.width = bounds.width;
         block.height = bounds.height;
@@ -306,8 +305,8 @@ public class InlineLayout extends BoxLayout {
      * @param firstLineStyle
      * @return Returns
      */
-    private InlineBox calculateInline(Context c, Content content, int avail, int max_width,
-                                      InlineBox prev, InlineBox prev_align, boolean isFirstLetter, CascadedStyle firstLetterStyle, boolean isFirstLine, CascadedStyle firstLineStyle) {
+    private static InlineBox calculateInline(Context c, Content content, int avail, int max_width,
+                                             InlineBox prev, InlineBox prev_align, boolean isFirstLetter, CascadedStyle firstLetterStyle, boolean isFirstLine, CascadedStyle firstLineStyle) {
 
         if (isFirstLine && firstLineStyle != null) c.pushStyle(firstLineStyle);
 
@@ -333,6 +332,8 @@ public class InlineLayout extends BoxLayout {
             // if this is another box from the same node as the previous one
             if (prev != null && prev.content == textContent) {
                 start = prev.end_index;
+            } else {//strip it
+
             }
             // get the text of the node
             String text = textContent.getText();
@@ -370,8 +371,8 @@ public class InlineLayout extends BoxLayout {
      * @param c            PARAM
      * @param block        PARAM
      */
-    private void saveLine(LineBox line_to_save, CalculatedStyle style, LineBox prev_line, int width, int x,
-                          Context c, Box block, boolean last) {
+    private static void saveLine(LineBox line_to_save, CalculatedStyle style, LineBox prev_line, int width, int x,
+                                 Context c, Box block, boolean last) {
         c.setFirstLine(false);
         // account for text-align
         TextAlign.adjustTextAlignment(c, style, line_to_save, width, x, last);
@@ -400,6 +401,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.51  2004/12/12 18:06:51  tobega
+* Made simple layout (inline and box) a bit easier to understand
+*
 * Revision 1.50  2004/12/12 05:51:48  tobega
 * Now things run. But there is a lot to do before it looks as nice as it did. At least we now have :before and :after content and handling of breaks by css.
 *
