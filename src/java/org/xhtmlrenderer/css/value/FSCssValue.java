@@ -58,6 +58,7 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
         // convert type as necessary
         switch ( primitiveType ) {
             case org.w3c.dom.css.CSSPrimitiveValue.CSS_RGBCOLOR:
+                this.rgbColorValue = primitive.getRGBColorValue();
                 break;
             case org.w3c.dom.css.CSSPrimitiveValue.CSS_IDENT:
                 break;
@@ -252,6 +253,9 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 16:18:13  pdoubleya
+ * Fixed error: wasn't storing RGB color value passed in.
+ *
  * Revision 1.3  2005/01/29 16:04:15  pdoubleya
  * No longer look up identifier when instantiating; value remains as specified in CSS.
  *
