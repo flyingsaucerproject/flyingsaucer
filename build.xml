@@ -75,6 +75,8 @@
             </fileset>
             <fileset dir=".">
                 <include name="demos/*.xhtml"/>
+                <include name="demos/*.gif"/>
+                <include name="demos/*.png"/>
             </fileset>
         </jar>
     </target>

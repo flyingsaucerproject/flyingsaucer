@@ -82,6 +82,7 @@
     /* default list stuff */
 
     list-style-type: none;
+    list-style-image: none;
 }
 
 

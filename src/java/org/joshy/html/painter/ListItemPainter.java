@@ -3,6 +3,8 @@ package org.joshy.html.painter;
 import org.joshy.u;
 import org.joshy.html.*;
 import org.joshy.html.box.*;
+import java.awt.Image;
+import org.joshy.html.util.ImageUtil;
 
 public class ListItemPainter {
     public static void paint(Context c, Box box) {
@@ -10,6 +12,24 @@ public class ListItemPainter {
         
         if(type.equals("none")) {
             return;
+        }
+        
+        String image = c.css.getStringProperty(box.node,"list-style-image");
+        Image img = null;
+        if(!image.equals("none")) {
+            try {
+                //u.p("loading: " + image);
+                img = ImageUtil.loadImage(c,image);
+            } catch (Exception ex) {
+                u.p(ex);
+            }
+            //u.p("image = " + img);
+            if(img != null) {
+                int rad = 8;
+                int baseline = box.height;
+                c.getGraphics().drawImage(img,box.x-img.getWidth(null)-2,box.y+baseline/2 - img.getHeight(null)/2 + 2,null);
+                return;
+            }
         }
         
         if(type.equals("disc")) {
