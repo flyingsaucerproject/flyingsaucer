@@ -38,6 +38,8 @@ public class XRLog {
     /** Description of the Field */
     private final static String INIT = "plumbing.init";
     /** Description of the Field */
+    private final static String JUNIT = "plumbing.junit";
+    /** Description of the Field */
     private final static String LOAD = "plumbing.load";
     /** Description of the Field */
     private final static String MATCH = "plumbing.match";
@@ -155,6 +157,38 @@ public class XRLog {
      */
     public static void init( Level level, String msg, Throwable th ) {
         log( INIT, level, msg, th );
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param msg  PARAM
+     */
+    public static void junit( String msg ) {
+        // CLEAN
+        //System.out.println("JUNIT: " + msg);
+        junit( Level.FINEST, msg );
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param level  PARAM
+     * @param msg    PARAM
+     */
+    public static void junit( Level level, String msg ) {
+        log( JUNIT, level, msg );
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param level  PARAM
+     * @param msg    PARAM
+     * @param th     PARAM
+     */
+    public static void junit( Level level, String msg, Throwable th ) {
+        log( JUNIT, level, msg, th );
     }
 
     /**
@@ -353,6 +387,9 @@ public class XRLog {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/24 14:33:07  pdoubleya
+ * Added junit logging hierarchy.
+ *
  * Revision 1.3  2004/10/23 14:06:57  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
