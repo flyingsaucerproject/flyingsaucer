@@ -25,7 +25,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.RenderingContext;
-import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -129,7 +128,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     public BasicPanel() {
 
         layout_thread = new LayoutThread(this);
-        setLayout(new AbsoluteLayoutManager());
         documentListeners = new HashMap();
         setBackground(Color.white);
     }
@@ -868,6 +866,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/01/03 00:35:03  tobega
+ * Cleaned out old forms code
+ *
  * Revision 1.26  2005/01/02 12:22:20  tobega
  * Cleaned out old layout code
  *
