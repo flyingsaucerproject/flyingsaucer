@@ -3,6 +3,15 @@ package org.joshy.html;
 import org.w3c.dom.Node;
 import org.joshy.u;
 
+/**
+Returns the appropriate layout for a given node. Currently this hard codes
+specific elements to specific layouts (for example, h1 is always an inline layout).
+Instead this should use the display attribute to figure it out.  The Inline and
+Box layouts work together so that you don't need to specify one or the other,
+always just use Inline. For lists, tables, and comments, though, we still need
+to specify the particular layout here.
+
+*/
 public class LayoutFactory {
     public static Layout getLayout(Node elem) {
         //u.p("node = " + elem);

@@ -194,6 +194,8 @@ private static InlineBox newBox(Context c, Node node,int start, int end, InlineB
     return newBox(c,node,start,end,prev,text,null, prev_align);
 }
 
+// this function by itself takes up fully 29% of the complete program's
+// rendering time.
 private static InlineBox newBox(Context c, Node node,int start, int end, InlineBox prev, String text, Rectangle bounds, InlineBox prev_align) {
     //u.p("newBox node = " + node.getNodeName() + " start = " + start + " end = " + end +
     //" prev = " + prev + " text = " + text + " bounds = " + bounds + " prev_align = " + prev_align);

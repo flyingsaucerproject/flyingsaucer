@@ -148,7 +148,6 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
             return;
         }
         //u.p("layout");
-        //long start_time = new java.util.Date().getTime();
         //u.p("size = " + this.getSize());
         //u.dump_stack();
         if(doc == null) { return; }
@@ -162,7 +161,11 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         
         // start painting
         c.setMaxWidth(0);
+        long start_time = new java.util.Date().getTime();
+        //u.p("starting count");
         body_box = layout.layout(c,body);
+        long end_time = new java.util.Date().getTime();
+        //u.p("ending count = " + (end_time-start_time) + " msec");
         
 
         if(this.pane != null) {
@@ -215,8 +218,6 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         */
         //c.getGraphics().setColor(Color.blue);
         //c.getGraphics().drawLine(0,0,50,50);
-        //long end_time = new java.util.Date().getTime();
-        //u.p("dist = " + (end_time-start_time));
     }
     
     

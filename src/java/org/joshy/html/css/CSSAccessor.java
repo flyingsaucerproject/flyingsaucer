@@ -11,6 +11,7 @@ import org.w3c.dom.css.*;
 public abstract class CSSAccessor {
     public abstract CSSValue getProperty(Element elem, String prop, boolean inherit);
 
+    // easy accessors
     public float getFloatProperty(Element elem, String prop, float parent_value) {
         return this.getFloatProperty(elem,prop,parent_value,true);
     }
@@ -22,6 +23,35 @@ public abstract class CSSAccessor {
             return getFloatProperty((Element)(elem.getParentNode()), prop, parent_value, inherit);
         }
     }
+    
+    public float getFloatProperty(Element elem, String prop) {
+        return getFloatProperty(elem,prop,true);
+    }
+    
+    
+    public boolean hasProperty(Element elem, String prop) {
+        return hasProperty(elem,prop,true);
+    }
+
+    public boolean hasProperty(Node elem, String prop, boolean inherit) {
+        if(elem instanceof Element) {
+            return hasProperty((Element)elem, prop, inherit);
+        } else {
+            return hasProperty((Element)(elem.getParentNode()), prop, inherit);
+        }
+    }
+    
+    public String getStringProperty(Element elem, String prop) {
+        return getStringProperty(elem,prop,true);
+    }
+
+    public String getStringProperty(Node elem, String prop) {
+        return getStringProperty(elem,prop,true);
+    }
+
+
+    
+    
     public float getFloatProperty(Element elem, String prop, float parent_value, boolean inherit) {
         CSSValue val = getProperty(elem,prop,inherit);
         //u.p("potential float value = " + val);
@@ -52,9 +82,6 @@ public abstract class CSSAccessor {
         return pval.getFloatValue(pval.CSS_PX);
     }
 
-    public float getFloatProperty(Element elem, String prop) {
-        return getFloatProperty(elem,prop,true);
-    }
 
     public float getFloatProperty(Element elem, String prop, boolean inherit) {
         //u.p("get float property " + elem.getNodeName() + " " + prop);
@@ -73,13 +100,6 @@ public abstract class CSSAccessor {
         return pval.getFloatValue(pval.CSS_PX);
     }
 
-    public boolean hasProperty(Node elem, String prop, boolean inherit) {
-        if(elem instanceof Element) {
-            return hasProperty((Element)elem, prop, inherit);
-        } else {
-            return hasProperty((Element)(elem.getParentNode()), prop, inherit);
-        }
-    }
 
     public boolean hasProperty(Element elem, String prop, boolean inherit) {
         CSSValue val = getProperty(elem,prop,inherit);
@@ -87,18 +107,6 @@ public abstract class CSSAccessor {
             return false;
         }
         return true;
-    }
-
-    public boolean hasProperty(Element elem, String prop) {
-        return hasProperty(elem,prop,true);
-    }
-
-    public String getStringProperty(Element elem, String prop) {
-        return getStringProperty(elem,prop,true);
-    }
-
-    public String getStringProperty(Node elem, String prop) {
-        return getStringProperty(elem,prop,true);
     }
 
 
@@ -109,13 +117,10 @@ public abstract class CSSAccessor {
             return getStringProperty((Element)(elem.getParentNode()), prop, inherit);
         }
     }
+    
     public String getStringProperty(Element elem, String prop, boolean inherit) {
-        //u.p("getStringProperty( " + elem.getNodeName() + " , " + prop +" )");
         CSSValue val = getProperty(elem,prop,inherit);
-        //CSSStyleDeclaration style_doc = findRule(elem.getNodeName());
-        //CSSValue val = style_doc.getPropertyCSSValue(prop);
         if(val == null) {
-            //u.p("elem " + elem.getNodeName() + " doesn't have the property: " + prop);
             return null;
         }
         if(val.getCssValueType() != val.CSS_PRIMITIVE_VALUE) {
@@ -128,7 +133,6 @@ public abstract class CSSAccessor {
 
     public Point getFloatPairProperty(Element elem, String prop, boolean inherit) {
         CSSValue val = getProperty(elem,prop,inherit);
-        //u.p("val blah = " + val);
         if(val == null) {
             return null;
         }

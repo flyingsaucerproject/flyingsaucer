@@ -11,6 +11,7 @@ import org.joshy.html.Context;
 import org.joshy.html.InlineLayout;
 
 public class FontUtil {
+    
 public static int len(Context c, Node node, String str) {
     return c.getGraphics().getFontMetrics(getFont(c,node)).stringWidth(str);
 }
@@ -21,79 +22,92 @@ public static int lineHeight(Context c, Node node) {
 
 public static Font getFont(Context c, Node e) {
     //u.p("testing node: " + e);
-    Font f = c.getGraphics().getFont();
-    if(e.getNodeType() == e.ELEMENT_NODE) {
-        Element el = (Element)e;
-        if(el.getParentNode().getNodeType() == el.DOCUMENT_NODE) {
-            u.p("ended up at the top somehow!: ");
-            return c.getGraphics().getFont().deriveFont((float)10);
-        }
-
-        // calculate the font size
-        // look up the parent and use it's font size to scale against
-        // joshy: this will fail if the parent also has a relative size
-        //  need to fix this by passing down the enclosing block's font size
-        //  in the context
-        Element par = (Element)el.getParentNode();
-        float parent_size = c.css.getFloatProperty(par,"font-size");
-        float size = c.css.getFloatProperty(el,"font-size",parent_size);
-        f = f.deriveFont((float)size);
-
-        // calculate the font weight
-        String weight = c.css.getStringProperty(el,"font-weight");
-        if(weight.equals("bold")) {
-            f = f.deriveFont(Font.BOLD);
-        }
-
-        // calculate the font family
-
-        // all of this font craziness should be pulled out into another class
-        //if(el.hasAttribute("font-family")) {
-
-        //String family = el.getAttribute("font-family");
-        String family = c.css.getStringArrayProperty(el,"font-family")[0];
-        //u.p("new fam get = ");
-        //u.p(c.css.getStringArrayProperty(el,"font-family"));
-        //u.p("");
-        String fontname = "SansSerif";
-        if(family.equals("serif")) {
-            fontname = "Serif";
-        }
-        if(family.equals("sans-serif")) {
-            fontname = "SansSerif";
-        }
-        if(family.equals("monospace")) {
-            fontname = "Monospaced";
-        }
-        //u.p("final font name = " + fontname);
-        f = new Font(fontname,f.getStyle(),f.getSize());
-        /*
-        c.getGraphics().setFont(new Font(fontname,
-                c.getGraphics().getFont().getStyle(),
-                c.getGraphics().getFont().getSize()));
-                */
-        //}
-
-        // calculate the font style
-        String style = c.css.getStringProperty(el,"font-style");
-        if(style != null) {
-            if(style.equals("italic")) {
-                f = f.deriveFont(Font.ITALIC|f.getStyle());//.deriveFont(Font.BOLD);
-                //c.getGraphics().setFont(c.getGraphics().getFont().deriveFont(Font.ITALIC));
-            }
-        }
-
-        // calculate the font color
-        c.getGraphics().setColor(c.css.getColor(el));
-    }
+    //Font f = c.getGraphics().getFont();
+    
     // if plain text then get the styling from the parent node
     if(e.getNodeType() == e.TEXT_NODE) {
         //u.p("it's a node");
         Element el = (Element)e.getParentNode();
-        return getFont(c,el);
+        return getElementFont(c,el);
     }
+    
+    if(e.getNodeType() == e.ELEMENT_NODE) {
+        Element el = (Element)e;
+        return getElementFont(c,el);
+    }
+    
+    u.p("big error in getFont(). Got a node that is neither txt nor element");
+    return null;
+}
+
+static boolean quick = false;
+public static Font getElementFont(Context c, Element el) {
+    //u.p("testing node: " + e);
+    Font f = c.getGraphics().getFont();
+    if(quick) {
+        //f = f.deriveFont((float)((int)(Math.random()*10)));
+        return f;
+    }
+    
+    if(el.getParentNode().getNodeType() == el.DOCUMENT_NODE) {
+        u.p("ended up at the top somehow!: ");
+        return c.getGraphics().getFont().deriveFont((float)10);
+    }
+
+    // calculate the font size
+    // look up the parent and use it's font size to scale against
+    // joshy: this will fail if the parent also has a relative size
+    //  need to fix this by passing down the enclosing block's font size
+    //  in the context
+    Element par = (Element)el.getParentNode();
+    float parent_size = c.css.getFloatProperty(par,"font-size");
+    float size = c.css.getFloatProperty(el,"font-size",parent_size);
+    f = f.deriveFont((float)size);
+
+    // calculate the font weight
+    String weight = c.css.getStringProperty(el,"font-weight");
+    if(weight.equals("bold")) {
+        f = f.deriveFont(Font.BOLD);
+    }
+
+    // calculate the font family
+
+    // all of this font craziness should be pulled out into another class
+    //if(el.hasAttribute("font-family")) {
+
+    //String family = el.getAttribute("font-family");
+    String family = c.css.getStringArrayProperty(el,"font-family")[0];
+    //u.p("new fam get = ");
+    //u.p(c.css.getStringArrayProperty(el,"font-family"));
+    //u.p("");
+    String fontname = "SansSerif";
+    if(family.equals("serif")) {
+        fontname = "Serif";
+    }
+    if(family.equals("sans-serif")) {
+        fontname = "SansSerif";
+    }
+    if(family.equals("monospace")) {
+        fontname = "Monospaced";
+    }
+    //u.p("final font name = " + fontname);
+    f = new Font(fontname,f.getStyle(),f.getSize());
+    //}
+
+    // calculate the font style
+    String style = c.css.getStringProperty(el,"font-style");
+    if(style != null) {
+        if(style.equals("italic")) {
+            f = f.deriveFont(Font.ITALIC|f.getStyle());//.deriveFont(Font.BOLD);
+            //c.getGraphics().setFont(c.getGraphics().getFont().deriveFont(Font.ITALIC));
+        }
+    }
+
+    // calculate the font color
+    c.getGraphics().setColor(c.css.getColor(el));
     return f;
 }
+
 
 public static void setupTextDecoration(Context c, Node node, InlineBox box) {
     Element el = null;
