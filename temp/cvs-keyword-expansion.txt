@@ -10,6 +10,9 @@
 # $Name$
 # $Locker$
 # $Log$
+# Revision 1.2  2004/10/14 13:03:59  pdoubleya
+# Removed duplicate keyword list.
+#
 # Revision 1.1  2004/10/14 13:03:11  pdoubleya
 # Added to CVS.
 #
@@ -17,17 +20,3 @@
 # $Source$
 # $State$
 
-$Author$
-$CVSHeader
-$Date$
-$Header$
-$Id$
-$Name$
-$Locker$
-$Log$
-Revision 1.1  2004/10/14 13:03:11  pdoubleya
-Added to CVS.
-
-$Revision$
-$Source$
-$State$
