@@ -31,7 +31,7 @@ public class RenderingContext {
         layout_factory = new LayoutFactory();
         setTextRenderer(new Java2DTextRenderer());
     }
-
+    
 
     /**
      *  Description of the Field

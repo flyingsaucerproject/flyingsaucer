@@ -51,18 +51,28 @@
 //add font scaling
 //add dpi awareness
 //fix line breaking bugs
-
-if something is floated or absolute it should be turned into a block
-floated divs work, but not floated spans. span should turn into a block when floated
-
+//initial printing (no media or paging support)
 
 rachel in town arrive 20th @ 7, leave 5th @ 7
 
-table crashes on tbody
-table crashes on empty tr
+bugs:
+    if something is floated or absolute it should be turned into a block
+    floated divs work, but not floated spans. span should turn into a block when floated
 
-abs pos w/ bottom align
-initial printing (no media or paging support)
+    table crashes on tbody
+    table crashes on empty tr
+
+    abs pos w/ bottom align
+    whitespace bugs
+    
+    font family resolution
+    bottom border resolution
+    
+    javadoc xhtmlpanel
+    javadoc graphic2drenderer
+    remove isPrinting(). check the graphics instanceof printablegraphics
+    
+    show current resources in browser
 
 --crash w/ width = 50%
 --% width for absolute layout

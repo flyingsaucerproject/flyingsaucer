@@ -19,13 +19,14 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.demo.browser.actions.PrintAction;
+import org.xhtmlrenderer.demo.browser.actions.*;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.test.DocumentDiffTest;
+import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.util.u;
 
 import javax.swing.*;
@@ -48,23 +49,26 @@ public class BrowserActions {
     /**
      * Description of the Field
      */
-    Action open_file, quit, print;
+    public Action open_file, quit, print;
     /**
      * Description of the Field
      */
-    Action cut, copy, paste;
+    public Action cut, copy, paste;
     /**
      * Description of the Field
      */
-    Action forward, backward, refresh, reload, load, stop;
+    public Action forward, backward, refresh, reload, load, stop;
 
-    Action generate_diff;
+    public Action generate_diff;
     /**
      * Description of the Field
      */
-    BrowserStartup root;
+    public BrowserStartup root;
+    
+    public Action increase_font, decrease_font;
+    
     /**
-     * Description of the Field
+     * The system logger for app.browser
      */
     public static Logger logger = Logger.getLogger("app.browser");
 
@@ -278,6 +282,11 @@ public class BrowserActions {
                         }
                     }
                 };
+                
+        increase_font = new FontSizeAction(root, 1.2f);
+        decrease_font = new FontSizeAction(root, 1f/1.2f);
+        setName(increase_font,"A+");
+        setName(decrease_font,"a-");
     }
 
 
@@ -318,6 +327,14 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/17 14:58:17  joshy
+ * added actions for font resizing
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/11/16 07:25:19  tobega
  * Renamed HTMLPanel to BasicPanel
  *

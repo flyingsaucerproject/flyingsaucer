@@ -554,6 +554,10 @@ public class Context {
     public FontResolver getFontResolver() {
         return font_resolver;
     }
+    
+    public void flushFonts() {
+        font_resolver = new FontResolverTest();
+    }
 
 
     /**
@@ -745,6 +749,14 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2004/11/17 14:58:18  joshy
+ * added actions for font resizing
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.19  2004/11/16 07:25:12  tobega
  * Renamed HTMLPanel to BasicPanel
  *

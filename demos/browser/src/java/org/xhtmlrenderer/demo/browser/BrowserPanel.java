@@ -68,6 +68,14 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     /**
      * Description of the Field
      */
+    JButton font_inc;
+    /**
+     * Description of the Field
+     */
+    JButton font_dec;
+    /**
+     * Description of the Field
+     */
     JTextField url;
     /**
      * Description of the Field
@@ -121,6 +129,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         reload = new JButton("Reload");
         url = new JTextField();
         view = new XHTMLPanel();
+        font_inc = new JButton("A");
+        font_dec = new JButton("a");
+        
         RenderingContext rc = view.getRenderingContext();
         try {
             rc.setFontMapping("Fuzz", Font.createFont(Font.TRUETYPE_FONT,
@@ -168,6 +179,14 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         add(reload);
 
         c.gridx++;
+        gbl.setConstraints(font_inc, c);
+        add(font_inc);
+
+        c.gridx++;
+        gbl.setConstraints(font_dec, c);
+        add(font_dec);
+
+        c.gridx++;
         c.fill = c.HORIZONTAL;
         c.weightx = 10.0;
         gbl.setConstraints(url, c);
@@ -176,7 +195,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         c.gridx = 0;
         c.gridy++;
         c.fill = c.BOTH;
-        c.gridwidth = 5;
+        c.gridwidth = 7;
         c.weightx = c.weighty = 10.0;
         gbl.setConstraints(scroll, c);
         add(scroll);
@@ -199,6 +218,10 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         reload.setAction(root.actions.reload);
         url.setAction(root.actions.load);
         updateButtons();
+        
+        font_inc.setAction(root.actions.increase_font);
+        font_dec.setAction(root.actions.decrease_font);
+        
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0), "pagedown");
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
@@ -475,6 +498,14 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/17 14:58:17  joshy
+ * added actions for font resizing
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.9  2004/11/17 00:44:54  joshy
  * fixed bug in the history manager
  * added cursor support to the link listener

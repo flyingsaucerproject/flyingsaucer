@@ -3,6 +3,7 @@ package org.xhtmlrenderer.simple;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.swing.BasicPanel;
+import org.xhtmlrenderer.util.u;
 
 import java.io.File;
 import java.net.URL;
@@ -110,9 +111,10 @@ public class XHTMLPanel extends BasicPanel {
     }
 
     /* browser functions? */
-    /*
-    public void reload() { }
-    */
+    public void relayout() {
+        super.calcLayout();
+        ctx.getContext().flushFonts();
+    }
     public void repaint() {
         super.repaint();
     }
