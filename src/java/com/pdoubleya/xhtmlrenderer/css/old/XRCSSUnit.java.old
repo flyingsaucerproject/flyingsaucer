@@ -1,0 +1,54 @@
+package org.pdoubleya.xhtmlrenderer.css;
+
+
+
+interface XRCSSUnit {
+  String EM = "em";
+  String EX = "ex";
+  String PERCENT = "%";
+  String PIXEL = "px";
+
+  /* Absolute value, inches = 2.54 cm */
+  String INCH = "in";
+  String CENTIMETER = "cm";
+  String MILLIMETER = "ex";
+  String POINTS = "pt";
+  String PICA = "pc";
+
+  String URI = "URI";
+  
+  /** 
+   * When the unit is an enumerated value, e.g. "bold" is
+   * on enumerated value for "font-weight"
+   */
+  String ENUM = "ENUM";
+  
+  int asInteger();
+  float asFloat();
+  double asDouble();
+  String asString();
+  
+  XRCSSValue
+  
+  /**
+   * Returns the character descriptor of this unit, e.g. "em", "ex".
+   * You can use the constants declared in XRCSSUnit to compare: EM,
+   * EX, PERCENT, PIXEL, STRING
+   */
+  String getUnitDescriptor();
+  
+  /** Returns the original string representation of the unit as declared. */
+  String toString();
+}
+
+/*
+new XRCSSProperty("font-size", new XRCSSValue(12, XRCSSUnit.POINT));
+
+new XRCSSProperty("font-size", new XRCSSPoints(12));
+new XRCSSProperty("font-size", new XRCSSInches(12));
+new XRCSSProperty("font-size", new XRCSSCentimeters(12));
+
+types mainly matter for determining how the value affects the property
+
+
+*/
