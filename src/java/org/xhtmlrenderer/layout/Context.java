@@ -55,9 +55,6 @@ public class Context {
     public Graphics graphics;
 
     /** Description of the Field */
-    public Point cursor;
-
-    /** Description of the Field */
     public StyleReference css;
 
     /** Description of the Field */
@@ -133,6 +130,7 @@ public class Context {
     public RenderingContext getRenderingContext() {
         return ctx;
     }
+    
     private TextRenderer text_renderer;
     public TextRenderer getTextRenderer() {
         return text_renderer;
@@ -233,11 +231,8 @@ public class Context {
         extents_stack.push( getExtents() );
 
         Border border = block.border;
-
         Border padding = block.padding;
-
         Border margin = block.margin;
-
 
         Rectangle rect = new Rectangle( 0, 0,
                 getExtents().width - ( margin.left + border.left + padding.left )
@@ -256,9 +251,7 @@ public class Context {
      * @param block  PARAM
      */
     public void unshrinkExtents( Box block ) {
-
         setExtents( (Rectangle)extents_stack.pop() );
-
     }
 
 
@@ -268,10 +261,8 @@ public class Context {
      * @param box  PARAM
      */
     public void translateInsets( Box box ) {
-
         translate( box.margin.left + box.border.left + box.padding.left,
                 box.margin.top + box.border.top + box.padding.top );
-
     }
 
     /**
@@ -280,10 +271,8 @@ public class Context {
      * @param box  PARAM
      */
     public void untranslateInsets( Box box ) {
-
         translate( -( box.margin.left + box.border.left + box.padding.left ),
                 -( box.margin.top + box.border.top + box.padding.top ) );
-
     }
 
 
@@ -293,11 +282,8 @@ public class Context {
      * @return   A string representation of the object.
      */
     public String toString() {
-
         return "Context: extents = " + extents //" cursor = " + cursor +
-
         //"\n color = " + color + " background color = " + background_color;
-
                 + " offset = " + xoff + "," + yoff
                 ;
     }
@@ -305,15 +291,10 @@ public class Context {
 
     /** Description of the Method */
     public void clearSelection() {
-
         selection_end = null;
-
         selection_start = null;
-
         selection_start_x = -1;
-
         selection_end_x = -1;
-
     }
 
     /**
@@ -322,23 +303,14 @@ public class Context {
      * @param box  PARAM
      */
     public void updateSelection( Box box ) {
-
         if ( box == selection_end ) {
-
             in_selection = false;
-
         }
-
         if ( box == selection_start ) {
-
             in_selection = true;
-
         }
-
         if ( box == selection_end && box == selection_start ) {
-
             in_selection = false;
-
         }
     }
 
@@ -349,13 +321,10 @@ public class Context {
      * @return     Returns
      */
     public boolean inSelection( Box box ) {
-
         if ( box == selection_end ||
                 box == selection_start ) {
-
             return true;
         }
-
         return in_selection;
     }
 
@@ -493,15 +462,6 @@ public class Context {
      */
     public Rectangle getExtents() {
         return this.extents;
-    }
-
-    /**
-     * Gets the cursor attribute of the Context object
-     *
-     * @return   The cursor value
-     */
-    public Point getCursor() {
-        return cursor;
     }
 
     /**
@@ -710,8 +670,8 @@ public class Context {
  * $Id$
  *
  * $Log$
- * Revision 1.12  2004/11/12 02:50:59  joshy
- * finished moving base url
+ * Revision 1.13  2004/11/12 02:54:38  joshy
+ * removed more dead code
  * Issue number:
  * Obtained from:
  * Submitted by:

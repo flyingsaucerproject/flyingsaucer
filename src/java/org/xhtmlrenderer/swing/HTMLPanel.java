@@ -601,8 +601,8 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
      */
     private void newContext( Graphics g ) {
         //u.p("new context begin");
-        Point origin = new Point( 0, 0 );
-        Point last = new Point( 0, 0 );
+        //Point origin = new Point( 0, 0 );
+        //Point last = new Point( 0, 0 );
         getContext().canvas = this;
         getContext().graphics = g;
         // set up the dimensions of the html canvas
@@ -619,7 +619,7 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
 
         //getContext().setExtents(new Rectangle(0,0,viewport.getWidth(),viewport.getHeight()));
         getContext().viewport = this.enclosingScrollPane;
-        getContext().cursor = last;
+        //getContext().cursor = last;
         getContext().setMaxWidth( 0 );
         //u.p("new context end");
         //u.p("c = " + c);
@@ -675,6 +675,13 @@ public abstract class HTMLPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2004/11/12 02:54:38  joshy
+ * removed more dead code
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.28  2004/11/12 02:50:59  joshy
  * finished moving base url
  * Issue number:
