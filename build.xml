@@ -133,6 +133,7 @@
                 <include name="ss_css2.jar"/>
             </fileset>
             <fileset dir="src/packaging/"><include name="fs.jnlp"/></fileset>
+            <fileset dir="src/packaging/"><include name="aboutbox.jnlp"/></fileset>
         </copy>
         <signjar jar="build/core-renderer.jar" alias="joshy" storepass="password" keystore="teststore"/>
         <signjar jar="build/browser.jar" alias="joshy" storepass="password" keystore="teststore"/>
