@@ -76,12 +76,26 @@ public class LayoutFactory {
             if(elem.getNodeName().equals("font")) { return new InlineLayout(); }
             if(elem.getNodeName().equals("hr")) { return new NullLayout(); }
             if(elem.getNodeName().equals("form")) { return new InlineLayout(); }
-            if(elem.getNodeName().equals("input")) { 
+            if(elem.getNodeName().equals("select")) { return new InputSelect(); }
+            if(elem.getNodeName().equals("option")) { return new NullLayout(); }
+                //u.p("here: " + elem.getNodeName());
+            if(elem.getNodeName().equals("textarea")) { 
+                return new InputTextArea(); 
+            }
+            if(elem.getNodeName().equals("input")) {
                 Element el = (Element)elem;
-                if(el.getAttribute("type").equals("text")) {
-                    return new InputText();
-                }
-                return new InputButton(); 
+                String type = el.getAttribute("type");
+                if(type == null) { return new InputButton(); }
+                if(type.equals("button")) { return new InputButton(); }
+                if(type.equals("checkbox")) { return new InputCheckbox(); }
+                //if(type.equals("file")) { return new InputCheckbox(); }
+                if(type.equals("hidden")) { return new NullLayout(); }
+                //if(type.equals("image")) { return new InputCheckbox(); }
+                if(type.equals("password")) { return new InputPassword(); }
+                if(type.equals("radio")) { return new InputRadio(); }
+                if(type.equals("reset")) { return new InputButton(); }
+                if(type.equals("submit")) { return new InputButton(); }
+                if(type.equals("text")) { return new InputText(); }
             }
         }
 

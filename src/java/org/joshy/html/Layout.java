@@ -231,10 +231,24 @@ public class Layout {
     }
 
     public static boolean isReplaced(Node node) {
+        // all images are replaced (because they have intrinsic sizes)
         if(node.getNodeName().equals("img")) {
             return true;
         }
+        if(node.getNodeName().equals("select")) {
+            return true;
+        }
+        if(node.getNodeName().equals("textarea")) {
+            return true;
+        }
+        // all input elements are replaced except for hidden forms
         if(node.getNodeName().equals("input")) {
+            Element el = (Element)node;
+            // skip hidden forms. they aren't replaced
+            if(el.getAttribute("type") != null
+            && el.getAttribute("type").equals("hidden")) {
+                return false;
+            }
             return true;
         }
 

@@ -18,37 +18,22 @@ public class InputButton extends FormItemLayout {
     public JComponent createComponent(Element elem) {
         //u.p("created a button");
         JButton comp = new JButton();
+        String type = elem.getAttribute("type");
+        if(type == null || type.equals("")) {
+            type = "button";
+        }
         String label = elem.getAttribute("value");
+        if(label == null || label.equals("")) {
+            if(type.equals("reset")) {
+                label = "Reset";
+            }
+            if(type.equals("submit")) {
+                label = "Submit";
+            }
+        }
         comp.setText(label);
+        commonPrep(comp,elem);
         return comp;
     }
-    
-    /*
-    public Box createBox(Context c, Node node) {
-        Element elem = (Element)node;
-        JButton comp = new JButton();
-        String label = elem.getAttribute("value");
-        comp.setText(label);
-        //c.canvas.remove(comp);
-        c.canvas.add(comp);
-        //comp.setSize(50,50);
-        comp.setLocation(100,100);
-        
-        //u.p("added a component to the viewport: " + comp);
-        InputBox box = new InputBox();
-        box.node = node;
-        box.component = comp;
-        return box;
-    }
-    */
-    
-    /*
-    public Dimension getIntrinsicDimensions(Context c, Element elem) {
-        //comp.setLocation(50,50);
-        return new Dimension(50,50);
-    }
-    */
-    
-    
     
 }

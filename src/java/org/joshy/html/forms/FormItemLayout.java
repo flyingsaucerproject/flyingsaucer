@@ -130,8 +130,8 @@ public abstract class FormItemLayout extends CustomBlockLayout {
         // nested inside of an inline. when we redo the inline-block code
         // this should be fixed
         
-        coords.x += box.totalLeftPadding()+box.getParent().totalLeftPadding()+2;
-        coords.y += box.totalTopPadding()+box.getParent().totalTopPadding()+2;
+        coords.x += box.totalLeftPadding()+box.getParent().totalLeftPadding();
+        coords.y += box.totalTopPadding()+box.getParent().totalTopPadding();
         adjustVerticalAlign(coords,box);
         //u.p("abs coords = " + coords);
         //u.p("comp coords = " + ib.component.getLocation());
@@ -162,10 +162,25 @@ public abstract class FormItemLayout extends CustomBlockLayout {
         if(box.getParent() instanceof InlineBox) {
             InlineBox ib = (InlineBox) box.getParent();
             LineBox lb = (LineBox) ib.getParent();
-            //u.p("box = " + box + " parent = " + box.getParent());
-            int off = lb.baseline - ib.height;
-            //u.p("off = " + off);
+            //u.p("box = " + box);
+            //u.p("margin = " + box.margin);
+            //u.p("border = " + box.border);
+            //u.p("padding = " + box.padding);
+            //u.p("ib = " + ib);
+            //u.p("margin = " + ib.margin);
+            //u.p("border = " + ib.border);
+            //u.p("padding = " + ib.padding);
+            //u.p("lb = " + lb);
+            int off = lb.baseline - (ib.height ) + 5;
+            coords.x += 5;
             coords.y += off;
+            
+            coords.x -= box.margin.left;
+            coords.x -= box.border.left;
+            coords.x -= box.padding.left;
+            coords.y -= box.margin.top;
+            coords.y -= box.border.top;
+            coords.y -= box.padding.top;
         }
     }
 
@@ -187,5 +202,10 @@ public abstract class FormItemLayout extends CustomBlockLayout {
         return pt;
     }
 
-    
+    protected void commonPrep(JComponent comp, Element elem) {
+        if(elem.hasAttribute("disabled") &&
+            elem.getAttribute("disabled").equals("disabled")) {
+            comp.setEnabled(false);
+        }
+    }
 }

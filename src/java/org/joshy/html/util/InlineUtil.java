@@ -118,7 +118,8 @@ public static List getInlineNodeList(Node node, Element elem, Context c, boolean
         if(curr.hasChildNodes()) {
             //u.p("about to test: " + curr);
             // if it's a floating block we don't want to recurse
-            if(!InlineLayout.isFloatedBlock(curr,c)) {
+            if(!InlineLayout.isFloatedBlock(curr,c) &&
+               !InlineLayout.isReplaced(curr)) {
                 curr = curr.getFirstChild();
                 //u.p("going to first child " + curr);
                 continue;

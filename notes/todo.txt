@@ -7,9 +7,9 @@ checklist for the 0.03 release
 //fix image crop bug
 //htmlPanel option to set anti-aliasing
 //add page down to the browser
+//fix forms padding
 ---
 cleanup html panel api (?)
-fix forms padding
 view source on browser app
 -------
 cleanup the about API

@@ -1,3 +1,9 @@
+08/06/2004
+    added support to the layoutfactory for all of the input elements
+    implemented radio, checkbox, password, and hidden form inputs
+    implemented select, option, and textarea form inputs
+08/04/2004
+    adjusted the space for form elements
 08/03/2004
     fixed a few minor bugs in the sample about box html
     background-attachment no longer inherits

@@ -67,6 +67,10 @@ public class InlinePainter {
             //u.p("got the layout: " + layout);
             layout.paint(c,inline);
             c.getGraphics().translate(-line.x,-(line.y+(line.baseline-inline.height)));
+            if(c.debugDrawInlineBoxes()) {
+                GraphicsUtil.draw(c.getGraphics(),new Rectangle(lx+inline.x+1,ly+inline.y+1-inline.height,
+                    inline.width-2,inline.height-2),Color.green);
+            }
             return;
         }
         

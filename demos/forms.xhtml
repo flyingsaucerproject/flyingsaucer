@@ -8,20 +8,62 @@
         <title>Form Test</title>
         <style>
             form { border-width: 1px; border-color: black; border-style: solid; }
-            /*input { border: 5px solid black; padding: 5px; margin: 5px; background-color: green; } */
-            img { vertical-align: sub; }
-            div { font-size: 600%; }
+            /*
+            img, input { 
+                vertical-align: baseline;
+                
+                border: 0px solid black;
+                margin: 0px;
+                padding: 0px;
+                background-color: green;
+                
+                }
+                */
+            div { font-size: 500%; }
         </style>
     </head>
-    <body>    
-        <h3>Test different input types</h3>
+    <body>
         
-        <div>
-            Button: 
-            <img src="image.png" alt="test image"/>
-            <input type="button" value="Panic!"/><br/>
-            Text: <input type="text" value=""/><br/>
-        </div>
+        <h3>Button, Reset, and Submit Test</h3>
+        <form>
+            <input type="button" value="Panic!"/> normal button<br/>
+            <input type="reset"/> reset button<br/>
+            <input type="submit"/> submit button<br/>
+        </form>
+        
+        
+        <h3>Checkbox Test</h3>
+        <form>
+            <input type="checkbox" value="radio"/>not checked <br/>
+            <input type="checkbox" value="radio" checked="checked"/> checked<br/>
+        </form>
+        
+        <h3>Hidden Test</h3>
+        <form>
+            hidden
+            <input type="hidden" name="name" value="value"/> form<br/>
+        </form>
+        
+        <h3>Password Test</h3>
+        <form>
+            password <input type="password" value=""/><br/>
+        </form>
+        
+        <h3>Radio Test</h3>
+        <form>
+            <input type="radio" value="radio"/>not checked<br/>
+            <input type="radio" value="radio" checked="checked"/>checked<br/>
+            <input type="radio" value="radio" checked="checked" disabled="disabled"/>checked and disabled<br/>
+        </form>
+        
+        <h3>Select Test</h3>
+        <form>
+            <select>
+                <option>option 1</option>
+                <option>option 2</option>
+                <option>option 3</option>
+            </select>
+        </form>
         
         <h3>Text Test</h3>
         <form>
@@ -30,11 +72,17 @@
             empty with size = 6<input type="text" size="6"/><br/>
         </form>
         
+        <h3>TextArea Test</h3>
+        <form>
+            <textarea>some text</textarea> default size<br/>
+            <textarea rows="10" cols="10"></textarea> empty with
+            rows = 10, cols = 10<br/>
+        </form>
+        
         <h3>wrapping around a form element</h3>
         <p>
-            before <input type="text"/> after
+            before <input type="text" value="text"/> after
         </p>
-        
     </body>
         
 </html>
