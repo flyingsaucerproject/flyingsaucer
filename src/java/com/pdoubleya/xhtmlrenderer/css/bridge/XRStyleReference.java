@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.io.*;
 import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 import java.util.logging.*;
 
@@ -69,6 +70,7 @@ import net.homelinux.tobe.css.AttributeResolver;
 import net.homelinux.tobe.css.Ruleset;
 import net.homelinux.tobe.css.StyleMap;
 
+import org.apache.xpath.XPathAPI;
 
 /**
  * <p>
@@ -114,6 +116,12 @@ public class XRStyleReference implements StyleReference {
      * to flag that match is required before retrieving properties.
      */
     private boolean _matchedSinceLastParse;
+    
+    /** Whether elements in the current document have been checked for style attributes */
+    private boolean _elementStyleAttributesPulled;
+    
+    /** Map from Element to XRStyleRules created from style attribute on it */
+    private Map _elementXRStyleMap;
 
     /**
      * ASK: holdover from Josh's processing code...apparently used as a trap to
@@ -160,6 +168,7 @@ public class XRStyleReference implements StyleReference {
         _jstyleXRStyleRuleMap = new HashMap();
         _jStyleRuleSetMap = new HashMap();
         _nodeXRElementMap = new HashMap();
+        _elementXRStyleMap = new HashMap();
     }
 
 
@@ -230,6 +239,20 @@ public class XRStyleReference implements StyleReference {
      */
     public void matchStyles( Document document ) {
         if ( _tbStyleMap == null ) {
+            if ( !_elementStyleAttributesPulled ) {
+                try {
+                    NodeList nl = XPathAPI.selectNodeList(document.getDocumentElement(), "//*[@style!='']");
+                    // HACK: better on first parse and avoid this second sweep (PWW 24-08-04)
+                    for ( int i=0, len=nl.getLength(); i < len; i++ ) {
+                        parseElementStyling((Element)nl.item(i));
+                    }
+                    _elementStyleAttributesPulled = true;
+                } catch (Exception ex) {
+                    System.err.println("Couldn't pull element style attribute.");
+                    ex.printStackTrace();
+                }
+            }
+            
             // we are going to pass a list of pre-sorted XRStyleRules to the mapping routines
             // The sort is on origin, specificity, and sequence...in principle, this means
             // that rules appearing later in the sort always override rules appearing higher
@@ -326,6 +349,54 @@ public class XRStyleReference implements StyleReference {
 
 
     /**
+     * Parses the CSS style information from a "<link>" Elements (for example in
+     * XHTML), and loads these rules into the associated RuleBank.
+     *
+     * @param root             Root of the document for which to search for link tags.
+     * @exception IOException  Throws
+     */
+    public void parseLinkedStyles( Element root )
+    throws IOException {
+        try {
+            NodeList nl = XPathAPI.selectNodeList(root, "//link[@type='text/css']/@href");
+            for ( int i=0, len=nl.getLength(); i < len; i++ ) {
+                Node hrefNode = nl.item(i);
+                String href = hrefNode.getNodeValue();
+                // HACK: need clean way to check if this is local reference...local references will need to be resolved to server reference, won't they?
+                Reader reader = null;
+                try {
+                    URL url = null;
+                    if ( !href.startsWith("http://"))
+                        url = new URL(_context.getBaseURL(),href);
+
+                    url = new URL(href);
+                    InputStream is = url.openStream();
+                    BufferedInputStream bis = new BufferedInputStream(is);
+                    reader = new InputStreamReader(bis);
+                } catch ( java.net.MalformedURLException ex ) {
+                    System.err.println("Stylesheet link " + href + " doesn't appear to be a url.");   
+                }
+                
+                if ( reader == null ) {
+                    File f = new File(href);
+                    if ( f.exists()) {
+                        reader = new BufferedReader(new FileReader(f));
+                        System.out.println("Loading CSS " + href + " as a file.");
+                    } else {
+                        System.err.println("Can't figure out how to load stylesheet '" + href + "'.");   
+                    }
+                } 
+                if ( reader != null ) {
+                    parse(reader, XRStyleSheet.AUTHOR);
+                    reader.close();
+                }
+            }
+        } catch ( Exception ex ) {
+            ex.printStackTrace();   
+        }
+    }
+
+    /**
      * Parses the CSS style information from a "<style>" Element (for example in
      * XHTML), and loads these styles for later lookup, and processes child
      * nodes as well. Inline stylesheets are always considered {@link
@@ -382,10 +453,36 @@ public class XRStyleReference implements StyleReference {
 
         _matchedSinceLastParse = false;
 
-        // TODO: need special handling. the rules for the element always apply only to the element
-        // need to have these available after matching--they are always added to the end (highest priority)
-        // of matched styles.
-        throw new RuntimeException( "NOT CODED: pulling style attributes from an Element." );
+        // Pull attribute
+        Node styleNode = elem.getAttributes().getNamedItem("style");
+        if ( styleNode == null ) {
+            System.err.println("Element requested to parse style attribute but it had none.");
+        } else {
+            String styleStr = "* { " + styleNode.getNodeValue() + " }";
+            
+
+            // can't use parse routines because we will lose track
+            // that style belongs only to this element (as if it had
+            // an id attribute)
+            // HACK: too heavyweight for general use moving fwd (PWW 24-08-04)
+            XRStyleSheet sheet = null;
+            try {
+                CSSOMParser parser = new CSSOMParser();
+                StringReader reader = new StringReader(styleStr);
+                InputSource is = new InputSource( reader );
+                CSSStyleSheet style = parser.parseStyleSheet( is );
+                reader.close();
+                
+                // HACK: this is overkill, but the constructors of the
+                // XRStyleRuleImpl class are not set up for non-sheet
+                // rule loading.
+                sheet = XRStyleSheetImpl.newAuthorStyleSheet( style, 0 );
+                XRStyleRule rule = (XRStyleRule)sheet.styleRules().next();
+                _elementXRStyleMap.put(elem, rule);
+            } catch ( Exception ex ) {
+                ex.printStackTrace();
+            }
+        }
     }
 
 
@@ -422,7 +519,6 @@ public class XRStyleReference implements StyleReference {
         if ( !_matchedSinceLastParse ) {
             matchStyles( elem.getOwnerDocument() );
         }
-        // CLEAN sDbgLogger.finest("getBackgroundColor() on Element: " + elem.hashCode());
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( elem );
         return xrElement.derivedStyle().getBackgroundColor( _context );
     }
@@ -438,7 +534,6 @@ public class XRStyleReference implements StyleReference {
         if ( !_matchedSinceLastParse ) {
             matchStyles( elem.getOwnerDocument() );
         }
-        // CLEAN sDbgLogger.finest("getBorderColor() on Element: " + elem.hashCode());
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( elem );
         return xrElement.derivedStyle().getBorderColor( _context );
     }
@@ -454,7 +549,6 @@ public class XRStyleReference implements StyleReference {
         if ( !_matchedSinceLastParse ) {
             matchStyles( elem.getOwnerDocument() );
         }
-        // CLEAN sDbgLogger.finest("getBorderWidth() on Element: " + elem.hashCode());
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( elem );
         return xrElement.derivedStyle().getBorderWidth( _context );
     }
@@ -471,7 +565,6 @@ public class XRStyleReference implements StyleReference {
         if ( !_matchedSinceLastParse ) {
             matchStyles( elem.getOwnerDocument() );
         }
-        // CLEAN sDbgLogger.finest("getColor() on Element: " + elem.hashCode());
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( elem );
         return xrElement.derivedStyle().getColor( _context );
     }
@@ -491,7 +584,6 @@ public class XRStyleReference implements StyleReference {
         if ( !_matchedSinceLastParse ) {
             matchStyles( elem.getOwnerDocument() );
         }
-        // CLEAN sDbgLogger.finest("getColor() on Element: " + elem.hashCode());
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( elem );
         return xrElement.derivedStyle().getColor( _context );
     }
@@ -514,7 +606,6 @@ public class XRStyleReference implements StyleReference {
         if ( !_matchedSinceLastParse ) {
             matchStyles( elem.getOwnerDocument() );
         }
-        // CLEAN sDbgLogger.finest("getFloatPairProperty() on Element: " + elem.hashCode());
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( elem );
 
         XRProperty xrProp = xrElement.derivedStyle().propertyByName( _context, prop );
@@ -614,7 +705,6 @@ public class XRStyleReference implements StyleReference {
         if ( !_matchedSinceLastParse ) {
             matchStyles( node.getOwnerDocument() );
         }
-        // CLEAN sDbgLogger.finest("getFloatProperty( " + node.hashCode() + ", " + prop + ", " + parent_value + ", " + inherit + " )");
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( node );
 
         return xrElement.derivedStyle().propertyByName( _context, prop ).actualValue().asFloat();
@@ -631,7 +721,6 @@ public class XRStyleReference implements StyleReference {
         if ( !_matchedSinceLastParse ) {
             matchStyles( elem.getOwnerDocument() );
         }
-        // CLEAN sDbgLogger.finest("getMarginWidth() on Element: " + elem.hashCode());
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( elem );
         return xrElement.derivedStyle().getMarginWidth( _context );
     }
@@ -666,7 +755,6 @@ public class XRStyleReference implements StyleReference {
         if ( !_matchedSinceLastParse ) {
             matchStyles( elem.getOwnerDocument() );
         }
-        // CLEAN sDbgLogger.finest("getProperty() on Element: " + elem.hashCode());
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( elem );
         XRProperty xrProp = xrElement.derivedStyle().propertyByName( _context, prop );
         return xrProp.actualValue().cssValue();
@@ -685,7 +773,6 @@ public class XRStyleReference implements StyleReference {
         if ( !_matchedSinceLastParse ) {
             matchStyles( elem.getOwnerDocument() );
         }
-        // CLEAN sDbgLogger.finest("getStringArrayProperty() on Element: " + elem.hashCode());
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( elem );
         return xrElement.derivedStyle().propertyByName( _context, prop ).actualValue().asStringArray();
     }
@@ -700,7 +787,6 @@ public class XRStyleReference implements StyleReference {
      * @return      The property value as String
      */
     public String getStringProperty( Element elem, String prop ) {
-        // CLEAN sDbgLogger.finest("getStringProperty( " + elem.hashCode() + ", " + prop + " )");
         return _getStringProperty( (Node)elem, prop, false );
     }
 
@@ -716,7 +802,6 @@ public class XRStyleReference implements StyleReference {
      * @return         The property value as String
      */
     public String getStringProperty( Element elem, String prop, boolean inherit ) {
-        // CLEAN sDbgLogger.finest("getStringProperty( " + elem.hashCode() + ", " + prop + ", " + inherit + " )");
         return _getStringProperty( (Node)elem, prop, inherit );
     }
 
@@ -731,7 +816,6 @@ public class XRStyleReference implements StyleReference {
      * @return      The property value as String
      */
     public String getStringProperty( Node node, String prop ) {
-        // CLEAN sDbgLogger.finest("getStringProperty( " + node.hashCode() + ", " + prop + " )");
         return _getStringProperty( node, prop, false );
     }
 
@@ -747,7 +831,6 @@ public class XRStyleReference implements StyleReference {
      * @return         The property value as String
      */
     public String getStringProperty( Node node, String prop, boolean inherit ) {
-        // CLEAN sDbgLogger.finest("getStringProperty( " + node.hashCode() + ", " + prop + ", " + inherit + " )");
         return _getStringProperty( node, prop, false );
     }
 
@@ -767,20 +850,12 @@ public class XRStyleReference implements StyleReference {
             matchStyles( node.getOwnerDocument() );
         }
 
-        // CLEAN sDbgLogger.finest("getStringProperty( " + node.hashCode() + ", " + prop + ", " + inherit + " )");
 
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( node );
         if ( xrElement == null ) {
-            // CLEAN sDbgLogger.finest("no map for element " + node.hashCode());
             return null;
         }
-
-        if ( xrElement.derivedStyle().hasProperty( prop ) ) {
-            return xrElement.derivedStyle().propertyByName( _context, prop ).actualValue().asString();
-        } else {
-            sDbgLogger.warning( "  Property " + prop + " not defined for node (" + node.hashCode() + ")" );
-            return null;
-        }
+        return xrElement.derivedStyle().propertyByName( _context, prop ).actualValue().asString();
     }
 
 
@@ -819,6 +894,11 @@ public class XRStyleReference implements StyleReference {
             XRStyleRule rule = (XRStyleRule)_jstyleXRStyleRuleMap.get( style );
 
             xrElement.addMatchedStyle( rule );
+        }
+        // apply rules from style attribute on element, if any
+        XRStyleRule attrRule = (XRStyleRule)_elementXRStyleMap.get(elem);
+        if ( attrRule != null ) {
+            xrElement.addMatchedStyle(attrRule);
         }
 
         NodeList nl = elem.getChildNodes();
