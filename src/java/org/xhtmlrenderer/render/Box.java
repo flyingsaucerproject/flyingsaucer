@@ -59,6 +59,7 @@ public class Box {
     public boolean relative = false;
     /** Description of the Field */
     public boolean fixed = false;
+    public boolean absolute = false;
     /** Description of the Field */
     public int top = 0;
     /** Description of the Field */
@@ -520,6 +521,14 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/03 15:17:05  joshy
+ * added intial support for absolute positioning
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/10/23 13:50:26  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

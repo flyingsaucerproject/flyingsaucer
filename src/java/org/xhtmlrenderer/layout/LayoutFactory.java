@@ -295,12 +295,28 @@ public class LayoutFactory {
         return false;
     }
 
+    public static boolean isForm(Element elem) {
+        if ( elem.getNodeName().equals( "form" ) ) {
+            return true;
+        }
+        return false;
+    }
+
+
 }
 
 /*
 * $Id$
 *
 * $Log$
+* Revision 1.11  2004/11/03 15:17:04  joshy
+* added intial support for absolute positioning
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.10  2004/11/02 20:44:56  joshy
 * put in some prep work for float support
 * removed some dead debugging code

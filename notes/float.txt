@@ -31,6 +31,11 @@ tests:
 10    5 spans float left w/ long words and images and wrap to next para    
 11    span float right in a single para
 
+------------------
+plan for abs
+create new bfc if none there (put in block layout())
+two divs. one normal one abs pos 100 x 100 w/ at top left
+two divs. one normal one abs pos 100 x 100 w/ at top right
 
 ------------------
 

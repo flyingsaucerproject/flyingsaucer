@@ -226,13 +226,12 @@ public class Context {
      * @param y  PARAM
      */
     public void translate( int x, int y ) {
-
         this.graphics.translate( x, y );
-
+        if(bfc != null) {
+            bfc.translate(x,y);
+        }
         xoff += x;
-
         yoff += y;
-
     }
 
     /**
@@ -241,11 +240,8 @@ public class Context {
      * @param max_width  The feature to be added to the MaxWidth attribute
      */
     public void addMaxWidth( int max_width ) {
-
         if ( max_width > this.max_width ) {
-
             this.max_width = max_width;
-
         }
     }
 
@@ -839,6 +835,14 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/03 15:17:04  joshy
+ * added intial support for absolute positioning
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/11/02 20:44:55  joshy
  * put in some prep work for float support
  * removed some dead debugging code

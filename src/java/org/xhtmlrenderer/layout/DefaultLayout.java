@@ -104,7 +104,7 @@ public class DefaultLayout implements Layout {
             if ( layout instanceof NullLayout ) {
                 continue;
             }
-            if ( child.getNodeName().equals( "br" ) ) {
+            if ( LayoutFactory.isBreak(child)) {//.getNodeName().equals( "br" ) ) {
                 continue;
             }
             if ( child.getNodeType() == child.COMMENT_NODE ) {
@@ -115,24 +115,18 @@ public class DefaultLayout implements Layout {
             if ( child.getNodeType() == child.ELEMENT_NODE ) {
                 // update the counter for printing OL list items
                 c.setListCounter( c.getListCounter() + 1 );
-                //u.p("elem = " + child.getNodeName() + "  counter = " + c.getListCounter());
 
                 Element child_elem = (Element)child;
                 // execute the layout and get the return bounds
-                //u.p("doing element layout: " + layout);
                 c.parent_box = box;
                 c.placement_point = new Point( 0, box.height );
                 child_box = layout.layout( c, child_elem );
                 child_box.list_count = c.getListCounter();
-                //u.p("child box = " + child_box);
             } else {
-                //u.p("we have to do an anonymous text block on this: " + child.getNodeValue());
                 // create anonymous block box
                 // prepare the node list of the text children
                 //child_box = new AnonymousBlockBox(child);
                 // call layout
-                //u.p("layout = " + layout);
-                //u.p("doing non element layout: " + layout);
                 child_box = ( (AnonymousBoxLayout)layout ).layout( c, elem, child );
 
                 // skip text children if the prev_child == anonymous block box
@@ -158,9 +152,19 @@ public class DefaultLayout implements Layout {
             child_box.y = box.height;
 
             //joshy fix the 'fixed' stuff later
-            // if fixed then don't modify the final layout bounds
+            // if fixed or abs then don't modify the final layout bounds
             // because fixed elements are removed from normal flow
             if ( child_box.fixed ) {
+                // put fixed positioning in later
+            }
+            
+            if ( child_box.absolute ) {
+                positionAbsoluteChild(c,child_box);
+            }
+            
+            // skip adjusting the parent box if the child
+            // doesn't affect flow layout
+            if (isOutsideNormalFlow(child_box)) {
                 continue;
             }
 
@@ -183,8 +187,35 @@ public class DefaultLayout implements Layout {
 
 
     
+    
     public Renderer getRenderer() {
         return new DefaultRenderer();
+    }
+
+    
+    public boolean isOutsideNormalFlow(Box box) {
+        if(box.fixed) {
+            return true;
+        }
+        if(box.absolute) {
+            return true;
+        }
+        return false;
+    }
+    
+    public void positionAbsoluteChild(Context c, Box child_box) {
+        u.p("modifying it");
+        BlockFormattingContext bfc = c.getBlockFormattingContext();
+        u.p("bfc = " + bfc);
+        u.p("child = " + child_box);
+        u.p("parent = " + child_box.getParent());
+        u.p("width = " + bfc.getWidth());
+        child_box.y = bfc.getY() + child_box.top;
+        if(child_box.right_set) {
+            child_box.x = bfc.getX() + bfc.getWidth() - child_box.left - child_box.width;
+        } else {
+            child_box.x = bfc.getX() + child_box.left;
+        }
     }
 
 
@@ -367,6 +398,14 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/03 15:17:04  joshy
+ * added intial support for absolute positioning
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.7  2004/11/02 20:44:55  joshy
  * put in some prep work for float support
  * removed some dead debugging code

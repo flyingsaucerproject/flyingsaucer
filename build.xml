@@ -387,7 +387,7 @@
             classpath="${dest.java.dir};${dest.dir}"
             fork="${java-exec.fork.tests}"
             >
-            <arg value="${src.demo.xhtml.dir}/hamlet.xhtml"/>
+            <arg value="tests/diff/box/absolute/01.xhtml"/>
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
@@ -608,6 +608,14 @@
 $Id$
 
 $Log$
+Revision 1.56  2004/11/03 15:17:03  joshy
+added intial support for absolute positioning
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.55  2004/11/02 20:44:54  joshy
 put in some prep work for float support
 removed some dead debugging code
