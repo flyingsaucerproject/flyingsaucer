@@ -280,7 +280,7 @@ public class x {
         if ( node == null ) {
             return;
         }
-        //u.p(tab + "node type = " + node.getNodeType());
+        printType(node,tab);
         if ( node.getNodeType() == node.ENTITY_NODE ) {
             u.p( tab + "entity node" );
         }
@@ -346,6 +346,58 @@ public class x {
         if ( ( node.getNodeType() == node.ELEMENT_NODE ) && ( node.getChildNodes().getLength() > 0 ) ) {
             u.p( tab + "</" + node.getNodeName() + ">" );
         }
+    }
+    
+    public static void printType(Node node, String tab) {
+        if(node.getNodeType() == node.ELEMENT_NODE) {
+            u.p(tab + "node type = element");
+            return;
+        }
+        if(node.getNodeType() == node.TEXT_NODE) {
+            u.p(tab + "node type = text node");
+            return;
+        }
+        if(node.getNodeType() == node.COMMENT_NODE) {
+            u.p(tab + "node type = comment");
+            return;
+        }
+        if(node.getNodeType() == node.DOCUMENT_FRAGMENT_NODE) {
+            u.p(tab + "node type = document fragment node");
+            return;
+        }
+        if(node.getNodeType() == node.CDATA_SECTION_NODE) {
+            u.p(tab + "node type = cdata section");
+            return;
+        }
+        if(node.getNodeType() == node.DOCUMENT_NODE) {
+            u.p(tab + "node type = document node");
+            return;
+        }
+        if(node.getNodeType() == node.DOCUMENT_TYPE_NODE) {
+            u.p(tab + "node type = document type node");
+            return;
+        }
+        if(node.getNodeType() == node.ENTITY_NODE) {
+            u.p(tab + "node type = entity node");
+            return;
+        }
+        if(node.getNodeType() == node.ENTITY_REFERENCE_NODE) {
+            u.p(tab + "node type = entity reference node");
+            return;
+        }
+        if(node.getNodeType() == node.NOTATION_NODE) {
+            u.p(tab + "node type = notation node");
+            return;
+        }
+        if(node.getNodeType() == node.PROCESSING_INSTRUCTION_NODE) {
+            u.p(tab + "node type = processing instruction node");
+            return;
+        }
+        if(node.getNodeType() == node.TEXT_NODE) {
+            u.p(tab + "node type = text node");
+            return;
+        }
+        u.p(tab + "UNKNOWN TYPE: node type = " + node.getNodeType());
     }
 
 
@@ -779,6 +831,13 @@ class MyErrorHandler implements ErrorHandler {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/11/18 23:29:38  joshy
+ * fixed xml bug
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.2  2004/10/23 14:06:57  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

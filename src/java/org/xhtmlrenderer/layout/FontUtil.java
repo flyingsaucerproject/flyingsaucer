@@ -31,6 +31,7 @@ import org.xhtmlrenderer.css.style.*;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.x;
 
 
 /**
@@ -204,25 +205,33 @@ public class FontUtil {
      * @return   The font value
      */
     public static Font getFont( Context c, Node e ) {
-        //u.p("testing node: " + e);
         //Font f = c.getGraphics().getFont();
 
         // if plain text then get the styling from the parent node
+        if ( e instanceof Element) {
+            return getElementFont( c, (Element) e);
+        }
         if ( e.getNodeType() == e.TEXT_NODE ) {
             //u.p("it's a node");
             Element el = (Element)e.getParentNode();
             return getElementFont( c, el );
         }
-
+/*
         if ( e.getNodeType() == e.ELEMENT_NODE ) {
             Element el = (Element)e;
             return getElementFont( c, el );
         }
-
-        u.p( "big error in getFont(). Got a node that is neither txt nor element" );
-        return null;
+        */
+        u.p("here");
+        u.p("big error in getFont(). Got a node that is neither txt nor element" );
+        u.p("probably returning a bad font!");
+        //x.p(e);
+        Font f = c.getGraphics().getFont();
+        //u.dump_stack();
+        return f;
     }
     public static Font getFont( Context c, CalculatedStyle style, Node e ) {
+        u.p("testing node: " + e);
         // if plain text then get the styling from the parent node
         if ( e.getNodeType() == e.TEXT_NODE ) {
             //u.p("it's a node");
@@ -326,6 +335,13 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/11/18 23:29:37  joshy
+ * fixed xml bug
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.13  2004/11/12 20:25:18  joshy
  * added hover support to the browser
  * created hover demo

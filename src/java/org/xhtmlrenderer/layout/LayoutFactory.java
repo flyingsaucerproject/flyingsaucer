@@ -97,6 +97,7 @@ public class LayoutFactory {
     */
 
     public Layout getLayout(Context c, Node elem ) {
+        //u.p("getting layout for node: " + elem);
         // we have to do the inputs manually since they don't depend on
         // the element name
         if ( elem.getNodeType() == elem.ELEMENT_NODE ) {
@@ -167,7 +168,7 @@ public class LayoutFactory {
         if ( elem.getNodeType() == elem.COMMENT_NODE ) {
             return new NullLayout();
         }
-
+        u.p("yo! got here w/ " + elem);
         XRLog.layout( Level.WARNING, "error! returning null! type = " + elem.getNodeType() );
         XRLog.layout( Level.INFO, "error! returning null! type = " + elem.getNodeType() );
         XRLog.layout( Level.INFO, "name = " + elem.getNodeName() );
@@ -323,6 +324,13 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.15  2004/11/18 23:29:38  joshy
+* fixed xml bug
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.14  2004/11/18 18:49:49  joshy
 * fixed the float issue.
 * commented out more dead code

@@ -143,7 +143,7 @@ public class InlineUtil {
 
                 if ( stop_at_blocks ) {
                     if ( LayoutUtil.isBlockNode( curr, c ) ) {
-                        u.p("at block boundary");
+                        //u.p("at block boundary");
                         return list;
                     }
                 }
@@ -227,6 +227,13 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/11/18 23:29:38  joshy
+ * fixed xml bug
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.13  2004/11/18 16:45:11  joshy
  * improved the float code a bit.
  * now floats are automatically forced to be blocks
