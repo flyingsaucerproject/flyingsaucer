@@ -87,6 +87,7 @@ public class XRValueImpl implements XRValue {
      * @param domPriority  PARAM
      */
     public XRValueImpl( CSSValue domCSSValue, String domPriority ) {
+        sDbgLogger.setLevel(Level.OFF);
         _domCSSValue = domCSSValue;
         _domValueTextClean = getCssTextClean();
         _domPriority = domPriority;
@@ -225,8 +226,8 @@ public class XRValueImpl implements XRValue {
         switch ( cssSACPrimitiveValueType() ) {
             case CSSPrimitiveValue.CSS_EMS:
                 // EM is equal to font-size of element on which it is used
-                // The exception is when ’em’ occurs in the value of
-                // the ’font-size’ property itself, in which case it refers
+                // The exception is when ï¿½emï¿½ occurs in the value of
+                // the ï¿½font-sizeï¿½ property itself, in which case it refers
                 // to the font size of the parent element (spec: 4.3.2)
                 absVal = relVal * deriveFontSize( context, ownerElement, propName );
                 _newPrimitiveValueType = CSSPrimitiveValue.CSS_PX;

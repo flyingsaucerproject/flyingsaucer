@@ -38,7 +38,7 @@ div { border: 0px solid red; padding: 0px; margin: 0px;}
 /* splash specific formatting */
 #splash { text-align: center; }
 #splash h1 {
-	font-family: "Century Gothic";
+	font-family: "Century Gothic" Arial sans-serif;
 	font-size: 50pt;
 	font-style: normal;
 	font-weight: normal;
@@ -46,7 +46,7 @@ div { border: 0px solid red; padding: 0px; margin: 0px;}
 	margin: 0px;
 }
 #splash h2 {
-	font-family: "Century Gothic";
+	font-family: "Century Gothic" Arial sans-serif;
 	font-size: 24pt;
 	font-style: italic;
 	font-weight: normal;
@@ -58,8 +58,8 @@ div { border: 0px solid red; padding: 0px; margin: 0px;}
 
 
 .section p, .section ul {
-	font-family: "Century Gothic";
-	padding: 10px 30px 15px 50px;
+	font-family: "Century Gothic" Arial sans-serif;
+	padding: 0px 30px 15px 50px;
 	border: 0px solid black;
 	font-size: 16pt;
     font-weight: normal;
@@ -69,38 +69,11 @@ div { border: 0px solid red; padding: 0px; margin: 0px;}
 	padding-left: 4em;
 	}
 
-
-
-
-
-
-/* the side bars */
-/*
-p.sidebar {
-	font-family:Georgia, "Times New Roman", Times, serif;
-	border: medium dotted #FFFF33;
-	background-color:#FFFF99;
-	color: black;
-	float:right;
-	width: 100px;
-	margin: 20px;
-	padding: 10px;
-	font-size: small;
-	margin-right: 50px;
-}
-.sidebar q {
-	font-family:Arial, Helvetica, sans-serif;
-	font-size: 2em;
-	display: block;
-	text-align: center;
-}
-*/
-
-
-
 #thanks {
 	text-align: right;
-    padding-bottom: 2em;
+    padding: 30px;
+    font-size: 12pt;
+    font-style: italic;
 	}
 
 </style>
@@ -109,7 +82,7 @@ p.sidebar {
 
         <div class="section" id="splash">
             <div class="top">
-                <div>.<br/>.</div>
+                <div> <br/> </div>
             </div>
             <div class="content">
                 <h1>Flying Saucer</h1>
@@ -123,17 +96,12 @@ p.sidebar {
         <div class="section">
 
             <div class="top">
-                <div>.<br/>
-                <br/>.</div>
+                <div> <br/> </div>
             </div>
             <div class="content">
                 <p>Flying Saucer is a Java library which lets you embed XHTML inside of your
                     application. Anywhere you use styled text you can use Flying Saucer.</p>
-                    <!--
-                <p class="sidebar">Rolling Stone says:
-                    <q>It's a number one smash hit!</q>
-                </p>
-                    -->
+                    
                 <p>We don't have complete CSS2 support but we've got a lot. Select the demo
                         menu to try out some examples. </p>
                 <p>You can use Flying Saucer inside all sorts of programs like:</p>
@@ -143,7 +111,7 @@ p.sidebar {
                     <li> an RSS reader</li>
                     <li> an About Box for your program</li>
                 </ul>
-                <p id="thanks">thanks From the Flying Saucer Team</p>
+                <p id="thanks">Thanks! from the Flying Saucer Team</p>
 
             </div>
 

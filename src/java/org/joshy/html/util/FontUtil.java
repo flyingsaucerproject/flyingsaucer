@@ -76,9 +76,13 @@ public static Font getElementFont(Context c, Element el) {
     float size = c.css.getFloatProperty(el,"font-size",parent_size,true);
 
     String weight = c.css.getStringProperty(el,"font-weight");
-    String[] family = c.css.getStringArrayProperty(el,"font-family");
-    //u.p("families");
-    //u.p(family);
+    String[] families = c.css.getStringArrayProperty(el,"font-family");
+    
+    /*
+    u.p("families");
+    u.p(families);
+    u.p("");
+    */
     /*
     if(!family[0].equals("sans-serif")) {
         //u.p("family = ");
@@ -88,7 +92,7 @@ public static Font getElementFont(Context c, Element el) {
     */
     String style = c.css.getStringProperty(el,"font-style");
     // CLEAN System.out.println("family=" + family + ", size=" + size + ", weight=" + weight + ", style=" + style);
-    f = c.getFontResolver().resolveFont(c,family,size,weight,style);
+    f = c.getFontResolver().resolveFont(c,families,size,weight,style);
 
     // calculate the font color
     c.getGraphics().setColor(c.css.getColor(el));

@@ -238,7 +238,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
           // though it original design they had an ownership relationship (PWW 14/08/04)
           c.css = new XRStyleReference(c);
         }
-        System.out.println("CSS Properties from: " + c.css.getClass().getName());
+        System.out.println("Using CSS implementation from: " + c.css.getClass().getName());
 
         c.setBaseURL(url);
 

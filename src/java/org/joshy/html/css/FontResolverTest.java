@@ -50,6 +50,16 @@ public class FontResolverTest extends FontResolver {
     }
     
     protected Font resolveFont(Context c, String font, float size, String weight, String style) {
+        // strip off the "s if they are there
+        if(font.startsWith("\"")) {
+            font = font.substring(1);
+        }
+        if(font.endsWith("\"")) {
+            font = font.substring(0,font.length()-1);
+        }
+        
+        
+        //u.p("final font = " + font);
         // normalize the font name
         if(font.equals("serif")) {
             font = "Serif";
@@ -71,12 +81,15 @@ public class FontResolverTest extends FontResolver {
             return (Font) instance_hash.get(font_instance_name);
         }
         
-        //u.p("font lookup failed");
+        
+        //u.p("font lookup failed for: " + font_instance_name);
         //u.p("searching for : " + font + " " + size + " " + weight + " " + style);
+        
         
         // if not then 
         //  does the font exist
         if(available_fonts_hash.containsKey(font)) {
+            //u.p("found an available font for: " + font);
             Object value = available_fonts_hash.get(font);
             // have we actually allocated the root font object yet?
             Font root_font = null;

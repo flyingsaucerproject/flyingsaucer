@@ -25,6 +25,7 @@ public class BrowserMenuBar extends JMenuBar {
     
     public BrowserMenuBar(BrowserStartup root) {
         this.root = root;
+        logger.setLevel(Level.OFF);
     }
     
     public void init() {
