@@ -191,8 +191,6 @@
                 <include name="*.xhtml"/>
                 <include name="*.gif"/>
                 <include name="*.png"/>
-                <include name="splash/**"/>
-                <include name="about/**"/>
             </zipfileset>
             <zipfileset dir="${src.demo.splash.dir}" prefix="demos/splash">
                 <include name="*.html"/>
@@ -234,6 +232,15 @@
          ===================================================== -->
 
     <target name="dists" depends="jnlp-dist, src-dist, binary-dist">
+    </target>
+    <target name="dists-upload">
+        <scp todir="${docs.upload.username}:${docs.upload.password}@${docs.upload.hostname}:mainwebsite_html/projects/xhtmlrenderer/">
+            <fileset dir="${dest.dir}">
+                <include name="*.zip"/>
+                <include name="*.jnlp"/>
+                <include name="*.jar"/>
+            </fileset>
+        </scp>
     </target>
 
     <!-- Builds a ZIP file of entire project from base directory. -->
@@ -284,6 +291,7 @@
                 <include name="xalan.jar"/>
             </fileset>
             <fileset dir="${src.packaging.dir}"><include name="fs.jnlp"/></fileset>
+            <fileset dir="${src.packaging.dir}"><include name="flyingsaucer.png"/></fileset>
             <fileset dir="${src.packaging.dir}"><include name="aboutbox.jnlp"/></fileset>
         </copy>
         <signjar jar="${dest.dir}/core-renderer.jar" alias="joshy" storepass="password" keystore="teststore"/>
@@ -546,6 +554,18 @@
 $Id$
 
 $Log$
+Revision 1.47  2004/10/19 15:00:51  joshy
+updated the build file
+removed some extraneous files
+update the home page to point to the new jnlp files
+updated the resource loader to use the marker class
+updated the text of the about box
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.46  2004/10/19 14:17:30  joshy
 merged the build2.xml into the build.xml
 added docs and docs upload targets

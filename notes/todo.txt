@@ -2,11 +2,11 @@ last bit for R4
 
 //add javadocs online
 --remove java.net stuff from javadocs pages
-build new news release
+//build new news release
 link to RSS feed
 //update src, binary, and java webstart links
 //create sub document links on FAQ page
-update demo xhtml files w/ new information
+//update demo xhtml files w/ new information
 //getting started guide
 //    change class names and packages
 //    update code for 'showing a page'
@@ -15,7 +15,8 @@ make general util use object classloader
 host jnlp on my website
 upload zips to java.net files
 add version number to html panel and manifest of core-renderer.jar
-add java2html
+//add java2html
+
     
 
 The Flying Saucer Team is proud to present Beta Release 4 (R4) of our 100% Java XHTML + CSS2 Renderer.
@@ -32,7 +33,10 @@ This release brings updates to the infrastructure with
 This release paves the way for the new features and speed increases coming
 in R5.  Thanks for all of your support and please send us your feedback.
 
-
+The Flying Saucer XHTMLRenderer can be used anywhere a program needs rich
+styled content. This includes ebook readers, chat apps, splash screens,
+help viewers, report generation, web-enabled thick clients, and online
+music stores.
 
 -------------
 

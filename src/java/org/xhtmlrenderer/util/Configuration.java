@@ -24,6 +24,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 
+import org.xhtmlrenderer.DefaultCSSMarker;
 
 /**
  * <p>
@@ -124,7 +125,7 @@ public class Configuration {
     /** Loads the default set of properties, which may be overridden. */
     private void loadDefaultProperties() {
         try {
-            InputStream readStream = GeneralUtil.openStreamFromClasspath( SF_FILE_NAME );
+            InputStream readStream = GeneralUtil.openStreamFromClasspath(new DefaultCSSMarker(), SF_FILE_NAME );
 
             if ( readStream == null ) {
                 throw new XRRuntimeException( "No configuration files found in classpath using URL: " + SF_FILE_NAME );
@@ -502,6 +503,18 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/10/19 15:00:53  joshy
+ * updated the build file
+ * removed some extraneous files
+ * update the home page to point to the new jnlp files
+ * updated the resource loader to use the marker class
+ * updated the text of the about box
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/10/18 12:10:50  pdoubleya
  * Added keysByPrefix(); local override file now read from user home directory; all logging now written to console instead of Logger because of Logger setup dependency issues (logger config depends on Configuration).
  *

@@ -37,10 +37,10 @@ public class GeneralUtil {
      * @param resource  PARAM
      * @return          Returns
      */
-    public static InputStream openStreamFromClasspath( String resource ) {
+    public static InputStream openStreamFromClasspath(Object obj, String resource ) {
         InputStream readStream = null;
         try {
-            ClassLoader loader = new DefaultCSSMarker().getClass().getClassLoader();
+            ClassLoader loader = obj.getClass().getClassLoader();
             if ( loader == null ) {
                 readStream = ClassLoader.getSystemResourceAsStream( resource );
             } else {
@@ -61,6 +61,18 @@ public class GeneralUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/10/19 15:00:53  joshy
+ * updated the build file
+ * removed some extraneous files
+ * update the home page to point to the new jnlp files
+ * updated the resource loader to use the marker class
+ * updated the text of the about box
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/18 23:43:02  joshy
  * final updates today
  *

@@ -60,7 +60,7 @@ public class CSSSpeedTest {
         // load doc
 
         String fileURL = Configuration.valueFor( "xr.test.files.hamlet" );
-        InputStream is = GeneralUtil.openStreamFromClasspath( fileURL );
+        InputStream is = GeneralUtil.openStreamFromClasspath(new DefaultCSSMarker(), fileURL );
         if ( is == null ) {
             System.err.println( "Can't find test file on CLASSPATH: " + fileURL );
             return;
