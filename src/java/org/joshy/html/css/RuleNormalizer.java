@@ -156,7 +156,11 @@ public class RuleNormalizer {
     }
     
     public CSSStyleRule normalize(CSSStyleRule rule) {
-        for(int i=0; i<rule.getStyle().getLength(); i++) {
+        int length = rule.getStyle().getLength();
+        //HACK: we need to rewrite all properties in expandProperty
+        //that way, we keep good cascade in case some fool redefined part of a shorthand-property
+        //The good solution would be to create a new CSSStyleRule entirely
+        for(int i=0; i<length; i++) {
             String prop = rule.getStyle().item(i);
             expandProperty(prop,rule);
 
@@ -293,21 +297,24 @@ public class RuleNormalizer {
                 rule.getStyle().setProperty(prop,getColorHex(value),rule.getStyle().getPropertyPriority(prop));
             return;
         }
-        if(prop.equals("padding")) {
+        else if(prop.equals("padding")) {
             expand(prop,rule);
         }
-        if(prop.equals("margin")) {
+        else if(prop.equals("margin")) {
             expand(prop,rule);
         }
-        if(prop.equals("border-width")) {
+        else if(prop.equals("border-width")) {
             expand("border-width",rule,"border","-width");
         }
-        if(prop.equals("background-position")) {
+        else if(prop.equals("background-position")) {
             expandBackgroundPosition(rule);
         }
-        if(prop.equals("border")) {
+        else if(prop.equals("border")) {
             //u.p("normalizing: " + prop);
             expandBorder(rule);
+        }
+        else {//rewrite it. This is a HACK to keep the order.
+            rule.getStyle().setProperty(prop,rule.getStyle().getPropertyValue(prop),rule.getStyle().getPropertyPriority(prop));
         }
     }
     
@@ -375,13 +382,16 @@ public class RuleNormalizer {
                     dec.setProperty("border-width",v.getCssText(),prio);
                     expandProperty("border-width",rule);
                 }
-                if(isColor(v.getCssText())) {
+                else if(isColor(v.getCssText())) {
                     dec.setProperty("border-color",v.getCssText(),prio);
                     expandProperty("border-color",rule);
                 }
-                if(isBorderStyle(v.getCssText())) {
+                else if(isBorderStyle(v.getCssText())) {
                     dec.setProperty("border-style",v.getCssText(),prio);
                     expandProperty("border-style",rule);
+                }
+                else {
+                    System.err.println("unhandled value type in RuleNormalizer.expandBorder");
                 }
             }
         }
@@ -393,9 +403,10 @@ public class RuleNormalizer {
         String prio = dec.getPropertyPriority("background-position");
         if(val.getCssValueType() == val.CSS_VALUE_LIST) {
             //u.p("val = " + val);
+            rule.getStyle().setProperty("background-position",rule.getStyle().getPropertyValue("background-position"),prio);
             return;
         }
-        if(val.getCssValueType() == val.CSS_PRIMITIVE_VALUE) {
+        else if(val.getCssValueType() == val.CSS_PRIMITIVE_VALUE) {
             //u.p("val = " + val);
             String str = val.getCssText();
             if(str.startsWith("top")) { dec.setProperty("background-position","50% 0%",prio); }
@@ -404,6 +415,7 @@ public class RuleNormalizer {
             if(str.startsWith("right")) { dec.setProperty("background-position","100% 50%",prio); }
             return;
         }
+        else System.err.println("unhandled value-type in RuleNormalizer.expandBackgroundPosition");
 
     }
     
