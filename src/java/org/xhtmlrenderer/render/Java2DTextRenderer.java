@@ -6,10 +6,13 @@ import java.awt.font.*;
 import java.awt.geom.*;
 
 import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.util.u;
 
 public class Java2DTextRenderer implements TextRenderer {
     public void setupGraphics(Graphics2D graphics) {
-//        graphics.setRenderingHint( RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        //u.p("setup graphics called");
+        // graphics.setRenderingHint( RenderingHints.KEY_FRACTIONALMETRICS, 
+        //     RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
             RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
     }

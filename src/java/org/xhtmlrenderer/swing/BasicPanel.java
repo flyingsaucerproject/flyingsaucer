@@ -29,6 +29,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.print.PrinterGraphics;
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -660,6 +661,10 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
      * @param filename    The new documentRelative value
      * @throws Exception  Throws
      */
+    protected void setDocument(InputStream stream, URL url)  throws Exception {
+        Document dom = x.loadDocument(stream);
+        setDocument(dom,url);
+    }
     protected void setDocumentRelative( String filename )
         throws Exception {
         if ( getContext() != null && ( !filename.startsWith( "http" ) ) ) {
@@ -766,6 +771,17 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/23 21:19:22  joshy
+ * added support for loading a document from an InputStream
+ * (for cases where you don't have a Document or URL)
+ *
+ * - j
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/11/23 18:38:48  joshy
  * removed isPrinting() method from rendering context because it's
  * not needed. the panel can detect printing by checking for
