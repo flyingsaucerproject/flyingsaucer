@@ -44,17 +44,11 @@ public class InlineUtil {
      * @return            Returns
      */
     public static int doTextIndent( Context c, Element elem, int width, LineBox first_line ) {
-
         if ( c.css.hasProperty( elem, CSSName.TEXT_INDENT ) ) {
-
             float indent = c.css.getFloatProperty( elem, CSSName.TEXT_INDENT, width );
-
             width = width - (int)indent;
-
             first_line.x = first_line.x + (int)indent;
-
         }
-
         return width;
     }
 
@@ -141,16 +135,11 @@ public class InlineUtil {
      * @return           Returns
      */
     public static Node nextTextNode( List node_list ) {
-
         if ( node_list.size() < 1 ) {
-
             return null;
         }
-
         Node nd = (Node)node_list.get( 0 );
-
         node_list.remove( nd );
-
         return nd;
     }
 
@@ -164,7 +153,6 @@ public class InlineUtil {
      * @return      The inlineNodeList value
      */
     public static List getInlineNodeList( Node node, Element elem, Context c ) {
-
         return getInlineNodeList( node, elem, c, false );
     }
 
@@ -178,174 +166,110 @@ public class InlineUtil {
      * @return                The inlineNodeList value
      */
     public static List getInlineNodeList( Node node, Element elem, Context c, boolean stop_at_blocks ) {
-
         List list = new ArrayList();
-
         if ( node == null ) {
             return list;
         }
-
         if ( elem == null ) {
             return list;
         }
-
         if ( !elem.hasChildNodes() ) {
-
             //u.p("it's empty");
-
             return list;
         }
 
         //u.p("starting at: " + node);
-
         Node curr = node;
-
         while ( true ) {
-
             //u.p("now list = " + list);
-
             // skip the first time through
-
             if ( curr != node ) {
-
                 if ( curr.getNodeType() == curr.TEXT_NODE ) {
-
                     //u.p("adding: " + curr);
-
                     list.add( curr );
-
                     node = curr;
-
                     continue;
                     //return curr;
-
                 }
 
                 if ( InlineLayout.isReplaced( curr ) ) {
-
                     //u.p("adding: " + curr);
-
                     list.add( curr );
-
                     node = curr;
-
                     continue;
                     //return curr;
-
                 }
 
                 if ( InlineLayout.isFloatedBlock( curr, c ) ) {
-
                     //u.p("adding: " + curr);
-
                     list.add( curr );
-
                     node = curr;
-
                     continue;
                     //return curr;
-
                 }
 
                 if ( LayoutFactory.isBreak( curr ) ) {
-
                     //u.p("adding: " + curr);
-
                     list.add( curr );
-
                     node = curr;
-
                     continue;
                     //return curr;
-
                 }
 
                 if ( stop_at_blocks ) {
-
                     if ( InlineLayout.isBlockNode( curr, c ) ) {
-
                         //u.p("at block boundary");
-
                         return list;
                     }
                 }
             }
 
             if ( curr.hasChildNodes() ) {
-
                 //u.p("about to test: " + curr);
-
                 // if it's a floating block we don't want to recurse
-
                 if ( !InlineLayout.isFloatedBlock( curr, c ) &&
                         !InlineLayout.isReplaced( curr ) ) {
-
                     curr = curr.getFirstChild();
-
                     //u.p("going to first child " + curr);
-
                     continue;
                 }
 
                 // it's okay to recurse if it's the root that's the float,
-
                 // not the node being examined. this only matters when we
-
                 // start the loop at the root of a floated block
-
                 if ( InlineLayout.isFloatedBlock( node, c ) ) {
-
                     if ( node == elem ) {
-
                         curr = curr.getFirstChild();
-
                         continue;
                     }
                 }
             }
 
             if ( curr.getNextSibling() != null ) {
-
                 curr = curr.getNextSibling();
-
                 //u.p("going to next sibling: " + curr);
-
                 continue;
             }
 
             // keep going up until we get another sibling
-
             // or we are at elem.
 
             while ( true ) {
-
                 curr = curr.getParentNode();
-
                 //u.p("going to parent: " + curr);
-
                 // if we are at the top then return null
-
                 if ( curr == elem ) {
-
                     //u.p("at the top again. returning null");
-
                     //u.p("returning the list");
-
                     //u.p(list);
-
                     return list;
                     //return null;
-
                 }
 
                 if ( curr.getNextSibling() != null ) {
-
                     curr = curr.getNextSibling();
-
                     //u.p("going to next sibling: " + curr);
-
                     break;
-
                 }
 
             }
@@ -360,6 +284,16 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/06 01:50:41  joshy
+ * support for line-height
+ * cleaned up the alice demo
+ * added unit tests for font family selection and line-height
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/11/04 15:35:45  joshy
  * initial float support
  * includes right and left float

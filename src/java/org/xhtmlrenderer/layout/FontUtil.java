@@ -63,7 +63,19 @@ public class FontUtil {
      * @return      Returns
      */
     public static int lineHeight( Context c, Node node ) {
-        return c.getGraphics().getFontMetrics( getFont( c, node ) ).getHeight();
+        int val = c.getGraphics().getFontMetrics( getFont( c, node ) ).getHeight();
+        Element elem = null;
+        if(node instanceof Element) {
+            elem = (Element)node;
+        } else {
+            elem = (Element)node.getParentNode();
+        }
+        if(c.css.hasProperty(elem,"line-height",true)) {
+            //u.p("elem = " + node);
+            val = (int)c.css.getFloatProperty(elem, "line-height", val, true);
+            //u.p("val = " + val);
+        }
+        return val;
     }
 
     /**
@@ -164,6 +176,7 @@ public class FontUtil {
         // set the height of the box to the height of the font
         if ( !InlineLayout.isReplaced( node ) ) {
             box.height = FontUtil.lineHeight( c, node );
+            //u.p("set height of box: " + box.height + " == " + box);
         }
         //u.p("vertical align = " + vertical_align);
         if ( vertical_align == null ) {
@@ -390,6 +403,16 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/06 01:50:40  joshy
+ * support for line-height
+ * cleaned up the alice demo
+ * added unit tests for font family selection and line-height
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/11/04 15:35:45  joshy
  * initial float support
  * includes right and left float

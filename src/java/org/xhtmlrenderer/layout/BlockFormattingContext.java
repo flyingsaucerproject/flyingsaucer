@@ -149,7 +149,7 @@ public class BlockFormattingContext {
         if(line.y > yoff) {
             return 0;
         }
-        u.p("returning: " + xoff);
+        //u.p("returning: " + xoff);
         return xoff;
     }
     

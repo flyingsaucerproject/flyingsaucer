@@ -388,7 +388,7 @@
             classpath="${dest.java.dir};${dest.dir}"
             fork="${java-exec.fork.tests}"
             >
-            <arg value="demos/browser/xhtml/alice/alice.xhtml"/>
+            <arg value="tests/diff/fonts/font-family/01.xhtml"/>
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
@@ -609,6 +609,16 @@
 $Id$
 
 $Log$
+Revision 1.62  2004/11/06 01:50:40  joshy
+support for line-height
+cleaned up the alice demo
+added unit tests for font family selection and line-height
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.61  2004/11/05 18:48:41  joshy
 added alice demo to the browser
 Issue number:
