@@ -51,9 +51,11 @@
     <!-- Directories -->
     <property name="libraries.dir" location="lib" />
     <property name="src.dir" location="src" />
+    <property name="doc.dir" location="doc" />
     <property name="src.browser.java.dir" location="demos/browser/src/java" />
     <property name="src.about.java.dir" location="demos/about/src/java" />
     <property name="dest.dir" location="build" />
+    <property name="dest.javadoc.dir" location="${doc.dir}/api" />
     <property name="src.java.dir" location="${src.dir}/java" />
     <property name="dest.java.dir" location="${dest.dir}/classes" />
     <property name="src.resources.css.dir" location="${src.dir}/css" />
@@ -154,6 +156,10 @@
         </delete>
     </target>
 
+    <target name="clean-javadoc" description="clean project javadoc files" depends="properties">
+        <delete dir="${dest.javadoc.dir}"/>
+    </target>
+
     <!-- Cleans all build files, then recompiles. -->
     <target name="clean-compile" description="clean compile" depends="clean,compile" />
 
@@ -179,6 +185,31 @@
     <!-- Compiles the Help/About Box demo along with the main codebase -->
     <target name="compile.about" depends="compile">
         <javac-full srcdir="${src.about.java.dir}" />
+    </target>
+
+    <!-- builds JavaDoc for all code -->
+    <target name="javadoc" description="builds javadoc for all XR packages" depends="clean-javadoc">
+      <javadoc 
+                access="public" 
+                author="true"
+                classpathref="libraries.all"
+                destdir="${dest.javadoc.dir}" 
+                nodeprecated="false" 
+                nodeprecatedlist="false"
+                noindex="false" 
+                nonavbar="false" 
+                notree="false"
+                source="1.4" 
+                sourcepath="${src.java.dir}" 
+                splitindex="true"
+                use="true" 
+                version="true">
+                
+        <packageset dir="${src.java.dir}">
+          <include name="org/xhtmlrenderer/**" />
+        </packageset>
+        <link offline="true" href="http://java.sun.com/j2se/1.4.2/docs/api/index.html" packagelistLoc="${doc.dir}/j2se14"/>
+      </javadoc>
     </target>
     
     <!-- Compiles main codebase, browser and about box -->
@@ -468,6 +499,9 @@
 $Id$
 
 $Log$
+Revision 1.8  2004/10/19 15:06:08  pdoubleya
+Added javadoc task and properties.
+
 Revision 1.7  2004/10/19 13:58:17  pdoubleya
 Comments to new blocks.
 
