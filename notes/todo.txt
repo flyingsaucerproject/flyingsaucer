@@ -63,29 +63,38 @@
     //make layoututil w/ util functions from defaultlayout
     //create preloadbox in layout interface
 
-
-rachel in town arrive 20th @ 7, leave 5th @ 7
-
 //table crashes on tbody. skip tbody? 
 //table crashes on empty tr
-reimplement whitespace handling
-javadoc xhtmlpanel
-javadoc graphic2drenderer
+//reimplement whitespace handling
 remove isPrinting(). check the graphics instanceof printablegraphics
 show current resources in browser
-can we separate inline and box more? maybe do that later?    
-cache linemetrics and ascend/dscend more
-take out redundant functions in font stuff
-    
+ 
+
+BERMU310
+
+
 post about dpi to units issue
 //fix n test vertical align
 //fix n test horizontal align
-fix n test line wrapping w/ floats
+//fix n test line wrapping w/ floats
 fix n test space collapsing w/ images
 fix n test tab alignment
+fix n test preformatted lines
+    pre
+    prewrap?
+    nowrap?
+    linewrap?
+    
 //test first line pseudo
 //test first char pseudo
 
+javadoc xhtmlpanel
+javadoc graphic2drenderer
+can we separate inline and box more? maybe do that later?    
+cache linemetrics and ascend/dscend more
+take out redundant functions in font stuff
+
+rachel in town arrive 20th @ 7, leave 5th @ 7
 
 --crash w/ width = 50%
 --% width for absolute layout

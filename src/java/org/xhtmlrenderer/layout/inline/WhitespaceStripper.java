@@ -14,7 +14,8 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 
 public class WhitespaceStripper {
-    final String space = " ";
+    public static final String SPACE = " ";
+    public static final String EOL = "\n";
     // update this to work on linefeeds on multiple platforms;
     final Pattern linefeed_space_collapse = Pattern.compile("\\s+\\n\\s+");
     final Pattern linefeed_to_space = Pattern.compile("\\n");
@@ -34,7 +35,7 @@ public class WhitespaceStripper {
         if(whitespace.equals("normal") ||
            whitespace.equals("nowrap") ||
            whitespace.equals("pre-line")) {
-            text = linefeed_space_collapse.matcher(text).replaceAll(space);
+            text = linefeed_space_collapse.matcher(text).replaceAll(SPACE);
         }
         //u.p("step 1 = \"" + text + "\"");
         
@@ -46,7 +47,7 @@ public class WhitespaceStripper {
         // convert line feeds to spaces
         if(whitespace.equals("normal") ||
            whitespace.equals("nowrap")) {
-           text = linefeed_to_space.matcher(text).replaceAll(space);
+           text = linefeed_to_space.matcher(text).replaceAll(SPACE);
         }
         //u.p("step 3 = \"" + text +"\"");
         
@@ -55,19 +56,19 @@ public class WhitespaceStripper {
            whitespace.equals("nowrap") ||
            whitespace.equals("pre-line") ) {
                
-            text = tab_to_space.matcher(text).replaceAll(space);
+            text = tab_to_space.matcher(text).replaceAll(SPACE);
             //u.p("step 4.1 = \"" + text + "\"");
 
-            text = space_collapse.matcher(text).replaceAll(space);
+            text = space_collapse.matcher(text).replaceAll(SPACE);
             //u.p("step 4.2 = \"" + text + "\"");
 
             // collapse first space against prev inline
-            if(text.startsWith(space) &&
+            if(text.startsWith(SPACE) &&
                            (prev != null) &&
                            (prev.whitespace.equals("normal") ||
                             prev.whitespace.equals("nowrap") ||
                             prev.whitespace.equals("pre-line")) &&
-                           (prev.getSubstring().endsWith(space))){
+                           (prev.getSubstring().endsWith(SPACE))){
                 text = text.substring(1,text.length());
             }
             //u.p("step 4.3 = \"" + text + "\"");
@@ -103,146 +104,12 @@ public class WhitespaceStripper {
             // u.p("new = " + inline);
         }
 
-        breakText( c, inline, prev, prev_align, avail, max, font );
+        Breaker.breakText( c, inline, prev, prev_align, avail, max, font );
         prepBox( c, inline, prev_align, font );
         // u.p("final inline = " + inline);
         return inline;
     }
     
-    public boolean breakText(Context c, InlineBox inline, InlineBox prev, InlineBox prev_align, int avail, int max, Font font) {
-        boolean db = false;
-        if(db) {
-         u.p("=========================");
-         u.p("breaking: " + inline);
-         u.p("breaking : '" + inline.getSubstring() + "'");
-         u.p("avail = " + avail);
-         u.p("max = " + max);
-         u.p("prev align = " + prev_align);
-        }
-        
-        //text pre
-        // if(text pre) {
-        //     inline.text = break on lf
-        //     update start/end
-        // }
-        
-        
-
-
-        
-        // all of the text fits on the current line so just return it
-        if(FontUtil.len(c,inline.getSubstring(),font) < avail) {
-            String txt = inline.getSubstring();
-            inline.break_after = false;
-            if(db) { u.p("text fits on current line"); }
-            return true;
-        }
-
-
-
-        
-        //text too long and pre
-        // if too long for line && pre {
-        //     inline.text = break at lf
-        //     return;
-        // }
-
-
-
-        
-        /*
-          there are lots of excess substrings generated in here!!!
-          this should all be done with indexes
-        */
-        //text too long to fit on this line
-        int n = 0;
-        int pn = 0;
-        while(true) {
-            n = inline.getSubstring().indexOf(space,n+1);
-            
-            
-            // a single unbreakable string that can't fit on the line
-            // handle a single unbreakable string
-            if(n == -1 && pn == 0) {
-                if(prev_align != null) {
-                    inline.break_before = true;
-                    //inline.x = 0;
-                }
-                
-                
-                // make unbreakable to end of this inline
-                //unbreakable(inline, inline.getSubstring().length());
-                //if(inline.start_index == -1) {
-                //    inline.start_index = 0;
-                //}
-                inline.setSubstring( inline.start_index, inline.getSubstring().length());
-                if(db) { u.p("unbreakable string can't fit on line"); }
-                return true;
-            }
-
-
-            
-            // make a tenative breaking string
-            String tenative = null;
-            if(n == -1) {
-                tenative = inline.getSubstring();
-            } else {
-                tenative = inline.getSubstring().substring(0,n);
-            }
-            // u.p("tenative = " + tenative);
-            
-            
-            
-            // if the string is too long to fit in the available space
-            int len = FontUtil.len(c,tenative,font);
-            if(db) { u.p("len = " + len + " avail = " + avail); }
-            if(len >= avail) {
-                
-                // if the previous tenative string would work, then add
-                // put the box on this line and break after
-                // if prev was okay, then go with that
-                if(pn > 0) {
-                    // if(inline.start_index == -1) {
-                    //     inline.start_index = 0;
-                    // }
-                    
-                    if(db) {
-                        u.p("normal break on current line. break after. pn = " + pn); 
-                    }
-                    inline.setSubstring( inline.start_index, inline.start_index + pn);
-                    inline.break_after = true;
-                    return true;
-                }
-                
-                
-                // if this is an unbreakable word so put it on the next line
-                // by itself
-                
-                // HACK. not sure the better way to do this
-                // if there is another space after this, then tack it on
-                if(inline.getSubstring().length() > n && inline.getSubstring().charAt(n) == ' ') {
-                    if(db) { u.p("ending space!!"); }
-                    inline.setSubstring(inline.start_index, inline.start_index + n+1);
-                } else {
-                    inline.setSubstring(inline.start_index, inline.start_index + n);
-                }
-                if(db) { u.p("unbreakable word in inline. break before"); }
-                inline.break_before = true;
-                // if it's so long that it fills up the next line too
-                if(FontUtil.len(c,inline.getSubstring(),font) > max) {
-                    inline.break_after = true;
-                }
-                return true;
-
-
-            }
-            
-            // loop
-            pn = n;
-            if(db) { u.p("loop " + n + " '" + tenative + "' avail = " + avail + " len = " + len); }
-        }
-        
-    }
 
     
     public void prepBox(Context c, InlineBox box, InlineBox prev_align, Font font) {
@@ -267,15 +134,14 @@ public class WhitespaceStripper {
 
 
 
+
+
+        // ============ set x ===========
         // shift left if starting a new line
         if(box.break_before) {
             box.x = 0;
         }
-        
 
-
-
-        // ============ set x
         // use the prev_align to calculate the x if not at start of
         // new line
         if ( prev_align != null && 
@@ -289,21 +155,21 @@ public class WhitespaceStripper {
             box.x = 0;
 
             // trim off leading space only if at start of new line
-            if(box.getSubstring().startsWith(space)) {
+            if(box.getSubstring().startsWith(SPACE)) {
                 box.setSubstring(box.start_index+1,box.end_index);
             }
         }
         
         
         
-        // =========== set y
+        // =========== set y ===========
         // y is  relative to the line, so it's always 0
         box.y = 0;
         
         
         
         
-        // =========== set width
+        // =========== set width ==========
         
         /*
         if ( !LayoutUtil.isReplaced(c, node ) ) {

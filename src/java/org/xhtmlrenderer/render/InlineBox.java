@@ -194,12 +194,22 @@ public class InlineBox extends Box {
     public void setSubstring(int start, int end) {
         if(end < start) {
             u.p("setting substring to: " + start + " " + end);
-            u.dump_stack();
-            System.exit(-1);
+            throw new XRRuntimeException("set substring length too long: " + this);
         }
         start_index = start;
         end_index = end;
     }
+    
+    public void setSubstringLength(int len) {
+        end_index = start_index + len;
+        if(end_index > master.length()) {
+            u.p("just set substring length to : " + len);
+            u.p("so indexes = " + start_index + " -> " + end_index);
+            u.p("longer than master: " + master);
+            throw new XRRuntimeException("set substring length too long: " + this);
+        }
+    }
+    
     private String master;
     public void setMasterText(String master) {
         //u.p("set master text to: \"" + master + "\"");
@@ -256,6 +266,16 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/11/23 15:19:23  joshy
+ * split breaking into it's own class
+ * added support for the other values of whitespace (pre, pre-line, etc)
+ * more unit tests
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.13  2004/11/23 01:53:30  joshy
  * re-enabled vertical align
  * added unit tests for various text-align and indent forms
