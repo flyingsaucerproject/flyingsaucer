@@ -292,22 +292,12 @@ public class Context {
         Border padding = block.padding;
         Border margin = block.margin;
 
-        Uu.p("box = " + block);
-        Uu.p(" border = " + border);
-        Uu.p(" padding = " + padding);
-        Uu.p(" margin = " + margin);
         Rectangle rect = new Rectangle(0, 0,
                 getExtents().width - block.totalHorizontalPadding(),
-                //(margin.left + border.left + padding.left)
-                //- (margin.right + border.right + padding.right),
-                
                 getExtents().height - block.totalVerticalPadding()
-                //(margin.top + border.top + padding.top)
-                //- (margin.bottom + border.bottom + padding.bottom));
                 );
 
         setExtents(rect);
-
     }
 
 
@@ -833,6 +823,13 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2004/12/16 17:22:25  joshy
+ * minor code cleanup
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.35  2004/12/16 17:10:41  joshy
  * fixed box bug
  *

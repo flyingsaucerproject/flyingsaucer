@@ -271,7 +271,6 @@ public class BoxLayout extends DefaultLayout {
                 block.firstLetterStyle = ((FirstLetterStyle) o).getStyle();
                 continue;
             }
-            Uu.p("o = " + o);
             Content currentContent = (Content) o;
 
             Box child_box = null;
@@ -356,6 +355,13 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.52  2004/12/16 17:22:25  joshy
+ * minor code cleanup
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.51  2004/12/16 17:10:41  joshy
  * fixed box bug
  *
