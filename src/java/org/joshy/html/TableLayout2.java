@@ -135,7 +135,10 @@ public class TableLayout2
                     //u.p("it's real");
                     //u.p("getting real cell: " + x + " , " + y);
                     Cell cell = grid.getCell(x,y);
-                    
+if(cell == null) {
+    System.err.println("Hit the null cell error in "+this.getClass().getName());
+    continue;
+}
                     // create a new cell box for this cell
                     CellBox cell_box = new CellBox(0,0,10,10);
                     cell.cb = cell_box;
