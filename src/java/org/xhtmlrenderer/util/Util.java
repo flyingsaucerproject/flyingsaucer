@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -575,6 +575,9 @@ public class Util {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/01/29 20:18:38  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.4  2004/12/12 03:33:05  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

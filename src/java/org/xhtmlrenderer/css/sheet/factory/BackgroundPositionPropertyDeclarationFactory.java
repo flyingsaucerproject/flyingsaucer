@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * DefaultPropertyDeclarationFactory.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -34,10 +34,9 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
- * A PropertyDeclarationFactory for CSS 2 shorthand properties that should not be exploded,
- * specifically background-position and font-family,
- * instantiating PropertyDeclarations; Singleton, use {@link
- * #instance()}.
+ * A PropertyDeclarationFactory for CSS 2 shorthand properties that should not
+ * be exploded, specifically background-position and font-family, instantiating
+ * PropertyDeclarations; Singleton, use {@link #instance()}.
  *
  * @author   Patrick Wright
  */
@@ -53,9 +52,8 @@ public class BackgroundPositionPropertyDeclarationFactory extends AbstractProper
      * superclass.
      *
      * @param primVals   The SAC value for this property
-     * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param cssName   property name
+     * @param cssName    property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -67,24 +65,26 @@ public class BackgroundPositionPropertyDeclarationFactory extends AbstractProper
                                             int origin ) {
 
         StringBuffer pos = new StringBuffer();
-        for (int i = 0; i < primVals.length; i++) {
+        for ( int i = 0; i < primVals.length; i++ ) {
             CSSPrimitiveValue primVal = primVals[i];
-            pos.append(primVal.getCssText().trim() + " ");
+            pos.append( primVal.getCssText().trim() + " " );
         }
-        pos.deleteCharAt(pos.length() - 1); // remove spc
+        pos.deleteCharAt( pos.length() - 1 );// remove spc
 
         String val = pos.toString().trim();
 
         // handle for single value--first will be taken as horizontal; as per CSS spec
         // if there is no " ", then we have a single value
-        if (val.indexOf(" ") == -1) {
+        if ( val.indexOf( " " ) == -1 ) {
             // check that the single value is a length
-            if ( Idents.looksLikeALength(val))
+            if ( Idents.looksLikeALength( val ) ) {
                 val += " 50%";
+            }
         }
 
         FSCssValue fsCssValue = new FSCssValue( cssName, primVals[0], val );
         List declarations = new ArrayList( 1 );
+        
         declarations.add( newPropertyDeclaration( cssName, fsCssValue, origin, important ) );
         return declarations.iterator();
     }
@@ -106,6 +106,9 @@ public class BackgroundPositionPropertyDeclarationFactory extends AbstractProper
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 20:24:25  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.3  2005/01/29 12:14:20  pdoubleya
  * Removed priority as a parameter, added alternate build when only CSSValue is available; could be used in a SAC DocumentHandler after the CSSValue is initialized from a property.
  *

@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -467,6 +467,9 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/01/29 20:21:09  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.27  2005/01/08 11:55:18  tobega
  * Started massaging the extension interfaces
  *

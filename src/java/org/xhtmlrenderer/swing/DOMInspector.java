@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -787,6 +787,9 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/01/29 20:22:17  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.12  2005/01/25 14:45:54  pdoubleya
  * Added support for IdentValue mapping on property declarations. On both CascadedStyle and PropertyDeclaration you can now request the value as an IdentValue, for object-object comparisons. Updated 99% of references that used to get the string value of PD to return the IdentValue instead; remaining cases are for pseudo-elements where the PD content needs to be manipulated as a String.
  *

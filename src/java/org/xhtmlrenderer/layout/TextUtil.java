@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -17,7 +17,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-
 package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -25,33 +24,34 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.util.Uu;
 
+
 /**
  * Description of the Class
  *
- * @author empty
+ * @author   empty
  */
 public class TextUtil {
 
     /**
      * Description of the Method
      *
-     * @param text  PARAM
+     * @param text   PARAM
      * @param style
-     * @return Returns
+     * @return       Returns
      */
-    public static String transformText(String text, CalculatedStyle style) {
-        IdentValue transform = style.getIdent(CSSName.TEXT_TRANSFORM);
-        if (transform == IdentValue.LOWERCASE) {
+    public static String transformText( String text, CalculatedStyle style ) {
+        IdentValue transform = style.getIdent( CSSName.TEXT_TRANSFORM );
+        if ( transform == IdentValue.LOWERCASE ) {
             text = text.toLowerCase();
         }
-        if (transform == IdentValue.UPPERCASE) {
+        if ( transform == IdentValue.UPPERCASE ) {
             text = text.toUpperCase();
         }
-        if (transform == IdentValue.CAPITALIZE) {
-            text = capitalizeWords(text);
+        if ( transform == IdentValue.CAPITALIZE ) {
+            text = capitalizeWords( text );
         }
-        IdentValue fontVariant = style.getIdent(CSSName.FONT_VARIANT);
-        if (fontVariant == IdentValue.SMALL_CAPS) {
+        IdentValue fontVariant = style.getIdent( CSSName.FONT_VARIANT );
+        if ( fontVariant == IdentValue.SMALL_CAPS ) {
             text = text.toUpperCase();
         }
         return text;
@@ -61,12 +61,12 @@ public class TextUtil {
     /**
      * Description of the Method
      *
-     * @param text PARAM
-     * @return Returns
+     * @param text  PARAM
+     * @return      Returns
      */
-    public static String capitalizeWords(String text) {
+    public static String capitalizeWords( String text ) {
         //Uu.p("start = -"+text+"-");
-        if (text.length() == 0) {
+        if ( text.length() == 0 ) {
             return text;
         }
 
@@ -75,31 +75,26 @@ public class TextUtil {
 
         // do first letter
         //Uu.p("first = " + text.substring(0,1));
-        /*
-         * if(!text.substring(0,1).equals(" ")) {
-         * sb.append(text.substring(0,1).toUpperCase());
-         * }
-         */
         boolean cap = true;
-        for (int i = 0; i < text.length(); i++) {
-            String ch = text.substring(i, i + 1);
+        for ( int i = 0; i < text.length(); i++ ) {
+            String ch = text.substring( i, i + 1 );
             //Uu.p("ch = " + ch + " cap = " + cap);
 
 
-            if (cap) {
-                sb.append(ch.toUpperCase());
+            if ( cap ) {
+                sb.append( ch.toUpperCase() );
             } else {
-                sb.append(ch);
+                sb.append( ch );
             }
             cap = false;
-            if (ch.equals(" ")) {
+            if ( ch.equals( " " ) ) {
                 cap = true;
             }
         }
 
         //Uu.p("final = -"+sb.toString()+"-");
-        if (sb.toString().length() != text.length()) {
-            Uu.p("error! to strings arent the same length = -" + sb.toString() + "-" + text + "-");
+        if ( sb.toString().length() != text.length() ) {
+            Uu.p( "error! to strings arent the same length = -" + sb.toString() + "-" + text + "-" );
         }
         return sb.toString();
     }
@@ -110,6 +105,9 @@ public class TextUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/01/29 20:18:41  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.9  2005/01/24 22:46:43  pdoubleya
  * Added support for ident-checks using IdentValue instead of string comparisons.
  *

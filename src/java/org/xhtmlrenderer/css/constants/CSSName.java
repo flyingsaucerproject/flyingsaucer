@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * CSSName.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -627,8 +627,8 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
- * Revision 1.4  2005/01/29 16:05:30  pdoubleya
- * Fixed error on static initializer; maxAssigned was assigned 0 in declaration, preventing modification afterwards.
+ * Revision 1.5  2005/01/29 20:22:21  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
  *
  * Revision 1.3  2005/01/24 19:01:07  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.

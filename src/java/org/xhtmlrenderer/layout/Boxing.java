@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci, Torbjšrn Gannholm
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjšrn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.util.List;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -36,86 +39,88 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.table.TableBoxing;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.util.List;
-
 
 /**
  * Description of the Class
  *
- * @author empty
+ * @author   empty
  */
 public class Boxing {
 
-    /**
-     * Constructor for the BoxLayout object
-     */
-    private Boxing() {
-    }
+    /** Constructor for the BoxLayout object  */
+    private Boxing() { }
 
 
     /**
      * Description of the Method
      *
-     * @param c       PARAM
-     * @param content PARAM
-     * @return Returns
+     * @param c        PARAM
+     * @param content  PARAM
+     * @return         Returns
      */
-    public static Box layout(Context c, Content content) {
+    public static Box layout( Context c, Content content ) {
         Box block = null;
-        if (content instanceof AnonymousBlockContent) {
-            return AnonymousBoxing.layout(c, content);
-        } else if (content instanceof TableContent) {
-            return TableBoxing.layout(c, content);
+        if ( content instanceof AnonymousBlockContent ) {
+            return AnonymousBoxing.layout( c, content );
+        } else if ( content instanceof TableContent ) {
+            return TableBoxing.layout( c, content );
         } else {
             block = new BlockBox();
         }
         block.element = content.getElement();
-        return layout(c, block, content);
+        return layout( c, block, content );
     }
 
-    public static Box layout(Context c, Box block, Content content) {
+    /**
+     * Description of the Method
+     *
+     * @param c        PARAM
+     * @param block    PARAM
+     * @param content  PARAM
+     * @return         Returns
+     */
+    public static Box layout( Context c, Box block, Content content ) {
         //OK, first set up the current style. All depends on this...
         CascadedStyle pushed = content.getStyle();
-        if (pushed != null) c.pushStyle(pushed);
+        if ( pushed != null ) {
+            c.pushStyle( pushed );
+        }
         // this is to keep track of when we are inside of a form
         //TODO: rethink: saveForm(c, (Element) block.getNode());
 
-        if ( c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
-            block.setChildrenExceedBounds(true);
+        if ( c.getCurrentStyle().isIdent( CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED ) ) {
+            block.setChildrenExceedBounds( true );
         }
         // install a block formatting context for the body,
         // ie. if it's null.
-        
+
         // set up the outtermost bfc
         boolean set_bfc = false;
-        if (c.getBlockFormattingContext() == null) {
-            BlockFormattingContext bfc = new BlockFormattingContext(block);
-            c.pushBFC(bfc);
+        if ( c.getBlockFormattingContext() == null ) {
+            BlockFormattingContext bfc = new BlockFormattingContext( block );
+            c.pushBFC( bfc );
             set_bfc = true;
-            bfc.setWidth((int) c.getExtents().getWidth());
+            bfc.setWidth( (int)c.getExtents().getWidth() );
         }
-
 
         // copy the extents
         Rectangle oe = c.getExtents();
-        c.setExtents(new Rectangle(oe));
-        
+        c.setExtents( new Rectangle( oe ) );
+
         // calculate the width and height as much as possible
-        adjustWidth(c, block);
-        adjustHeight(c, block);
+        adjustWidth( c, block );
+        adjustHeight( c, block );
         block.x = c.getExtents().x;
         block.y = c.getExtents().y;
 
-        if (ContentUtil.isFloated(content.getStyle())) {
+        if ( ContentUtil.isFloated( content.getStyle() ) ) {
             // set up a float bfc
-            FloatUtil.preChildrenLayout(c, block);
+            FloatUtil.preChildrenLayout( c, block );
         }
 
-        if (Absolute.isAbsolute(content.getStyle())) {
+        if ( Absolute.isAbsolute( content.getStyle() ) ) {
             // set up an absolute bfc
-            Absolute.preChildrenLayout(c, block);
+            Absolute.preChildrenLayout( c, block );
         }
 
         // save height incase fixed height
@@ -123,159 +128,138 @@ public class Boxing {
 
         // do children's layout
         boolean old_sub = c.isSubBlock();
-        c.setSubBlock(false);
-        int tx = block.totalLeftPadding(c.getCurrentStyle());
-        int ty = block.totalTopPadding(c.getCurrentStyle());
-        c.translate(tx, ty);
-        layoutChildren(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
-        c.translate(-tx, -ty);
-        c.setSubBlock(old_sub);
+        c.setSubBlock( false );
+        int tx = block.totalLeftPadding( c.getCurrentStyle() );
+        int ty = block.totalTopPadding( c.getCurrentStyle() );
+        c.translate( tx, ty );
+        layoutChildren( c, block, content.getChildContent( c ) );//when this is really an anonymous, InlineLayout.layoutChildren is called
+        c.translate( -tx, -ty );
+        c.setSubBlock( old_sub );
 
         // restore height incase fixed height
-        if (block.auto_height == false) {
-            Uu.p("restoring original height");
+        if ( block.auto_height == false ) {
+            Uu.p( "restoring original height" );
             block.height = original_height;
         }
 
-        if (ContentUtil.isFloated(content.getStyle())) {
+        if ( ContentUtil.isFloated( content.getStyle() ) ) {
             // remove the float bfc
-            FloatUtil.postChildrenLayout(c, block);
+            FloatUtil.postChildrenLayout( c, block );
         }
 
-        if (Absolute.isAbsolute(content.getStyle())) {
+        if ( Absolute.isAbsolute( content.getStyle() ) ) {
             // remove the absolute bfc
-            Absolute.postChildrenLayout(c, block);
+            Absolute.postChildrenLayout( c, block );
         }
 
         // calculate the total outer width
-        block.width = block.totalHorizontalPadding(c.getCurrentStyle()) + block.width;
-        block.height = block.totalVerticalPadding(c.getCurrentStyle()) + block.height;
-        
+        block.width = block.totalHorizontalPadding( c.getCurrentStyle() ) + block.width;
+        block.height = block.totalVerticalPadding( c.getCurrentStyle() ) + block.height;
+
         //restore the extents
-        c.setExtents(oe);
+        c.setExtents( oe );
 
         // account for special positioning
         // need to add bfc/unbfc code for absolutes
-        //Relative.setupRelative(block, c);
-        // need to add bfc/unbfc code for absolutes
-        Absolute.setupAbsolute(block, c);
-        Fixed.setupFixed(c, block);
-        FloatUtil.setupFloat(c, block, content.getStyle());
+        Absolute.setupAbsolute( block, c );
+        Fixed.setupFixed( c, block );
+        FloatUtil.setupFloat( c, block, content.getStyle() );
+
         //TODO: rethink: setupForm(c, block);
 
         // remove the outtermost bfc
-        if (set_bfc) {
+        if ( set_bfc ) {
             c.getBlockFormattingContext().doFinalAdjustments();
             c.popBFC();
         }
 
         //and now, back to previous style
-        if (pushed != null) c.popStyle();
+        if ( pushed != null ) {
+            c.popStyle();
+        }
 
         // Uu.p("BoxLayout: finished with block: " + block);
         return block;
-    }
-
-    // calculate the width based on css and available space
-    private static void adjustWidth(Context c, Box block) {
-        if (block instanceof AnonymousBlockBox) {
-            return;
-        }
-        // initalize the width to all the available space
-        //block.width = c.getExtents().width;
-        CalculatedStyle style = c.getCurrentStyle();
-        //if (c.css.hasProperty(elem, "width", false)) {
-        if (style.hasProperty(CSSName.WIDTH)) {
-            // if it is a sub block then don't mess with the width
-            if (c.isSubBlock()) {
-                /*if (!elem.getNodeName().equals("td")) {
-                    Uu.p("ERRRRRRRRRRORRRR!!! in a sub block that's not a TD!!!!");
-                }*/
-                return;
-            }
-            //float new_width = c.css.getFloatProperty(elem, "width", c.getExtents().width, false);
-            float new_width = style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width);
-            c.getExtents().width = (int) new_width;
-            block.width = (int) new_width;
-            //block.auto_width = false;
-        }
-    }
-
-    // calculate the height based on css and available space
-    private static void adjustHeight(Context c, Box block) {
-        if (block instanceof AnonymousBlockBox) {
-            return;
-        }
-        CalculatedStyle style = c.getCurrentStyle();
-        if (style.hasProperty(CSSName.HEIGHT)) {
-            float new_height = style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height);
-            c.getExtents().height = (int) new_height;
-            block.height = (int) new_height;
-            block.auto_height = false;
-        }
     }
 
 
     /**
      * Description of the Method
      *
-     * @param c           PARAM
-     * @param box         PARAM
+     * @param c            PARAM
+     * @param box          PARAM
      * @param contentList
-     * @return Returns
+     * @return             Returns
      */
-    public static Box layoutChildren(Context c, Box box, List contentList) {
-        //List contentList = box.content.getChildContent(c);
-        if (contentList == null) return box;
-        if (contentList.size() == 0) return box;//we can do this if there is no content, right?
+    public static Box layoutChildren( Context c, Box box, List contentList ) {
+        if ( contentList == null ) {
+            return box;
+        }
+        if ( contentList.size() == 0 ) {
+            return box;
+        }//we can do this if there is no content, right?
 
-        if (ContentUtil.hasBlockContent(contentList)) {//this should be block layed out
-            BlockBoxing.layoutContent(c, box, contentList, box);
+        if ( ContentUtil.hasBlockContent( contentList ) ) {//this should be block layed out
+            BlockBoxing.layoutContent( c, box, contentList, box );
         } else {
-            InlineBoxing.layoutContent(c, box, contentList);
+            InlineBoxing.layoutContent( c, box, contentList );
         }
         return box;
     }
 
     /**
-     * Gets the padding attribute of the BoxLayout object
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     * @return The padding value
-     */
-    /*public static Border getPadding(Context c, Box box) {
-        Border padding = c.getCurrentStyle().getPaddingWidth();
-        return padding;
-    }*/
-
-
-    /**
-     * Gets the margin attribute of the BoxLayout object
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     * @return The margin value
-     */
-    /*public static Border getMargin(Context c, Box box) {
-        Border margin = c.getCurrentStyle().getMarginWidth();
-        return margin;
-    }*/
-
-    /*public static Border getBorder(Context c, Box block) {
-        Border border = LayoutUtil.getBorder(c.getCurrentStyle());
-        return border;
-    }*/
-
-    /**
      * Gets the backgroundColor attribute of the BoxLayout object
      *
-     * @param c   PARAM
-     * @param box PARAM
-     * @return The backgroundColor value
+     * @param c    PARAM
+     * @param box  PARAM
+     * @return     The backgroundColor value
      */
-    public static Color getBackgroundColor(Context c, Box box) {
+    public static Color getBackgroundColor( Context c, Box box ) {
         return c.getCurrentStyle().getBackgroundColor();
+    }
+
+    // calculate the width based on css and available space
+    /**
+     * Description of the Method
+     *
+     * @param c      PARAM
+     * @param block  PARAM
+     */
+    private static void adjustWidth( Context c, Box block ) {
+        if ( block instanceof AnonymousBlockBox ) {
+            return;
+        }
+        // initalize the width to all the available space
+        CalculatedStyle style = c.getCurrentStyle();
+        if ( style.hasProperty( CSSName.WIDTH ) ) {
+            // if it is a sub block then don't mess with the width
+            if ( c.isSubBlock() ) {
+                return;
+            }
+            float new_width = style.getFloatPropertyProportionalWidth( CSSName.WIDTH, c.getExtents().width );
+            c.getExtents().width = (int)new_width;
+            block.width = (int)new_width;
+        }
+    }
+
+    // calculate the height based on css and available space
+    /**
+     * Description of the Method
+     *
+     * @param c      PARAM
+     * @param block  PARAM
+     */
+    private static void adjustHeight( Context c, Box block ) {
+        if ( block instanceof AnonymousBlockBox ) {
+            return;
+        }
+        CalculatedStyle style = c.getCurrentStyle();
+        if ( style.hasProperty( CSSName.HEIGHT ) ) {
+            float new_height = style.getFloatPropertyProportionalHeight( CSSName.HEIGHT, c.getExtents().height );
+            c.getExtents().height = (int)new_height;
+            block.height = (int)new_height;
+            block.auto_height = false;
+        }
     }
 }
 
@@ -283,6 +267,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/01/29 20:22:23  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.9  2005/01/24 22:46:43  pdoubleya
  * Added support for ident-checks using IdentValue instead of string comparisons.
  *

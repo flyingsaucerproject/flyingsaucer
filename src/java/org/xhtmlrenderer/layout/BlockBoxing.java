@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci, Torbjšrn Gannholm
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjšrn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.util.Iterator;
+import java.util.List;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Fixed;
 import org.xhtmlrenderer.layout.content.Content;
@@ -26,30 +28,26 @@ import org.xhtmlrenderer.layout.content.FirstLetterStyle;
 import org.xhtmlrenderer.layout.content.FirstLineStyle;
 import org.xhtmlrenderer.render.Box;
 
-import java.util.Iterator;
-import java.util.List;
-
 
 /**
  * Description of the Class
  *
- * @author empty
+ * @author   empty
  */
 public class BlockBoxing {
+    /** Constructor for the BoxLayout object  */
+    private BlockBoxing() { }
 
     /**
-     * Description of the Field
+     * Description of the Method
+     *
+     * @param c            PARAM
+     * @param box          PARAM
+     * @param contentList  PARAM
+     * @param block        PARAM
      */
-    //public int contents_height;
-
-    /**
-     * Constructor for the BoxLayout object
-     */
-    private BlockBoxing() {
-    }
-
-    public static void layoutContent(Context c, Box box, List contentList, Box block) {
-        c.shrinkExtents(block);
+    public static void layoutContent( Context c, Box box, List contentList, Box block ) {
+        c.shrinkExtents( block );
 
         // save the original height in case it
         // has a fixed height
@@ -57,37 +55,37 @@ public class BlockBoxing {
 
         // prepare for the list items
         int old_counter = c.getListCounter();
-        c.setListCounter(0);
+        c.setListCounter( 0 );
         // Uu.p("BoxLayout.layoutContent(): " + block);
         Iterator contentIterator = contentList.iterator();
         //TODO: how does a block's firstLineStyle and firstLetterStyle propagate downwards?
-        while (contentIterator.hasNext()) {
+        while ( contentIterator.hasNext() ) {
             Object o = contentIterator.next();
-            if (o instanceof FirstLineStyle) {//can actually only be the first object in list
-                block.firstLineStyle = ((FirstLineStyle) o).getStyle();
+            if ( o instanceof FirstLineStyle ) {//can actually only be the first object in list
+                block.firstLineStyle = ( (FirstLineStyle)o ).getStyle();
                 continue;
             }
-            if (o instanceof FirstLetterStyle) {//can actually only be the first or second object in list
-                block.firstLetterStyle = ((FirstLetterStyle) o).getStyle();
+            if ( o instanceof FirstLetterStyle ) {//can actually only be the first or second object in list
+                block.firstLetterStyle = ( (FirstLetterStyle)o ).getStyle();
                 continue;
             }
-            Content currentContent = (Content) o;
+            Content currentContent = (Content)o;
 
             Box child_box = null;
             //TODO:handle run-ins. For now, treat them as blocks
             // update the counter for printing OL list items
             //TODO:handle counters correctly
-            c.setListCounter(c.getListCounter() + 1);
+            c.setListCounter( c.getListCounter() + 1 );
 
             // execute the layout and get the return bounds
             //c.parent_box = box;
             //c.placement_point = new Point(0, box.height);
-            c.translate(0, box.height);
-            child_box = Boxing.layout(c, currentContent);
-            c.translate(0, -box.height);
+            c.translate( 0, box.height );
+            child_box = Boxing.layout( c, currentContent );
+            c.translate( 0, -box.height );
             child_box.list_count = c.getListCounter();
 
-            box.addChild(child_box);
+            box.addChild( child_box );
             // set the child_box location
             child_box.x = 0;
             child_box.y = box.height;
@@ -95,34 +93,34 @@ public class BlockBoxing {
             //joshy fix the 'fixed' stuff later
             // if fixed or abs then don't modify the final layout bounds
             // because fixed elements are removed from normal flow
-            if (child_box.fixed) {
+            if ( child_box.fixed ) {
                 // put fixed positioning in later
-                Fixed.positionFixedChild(c, child_box);
+                Fixed.positionFixedChild( c, child_box );
             }
 
-            if (child_box.absolute) {
-                Absolute.positionAbsoluteChild(c, child_box);
+            if ( child_box.absolute ) {
+                Absolute.positionAbsoluteChild( c, child_box );
             }
 
             // skip adjusting the parent box if the child
             // doesn't affect flow layout
-            if (LayoutUtil.isOutsideNormalFlow(child_box)) {
+            if ( LayoutUtil.isOutsideNormalFlow( child_box ) ) {
                 continue;
             }
 
             // increase the final layout width if the child was greater
-            if (child_box.width > box.width) {
+            if ( child_box.width > box.width ) {
                 box.width = child_box.width;
             }
 
             // increase the final layout height by the height of the child
             box.height += child_box.height;
         }
-        c.addMaxWidth(box.width);
+        c.addMaxWidth( box.width );
 
-        c.setListCounter(old_counter);
+        c.setListCounter( old_counter );
 
-        c.unshrinkExtents(block);
+        c.unshrinkExtents( block );
 
     }
 
@@ -132,6 +130,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/01/29 20:24:27  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.2  2005/01/07 12:42:07  tobega
  * Hacked improved support for custom components (read forms). Creates trouble with the image demo. Anyway, components work and are usually in the right place.
  *

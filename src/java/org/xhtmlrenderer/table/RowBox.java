@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.render.Box;
+
 
 /**
  * Description of the Class
@@ -54,12 +55,14 @@ public class RowBox extends Box {
 }
 
 /*
-   $Id$
-   $Log$
-   Revision 1.2  2004/10/23 13:59:17  pdoubleya
-   Re-formatted using JavaStyle tool.
-   Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
-   Added CVS log comments at bottom.
-
-  */
+ * $Id$
+ * $Log$
+ * Revision 1.3  2005/01/29 20:19:24  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
+ * Revision 1.2  2004/10/23 13:59:17  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ */
 

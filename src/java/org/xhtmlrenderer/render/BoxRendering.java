@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci, Torbjšrn Gannholm
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjšrn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -36,67 +36,69 @@ import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Uu;
 
+
+/**
+ * Description of the Class
+ *
+ * @author   Joshua Marinacci
+ * @author   Torbjörn Gannholm
+ */
 public class BoxRendering {
 
     /**
      * Description of the Method
      *
-     * @param c           PARAM
-     * @param box         PARAM
+     * @param c            PARAM
+     * @param box          PARAM
      * @param stylePushed
      * @param restyle
      */
     //HACK: the stylePushed is because we need to set style for inline blocks earlier
-    public static void paint(Context c, Box box, boolean stylePushed, boolean restyle) {
+    public static void paint( Context c, Box box, boolean stylePushed, boolean restyle ) {
         // Uu.p("BoxRenderer.paint " + box);
-        Box block = (Box) box;
+        Box block = (Box)box;
         restyle = restyle || box.restyle;//cascade it down
         box.restyle = false;//reset
 
         //set the current style
-        //CascadedStyle hoverStyle = null;
         CascadedStyle style = null;
-        if (!stylePushed && block.element != null) style = c.getCss().getCascadedStyle(block.element, restyle);
-        if (style != null) {
-            c.pushStyle(style);
-            /*if (block.hover) {
-                hoverStyle = c.getCss().getPseudoElementStyle(block.content.getElement(), "hover");
-                if (hoverStyle != null) c.pushStyle(hoverStyle);
-            }*/
+        if ( !stylePushed && block.element != null ) {
+            style = c.getCss().getCascadedStyle( block.element, restyle );
+        }
+        if ( style != null ) {
+            c.pushStyle( style );
         }
 
         // copy the bounds to we don't mess it up
-        Rectangle oldBounds = new Rectangle(c.getExtents());
+        Rectangle oldBounds = new Rectangle( c.getExtents() );
 
-        if (Relative.isRelative(c)) {
-            paintRelative(c, block, restyle);
-        } else if (block.fixed) {
-            paintFixed(c, block, restyle);
-        } else if (block.absolute) {
-            paintAbsoluteBox(c, block, restyle);
+        if ( Relative.isRelative( c ) ) {
+            paintRelative( c, block, restyle );
+        } else if ( block.fixed ) {
+            paintFixed( c, block, restyle );
+        } else if ( block.absolute ) {
+            paintAbsoluteBox( c, block, restyle );
         } else {
-            paintNormal(c, block, restyle);
+            paintNormal( c, block, restyle );
         }
 
         //Uu.p("here it's : " + c.getListCounter());
-        if (ContentUtil.isListItem(style)) {
-            paintListItem(c, box);
+        if ( ContentUtil.isListItem( style ) ) {
+            paintListItem( c, box );
         }
 
         // move the origin down to account for the contents plus the margin, borders, and padding
         oldBounds.y = oldBounds.y + block.height;
-        c.setExtents(oldBounds);
+        c.setExtents( oldBounds );
 
         //reset style
-        if (style != null) {
-            //if (hoverStyle != null) c.popStyle();
+        if ( style != null ) {
             c.popStyle();
         }
 
-
-        if (c.debugDrawBoxes() ||
-                Configuration.isTrue("xr.renderer.debug.box-outlines", true)) {
-            GraphicsUtil.drawBox(c.getGraphics(), block, Color.red);
+        if ( c.debugDrawBoxes() ||
+                Configuration.isTrue( "xr.renderer.debug.box-outlines", true ) ) {
+            GraphicsUtil.drawBox( c.getGraphics(), block, Color.red );
         }
     }
 
@@ -104,35 +106,37 @@ public class BoxRendering {
     /**
      * Description of the Method
      *
-     * @param c       PARAM
-     * @param block   PARAM
+     * @param c        PARAM
+     * @param block    PARAM
      * @param restyle
      */
-    public static void paintNormal(Context c, Box block, boolean restyle) {
-        paintBackground(c, block);
+    public static void paintNormal( Context c, Box block, boolean restyle ) {
+        paintBackground( c, block );
 
-        if (!(block instanceof AnonymousBlockBox)) c.translateInsets(block);
-        //paintComponent(c, block);
-        //paintChildren(c, block);
-        if (block instanceof TableBox) {
-            TableRendering.paintTable(c, (TableBox) block, restyle);
-        } else if (isInlineLayedOut(block)) {
-            InlineRendering.paintInlineContext(c, block, restyle);
-        } else {
-            BlockRendering.paintBlockContext(c, block, restyle);
+        if ( !( block instanceof AnonymousBlockBox ) ) {
+            c.translateInsets( block );
         }
-        if (!(block instanceof AnonymousBlockBox)) c.untranslateInsets(block);
+        if ( block instanceof TableBox ) {
+            TableRendering.paintTable( c, (TableBox)block, restyle );
+        } else if ( isInlineLayedOut( block ) ) {
+            InlineRendering.paintInlineContext( c, block, restyle );
+        } else {
+            BlockRendering.paintBlockContext( c, block, restyle );
+        }
+        if ( !( block instanceof AnonymousBlockBox ) ) {
+            c.untranslateInsets( block );
+        }
 
-        if (!(block instanceof AnonymousBlockBox)) {
+        if ( !( block instanceof AnonymousBlockBox ) ) {
             int width = block.getWidth();
             int height = block.getHeight();
-            Border margin = c.getCurrentStyle().getMarginWidth(width, height);
+            Border margin = c.getCurrentStyle().getMarginWidth( width, height );
 
-            Rectangle bounds = new Rectangle(block.x + margin.left,
+            Rectangle bounds = new Rectangle( block.x + margin.left,
                     block.y + margin.top,
                     block.width - margin.left - margin.right,
-                    block.height - margin.top - margin.bottom);
-            BorderPainter.paint(c, bounds, BorderPainter.ALL);
+                    block.height - margin.top - margin.bottom );
+            BorderPainter.paint( c, bounds, BorderPainter.ALL );
         }
     }
 
@@ -140,213 +144,155 @@ public class BoxRendering {
     /**
      * Description of the Method
      *
-     * @param ctx     PARAM
-     * @param block   PARAM
+     * @param ctx      PARAM
+     * @param block    PARAM
      * @param restyle
      */
-    public static void paintRelative(Context ctx, Box block, boolean restyle) {
-        //ctx.translate(block.left, block.top);
-        Relative.translateRelative(ctx);
-        paintNormal(ctx, block, restyle);
-        //ctx.translate(-block.left, -block.top);
-        Relative.untranslateRelative(ctx);
+    public static void paintRelative( Context ctx, Box block, boolean restyle ) {
+        Relative.translateRelative( ctx );
+        paintNormal( ctx, block, restyle );
+        Relative.untranslateRelative( ctx );
     }
 
     // adjustments for fixed painting
     /**
      * Description of the Method
      *
-     * @param c       PARAM
-     * @param block   PARAM
+     * @param c        PARAM
+     * @param block    PARAM
      * @param restyle
      */
-    public static void paintFixed(Context c, Box block, boolean restyle) {
-        paintFixedOrAbsolute(c, block, restyle);
-    }
-
-    private static void paintFixedOrAbsolute(Context c, Box block, boolean restyle) {
-        paintFixedOrAbsolute(c, block, restyle);
+    public static void paintFixed( Context c, Box block, boolean restyle ) {
+        paintFixedOrAbsolute( c, block, restyle );
     }
 
     /**
      * Description of the Method
      *
-     * @param c       PARAM
-     * @param block   PARAM
+     * @param c        PARAM
+     * @param block    PARAM
      * @param restyle
      */
     //HACK: more or less copied paintFixed - tobe
     //TODO: these were duplicates code blocks--need to decide how they differ, or leave as common method (PWW 25-01-05)
-    public static void paintAbsoluteBox(Context c, Box block, boolean restyle) {
+    public static void paintAbsoluteBox( Context c, Box block, boolean restyle ) {
         Rectangle rect = c.getExtents();
         //why this?
         int xoff = -rect.x;
         int yoff = -rect.y;
 
-        if (block.top_set) {
+        if ( block.top_set ) {
             yoff += block.top;
         }
-        if (block.right_set) {
+        if ( block.right_set ) {
             xoff = -rect.x + rect.width - block.width - block.right;
         }
-        if (block.left_set) {
+        if ( block.left_set ) {
             xoff = block.left;
         }
-        if (block.bottom_set) {
+        if ( block.bottom_set ) {
             yoff = -rect.y + rect.height - block.height - block.bottom;
         }
-        c.translate(xoff, yoff);
-        paintNormal(c, block, restyle);
-        c.translate(-xoff, -yoff);
+        c.translate( xoff, yoff );
+        paintNormal( c, block, restyle );
+        c.translate( -xoff, -yoff );
     }
 
 
     /**
      * Description of the Method
      *
-     * @param c   PARAM
-     * @param box PARAM
+     * @param c    PARAM
+     * @param box  PARAM
      */
-    public static void paintBackground(Context c, Box box) {
+    public static void paintBackground( Context c, Box box ) {
         Box block = box;
 
-        /*if (!LayoutUtil.shouldDrawBackground(block)) {
-            //Uu.p("skipping: " + block);
-            return;
-        }*/
-
-
         // cache the background color
-        getBackgroundColor(c, block);
+        getBackgroundColor( c, block );
 
         // get the css properties
         CalculatedStyle style = c.getCurrentStyle();
-        String back_image = style.getStringProperty(CSSName.BACKGROUND_IMAGE);
-        block.repeat = style.getIdent(CSSName.BACKGROUND_REPEAT);
-        block.attachment = style.getIdent(CSSName.BACKGROUND_ATTACHMENT);
+        String back_image = style.getStringProperty( CSSName.BACKGROUND_IMAGE );
+        block.repeat = style.getIdent( CSSName.BACKGROUND_REPEAT );
+        block.attachment = style.getIdent( CSSName.BACKGROUND_ATTACHMENT );
         // handle image positioning issues
         // need to update this to support vert and horz, not just vert
-        if (style.hasProperty(CSSName.BACKGROUND_POSITION)) {
+        if ( style.hasProperty( CSSName.BACKGROUND_POSITION ) ) {
             float width = c.getBlockFormattingContext().getWidth();
             float height = c.getBlockFormattingContext().getHeight();
 
-            Point pt = style.getBackgroundPosition(width, height);
-            block.background_position_horizontal = (int) pt.getX();
-            block.background_position_vertical = (int) pt.getY();
+            Point pt = style.getBackgroundPosition( width, height );
+            block.background_position_horizontal = (int)pt.getX();
+            block.background_position_vertical = (int)pt.getY();
         }
 
         // load the background image
         block.background_image = null;
-        if (back_image != null && !"none".equals(back_image)) {
+        if ( back_image != null && !"none".equals( back_image ) ) {
             try {
-                block.background_image = ImageUtil.loadImage(c, back_image);
-                // DEBUG System.out.println("[" + block.background_image.hashCode() + "]   backgound-image: loaded " + back_image);
-            } catch (Exception ex) {
+                block.background_image = ImageUtil.loadImage( c, back_image );
+                block.background_uri = back_image;
+            } catch ( Exception ex ) {
                 ex.printStackTrace();
-                Uu.p(ex);
+                Uu.p( ex );
             }
-            /*
-             * ImageIcon icon = new ImageIcon(back_image);
-             * if(icon.getImageLoadStatus() == MediaTracker.COMPLETE) {
-             * block.background_image = icon.getImage();
-             * }
-             */
         }
 
         // actually paint the background
-        BackgroundPainter.paint(c, block);
+        BackgroundPainter.paint( c, block );
     }
 
     /**
      * Description of the Method
      *
-     * @param c   PARAM
-     * @param box PARAM
+     * @param c    PARAM
+     * @param box  PARAM
      */
-    /*public void paintChildren(Context c, Box box) {
-        if (box.getBlockFormattingContext() != null) c.pushBFC(box.getBlockFormattingContext());
-        c.translate(box.x, box.y);
-        super.paintChildren(c, box);
-        c.translate(-box.x, -box.y);
-        if (box.getBlockFormattingContext() != null) c.popBFC();
-    }*/
-
-
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
-    /*public static void paintBorder(Context c, Box box) {
-        Box block = box;
-        // get the border parts
-
-        // paint the border
-        //BorderPainter bp = new BorderPainter();
-
-        // adjust to a fixed height, if necessary
-        //if (!block.auto_height) {
-        //bnds.y = block.height - block.margin.top - block.margin.bottom;
-        //}
-
-        BorderPainter.paint(c, block);
-    }*/
-
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
-    public static void paintListItem(Context c, Box box) {
-        ListItemPainter.paint(c, box);
+    public static void paintListItem( Context c, Box box ) {
+        ListItemPainter.paint( c, box );
     }
 
-// --Commented out by Inspection START (2005-01-05 01:06):
-//    public static Border getBorder(Context c, Box box) {
-//        return Boxing.getBorder(c, box);
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:06)
-
-// --Commented out by Inspection START (2005-01-05 01:06):
-//    public static Border getPadding(Context c, Box box) {
-//        return Boxing.getPadding(c, box);
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:06)
-
-    public static Color getBackgroundColor(Context c, Box box) {
-        return Boxing.getBackgroundColor(c, box);
+    /**
+     * Gets the backgroundColor attribute of the BoxRendering class
+     *
+     * @param c    PARAM
+     * @param box  PARAM
+     * @return     The backgroundColor value
+     */
+    public static Color getBackgroundColor( Context c, Box box ) {
+        return Boxing.getBackgroundColor( c, box );
     }
-
-// --Commented out by Inspection START (2005-01-05 01:06):
-//    public static Border getMargin(Context c, Box box) {
-//        return Boxing.getMargin(c, box);
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:06)
-
-
-// --Commented out by Inspection START (2005-01-05 01:06):
-//    //TODO: check the logic here
-//    public static boolean isBlockLayedOut(Box box) {
-//        if (box.getChildCount() == 0) return false;//have to return something, it shouldn't matter
-//        for (int i = 0; i < box.getChildCount(); i++) {
-//            Box child = box.getChild(i);
-//            if (child instanceof LineBox) return false;
-//            if (child instanceof InlineBox) return false;
-//            if (child instanceof InlineBlockBox) return false;
-//        }
-//        return true;
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:06)
 
     //TODO: check the logic here
-    public static boolean isInlineLayedOut(Box box) {
-        if (box.getChildCount() == 0) return false;//have to return something, it shouldn't matter
-        for (int i = 0; i < box.getChildCount(); i++) {
-            Box child = box.getChild(i);
-            if (child instanceof LineBox) return true;
+    /**
+     * Gets the inlineLayedOut attribute of the BoxRendering class
+     *
+     * @param box  PARAM
+     * @return     The inlineLayedOut value
+     */
+    public static boolean isInlineLayedOut( Box box ) {
+        if ( box.getChildCount() == 0 ) {
+            return false;
+        }//have to return something, it shouldn't matter
+        for ( int i = 0; i < box.getChildCount(); i++ ) {
+            Box child = box.getChild( i );
+            if ( child instanceof LineBox ) {
+                return true;
+            }
         }
         return false;
     }
+
+    /**
+     * Description of the Method
+     *
+     * @param c        PARAM
+     * @param block    PARAM
+     * @param restyle  PARAM
+     */
+    private static void paintFixedOrAbsolute( Context c, Box block, boolean restyle ) {
+        paintFixedOrAbsolute( c, block, restyle );
+    }
 }
+

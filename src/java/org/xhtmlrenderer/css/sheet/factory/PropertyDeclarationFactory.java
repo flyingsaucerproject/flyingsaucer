@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * PropertyDeclarationFactory.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -42,13 +42,24 @@ public interface PropertyDeclarationFactory {
      * assignments. The exact form of the explosion is left to the implementing
      * class.
      *
-     * @param style     The {@link org.w3c.dom.css.CSSStyleDeclaration} from the SAC parser.
+     * @param style    The {@link org.w3c.dom.css.CSSStyleDeclaration} from the
+     *      SAC parser.
      * @param cssName  The String property name for the property to explode.
-     * @return          Iterator of one or more PropertyDeclaration instances
+     * @param origin   PARAM
+     * @return         Iterator of one or more PropertyDeclaration instances
      *      representing the exploded values.
      */
     Iterator buildDeclarations( CSSStyleDeclaration style, CSSName cssName, int origin );
 
+    /**
+     * Description of the Method
+     *
+     * @param cssValue   PARAM
+     * @param cssName    PARAM
+     * @param origin     PARAM
+     * @param important  PARAM
+     * @return           Returns
+     */
     Iterator buildDeclarations( CSSValue cssValue, CSSName cssName, int origin, boolean important );
 }// end class
 
@@ -56,6 +67,9 @@ public interface PropertyDeclarationFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/01/29 20:19:25  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.4  2005/01/29 12:14:22  pdoubleya
  * Removed priority as a parameter, added alternate build when only CSSValue is available; could be used in a SAC DocumentHandler after the CSSValue is initialized from a property.
  *

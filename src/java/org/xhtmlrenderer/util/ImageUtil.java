@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -105,6 +105,9 @@ public class ImageUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/01/29 20:21:08  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.9  2005/01/10 23:24:47  tobega
  * Created image cache
  *

@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -25,14 +25,11 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 /**
  * Description of the Class
  *
- * @author empty
+ * @author   empty
  */
 public class BlockBox extends Box {
 
-
-    /**
-     * Constructor for the BlockBox object
-     */
+    /** Constructor for the BlockBox object  */
     public BlockBox() {
         super();
     }
@@ -40,13 +37,13 @@ public class BlockBox extends Box {
     /**
      * Constructor for the BlockBox object
      *
-     * @param x PARAM
-     * @param y PARAM
-     * @param w PARAM
-     * @param h PARAM
+     * @param x  PARAM
+     * @param y  PARAM
+     * @param w  PARAM
+     * @param h  PARAM
      */
-    public BlockBox(int x, int y, int w, int h) {
-        super(x, y, w, h);
+    public BlockBox( int x, int y, int w, int h ) {
+        super( x, y, w, h );
     }
 
     //A block box may have special styles for the first line and first letter
@@ -55,21 +52,19 @@ public class BlockBox extends Box {
     /**
      * Converts to a String representation of the object.
      *
-     * @return A string representation of the object.
+     * @return   A string representation of the object.
      */
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("BlockBox:");
-        sb.append(super.toString());
+        sb.append( "BlockBox:" );
+        sb.append( super.toString() );
 
-        if (this.fixed) {
-            sb.append(" position: fixed");
+        if ( this.fixed ) {
+            sb.append( " position: fixed" );
         }
-        if (this.right_set) {
-            sb.append(" right = " + this.right);
+        if ( this.right_set ) {
+            sb.append( " right = " + this.right );
         }
-        //+ " right = " + this.right;
-        // + " width = " + auto_width + " height = " + auto_height;
         return sb.toString();
     }
 
@@ -79,6 +74,9 @@ public class BlockBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/01/29 20:24:23  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.6  2004/12/16 15:53:10  joshy
  * fixes for absolute layout
  *

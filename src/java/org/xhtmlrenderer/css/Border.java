@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -27,21 +27,6 @@ package org.xhtmlrenderer.css;
  * @author   Patrick Wright
  */
 public class Border {
-    
-    public Border() {
-    }
-    public Border(Border bd) {
-        this.top = bd.top;
-        this.bottom = bd.bottom;
-        this.left = bd.left;
-        this.right = bd.right;
-    }
-    public Border(int top, int right, int bottom, int left) {
-        this.top = top;
-        this.bottom = bottom;
-        this.right = right;
-        this.left = left;
-    }
 
     /** Description of the Field */
     public int top;
@@ -54,6 +39,37 @@ public class Border {
 
     /** Description of the Field */
     public int right;
+
+    /** Constructor for the Border object */
+    public Border() { }
+
+    /**
+     * Copy constructor for the Border object. Creates a copy of the Border
+     * object parameter
+     *
+     * @param bd  Object to copy.
+     */
+    public Border( Border bd ) {
+        this.top = bd.top;
+        this.bottom = bd.bottom;
+        this.left = bd.left;
+        this.right = bd.right;
+    }
+
+    /**
+     * Constructor for the Border object
+     *
+     * @param top     PARAM
+     * @param right   PARAM
+     * @param bottom  PARAM
+     * @param left    PARAM
+     */
+    public Border( int top, int right, int bottom, int left ) {
+        this.top = top;
+        this.bottom = bottom;
+        this.right = right;
+        this.left = left;
+    }
 
 
     /**
@@ -71,6 +87,9 @@ public class Border {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/01/29 20:24:26  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.4  2004/11/09 15:53:48  joshy
  * initial support for hover (currently disabled)
  * moved justification code into it's own class in a new subpackage for inline

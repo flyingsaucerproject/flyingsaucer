@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -25,198 +25,90 @@ import java.util.List;
 /**
  * Description of the Class
  *
- * @author empty
+ * @author   empty
  */
 public abstract class InlineBox extends Box {
 
-    public InlineBox() {
-    }
-
-    public abstract InlineBox copy();
-
-    public abstract boolean isEndOfParentContent();
-
     //might need to push styles before rendering this box
+    /** Description of the Field */
     public List pushstyles;
     //might need to pop styles after rendering this box
+    /** Description of the Field */
     public List popstyles;
 
     // if we are an inline block, then this is
-
     // the reference to the real block inside
 
-    /**
-     * Description of the Field
-     */
-
-// --Commented out by Inspection START (2005-01-05 01:07):
-//    /**
-//     * Description of the Field
-//     */
-//    public boolean replaced = false;
-// --Commented out by Inspection STOP (2005-01-05 01:07)
-
+    /** Description of the Field  */
 
     // line breaking stuff
 
-    /**
-     * Description of the Field
-     */
+    /** Description of the Field  */
     public boolean break_after = false;
 
-    /**
-     * Description of the Field
-     */
+    /** Description of the Field  */
     public boolean break_before = false;
 
 
-
     // vertical alignment stuff
-
-    /**
-     * Description of the Field
-     */
-    //calculated public int baseline;
-
-// --Commented out by Inspection START (2005-01-05 01:07):
-//    /**
-//     * Description of the Field
-//     */
-//    public int lineheight;
-// --Commented out by Inspection STOP (2005-01-05 01:07)
-
-    /**
-     * Description of the Field
-     */
-    //calculated public boolean vset = false;
-
-    /**
-     * Description of the Field
-     */
-    //calculated public boolean top_align = false;
-
-    /**
-     * Description of the Field
-     */
-    //calculated public boolean bottom_align = false;
-
-    // text stuff
-
-    /**
-     * Description of the Field
-     */
+    /** Description of the Field  */
     public int start_index = -1;
 
-    /**
-     * Description of the Field
-     */
+    /** Description of the Field  */
     public int end_index = -1;
+
+    /** Constructor for the InlineBox object */
+    public InlineBox() { }
+
+    /**
+     * Description of the Method
+     *
+     * @return   Returns
+     */
+    public abstract InlineBox copy();
 
     /**
      * Converts to a String representation of the object.
      *
-     * @return A string representation of the object.
+     * @return   A string representation of the object.
      */
     public String toString() {
 
         return "InlineBox " +
                 "bnds = " + x + "," + y + " - " + width + "Xx" + height +
                 " start = " + this.start_index + " end = " + this.end_index;
-        //       " baseline = " + this.baseline + " vset = " + this.vset;// +
-        // CLN: (PWW 13/08/04)
-        //" color: " + color + " background-color: " + background_color +
-        //" font: " + font;
     }
 
     /**
-     * Description of the Field
-     */
-    //private Font font;
-
-
-    /**
-     * Gets the font attribute of the InlineBox object
+     * Gets the endOfParentContent attribute of the InlineBox object
      *
-     * @return The font value
+     * @return   The endOfParentContent value
      */
-    /*public Font getFont() {
-        return font;
-    } */
-
-    /**
-     * Sets the font attribute of the InlineBox object
-     *
-     * @param font The new font value
-     */
-    /*public void setFont(Font font) {
-        this.font = font;
-    }*/
-
-    //TODO: find a way to find the font
-    /*public int getTextIndex(int x, Graphics g) {
-        Font font = getFont();
-        String str = getSubstring();
-        char[] chars = new char[str.length()];
-        getSubstring().getChars(0, str.length(), chars, 0);
-        FontMetrics fm = g.getFontMetrics(font);
-
-        for (int i = 0; i < chars.length; i++) {
-
-            if (fm.charsWidth(chars, 0, i) >= x) {
-                return i;
-            }
-        }
-
-        return 0;
-    }*/
+    public abstract boolean isEndOfParentContent();
 
     //TODO: figure out another way to find the font, if we still need this method
-    /*public int getAdvance(int x, Graphics g) {
-        Font font = getFont();
-        String str = getSubstring();
-        str = str.substring(0, x);
-        //Uu.p("substring = " + str);
-        char[] chars = new char[str.length()];
-        getSubstring().getChars(0, str.length(), chars, 0);
-        FontMetrics fm = g.getFontMetrics(font);
-        //Uu.p("getting advance: " + Xx + " chars = " + chars);
-        return fm.charsWidth(chars, 0, x);
-    }*/
-
-
-    //public LineMetrics line_metrics;
-    //public Rectangle2D text_bounds;
-
-    //private CalculatedStyle style;
-
-    /*public void setStyle(CalculatedStyle style) {
-        this.style = style;
-    }*/
-
-// --Commented out by Inspection START (2005-01-05 01:07):
-//    public CalculatedStyle getStyle() {
-//        return this.style;
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:07)
-
-    /*public boolean isInlineElement() {
-        if (this.content == null) return false;
-        if (this.getParent() == null) return true;
-        if (this.getParent().getParent() == null) return true;
-        if (this.getParent().getParent().content == null) return true;
-        if (this.content.getElement() == this.getParent().getParent().content.getElement()) {
-            return false;
-        }
-        return true;
-    }*/
-
-
+    /*
+     * public int getAdvance(int x, Graphics g) {
+     * Font font = getFont();
+     * String str = getSubstring();
+     * str = str.substring(0, x);
+     * //Uu.p("substring = " + str);
+     * char[] chars = new char[str.length()];
+     * getSubstring().getChars(0, str.length(), chars, 0);
+     * FontMetrics fm = g.getFontMetrics(font);
+     * //Uu.p("getting advance: " + Xx + " chars = " + chars);
+     * return fm.charsWidth(chars, 0, x);
+     * }
+     */
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/01/29 20:21:05  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.33  2005/01/10 01:58:37  tobega
  * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
  *

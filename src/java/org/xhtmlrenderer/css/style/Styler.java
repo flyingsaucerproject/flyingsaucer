@@ -1,6 +1,6 @@
 /*
  * Styler.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -23,12 +23,10 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 
 
 /**
- * @author Torbjörn Gannholm
+ * @author   Torbjörn Gannholm
  */
 public class Styler {
-    /**
-     * Description of the Field
-     */
+    /** Description of the Field  */
     private java.util.HashMap _styleMap = new java.util.HashMap();
 
     /**
@@ -36,81 +34,38 @@ public class Styler {
      */
     private java.util.HashMap _styleCache = new java.util.HashMap();
 
-    /**
-     * Creates a new instance of Styler
-     */
-    public Styler() {
-    }
+    /** Creates a new instance of Styler  */
+    public Styler() { }
 
     /**
-     * Applies matches to Element and its children, recursively. StyleMap should
-     * have been re-loaded before calling this. <p/>
-     * <p/>
-     * TODO: change matchElement, then this method is not needed
+     * Gets the derivedStyle attribute of the Styler object
      *
-     * @param elem PARAM
+     * @param parent   PARAM
+     * @param matched  PARAM
+     * @return         The derivedStyle value
      */
-/*
-    public void styleTree(org.w3c.dom.Element elem) {
-        CalculatedStyle parent = null;
-
-        if (elem.getOwnerDocument().getDocumentElement() == elem) {
-            _styleCache = new java.util.HashMap();
-            parent = new EmptyStyle();
-        } else {
-            org.w3c.dom.Node pnode = elem.getParentNode();
-            if (pnode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-                parent = getCalculatedStyle((org.w3c.dom.Element) pnode);
-            }
-            if (parent == null) {
-                throw new RuntimeException("Applying matches to elements, found an element with no mapped parent; can't continue.");
-            }
-        }
-        org.xhtmlrenderer.css.newmatch.CascadedStyle matched = _matcher.getCascadedStyle( elem );
-
-        CalculatedStyle cs = getDerivedStyle(parent, matched);
-
-        _styleMap.put(elem, cs);
-
-        // apply rules from style attribute on element, if any
-        // elementStyling is now responsibility of Matcher
-        org.w3c.dom.NodeList nl = elem.getChildNodes();
-        for (int i = 0, len = nl.getLength(); i < len; i++) {
-            org.w3c.dom.Node n = nl.item(i);
-            if (n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-                styleTree((org.w3c.dom.Element) n);
-            }
-        }
-    }
-
-=======
->>>>>>> 1.12
-*/
-    public CalculatedStyle getDerivedStyle(CalculatedStyle parent, CascadedStyle matched) {
+    public CalculatedStyle getDerivedStyle( CalculatedStyle parent, CascadedStyle matched ) {
         CalculatedStyle cs = null;
         StringBuffer sb = new StringBuffer();
-        sb.append(parent.hashCode()).append(":").append(matched.hashCode());
+        sb.append( parent.hashCode() ).append( ":" ).append( matched.hashCode() );
         String fingerprint = sb.toString();
-        cs = (CalculatedStyle) _styleCache.get(fingerprint);
+        cs = (CalculatedStyle)_styleCache.get( fingerprint );
 
-        if (cs == null) {
-            cs = new CalculatedStyle(parent, matched);
-            _styleCache.put(fingerprint, cs);
+        if ( cs == null ) {
+            cs = new CalculatedStyle( parent, matched );
+            _styleCache.put( fingerprint, cs );
         }
         return cs;
     }
-} // end class
+}// end class
 
 /*
-<<<<<<< Styler.java
  * $Id$
-=======
-
- * $Id$
-
->>>>>>> 1.12
  *
  * $Log$
+ * Revision 1.14  2005/01/29 20:19:22  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.13  2005/01/24 14:36:31  pdoubleya
  * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
  *
@@ -136,6 +91,5 @@ public class Styler {
  * CVS log section.
  *
  *
-*/
-
+ */
 

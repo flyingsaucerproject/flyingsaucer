@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * ValueConstants.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -44,7 +44,8 @@ public final class ValueConstants {
      * statics
      */
     private final static List TYPE_DESCRIPTIONS;
-    private static final Map sacTypesStrings;
+    /** Description of the Field */
+    private final static Map sacTypesStrings;
 
     /**
      * A text representation of the CSS type for this value.
@@ -71,28 +72,70 @@ public final class ValueConstants {
     }
 
     /**
+     * Description of the Method
+     *
+     * @param type  PARAM
+     * @return      Returns
+     */
+    public static short sacPrimitiveTypeForString( String type ) {
+        if ( "em".equals( type ) ) {
+            return CSSPrimitiveValue.CSS_EMS;
+        } else if ( "ex".equals( type ) ) {
+            return CSSPrimitiveValue.CSS_EXS;
+        } else if ( "px".equals( type ) ) {
+            return CSSPrimitiveValue.CSS_PX;
+        } else if ( "%".equals( type ) ) {
+            return CSSPrimitiveValue.CSS_PERCENTAGE;
+        } else if ( "in".equals( type ) ) {
+            return CSSPrimitiveValue.CSS_IN;
+        } else if ( "cm".equals( type ) ) {
+            return CSSPrimitiveValue.CSS_CM;
+        } else if ( "mm".equals( type ) ) {
+            return CSSPrimitiveValue.CSS_MM;
+        } else if ( "pt".equals( type ) ) {
+            return CSSPrimitiveValue.CSS_PT;
+        } else if ( "pc".equals( type ) ) {
+            return CSSPrimitiveValue.CSS_PC;
+        } else if ( type == null ) {
+            return CSSPrimitiveValue.CSS_PT;
+        } else {
+            throw new XRRuntimeException( "Unknown type on CSS value: " + type );
+        }
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param type  PARAM
+     * @return      Returns
+     */
+    public static String stringForSACPrimitiveType( short type ) {
+        return (String)sacTypesStrings.get( new Short( type ) );
+    }
+
+    /**
      * Returns true if the specified value was absolute (even if we have a
      * computed value for it), meaning that either the value can be used
      * directly (e.g. pixels) or there is a fixed context-independent conversion
      * for it (e.g. inches). Proportional types (e.g. %) return false.
      *
      * @param primitive  The CSSValue instance to check.
-     * @return          See desc.
+     * @return           See desc.
      */
     public static boolean isAbsoluteUnit( CSSPrimitiveValue primitive ) {
         short type = 0;
         type = ( (CSSPrimitiveValue)primitive ).getPrimitiveType();
-        return isAbsoluteUnit(type);
+        return isAbsoluteUnit( type );
     }
 
     /**
-     * Returns true if the specified type absolute (even if we have a
-     * computed value for it), meaning that either the value can be used
-     * directly (e.g. pixels) or there is a fixed context-independent conversion
-     * for it (e.g. inches). Proportional types (e.g. %) return false.
+     * Returns true if the specified type absolute (even if we have a computed
+     * value for it), meaning that either the value can be used directly (e.g.
+     * pixels) or there is a fixed context-independent conversion for it (e.g.
+     * inches). Proportional types (e.g. %) return false.
      *
      * @param type  The CSSValue type to check.
-     * @return          See desc.
+     * @return      See desc.
      */
     public static boolean isAbsoluteUnit( short type ) {
         // TODO: check this list...
@@ -144,10 +187,10 @@ public final class ValueConstants {
             case CSSPrimitiveValue.CSS_STRING:
                 return true;
             case CSSPrimitiveValue.CSS_UNKNOWN:
-                XRLog.cascade(Level.WARNING, "Asked whether type was absolute, given CSS_UNKNOWN as the type. " +
-                        "Might be one of those funny values like background-position.");
-                GeneralUtil.dumpShortException(new Exception());
-                // fall-through
+                XRLog.cascade( Level.WARNING, "Asked whether type was absolute, given CSS_UNKNOWN as the type. " +
+                        "Might be one of those funny values like background-position." );
+                GeneralUtil.dumpShortException( new Exception() );
+            // fall-through
             default:
                 return false;
         }
@@ -245,46 +288,16 @@ public final class ValueConstants {
         }
 
         // HACK: this is a quick way to perform the lookup, but dumb if the short assigned are > 100; but the compiler will tell us that (PWW 21-01-05)
-        sacTypesStrings = new HashMap(25);
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_EMS), "em");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_EXS), "ex");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PX), "px");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PERCENTAGE), "%");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_IN), "in");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_CM), "cm");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_MM), "mm");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PT), "pt");
-        sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PC), "pc");
-    }
-
-    public static short sacPrimitiveTypeForString(String type) {
-        if ( "em".equals(type)){
-            return CSSPrimitiveValue.CSS_EMS;
-        } else if ( "ex".equals(type)){
-            return CSSPrimitiveValue.CSS_EXS;
-        } else if ( "px".equals(type)){
-            return CSSPrimitiveValue.CSS_PX;
-        } else if ( "%".equals(type)){
-            return CSSPrimitiveValue.CSS_PERCENTAGE;
-        } else if ( "in".equals(type)){
-            return CSSPrimitiveValue.CSS_IN;
-        } else if ( "cm".equals(type)){
-            return CSSPrimitiveValue.CSS_CM;
-        } else if ( "mm".equals(type)){
-            return CSSPrimitiveValue.CSS_MM;
-        } else if ( "pt".equals(type)){
-            return CSSPrimitiveValue.CSS_PT;
-        } else if ( "pc".equals(type)){
-            return CSSPrimitiveValue.CSS_PC;
-        } else if ( type == null ){
-            return CSSPrimitiveValue.CSS_PT;
-        } else {
-            throw new XRRuntimeException("Unknown type on CSS value: " + type);
-        }
-    }
-
-    public static String stringForSACPrimitiveType(short type) {
-        return (String)sacTypesStrings.get(new Short(type));
+        sacTypesStrings = new HashMap( 25 );
+        sacTypesStrings.put( new Short( CSSPrimitiveValue.CSS_EMS ), "em" );
+        sacTypesStrings.put( new Short( CSSPrimitiveValue.CSS_EXS ), "ex" );
+        sacTypesStrings.put( new Short( CSSPrimitiveValue.CSS_PX ), "px" );
+        sacTypesStrings.put( new Short( CSSPrimitiveValue.CSS_PERCENTAGE ), "%" );
+        sacTypesStrings.put( new Short( CSSPrimitiveValue.CSS_IN ), "in" );
+        sacTypesStrings.put( new Short( CSSPrimitiveValue.CSS_CM ), "cm" );
+        sacTypesStrings.put( new Short( CSSPrimitiveValue.CSS_MM ), "mm" );
+        sacTypesStrings.put( new Short( CSSPrimitiveValue.CSS_PT ), "pt" );
+        sacTypesStrings.put( new Short( CSSPrimitiveValue.CSS_PC ), "pc" );
     }
 }// end class
 
@@ -292,6 +305,9 @@ public final class ValueConstants {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/01/29 20:18:40  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.5  2005/01/24 14:52:20  pdoubleya
  * Fixed accidental access modifier change to private--isAbsoluteUnit() is used in tests.
  *

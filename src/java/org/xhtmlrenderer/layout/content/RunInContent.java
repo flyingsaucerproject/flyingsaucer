@@ -1,6 +1,6 @@
 /*
  * RunInContent.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,33 +19,60 @@
  */
 package org.xhtmlrenderer.layout.content;
 
+import java.util.List;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 
-import java.util.List;
 
 /**
  * Represents run-in content
+ *
+ * @author   Torbjörn Gannholm
  */
 public class RunInContent implements Content {
+    /** Description of the Field */
     private Element _elem;
+    /** Description of the Field */
     private CascadedStyle _style;
 
-    RunInContent(Element parent, CascadedStyle style) {
+    /**
+     * Constructor for the RunInContent object
+     *
+     * @param parent  PARAM
+     * @param style   PARAM
+     */
+    RunInContent( Element parent, CascadedStyle style ) {
         _elem = parent;
         _style = style;
     }
 
+    /**
+     * Gets the element attribute of the RunInContent object
+     *
+     * @return   The element value
+     */
     public Element getElement() {
         return _elem;
     }
 
-    public List getChildContent(Context c) {
-        return ContentUtil.getChildContentList(c, this);
+    /**
+     * Gets the childContent attribute of the RunInContent object
+     *
+     * @param c  PARAM
+     * @return   The childContent value
+     */
+    public List getChildContent( Context c ) {
+        return ContentUtil.getChildContentList( c, this );
     }
 
+    /**
+     * Gets the style attribute of the RunInContent object
+     *
+     * @return   The style value
+     */
     public CascadedStyle getStyle() {
         return _style;
     }
 }
+

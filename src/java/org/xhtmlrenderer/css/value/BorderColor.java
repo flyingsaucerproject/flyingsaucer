@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * BorderColor.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -29,20 +29,6 @@ import java.awt.Color;
  * @author   Patrick Wright
  */
 public class BorderColor {
-    public BorderColor() {
-    }
-    public BorderColor(Color color) {
-        this.topColor = color;
-        this.bottomColor = color;
-        this.rightColor = color;
-        this.leftColor = color;
-    }
-    public BorderColor(Color top, Color right, Color bottom, Color left) {
-        this.topColor = top;
-        this.bottomColor = bottom;
-        this.rightColor = right;
-        this.leftColor = left;
-    }
     /** Color for top of the border. */
     public Color topColor;
 
@@ -55,6 +41,41 @@ public class BorderColor {
     /** Color for right of the border. */
     public Color rightColor;
 
+    /** Constructor for the BorderColor object */
+    public BorderColor() { }
+
+    /**
+     * Constructor for the BorderColor object
+     *
+     * @param color  PARAM
+     */
+    public BorderColor( Color color ) {
+        this.topColor = color;
+        this.bottomColor = color;
+        this.rightColor = color;
+        this.leftColor = color;
+    }
+
+    /**
+     * Constructor for the BorderColor object
+     *
+     * @param top     PARAM
+     * @param right   PARAM
+     * @param bottom  PARAM
+     * @param left    PARAM
+     */
+    public BorderColor( Color top, Color right, Color bottom, Color left ) {
+        this.topColor = top;
+        this.bottomColor = bottom;
+        this.rightColor = right;
+        this.leftColor = left;
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @return   Returns
+     */
     public BorderColor brighter() {
         BorderColor bc = new BorderColor();
         bc.topColor = topColor.brighter();
@@ -63,6 +84,12 @@ public class BorderColor {
         bc.rightColor = rightColor.brighter();
         return bc;
     }
+
+    /**
+     * Description of the Method
+     *
+     * @return   Returns
+     */
     public BorderColor darker() {
         BorderColor bc = new BorderColor();
         bc.topColor = topColor.darker();
@@ -92,6 +119,9 @@ public class BorderColor {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/01/29 20:24:26  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.4  2004/11/09 15:53:48  joshy
  * initial support for hover (currently disabled)
  * moved justification code into it's own class in a new subpackage for inline

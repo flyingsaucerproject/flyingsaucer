@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -52,9 +52,6 @@ public class Box {
      */
     public Box(boolean create_substyles) {
         boxes = new ArrayList();
-        /*if (create_substyles) {
-            this.click_styles = new Box(false);
-        }*/
     }
 
     /**
@@ -89,8 +86,6 @@ public class Box {
 
     public boolean restyle = false;
 
-    //public boolean restyle;//used during render if things have changed because of e.g. hover
-    //public boolean hover;//dynamic attribute set
 
     // dimensions stuff
     /**
@@ -148,62 +143,21 @@ public class Box {
     public boolean left_set = false;
     
 
-    // margins, borders, and padding stuff
-    /**
-     * Description of the Field
-     */
-//    public BorderColor border_color;
-
-/*    public BorderColor getBorderColor() {
-        return border_color;
-    }*/
-
-    /**
-     * Description of the Field
-     */
-    //public Border padding;
-    /**
-     * Description of the Field
-     */
-    //public Border border;
-    /**
-     * Description of the Field
-     */
-    //public Border margin;
-    /**
-     * Description of the Field
-     */
-//    public String border_style;
-
-    /**
-     * Description of the Field
-     */
-    //public Box click_styles;
-
-    // foreground stuff
-    /**
-     * Description of the Field
-     */
-    //public Color color;
-
-    // background stuff
-    /**
-     * Description of the Field
-     */
-    //public Color background_color;
     /**
      * Description of the Field
      */
     public Image background_image;
     /**
+     * The URI for a background image; used in debugging (so we know which bg is being painted)
+     */
+    public String background_uri;
+    /**
      * Description of the Field
      */
-    //public String repeat;
     public IdentValue repeat;
     /**
      * Description of the Field
      */
-    //public String attachment;
     public IdentValue attachment;
     
     /**
@@ -214,12 +168,6 @@ public class Box {
      * Description of the Field
      */
     public int background_position_horizontal = 0;
-// --Commented out by Inspection START (2005-01-05 01:06):
-//    /**
-//     * Description of the Field
-//     */
-//    public boolean clicked = false;
-// --Commented out by Inspection STOP (2005-01-05 01:06)
 
     // list stuff
     /**
@@ -238,13 +186,6 @@ public class Box {
     private List boxes;
 
     // printing stuff
-// --Commented out by Inspection START (2005-01-05 01:05):
-//    /**
-//     * Description of the Field
-//     */
-//    public boolean auto_width = true;
-// --Commented out by Inspection STOP (2005-01-05 01:05)
-
     /**
      * Description of the Field
      */
@@ -269,13 +210,6 @@ public class Box {
                 return true;
             }
         }
-        /*
-         * if((Xx >= this.Xx) && (Xx<= this.Xx + this.width)) {
-         * if((y>=this.y) && (y<=this.y + this.height)) {
-         * return true;
-         * }
-         * }
-         */
         return false;
     }
 
@@ -399,20 +333,7 @@ public class Box {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Box: ");
-        /*if (content == null) {
-            sb.append(" null content, ");
-        } else {
-            String nm = content.getClass().getPropertyName();
-            nm = nm.substring(nm.lastIndexOf('.') + 1, nm.length());
-            sb.append(nm);// + " (" + content.hashCode() + ")");
-            sb.append("-");
-            if (content.getElement() != null) {
-                sb.append(content.getElement().getNodeName());
-            }
-        } */
         sb.append(" (" + x + "," + y + ")->(" + width + " x " + height + ")");
-        // CLN: (PWW 13/08/04)
-        //sb.append(" color: " + color + " background-color: " + background_color + " ");
         return sb.toString();
     }
 
@@ -498,17 +419,6 @@ public class Box {
         boxes.clear();
     }
 
-// --Commented out by Inspection START (2005-01-05 01:06):
-//    /**
-//     * Gets the anonymous attribute of the Box object
-//     *
-//     * @return The anonymous value
-//     */
-//    public boolean isAnonymous() {
-//        return false;
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:06)
-
     private boolean children_exceeds;
 
     public boolean isChildrenExceedBounds() {
@@ -562,16 +472,9 @@ public class Box {
             sb.append("box:");
         }
 
-        // element
-        //sb.append("-content:" + this.getContent());
-
         // dimensions and location
         sb.append("-box(" + x + "," + y + ")-(" + width + "x" + height + ")");
 
-        // positioning info
-        /*if (relative) {
-            sb.append("-relative");
-        }*/
         if (fixed) {
             sb.append("-fixed");
         }
@@ -580,15 +483,6 @@ public class Box {
             sb.append("-floated");
         }
 
-        // colors and insets
-        //sb.append("-colors(for" + getColorTestString(color));
-        //sb.append("-bor" + getColorTestString(border_color));
-        //sb.append("-bak" + getColorTestString(background_color) + ")");
-        //sb.append("-style(" + border_style + ")");
-        //sb.append("-insets(mar" + getBorderTestString(margin));
-        //sb.append("-bor" + getBorderTestString(border));
-        //sb.append("-pad" + getBorderTestString(padding) + ")");
-
         // background images
         sb.append("-backimg(" + background_image);
         sb.append("-" + repeat);
@@ -596,39 +490,8 @@ public class Box {
         sb.append("-" + background_position_vertical);
         sb.append("-" + background_position_horizontal + ")");
 
-        //sb.append("-value:" + this.getClosestNode().getNodeValue());
         return sb.toString();
     }
-
-// --Commented out by Inspection START (2005-01-05 01:06):
-//    /**
-//     * Gets the colorTestString attribute of the Box object
-//     *
-//     * @param c PARAM
-//     * @return The colorTestString value
-//     */
-//    public String getColorTestString(Color c) {
-//        if (c == null) {
-//            return "[null]";
-//        }
-//        return "#" + Integer.toHexString(c.getRGB());
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:06)
-
-// --Commented out by Inspection START (2005-01-05 01:06):
-//    /**
-//     * Gets the borderTestString attribute of the Box object
-//     *
-//     * @param b PARAM
-//     * @return The borderTestString value
-//     */
-//    public String getBorderTestString(Border b) {
-//        if (b == null) {
-//            return "[null]";
-//        }
-//        return "(" + b.top + "," + b.right + "," + b.bottom + "," + b.left + ")";
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:06)
 
     /**
      * If this box represents the text of an inline element then returns true.
@@ -656,6 +519,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2005/01/29 20:24:23  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.43  2005/01/24 22:46:42  pdoubleya
  * Added support for ident-checks using IdentValue instead of string comparisons.
  *

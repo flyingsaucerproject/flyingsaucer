@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * BorderColorPropertyDeclarationFactory.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -29,8 +29,8 @@ import org.xhtmlrenderer.css.value.FSCssValue;
 
 
 /**
- * A PropertyDeclarationFactory for CSS 2 "border-color" shorthand property, instantiating
- * PropertyDeclarations; Singleton, use {@link #instance()}.
+ * A PropertyDeclarationFactory for CSS 2 "border-color" shorthand property,
+ * instantiating PropertyDeclarations; Singleton, use {@link #instance()}.
  *
  * @author   Patrick Wright
  */
@@ -44,10 +44,10 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName ONE_TO_FOUR[] = {
-                CSSName.BORDER_COLOR_TOP,
-                CSSName.BORDER_COLOR_RIGHT,
-                CSSName.BORDER_COLOR_BOTTOM,
-                CSSName.BORDER_COLOR_LEFT};
+            CSSName.BORDER_COLOR_TOP,
+            CSSName.BORDER_COLOR_RIGHT,
+            CSSName.BORDER_COLOR_BOTTOM,
+            CSSName.BORDER_COLOR_LEFT};
 
     /**
      * List of property names, in order, when expanding 2 prop to 4. Careful,
@@ -55,10 +55,10 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName TWO_TO_FOUR[] = {
-                CSSName.BORDER_COLOR_TOP,
-                CSSName.BORDER_COLOR_BOTTOM,
-                CSSName.BORDER_COLOR_RIGHT,
-                CSSName.BORDER_COLOR_LEFT};
+            CSSName.BORDER_COLOR_TOP,
+            CSSName.BORDER_COLOR_BOTTOM,
+            CSSName.BORDER_COLOR_RIGHT,
+            CSSName.BORDER_COLOR_LEFT};
 
     /**
      * List of property names, in order, when expanding 3 prop to 4. Careful,
@@ -66,10 +66,10 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName THREE_TO_FOUR[] = {
-                CSSName.BORDER_COLOR_TOP,
-                CSSName.BORDER_COLOR_RIGHT,
-                CSSName.BORDER_COLOR_LEFT,
-                CSSName.BORDER_COLOR_BOTTOM};
+            CSSName.BORDER_COLOR_TOP,
+            CSSName.BORDER_COLOR_RIGHT,
+            CSSName.BORDER_COLOR_LEFT,
+            CSSName.BORDER_COLOR_BOTTOM};
 
     /**
      * List of property names, in order, when expanding 4 prop to 4. Careful,
@@ -77,10 +77,10 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName FOUR_TO_FOUR[] = {
-                CSSName.BORDER_COLOR_TOP,
-                CSSName.BORDER_COLOR_RIGHT,
-                CSSName.BORDER_COLOR_BOTTOM,
-                CSSName.BORDER_COLOR_LEFT};
+            CSSName.BORDER_COLOR_TOP,
+            CSSName.BORDER_COLOR_RIGHT,
+            CSSName.BORDER_COLOR_BOTTOM,
+            CSSName.BORDER_COLOR_LEFT};
 
     /** Default constructor; don't use, use instance() instead. */
     private BorderColorPropertyDeclarationFactory() { }
@@ -90,9 +90,8 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * superclass.
      *
      * @param primVals   The SAC value for this property
-     * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param cssName   property name
+     * @param cssName    property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -117,34 +116,34 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
                 // HACK: can use any color-property name here, just helps FSCssValue
                 // figure out ident conversion (PWW 20-11-04)
                 CSSPrimitiveValue primitive = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[0] );
-                primitives = new CSSPrimitiveValue[] {
-                            primitive,
-                            primitive,
-                            primitive,
-                            primitive};
+                primitives = new CSSPrimitiveValue[]{
+                        primitive,
+                        primitive,
+                        primitive,
+                        primitive};
 
                 addProperties( declarations, primitives, ONE_TO_FOUR, origin, important );
                 break;
             case 2:
-                p1 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[ 0 ] );
-                p2 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[ 1 ] );
+                p1 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[0] );
+                p2 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[1] );
                 primitives = new CSSPrimitiveValue[]{p1, p1, p2, p2};
 
                 addProperties( declarations, primitives, TWO_TO_FOUR, origin, important );
                 break;
             case 3:
-                p1 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[ 0 ] );
-                p2 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[ 1 ] );
-                p3 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[ 2 ] );
+                p1 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[0] );
+                p2 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[1] );
+                p3 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[2] );
                 primitives = new CSSPrimitiveValue[]{p1, p2, p2, p3};
 
                 addProperties( declarations, primitives, THREE_TO_FOUR, origin, important );
                 break;
             case 4:
-                p1 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[ 0 ] );
-                p2 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[ 1 ] );
-                p3 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[ 2 ] );
-                p4 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[ 3 ] );
+                p1 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[0] );
+                p2 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[1] );
+                p3 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[2] );
+                p4 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[3] );
                 primitives = new CSSPrimitiveValue[]{p1, p2, p3, p4};
 
                 addProperties( declarations, primitives, FOUR_TO_FOUR, origin, important );
@@ -221,6 +220,9 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 20:24:25  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.3  2005/01/29 12:14:20  pdoubleya
  * Removed priority as a parameter, added alternate build when only CSSValue is available; could be used in a SAC DocumentHandler after the CSSValue is initialized from a property.
  *

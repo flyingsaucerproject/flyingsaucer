@@ -1,6 +1,6 @@
 /*
  * PropertyDeclaration.java
- * Copyright (c) 2004 Torbjörn Gannholm, Patrick Wright
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm, Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -239,6 +239,9 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/01/29 20:19:21  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.11  2005/01/29 16:02:30  pdoubleya
  * Fixed case where null CSS name is passed for a PD factory; this is valid on testing (use default factory).
  *

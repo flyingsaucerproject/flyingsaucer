@@ -1,6 +1,6 @@
 /*
  * TextContent.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,68 +19,133 @@
  */
 package org.xhtmlrenderer.layout.content;
 
+import java.util.List;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 
-import java.util.List;
 
 /**
- * Represents the content of text nodes and :before and :after content.
- * The associated element is the parent element.
- * The style is null, should be resolved from the context.
- * ChildContent is null, use getText
+ * Represents the content of text nodes and :before and :after content. The
+ * associated element is the parent element. The style is null, should be
+ * resolved from the context. ChildContent is null, use getText
+ *
+ * @author   Torbjörn Gannholm
  */
 public class TextContent implements Content {
+    /** Description of the Field */
     private Element _elem;//will need this for handling dynamic content!
+            /** Description of the Field */
     private String _pseudo;
+    /** Description of the Field */
     private String _text;
+    /** Description of the Field */
     private boolean removableWhitespace = false;
 
-    TextContent(Element e, String text) {
+    /**
+     * Constructor for the TextContent object
+     *
+     * @param e     PARAM
+     * @param text  PARAM
+     */
+    TextContent( Element e, String text ) {
         _elem = e;
         _text = text;
     }
 
-    TextContent(String pseudoElement, Element e, String text) {
+    /**
+     * Constructor for the TextContent object
+     *
+     * @param pseudoElement  PARAM
+     * @param e              PARAM
+     * @param text           PARAM
+     */
+    TextContent( String pseudoElement, Element e, String text ) {
         _pseudo = pseudoElement;
         _elem = e;
         _text = text;
     }
 
-    public String getPseudoElement() {
-        return _pseudo;
-    }
-
-    public Element getElement() {
-        return _elem;
-    }
-
-    public CascadedStyle getStyle() {
-        return null;
-    }
-
-    public List getChildContent(Context c) {
-        return null;
-    }
-
-    public String getText() {
-        return _text;
-    }
-
-    public void setText(String text) {
-        _text = text;
-    }
-
+    /**
+     * Converts to a String representation of the object.
+     *
+     * @return   A string representation of the object.
+     */
     public String toString() {
         return "TextContent: " + _text;
     }
 
+    /**
+     * Sets the text attribute of the TextContent object
+     *
+     * @param text  The new text value
+     */
+    public void setText( String text ) {
+        _text = text;
+    }
+
+    /**
+     * Sets the removableWhitespace attribute of the TextContent object
+     *
+     * @param removableWhitespace  The new removableWhitespace value
+     */
+    public void setRemovableWhitespace( boolean removableWhitespace ) {
+        this.removableWhitespace = removableWhitespace;
+    }
+
+    /**
+     * Gets the pseudoElement attribute of the TextContent object
+     *
+     * @return   The pseudoElement value
+     */
+    public String getPseudoElement() {
+        return _pseudo;
+    }
+
+    /**
+     * Gets the element attribute of the TextContent object
+     *
+     * @return   The element value
+     */
+    public Element getElement() {
+        return _elem;
+    }
+
+    /**
+     * Gets the style attribute of the TextContent object
+     *
+     * @return   The style value
+     */
+    public CascadedStyle getStyle() {
+        return null;
+    }
+
+    /**
+     * Gets the childContent attribute of the TextContent object
+     *
+     * @param c  PARAM
+     * @return   The childContent value
+     */
+    public List getChildContent( Context c ) {
+        return null;
+    }
+
+    /**
+     * Gets the text attribute of the TextContent object
+     *
+     * @return   The text value
+     */
+    public String getText() {
+        return _text;
+    }
+
+    /**
+     * Gets the removableWhitespace attribute of the TextContent object
+     *
+     * @return   The removableWhitespace value
+     */
     public boolean isRemovableWhitespace() {
         return removableWhitespace;
     }
-
-    public void setRemovableWhitespace(boolean removableWhitespace) {
-        this.removableWhitespace = removableWhitespace;
-    }
 }
+

@@ -1,3 +1,22 @@
+/*
+ * {{{ header & license
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
+ */
 package org.xhtmlrenderer.css;
 
 import org.w3c.dom.Element;
@@ -6,61 +25,131 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
 
+
 /**
- * Created by IntelliJ IDEA.
- * User: tobe
- * Date: 2005-jan-07
- * Time: 23:23:30
- * To change this template use File | Settings | File Templates.
+ *
+ * @author   Torbjörn Gannholm
  */
 public class StandardAttributeResolver implements AttributeResolver {
+    /** Description of the Field */
     private NamespaceHandler nsh;
+    /** Description of the Field */
     private UserAgentCallback uac;
+    /** Description of the Field */
     private UserInterface ui;
 
-    public StandardAttributeResolver(NamespaceHandler nsh, UserAgentCallback uac, UserInterface ui) {
+    /**
+     * Constructor for the StandardAttributeResolver object
+     *
+     * @param nsh  PARAM
+     * @param uac  PARAM
+     * @param ui   PARAM
+     */
+    public StandardAttributeResolver( NamespaceHandler nsh, UserAgentCallback uac, UserInterface ui ) {
         this.nsh = nsh;
         this.uac = uac;
         this.ui = ui;
     }
 
-    public String getAttributeValue(Element e, String attrName) {
-        return nsh.getAttributeValue(e, attrName);
+    /**
+     * Gets the attributeValue attribute of the StandardAttributeResolver object
+     *
+     * @param e         PARAM
+     * @param attrName  PARAM
+     * @return          The attributeValue value
+     */
+    public String getAttributeValue( Element e, String attrName ) {
+        return nsh.getAttributeValue( e, attrName );
     }
 
-    public String getClass(Element e) {
-        return nsh.getClass(e);
+    /**
+     * Gets the class attribute of the StandardAttributeResolver object
+     *
+     * @param e  PARAM
+     * @return   The class value
+     */
+    public String getClass( Element e ) {
+        return nsh.getClass( e );
     }
 
-    public String getID(Element e) {
-        return nsh.getID(e);
+    /**
+     * Gets the iD attribute of the StandardAttributeResolver object
+     *
+     * @param e  PARAM
+     * @return   The iD value
+     */
+    public String getID( Element e ) {
+        return nsh.getID( e );
     }
 
-    public String getElementStyling(Element e) {
-        return nsh.getElementStyling(e);
+    /**
+     * Gets the elementStyling attribute of the StandardAttributeResolver object
+     *
+     * @param e  PARAM
+     * @return   The elementStyling value
+     */
+    public String getElementStyling( Element e ) {
+        return nsh.getElementStyling( e );
     }
 
-    public String getLang(Element e) {
-        return nsh.getLang(e);
+    /**
+     * Gets the lang attribute of the StandardAttributeResolver object
+     *
+     * @param e  PARAM
+     * @return   The lang value
+     */
+    public String getLang( Element e ) {
+        return nsh.getLang( e );
     }
 
-    public boolean isLink(Element e) {
-        return nsh.getLinkUri(e) != null;
+    /**
+     * Gets the link attribute of the StandardAttributeResolver object
+     *
+     * @param e  PARAM
+     * @return   The link value
+     */
+    public boolean isLink( Element e ) {
+        return nsh.getLinkUri( e ) != null;
     }
 
-    public boolean isVisited(Element e) {
-        return uac.isVisited(nsh.getLinkUri(e));
+    /**
+     * Gets the visited attribute of the StandardAttributeResolver object
+     *
+     * @param e  PARAM
+     * @return   The visited value
+     */
+    public boolean isVisited( Element e ) {
+        return uac.isVisited( nsh.getLinkUri( e ) );
     }
 
-    public boolean isHover(Element e) {
-        return ui.isHover(e);
+    /**
+     * Gets the hover attribute of the StandardAttributeResolver object
+     *
+     * @param e  PARAM
+     * @return   The hover value
+     */
+    public boolean isHover( Element e ) {
+        return ui.isHover( e );
     }
 
-    public boolean isActive(Element e) {
-        return ui.isActive(e);
+    /**
+     * Gets the active attribute of the StandardAttributeResolver object
+     *
+     * @param e  PARAM
+     * @return   The active value
+     */
+    public boolean isActive( Element e ) {
+        return ui.isActive( e );
     }
 
-    public boolean isFocus(Element e) {
-        return ui.isFocus(e);
+    /**
+     * Gets the focus attribute of the StandardAttributeResolver object
+     *
+     * @param e  PARAM
+     * @return   The focus value
+     */
+    public boolean isFocus( Element e ) {
+        return ui.isFocus( e );
     }
 }
+

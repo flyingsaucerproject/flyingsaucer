@@ -1,6 +1,6 @@
 /*
  * Content.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,24 +19,39 @@
  */
 package org.xhtmlrenderer.layout.content;
 
+import java.util.List;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 
-import java.util.List;
 
 /**
- * Represents content in the visual model. This is the link between element, style and renderable content.
+ * Represents content in the visual model. This is the link between element,
+ * style and renderable content.
+ *
+ * @author   Torbjörn Gannholm
  */
 public interface Content {
+    /**
+     * Gets the element attribute of the Content object
+     *
+     * @return   The element value
+     */
     public Element getElement();
 
     /**
      * @param c
-     * @return either a String (for TextContent) or a List of Content objects.
-     *         The List may be headed by FirstLineStyle and/or FirstLetterStyle if these are applicable
+     * @return   either a String (for TextContent) or a List of Content objects.
+     *      The List may be headed by FirstLineStyle and/or FirstLetterStyle if
+     *      these are applicable
      */
-    public List getChildContent(Context c);
+    public List getChildContent( Context c );
 
+    /**
+     * Gets the style attribute of the Content object
+     *
+     * @return   The style value
+     */
     public CascadedStyle getStyle();
 }
+

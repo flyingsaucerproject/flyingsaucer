@@ -1,6 +1,6 @@
 /*
  * Ruleset.java
- * Copyright (c) 2004 Patrick Wright, Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Patrick Wright, Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -20,9 +20,9 @@
 package org.xhtmlrenderer.css.sheet;
 
 import java.util.*;
+import org.xhtmlrenderer.css.constants.CSSName;
 
 import org.xhtmlrenderer.util.XRRuntimeException;
-import org.xhtmlrenderer.css.constants.CSSName;
 
 
 /**
@@ -45,12 +45,6 @@ public class Ruleset {
     /** Convenience parser for selector text */
     private final static com.steadystate.css.parser.CSSOMParser CSOM_PARSER;
 
-    /** Default constructor */
-    private Ruleset(int orig) {
-        _origin = orig;
-        _props = new java.util.LinkedList();
-    }
-    
     /**
      * Creates a new instance of Ruleset
      *
@@ -58,19 +52,34 @@ public class Ruleset {
      * @param orig  PARAM
      */
     public Ruleset( org.w3c.dom.css.CSSStyleRule rule, int orig ) {
-        this(orig);
+        this( orig );
         pullPropertiesFromDOMRule( rule );
         pullSelectorsFromDOMRule( rule );
     }
-    
+
     /**
-     * Instantiates a Ruleset for a specific {@link SelectorList}, List of {@link PropertyDeclaration}
-     * and origin. Can be used when you have these outside of a {@link CSSStyleRule}.
+     * Instantiates a Ruleset for a specific {@link SelectorList}, List of
+     * {@link PropertyDeclaration} and origin. Can be used when you have these
+     * outside of a {@link CSSStyleRule}.
+     *
+     * @param selectorList          PARAM
+     * @param propertyDeclarations  PARAM
+     * @param orig                  PARAM
      */
     public Ruleset( org.w3c.css.sac.SelectorList selectorList, List propertyDeclarations, int orig ) {
-        this(orig);
+        this( orig );
         this.sacSelectorList = selectorList;
-        this._props.addAll(propertyDeclarations);        
+        this._props.addAll( propertyDeclarations );
+    }
+
+    /**
+     * Default constructor
+     *
+     * @param orig  PARAM
+     */
+    private Ruleset( int orig ) {
+        _origin = orig;
+        _props = new java.util.LinkedList();
     }
 
     /**
@@ -118,7 +127,7 @@ public class Ruleset {
      */
     private void pullPropertiesFromDOMRule( org.w3c.dom.css.CSSStyleRule sacRule ) {
         org.w3c.dom.css.CSSStyleDeclaration decl = sacRule.getStyle();
-        
+
         // a style declaration is a block of property assignments
         // so looping items in the declaration means looping properties
         //
@@ -126,14 +135,13 @@ public class Ruleset {
         // shorthand properties along the way.
         for ( int i = 0; i < decl.getLength(); i++ ) {
             String propName = decl.item( i );
-            CSSName cssName = CSSName.getByPropertyName(propName);
+            CSSName cssName = CSSName.getByPropertyName( propName );
 
-            PropertyDeclaration prop = null;
-            Iterator iter = PropertyDeclaration.newFactory(cssName).buildDeclarations(decl, cssName, _origin);
+            Iterator iter = PropertyDeclaration.newFactory( cssName ).buildDeclarations( decl, cssName, _origin );
 
-            while (iter.hasNext()) {
+            while ( iter.hasNext() ) {
                 // the cast is just for doc purposes
-                _props.add((PropertyDeclaration)iter.next());
+                _props.add( (PropertyDeclaration)iter.next() );
             }
         }
     }
@@ -147,6 +155,9 @@ public class Ruleset {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/01/29 20:19:21  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.6  2005/01/29 12:08:23  pdoubleya
  * Added constructor for SelectorList/PD List, for possible use of our own SAC DocumentHandler in the future.
  *

@@ -1,6 +1,6 @@
 /*
  * FirstLetterStyle.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -21,17 +21,32 @@ package org.xhtmlrenderer.layout.content;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 
+
 /**
  * A marker for changing the style of the first letter
+ *
+ * @author   Torbjörn Gannholm
  */
 public class FirstLetterStyle {
+    /** Description of the Field */
     private CascadedStyle _style;
 
-    FirstLetterStyle(CascadedStyle style) {
+    /**
+     * Constructor for the FirstLetterStyle object
+     *
+     * @param style  PARAM
+     */
+    FirstLetterStyle( CascadedStyle style ) {
         _style = style;
     }
 
+    /**
+     * Gets the style attribute of the FirstLetterStyle object
+     *
+     * @return   The style value
+     */
     public CascadedStyle getStyle() {
         return _style;
     }
 }
+

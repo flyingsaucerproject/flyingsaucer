@@ -1,6 +1,6 @@
 /*
  * AnonymousBlockContent.java
- * Copyright (c) 2004 Torbjï¿½rn Gannholm
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,34 +19,61 @@
  */
 package org.xhtmlrenderer.layout.content;
 
+import java.util.List;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 
-import java.util.List;
 
 /**
- * Represents content that should be layed out as an anonymous block.
- * The associated element is the parent element.
+ * Represents content that should be layed out as an anonymous block. The
+ * associated element is the parent element.
+ *
+ * @author   Torbjörn Gannholm
  */
 public class AnonymousBlockContent implements Content {
+    /** Description of the Field */
     private Element _elem;
+    /** Description of the Field */
     private List _inline;
 
-    AnonymousBlockContent(Element parent, List inlineList) {
+    /**
+     * Constructor for the AnonymousBlockContent object
+     *
+     * @param parent      PARAM
+     * @param inlineList  PARAM
+     */
+    AnonymousBlockContent( Element parent, List inlineList ) {
         _elem = parent;
         _inline = inlineList;
     }
 
+    /**
+     * Gets the element attribute of the AnonymousBlockContent object
+     *
+     * @return   The element value
+     */
     public Element getElement() {
         return _elem;
     }
 
-    public List getChildContent(Context c) {
+    /**
+     * Gets the childContent attribute of the AnonymousBlockContent object
+     *
+     * @param c  PARAM
+     * @return   The childContent value
+     */
+    public List getChildContent( Context c ) {
         return _inline;
     }
 
+    /**
+     * Gets the style attribute of the AnonymousBlockContent object
+     *
+     * @return   The style value
+     */
     public CascadedStyle getStyle() {
         return null;
     }
 }
+

@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * GeneralUtil.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -70,6 +70,9 @@ public class GeneralUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/01/29 20:21:08  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.6  2005/01/24 14:33:47  pdoubleya
  * Added exception dump.
  *

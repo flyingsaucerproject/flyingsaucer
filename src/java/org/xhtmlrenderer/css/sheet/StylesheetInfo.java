@@ -1,7 +1,6 @@
 /*
- *
  * StylesheetInfo.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -20,89 +19,157 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+
+
 /**
- * A reference to a stylesheet. If no stylesheet is set, the matcher will try to find the stylesheet by uri,
- * first from the StylesheetFactory cache, then by loading the uri if it is not cached.
- * <p>Therefore, either a stylesheet must be set, or a uri must be set
- * <p>Origin defaults to USER_AGENT and media defaults to "all"
+ * A reference to a stylesheet. If no stylesheet is set, the matcher will try to
+ * find the stylesheet by uri, first from the StylesheetFactory cache, then by
+ * loading the uri if it is not cached. <p>
+ *
+ * Therefore, either a stylesheet must be set, or a uri must be set <p>
+ *
+ * Origin defaults to USER_AGENT and media defaults to "all"
+ *
+ * @author   Torbjörn Gannholm
  */
 public class StylesheetInfo {
 
-    /**
-     * Origin of stylesheet - user agent
-     */
+    /** Description of the Field */
+    private Stylesheet stylesheet = null;//just to be able to attach "dummy" stylesheets. Also might save a lookup if it's already looked up
+            /** Description of the Field */
+    private String title;
+    /** Description of the Field */
+    private String uri;
+    /** Description of the Field */
+    private String media = "all";
+    /** Description of the Field */
+    private int origin = USER_AGENT;
+    /** Description of the Field */
+    private String type;
+
+    /** Origin of stylesheet - user agent  */
     public final static int USER_AGENT = 0;
 
-    /**
-     * Origin of stylesheet - user
-     */
+    /** Origin of stylesheet - user  */
     public final static int USER = 1;
 
-    /**
-     * Origin of stylesheet - author
-     */
+    /** Origin of stylesheet - author  */
     public final static int AUTHOR = 2;
 
     /**
-     * @param m a single media identifier
-     * @return true if the stylesheet referenced applies to the medium
+     * @param m  a single media identifier
+     * @return   true if the stylesheet referenced applies to the medium
      */
-    public boolean appliesToMedia(String m) {
-        return !(m.indexOf("all") == -1 && media.indexOf("all") == -1 && media.indexOf(m) == -1);
+    public boolean appliesToMedia( String m ) {
+        return !( m.indexOf( "all" ) == -1 && media.indexOf( "all" ) == -1 && media.indexOf( m ) == -1 );
     }
 
+    /**
+     * Sets the uri attribute of the StylesheetInfo object
+     *
+     * @param uri  The new uri value
+     */
+    public void setUri( String uri ) {
+        this.uri = uri;
+    }
+
+    /**
+     * Sets the media attribute of the StylesheetInfo object
+     *
+     * @param media  The new media value
+     */
+    public void setMedia( String media ) {
+        this.media = media;
+    }
+
+    /**
+     * Sets the origin attribute of the StylesheetInfo object
+     *
+     * @param origin  The new origin value
+     */
+    public void setOrigin( int origin ) {
+        this.origin = origin;
+    }
+
+    /**
+     * Sets the type attribute of the StylesheetInfo object
+     *
+     * @param type  The new type value
+     */
+    public void setType( String type ) {
+        this.type = type;
+    }
+
+    /**
+     * Sets the title attribute of the StylesheetInfo object
+     *
+     * @param title  The new title value
+     */
+    public void setTitle( String title ) {
+        this.title = title;
+    }
+
+    /**
+     * Sets the stylesheet attribute of the StylesheetInfo object
+     *
+     * @param stylesheet  The new stylesheet value
+     */
+    public void setStylesheet( Stylesheet stylesheet ) {
+        this.stylesheet = stylesheet;
+    }
+
+    /**
+     * Gets the uri attribute of the StylesheetInfo object
+     *
+     * @return   The uri value
+     */
     public String getUri() {
         return uri;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
+    /**
+     * Gets the media attribute of the StylesheetInfo object
+     *
+     * @return   The media value
+     */
     public String getMedia() {
         return media;
     }
 
-    public void setMedia(String media) {
-        this.media = media;
-    }
-
+    /**
+     * Gets the origin attribute of the StylesheetInfo object
+     *
+     * @return   The origin value
+     */
     public int getOrigin() {
         return origin;
     }
 
-    public void setOrigin(int origin) {
-        this.origin = origin;
-    }
-
+    /**
+     * Gets the type attribute of the StylesheetInfo object
+     *
+     * @return   The type value
+     */
     public String getType() {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
+    /**
+     * Gets the title attribute of the StylesheetInfo object
+     *
+     * @return   The title value
+     */
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
+    /**
+     * Gets the stylesheet attribute of the StylesheetInfo object
+     *
+     * @return   The stylesheet value
+     */
     public Stylesheet getStylesheet() {
         return stylesheet;
     }
-
-    public void setStylesheet(Stylesheet stylesheet) {
-        this.stylesheet = stylesheet;
-    }
-
-    private Stylesheet stylesheet = null;//just to be able to attach "dummy" stylesheets. Also might save a lookup if it's already looked up
-    private String title;
-    private String uri;
-    private String media = "all";
-    private int origin = USER_AGENT;
-    private String type;
 }
+

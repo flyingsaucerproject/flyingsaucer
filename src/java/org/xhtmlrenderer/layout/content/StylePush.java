@@ -1,6 +1,6 @@
 /*
  * StylePush.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -21,23 +21,45 @@ package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
 
+
 /**
  * A marker for changing the style of the first letter
+ *
+ * @author   Torbjörn Gannholm
  */
 public class StylePush {
+    /** Description of the Field */
     private String _pseudo;
+    /** Description of the Field */
     private Element _elem;//needed for dynamic stuff
 
-    StylePush(String pseudo, Element e) {
+            /**
+     * Constructor for the StylePush object
+     *
+     * @param pseudo  PARAM
+     * @param e       PARAM
+     */
+    StylePush( String pseudo, Element e ) {
         _pseudo = pseudo;
         _elem = e;
     }
 
+    /**
+     * Gets the pseudoElement attribute of the StylePush object
+     *
+     * @return   The pseudoElement value
+     */
     public String getPseudoElement() {
         return _pseudo;
     }
 
+    /**
+     * Gets the element attribute of the StylePush object
+     *
+     * @return   The element value
+     */
     public Element getElement() {
         return _elem;
     }
 }
+

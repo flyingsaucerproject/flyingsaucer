@@ -1,6 +1,6 @@
 /*
  * Stylesheet.java
- * Copyright (c) 2004 Patrick Wright, Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Patrick Wright, Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -20,27 +20,25 @@
 package org.xhtmlrenderer.css.sheet;
 
 
+
 /**
  * A representation of a CSS style sheet. A Stylesheet has the sheet's rules in
- * {@link Ruleset}, and has an origin--either user agent, user, or author. A Stylesheet
- * can only be instantiated from a SAC CSSStyleSheet instance-- this would be
- * the output of a SAC-compliant parser after parsing a CSS stream or source. A
- * Stylesheet is immutable; after instantiation, you can query the origin and
- * the {@link Ruleset}, but not modify either of them.
+ * {@link Ruleset}, and has an origin--either user agent, user, or author. A
+ * Stylesheet can only be instantiated from a SAC CSSStyleSheet instance-- this
+ * would be the output of a SAC-compliant parser after parsing a CSS stream or
+ * source. A Stylesheet is immutable; after instantiation, you can query the
+ * origin and the {@link Ruleset}, but not modify either of them.
  *
- * @author Torbjörn Gannholm
- * @author Patrick Wright
+ * @author   Torbjörn Gannholm
+ * @author   Patrick Wright
  */
 public class Stylesheet {
-    /**
-     * The info for this stylesheet
-     */
+    /** The info for this stylesheet  */
     private String _uri;
+    /** Description of the Field */
     private int _origin;
 
-    /**
-     * Description of the Field
-     */
+    /** Description of the Field  */
     private java.util.List _rulesets;
 
     /**
@@ -49,7 +47,7 @@ public class Stylesheet {
      * @param uri
      * @param origin
      */
-    public Stylesheet(String uri, int origin) {
+    public Stylesheet( String uri, int origin ) {
         _uri = uri;
         _origin = origin;
         _rulesets = new java.util.LinkedList();
@@ -58,7 +56,7 @@ public class Stylesheet {
     /**
      * Gets the origin attribute of the Stylesheet object
      *
-     * @return The origin value
+     * @return   The origin value
      */
     public int getOrigin() {
         return _origin;
@@ -67,40 +65,50 @@ public class Stylesheet {
     /**
      * Gets the URI of the Stylesheet object
      *
-     * @return The URI
+     * @return   The URI
      */
     public String getURI() {
         return _uri;
     }
 
     /**
-     * Returns an iterator over the Rulesets and embedded Stylesheets loaded from the source stylesheet.
+     * Returns an iterator over the Rulesets and embedded Stylesheets loaded
+     * from the source stylesheet.
      *
-     * @return The rulesets value
+     * @return   The rulesets value
      */
     public java.util.Iterator getRulesets() {
         return _rulesets.iterator();
     }
 
     /**
-     * Set the Rulesets to this stylesheet. Should usually only be called by StylesheetFactory.
+     * Set the Rulesets to this stylesheet. Should usually only be called by
+     * StylesheetFactory.
+     *
+     * @param r  The feature to be added to the Ruleset attribute
      */
-    void addRuleset(Ruleset r) {
-        _rulesets.add(r);
+    void addRuleset( Ruleset r ) {
+        _rulesets.add( r );
     }
 
     /**
-     * Set the imported stylesheet Rulesets to this stylesheet. Should usually only be called by StylesheetFactory.
+     * Set the imported stylesheet Rulesets to this stylesheet. Should usually
+     * only be called by StylesheetFactory.
+     *
+     * @param s  The feature to be added to the Stylesheet attribute
      */
-    void addStylesheet(StylesheetInfo s) {
-        _rulesets.add(s);
+    void addStylesheet( StylesheetInfo s ) {
+        _rulesets.add( s );
     }
-} // end class
+}// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/01/29 20:19:21  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.9  2004/12/11 18:18:07  tobega
  * Still broken, won't even compile at the moment. Working hard to fix it, though. Replace the StyleReference interface with our only concrete implementation, it was a bother changing in two places all the time.
  *

@@ -1,3 +1,22 @@
+/*
+ * {{{ header & license
+ * Copyright (c) 2004, 2005 Patrick Wright
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
+ */
 package org.xhtmlrenderer.css.constants;
 
 import java.util.*;
@@ -6,12 +25,14 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
- * An IdentValue represents a string that you can assign to a CSS property, where the string is one of several
- * enumerated values. For example, "whitespace" can take the values "nowrap", "pre" and "normal". There is a static
- * instance for all idents in the CSS 2 spec, which you can retrieve using the {@link #getByIdentString(String)} method.
- * The instance doesn't have any behavior: it's just a marker so that you can retrieve an ident from a DerivedValue or
- * CalculatedStyle, then compare to the instance here. For example:
- * <pre>
+ * An IdentValue represents a string that you can assign to a CSS property,
+ * where the string is one of several enumerated values. For example,
+ * "whitespace" can take the values "nowrap", "pre" and "normal". There is a
+ * static instance for all idents in the CSS 2 spec, which you can retrieve
+ * using the {@link #getByIdentString(String)} method. The instance doesn't have
+ * any behavior: it's just a marker so that you can retrieve an ident from a
+ * DerivedValue or CalculatedStyle, then compare to the instance here. For
+ * example: <pre>
  * CalculatedStyle style = ...getstyle from somewhere
  * IdentValue whitespace = style.getIdent(CSSName.WHITESPACE);
  * if ( whitespace == IdentValue.NORMAL ) {
@@ -21,148 +42,259 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * } else if ( whitespace == IdentValue.PRE ) {
  *      // preserve spacing
  * }
- * </pre>
- * All static instances are instantiated automatically, and are Singletons, so you can compare using a simple Object
- * comparison using <code>==</code>.
+ * </pre> All static instances are instantiated automatically, and are
+ * Singletons, so you can compare using a simple Object comparison using <code>==</code>
+ * .
+ *
+ * @author   Patrick Wright
  */
 public class IdentValue {
+    /** Description of the Field */
     private String ident;
-
-    private static Map ALL_IDENT_VALUES;
-    public static final IdentValue ABSOLUTE = addValue("absolute");
-    public static final IdentValue ARMENIAN = addValue("armenian");
-    public static final IdentValue AUTO = addValue("auto");
-    public static final IdentValue BASELINE = addValue("baseline");
-    public static final IdentValue BLINK = addValue("blink");
-    public static final IdentValue BLOCK = addValue("block");
-    public static final IdentValue BOLD = addValue("bold");
-    public static final IdentValue BOLDER = addValue("bolder");
-    public static final IdentValue BOTTOM = addValue("bottom");
-    public static final IdentValue CAPITALIZE = addValue("capitalize");
-    public static final IdentValue CENTER = addValue("center");
-    public static final IdentValue CIRCLE = addValue("circle");
-    public static final IdentValue CJK_IDEOGRAPHIC = addValue("cjk-ideographic");
-    public static final IdentValue COMPACT = addValue("compact");
-    public static final IdentValue DASHED = addValue("dashed");
-    public static final IdentValue DECIMAL = addValue("decimal");
-    public static final IdentValue DECIMAL_LEADING_ZERO = addValue("decimal-leading-zero");
-    public static final IdentValue DISC = addValue("disc");
-    public static final IdentValue DOTTED = addValue("dotted");
-    public static final IdentValue DOUBLE = addValue("double");
-    public static final IdentValue FIXED = addValue("fixed");
-    public static final IdentValue FONT_WEIGHT_100 = addValue("100");
-    public static final IdentValue FONT_WEIGHT_200 = addValue("200");
-    public static final IdentValue FONT_WEIGHT_300 = addValue("300");
-    public static final IdentValue FONT_WEIGHT_400 = addValue("400");
-    public static final IdentValue FONT_WEIGHT_500 = addValue("500");
-    public static final IdentValue FONT_WEIGHT_600 = addValue("600");
-    public static final IdentValue FONT_WEIGHT_700 = addValue("700");
-    public static final IdentValue FONT_WEIGHT_800 = addValue("800");
-    public static final IdentValue FONT_WEIGHT_900 = addValue("900");
-    public static final IdentValue GEORGIAN = addValue("georgian");
-    public static final IdentValue GROOVE = addValue("groove");
-    public static final IdentValue HEBREW = addValue("hebrew");
-    public static final IdentValue HIDDEN = addValue("hidden");
-    public static final IdentValue HIRAGANA = addValue("hiragana");
-    public static final IdentValue HIRAGANA_IROHA = addValue("hiragana-iroha");
-    public static final IdentValue INLINE = addValue("inline");
+    /** Description of the Field */
+    public final static IdentValue ABSOLUTE = addValue( "absolute" );
+    /** Description of the Field */
+    public final static IdentValue ARMENIAN = addValue( "armenian" );
+    /** Description of the Field */
+    public final static IdentValue AUTO = addValue( "auto" );
+    /** Description of the Field */
+    public final static IdentValue BASELINE = addValue( "baseline" );
+    /** Description of the Field */
+    public final static IdentValue BLINK = addValue( "blink" );
+    /** Description of the Field */
+    public final static IdentValue BLOCK = addValue( "block" );
+    /** Description of the Field */
+    public final static IdentValue BOLD = addValue( "bold" );
+    /** Description of the Field */
+    public final static IdentValue BOLDER = addValue( "bolder" );
+    /** Description of the Field */
+    public final static IdentValue BOTTOM = addValue( "bottom" );
+    /** Description of the Field */
+    public final static IdentValue CAPITALIZE = addValue( "capitalize" );
+    /** Description of the Field */
+    public final static IdentValue CENTER = addValue( "center" );
+    /** Description of the Field */
+    public final static IdentValue CIRCLE = addValue( "circle" );
+    /** Description of the Field */
+    public final static IdentValue CJK_IDEOGRAPHIC = addValue( "cjk-ideographic" );
+    /** Description of the Field */
+    public final static IdentValue COMPACT = addValue( "compact" );
+    /** Description of the Field */
+    public final static IdentValue DASHED = addValue( "dashed" );
+    /** Description of the Field */
+    public final static IdentValue DECIMAL = addValue( "decimal" );
+    /** Description of the Field */
+    public final static IdentValue DECIMAL_LEADING_ZERO = addValue( "decimal-leading-zero" );
+    /** Description of the Field */
+    public final static IdentValue DISC = addValue( "disc" );
+    /** Description of the Field */
+    public final static IdentValue DOTTED = addValue( "dotted" );
+    /** Description of the Field */
+    public final static IdentValue DOUBLE = addValue( "double" );
+    /** Description of the Field */
+    public final static IdentValue FIXED = addValue( "fixed" );
+    /** Description of the Field */
+    public final static IdentValue FONT_WEIGHT_100 = addValue( "100" );
+    /** Description of the Field */
+    public final static IdentValue FONT_WEIGHT_200 = addValue( "200" );
+    /** Description of the Field */
+    public final static IdentValue FONT_WEIGHT_300 = addValue( "300" );
+    /** Description of the Field */
+    public final static IdentValue FONT_WEIGHT_400 = addValue( "400" );
+    /** Description of the Field */
+    public final static IdentValue FONT_WEIGHT_500 = addValue( "500" );
+    /** Description of the Field */
+    public final static IdentValue FONT_WEIGHT_600 = addValue( "600" );
+    /** Description of the Field */
+    public final static IdentValue FONT_WEIGHT_700 = addValue( "700" );
+    /** Description of the Field */
+    public final static IdentValue FONT_WEIGHT_800 = addValue( "800" );
+    /** Description of the Field */
+    public final static IdentValue FONT_WEIGHT_900 = addValue( "900" );
+    /** Description of the Field */
+    public final static IdentValue GEORGIAN = addValue( "georgian" );
+    /** Description of the Field */
+    public final static IdentValue GROOVE = addValue( "groove" );
+    /** Description of the Field */
+    public final static IdentValue HEBREW = addValue( "hebrew" );
+    /** Description of the Field */
+    public final static IdentValue HIDDEN = addValue( "hidden" );
+    /** Description of the Field */
+    public final static IdentValue HIRAGANA = addValue( "hiragana" );
+    /** Description of the Field */
+    public final static IdentValue HIRAGANA_IROHA = addValue( "hiragana-iroha" );
+    /** Description of the Field */
+    public final static IdentValue INLINE = addValue( "inline" );
     // HACK: inline-block is not a valid CSS value, but was being used in CSS/demos. should prob be inline or block (PWW 25-01-05)
-    public static final IdentValue INLINE_BLOCK = addValue("inline-block");
-    public static final IdentValue INLINE_TABLE = addValue("inline-table");
-    public static final IdentValue INSET = addValue("inset");
-    public static final IdentValue ITALIC = addValue("italic");
-    public static final IdentValue JUSTIFY = addValue("justify");
-    public static final IdentValue KATAKANA = addValue("katakana");
-    public static final IdentValue KATAKANA_IROHA = addValue("katakana-iroha");
-    public static final IdentValue LEFT = addValue("left");
-    public static final IdentValue LIGHTER = addValue("lighter");
-    public static final IdentValue LINE_THROUGH = addValue("line-through");
-    public static final IdentValue LIST_ITEM = addValue("list-item");
-    public static final IdentValue LOWERCASE = addValue("lowercase");
-    public static final IdentValue LOWER_ALPHA = addValue("lower-alpha");
-    public static final IdentValue LOWER_GREEK = addValue("lower-greek");
-    public static final IdentValue LOWER_LATIN = addValue("lower-latin");
-    public static final IdentValue LOWER_ROMAN = addValue("lower-roman");
-    public static final IdentValue MARKER = addValue("marker");
-    public static final IdentValue NONE = addValue("none");
-    public static final IdentValue NORMAL = addValue("normal");
-    public static final IdentValue NOWRAP = addValue("nowrap");
-    public static final IdentValue NO_REPEAT = addValue("no-repeat");
-    public static final IdentValue OBLIQUE = addValue("oblique");
-    public static final IdentValue OUTSET = addValue("outset");
-    public static final IdentValue OVERLINE = addValue("overline");
-    public static final IdentValue PRE = addValue("pre");
+    /** Description of the Field */
+    public final static IdentValue INLINE_BLOCK = addValue( "inline-block" );
+    /** Description of the Field */
+    public final static IdentValue INLINE_TABLE = addValue( "inline-table" );
+    /** Description of the Field */
+    public final static IdentValue INSET = addValue( "inset" );
+    /** Description of the Field */
+    public final static IdentValue ITALIC = addValue( "italic" );
+    /** Description of the Field */
+    public final static IdentValue JUSTIFY = addValue( "justify" );
+    /** Description of the Field */
+    public final static IdentValue KATAKANA = addValue( "katakana" );
+    /** Description of the Field */
+    public final static IdentValue KATAKANA_IROHA = addValue( "katakana-iroha" );
+    /** Description of the Field */
+    public final static IdentValue LEFT = addValue( "left" );
+    /** Description of the Field */
+    public final static IdentValue LIGHTER = addValue( "lighter" );
+    /** Description of the Field */
+    public final static IdentValue LINE_THROUGH = addValue( "line-through" );
+    /** Description of the Field */
+    public final static IdentValue LIST_ITEM = addValue( "list-item" );
+    /** Description of the Field */
+    public final static IdentValue LOWERCASE = addValue( "lowercase" );
+    /** Description of the Field */
+    public final static IdentValue LOWER_ALPHA = addValue( "lower-alpha" );
+    /** Description of the Field */
+    public final static IdentValue LOWER_GREEK = addValue( "lower-greek" );
+    /** Description of the Field */
+    public final static IdentValue LOWER_LATIN = addValue( "lower-latin" );
+    /** Description of the Field */
+    public final static IdentValue LOWER_ROMAN = addValue( "lower-roman" );
+    /** Description of the Field */
+    public final static IdentValue MARKER = addValue( "marker" );
+    /** Description of the Field */
+    public final static IdentValue NONE = addValue( "none" );
+    /** Description of the Field */
+    public final static IdentValue NORMAL = addValue( "normal" );
+    /** Description of the Field */
+    public final static IdentValue NOWRAP = addValue( "nowrap" );
+    /** Description of the Field */
+    public final static IdentValue NO_REPEAT = addValue( "no-repeat" );
+    /** Description of the Field */
+    public final static IdentValue OBLIQUE = addValue( "oblique" );
+    /** Description of the Field */
+    public final static IdentValue OUTSET = addValue( "outset" );
+    /** Description of the Field */
+    public final static IdentValue OVERLINE = addValue( "overline" );
+    /** Description of the Field */
+    public final static IdentValue PRE = addValue( "pre" );
     // HACK: pre-line/pre-wrap are not valid CSS values, but being used in CSS/demos. should prob be pre (PWW 25-01-05)
-    public static final IdentValue PRE_LINE = addValue("pre-line");
-    public static final IdentValue PRE_WRAP = addValue("pre-wrap");
-    public static final IdentValue RELATIVE = addValue("relative");
-    public static final IdentValue REPEAT = addValue("repeat");
-    public static final IdentValue REPEAT_X = addValue("repeat-x");
-    public static final IdentValue REPEAT_Y = addValue("repeat-y");
-    public static final IdentValue RIDGE = addValue("ridge");
-    public static final IdentValue RIGHT = addValue("right");
-    public static final IdentValue RUN_IN = addValue("run-in");
-    public static final IdentValue SCROLL = addValue("scroll");
-    public static final IdentValue SMALL_CAPS = addValue("small-caps");
-    public static final IdentValue SOLID = addValue("solid");
-    public static final IdentValue SQUARE = addValue("square");
-    public static final IdentValue STATIC = addValue("static");
-    public static final IdentValue SUB = addValue("sub");
-    public static final IdentValue SUPER = addValue("super");
-    public static final IdentValue TABLE = addValue("table");
-    public static final IdentValue TABLE_CAPTION = addValue("table-caption");
-    public static final IdentValue TABLE_CELL = addValue("table-cell");
-    public static final IdentValue TABLE_COLUMN = addValue("table-column");
-    public static final IdentValue TABLE_COLUMN_GROUP = addValue("table-column-group");
-    public static final IdentValue TABLE_FOOTER_GROUP = addValue("table-footer-group");
-    public static final IdentValue TABLE_HEADER_GROUP = addValue("table-header-group");
-    public static final IdentValue TABLE_ROW = addValue("table-row");
-    public static final IdentValue TABLE_ROW_GROUP = addValue("table-row-group");
-    public static final IdentValue TEXT_BOTTOM = addValue("text-bottom");
-    public static final IdentValue TEXT_TOP = addValue("text-top");
-    public static final IdentValue TOP = addValue("top");
-    public static final IdentValue UNDERLINE = addValue("underline");
-    public static final IdentValue UPPERCASE = addValue("uppercase");
-    public static final IdentValue UPPER_ALPHA = addValue("upper-alpha");
-    public static final IdentValue UPPER_LATIN = addValue("upper-latin");
-    public static final IdentValue UPPER_ROMAN = addValue("upper-roman");
+    /** Description of the Field */
+    public final static IdentValue PRE_LINE = addValue( "pre-line" );
+    /** Description of the Field */
+    public final static IdentValue PRE_WRAP = addValue( "pre-wrap" );
+    /** Description of the Field */
+    public final static IdentValue RELATIVE = addValue( "relative" );
+    /** Description of the Field */
+    public final static IdentValue REPEAT = addValue( "repeat" );
+    /** Description of the Field */
+    public final static IdentValue REPEAT_X = addValue( "repeat-x" );
+    /** Description of the Field */
+    public final static IdentValue REPEAT_Y = addValue( "repeat-y" );
+    /** Description of the Field */
+    public final static IdentValue RIDGE = addValue( "ridge" );
+    /** Description of the Field */
+    public final static IdentValue RIGHT = addValue( "right" );
+    /** Description of the Field */
+    public final static IdentValue RUN_IN = addValue( "run-in" );
+    /** Description of the Field */
+    public final static IdentValue SCROLL = addValue( "scroll" );
+    /** Description of the Field */
+    public final static IdentValue SMALL_CAPS = addValue( "small-caps" );
+    /** Description of the Field */
+    public final static IdentValue SOLID = addValue( "solid" );
+    /** Description of the Field */
+    public final static IdentValue SQUARE = addValue( "square" );
+    /** Description of the Field */
+    public final static IdentValue STATIC = addValue( "static" );
+    /** Description of the Field */
+    public final static IdentValue SUB = addValue( "sub" );
+    /** Description of the Field */
+    public final static IdentValue SUPER = addValue( "super" );
+    /** Description of the Field */
+    public final static IdentValue TABLE = addValue( "table" );
+    /** Description of the Field */
+    public final static IdentValue TABLE_CAPTION = addValue( "table-caption" );
+    /** Description of the Field */
+    public final static IdentValue TABLE_CELL = addValue( "table-cell" );
+    /** Description of the Field */
+    public final static IdentValue TABLE_COLUMN = addValue( "table-column" );
+    /** Description of the Field */
+    public final static IdentValue TABLE_COLUMN_GROUP = addValue( "table-column-group" );
+    /** Description of the Field */
+    public final static IdentValue TABLE_FOOTER_GROUP = addValue( "table-footer-group" );
+    /** Description of the Field */
+    public final static IdentValue TABLE_HEADER_GROUP = addValue( "table-header-group" );
+    /** Description of the Field */
+    public final static IdentValue TABLE_ROW = addValue( "table-row" );
+    /** Description of the Field */
+    public final static IdentValue TABLE_ROW_GROUP = addValue( "table-row-group" );
+    /** Description of the Field */
+    public final static IdentValue TEXT_BOTTOM = addValue( "text-bottom" );
+    /** Description of the Field */
+    public final static IdentValue TEXT_TOP = addValue( "text-top" );
+    /** Description of the Field */
+    public final static IdentValue TOP = addValue( "top" );
+    /** Description of the Field */
+    public final static IdentValue UNDERLINE = addValue( "underline" );
+    /** Description of the Field */
+    public final static IdentValue UPPERCASE = addValue( "uppercase" );
+    /** Description of the Field */
+    public final static IdentValue UPPER_ALPHA = addValue( "upper-alpha" );
+    /** Description of the Field */
+    public final static IdentValue UPPER_LATIN = addValue( "upper-latin" );
+    /** Description of the Field */
+    public final static IdentValue UPPER_ROMAN = addValue( "upper-roman" );
 
-    private IdentValue(String ident) {
+    /** Description of the Field */
+    private static Map ALL_IDENT_VALUES;
+
+    /**
+     * Constructor for the IdentValue object
+     *
+     * @param ident  PARAM
+     */
+    private IdentValue( String ident ) {
         this.ident = ident;
     }
 
-    private static synchronized final IdentValue addValue(String ident) {
-        if (ALL_IDENT_VALUES == null) {
-            ALL_IDENT_VALUES = new TreeMap();
-        }
-        IdentValue val = new IdentValue(ident);
-        ALL_IDENT_VALUES.put(ident, val);
-        return val;
-    }
-
     /**
-     * Returns a string representation of the object, in this case, the ident as a string (as it appears in the CSS
-     * spec).
+     * Returns a string representation of the object, in this case, the ident as
+     * a string (as it appears in the CSS spec).
      *
-     * @return a string representation of the object.
+     * @return   a string representation of the object.
      */
     public String toString() {
         return ident;
     }
 
     /**
-     * Returns the Singleton IdentValue that corresponds to the given string, e.g. for "normal" will return
-     * IdentValue.NORMAL. Use this when you have the string but need to look up the Singleton. If the string doesn't
-     * match an ident in the CSS spec, a runtime exception is thrown.
+     * Returns the Singleton IdentValue that corresponds to the given string,
+     * e.g. for "normal" will return IdentValue.NORMAL. Use this when you have
+     * the string but need to look up the Singleton. If the string doesn't match
+     * an ident in the CSS spec, a runtime exception is thrown.
      *
-     * @param ident The identifier to retrieve the Singleton IdentValue for.
-     * @return see desc.
+     * @param ident  The identifier to retrieve the Singleton IdentValue for.
+     * @return       see desc.
      */
-    public static IdentValue getByIdentString(String ident) {
-        IdentValue val = (IdentValue) ALL_IDENT_VALUES.get(ident);
-        if (val == null) {
-            throw new XRRuntimeException("Ident named " + ident + " has no IdentValue instance assigned to it.");
+    public static IdentValue getByIdentString( String ident ) {
+        IdentValue val = (IdentValue)ALL_IDENT_VALUES.get( ident );
+        if ( val == null ) {
+            throw new XRRuntimeException( "Ident named " + ident + " has no IdentValue instance assigned to it." );
         }
+        return val;
+    }
+
+    /**
+     * Adds a feature to the Value attribute of the IdentValue class
+     *
+     * @param ident  The feature to be added to the Value attribute
+     * @return       Returns
+     */
+    private final static synchronized IdentValue addValue( String ident ) {
+        if ( ALL_IDENT_VALUES == null ) {
+            ALL_IDENT_VALUES = new TreeMap();
+        }
+        IdentValue val = new IdentValue( ident );
+        ALL_IDENT_VALUES.put( ident, val );
         return val;
     }
 }
@@ -171,6 +303,9 @@ public class IdentValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/01/29 20:21:09  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.4  2005/01/25 15:24:38  pdoubleya
  * Temporary support for pre-line and pre-wrap.
  *
@@ -178,4 +313,4 @@ public class IdentValue {
  * Added temporary support for invalid identifier "inline-block" to support existing code.
  *
  *
-*/
+ */

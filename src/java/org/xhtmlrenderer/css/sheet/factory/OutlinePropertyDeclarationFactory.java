@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * OutlinePropertyDeclarationFactory.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -34,8 +34,8 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
- * A PropertyDeclarationFactory for CSS 2 "outline" shorthand property, instantiating
- * PropertyDeclarations; Singleton, use {@link #instance()}.
+ * A PropertyDeclarationFactory for CSS 2 "outline" shorthand property,
+ * instantiating PropertyDeclarations; Singleton, use {@link #instance()}.
  *
  * @author   Patrick Wright
  */
@@ -51,9 +51,8 @@ public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarati
      * superclass.
      *
      * @param primVals   The SAC value for this property
-     * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param cssName   property name
+     * @param cssName    property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -72,14 +71,14 @@ public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarati
         CSSPrimitiveValue primitives[] = new CSSPrimitiveValue[1];
         CSSName names[] = new CSSName[1];
 
-        for ( int i=0; i < primVals.length; i++ ) {
-            primitive = primVals[ i ];
+        for ( int i = 0; i < primVals.length; i++ ) {
+            primitive = primVals[i];
 
             String val = primitive.getCssText().trim();
             CSSName expPropName = null;
             if ( Idents.looksLikeAColor( val ) ) {
                 expPropName = CSSName.OUTLINE_COLOR;
-                primitive = new FSCssValue(CSSName.OUTLINE_COLOR, primitive);
+                primitive = new FSCssValue( CSSName.OUTLINE_COLOR, primitive );
             } else if ( Idents.looksLikeABorderStyle( val ) ) {
                 expPropName = CSSName.OUTLINE_STYLE;
             } else {
@@ -90,7 +89,7 @@ public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarati
             primitives[0] = primitive;
             addProperties( declarations, primitives, names, origin, important );
         }
-        
+
         return declarations.iterator();
     }
 
@@ -111,6 +110,9 @@ public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarati
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 20:19:25  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.3  2005/01/29 12:14:21  pdoubleya
  * Removed priority as a parameter, added alternate build when only CSSValue is available; could be used in a SAC DocumentHandler after the CSSValue is initialized from a property.
  *

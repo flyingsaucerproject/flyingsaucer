@@ -85,18 +85,6 @@ public class BlockFormattingContext {
         return (Point) offset_map.get(block);
     }
     
-    // joshy: these line boxes may not be valid
-    // the inline layout may not have a line box available yet, in fact
-    /*
-    public boolean isLeftFloatPresent(LineBox line) {
-        return false;
-    }
-    
-    public boolean isRightFloatPresent(LineBox line) {
-        return false;
-    }
-    */
-    
     public int getLeftFloatDistance(LineBox line) {
         return getFloatDistance(line, left_floats);
     }
@@ -211,6 +199,4 @@ public class BlockFormattingContext {
     public String toString() {
         return "BFC: (" + x + "," + y + ") - " + master + "";
     }
-
-
 }

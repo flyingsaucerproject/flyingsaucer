@@ -1,6 +1,6 @@
 /*
  * CascadedStyle.java
- * Copyright (c) 2004 Patrick Wright, Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Patrick Wright, Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -95,7 +95,6 @@ public class CascadedStyle {
      * properties.
      */
     protected CascadedStyle() {
-        // CLEAN_cascadedPropertiesByName = new java.util.TreeMap(CSSName.getComparator());
         _cascadedPropertiesByID = new PropertyDeclaration[CSSName.countCSSNames()];
     }
 
@@ -104,7 +103,7 @@ public class CascadedStyle {
      * Returns true if property has been defined in this style.
      *
      * @param cssName  The CSS property name, e.g. "font-family".
-     * @return          True if the property is defined in this set.
+     * @return         True if the property is defined in this set.
      */
     public boolean hasProperty( CSSName cssName ) {
         //return _cascadedPropertiesByName.get( cssName ) != null;
@@ -119,8 +118,8 @@ public class CascadedStyle {
      * value) to use for CSS-based layout and rendering.
      *
      * @param cssName  The CSS property name, e.g. "font-family".
-     * @return          The PropertyDeclaration, if declared in this set, or
-     *      null if not found.
+     * @return         The PropertyDeclaration, if declared in this set, or null
+     *      if not found.
      */
     public PropertyDeclaration propertyByName( CSSName cssName ) {
         PropertyDeclaration prop = _cascadedPropertiesByID[cssName.getAssignedID()];
@@ -128,9 +127,15 @@ public class CascadedStyle {
         return prop;
     }
 
-    public IdentValue getIdent(CSSName cssName) {
-        PropertyDeclaration pd = propertyByName(cssName);
-        return ( pd == null ? null : pd.asIdentValue());
+    /**
+     * Gets the ident attribute of the CascadedStyle object
+     *
+     * @param cssName  PARAM
+     * @return         The ident value
+     */
+    public IdentValue getIdent( CSSName cssName ) {
+        PropertyDeclaration pd = propertyByName( cssName );
+        return ( pd == null ? null : pd.asIdentValue() );
     }
 
 
@@ -138,16 +143,19 @@ public class CascadedStyle {
      * Returns an {@link java.util.Iterator} over the set of {@link
      * org.xhtmlrenderer.css.sheet.PropertyDeclaration}s already matched in this
      * CascadedStyle. For a given property name, there may be no match, in which
-     * case there will be no <code>PropertyDeclaration</code> for that property name in the Iterator.
+     * case there will be no <code>PropertyDeclaration</code> for that property
+     * name in the Iterator.
      *
      * @return   Iterator over a set of properly cascaded PropertyDeclarations.
      */
     public java.util.Iterator getMatchedPropertyDeclarations() {
-        List list = new ArrayList(_cascadedPropertiesByID.length);
-        for (int i = 0; i < _cascadedPropertiesByID.length; i++) {
+        List list = new ArrayList( _cascadedPropertiesByID.length );
+        for ( int i = 0; i < _cascadedPropertiesByID.length; i++ ) {
             PropertyDeclaration propertyDeclaration = _cascadedPropertiesByID[i];
-            if ( propertyDeclaration == null ) continue;
-            list.add(propertyDeclaration);
+            if ( propertyDeclaration == null ) {
+                continue;
+            }
+            list.add( propertyDeclaration );
         }
         return list.iterator();
     }
@@ -158,6 +166,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/01/29 20:22:25  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.5  2005/01/25 14:45:55  pdoubleya
  * Added support for IdentValue mapping on property declarations. On both CascadedStyle and PropertyDeclaration you can now request the value as an IdentValue, for object-object comparisons. Updated 99% of references that used to get the string value of PD to return the IdentValue instead; remaining cases are for pseudo-elements where the PD content needs to be manipulated as a String.
  *

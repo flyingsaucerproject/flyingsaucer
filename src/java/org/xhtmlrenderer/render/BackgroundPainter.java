@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,102 +19,86 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.Border;
-import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.util.Configuration;
-
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
+import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.util.Configuration;
+
 
 /**
  * Description of the Class
  *
- * @author empty
+ * @author   empty
  */
 public class BackgroundPainter {
-    private static final Color transparent = new Color(0, 0, 0, 0);
+    /** Description of the Field */
+    private final static Color transparent = new Color( 0, 0, 0, 0 );
 
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param block PARAM
+     * @param c      PARAM
+     * @param block  PARAM
      */
-    public static void paint(Context c, Box block) {
+    public static void paint( Context c, Box block ) {
 
         // don't draw if the backgrounds are turned off
-        if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
+        if ( !Configuration.isTrue( "xr.renderer.draw.backgrounds", true ) ) {
             return;
         }
 
         int width = block.getWidth();
         int height = block.getHeight();
-        Border border = c.getCurrentStyle().getBorderWidth(width, height);
-        if (border == null) return;
-        Border margin = c.getCurrentStyle().getMarginWidth(width, height);
-        Rectangle box = new Rectangle(block.x + margin.left + border.left,
+        Border border = c.getCurrentStyle().getBorderWidth( width, height );
+        if ( border == null ) {
+            return;
+        }
+        Border margin = c.getCurrentStyle().getMarginWidth( width, height );
+        Rectangle box = new Rectangle( block.x + margin.left + border.left,
                 block.y + margin.top + border.top,
                 block.width - margin.left - margin.right - border.left - border.right,
-                block.height - margin.top - border.top - border.bottom - margin.bottom);
-                 
+                block.height - margin.top - border.top - border.bottom - margin.bottom );
+
         // paint the background
-        Color background_color = BoxRendering.getBackgroundColor(c, block);
-        if (background_color != null) {
+        Color background_color = BoxRendering.getBackgroundColor( c, block );
+        if ( background_color != null ) {
             // skip transparent background
-            if (!background_color.equals(transparent)) {
+            if ( !background_color.equals( transparent ) ) {
                 //TODO. make conf controlled Uu.p("filling a background");
-                c.getGraphics().setColor(background_color);
-                c.getGraphics().fillRect(box.x, box.y, box.width, box.height);
+                c.getGraphics().setColor( background_color );
+                c.getGraphics().fillRect( box.x, box.y, box.width, box.height );
             }
         }
 
         int xoff = 0;
         int yoff = 0;
 
-        if (block.attachment != null && block.attachment.equals("fixed")) {
+        if ( block.attachment != null && block.attachment.equals( "fixed" ) ) {
             yoff = c.getCanvas().getLocation().y;
             //TODO. make conf controlled Uu.p("setting the clip rect for fixed background");
-            c.getGraphics().setClip(c.getCanvas().getVisibleRect());
+            c.getGraphics().setClip( c.getCanvas().getVisibleRect() );
         }
 
-        if (block.background_image != null) {
+        if ( block.background_image != null ) {
             int left_insets = box.x;
             int top_insets = box.y;
             int back_width = box.width;
             int back_height = box.height;
-            Rectangle2D oldclip = (Rectangle2D) c.getGraphics().getClip();
-            Rectangle new_clip = new Rectangle(left_insets, top_insets, back_width, back_height);
-            c.getGraphics().setClip(oldclip.createIntersection(new_clip));
+            Rectangle2D oldclip = (Rectangle2D)c.getGraphics().getClip();
+            Rectangle new_clip = new Rectangle( left_insets, top_insets, back_width, back_height );
+            c.getGraphics().setClip( oldclip.createIntersection( new_clip ) );
 
-            // calculate repeat indecies
-            /* not used
-            int repeatx = 1;
-            int repeaty = 1;
-
-            if (block.repeat == null) {
-                repeatx = 1;
-                repeaty = 1;
-            } else if (block.repeat.equals("repeat-Xx")) {
-                repeatx = back_width;
-            } else if (block.repeat.equals("repeat-y")) {
-                repeaty = back_height;
-            } else if (block.repeat.equals("repeat")) {
-                repeatx = back_width;
-                repeaty = back_height;
-            }
-            */
-
-            //double iwd = block.background_image.getWidth(null);
-            //double ihd = block.background_image.getHeight(null);
-            int iw = block.background_image.getWidth(null);
-            int ih = block.background_image.getHeight(null);
+            int iw = block.background_image.getWidth( null );
+            int ih = block.background_image.getHeight( null );
 
             // handle image position offsets
-            /* KEEP JMM (11/16)
+            /*
+             * KEEP JMM (11/16)
              * xoff = block width - image width * pos
              * pos = 0
              * block width = 300
@@ -124,60 +108,41 @@ public class BackgroundPainter {
              * if pos = 1 then
              * xoff = 200
              */
-            xoff += (int) ((double) (back_width - iw) * (double) ((double) block.background_position_horizontal / (double) 100));
-            yoff -= (int) ((double) (back_height - ih) * (double) ((double) block.background_position_vertical / (double) 100));
-            /* DEBUG
-            System.out.println("[" + block.background_image.hashCode() +
-                    "]   background-image: box_width " + back_width +
-                    ", image-width " + iw +
-                    ", block.bgp_horizontal " + block.background_position_horizontal);
-            System.out.println("[" + block.background_image.hashCode() +
-                    "]   background-image: box_height " + back_height +
-                    ", image-height " + ih +
-                    ", block.bgp_vertical " + block.background_position_vertical);*/
+            xoff += (int)( (double)( back_width - iw ) * (double)( (double)block.background_position_horizontal / (double)100 ) );
+            yoff -= (int)( (double)( back_height - ih ) * (double)( (double)block.background_position_vertical / (double)100 ) );
 
-            // calculations for fixed tile images
-            /* not used
-            int starty = (int) Math.ceil((double) (top_insets + yoff) / ih);
-            int endy = (int) Math.ceil((double) (back_height + top_insets + yoff) / ih);
-            int startx = (int) Math.ceil((double) (left_insets) / iw);
-            int endx = (int) Math.ceil((double) (back_width + left_insets) / iw);
-            */
             // tile the image as appropriate
-
             // do fixed tile image
 
             boolean horiz = false;
             boolean vert = false;
-            if (block.repeat.equals("repeat-Xx")) {
+            if ( block.repeat.equals( "repeat-Xx" ) ) {
                 horiz = true;
                 vert = false;
             }
-            if (block.repeat.equals("repeat-y")) {
+            if ( block.repeat.equals( "repeat-y" ) ) {
                 horiz = false;
                 vert = true;
             }
-            if (block.repeat.equals("repeat")) {
+            if ( block.repeat.equals( "repeat" ) ) {
                 horiz = true;
                 vert = true;
             }
 
             //TODO. make conf controlled Uu.p("filling background with an image");
             // fixed tiled image
-            if (block.attachment != null && block.attachment.equals("fixed")) {
-                tileFill(c.getGraphics(), block.background_image,
-                        new Rectangle(left_insets, top_insets, back_width, back_height),
-                        xoff, -yoff, horiz, vert);
+            if ( block.attachment != null && block.attachment.equals( "fixed" ) ) {
+                tileFill( c.getGraphics(), block.background_image,
+                        new Rectangle( left_insets, top_insets, back_width, back_height ),
+                        xoff, -yoff, horiz, vert );
             } else {
                 // do normal tile image
-                tileFill(c.getGraphics(), block.background_image,
-                        new Rectangle(left_insets, top_insets, back_width, back_height),
-                        xoff, -yoff, horiz, vert);
-                // DEBUG System.out.println("[" + block.background_image.hashCode() + "]   background-image: left_insets " + left_insets + ", top_insets " + top_insets + ", xoff " + xoff + ", yoff " + yoff);
-                // DEBUG System.out.println("[" + block.background_image.hashCode() + "]   background-image: painting at " + (left_insets + xoff) + ", " + (top_insets + -yoff));
+                tileFill( c.getGraphics(), block.background_image,
+                        new Rectangle( left_insets, top_insets, back_width, back_height ),
+                        xoff, -yoff, horiz, vert );
             }
             //TODO. make conf controlled Uu.p("setting the clip rect");
-            c.getGraphics().setClip(oldclip);
+            c.getGraphics().setClip( oldclip );
         }
     }
 
@@ -185,44 +150,43 @@ public class BackgroundPainter {
     /**
      * Description of the Method
      *
-     * @param g     PARAM
-     * @param img   PARAM
-     * @param rect  PARAM
-     * @param xoff  PARAM
-     * @param yoff  PARAM
-     * @param horiz PARAM
-     * @param vert  PARAM
+     * @param g      PARAM
+     * @param img    PARAM
+     * @param rect   PARAM
+     * @param xoff   PARAM
+     * @param yoff   PARAM
+     * @param horiz  PARAM
+     * @param vert   PARAM
      */
-    private static void tileFill(Graphics g, Image img, Rectangle rect, int xoff, int yoff, boolean horiz, boolean vert) {
-        int iwidth = img.getWidth(null);
-        int iheight = img.getHeight(null);
+    private static void tileFill( Graphics g, Image img, Rectangle rect, int xoff, int yoff, boolean horiz, boolean vert ) {
+        int iwidth = img.getWidth( null );
+        int iheight = img.getHeight( null );
         int rwidth = rect.width;
         int rheight = rect.height;
 
-        if (!horiz) {
+        if ( !horiz ) {
             rwidth = iwidth;
         }
-        if (!vert) {
+        if ( !vert ) {
             rheight = iheight;
         }
 
-        if (horiz) {
+        if ( horiz ) {
             xoff = xoff % iwidth - iwidth;
             rwidth += iwidth;
         }
-        if (vert) {
+        if ( vert ) {
             yoff = yoff % iheight - iheight;
             rheight += iheight;
         }
 
-        for (int i = 0; i < rwidth; i += iwidth) {
-            for (int j = 0; j < rheight; j += iheight) {
-                g.drawImage(img, i + rect.x + xoff, j + rect.y + yoff, null);
+        for ( int i = 0; i < rwidth; i += iwidth ) {
+            for ( int j = 0; j < rheight; j += iheight ) {
+                g.drawImage( img, i + rect.x + xoff, j + rect.y + yoff, null );
             }
         }
 
     }
-
 
 }
 
@@ -230,6 +194,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/01/29 20:24:23  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.18  2005/01/24 19:01:02  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *

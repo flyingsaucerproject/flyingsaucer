@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * ConversionUtil.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -48,6 +48,9 @@ public class ConversionUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/01/29 20:22:23  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.2  2004/10/23 13:30:42  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

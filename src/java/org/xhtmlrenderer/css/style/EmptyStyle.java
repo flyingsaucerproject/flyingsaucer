@@ -1,7 +1,6 @@
 /*
- *
  * EmptyStyle.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -18,21 +17,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-
 package org.xhtmlrenderer.css.style;
 
 
+
 /**
- * Represents the outer box to be used for evaluating positioning of internal boxes
+ * Represents the outer box to be used for evaluating positioning of internal
+ * boxes
  *
- * @author Torbjörn Gannholm
+ * @author   Torbjörn Gannholm
  */
 public class EmptyStyle extends CalculatedStyle {
 
-    /**
-     * Creates a new instance of EmptyStyle
-     */
-    public EmptyStyle() {
-    }
+    /** Creates a new instance of EmptyStyle  */
+    public EmptyStyle() { }
 
 }
+

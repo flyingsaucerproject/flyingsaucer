@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -72,6 +72,9 @@ public class XLayout /*extends CustomBlockLayout*/ {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/01/29 20:18:39  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.7  2005/01/02 12:22:23  tobega
  * Cleaned out old layout code
  *

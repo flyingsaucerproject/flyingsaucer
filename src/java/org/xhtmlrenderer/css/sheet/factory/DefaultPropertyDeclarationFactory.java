@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * DefaultPropertyDeclarationFactory.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -33,9 +33,9 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
- * A PropertyDeclarationFactory for CSS 2 non-shorthand properties that don't require
- * special handling, instantiating PropertyDeclarations; Singleton, use {@link
- * #instance()}.
+ * A PropertyDeclarationFactory for CSS 2 non-shorthand properties that don't
+ * require special handling, instantiating PropertyDeclarations; Singleton, use
+ * {@link #instance()}.
  *
  * @author   Patrick Wright
  */
@@ -51,9 +51,8 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
      * superclass.
      *
      * @param primVals   The SAC value for this property
-     * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param cssName   property name
+     * @param cssName    property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -70,10 +69,11 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
                     " CSS style information is not primitive--is a list of values." +
                     " Should be handled by a shorthand property factory." );
         }
-        /* if ( propName.equals(CSSName.WHITE_SPACE)){
-            System.out.println("!!! got white space " + primVals[0]);
-        } */
-
+        /*
+         * if ( propName.equals(CSSName.WHITE_SPACE)){
+         * System.out.println("!!! got white space " + primVals[0]);
+         * }
+         */
         FSCssValue fsCssValue = new FSCssValue( cssName, primVals[0] );
         List declarations = new ArrayList( 1 );
         declarations.add( newPropertyDeclaration( cssName, fsCssValue, origin, important ) );
@@ -97,6 +97,9 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 20:21:04  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.3  2005/01/29 12:14:21  pdoubleya
  * Removed priority as a parameter, added alternate build when only CSSValue is available; could be used in a SAC DocumentHandler after the CSSValue is initialized from a property.
  *

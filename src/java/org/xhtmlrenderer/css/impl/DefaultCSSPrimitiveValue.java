@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * DefaultCSSPrimitiveValue.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -29,7 +29,7 @@ import org.w3c.dom.css.*;
  * property values which are not derived from a sheet but which need to act as
  * if they are.
  *
- * @author Patrick Wright
+ * @author   Patrick Wright
  */
 public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
     /** */
@@ -44,48 +44,48 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
     /**
      * Creates a new instance of DefaultCSSValue
      *
-     * @param value PARAM
+     * @param value  PARAM
      */
-    public DefaultCSSPrimitiveValue(String value) {
+    public DefaultCSSPrimitiveValue( String value ) {
         this._stringValue = value;
         this._cssValueType = CSS_PRIMITIVE_VALUE;
-        this._primitiveType = guessType(value);
+        this._primitiveType = guessType( value );
     }
 
     /**
      * Changes the text assigned to this value
      *
-     * @param cssText The new cssText value
-     * @throws DOMException Throws
+     * @param cssText        The new cssText value
+     * @throws DOMException  Throws
      */
-    public void setCssText(String cssText)
-            throws DOMException {
+    public void setCssText( String cssText )
+        throws DOMException {
         _stringValue = cssText;
     }
 
     /**
      * as CSSPrimitiveValue.setFloatValue()
      *
-     * @param unitType   The new floatValue value
-     * @param floatValue The new floatValue value
-     * @throws DOMException Throws
+     * @param unitType       The new floatValue value
+     * @param floatValue     The new floatValue value
+     * @throws DOMException  Throws
      */
-    public void setFloatValue(short unitType, float floatValue)
-            throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Not a Float value.");
+    public void setFloatValue( short unitType, float floatValue )
+        throws DOMException {
+        throw new DOMException( DOMException.NOT_SUPPORTED_ERR, "Not a Float value." );
     }
 
     /**
      * as CSSPrimitiveValue.setStringValue()
      *
-     * @param stringType  The new stringValue value
-     * @param stringValue The new stringValue value
-     * @throws DOMException Throws
+     * @param stringType     The new stringValue value
+     * @param stringValue    The new stringValue value
+     * @throws DOMException  Throws
      */
-    public void setStringValue(short stringType, String stringValue)
-            throws DOMException {
-        if (stringType != CSS_STRING) {
-            throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Can only set to CSS_STRING.");
+    public void setStringValue( short stringType, String stringValue )
+        throws DOMException {
+        if ( stringType != CSS_STRING ) {
+            throw new DOMException( DOMException.NOT_SUPPORTED_ERR, "Can only set to CSS_STRING." );
         }
 
         _stringValue = stringValue;
@@ -94,7 +94,7 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
     /**
      * as same method on CSSPrimitiveValue()
      *
-     * @return The cssText value
+     * @return   The cssText value
      */
     public String getCssText() {
         return _stringValue;
@@ -103,7 +103,7 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
     /**
      * as CSSValue.getCssValueType()
      *
-     * @return The cssValueType value
+     * @return   The cssValueType value
      */
     public short getCssValueType() {
         return _cssValueType;
@@ -112,30 +112,30 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
     /**
      * as same method on CSSPrimitiveValue()
      *
-     * @return The counterValue value
-     * @throws DOMException Throws
+     * @return               The counterValue value
+     * @throws DOMException  Throws
      */
     public Counter getCounterValue()
-            throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Not a Counter value.");
+        throws DOMException {
+        throw new DOMException( DOMException.NOT_SUPPORTED_ERR, "Not a Counter value." );
     }
 
     /**
      * as same method on CSSPrimitiveValue()
      *
-     * @param unitType PARAM
-     * @return The floatValue value
-     * @throws DOMException Throws
+     * @param unitType       PARAM
+     * @return               The floatValue value
+     * @throws DOMException  Throws
      */
-    public float getFloatValue(short unitType)
-            throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Not a Float value.");
+    public float getFloatValue( short unitType )
+        throws DOMException {
+        throw new DOMException( DOMException.NOT_SUPPORTED_ERR, "Not a Float value." );
     }
 
     /**
      * as same method on CSSPrimitiveValue()
      *
-     * @return The primitiveType value
+     * @return   The primitiveType value
      */
     public short getPrimitiveType() {
         return _primitiveType;
@@ -144,40 +144,40 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
     /**
      * as same method on CSSPrimitiveValue()
      *
-     * @return The rGBColorValue value
-     * @throws DOMException Throws
+     * @return               The rGBColorValue value
+     * @throws DOMException  Throws
      */
     public RGBColor getRGBColorValue()
-            throws DOMException {
-        if (_stringValue.startsWith("#")) {
-            if (_asColor == null) {
-                _asColor = new _RGBColor(_stringValue);
+        throws DOMException {
+        if ( _stringValue.startsWith( "#" ) ) {
+            if ( _asColor == null ) {
+                _asColor = new _RGBColor( _stringValue );
             }
             return _asColor;
         } else {
-            throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Not an RGBColor value.");
+            throw new DOMException( DOMException.NOT_SUPPORTED_ERR, "Not an RGBColor value." );
         }
     }
 
     /**
      * as same method on CSSPrimitiveValue()
      *
-     * @return The rectValue value
-     * @throws DOMException Throws
+     * @return               The rectValue value
+     * @throws DOMException  Throws
      */
     public Rect getRectValue()
-            throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Not a Rect value.");
+        throws DOMException {
+        throw new DOMException( DOMException.NOT_SUPPORTED_ERR, "Not a Rect value." );
     }
 
     /**
      * as same method on CSSPrimitiveValue()
      *
-     * @return The stringValue value
-     * @throws DOMException Throws
+     * @return               The stringValue value
+     * @throws DOMException  Throws
      */
     public String getStringValue()
-            throws DOMException {
+        throws DOMException {
         return _stringValue;
     }
 
@@ -187,37 +187,37 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
     /**
      * Description of the Method
      *
-     * @param value PARAM
-     * @return Returns
+     * @param value  PARAM
+     * @return       Returns
      */
-    private static short guessType(String value) {
+    private static short guessType( String value ) {
         short type = CSS_STRING;
-        if (value != null && value.length() > 1) {
-            if (value.endsWith("%")) {
+        if ( value != null && value.length() > 1 ) {
+            if ( value.endsWith( "%" ) ) {
                 type = CSS_PERCENTAGE;
-            } else if (value.startsWith("rgb") || value.startsWith("#")) {
+            } else if ( value.startsWith( "rgb" ) || value.startsWith( "#" ) ) {
                 type = CSS_RGBCOLOR;
             } else {
-                String hmm = value.substring(value.length() - 2);
-                if ("pt".equals(hmm)) {
+                String hmm = value.substring( value.length() - 2 );
+                if ( "pt".equals( hmm ) ) {
                     type = CSS_PT;
-                } else if ("px".equals(hmm)) {
+                } else if ( "px".equals( hmm ) ) {
                     type = CSS_PX;
-                } else if ("em".equals(hmm)) {
+                } else if ( "em".equals( hmm ) ) {
                     type = CSS_EMS;
-                } else if ("ex".equals(hmm)) {
+                } else if ( "ex".equals( hmm ) ) {
                     type = CSS_EXS;
-                } else if ("in".equals(hmm)) {
+                } else if ( "in".equals( hmm ) ) {
                     type = CSS_IN;
-                } else if ("cm".equals(hmm)) {
+                } else if ( "cm".equals( hmm ) ) {
                     type = CSS_CM;
-                } else if ("mm".equals(hmm)) {
+                } else if ( "mm".equals( hmm ) ) {
                     type = CSS_MM;
                 } else {
                     try {
-                        new Float(value);
+                        new Float( value );
                         type = CSS_NUMBER;
-                    } catch (NumberFormatException ex) {
+                    } catch ( NumberFormatException ex ) {
                         type = CSS_STRING;
                     }
                 }
@@ -229,7 +229,7 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
     /**
      * Description of the Class
      *
-     * @author Patrick Wright
+     * @author   Patrick Wright
      */
     class _RGBColor implements RGBColor {
         /** */
@@ -238,21 +238,21 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
         /**
          * Constructor for the _RGBColor object
          *
-         * @param hex PARAM
+         * @param hex  PARAM
          */
-        _RGBColor(String hex) {
-            int red = Integer.parseInt(hex.substring(1, 3), 16);
-            redCV = new ColorValue(red);
-            int green = Integer.parseInt(hex.substring(3, 5), 16);
-            greenCV = new ColorValue(green);
-            int blue = Integer.parseInt(hex.substring(5, 7), 16);
-            blueCV = new ColorValue(blue);
+        _RGBColor( String hex ) {
+            int red = Integer.parseInt( hex.substring( 1, 3 ), 16 );
+            redCV = new ColorValue( red );
+            int green = Integer.parseInt( hex.substring( 3, 5 ), 16 );
+            greenCV = new ColorValue( green );
+            int blue = Integer.parseInt( hex.substring( 5, 7 ), 16 );
+            blueCV = new ColorValue( blue );
         }
 
         /**
          * Gets the blue attribute of the _RGBColor object
          *
-         * @return The blue value
+         * @return   The blue value
          */
         public CSSPrimitiveValue getBlue() {
             return blueCV;
@@ -261,7 +261,7 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
         /**
          * Gets the green attribute of the _RGBColor object
          *
-         * @return The green value
+         * @return   The green value
          */
         public CSSPrimitiveValue getGreen() {
             return greenCV;
@@ -270,7 +270,7 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
         /**
          * Gets the red attribute of the _RGBColor object
          *
-         * @return The red value
+         * @return   The red value
          */
         public CSSPrimitiveValue getRed() {
             return redCV;
@@ -279,7 +279,7 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
         /**
          * Description of the Class
          *
-         * @author Patrick Wright
+         * @author   Patrick Wright
          */
         class ColorValue implements CSSPrimitiveValue {
             /** */
@@ -288,62 +288,62 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
             /**
              * Constructor for the ColorValue object
              *
-             * @param color PARAM
+             * @param color  PARAM
              */
-            ColorValue(int color) {
-                this._color = new Float(color).floatValue();
+            ColorValue( int color ) {
+                this._color = new Float( color ).floatValue();
             }
 
             /**
              * Sets the cssText attribute of the ColorValue object
              *
-             * @param cssText The new cssText value
-             * @throws DOMException Throws
+             * @param cssText        The new cssText value
+             * @throws DOMException  Throws
              */
-            public void setCssText(String cssText)
-                    throws DOMException {
-                throw new DOMException(DOMException.INVALID_ACCESS_ERR, "This is a color");
+            public void setCssText( String cssText )
+                throws DOMException {
+                throw new DOMException( DOMException.INVALID_ACCESS_ERR, "This is a color" );
             }
 
             /**
              * Sets the floatValue attribute of the ColorValue object
              *
-             * @param unitType   The new floatValue value
-             * @param floatValue The new floatValue value
-             * @throws DOMException Throws
+             * @param unitType       The new floatValue value
+             * @param floatValue     The new floatValue value
+             * @throws DOMException  Throws
              */
-            public void setFloatValue(short unitType, float floatValue)
-                    throws DOMException {
-                throw new DOMException(DOMException.INVALID_ACCESS_ERR, "This is a color");
+            public void setFloatValue( short unitType, float floatValue )
+                throws DOMException {
+                throw new DOMException( DOMException.INVALID_ACCESS_ERR, "This is a color" );
             }
 
             /**
              * Sets the stringValue attribute of the ColorValue object
              *
-             * @param stringType  The new stringValue value
-             * @param stringValue The new stringValue value
-             * @throws DOMException Throws
+             * @param stringType     The new stringValue value
+             * @param stringValue    The new stringValue value
+             * @throws DOMException  Throws
              */
-            public void setStringValue(short stringType, String stringValue)
-                    throws DOMException {
-                throw new DOMException(DOMException.INVALID_ACCESS_ERR, "This is a color");
+            public void setStringValue( short stringType, String stringValue )
+                throws DOMException {
+                throw new DOMException( DOMException.INVALID_ACCESS_ERR, "This is a color" );
             }
 
             /**
              * Gets the counterValue attribute of the ColorValue object
              *
-             * @return The counterValue value
-             * @throws DOMException Throws
+             * @return               The counterValue value
+             * @throws DOMException  Throws
              */
             public Counter getCounterValue()
-                    throws DOMException {
-                throw new DOMException(DOMException.INVALID_ACCESS_ERR, "This is a color");
+                throws DOMException {
+                throw new DOMException( DOMException.INVALID_ACCESS_ERR, "This is a color" );
             }
 
             /**
              * Gets the cssText attribute of the ColorValue object
              *
-             * @return The cssText value
+             * @return   The cssText value
              */
             public String getCssText() {
                 return "" + _color;
@@ -352,7 +352,7 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
             /**
              * Gets the cssValueType attribute of the ColorValue object
              *
-             * @return The cssValueType value
+             * @return   The cssValueType value
              */
             public short getCssValueType() {
                 return CSSValue.CSS_PRIMITIVE_VALUE;
@@ -361,19 +361,19 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
             /**
              * Gets the floatValue attribute of the ColorValue object
              *
-             * @param unitType PARAM
-             * @return The floatValue value
-             * @throws DOMException Throws
+             * @param unitType       PARAM
+             * @return               The floatValue value
+             * @throws DOMException  Throws
              */
-            public float getFloatValue(short unitType)
-                    throws DOMException {
+            public float getFloatValue( short unitType )
+                throws DOMException {
                 return _color;
             }
 
             /**
              * Gets the primitiveType attribute of the ColorValue object
              *
-             * @return The primitiveType value
+             * @return   The primitiveType value
              */
             public short getPrimitiveType() {
                 return CSS_NUMBER;
@@ -382,33 +382,33 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
             /**
              * Gets the rGBColorValue attribute of the ColorValue object
              *
-             * @return The rGBColorValue value
-             * @throws DOMException Throws
+             * @return               The rGBColorValue value
+             * @throws DOMException  Throws
              */
             public RGBColor getRGBColorValue()
-                    throws DOMException {
-                throw new DOMException(DOMException.INVALID_ACCESS_ERR, "This is a color");
+                throws DOMException {
+                throw new DOMException( DOMException.INVALID_ACCESS_ERR, "This is a color" );
             }
 
             /**
              * Gets the rectValue attribute of the ColorValue object
              *
-             * @return The rectValue value
-             * @throws DOMException Throws
+             * @return               The rectValue value
+             * @throws DOMException  Throws
              */
             public Rect getRectValue()
-                    throws DOMException {
-                throw new DOMException(DOMException.INVALID_ACCESS_ERR, "This is a color");
+                throws DOMException {
+                throw new DOMException( DOMException.INVALID_ACCESS_ERR, "This is a color" );
             }
 
             /**
              * Gets the stringValue attribute of the ColorValue object
              *
-             * @return The stringValue value
-             * @throws DOMException Throws
+             * @return               The stringValue value
+             * @throws DOMException  Throws
              */
             public String getStringValue()
-                    throws DOMException {
+                throws DOMException {
                 return "" + _color;
             }
         }
@@ -420,6 +420,9 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 20:22:20  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.3  2004/12/08 00:42:29  tobega
  * More cleaning of use of Node, more preparation for Content-based inline generation. Also fixed 2 irritating bugs!
  *

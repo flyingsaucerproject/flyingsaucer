@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -126,13 +126,6 @@ public class SharedContext {
      * Description of the Field
      */
     protected BasicPanel canvas;
-
-    //public Graphics canvas_graphics;
-
-    /**
-     * Description of the Field
-     */
-    //public JComponent viewport;
 
     /*
      * selection management code
@@ -298,48 +291,6 @@ public class SharedContext {
 
 
     /**
-     * Sets the form attribute of the Context object
-     *
-     * @param form_name The new form value
-     * @param action    The new form value
-     */
-    /*public void setForm(String form_name, String action) {
-        this.setForm_name(form_name);
-        if (form_name != null) {
-            getForms().put(form_name, new HashMap());
-            getActions().put(form_name, action);
-        }
-    } */
-
-
-    /**
-     * Gets the viewport attribute of the Context object
-     *
-     * @return The viewport value
-     */
-    /*public JComponent getViewport() {
-        return this.viewport;
-    }*/
-
-    /**
-     * Gets the xoff attribute of the Context object
-     *
-     * @return The xoff value
-     */
-    /*public int getXoff() {
-        return this.xoff;
-    }*/
-
-    /**
-     * Gets the yoff attribute of the Context object
-     *
-     * @return The yoff value
-     */
-    /*public int getYoff() {
-        return this.yoff;
-    }*/
-
-    /**
      * Gets the maxWidth attribute of the Context object
      *
      * @return The maxWidth value
@@ -399,10 +350,6 @@ public class SharedContext {
     public void setSelectionStart(Box box, int x) {
         selection_start = box;
         selection_start_x = x;
-        /*if (box instanceof InlineBox) {
-            InlineBox ib = (InlineBox) box;
-            //int i = ib.getTextIndex(x, getGraphics());
-        }*/
     }
 
     /**
@@ -426,44 +373,6 @@ public class SharedContext {
     
     /* =========== Form Stuff ============== */
 
-    /**
-     * Gets the form attribute of the Context object
-     *
-     * @return The form value
-     */
-    /*public String getForm() {
-        return this.getForm_name();
-    } */
-
-    /**
-     * Gets the inputFieldComponents attribute of the Context object
-     *
-     * @param form_name PARAM
-     * @return The inputFieldComponents value
-     */
-    /*public Iterator getInputFieldComponents(String form_name) {
-        Map fields = (Map) getForms().get(form_name);
-        return fields.values().iterator();
-    }*/
-
-    /**
-     * Gets the formAction attribute of the Context object
-     *
-     * @param form_name PARAM
-     * @return The formAction value
-     */
-    /* public String getFormAction(String form_name) {
-         return (String) getActions().get(form_name);
-     } */
-
-    /**
-     * Gets the forms attribute of the Context object
-     *
-     * @return The forms value
-     */
-    /*public Map getForms() {
-        return forms;
-    } */
 
     public StyleReference getCss() {
         return css;
@@ -481,26 +390,6 @@ public class SharedContext {
         this.canvas = canvas;
     }
 
-
-    /*public String getForm_name() {
-        return form_name;
-    } */
-
-    /*public void setForm_name(String form_name) {
-        this.form_name = form_name;
-    } */
-
-    /*public void setForms(Map forms) {
-        this.forms = forms;
-    } */
-
-    /*public Map getActions() {
-        return actions;
-    } */
-
-    /*public void setActions(Map actions) {
-        this.actions = actions;
-    } */
 
     public RenderingContext getCtx() {
         return ctx;
@@ -566,6 +455,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/01/29 20:19:24  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.8  2005/01/13 00:48:46  tobega
  * Added preparation of values for a form submission
  *

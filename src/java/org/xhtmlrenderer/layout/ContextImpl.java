@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci, Torbjšrn Gannholm
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjšrn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -90,12 +90,6 @@ public class ContextImpl implements Context {
         return sharedContext.inSelection(box);
     }
 
-// --Commented out by Inspection START (2005-01-05 00:56):
-//    public void setMaxWidth(int max_width) {
-//        sharedContext.setMaxWidth(max_width);
-//    }
-// --Commented out by Inspection STOP (2005-01-05 00:56)
-
     public void setSelectionStart(Box box, int x) {
         sharedContext.setSelectionStart(box, x);
     }
@@ -107,12 +101,6 @@ public class ContextImpl implements Context {
     public Graphics2D getGraphics() {
         return sharedContext.getGraphics();
     }
-
-// --Commented out by Inspection START (2005-01-05 00:56):
-//    public int getMaxWidth() {
-//        return sharedContext.getMaxWidth();
-//    }
-// --Commented out by Inspection STOP (2005-01-05 00:56)
 
     public FontResolver getFontResolver() {
         return sharedContext.getFontResolver();
@@ -238,10 +226,6 @@ public class ContextImpl implements Context {
         bfc = (BlockFormattingContext) bfc_stack.pop();
     }
 
-    /*public void setBlockFormattingContext(BlockFormattingContext bfc) {
-        this.bfc = bfc;
-    }*/
-
     /**
      * Description of the Field
      */
@@ -282,11 +266,6 @@ public class ContextImpl implements Context {
     public void shrinkExtents(Box block) {
 
         extents_stack.push(getExtents());
-
-
-        //Border border = block.border;
-        //Border padding = block.padding;
-        //Border margin = block.margin;
 
         Rectangle rect = new Rectangle(0, 0,
                 getExtents().width - block.totalHorizontalPadding(getCurrentStyle()),
@@ -447,10 +426,7 @@ public class ContextImpl implements Context {
     public String toString() {
         return "Context: extents = " +
                 "(" + extents.x + "," + extents.y + ") -> (" + extents.width + "x" + extents.height + ")"
-                //" cursor = " + cursor +
-                //"\n color = " + color + " background color = " + background_color;
                 + " offset = " + xoff + "," + yoff
                 ;
     }
-
 }

@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * MarginPropertyDeclarationFactory.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -28,8 +28,8 @@ import org.xhtmlrenderer.css.constants.CSSName;
 
 
 /**
- * A PropertyDeclarationFactory for CSS 2 "margin" shorthand property, instantiating
- * PropertyDeclarations; Singleton, use {@link #instance()}.
+ * A PropertyDeclarationFactory for CSS 2 "margin" shorthand property,
+ * instantiating PropertyDeclarations; Singleton, use {@link #instance()}.
  *
  * @author   Patrick Wright
  */
@@ -43,10 +43,10 @@ public class MarginPropertyDeclarationFactory extends AbstractPropertyDeclaratio
      * willy-nilly.
      */
     private final static CSSName ONE_TO_FOUR[] = {
-                CSSName.MARGIN_TOP,
-                CSSName.MARGIN_RIGHT,
-                CSSName.MARGIN_BOTTOM,
-                CSSName.MARGIN_LEFT};
+            CSSName.MARGIN_TOP,
+            CSSName.MARGIN_RIGHT,
+            CSSName.MARGIN_BOTTOM,
+            CSSName.MARGIN_LEFT};
 
     /**
      * List of property names, in order, when expanding 2 prop to 4. Careful,
@@ -54,10 +54,10 @@ public class MarginPropertyDeclarationFactory extends AbstractPropertyDeclaratio
      * willy-nilly.
      */
     private final static CSSName TWO_TO_FOUR[] = {
-                CSSName.MARGIN_TOP,
-                CSSName.MARGIN_BOTTOM,
-                CSSName.MARGIN_RIGHT,
-                CSSName.MARGIN_LEFT};
+            CSSName.MARGIN_TOP,
+            CSSName.MARGIN_BOTTOM,
+            CSSName.MARGIN_RIGHT,
+            CSSName.MARGIN_LEFT};
 
     /**
      * List of property names, in order, when expanding 3 prop to 4. Careful,
@@ -65,10 +65,10 @@ public class MarginPropertyDeclarationFactory extends AbstractPropertyDeclaratio
      * willy-nilly.
      */
     private final static CSSName THREE_TO_FOUR[] = {
-                CSSName.MARGIN_TOP,
-                CSSName.MARGIN_RIGHT,
-                CSSName.MARGIN_LEFT,
-                CSSName.MARGIN_BOTTOM};
+            CSSName.MARGIN_TOP,
+            CSSName.MARGIN_RIGHT,
+            CSSName.MARGIN_LEFT,
+            CSSName.MARGIN_BOTTOM};
 
     /**
      * List of property names, in order, when expanding 4 prop to 4. Careful,
@@ -76,10 +76,10 @@ public class MarginPropertyDeclarationFactory extends AbstractPropertyDeclaratio
      * willy-nilly.
      */
     private final static CSSName FOUR_TO_FOUR[] = {
-                CSSName.MARGIN_TOP,
-                CSSName.MARGIN_RIGHT,
-                CSSName.MARGIN_BOTTOM,
-                CSSName.MARGIN_LEFT};
+            CSSName.MARGIN_TOP,
+            CSSName.MARGIN_RIGHT,
+            CSSName.MARGIN_BOTTOM,
+            CSSName.MARGIN_LEFT};
 
     /** Default constructor; don't use, use instance() instead. */
     private MarginPropertyDeclarationFactory() { }
@@ -89,9 +89,8 @@ public class MarginPropertyDeclarationFactory extends AbstractPropertyDeclaratio
      * superclass.
      *
      * @param primVals   The SAC value for this property
-     * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param cssName   property name
+     * @param cssName    property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -111,38 +110,38 @@ public class MarginPropertyDeclarationFactory extends AbstractPropertyDeclaratio
         switch ( primVals.length ) {
             case 1:
                 primitive = primVals[0];
-                primitives =  new CSSPrimitiveValue[]{
-                            primitive,
-                            primitive,
-                            primitive,
-                            primitive};
+                primitives = new CSSPrimitiveValue[]{
+                        primitive,
+                        primitive,
+                        primitive,
+                        primitive};
 
                 addProperties( declarations, primitives, ONE_TO_FOUR, origin, important );
                 break;
             case 2:
                 primitives = new CSSPrimitiveValue[]{
-                            primVals[0],
-                            primVals[0],
-                            primVals[1],
-                            primVals[1]};
+                        primVals[0],
+                        primVals[0],
+                        primVals[1],
+                        primVals[1]};
 
                 addProperties( declarations, primitives, TWO_TO_FOUR, origin, important );
                 break;
             case 3:
                 primitives = new CSSPrimitiveValue[]{
-                            primVals[0],
-                            primVals[1],
-                            primVals[1],
-                            primVals[2]};
+                        primVals[0],
+                        primVals[1],
+                        primVals[1],
+                        primVals[2]};
 
                 addProperties( declarations, primitives, THREE_TO_FOUR, origin, important );
                 break;
             case 4:
                 primitives = new CSSPrimitiveValue[]{
-                            primVals[0],
-                            primVals[1],
-                            primVals[2],
-                            primVals[3]};
+                        primVals[0],
+                        primVals[1],
+                        primVals[2],
+                        primVals[3]};
 
                 addProperties( declarations, primitives, FOUR_TO_FOUR, origin, important );
                 break;
@@ -168,6 +167,9 @@ public class MarginPropertyDeclarationFactory extends AbstractPropertyDeclaratio
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 20:19:26  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.3  2005/01/29 12:14:21  pdoubleya
  * Removed priority as a parameter, added alternate build when only CSSValue is available; could be used in a SAC DocumentHandler after the CSSValue is initialized from a property.
  *

@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * LogStartupConfig.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -80,6 +80,9 @@ public class LogStartupConfig {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 20:19:27  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.3  2004/10/18 12:07:17  pdoubleya
  * LogManager now initialized from main Configuration.
  *

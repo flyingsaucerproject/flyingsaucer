@@ -1,7 +1,6 @@
 /*
- *
  * InlineStyleInfo.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -20,31 +19,53 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+
+
 /**
- * Created by IntelliJ IDEA.
- * User: tobe
- * Date: 2004-dec-02
- * Time: 19:29:20
- * To change this template use File | Settings | File Templates.
+ *
+ * @author   Torbjörn Gannholm
  */
 public class InlineStyleInfo {
+    /** Description of the Field */
     private String style;
 
+    /** Description of the Field */
     private StylesheetInfo info;
 
+    /**
+     * Sets the style attribute of the InlineStyleInfo object
+     *
+     * @param style  The new style value
+     */
+    public void setStyle( String style ) {
+        this.style = style;
+    }
+
+    /**
+     * Sets the info attribute of the InlineStyleInfo object
+     *
+     * @param info  The new info value
+     */
+    public void setInfo( StylesheetInfo info ) {
+        this.info = info;
+    }
+
+    /**
+     * Gets the style attribute of the InlineStyleInfo object
+     *
+     * @return   The style value
+     */
     public String getStyle() {
         return style;
     }
 
-    public void setStyle(String style) {
-        this.style = style;
-    }
-
+    /**
+     * Gets the info attribute of the InlineStyleInfo object
+     *
+     * @return   The info value
+     */
     public StylesheetInfo getInfo() {
         return info;
     }
-
-    public void setInfo(StylesheetInfo info) {
-        this.info = info;
-    }
 }
+

@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * BackgroundPropertyDeclarationFactory.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -30,37 +30,36 @@ import org.xhtmlrenderer.css.value.FSCssValue;
 
 
 /**
- * A PropertyDeclarationFactory for CSS 2 "background" shorthand property, instantiating PropertyDeclarations; Singleton, use
- * {@link #instance()}.
+ * A PropertyDeclarationFactory for CSS 2 "background" shorthand property,
+ * instantiating PropertyDeclarations; Singleton, use {@link #instance()}.
  *
- * @author Patrick Wright
+ * @author   Patrick Wright
  */
 public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclarationFactory {
-    /**
-     * Singleton instance.
-     */
+    /** Singleton instance.  */
     private static BackgroundPropertyDeclarationFactory _instance;
 
     /**
      * Constructor for the BackgroundPropertyDeclarationFactory object
      */
-    private BackgroundPropertyDeclarationFactory() {
-    }
+    private BackgroundPropertyDeclarationFactory() { }
 
     /**
-     * Subclassed implementation of redirected buildDeclarations() from abstract superclass.
+     * Subclassed implementation of redirected buildDeclarations() from abstract
+     * superclass.
      *
-     * @param priority  Priority string for this value
-     * @param important True if author-marked important!
-     * @param cssName  property name
-     * @param origin    The origin of the stylesheet; constant from {@link org.xhtmlrenderer.css.sheet.Stylesheet}, e.g.
-     *                  Stylesheet.AUTHOR
-     * @return Iterator of PropertyDeclarations for the shorthand margin property.
+     * @param primVals   PARAM
+     * @param important  True if author-marked important!
+     * @param cssName    property name
+     * @param origin     The origin of the stylesheet; constant from {@link
+     *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
+     * @return           Iterator of PropertyDeclarations for the shorthand
+     *      margin property.
      */
-    protected Iterator doBuildDeclarations(CSSPrimitiveValue[] primVals,
-                                           boolean important,
-                                           CSSName cssName,
-                                           int origin) {
+    protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
+                                            boolean important,
+                                            CSSName cssName,
+                                            int origin ) {
 
         List declarations = new ArrayList();
         CSSPrimitiveValue primitive = null;
@@ -70,16 +69,16 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
         StringBuffer bgPos = null;
         String val = null;
 
-        for (int i = 0; i < primVals.length; i++) {
+        for ( int i = 0; i < primVals.length; i++ ) {
             primitive = primVals[i];
 
             val = primitive.getCssText().trim();
 
             // sniff this one value out. using an array to return
             // multiple pieces of info; see parseSingle() method
-            Object[] ret = parseSingle(val, primitive, bgPos);
-            names[0] = (CSSName) ret[0];
-            primitives[0] = (CSSPrimitiveValue) ret[1];
+            Object[] ret = parseSingle( val, primitive, bgPos );
+            names[0] = (CSSName)ret[0];
+            primitives[0] = (CSSPrimitiveValue)ret[1];
 
             // handle background-position. the issue here is that
             // the position will have either one or two assignments
@@ -92,72 +91,72 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
             // to make this worse, if both values for the position are given
             // they must appear as a pair (top left) without intervening properties,
             // whereas all other properties can be given in any order.
-            if (((Boolean) ret[4]).booleanValue()) {
-                if (bgPos == null) {
-                    bgPos = (StringBuffer) ret[2];
+            if ( ( (Boolean)ret[4] ).booleanValue() ) {
+                if ( bgPos == null ) {
+                    bgPos = (StringBuffer)ret[2];
                 }
-                if (bgPosPrimitive == null) {
-                    bgPosPrimitive = (CSSPrimitiveValue) ret[3];
+                if ( bgPosPrimitive == null ) {
+                    bgPosPrimitive = (CSSPrimitiveValue)ret[3];
                 }
                 // System.out.println("  --WAS A BGPOS, SKIPPING ADD");
                 continue;
             }
             // System.out.println("   --ADDING " + names[0]);
-            addProperties(declarations, primitives, names, origin, important);
+            addProperties( declarations, primitives, names, origin, important );
 
         }
-        if (bgPos != null) {
+        if ( bgPos != null ) {
             val = bgPos.toString().trim();
 
             // handle for single value--first will be taken as horizontal; as per CSS spec
             // if there is no " ", then we have a single value
-            if (val.indexOf(" ") == -1) {
+            if ( val.indexOf( " " ) == -1 ) {
                 // check that the single value is a length
-                if ( Idents.looksLikeALength(val))
+                if ( Idents.looksLikeALength( val ) ) {
                     val += " 50%";
+                }
             }
-            bgPosPrimitive.setCssText(val);
+            bgPosPrimitive.setCssText( val );
             names[0] = CSSName.BACKGROUND_POSITION;
-            primitives[0] = new FSCssValue(CSSName.BACKGROUND_POSITION, bgPosPrimitive, val);
-            addProperties(declarations, primitives, names, origin, important);
+            primitives[0] = new FSCssValue( CSSName.BACKGROUND_POSITION, bgPosPrimitive, val );
+            addProperties( declarations, primitives, names, origin, important );
         }
 
         return declarations.iterator();
     }
 
     /**
-     *
      * @param val
      * @param primitive
      * @param bgPos
      * @return
      */
-    private Object[] parseSingle(String val, CSSPrimitiveValue primitive, StringBuffer bgPos) {
+    private Object[] parseSingle( String val, CSSPrimitiveValue primitive, StringBuffer bgPos ) {
         Boolean wasBGP = Boolean.FALSE;
         CSSName expPropName = null;
         CSSPrimitiveValue bgPosPrimitive = null;
         //System.out.println("  TESTING '" + val + "'");
 
-        if (Idents.looksLikeAColor(val)) {
+        if ( Idents.looksLikeAColor( val ) ) {
             // System.out.println("    BG COLOR");
             expPropName = CSSName.BACKGROUND_COLOR;
-            primitive = new FSCssValue(CSSName.BACKGROUND_COLOR, primitive);
-        } else if (Idents.looksLikeAURI(val) || "none".equals(val)) {
+            primitive = new FSCssValue( CSSName.BACKGROUND_COLOR, primitive );
+        } else if ( Idents.looksLikeAURI( val ) || "none".equals( val ) ) {
             // System.out.println("    BG URI-IMAGE");
             expPropName = CSSName.BACKGROUND_IMAGE;
-        } else if (Idents.looksLikeABGRepeat(val)) {
+        } else if ( Idents.looksLikeABGRepeat( val ) ) {
             // System.out.println("    BG REPEAT");
             expPropName = CSSName.BACKGROUND_REPEAT;
-        } else if (Idents.looksLikeABGAttachment(val)) {
+        } else if ( Idents.looksLikeABGAttachment( val ) ) {
             // System.out.println("    BGN ATTACHMENT");
             expPropName = CSSName.BACKGROUND_ATTACHMENT;
-        } else if (Idents.looksLikeABGPosition(val)) {
+        } else if ( Idents.looksLikeABGPosition( val ) ) {
             // System.out.println("    BG POSITION (I THINK)");
-            if (bgPos == null) {
-                bgPos = new StringBuffer(val);
+            if ( bgPos == null ) {
+                bgPos = new StringBuffer( val );
                 bgPosPrimitive = primitive;
             } else {
-                bgPos.append(" " + val);
+                bgPos.append( " " + val );
             }
             wasBGP = Boolean.TRUE;
         } else {
@@ -170,10 +169,10 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
     /**
      * Returns the singleton instance.
      *
-     * @return Returns
+     * @return   Returns
      */
     public static synchronized PropertyDeclarationFactory instance() {
-        if (_instance == null) {
+        if ( _instance == null ) {
             _instance = new BackgroundPropertyDeclarationFactory();
         }
         return _instance;
@@ -184,6 +183,9 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 20:24:25  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.3  2005/01/29 12:14:20  pdoubleya
  * Removed priority as a parameter, added alternate build when only CSSValue is available; could be used in a SAC DocumentHandler after the CSSValue is initialized from a property.
  *

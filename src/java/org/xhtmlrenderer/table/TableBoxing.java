@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -169,8 +169,8 @@ public class TableBoxing {
                     Rectangle oe = c.getExtents();
                     c.setExtents(new Rectangle(c.getExtents().x, c.getExtents().y,
                             cell_box.width, 100));
+                    
                     // do child layout
-                    //Layout layout = c.getLayout(cell.node);
                     //Uu.p("cell box = " + cell_box);
                     //Uu.p("doing child layout on: " + layout + " for " + cell_box.node);
                     //Uu.p("cell_box properly = " + cell_box);
@@ -285,6 +285,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.8  2005/01/29 20:18:43  pdoubleya
+   Clean/reformat code. Removed commented blocks, checked copyright.
+
    Revision 1.7  2005/01/24 22:46:46  pdoubleya
    Added support for ident-checks using IdentValue instead of string comparisons.
 

@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,11 +19,28 @@
  */
 package org.xhtmlrenderer.render;
 
+
+
+/**
+ * Description of the Class
+ *
+ * @author   Joshua Marinacci
+ */
 public class InlineBlockBox extends InlineBox {
+
+    /** Description of the Field */
+    public BlockBox sub_block = null;
+
+    /** Constructor for the InlineBlockBox object */
     public InlineBlockBox() {
         super();
     }
 
+    /**
+     * Description of the Method
+     *
+     * @return   Returns
+     */
     public InlineBox copy() {
         InlineBlockBox newBox = new InlineBlockBox();
         InlineBlockBox box = this;
@@ -31,30 +48,31 @@ public class InlineBlockBox extends InlineBox {
         newBox.y = box.y;
         newBox.width = box.width;
         newBox.height = box.height;
-        //border = box.border;
-        //margin = box.margin;
-        //padding = box.padding;
-        //color = box.color;
         newBox.element = box.element;
         newBox.sub_block = box.sub_block;
-        //font = box.font;
-        //newBox.underline = box.underline;
-        //newBox.overline = box.overline;
-        //newBox.strikethrough = box.strikethrough;
         return newBox;
     }
 
-    public BlockBox sub_block = null;
+    /**
+     * Converts to a String representation of the object.
+     *
+     * @return   A string representation of the object.
+     */
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append( "InlineBlockBox:" );
+        sb.append( super.toString() );
+        return sb.toString();
+    }
 
+    /**
+     * Gets the endOfParentContent attribute of the InlineBlockBox object
+     *
+     * @return   The endOfParentContent value
+     */
     public boolean isEndOfParentContent() {
         return true;
     }
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("InlineBlockBox:");
-        sb.append(super.toString());
-        return sb.toString();
-    }
-
 }
+

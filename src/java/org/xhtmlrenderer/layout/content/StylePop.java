@@ -1,6 +1,6 @@
 /*
  * StylePop.java
- * Copyright (c) 2004 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -24,21 +24,42 @@ import org.w3c.dom.Element;
 
 /**
  * A marker for returning to the previous style
+ *
+ * @author   Torbjörn Gannholm
  */
 public class StylePop {
+    /** Description of the Field */
     private String _pseudo;
+    /** Description of the Field */
     private Element element;//needed for dynamic stuff
 
-    StylePop(String pseudo, Element e) {
+            /**
+     * Constructor for the StylePop object
+     *
+     * @param pseudo  PARAM
+     * @param e       PARAM
+     */
+    StylePop( String pseudo, Element e ) {
         _pseudo = pseudo;
         element = e;
     }
 
+    /**
+     * Gets the element attribute of the StylePop object
+     *
+     * @return   The element value
+     */
     public Element getElement() {
         return element;
     }
 
+    /**
+     * Gets the pseudoElement attribute of the StylePop object
+     *
+     * @return   The pseudoElement value
+     */
     public String getPseudoElement() {
         return _pseudo;
     }
 }
+

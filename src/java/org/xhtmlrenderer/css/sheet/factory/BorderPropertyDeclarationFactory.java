@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * BorderPropertyDeclarationFactory.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -29,8 +29,8 @@ import org.xhtmlrenderer.css.constants.Idents;
 
 
 /**
- * A PropertyDeclarationFactory for CSS 2 "border" shorthand property, instantiating
- * XRProperties.
+ * A PropertyDeclarationFactory for CSS 2 "border" shorthand property,
+ * instantiating XRProperties.
  *
  * @author   Patrick Wright
  */
@@ -55,6 +55,51 @@ public class BorderPropertyDeclarationFactory extends AbstractPropertyDeclaratio
 
     /** Constructor for the BorderPropertyDeclarationFactory object */
     private BorderPropertyDeclarationFactory() { }
+
+    /**
+     * Internal version of {@link #buildDeclarations(org.w3c.dom.css.CSSStyleDeclaration,
+     * CSSName, int)}, with value, priority and important already extracted for
+     * easy access. Override this in subclass to implement.
+     *
+     * @param primVals   The SAC value for this property
+     * @param important  True if author-marked important!
+     * @param cssName    property name
+     * @param origin     The origin of the stylesheet; constant from {@link
+     *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
+     * @return           Iterator of {@link
+     *      org.xhtmlrenderer.css.sheet.PropertyDeclaration} for the shorthand
+     *      margin property.
+     */
+    protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals, boolean important, CSSName cssName, int origin ) {
+        List declarations = new ArrayList();
+
+        // border explodes differently based on number of supplied values
+        // but values for color, style, width can be given in any order
+        // loop over the ones given and sniff them out to see if they
+        // look like color, style, width, then apply to all four sides
+        CSSPrimitiveValue primitive = null;
+        CSSPrimitiveValue[] primitives = new CSSPrimitiveValue[4];
+
+        CSSName sides[] = null;
+        for ( int i = 0, len = primVals.length; i < len; i++ ) {
+            primitive = primVals[i];
+            String val = primitive.getCssText();
+            if ( Idents.looksLikeAColor( val ) ) {
+                sides = LISTS[COLOR_IDX];
+            } else if ( Idents.looksLikeABorderStyle( val ) ) {
+                sides = LISTS[STYLE_IDX];
+            } else {
+                // it is a length
+                sides = LISTS[WIDTH_IDX];
+            }
+            primitives[0] = primitive;
+            primitives[1] = primitive;
+            primitives[2] = primitive;
+            primitives[3] = primitive;
+            addProperties( declarations, primitives, sides, origin, important );
+        }
+        return declarations.iterator();
+    }
 
     /**
      * * Returns the singleton instance.
@@ -99,55 +144,15 @@ public class BorderPropertyDeclarationFactory extends AbstractPropertyDeclaratio
         LISTS[STYLE_IDX] = STYLE_PRP;
         LISTS[COLOR_IDX] = COLOR_PRP;
     }
-
-    /**
-     * Internal version of {@link #buildDeclarations(org.w3c.dom.css.CSSStyleDeclaration, CSSName, int)}, with value,
-     * priority and important already extracted for easy access. Override this in subclass to implement.
-     *
-     * @param primVals  The SAC value for this property
-     * @param priority  Priority string for this value
-     * @param important True if author-marked important!
-     * @param cssName  property name
-     * @param origin    The origin of the stylesheet; constant from {@link org.xhtmlrenderer.css.sheet.Stylesheet}, e.g.
-     *                  Stylesheet.AUTHOR
-     * @return Iterator of {@link org.xhtmlrenderer.css.sheet.PropertyDeclaration} for the shorthand margin property.
-     */
-    protected Iterator doBuildDeclarations(CSSPrimitiveValue[] primVals, boolean important, CSSName cssName, int origin) {
-        List declarations = new ArrayList();
-
-        // border explodes differently based on number of supplied values
-        // but values for color, style, width can be given in any order
-        // loop over the ones given and sniff them out to see if they
-        // look like color, style, width, then apply to all four sides
-        CSSPrimitiveValue primitive = null;
-        CSSPrimitiveValue[] primitives = new CSSPrimitiveValue[4];
-
-        CSSName sides[] = null;
-        for ( int i = 0, len = primVals.length; i < len; i++ ) {
-            primitive = primVals[i];
-            String val = primitive.getCssText();
-            if ( Idents.looksLikeAColor( val ) ) {
-                sides = LISTS[COLOR_IDX];
-            } else if ( Idents.looksLikeABorderStyle( val ) ) {
-                sides = LISTS[STYLE_IDX];
-            } else {
-                // it is a length
-                sides = LISTS[WIDTH_IDX];
-            }
-            primitives[0] = primitive;
-            primitives[1] = primitive;
-            primitives[2] = primitive;
-            primitives[3] = primitive;
-            addProperties( declarations, primitives, sides, origin, important );
-        }
-        return declarations.iterator();
-    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 20:24:25  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.3  2005/01/29 12:14:20  pdoubleya
  * Removed priority as a parameter, added alternate build when only CSSValue is available; could be used in a SAC DocumentHandler after the CSSValue is initialized from a property.
  *
@@ -159,3 +164,4 @@ public class BorderPropertyDeclarationFactory extends AbstractPropertyDeclaratio
  *
  *
  */
+

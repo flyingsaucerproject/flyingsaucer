@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci, Torbjšrn Gannholm
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjšrn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,34 +19,37 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.awt.*;
+import java.util.List;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
-import java.util.List;
-
 
 /**
  * Description of the Class
  *
- * @author empty
+ * @author   empty
  */
 public class AnonymousBoxing {
 
+    /** Constructor for the AnonymousBoxLayout object  */
+    private AnonymousBoxing() { }
+
+
     /**
-     * Constructor for the AnonymousBoxLayout object
+     * Description of the Method
+     *
+     * @param c        PARAM
+     * @param content  PARAM
+     * @return         Returns
      */
-    private AnonymousBoxing() {
-    }
-
-
-    public static Box layout(Context c, Content content) {
-        Box block = new AnonymousBlockBox(content);
+    public static Box layout( Context c, Content content ) {
+        Box block = new AnonymousBlockBox( content );
         // copy the extents
         Rectangle oe = c.getExtents();
-        c.setExtents(new Rectangle(oe));
+        c.setExtents( new Rectangle( oe ) );
 
         block.x = c.getExtents().x;
         block.y = c.getExtents().y;
@@ -56,25 +59,24 @@ public class AnonymousBoxing {
 
         // do children's layout
         boolean old_sub = c.isSubBlock();
-        c.setSubBlock(false);
-        List contentList = content.getChildContent(c);
-        if (contentList != null && contentList.size() != 0) {
-            InlineBoxing.layoutContent(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
+        c.setSubBlock( false );
+        List contentList = content.getChildContent( c );
+        if ( contentList != null && contentList.size() != 0 ) {
+            InlineBoxing.layoutContent( c, block, content.getChildContent( c ) );//when this is really an anonymous, InlineLayout.layoutChildren is called
         }
-        c.setSubBlock(old_sub);
+        c.setSubBlock( old_sub );
 
         // restore height incase fixed height
-        if (block.auto_height == false) {
-            Uu.p("restoring original height");
+        if ( block.auto_height == false ) {
+            Uu.p( "restoring original height" );
             block.height = original_height;
         }
 
         //restore the extents
-        c.setExtents(oe);
+        c.setExtents( oe );
 
         return block;
     }
-
 
 }
 
@@ -82,6 +84,9 @@ public class AnonymousBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/01/29 20:24:27  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.1  2005/01/02 09:32:40  tobega
  * Now using mostly static methods for layout
  *

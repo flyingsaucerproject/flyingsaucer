@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * DefaultPropertyDeclarationFactory.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -34,10 +34,9 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
- * A PropertyDeclarationFactory for CSS 2 shorthand properties that should not be exploded,
- * specifically background-position and font-family,
- * instantiating PropertyDeclarations; Singleton, use {@link
- * #instance()}.
+ * A PropertyDeclarationFactory for CSS 2 shorthand properties that should not
+ * be exploded, specifically background-position and font-family, instantiating
+ * PropertyDeclarations; Singleton, use {@link #instance()}.
  *
  * @author   Patrick Wright
  */
@@ -53,9 +52,8 @@ public class FontFamilyPropertyDeclarationFactory extends AbstractPropertyDeclar
      * superclass.
      *
      * @param primVals   The SAC value for this property
-     * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param cssName   property name
+     * @param cssName    property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -68,11 +66,11 @@ public class FontFamilyPropertyDeclarationFactory extends AbstractPropertyDeclar
 
         StringBuffer pos = new StringBuffer();
         String suffix = ", ";
-        for (int i = 0; i < primVals.length; i++) {
+        for ( int i = 0; i < primVals.length; i++ ) {
             CSSPrimitiveValue primVal = primVals[i];
-            pos.append(primVal.getCssText().trim() + suffix);
+            pos.append( primVal.getCssText().trim() + suffix );
         }
-        pos.deleteCharAt(pos.length() - suffix.length()); // remove ,spc
+        pos.deleteCharAt( pos.length() - suffix.length() );// remove ,spc
         FSCssValue fsCssValue = new FSCssValue( cssName, primVals[0], pos.toString().trim() );
         List declarations = new ArrayList( 1 );
         declarations.add( newPropertyDeclaration( cssName, fsCssValue, origin, important ) );
@@ -96,6 +94,9 @@ public class FontFamilyPropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 20:21:04  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.3  2005/01/29 12:14:21  pdoubleya
  * Removed priority as a parameter, added alternate build when only CSSValue is available; could be used in a SAC DocumentHandler after the CSSValue is initialized from a property.
  *

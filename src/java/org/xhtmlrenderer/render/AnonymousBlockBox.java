@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -21,20 +21,20 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.content.Content;
 
+
 /**
  * Description of the Class
  *
- * @author empty
+ * @author   empty
  */
 public class AnonymousBlockBox extends BlockBox {
-
 
     /**
      * Constructor for the AnonymousBlockBox object
      *
      * @param content
      */
-    public AnonymousBlockBox(Content content) {
+    public AnonymousBlockBox( Content content ) {
 
         super();
         this.element = content.getElement();
@@ -45,39 +45,27 @@ public class AnonymousBlockBox extends BlockBox {
     /**
      * Converts to a String representation of the object.
      *
-     * @return A string representation of the object.
+     * @return   A string representation of the object.
      */
     public String toString() {
 
         StringBuffer sb = new StringBuffer();
 
-        sb.append("AnonymousBlockBox:");
+        sb.append( "AnonymousBlockBox:" );
 
-        sb.append(super.toString());
+        sb.append( super.toString() );
 
         return sb.toString();
     }
-
-
-// --Commented out by Inspection START (2005-01-05 01:06):
-//    /**
-//     * Gets the anonymous attribute of the AnonymousBlockBox object
-//     *
-//     * @return The anonymous value
-//     */
-//    public boolean isAnonymous() {
-//
-//        return true;
-//    }
-// --Commented out by Inspection STOP (2005-01-05 01:06)
-
-
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/01/29 20:24:24  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.11  2005/01/07 00:29:29  tobega
  * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
  *

@@ -1,7 +1,7 @@
 /*
  * {{{ header & license
  * BorderStylePropertyDeclarationFactory.java
- * Copyright (c) 2004 Patrick Wright
+ * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -28,8 +28,8 @@ import org.xhtmlrenderer.css.constants.CSSName;
 
 
 /**
- * A PropertyDeclarationFactory for CSS 2 "border-style" shorthand property, instantiating
- * PropertyDeclarations; Singleton, use {@link #instance()}.
+ * A PropertyDeclarationFactory for CSS 2 "border-style" shorthand property,
+ * instantiating PropertyDeclarations; Singleton, use {@link #instance()}.
  *
  * @author   Patrick Wright
  */
@@ -42,44 +42,44 @@ public class BorderStylePropertyDeclarationFactory extends AbstractPropertyDecla
      * this is closely in sync with the explosion code below, don't change
      * willy-nilly.
      */
-    private static final CSSName ONE_TO_FOUR[] = {
-                CSSName.BORDER_STYLE_TOP,
-                CSSName.BORDER_STYLE_RIGHT,
-                CSSName.BORDER_STYLE_BOTTOM,
-                CSSName.BORDER_STYLE_LEFT};
+    private final static CSSName ONE_TO_FOUR[] = {
+            CSSName.BORDER_STYLE_TOP,
+            CSSName.BORDER_STYLE_RIGHT,
+            CSSName.BORDER_STYLE_BOTTOM,
+            CSSName.BORDER_STYLE_LEFT};
 
     /**
      * List of property names, in order, when expanding 2 prop to 4. Careful,
      * this is closely in sync with the explosion code below, don't change
      * willy-nilly.
      */
-    private static final CSSName TWO_TO_FOUR[] = {
-                CSSName.BORDER_STYLE_TOP,
-                CSSName.BORDER_STYLE_BOTTOM,
-                CSSName.BORDER_STYLE_RIGHT,
-                CSSName.BORDER_STYLE_LEFT};
+    private final static CSSName TWO_TO_FOUR[] = {
+            CSSName.BORDER_STYLE_TOP,
+            CSSName.BORDER_STYLE_BOTTOM,
+            CSSName.BORDER_STYLE_RIGHT,
+            CSSName.BORDER_STYLE_LEFT};
 
     /**
      * List of property names, in order, when expanding 3 prop to 4. Careful,
      * this is closely in sync with the explosion code below, don't change
      * willy-nilly.
      */
-    private static final CSSName THREE_TO_FOUR[] = {
-                CSSName.BORDER_STYLE_TOP,
-                CSSName.BORDER_STYLE_RIGHT,
-                CSSName.BORDER_STYLE_LEFT,
-                CSSName.BORDER_STYLE_BOTTOM};
+    private final static CSSName THREE_TO_FOUR[] = {
+            CSSName.BORDER_STYLE_TOP,
+            CSSName.BORDER_STYLE_RIGHT,
+            CSSName.BORDER_STYLE_LEFT,
+            CSSName.BORDER_STYLE_BOTTOM};
 
     /**
      * List of property names, in order, when expanding 4 prop to 4. Careful,
      * this is closely in sync with the explosion code below, don't change
      * willy-nilly.
      */
-    private static final CSSName FOUR_TO_FOUR[] = {
-                CSSName.BORDER_STYLE_TOP,
-                CSSName.BORDER_STYLE_RIGHT,
-                CSSName.BORDER_STYLE_BOTTOM,
-                CSSName.BORDER_STYLE_LEFT};
+    private final static CSSName FOUR_TO_FOUR[] = {
+            CSSName.BORDER_STYLE_TOP,
+            CSSName.BORDER_STYLE_RIGHT,
+            CSSName.BORDER_STYLE_BOTTOM,
+            CSSName.BORDER_STYLE_LEFT};
 
     /** Default constructor; don't use, use instance() instead. */
     private BorderStylePropertyDeclarationFactory() { }
@@ -89,9 +89,8 @@ public class BorderStylePropertyDeclarationFactory extends AbstractPropertyDecla
      * superclass.
      *
      * @param primVals   The SAC value for this property
-     * @param priority   Priority string for this value
      * @param important  True if author-marked important!
-     * @param cssName   property name
+     * @param cssName    property name
      * @param origin     The origin of the stylesheet; constant from {@link
      *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
      * @return           Iterator of PropertyDeclarations for the shorthand
@@ -110,37 +109,37 @@ public class BorderStylePropertyDeclarationFactory extends AbstractPropertyDecla
             case 1:
                 primitive = primVals[0];
                 primitives = new CSSPrimitiveValue[]{
-                            primitive,
-                            primitive,
-                            primitive,
-                            primitive};
+                        primitive,
+                        primitive,
+                        primitive,
+                        primitive};
 
                 addProperties( declarations, primitives, ONE_TO_FOUR, origin, important );
                 break;
             case 2:
                 primitives = new CSSPrimitiveValue[]{
-                            primVals[ 0 ],
-                            primVals[ 0 ],
-                            primVals[ 1 ],
-                            primVals[ 1 ]};
+                        primVals[0],
+                        primVals[0],
+                        primVals[1],
+                        primVals[1]};
 
                 addProperties( declarations, primitives, TWO_TO_FOUR, origin, important );
                 break;
             case 3:
                 primitives = new CSSPrimitiveValue[]{
-                            primVals[ 0 ],
-                            primVals[ 1 ],
-                            primVals[ 1 ],
-                            primVals[ 2 ]};
+                        primVals[0],
+                        primVals[1],
+                        primVals[1],
+                        primVals[2]};
 
                 addProperties( declarations, primitives, THREE_TO_FOUR, origin, important );
                 break;
             case 4:
                 primitives = new CSSPrimitiveValue[]{
-                            primVals[ 0 ],
-                            primVals[ 1 ],
-                            primVals[ 2 ],
-                            primVals[ 3 ]};
+                        primVals[0],
+                        primVals[1],
+                        primVals[2],
+                        primVals[3]};
 
                 addProperties( declarations, primitives, FOUR_TO_FOUR, origin, important );
                 break;
@@ -166,6 +165,9 @@ public class BorderStylePropertyDeclarationFactory extends AbstractPropertyDecla
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/01/29 20:24:24  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.3  2005/01/29 12:14:21  pdoubleya
  * Removed priority as a parameter, added alternate build when only CSSValue is available; could be used in a SAC DocumentHandler after the CSSValue is initialized from a property.
  *

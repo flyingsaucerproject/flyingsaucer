@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Torbjï¿½rn Gannholm, Joshua Marinacci
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm, Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.layout.content;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -29,25 +32,254 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.inline.WhitespaceStripper;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Generates lists of Content.
- * This is the only place where it should be determined about the type of content an element is.
- * The layout and rendering should only work with Boxes and Content
+ * Generates lists of Content. This is the only place where it should be
+ * determined about the type of content an element is. The layout and rendering
+ * should only work with Boxes and Content
+ *
+ * @author   Joshua Marinacci
+ * @author   Torbjörn Gannholm
  */
 public class ContentUtil {
+
+    //TODO: following methods should not need to be public
+    /**
+     * Description of the Method
+     *
+     * @param style  PARAM
+     * @return       Returns
+     */
+    public static boolean mayHaveFirstLetter( CascadedStyle style ) {
+        // ASK: why use CascadedStyle here, instead of Calculated? (PWW 25-01-05)
+        if ( style == null ) {
+            return false;
+        }//for DomToplevelNode
+        IdentValue display = style.getIdent( CSSName.DISPLAY );
+        return display != null &&
+                ( display == IdentValue.BLOCK ||
+                display == IdentValue.LIST_ITEM ||
+                display == IdentValue.TABLE_CELL ||
+                display == IdentValue.TABLE_CAPTION ||
+                display == IdentValue.INLINE_BLOCK );
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param style  PARAM
+     * @return       Returns
+     */
+    public static boolean mayHaveFirstLine( CascadedStyle style ) {
+        // ASK: why use CascadedStyle here, instead of Calculated? (PWW 25-01-05)
+        if ( style == null ) {
+            return false;
+        }//for DomToplevelNode
+        IdentValue display = style.getIdent( CSSName.DISPLAY );
+        return display != null &&
+                ( display == IdentValue.BLOCK ||
+                display == IdentValue.LIST_ITEM ||
+                display == IdentValue.RUN_IN ||
+                display == IdentValue.TABLE ||
+                display == IdentValue.TABLE_CELL ||
+                display == IdentValue.TABLE_CAPTION ||
+                display == IdentValue.INLINE_BLOCK );
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param childContent  PARAM
+     * @return              Returns
+     */
+    public static boolean hasBlockContent( List childContent ) {
+        for ( Iterator i = childContent.iterator(); i.hasNext();  ) {
+            Object o = i.next();
+            if ( o instanceof TableContent ) {
+                return true;
+            }
+            if ( o instanceof BlockContent ) {
+                return true;
+            }
+            if ( o instanceof AnonymousBlockContent ) {
+                return true;
+            }
+            if ( o instanceof RunInContent ) {
+                return true;
+            }//if it has run-ins, it will be block, one way or another
+        }
+        return false;
+    }
+
+    /**
+     * Gets the blockLevel attribute of the ContentUtil class
+     *
+     * @param style  PARAM
+     * @return       The blockLevel value
+     */
+    public static boolean isBlockLevel( CascadedStyle style ) {
+        if ( style == null ) {
+            return false;
+        }
+        IdentValue display = style.getIdent( CSSName.DISPLAY );
+        return display != null && ( display == IdentValue.BLOCK || display == IdentValue.LIST_ITEM || display == IdentValue.TABLE );
+    }
+
+    /**
+     * Gets the hidden attribute of the ContentUtil class
+     *
+     * @param style  PARAM
+     * @return       The hidden value
+     */
+    public static boolean isHidden( CascadedStyle style ) {
+        IdentValue display = style.getIdent( CSSName.DISPLAY );
+        return display != null && display == IdentValue.NONE;
+    }
+
+    /**
+     * Gets the runIn attribute of the ContentUtil class
+     *
+     * @param style  PARAM
+     * @return       The runIn value
+     */
+    public static boolean isRunIn( CascadedStyle style ) {
+        IdentValue display = style.getIdent( CSSName.DISPLAY );
+        return display != null && display == IdentValue.RUN_IN;
+    }
+
+    /**
+     * Gets the table attribute of the ContentUtil class
+     *
+     * @param style  PARAM
+     * @return       The table value
+     */
+    public static boolean isTable( CascadedStyle style ) {
+        IdentValue display = style.getIdent( CSSName.DISPLAY );
+        return display != null && display == IdentValue.TABLE;
+    }
+
+    /**
+     * Gets the listItem attribute of the ContentUtil class
+     *
+     * @param style  PARAM
+     * @return       The listItem value
+     */
+    public static boolean isListItem( CascadedStyle style ) {
+        if ( style == null ) {
+            return false;
+        }
+        IdentValue display = style.getIdent( CSSName.DISPLAY );
+        return display != null && display == IdentValue.LIST_ITEM;
+    }
+
+    /**
+     * Gets the absoluteOrFixed attribute of the ContentUtil class
+     *
+     * @param style  PARAM
+     * @return       The absoluteOrFixed value
+     */
+    public static boolean isAbsoluteOrFixed( CascadedStyle style ) {
+        IdentValue position = style.getIdent( CSSName.POSITION );
+        return position != null && ( position == IdentValue.ABSOLUTE || position == IdentValue.FIXED );
+    }
+
+    /**
+     * Gets the inlineBlock attribute of the ContentUtil class
+     *
+     * @param style  PARAM
+     * @return       The inlineBlock value
+     */
+    public static boolean isInlineBlock( CascadedStyle style ) {
+        IdentValue display = style.getIdent( CSSName.DISPLAY );
+        return display != null && display == IdentValue.INLINE_BLOCK;
+    }
+
+    /**
+     * Gets the floated attribute of the ContentUtil class
+     *
+     * @param style  PARAM
+     * @return       The floated value
+     */
+    public static boolean isFloated( CascadedStyle style ) {
+        if ( style == null ) {
+            return false;
+        }
+        IdentValue floatVal = style.getIdent( CSSName.FLOAT );
+        return floatVal != null && ( floatVal == IdentValue.LEFT || floatVal == IdentValue.RIGHT );
+    }
+
+    /**
+     * Gets the blockContent attribute of the ContentUtil class
+     *
+     * @param childContent  PARAM
+     * @return              The blockContent value
+     */
+    public static boolean isBlockContent( List childContent ) {
+        // Uu.p("checking block content: " + childContent);
+        if ( childContent.size() == 0 ) {
+            return false;
+        }
+        Object o = childContent.get( childContent.size() - 1 );
+        if ( o instanceof TableContent ) {
+            return true;
+        }
+        if ( o instanceof BlockContent ) {
+            return true;
+        }
+        if ( o instanceof AnonymousBlockContent ) {
+            return true;
+        }
+        if ( o instanceof RunInContent ) {
+            return true;
+        }//if it has run-ins, it will be block, one way or another
+        return false;
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param pendingInlines  PARAM
+     * @param parentElement   PARAM
+     * @param c               PARAM
+     * @return                Returns
+     */
+    static List resolveBlockContent( List pendingInlines, Element parentElement, Context c ) {
+        //return new LinkedList(pendingInlines);//pendingInlines.clone();
+
+        List inline = new LinkedList();
+        List block = new LinkedList();
+        for ( Iterator i = pendingInlines.iterator(); i.hasNext();  ) {
+            Object o = i.next();
+            if ( o instanceof BlockContent || o instanceof RunInContent || o instanceof TableContent ) {
+                inline = WhitespaceStripper.stripInlineContent( c, inline );
+                if ( inline.size() != 0 ) {
+                    //Uu.p("resove runin : new anony");
+                    block.add( new AnonymousBlockContent( parentElement, inline ) );
+                    inline = new LinkedList();
+                }
+                block.add( o );
+            } else {
+                inline.add( o );
+            }
+        }
+        inline = WhitespaceStripper.stripInlineContent( c, inline );
+        if ( inline.size() != 0 ) {
+            //Uu.p("resove runin : new anony 2");
+            //Uu.p("stripped list = " + inline);
+            block.add( new AnonymousBlockContent( parentElement, inline ) );
+        }
+        return block;
+    }
 
     /**
      * Gets the inline content of a sequence of nodes
      *
-     * @param c      The current context. The current style in the context must correspond to that of the parent Content
-     * @param parent The parent Content to get the child content for
-     * @return A list of content.
+     * @param c       The current context. The current style in the context must
+     *      correspond to that of the parent Content
+     * @param parent  The parent Content to get the child content for
+     * @return        A list of content.
      */
-    static List getChildContentList(Context c, Content parent) {
+    static List getChildContentList( Context c, Content parent ) {
         List inlineList = new LinkedList();
         FirstLineStyle firstLineStyle = null;
         FirstLetterStyle firstLetterStyle = null;
@@ -55,319 +287,204 @@ public class ContentUtil {
         CascadedStyle parentStyle = parent.getStyle();
         Element parentElement = parent.getElement();
 
-        if (parentElement != null) {
-            if (mayHaveFirstLine(parentStyle)) {
+        if ( parentElement != null ) {
+            if ( mayHaveFirstLine( parentStyle ) ) {
                 //put in a marker if there is first-line styling
-                CascadedStyle firstLine = c.getCss().getPseudoElementStyle(parentElement, "first-line");
-                if (firstLine != null) {
-                    firstLineStyle = new FirstLineStyle(firstLine);
+                CascadedStyle firstLine = c.getCss().getPseudoElementStyle( parentElement, "first-line" );
+                if ( firstLine != null ) {
+                    firstLineStyle = new FirstLineStyle( firstLine );
                 }
             }
 
-            if (mayHaveFirstLetter(parentStyle)) {
+            if ( mayHaveFirstLetter( parentStyle ) ) {
                 //put in a marker if there is first-letter styling
-                CascadedStyle firstLetter = c.getCss().getPseudoElementStyle(parentElement, "first-letter");
-                if (firstLetter != null) {
-                    firstLetterStyle = new FirstLetterStyle(firstLetter);
+                CascadedStyle firstLetter = c.getCss().getPseudoElementStyle( parentElement, "first-letter" );
+                if ( firstLetter != null ) {
+                    firstLetterStyle = new FirstLetterStyle( firstLetter );
                 }
             }
 
             //TODO: before and after may be block!
             //<br/> handling should be done by :before content
-            CascadedStyle before = c.getCss().getPseudoElementStyle(parentElement, "before");
-            if (before != null && before.hasProperty(CSSName.CONTENT)) {
-                String content = ((CSSPrimitiveValue) before.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
-                if (!content.equals("")) {
-                    inlineList.add(new StylePush("before", parentElement));
-                    c.pushStyle(before);
+            CascadedStyle before = c.getCss().getPseudoElementStyle( parentElement, "before" );
+            if ( before != null && before.hasProperty( CSSName.CONTENT ) ) {
+                String content = ( (CSSPrimitiveValue)before.propertyByName( CSSName.CONTENT ).getValue() ).getStringValue();
+                if ( !content.equals( "" ) ) {
+                    inlineList.add( new StylePush( "before", parentElement ) );
+                    c.pushStyle( before );
                     textContent = new StringBuffer();
-                    textContent.append(content.replaceAll("\\\\A", "\n"));
-                    inlineList.add(new TextContent("before", parentElement, textContent.toString()));
+                    textContent.append( content.replaceAll( "\\\\A", "\n" ) );
+                    inlineList.add( new TextContent( "before", parentElement, textContent.toString() ) );
                     textContent = null;
                     c.popStyle();
-                    inlineList.add(new StylePop("before", parentElement));
+                    inlineList.add( new StylePop( "before", parentElement ) );
                 }
                 //do not reset style here, because if this element is empty, we will not have changed context
             }
         }
 
         Node node = parentElement;
-        if (node == null) node = ((DomToplevelNode) parent).getNode();
+        if ( node == null ) {
+            node = ( (DomToplevelNode)parent ).getNode();
+        }
         NodeList children = node.getChildNodes();
         //each child node can result in only one addition to content
-        for (int i = 0; i < children.getLength(); i++) {
-            Node curr = children.item(i);
-            if (curr.getNodeType() != Node.ELEMENT_NODE && curr.getNodeType() != Node.TEXT_NODE) continue;//must be a comment or pi or something
+        for ( int i = 0; i < children.getLength(); i++ ) {
+            Node curr = children.item( i );
+            if ( curr.getNodeType() != Node.ELEMENT_NODE && curr.getNodeType() != Node.TEXT_NODE ) {
+                continue;
+            }//must be a comment or pi or something
 
-            if (curr.getNodeType() == Node.TEXT_NODE) {
+            if ( curr.getNodeType() == Node.TEXT_NODE ) {
                 String text = curr.getNodeValue();
-                if (textContent == null) textContent = new StringBuffer();
-                textContent.append(text);
+                if ( textContent == null ) {
+                    textContent = new StringBuffer();
+                }
+                textContent.append( text );
                 continue;
             }
 
-            Element elem = (Element) curr;
-            CascadedStyle style = c.getCss().getCascadedStyle(elem, true);//this is the place where restyle is done for layout (boxing)
-            c.pushStyle(style);//just remember to pop it before continue
+            Element elem = (Element)curr;
+            CascadedStyle style = c.getCss().getCascadedStyle( elem, true );//this is the place where restyle is done for layout (boxing)
+            c.pushStyle( style );//just remember to pop it before continue
 
-            if (isHidden(style)) {
+            if ( isHidden( style ) ) {
                 c.popStyle();
                 continue;//at least for now, don't generate hidden content
             }
 
-            if (isAbsoluteOrFixed(style)) {
+            if ( isAbsoluteOrFixed( style ) ) {
                 // Uu.p("adding replaced: " + curr);
-                if (textContent != null) {
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
+                if ( textContent != null ) {
+                    inlineList.add( new TextContent( parentElement, textContent.toString() ) );
                     textContent = null;
                 }
-                inlineList.add(new AbsolutelyPositionedContent((Element) curr, style));
+                inlineList.add( new AbsolutelyPositionedContent( (Element)curr, style ) );
                 c.popStyle();
                 continue;
             }
 
             //have to check for float here already. The element may still be replaced, though
-            if (isFloated(style)) {
+            if ( isFloated( style ) ) {
                 // Uu.p("adding floated block: " + curr);
-                if (textContent != null) {
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
+                if ( textContent != null ) {
+                    inlineList.add( new TextContent( parentElement, textContent.toString() ) );
                     textContent = null;
                 }
-                inlineList.add(new FloatedBlockContent((Element) curr, style));
+                inlineList.add( new FloatedBlockContent( (Element)curr, style ) );
                 c.popStyle();
                 continue;
             }
 
-            if (isInlineBlock(style)) {
+            if ( isInlineBlock( style ) ) {
                 //treat it like a replaced element
-                if (textContent != null) {
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
+                if ( textContent != null ) {
+                    inlineList.add( new TextContent( parentElement, textContent.toString() ) );
                     textContent = null;
                 }
-                inlineList.add(new InlineBlockContent(elem, style));
+                inlineList.add( new InlineBlockContent( elem, style ) );
                 c.popStyle();
                 continue;
             }
 
-            if (isRunIn(style)) {
-                RunInContent runIn = new RunInContent(elem, style);
-                if (textContent != null) {
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
+            if ( isRunIn( style ) ) {
+                RunInContent runIn = new RunInContent( elem, style );
+                if ( textContent != null ) {
+                    inlineList.add( new TextContent( parentElement, textContent.toString() ) );
                     textContent = null;
                 }
-                inlineList.add(runIn);//resolve it when we can
+                inlineList.add( runIn );//resolve it when we can
                 c.popStyle();
                 continue;
             }
 
-            if (isTable(style)) {
-                if (textContent != null) {
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
+            if ( isTable( style ) ) {
+                if ( textContent != null ) {
+                    inlineList.add( new TextContent( parentElement, textContent.toString() ) );
                     textContent = null;
                 }
-                TableContent table = new TableContent(elem, style);
-                inlineList.add(table);
+                TableContent table = new TableContent( elem, style );
+                inlineList.add( table );
                 c.popStyle();
                 continue;
             }
 
             //TODO:list-items, anonymous tables, inline tables, etc.
 
-            if (isBlockLevel(style)) {
-                if (textContent != null) {
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
+            if ( isBlockLevel( style ) ) {
+                if ( textContent != null ) {
+                    inlineList.add( new TextContent( parentElement, textContent.toString() ) );
                     textContent = null;
                 }
-                BlockContent block = new BlockContent(elem, style);
-                inlineList.add(block);
+                BlockContent block = new BlockContent( elem, style );
+                inlineList.add( block );
                 c.popStyle();
                 continue;
             }
 
             //if we get here, we have inline content, need to get into it.
-            if (textContent != null) {
-                inlineList.add(new TextContent(parentElement, textContent.toString()));
+            if ( textContent != null ) {
+                inlineList.add( new TextContent( parentElement, textContent.toString() ) );
                 textContent = null;
             }
-            Content inline = new InlineContent(elem, style);
-            List childList = inline.getChildContent(c);
-            inlineList.add(new StylePush(null, elem));//this is already pushed to context
+            Content inline = new InlineContent( elem, style );
+            List childList = inline.getChildContent( c );
+            inlineList.add( new StylePush( null, elem ) );//this is already pushed to context
             //the child list represents the entire contents of an element,
             //therefore we need not concern ourselves with style-changes, as they will even out
-            for (Iterator ci = childList.iterator(); ci.hasNext();) {
+            for ( Iterator ci = childList.iterator(); ci.hasNext();  ) {
                 Object o = ci.next();
-                if (o instanceof AnonymousBlockContent) {
-                    inlineList.addAll(((AnonymousBlockContent) o).getChildContent(c));
+                if ( o instanceof AnonymousBlockContent ) {
+                    inlineList.addAll( ( (AnonymousBlockContent)o ).getChildContent( c ) );
                 } else {
-                    inlineList.add(o);
+                    inlineList.add( o );
                 }
             }
-            inlineList.add(new StylePop(null, elem));//pop from c below
+            inlineList.add( new StylePop( null, elem ) );//pop from c below
             c.popStyle();
         }
 
-        if (textContent != null) {
-            inlineList.add(new TextContent(parentElement, textContent.toString()));
+        if ( textContent != null ) {
+            inlineList.add( new TextContent( parentElement, textContent.toString() ) );
             textContent = null;
         }
-        if (parentElement != null) {
+        if ( parentElement != null ) {
             //TODO: after may be block!
-            CascadedStyle after = c.getCss().getPseudoElementStyle(parentElement, "after");
-            if (after != null && after.hasProperty(CSSName.CONTENT)) {
-                String content = ((CSSPrimitiveValue) after.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
-                if (!content.equals("")) {//a worthwhile reduncancy-check
-                    if (textContent != null) {
-                        inlineList.add(new TextContent(parentElement, textContent.toString()));
+            CascadedStyle after = c.getCss().getPseudoElementStyle( parentElement, "after" );
+            if ( after != null && after.hasProperty( CSSName.CONTENT ) ) {
+                String content = ( (CSSPrimitiveValue)after.propertyByName( CSSName.CONTENT ).getValue() ).getStringValue();
+                if ( !content.equals( "" ) ) {//a worthwhile reduncancy-check
+                    if ( textContent != null ) {
+                        inlineList.add( new TextContent( parentElement, textContent.toString() ) );
                         textContent = null;
                     }
-                    inlineList.add(new StylePush("after", parentElement));
+                    inlineList.add( new StylePush( "after", parentElement ) );
                     textContent = new StringBuffer();
-                    textContent.append(content.replaceAll("\\\\A", "\n"));
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
+                    textContent.append( content.replaceAll( "\\\\A", "\n" ) );
+                    inlineList.add( new TextContent( parentElement, textContent.toString() ) );
                     textContent = null;
-                    inlineList.add(new StylePop("after", parentElement));
+                    inlineList.add( new StylePop( "after", parentElement ) );
                 }
             }
         }
 
         List blockList = null;
-        if (firstLetterStyle != null) {
-            inlineList.add(0, firstLetterStyle);
+        if ( firstLetterStyle != null ) {
+            inlineList.add( 0, firstLetterStyle );
         }
-        if (firstLineStyle != null) {
-            inlineList.add(0, firstLineStyle);
+        if ( firstLineStyle != null ) {
+            inlineList.add( 0, firstLineStyle );
         }
 
-        if (hasBlockContent(inlineList)) {
+        if ( hasBlockContent( inlineList ) ) {
             blockList = new LinkedList();
-            blockList.addAll(resolveBlockContent(inlineList, parentElement, c));
+            blockList.addAll( resolveBlockContent( inlineList, parentElement, c ) );
             return blockList;
         } else {
-            inlineList = WhitespaceStripper.stripInlineContent(c, inlineList);
+            inlineList = WhitespaceStripper.stripInlineContent( c, inlineList );
             return inlineList;
         }
 
-    }
-
-    static List resolveBlockContent(List pendingInlines, Element parentElement, Context c) {
-        //return new LinkedList(pendingInlines);//pendingInlines.clone();
-
-        List inline = new LinkedList();
-        List block = new LinkedList();
-        for (Iterator i = pendingInlines.iterator(); i.hasNext();) {
-            Object o = i.next();
-            if (o instanceof BlockContent || o instanceof RunInContent || o instanceof TableContent) {
-                inline = WhitespaceStripper.stripInlineContent(c, inline);
-                if (inline.size() != 0) {
-                    //Uu.p("resove runin : new anony");
-                    block.add(new AnonymousBlockContent(parentElement, inline));
-                    inline = new LinkedList();
-                }
-                block.add(o);
-            } else {
-                inline.add(o);
-            }
-        }
-        inline = WhitespaceStripper.stripInlineContent(c, inline);
-        if (inline.size() != 0) {
-            //Uu.p("resove runin : new anony 2");
-            //Uu.p("stripped list = " + inline);
-            block.add(new AnonymousBlockContent(parentElement, inline));
-        }
-        return block;
-
-    }
-
-    //TODO: following methods should not need to be public
-    public static boolean mayHaveFirstLetter(CascadedStyle style) {
-        // ASK: why use CascadedStyle here, instead of Calculated? (PWW 25-01-05)
-        if (style == null) return false;//for DomToplevelNode
-        IdentValue display = style.getIdent(CSSName.DISPLAY);
-        return display != null &&
-                (display == IdentValue.BLOCK ||
-                 display == IdentValue.LIST_ITEM ||
-                 display == IdentValue.TABLE_CELL ||
-                 display == IdentValue.TABLE_CAPTION ||
-                 display == IdentValue.INLINE_BLOCK );
-    }
-
-    public static boolean mayHaveFirstLine(CascadedStyle style) {
-        // ASK: why use CascadedStyle here, instead of Calculated? (PWW 25-01-05)
-        if(style == null) return false;//for DomToplevelNode
-        IdentValue display = style.getIdent(CSSName.DISPLAY);
-        return display != null &&
-                (display == IdentValue.BLOCK ||
-                 display == IdentValue.LIST_ITEM ||
-                 display == IdentValue.RUN_IN ||
-                 display == IdentValue.TABLE ||
-                 display == IdentValue.TABLE_CELL ||
-                 display == IdentValue.TABLE_CAPTION ||
-                 display == IdentValue.INLINE_BLOCK );
-    }
-
-    public static boolean isBlockLevel(CascadedStyle style) {
-        if (style == null) return false;
-        IdentValue display = style.getIdent(CSSName.DISPLAY);
-        return display != null && (display == IdentValue.BLOCK || display == IdentValue.LIST_ITEM || display == IdentValue.TABLE);
-    }
-
-    public static boolean isHidden(CascadedStyle style) {
-        IdentValue display = style.getIdent(CSSName.DISPLAY);
-        return display != null && display == IdentValue.NONE;
-    }
-
-    public static boolean isRunIn(CascadedStyle style) {
-        IdentValue display = style.getIdent(CSSName.DISPLAY);
-        return display != null && display == IdentValue.RUN_IN;
-    }
-
-    public static boolean isTable(CascadedStyle style) {
-        IdentValue display = style.getIdent(CSSName.DISPLAY);
-        return display != null && display == IdentValue.TABLE;
-    }
-
-    public static boolean isListItem(CascadedStyle style) {
-        if (style == null) return false;
-        IdentValue display = style.getIdent(CSSName.DISPLAY);
-        return display != null && display == IdentValue.LIST_ITEM;
-    }
-
-    public static boolean isAbsoluteOrFixed(CascadedStyle style) {
-        IdentValue position = style.getIdent(CSSName.POSITION);
-        return position != null && ( position == IdentValue.ABSOLUTE || position == IdentValue.FIXED );
-    }
-
-    public static boolean isInlineBlock(CascadedStyle style) {
-        IdentValue display = style.getIdent(CSSName.DISPLAY);
-        return display != null && display == IdentValue.INLINE_BLOCK;
-    }
-
-    public static boolean isFloated(CascadedStyle style) {
-        if (style == null) return false;
-        IdentValue floatVal = style.getIdent(CSSName.FLOAT);
-        return floatVal != null && ( floatVal == IdentValue.LEFT || floatVal == IdentValue.RIGHT );
-    }
-
-    public static boolean isBlockContent(List childContent) {
-        // Uu.p("checking block content: " + childContent);
-        if (childContent.size() == 0) return false;
-        Object o = childContent.get(childContent.size() - 1);
-        if (o instanceof TableContent) return true;
-        if (o instanceof BlockContent) return true;
-        if (o instanceof AnonymousBlockContent) return true;
-        if (o instanceof RunInContent) return true;//if it has run-ins, it will be block, one way or another
-        return false;
-    }
-
-    public static boolean hasBlockContent(List childContent) {
-        for (Iterator i = childContent.iterator(); i.hasNext();) {
-            Object o = i.next();
-            if (o instanceof TableContent) return true;
-            if (o instanceof BlockContent) return true;
-            if (o instanceof AnonymousBlockContent) return true;
-            if (o instanceof RunInContent) return true;//if it has run-ins, it will be block, one way or another
-        }
-        return false;
     }
 
 }
@@ -376,6 +493,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/01/29 20:22:15  pdoubleya
+ * Clean/reformat code. Removed commented blocks, checked copyright.
+ *
  * Revision 1.32  2005/01/25 14:45:55  pdoubleya
  * Added support for IdentValue mapping on property declarations. On both CascadedStyle and PropertyDeclaration you can now request the value as an IdentValue, for object-object comparisons. Updated 99% of references that used to get the string value of PD to return the IdentValue instead; remaining cases are for pseudo-elements where the PD content needs to be manipulated as a String.
  *
