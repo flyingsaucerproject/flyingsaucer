@@ -136,13 +136,9 @@ public class FontResolver {
             font_const = font_const | Font.ITALIC;
         }
 
-        // scale relative to java's default 72.0 dpi
-        float dpi = c.getRenderingContext().getDPI();
-        float dpiscale = dpi / 72f;
         // scale vs font scale value too
-        float scale = c.getRenderingContext().getTextRenderer().getFontScale();
+        size *= c.getRenderingContext().getTextRenderer().getFontScale();
 
-        size = size * dpiscale * scale;
         Font fnt = root_font.deriveFont( font_const, size );
         if ( variant != null ) {
             if ( variant == IdentValue.SMALL_CAPS ) {
@@ -244,6 +240,9 @@ public class FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/03/24 23:19:11  pdoubleya
+ * Cleaned up DPI calculations for font size (Kevin).
+ *
  * Revision 1.13  2005/02/02 11:32:29  pdoubleya
  * Fixed error in font-weight; now checks for 700, 800, 900 or BOLD.
  *
