@@ -20,7 +20,7 @@
 package org.xhtmlrenderer.forms;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.layout.Context;
 
 import javax.swing.*;
 
@@ -45,7 +45,7 @@ public class InputCheckbox extends FormItemLayout {
      * @param elem PARAM
      * @return Returns
      */
-    public JComponent createComponent(SharedContext c, Element elem) {
+    public JComponent createComponent(Context c, Element elem) {
         JCheckBox comp = new JCheckBox();
         comp.setText("");
         comp.setOpaque(false);
@@ -63,6 +63,9 @@ public class InputCheckbox extends FormItemLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/29 15:06:40  tobega
+ * Referencing Context instead of SharedContext where it was wrongly set before.
+ *
  * Revision 1.4  2004/12/29 10:39:28  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

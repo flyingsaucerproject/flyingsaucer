@@ -24,7 +24,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.*;
+import org.xhtmlrenderer.layout.BoxLayout;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.Layout;
+import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.layout.content.BlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
@@ -75,7 +78,7 @@ public class TableLayout
      * @param content
      * @return Returns
      */
-    public Box createBox(SharedContext c, Content content) {
+    public Box createBox(Context c, Content content) {
 
         Box box = new TableBox(0, 0, 0, 0);
 
@@ -539,6 +542,9 @@ public class TableLayout
 /*
    $Id$
    $Log$
+   Revision 1.18  2004/12/29 15:06:42  tobega
+   Referencing Context instead of SharedContext where it was wrongly set before.
+
    Revision 1.17  2004/12/29 10:39:36  tobega
    Separated current state Context into ContextImpl and the rest into SharedContext.
 

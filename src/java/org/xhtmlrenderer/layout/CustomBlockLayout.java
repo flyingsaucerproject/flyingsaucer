@@ -41,7 +41,7 @@ public class CustomBlockLayout extends BoxLayout {
      * @param content
      * @return Returns
      */
-    public Box createBox(SharedContext c, Content content) {
+    public Box createBox(Context c, Content content) {
         BlockBox box = new BlockBox();
         box.content = content;
         return box;
@@ -98,6 +98,9 @@ public class CustomBlockLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/12/29 15:06:41  tobega
+ * Referencing Context instead of SharedContext where it was wrongly set before.
+ *
  * Revision 1.9  2004/12/29 10:39:32  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

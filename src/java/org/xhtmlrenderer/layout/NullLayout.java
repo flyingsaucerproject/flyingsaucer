@@ -37,7 +37,7 @@ public class NullLayout extends DefaultLayout {
      * @param content PARAM
      * @return Returns
      */
-    public Box layout(SharedContext c, Content content) {
+    public Box layout(Context c, Content content) {
 
         return new Box(0, 0, 0, 0);
     }
@@ -57,6 +57,9 @@ public class NullLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/12/29 15:06:41  tobega
+ * Referencing Context instead of SharedContext where it was wrongly set before.
+ *
  * Revision 1.6  2004/12/29 10:39:33  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

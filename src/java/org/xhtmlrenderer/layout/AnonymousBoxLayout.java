@@ -173,7 +173,7 @@ public class AnonymousBoxLayout extends InlineLayout {
      * @param content
      * @return Returns
      */
-    public Box createBox(SharedContext c, Content content) {
+    public Box createBox(Context c, Content content) {
 
         AnonymousBlockBox block = new AnonymousBlockBox(content);
 
@@ -237,6 +237,9 @@ public class AnonymousBoxLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/12/29 15:06:41  tobega
+ * Referencing Context instead of SharedContext where it was wrongly set before.
+ *
  * Revision 1.14  2004/12/29 10:39:32  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *
