@@ -56,7 +56,7 @@ public class AnonymousBlockBox extends BlockBox {
 
         node_list = InlineUtil.getInlineNodeList(startNode, (Element) this.getNode(), c, true);
 
-        node_list.add(0, startNode);
+        //this should now already have been done: node_list.add(0, startNode);
 
         last_node = (Node) node_list.get(node_list.size() - 1);
 
@@ -108,6 +108,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/05 19:42:44  tobega
+ * Made recursion in InlineUtil easier to understand
+ *
  * Revision 1.5  2004/12/05 18:11:38  tobega
  * Now uses style cache for pseudo-element styles. Also started preparing to replace inline node handling with inline content handling.
  *

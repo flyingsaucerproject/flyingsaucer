@@ -21,6 +21,7 @@ package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.inline.content.FloatedBlockContent;
@@ -89,35 +90,36 @@ public class InlineUtil {
         Node curr = root;
         while (true) {
             // u.p("now list = " + list);
-            
-            // skip the first time
-            if (curr != root) {
+
+            // handle the current node
+            // skip if the node is the element
+            handling: if (curr != elem) {
                 if (curr.getNodeType() == curr.TEXT_NODE) {
                     // u.p("adding text: " + curr);
                     list.add(curr);
-                    root = curr;
-                    continue;
+                    //root = curr;
+                    break handling;
                 }
 
                 if (LayoutUtil.isReplaced(c, curr)) {
                     // u.p("adding replaced: " + curr);
                     list.add(curr);
-                    root = curr;
-                    continue;
+                    //root = curr;
+                    break handling;
                 }
 
                 if (LayoutUtil.isFloatedBlock(curr, c)) {
                     // u.p("adding floated block: " + curr);
                     list.add(curr);
-                    root = curr;
-                    continue;
+                    //root = curr;
+                    break handling;
                 }
 
                 if (c.getRenderingContext().getLayoutFactory().isBreak(curr)) {
                     // u.p("adding break: " + curr);
                     list.add(curr);
-                    root = curr;
-                    continue;
+                    //root = curr;
+                    break handling;
                 }
 
                 if (stop_at_blocks) {
@@ -126,25 +128,9 @@ public class InlineUtil {
                         return list;
                     }
                 }
-            } else {
-                // check for float on the first time through
-                /*
-                u.p("first time through");
-                
-                if(curr instanceof Element) {
-                    Element e = (Element)curr;
-                    if(LayoutUtil.isFloated(c,e)) {
-                        u.p("adding floated block: " + curr);
-                        //list.add( curr );
-                        //node = curr;
-                        //continue;
-                    }
-                }
-                */
-
             }
 
-
+            //recursing
             if (curr.hasChildNodes()) {
                 // u.p("about to test: " + curr);
                 // if it's a floating block we don't want to recurse
@@ -159,8 +145,8 @@ public class InlineUtil {
                 // not the node being examined. this only matters when we
                 // start the loop at the root of a floated block
                 
-                if (LayoutUtil.isFloatedBlock(root, c)) {
-                    if (root == elem) {
+                if (LayoutUtil.isFloatedBlock(curr, c)) {
+                    if (curr == elem) {
                         curr = curr.getFirstChild();
                         continue;
                     }
@@ -230,14 +216,14 @@ public class InlineUtil {
             // u.p("now list = " + list);
             if (style == null) style = c.css.getStyle(curr);
 
-            // skip first time
-            if (curr != root) {
+            // handle the nodes
+            // skip first time if root was the element
+            handling: if (curr != elem) {
                 if (curr.getNodeType() == curr.TEXT_NODE) {
                     // u.p("adding text: " + curr);
                     if (text == null) text = new TextContent(style);
                     text.append(curr.getNodeValue());
-                    root = curr;
-                    continue;
+                    break handling;
                 }
 
                 //TODO: what if a replaced element has :before and/or :after content?
@@ -248,8 +234,7 @@ public class InlineUtil {
                         text = null;
                     }
                     contentList.add(new ReplacedContent((Element) curr));
-                    root = curr;
-                    continue;
+                    break handling;
                 }
 
                 //TODO: what if a floated block has :before and/or :after content?
@@ -260,21 +245,7 @@ public class InlineUtil {
                         text = null;
                     }
                     contentList.add(new FloatedBlockContent((Element) curr));
-                    root = curr;
-                    continue;
-                }
-
-                //break handling should be done by :before content
-                CascadedStyle before = c.css.getPseudoElementStyle(curr, "before");
-                if (before != null) {
-                    CalculatedStyle parentStyle = c.css.getStyle(curr);
-                    CalculatedStyle derived = c.css.getDerivedStyle(parentStyle, before);
-                    if (text != null) {
-                        contentList.add(text);
-                        text = null;
-                    }
-                    contentList.add(new TextContent(derived));
-                    //do not reset style here, because if this element is empty, we will not have changed context
+                    break handling;
                 }
 
                 //TODO: check if this should maybe always be true
@@ -283,6 +254,24 @@ public class InlineUtil {
                         //u.p("at block boundary");
                         return contentList;
                     }
+                }
+            }
+
+            if (curr.getNodeType() == Node.ELEMENT_NODE) {
+                //<br/> handling should be done by :before content
+                CascadedStyle before = c.css.getPseudoElementStyle(curr, "before");
+                if (before != null) {
+                    CalculatedStyle parentStyle = c.css.getStyle(curr);
+                    CalculatedStyle derived = c.css.getDerivedStyle(parentStyle, before);
+                    if (text != null) {
+                        contentList.add(text);
+                        text = null;
+                    }
+                    text = new TextContent(derived);
+                    text.append(derived.getStringProperty(CSSName.CONTENT));
+                    contentList.add(text);
+                    text = null;
+                    //do not reset style here, because if this element is empty, we will not have changed context
                 }
             }
 
@@ -315,6 +304,25 @@ public class InlineUtil {
                     }
                 }
 
+            } else if (curr.getNodeType() == Node.ELEMENT_NODE) {
+                //it might still have :after content
+                CascadedStyle after = c.css.getPseudoElementStyle((Element) curr, "after");
+                if (after != null) {
+                    CalculatedStyle parentStyle = c.css.getStyle(curr);
+                    CalculatedStyle derived = c.css.getDerivedStyle(parentStyle, after);
+                    if (text != null) {
+                        contentList.add(text);
+                        text = null;
+                    }
+                    text = new TextContent(derived);
+                    text.append(derived.getStringProperty(CSSName.CONTENT));
+                    contentList.add(text);
+                    text = null;
+                }
+                if (curr == elem) {
+                    //elem was empty, that can happen, right?
+                    return contentList;
+                }
             }
 
             if (curr.getNextSibling() != null) {
@@ -334,6 +342,21 @@ public class InlineUtil {
                     text = null;
                 }
                 style = null;
+
+                if (curr.getNodeType() == Node.ELEMENT_NODE) {
+                    //check for :after content
+                    //this has not been checked yet because this element had child nodes
+                    CascadedStyle after = c.css.getPseudoElementStyle((Element) curr, "after");
+                    if (after != null) {
+                        CalculatedStyle parentStyle = c.css.getStyle(curr);
+                        CalculatedStyle derived = c.css.getDerivedStyle(parentStyle, after);
+                        //text must be null here
+                        text = new TextContent(derived);
+                        text.append(derived.getStringProperty(CSSName.CONTENT));
+                        contentList.add(text);
+                        text = null;
+                    }
+                }
 
                 // u.p("going to parent: " + curr);
                 // if we are at the top then return null
@@ -363,6 +386,9 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/12/05 19:42:43  tobega
+ * Made recursion in InlineUtil easier to understand
+ *
  * Revision 1.16  2004/12/05 18:11:38  tobega
  * Now uses style cache for pseudo-element styles. Also started preparing to replace inline node handling with inline content handling.
  *
