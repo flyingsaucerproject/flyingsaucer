@@ -132,6 +132,7 @@
             <fileset dir="lib">
                 <include name="joshy-common.jar"/>
                 <include name="ss_css2.jar"/>
+                <include name="xalan.jar"/>
             </fileset>
             <fileset dir="src/packaging/"><include name="fs.jnlp"/></fileset>
             <fileset dir="src/packaging/"><include name="aboutbox.jnlp"/></fileset>
@@ -140,6 +141,7 @@
         <signjar jar="build/browser.jar" alias="joshy" storepass="password" keystore="teststore"/>
         <signjar jar="build/joshy-common.jar" alias="joshy" storepass="password" keystore="teststore"/>
         <signjar jar="build/ss_css2.jar" alias="joshy" storepass="password" keystore="teststore"/>
+        <signjar jar="build/xalan.jar" alias="joshy" storepass="password" keystore="teststore"/>
 
     </target>
 

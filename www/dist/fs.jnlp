@@ -19,6 +19,7 @@
         <jar href="browser.jar"/>
         <jar href="joshy-common.jar"/>
         <jar href="ss_css2.jar"/>
+        <jar href="xalan.jar"/>
     </resources>
     <application-desc main-class="org.joshy.html.app.browser.BrowserStartup"/>
     <security>
