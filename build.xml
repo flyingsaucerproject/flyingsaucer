@@ -311,9 +311,12 @@
         </java>
     </target>
     
-    <target name="speed-test-1" depends="compile">
-        <java classname="org.joshy.html.SpeedTest" classpath="build/classes" fork="true">
-            <jvmarg value="-prof"/>
+    <target name="test-speed" depends="test-css-speed">
+    </target>
+    
+    <target name="test-css-speed" depends="compile">
+        <java classname="org.joshy.html.test.CSSSpeedTest" classpath="build/classes" fork="true">
+            <!--<jvmarg value="-prof"/>-->
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
         </java>
     </target>

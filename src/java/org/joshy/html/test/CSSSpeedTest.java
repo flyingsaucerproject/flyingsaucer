@@ -1,5 +1,6 @@
-package org.joshy.html;
+package org.joshy.html.test;
 
+import org.joshy.html.*;
 import java.awt.image.BufferedImage;
 import org.joshy.html.swing.DOMInspector;
 import javax.swing.*;
@@ -14,11 +15,11 @@ import java.util.Date;
 import org.joshy.html.css.DefaultCSSMarker;
 import java.io.*;
 
-public class SpeedTest {
+public class CSSSpeedTest {
     public static void main(String[] args) throws Exception {
-
+        
         // load doc
-        Document doc = x.loadDocument("demos/paragraph.xhtml");
+        Document doc = x.loadDocument("demos/hamlet.xhtml");
         Element html = (Element)doc.getDocumentElement();
         Element body = x.child(html,"body");
         

@@ -74,14 +74,16 @@ public class CSSBank extends CSSAccessor {
         }
         CSSValue val = style_dec.getPropertyCSSValue(prop);
         if(val == null) {
-            //u.p("elem " + elem.getNodeName() + " doesn't have the property: " + prop);
+            u.p("WARNING!! elem " + elem.getNodeName() + " doesn't have the property: " + prop);
+            /*
             if(elem.getParentNode() != null && inherit) {
-                //u.p("going up: " + elem.getNodeName() + " -> " + elem.getParentNode().getNodeName() + " prop = " + prop);
+                u.p("going up: " + elem.getNodeName() + " -> " + elem.getParentNode().getNodeName() + " prop = " + prop);
                 if(elem.getParentNode() instanceof Element) {
                     return getProperty((Element)elem.getParentNode(),prop,inherit);
                 }
             }
             return null;
+            */
         }
         //u.p("returning: " + val);
         return val;
