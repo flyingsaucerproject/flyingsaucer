@@ -21,10 +21,8 @@
 package org.xhtmlrenderer.css.impl;
 
 import java.util.*;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
 import org.xhtmlrenderer.css.XRDerivedStyle;
 import org.xhtmlrenderer.css.XRElement;
 import org.xhtmlrenderer.css.XRStyleRule;
@@ -33,16 +31,21 @@ import org.xhtmlrenderer.css.XRStyleRule;
 /**
  * Implementation of XRElement, see interface for comments.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public class XRElementImpl implements XRElement {
 
     /** The Document our Node belongs to */
     private Document _document;
-    /** The DOM Node we are wrapping. HACK: there was some problem in an existing API that required storage of Node, not Element...? (PWW 15/08/04)*/
+    /**
+     * The DOM Node we are wrapping. HACK: there was some problem in an existing
+     * API that required storage of Node, not Element...? (PWW 15/08/04)
+     */
     private Node _node;
-    /** The parent XRElement, null if none--this would be the XRElement that owns the parent DOM Node for our own DOM Node. */
+    /**
+     * The parent XRElement, null if none--this would be the XRElement that owns
+     * the parent DOM Node for our own DOM Node.
+     */
     private XRElement _xrParent;
     /** List of the styles added to us by matching process. */
     private List _matchedStyles;
@@ -53,8 +56,8 @@ public class XRElementImpl implements XRElement {
     /**
      * //JDOC
      *
-     * @param parentXRElement  PARAM
      * @param node             PARAM
+     * @param parentXRElement  PARAM
      */
     public XRElementImpl( Node node, XRElement parentXRElement ) {
 
@@ -132,5 +135,15 @@ public class XRElementImpl implements XRElement {
     }
 }// end class
 
-// :folding=java:collapseFolds=2:tabSize=4:indentSize=4:noTabs=true:
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:21:14  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

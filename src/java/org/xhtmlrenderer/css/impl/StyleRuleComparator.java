@@ -21,18 +21,16 @@
 package org.xhtmlrenderer.css.impl;
 
 import java.util.*;
-
 import org.xhtmlrenderer.css.XRStyleRule;
 import org.xhtmlrenderer.css.XRStyleSheet;
 
 
 /**
- *   The idea, and first implementation of this, is from Scott Sauyet,
- *   adapted for this class by Patrick Wright.</p>
+ * The idea, and first implementation of this, is from Scott Sauyet, adapted for
+ * this class by Patrick Wright.</p>
  *
- * @author    Patrick Wright
- * @author    Scott Sauyet
- *
+ * @author   Patrick Wright
+ * @author   Scott Sauyet
  */
 public class StyleRuleComparator implements Comparator {
     /**
@@ -48,6 +46,7 @@ public class StyleRuleComparator implements Comparator {
      *   (sequentially)</li>
      *   <li> o1 and o2 were originally the same rule, but o2 includes one or
      *   more properties marked "important" in the rule</li> <p>
+     *
      *
      *
      * @param o1  PARAM
@@ -127,4 +126,16 @@ public class StyleRuleComparator implements Comparator {
         return -1;// n/a if the rule is properly initialized.
     }
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:21:14  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

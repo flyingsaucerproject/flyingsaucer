@@ -21,17 +21,14 @@
 package org.xhtmlrenderer.css.impl;
 
 import java.util.*;
-
 import org.w3c.dom.css.CSSRule;
-
 import org.xhtmlrenderer.css.XRStyleSheet;
 
 
 /**
  * An @ rule in CSS, such as (at)page, (at)import
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public class XRAtRuleImpl extends XRSheetRuleImpl {
     /**
@@ -52,8 +49,8 @@ public class XRAtRuleImpl extends XRSheetRuleImpl {
      *
      * @param sheet          PARAM
      * @param cssRule        PARAM
-     * @param sequence       PARAM
      * @param propertyNames  PARAM
+     * @param sequence       PARAM
      * @param isImportant    PARAM
      */
     public XRAtRuleImpl( XRStyleSheet sheet, CSSRule cssRule, List propertyNames, int sequence, boolean isImportant ) {
@@ -61,4 +58,15 @@ public class XRAtRuleImpl extends XRSheetRuleImpl {
     }
 }// end interface
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:21:14  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

@@ -22,25 +22,21 @@ package org.xhtmlrenderer.css.impl;
 
 import java.util.*;
 import org.w3c.dom.DOMException;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.css.CSSRule;
 import org.w3c.dom.css.CSSRuleList;
 import org.w3c.dom.css.CSSStyleSheet;
 import org.w3c.dom.stylesheets.MediaList;
 import org.w3c.dom.stylesheets.StyleSheet;
-
 import org.xhtmlrenderer.css.XRSheetRule;
 import org.xhtmlrenderer.css.XRStyleRule;
 import org.xhtmlrenderer.css.XRStyleSheet;
 
 
-
 /**
  * Represents a stylesheet...see interface comments.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public class XRStyleSheetImpl implements XRStyleSheet {
     /** origin of the sheet */
@@ -83,42 +79,6 @@ public class XRStyleSheetImpl implements XRStyleSheet {
     private XRStyleSheetImpl() {
         _rules = new ArrayList();
         _rulesBySelector = new TreeMap();
-    }
-
-
-    /**
-     * Convenience, creates a new XRStyleSheet instance for a user agent sheet.
-     *
-     * @param sheet  PARAM
-     * @param seq    PARAM
-     * @return       Returns
-     */
-    public static XRStyleSheet newUserAgentStyleSheet( CSSStyleSheet sheet, int seq ) {
-        return new XRStyleSheetImpl( sheet, XRStyleSheet.USER_AGENT, seq );
-    }
-
-
-    /**
-     * Convenience, creates a new XRStyleSheet instance for an author sheet.
-     *
-     * @param sheet  PARAM
-     * @param seq    PARAM
-     * @return       Returns
-     */
-    public static XRStyleSheet newAuthorStyleSheet( CSSStyleSheet sheet, int seq ) {
-        return new XRStyleSheetImpl( sheet, XRStyleSheet.AUTHOR, seq );
-    }
-
-
-    /**
-     * Convenience, creates a new XRStyleSheet instance for a user sheet.
-     *
-     * @param sheet  PARAM
-     * @param seq    PARAM
-     * @return       Returns
-     */
-    public static XRStyleSheet newUserStyleSheet( CSSStyleSheet sheet, int seq ) {
-        return new XRStyleSheetImpl( sheet, XRStyleSheet.USER, seq );
     }
 
 
@@ -380,5 +340,53 @@ public class XRStyleSheetImpl implements XRStyleSheet {
     private void setDOMStyleSheet( CSSStyleSheet sheet ) {
         _domSheet = sheet;
     }
+
+
+    /**
+     * Convenience, creates a new XRStyleSheet instance for a user agent sheet.
+     *
+     * @param sheet  PARAM
+     * @param seq    PARAM
+     * @return       Returns
+     */
+    public static XRStyleSheet newUserAgentStyleSheet( CSSStyleSheet sheet, int seq ) {
+        return new XRStyleSheetImpl( sheet, XRStyleSheet.USER_AGENT, seq );
+    }
+
+
+    /**
+     * Convenience, creates a new XRStyleSheet instance for an author sheet.
+     *
+     * @param sheet  PARAM
+     * @param seq    PARAM
+     * @return       Returns
+     */
+    public static XRStyleSheet newAuthorStyleSheet( CSSStyleSheet sheet, int seq ) {
+        return new XRStyleSheetImpl( sheet, XRStyleSheet.AUTHOR, seq );
+    }
+
+
+    /**
+     * Convenience, creates a new XRStyleSheet instance for a user sheet.
+     *
+     * @param sheet  PARAM
+     * @param seq    PARAM
+     * @return       Returns
+     */
+    public static XRStyleSheet newUserStyleSheet( CSSStyleSheet sheet, int seq ) {
+        return new XRStyleSheetImpl( sheet, XRStyleSheet.USER, seq );
+    }
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:21:15  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

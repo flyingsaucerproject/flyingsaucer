@@ -20,20 +20,18 @@
  */
 package org.xhtmlrenderer.css.impl;
 
-import org.xhtmlrenderer.css.constants.ValueConstants;
 import java.util.*;
-import java.util.logging.*;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSRule;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSStyleRule;
 import org.w3c.dom.css.CSSValue;
-
+import org.xhtmlrenderer.css.RuleNormalizer;
 import org.xhtmlrenderer.css.XRElement;
 import org.xhtmlrenderer.css.XRProperty;
 import org.xhtmlrenderer.css.XRValue;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.factory.BackgroundPropertyFactory;
 import org.xhtmlrenderer.css.factory.BorderColorPropertyFactory;
 import org.xhtmlrenderer.css.factory.BorderPropertyFactory;
@@ -48,25 +46,13 @@ import org.xhtmlrenderer.css.factory.PaddingPropertyFactory;
 import org.xhtmlrenderer.css.factory.PropertyFactory;
 import org.xhtmlrenderer.layout.Context;
 
-import org.xhtmlrenderer.css.RuleNormalizer;
-
 
 /**
  * Default XRProperty implementation.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public class XRPropertyImpl implements XRProperty {
-    /**
-     * The property name to PropertyFactory mappings. The factories facilitate
-     * creating XRProperties from a property definition. Note static block is at
-     * end of class.
-     */
-    private final static Map PRP_FACTORIES;
-
-    /** Static RuleNormalizer for cleaning property values. */
-    private final static RuleNormalizer RULE_NORMALIZER;
 
     /** Property's text name, e.g. "margin-top" */
     private String _propName;
@@ -88,6 +74,15 @@ public class XRPropertyImpl implements XRProperty {
      * environment or not
      */
     private boolean _isResolved;
+    /**
+     * The property name to PropertyFactory mappings. The factories facilitate
+     * creating XRProperties from a property definition. Note static block is at
+     * end of class.
+     */
+    private final static Map PRP_FACTORIES;
+
+    /** Static RuleNormalizer for cleaning property values. */
+    private final static RuleNormalizer RULE_NORMALIZER;
 
     // seq = 0;
     /**
@@ -117,7 +112,6 @@ public class XRPropertyImpl implements XRProperty {
     /**
      * Constructor for the XRPropertyImpl object
      *
-     * @param style     PARAM
      * @param propName  PARAM
      * @param sequence  PARAM
      * @param value     PARAM
@@ -126,8 +120,168 @@ public class XRPropertyImpl implements XRProperty {
         _propName = propName;
         _sequence = sequence;
         _specifiedValue = value;
-        _isResolved = !_specifiedValue.forcedInherit() && 
-                       ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()); 
+        _isResolved = !_specifiedValue.forcedInherit() &&
+                ValueConstants.isAbsoluteUnit( _specifiedValue.cssValue() );
+    }
+
+    /**
+     * Deep copy operation. However, any contained SAC instances are not
+     * deep-copied.
+     *
+     * @return   Returns
+     */
+    public XRProperty copyOf() {
+        return new XRPropertyImpl( _propName, _sequence, _specifiedValue.copyOf() );
+    }
+
+    /**
+     * Deep copy operation for the purposes of inheriting a computed value. Used
+     * when a child element needs the parent element's computed value for a
+     * property. The following is true of the copy: 1) is resolved 2) computed
+     * value is same as parent's computed 3) actual value is same as parent's
+     * actual value. Any contained SAC instances are not deep-copied.
+     *
+     * @return   See desc
+     */
+    public XRProperty copyForInherit() {
+        XRPropertyImpl newProp = (XRPropertyImpl)this.copyOf();
+        newProp._computedValue = _computedValue;
+        newProp._actualValue = _actualValue;
+        newProp._isResolved = true;
+        return newProp;
+    }
+
+    /**
+     * The value as specified in the sheet.
+     *
+     * @return   Returns
+     */
+    public XRValue specifiedValue() {
+        return _specifiedValue;
+    }
+
+
+    /**
+     * The computed value, if the specified value is relative.
+     *
+     * @return   Returns
+     */
+    public XRValue computedValue() {
+        return ( _computedValue == null ? _specifiedValue : _computedValue );
+    }
+
+    /**
+     * The computed value, with any modifications forced by the presentation
+     * environment e.g. limitation in color range.
+     *
+     * @return   Returns
+     */
+    public XRValue actualValue() {
+        return ( _actualValue == null ? _specifiedValue : _actualValue );
+    }
+
+
+    /**
+     * The plain-text property name, should be CSS2 valid.
+     *
+     * @return   Returns
+     */
+    public String propertyName() {
+        return _propName;
+    }
+
+
+    /**
+     * ...
+     *
+     * @return   Returns
+     */
+    public String toString() {
+        return _propName + "=" + _specifiedValue;
+    }
+
+
+    /**
+     * If the property has a relative value that has not been computed, computes
+     * it. After the property value is resolved, computedValue() and
+     * actualValue() will return meaningful results.
+     *
+     * @param context      PARAM
+     * @param elemContext  PARAM
+     */
+    public void resolveValue( Context context, XRElement elemContext ) {
+        // CLN System.out.println("resolveValue(" + propertyName() + ") _isResolved " + _isResolved);
+        if ( _isResolved ) {
+            return;
+        } else {
+            if ( isResolvable() ) {
+                // CLN System.out.println("resolving " + propertyName() + " " + _specifiedValue);
+
+                // NOTE: the side effect of what follows is that _computedValue
+                // and _actualValue are assigned
+
+                // inherit the value from parent element if value is set to inherit
+                XRValue computed = _specifiedValue;
+                if ( _specifiedValue.forcedInherit() ) {
+                    XRElement parent = elemContext.parentXRElement();
+
+                    // if we are root, have no parent, use the initial value as
+                    // defined by the CSS2 spec
+                    if ( parent == null ) {
+                        System.err.println( "XRPropertyImpl: trying to resolve an inherited property, but have no parent XRElement (root of document?)--property '" + propertyName() + "' may not be defined in CSS." );
+                        // TODO
+
+                    } else {
+                        // this is indirectly recursive because propertyByName()
+                        // will end up here again but in parent element context
+                        // until it dead-ends at root, above
+                        computed = parent.derivedStyle().propertyByName( context, _propName ).computedValue();
+                    }
+                }
+
+                // if value is relative value (e.g. percentage), resolve it
+                if ( computed.requiresComputation() ) {
+                    computed.computeRelativeUnit( context, elemContext, _propName );
+                }
+
+                _computedValue = computed;
+
+                // TODO: apply restrictions on computed values to form actual values (PWW 23/08/04)
+                // NOTE: at this point we want to apply any restrictions on
+                // computed values--e.g. if display resolution supports
+                // limited amount of colors--deferred for now
+                _actualValue = computed;
+
+                // CLN System.out.println("resolved value for " + propertyName() + " " + computed + " hc: " + computed.hashCode());
+            } else {
+                _computedValue = _specifiedValue;
+                _actualValue = _specifiedValue;
+            }
+            _isResolved = true;
+        }
+    }
+
+
+    /**
+     * Returns true if the property has an absolute value, or a relative value
+     * that has been correctly computed.
+     *
+     * @return   The resolved value
+     */
+    public boolean isResolved() {
+        return ValueConstants.isAbsoluteUnit( _specifiedValue.cssValue() ) || _isResolved;
+    }
+
+
+    /**
+     * Gets the resolvable attribute of the XRPropertyImpl object
+     *
+     * @return   The resolvable value
+     */
+    public boolean isResolvable() {
+        return _specifiedValue.forcedInherit() ||
+                ( _specifiedValue.isPrimitiveType() &&
+                !ValueConstants.isAbsoluteUnit( _specifiedValue.cssValue() ) );
     }
 
     /**
@@ -135,22 +289,22 @@ public class XRPropertyImpl implements XRProperty {
      * rule/declaration. Returns an iterator of the instantiated properties--the
      * are not attached to the declaration or otherwise stored.
      *
+     * @param cssRule   PARAM
      * @param style     PARAM
      * @param propName  PARAM
      * @param sequence  PARAM
-     * @param cssRule   PARAM
      * @return          Returns
      */
     public static Iterator fromCSSPropertyDecl( CSSRule cssRule, CSSStyleDeclaration style, String propName, int sequence ) {
         // HACK: special cases for RuleNormalizer...need to work this out cleanly
         PropertyFactory factory = (PropertyFactory)PRP_FACTORIES.get( propName );
-        
+
         if ( ( factory == null && cssRule.getType() == CSSRule.STYLE_RULE ) ||
-                propName.indexOf( "color" ) >= 0 && !propName.equals("border")) {
+                propName.indexOf( "color" ) >= 0 && !propName.equals( "border" ) ) {
             RULE_NORMALIZER.normalize( (CSSStyleRule)cssRule );
             style = ( (CSSStyleRule)cssRule ).getStyle();
         }
-        
+
         List list = new ArrayList();
         switch ( style.getPropertyCSSValue( propName ).getCssValueType() ) {
             case CSSValue.CSS_PRIMITIVE_VALUE:
@@ -188,167 +342,6 @@ public class XRPropertyImpl implements XRProperty {
         return list.iterator();
     }
 
-    /**
-     * Deep copy operation. However, any contained SAC instances are not
-     * deep-copied.
-     *
-     * @return   Returns
-     */
-    public XRProperty copyOf() {
-        return new XRPropertyImpl( _propName, _sequence, _specifiedValue.copyOf() );
-    }
-
-    /**
-     * Deep copy operation for the purposes of inheriting a computed value.
-     * Used when a child element needs the parent element's computed value
-     * for a property. The following is true of the copy: 1) is resolved
-     * 2) computed value is same as parent's computed 3) actual value
-     * is same as parent's actual value. Any contained SAC instances are not
-     * deep-copied.
-     *
-     * @return   See desc
-     */
-    public XRProperty copyForInherit() {
-        XRPropertyImpl newProp = (XRPropertyImpl)this.copyOf();
-        newProp._computedValue = _computedValue;
-        newProp._actualValue = _actualValue;
-        newProp._isResolved = true;
-        return newProp;
-    }
-
-    /**
-     * The value as specified in the sheet.
-     *
-     * @return   Returns
-     */
-    public XRValue specifiedValue() {
-        return _specifiedValue;
-    }
-
-
-    /**
-     * The computed value, if the specified value is relative.
-     *
-     * @return   Returns
-     */
-    public XRValue computedValue() {
-        return ( _computedValue == null ? _specifiedValue : _computedValue ); 
-    }
-
-    /**
-     * The computed value, with any modifications forced by the presentation
-     * environment e.g. limitation in color range.
-     *
-     * @return   Returns
-     */
-    public XRValue actualValue() {
-        return ( _actualValue == null ? _specifiedValue : _actualValue ); 
-    }
-
-
-    /**
-     * The plain-text property name, should be CSS2 valid.
-     *
-     * @return   Returns
-     */
-    public String propertyName() {
-        return _propName;
-    }
-
-
-    /**
-     * ...
-     *
-     * @return   Returns
-     */
-    public String toString() {
-        return _propName + "=" + _specifiedValue;
-    }
-
-
-    /**
-     * If the property has a relative value that has not been computed, computes
-     * it. After the property value is resolved, computedValue() and
-     * actualValue() will return meaningful results.
-     *
-     * @param elemContext  PARAM
-     * @param context      PARAM
-     */
-    public void resolveValue( Context context, XRElement elemContext ) {
-        // CLN System.out.println("resolveValue(" + propertyName() + ") _isResolved " + _isResolved);
-        if ( _isResolved ) {
-            return;
-        } else {
-            if ( isResolvable() ) {
-                // CLN System.out.println("resolving " + propertyName() + " " + _specifiedValue);
-                
-                // NOTE: the side effect of what follows is that _computedValue
-                // and _actualValue are assigned
-                
-                // inherit the value from parent element if value is set to inherit
-                XRValue computed = _specifiedValue;
-                if ( _specifiedValue.forcedInherit() ) {
-                    XRElement parent = elemContext.parentXRElement();
-                    
-                    // if we are root, have no parent, use the initial value as
-                    // defined by the CSS2 spec
-                    if ( parent == null ) {
-                        System.err.println( "XRPropertyImpl: trying to resolve an inherited property, but have no parent XRElement (root of document?)--property '" + propertyName() + "' may not be defined in CSS." );
-                        // TODO
-                        
-                    } else {
-                        // this is indirectly recursive because propertyByName()
-                        // will end up here again but in parent element context
-                        // until it dead-ends at root, above
-                        computed = parent.derivedStyle().propertyByName( context, _propName ).computedValue();
-                    }
-                }
-
-                // if value is relative value (e.g. percentage), resolve it
-                if ( computed.requiresComputation() ) {
-                    computed.computeRelativeUnit( context, elemContext, _propName );
-                }
-
-                _computedValue = computed;
-                
-                // TODO: apply restrictions on computed values to form actual values (PWW 23/08/04)
-                // NOTE: at this point we want to apply any restrictions on
-                // computed values--e.g. if display resolution supports 
-                // limited amount of colors--deferred for now
-                _actualValue = computed;
-                
-                // CLN System.out.println("resolved value for " + propertyName() + " " + computed + " hc: " + computed.hashCode());
-            } else {
-                _computedValue = _specifiedValue;
-                _actualValue = _specifiedValue;
-            }
-            _isResolved = true;
-        }
-    }
-
-
-    /**
-     * Returns true if the property has an absolute value, or a relative value
-     * that has been correctly computed.
-     *
-     * @return   The resolved value
-     */
-    public boolean isResolved() {
-        return ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()) || _isResolved;
-    }
-
-
-    /**
-     * Gets the resolvable attribute of the XRPropertyImpl object
-     *
-     * @return   The resolvable value
-     */
-    public boolean isResolvable() {
-        return _specifiedValue.forcedInherit() ||    
-              (_specifiedValue.isPrimitiveType() && 
-               !ValueConstants.isAbsoluteUnit(_specifiedValue.cssValue()));
-    }
-
     static {
         RULE_NORMALIZER = new RuleNormalizer();
 
@@ -378,4 +371,16 @@ public class XRPropertyImpl implements XRProperty {
         PRP_FACTORIES.put( CSSName.FONT_SHORTHAND, FontPropertyFactory.instance() );
     }
 }// end class
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.3  2004/10/23 13:21:14  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

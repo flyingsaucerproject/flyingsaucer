@@ -22,18 +22,13 @@ package org.xhtmlrenderer.css.impl;
 
 import java.io.*;
 import java.util.*;
-import java.util.logging.*;
-
 import org.w3c.css.sac.InputSource;
 import org.w3c.css.sac.SelectorList;
 import org.w3c.dom.css.CSSRule;
 import org.w3c.dom.css.CSSStyleRule;
-
+import com.steadystate.css.parser.CSSOMParser;
 import org.xhtmlrenderer.css.XRStyleRule;
 import org.xhtmlrenderer.css.XRStyleSheet;
-import org.xhtmlrenderer.util.LoggerUtil;
-
-import com.steadystate.css.parser.CSSOMParser;
 
 
 /**
@@ -41,23 +36,10 @@ import com.steadystate.css.parser.CSSOMParser;
  * SAC parser. Note the assumption is that selectors are always single
  * selectors, not comma-separated multi-selectors.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 // NOTE: most of the rule-parsing happens in superclass, not here
 public class XRStyleRuleImpl extends XRSheetRuleImpl implements XRStyleRule {
-
-    /** The Comparator we use for sorting XRStyleRules before cascade/inherit logic applied. */
-    public final static StyleRuleComparator STYLE_RULE_COMPARATOR = new StyleRuleComparator();
-
-    /** Constant list of CSS pseudo-class names, without leading ":" */
-    private final static List PSEUDO_CLASS_NAMES;
-
-    /** Constant list of pseudo-element names, without leading ":" */
-    private final static List PSEUDO_ELEMENT_NAMES;
-
-    /** Convenience parser for selector text */
-    private final static CSSOMParser CSOM_PARSER;
 
     /**
      * The CSSStyleRule we are wrapping--be careful as our superclass also
@@ -70,6 +52,21 @@ public class XRStyleRuleImpl extends XRSheetRuleImpl implements XRStyleRule {
 
     /** The specificity for this selector. */
     private int _specificity;
+
+    /**
+     * The Comparator we use for sorting XRStyleRules before cascade/inherit
+     * logic applied.
+     */
+    public final static StyleRuleComparator STYLE_RULE_COMPARATOR = new StyleRuleComparator();
+
+    /** Constant list of CSS pseudo-class names, without leading ":" */
+    private final static List PSEUDO_CLASS_NAMES;
+
+    /** Constant list of pseudo-element names, without leading ":" */
+    private final static List PSEUDO_ELEMENT_NAMES;
+
+    /** Convenience parser for selector text */
+    private final static CSSOMParser CSOM_PARSER;
 
 
     /**
@@ -90,8 +87,8 @@ public class XRStyleRuleImpl extends XRSheetRuleImpl implements XRStyleRule {
      *
      * @param sheet        PARAM
      * @param cssRule      PARAM
-     * @param sequence     PARAM
      * @param propNames    PARAM
+     * @param sequence     PARAM
      * @param isImportant  PARAM
      */
     public XRStyleRuleImpl( XRStyleSheet sheet, CSSRule cssRule, List propNames, int sequence, boolean isImportant ) {
@@ -106,8 +103,8 @@ public class XRStyleRuleImpl extends XRSheetRuleImpl implements XRStyleRule {
      * @param sheet        PARAM
      * @param cssRule      PARAM
      * @param selector     PARAM
-     * @param sequence     PARAM
      * @param propNames    PARAM
+     * @param sequence     PARAM
      * @param isImportant  PARAM
      */
     public XRStyleRuleImpl( XRStyleSheet sheet, CSSRule cssRule, String selector, List propNames, int sequence, boolean isImportant ) {
@@ -191,18 +188,23 @@ public class XRStyleRuleImpl extends XRSheetRuleImpl implements XRStyleRule {
     }
 
 
+    /**
+     * Description of the Method
+     *
+     * @return   Returns
+     */
     public SelectorList selectorsAsSACList() {
-            SelectorList list = null;
+        SelectorList list = null;
 
-            try {
-                // note, we parse the selector for this instance, not the one from the CSS Style, which
-                // might still be multi-part; selector for XRStyleRule is always single (no commas)
-                list = CSOM_PARSER.parseSelectors( new InputSource( new StringReader( _selector ) ) );
-            } catch ( IOException ex ) {
-                ex.printStackTrace();
-            }
-            
-            return list;
+        try {
+            // note, we parse the selector for this instance, not the one from the CSS Style, which
+            // might still be multi-part; selector for XRStyleRule is always single (no commas)
+            list = CSOM_PARSER.parseSelectors( new InputSource( new StringReader( _selector ) ) );
+        } catch ( IOException ex ) {
+            ex.printStackTrace();
+        }
+
+        return list;
     }
 
 
@@ -270,4 +272,16 @@ public class XRStyleRuleImpl extends XRSheetRuleImpl implements XRStyleRule {
         PSEUDO_ELEMENT_NAMES.add( "after" );
     }
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:21:15  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

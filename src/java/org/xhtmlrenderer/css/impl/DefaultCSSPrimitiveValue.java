@@ -19,9 +19,9 @@
  * }}}
  */
 package org.xhtmlrenderer.css.impl;
+
 import org.w3c.dom.DOMException;
 import org.w3c.dom.css.CSSPrimitiveValue;
-
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.Counter;
 import org.w3c.dom.css.RGBColor;
@@ -36,13 +36,13 @@ import org.w3c.dom.css.Rect;
  * @author   Patrick Wright
  */
 public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
-    /**  */
+    /** */
     private String _stringValue;
-    /**  */
+    /** */
     private short _cssValueType;
-    /**  */
+    /** */
     private short _primitiveType;
-    /**  */
+    /** */
     private _RGBColor _asColor;
 
     /**
@@ -236,7 +236,7 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
      * @author   Patrick Wright
      */
     class _RGBColor implements RGBColor {
-        /**  */
+        /** */
         ColorValue redCV, greenCV, blueCV;
 
         /**
@@ -286,7 +286,7 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
          * @author   Patrick Wright
          */
         class ColorValue implements CSSPrimitiveValue {
-            /**  */
+            /** */
             float _color;
 
             /**
@@ -419,4 +419,16 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
     }
 
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:21:14  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

@@ -22,7 +22,6 @@ package org.xhtmlrenderer.css.impl;
 
 import java.util.*;
 import org.w3c.dom.DOMException;
-
 import org.w3c.dom.css.CSSFontFaceRule;
 import org.w3c.dom.css.CSSPageRule;
 import org.w3c.dom.css.CSSRule;
@@ -30,13 +29,11 @@ import org.w3c.dom.css.CSSRuleList;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSStyleRule;
 import org.w3c.dom.css.CSSStyleSheet;
-
-import org.xhtmlrenderer.layout.Context;
-
 import org.xhtmlrenderer.css.XRProperty;
 import org.xhtmlrenderer.css.XRRule;
 import org.xhtmlrenderer.css.XRSheetRule;
 import org.xhtmlrenderer.css.XRStyleSheet;
+import org.xhtmlrenderer.layout.Context;
 
 
 /**
@@ -44,8 +41,7 @@ import org.xhtmlrenderer.css.XRStyleSheet;
  * (like property handling) is in here for use in subclasses. The class wraps a
  * DOM CSSRule, for example from a SAC parser.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public abstract class XRSheetRuleImpl implements XRSheetRule {
 
@@ -70,8 +66,8 @@ public abstract class XRSheetRuleImpl implements XRSheetRule {
      *
      * @param sheet        PARAM
      * @param domCSSRule   PARAM
-     * @param sequence     PARAM
      * @param propNames    PARAM
+     * @param sequence     PARAM
      * @param isImportant  PARAM
      */
     public XRSheetRuleImpl( XRStyleSheet sheet, CSSRule domCSSRule, List propNames, int sequence, boolean isImportant ) {
@@ -81,114 +77,6 @@ public abstract class XRSheetRuleImpl implements XRSheetRule {
         _isImportant = isImportant;
         _xrPropertiesByName = new TreeMap();
         pullPropertiesFromDOMRule( propNames );
-    }
-
-
-    /**
-     * Pulls CSSRules out of an XRStyleSheet and returns an Iterator of the
-     * corresponding XRSheetRule for each
-     *
-     * @param styleSheet  PARAM
-     * @return            Returns
-     */
-    public static Iterator fromCSSStyleSheet( XRStyleSheet styleSheet ) {
-        ArrayList xrRules = new ArrayList();
-        List props[];
-        List reg;
-        List imp = null;
-        CSSRuleList rules = styleSheet.getCssRules();
-        for ( int seq = 0, len = rules.getLength(); seq < len; seq++ ) {
-            CSSRule rule = rules.item( seq );
-            switch ( rule.getType() ) {
-                case CSSRule.CHARSET_RULE:// fall thru
-                case CSSRule.FONT_FACE_RULE:// fall thru
-                case CSSRule.IMPORT_RULE:// fall thru
-                case CSSRule.MEDIA_RULE:// fall thru
-                case CSSRule.PAGE_RULE:
-                    props = splitImportant( rule );
-                    reg = (List)props[0];
-                    imp = (List)props[1];
-                    if ( reg.size() > 0 ) {
-                        xrRules.add( new XRAtRuleImpl( styleSheet, rule, props[0], seq, false ) );
-                    }
-
-                    if ( imp.size() > 0 ) {
-                        xrRules.add( new XRAtRuleImpl( styleSheet, rule, props[1], seq, true ) );
-                    }
-                    break;
-                case CSSRule.STYLE_RULE:
-                    CSSStyleRule styleRule = (CSSStyleRule)rule;
-                    props = splitImportant( rule );
-                    reg = (List)props[0];
-                    imp = (List)props[1];
-
-                    String selector = styleRule.getSelectorText();
-                    String selectors[] = selector.split( "," );
-                    for ( int i = 0, slen = selectors.length; i < slen; i++ ) {
-                        if ( reg.size() > 0 ) {
-                            xrRules.add( new XRStyleRuleImpl( styleSheet, rule, selectors[i].trim(), reg, seq, false ) );
-                        }
-                        if ( imp.size() > 0 ) {
-                            xrRules.add( new XRStyleRuleImpl( styleSheet, rule, selectors[i].trim(), imp, seq, true ) );
-                        }
-                    }
-                    break;
-            }
-        }
-        return xrRules.iterator();
-    }
-
-
-    /**
-     * Breaks the rule into two lists of properties, one regular List[0], one
-     * important List[1]. Will be empty list if none found
-     *
-     * @param rule  PARAM
-     * @return      Returns
-     */
-    private static List[] splitImportant( CSSRule rule ) {
-        CSSStyleDeclaration decl = getStyleDeclaration( rule );
-        List reg = new ArrayList();
-        List imp = new ArrayList();
-        for ( int seq = 0, len = decl.getLength(); seq < len; seq++ ) {
-            String propName = decl.item( seq );
-            boolean isimp = decl.getPropertyPriority( propName ).equals( "important" );
-            if ( isimp ) {
-                imp.add( propName );
-            } else {
-                reg.add( propName );
-            }
-        }
-        return new List[]{reg, imp};
-    }
-
-
-    /**
-     * Gets the styleDeclaration attribute of the XRSheetRuleImpl object
-     *
-     * @param rule  PARAM
-     * @return      The styleDeclaration value
-     */
-    private static CSSStyleDeclaration getStyleDeclaration( CSSRule rule ) {
-        CSSStyleDeclaration decl = null;
-        switch ( rule.getType() ) {
-            case CSSRule.CHARSET_RULE:// fall thru
-            case CSSRule.IMPORT_RULE:// fall thru
-            case CSSRule.MEDIA_RULE:// fall thru
-                // these have no style declaration, nothing to do
-                decl = null;
-                break;
-            case CSSRule.FONT_FACE_RULE:// fall thru
-                decl = ( (CSSFontFaceRule)rule ).getStyle();
-                break;
-            case CSSRule.PAGE_RULE:// fall thru
-                decl = ( (CSSPageRule)rule ).getStyle();
-                break;
-            case CSSRule.STYLE_RULE:// fall thru
-                decl = ( (CSSStyleRule)rule ).getStyle();
-                break;
-        }
-        return decl;
     }
 
 
@@ -233,8 +121,8 @@ public abstract class XRSheetRuleImpl implements XRSheetRule {
      * Returns the XRProperty given its propertyname. Note this is independent
      * of cascade, inherit, etc--it is the property as specified.
      *
-     * @param propName  PARAM
      * @param context   PARAM
+     * @param propName  PARAM
      * @return          Returns
      */
     public XRProperty propertyByName( Context context, String propName ) {
@@ -361,5 +249,125 @@ public abstract class XRSheetRuleImpl implements XRSheetRule {
             }
         }
     }
+
+
+    /**
+     * Pulls CSSRules out of an XRStyleSheet and returns an Iterator of the
+     * corresponding XRSheetRule for each
+     *
+     * @param styleSheet  PARAM
+     * @return            Returns
+     */
+    public static Iterator fromCSSStyleSheet( XRStyleSheet styleSheet ) {
+        ArrayList xrRules = new ArrayList();
+        List props[];
+        List reg;
+        List imp = null;
+        CSSRuleList rules = styleSheet.getCssRules();
+        for ( int seq = 0, len = rules.getLength(); seq < len; seq++ ) {
+            CSSRule rule = rules.item( seq );
+            switch ( rule.getType() ) {
+                case CSSRule.CHARSET_RULE:// fall thru
+                case CSSRule.FONT_FACE_RULE:// fall thru
+                case CSSRule.IMPORT_RULE:// fall thru
+                case CSSRule.MEDIA_RULE:// fall thru
+                case CSSRule.PAGE_RULE:
+                    props = splitImportant( rule );
+                    reg = (List)props[0];
+                    imp = (List)props[1];
+                    if ( reg.size() > 0 ) {
+                        xrRules.add( new XRAtRuleImpl( styleSheet, rule, props[0], seq, false ) );
+                    }
+
+                    if ( imp.size() > 0 ) {
+                        xrRules.add( new XRAtRuleImpl( styleSheet, rule, props[1], seq, true ) );
+                    }
+                    break;
+                case CSSRule.STYLE_RULE:
+                    CSSStyleRule styleRule = (CSSStyleRule)rule;
+                    props = splitImportant( rule );
+                    reg = (List)props[0];
+                    imp = (List)props[1];
+
+                    String selector = styleRule.getSelectorText();
+                    String selectors[] = selector.split( "," );
+                    for ( int i = 0, slen = selectors.length; i < slen; i++ ) {
+                        if ( reg.size() > 0 ) {
+                            xrRules.add( new XRStyleRuleImpl( styleSheet, rule, selectors[i].trim(), reg, seq, false ) );
+                        }
+                        if ( imp.size() > 0 ) {
+                            xrRules.add( new XRStyleRuleImpl( styleSheet, rule, selectors[i].trim(), imp, seq, true ) );
+                        }
+                    }
+                    break;
+            }
+        }
+        return xrRules.iterator();
+    }
+
+
+    /**
+     * Breaks the rule into two lists of properties, one regular List[0], one
+     * important List[1]. Will be empty list if none found
+     *
+     * @param rule  PARAM
+     * @return      Returns
+     */
+    private static List[] splitImportant( CSSRule rule ) {
+        CSSStyleDeclaration decl = getStyleDeclaration( rule );
+        List reg = new ArrayList();
+        List imp = new ArrayList();
+        for ( int seq = 0, len = decl.getLength(); seq < len; seq++ ) {
+            String propName = decl.item( seq );
+            boolean isimp = decl.getPropertyPriority( propName ).equals( "important" );
+            if ( isimp ) {
+                imp.add( propName );
+            } else {
+                reg.add( propName );
+            }
+        }
+        return new List[]{reg, imp};
+    }
+
+
+    /**
+     * Gets the styleDeclaration attribute of the XRSheetRuleImpl object
+     *
+     * @param rule  PARAM
+     * @return      The styleDeclaration value
+     */
+    private static CSSStyleDeclaration getStyleDeclaration( CSSRule rule ) {
+        CSSStyleDeclaration decl = null;
+        switch ( rule.getType() ) {
+            case CSSRule.CHARSET_RULE:// fall thru
+            case CSSRule.IMPORT_RULE:// fall thru
+            case CSSRule.MEDIA_RULE:// fall thru
+                // these have no style declaration, nothing to do
+                decl = null;
+                break;
+            case CSSRule.FONT_FACE_RULE:// fall thru
+                decl = ( (CSSFontFaceRule)rule ).getStyle();
+                break;
+            case CSSRule.PAGE_RULE:// fall thru
+                decl = ( (CSSPageRule)rule ).getStyle();
+                break;
+            case CSSRule.STYLE_RULE:// fall thru
+                decl = ( (CSSStyleRule)rule ).getStyle();
+                break;
+        }
+        return decl;
+    }
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:21:14  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

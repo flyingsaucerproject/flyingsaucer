@@ -20,16 +20,11 @@
  */
 package org.xhtmlrenderer.css.impl;
 
-import org.xhtmlrenderer.css.constants.ValueConstants;
 import java.awt.Color;
-import java.awt.Font;
 import java.util.*;
-import java.util.logging.*;
-
+import java.util.logging.Level;
 import org.xhtmlrenderer.css.Border;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.css.RuleNormalizer;
-
 import org.xhtmlrenderer.css.XRDerivedStyle;
 import org.xhtmlrenderer.css.XRElement;
 import org.xhtmlrenderer.css.XRProperty;
@@ -37,15 +32,16 @@ import org.xhtmlrenderer.css.XRRule;
 import org.xhtmlrenderer.css.XRStyleRule;
 import org.xhtmlrenderer.css.XRValue;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.value.BorderColor;
+import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.XRLog;
 
 
 /**
  * Default implementation of XRDerivedStyle.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public class XRDerivedStyleImpl implements XRDerivedStyle {
     /** The XRElement we are a derived style for. */
@@ -54,7 +50,11 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
     /** The styles matched to our owner element. */
     private List _matchedStyles;
 
-    /** The main Map of XRProperties keyed by property name, after cascade/inherit takes place. This is the map we look up properties with. Do NOT call clear() (haha). */
+    /**
+     * The main Map of XRProperties keyed by property name, after
+     * cascade/inherit takes place. This is the map we look up properties with.
+     * Do NOT call clear() (haha).
+     */
     private Map _derivedPropertiesByName;
 
     /** The derived border width for this RuleSet */
@@ -171,8 +171,8 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
      * synchronized in order to allow this resolution to happen safely. Thus, on
      * this XRProperty you can call actualValue() to get something meaningful.
      *
-     * @param propName  PARAM
      * @param context   PARAM
+     * @param propName  PARAM
      * @return          Returns
      */
     public XRProperty propertyByName( Context context, String propName ) {
@@ -184,24 +184,24 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
         // but the property may not be defined for this Element
         if ( prop == null ) {
             XRValue val = null;
-            
+
             // if it is inheritable (like color) and we are not root, ask our parent
             // for the value
-            if ( CSSName.propertyInherits(propName) && _xrElement.parentXRElement() != null ) {
+            if ( CSSName.propertyInherits( propName ) && _xrElement.parentXRElement() != null ) {
                 // get a copy
-                prop = _xrElement.parentXRElement().derivedStyle().propertyByName(context, propName).copyForInherit();
+                prop = _xrElement.parentXRElement().derivedStyle().propertyByName( context, propName ).copyForInherit();
             } else {
                 // otherwise, use the initial value (defined by the CSS2 Spec)
-                String initialValue = CSSName.initialValue(propName);
+                String initialValue = CSSName.initialValue( propName );
                 if ( initialValue == null ) {
-                    throw new RuntimeException("Property '" + propName + "' has no initial values assigned.");
+                    throw new RuntimeException( "Property '" + propName + "' has no initial values assigned." );
                 }
-                initialValue = RuleNormalizer.convertIdent(propName, initialValue);
-                DefaultCSSPrimitiveValue cssval = new DefaultCSSPrimitiveValue(initialValue);
-                XRValueImpl xrVal = new XRValueImpl(cssval, "");
-                prop = new XRPropertyImpl(propName, 100, xrVal);
+                initialValue = RuleNormalizer.convertIdent( propName, initialValue );
+                DefaultCSSPrimitiveValue cssval = new DefaultCSSPrimitiveValue( initialValue );
+                XRValueImpl xrVal = new XRValueImpl( cssval, "" );
+                prop = new XRPropertyImpl( propName, 100, xrVal );
             }
-            _derivedPropertiesByName.put(propName, prop);
+            _derivedPropertiesByName.put( propName, prop );
         }
         prop.resolveValue( context, _xrElement );
         return prop;
@@ -354,7 +354,7 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
             Iterator props = rule.listXRProperties();
             while ( props.hasNext() ) {
                 XRProperty prop = (XRProperty)props.next();
-                if ( !ValueConstants.isAbsoluteUnit(prop.specifiedValue().cssValue()) ) {
+                if ( !ValueConstants.isAbsoluteUnit( prop.specifiedValue().cssValue() ) ) {
                     relativeProps.add( prop );
                 }
                 _derivedPropertiesByName.put( prop.propertyName(), prop );
@@ -465,4 +465,16 @@ public class XRDerivedStyleImpl implements XRDerivedStyle {
         return der;
     }
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.4  2004/10/23 13:21:14  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 
