@@ -29,7 +29,20 @@ import java.awt.Color;
  * @author   Patrick Wright
  */
 public class BorderColor {
-
+    public BorderColor() {
+    }
+    public BorderColor(Color color) {
+        this.topColor = color;
+        this.bottomColor = color;
+        this.rightColor = color;
+        this.leftColor = color;
+    }
+    public BorderColor(Color top, Color right, Color bottom, Color left) {
+        this.topColor = top;
+        this.bottomColor = bottom;
+        this.rightColor = right;
+        this.leftColor = left;
+    }
     /** Color for top of the border. */
     public Color topColor;
 
@@ -79,6 +92,16 @@ public class BorderColor {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/09 15:53:48  joshy
+ * initial support for hover (currently disabled)
+ * moved justification code into it's own class in a new subpackage for inline
+ * layout (because it's so blooming complicated)
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/11/07 16:23:17  joshy
  * added support for lighten and darken to bordercolor
  * added support for different colored sides

@@ -39,6 +39,8 @@ public interface Layout {
      * @return      Returns
      */
     public Box layout( Context c, Element elem );
+    public void restyleNormal(Context c, Box box);
+    public void restyleHover(Context c, Box box);
     public Renderer getRenderer();
 }
 
@@ -46,6 +48,16 @@ public interface Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/09 15:53:49  joshy
+ * initial support for hover (currently disabled)
+ * moved justification code into it's own class in a new subpackage for inline
+ * layout (because it's so blooming complicated)
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/10/28 02:13:41  joshy
  * finished moving the painting code into the renderers
  *

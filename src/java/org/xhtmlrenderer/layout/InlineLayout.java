@@ -18,12 +18,14 @@
  * }}}
  */
  package org.xhtmlrenderer.layout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.util.List;
 import java.util.ArrayList;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.layout.inline.*;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
@@ -32,6 +34,8 @@ import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.InlineRenderer;
 import org.xhtmlrenderer.render.Renderer;
+import org.xhtmlrenderer.css.value.*;
+import org.xhtmlrenderer.css.*;
 import org.xhtmlrenderer.util.InfiniteLoopError;
 import org.xhtmlrenderer.util.u;
 /**
@@ -378,98 +382,35 @@ public class InlineLayout extends BoxLayout {
         if ( text_align.equals( "center" ) ) {
             line_to_save.x = x + ( width - line_to_save.width ) / 2;
         }
-        if (text_align.equals("justify")) {
-            if(!last) {
-                justifyLine(c,line_to_save,containing_block,width);
+        if(TextAlignJustify.isJustified(c,containing_block)) {
+            if(!last) {            
+                TextAlignJustify.justifyLine(c,line_to_save,containing_block,width);
             }
         }
     }
     
-    private static void justifyLine(Context c, LineBox line, Element elem, int width) {
-        if(line.width > width) {
-            return;
-        }
-        //u.p("line width = " + line.width);
-        //u.p("available width = " + width);
-        //u.p("inlines = " + line.getChildCount());
-        //u.p("word count = " + wordCount((InlineBox)line.getChild(0)));
-        //int extra = width - line.width;
-        //u.p("extra = " + extra);
-        /*
-        int word_count = 0;
-        for(int i=0; i<line.getChildCount();i++) {
-            word_count += wordCount((InlineBox)line.getChild(i));
-        }
-        if(word_count < 2) {
-            return;
-        }
-        //u.p("final word count = " + word_count);
-        int spacer = extra/(word_count-1);
-        //u.p("spacer = " + spacer);
-        */
-        
-        // split each inline box into words
-        List temp_list = new ArrayList();
-        for(int i=0; i<line.getChildCount();i++) {
-            splitInlineBox(c,(InlineBox)line.getChild(i),temp_list);
-        }
-        // clear out all inlines
-        line.removeAllChildren();
-        // add in all of the new inlines
-        line.width = 0;
-        for(int i=0; i<temp_list.size(); i++) {
-            InlineBox box = (InlineBox)temp_list.get(i);
-            line.width += box.width;
-            line.addChild(box);
-        }
-        
-        int extra = width - line.width;
-        int spaces = (line.getChildCount()-1);
-        float spacer = extra / (float)spaces;
-        // now realign them
-        int total_lengths = 0;
-        for(int i=0; i<line.getChildCount(); i++) {
-            InlineBox box = (InlineBox)line.getChild(i);
-            box.x = total_lengths + (int)(spacer * (float)i);
-            total_lengths += box.width;
-        }
-    }
-    
-    private static void splitInlineBox(Context c, InlineBox box, List temp_list) {
-        String[] words = words(box);
-        // don't split if only one word
-        if(words.length < 2) { 
-            temp_list.add(box);
-            return; 
-        }
-        for(int i=0; i<words.length; i++) {
-            InlineBox copy = new InlineBox(box);
-            copy.setSubstring(words[i]);
-            copy.width = FontUtil.len(c,copy);
-            temp_list.add(copy);
-        }
-    }
-    
-    private static String[] words(InlineBox box) {
-        String text = box.getSubstring();
-        String[] words = text.split("\\s");
-        return words;
-    }
-    private static int wordCount(InlineBox box) {
-        String text = box.getSubstring();
-        String[] words = text.split("\\s");
-        return words.length;
-    }
     
     public Renderer getRenderer() {
         return new InlineRenderer();
     }
+    
+    
 
 }
 /*
 * $Id$
 *
 * $Log$
+* Revision 1.17  2004/11/09 15:53:48  joshy
+* initial support for hover (currently disabled)
+* moved justification code into it's own class in a new subpackage for inline
+* layout (because it's so blooming complicated)
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.16  2004/11/09 02:04:23  joshy
 * support for text-align: justify
 *

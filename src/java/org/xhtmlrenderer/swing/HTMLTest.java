@@ -33,12 +33,16 @@ import javax.swing.JMenuBar;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.event.MouseInputAdapter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.CSSBank;
 import org.xhtmlrenderer.css.bridge.XRStyleReference;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.layout.LayoutFactory;
+import org.xhtmlrenderer.layout.Layout;
+import org.xhtmlrenderer.layout.InlineLayout;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.u;
 
@@ -70,7 +74,10 @@ public class HTMLTest extends JFrame {
         scroll.setVerticalScrollBarPolicy( scroll.VERTICAL_SCROLLBAR_ALWAYS );
         scroll.setHorizontalScrollBarPolicy( scroll.HORIZONTAL_SCROLLBAR_ALWAYS );
         scroll.setPreferredSize( new Dimension( text_width, text_width ) );
-        panel.addMouseListener( new ClickMouseListener( panel ) );
+        //panel.addMouseListener( new ClickMouseListener( panel ) );
+        HoverListener hov = new HoverListener(panel);
+        panel.addMouseListener(hov);
+        panel.addMouseMotionListener(hov);
 
         if ( args.length > 0 ) {
             // CLEAN
@@ -455,17 +462,13 @@ class ClickMouseListener extends MouseAdapter {
         this.panel = panel;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param evt  PARAM
-     */
     public void mousePressed( MouseEvent evt ) {
         Box box = panel.findBox( evt.getX(), evt.getY() );
         if ( box == null ) {
             return;
         }
         u.p( "pressed " + box );
+        
         if ( box.node != null ) {
             Node node = box.node;
             if ( node.getNodeType() == node.TEXT_NODE ) {
@@ -487,6 +490,7 @@ class ClickMouseListener extends MouseAdapter {
      * @param evt  PARAM
      */
     public void mouseReleased( MouseEvent evt ) {
+        
         Box box = panel.findBox( evt.getX(), evt.getY() );
         if ( box == null ) {
             return;
@@ -497,7 +501,7 @@ class ClickMouseListener extends MouseAdapter {
             if ( node.getNodeType() == node.TEXT_NODE ) {
                 node = node.getParentNode();
             }
-
+            
             if ( LayoutFactory.isLink(node) ) {
                 u.p( "clicked on a link" );
                 box.clicked = true;
@@ -505,7 +509,9 @@ class ClickMouseListener extends MouseAdapter {
                 panel.repaint();
                 followLink( (Element)node );
             }
+            
         }
+        
     }
 
     /**
@@ -525,10 +531,75 @@ class ClickMouseListener extends MouseAdapter {
 
 }
 
+
+class HoverListener extends MouseInputAdapter {
+    private HTMLPanel panel;
+    private InlineBox prev;
+    public HoverListener(HTMLPanel panel) {
+        this.panel = panel;
+    }
+    public void mouseMoved( MouseEvent evt ) {
+        InlineBox ib = findInlineBox(evt);
+        restyle(ib);
+    }
+    public void mouseEntered( MouseEvent evt ) {
+        InlineBox ib = findInlineBox(evt);
+        restyle(ib);
+    }
+    public void mouseExited( MouseEvent evt ) {
+        InlineBox ib = findInlineBox(evt);
+        restyle(ib);
+    }
+    private void restyle(InlineBox ib) {
+        // if moved out of the old block then unstyle it
+        if(prev != null && prev != ib) {
+            Layout lt = LayoutFactory.getLayout(prev.getRealElement());
+            if(lt instanceof InlineLayout) {
+                ((InlineLayout)lt).restyleNormal(panel.getContext(), prev);
+                panel.repaint();
+            }
+        }
+        
+        if(prev == ib) {
+            return;
+        }
+        prev = ib;
+        // return if no new hovered block;
+        if(ib == null) { return; }
+        
+        // if the block has a hover style then restyle it
+        if(ib.hasHoverStyle()) {
+            prev = ib;
+            Layout lt = LayoutFactory.getLayout(ib.getRealElement());
+            if(lt instanceof InlineLayout) {
+                ((InlineLayout)lt).restyleHover(panel.getContext(), ib);
+                panel.repaint();
+            }
+        }
+    }
+    private InlineBox findInlineBox(MouseEvent evt) {
+        Box box = panel.findBox( evt.getX(), evt.getY() );
+        if(box instanceof InlineBox) {
+            InlineBox ib = (InlineBox)box;
+            return ib;
+        }
+        return null;
+    }
+}
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/11/09 15:53:51  joshy
+ * initial support for hover (currently disabled)
+ * moved justification code into it's own class in a new subpackage for inline
+ * layout (because it's so blooming complicated)
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.12  2004/11/09 00:36:09  joshy
  * fixed more text alignment
  * added menu item to show font metrics

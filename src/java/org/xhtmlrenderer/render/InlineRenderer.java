@@ -255,6 +255,7 @@ public class InlineRenderer extends BoxRenderer {
 
     public void paintPadding(Context c, LineBox line, InlineBox inline) {
         // paint the background
+        //u.p("painting the padding: " + inline);
         //int padding_xoff = inline.totalLeftPadding();
         int padding_xoff = 0;
         int padding_yoff = inline.totalTopPadding();

@@ -53,7 +53,16 @@ table demo
 build a calendar demo
     month, days, selected day, events, years, days of the week,
     should resize w/ the window
-    
+====================
+thoughts on hover
+hover requires some sort of dynamic reflow
+also needs a way of indentifying which areas of the screen can be hovered
+could do a search for the box under the mouse cursor and then see if it has hover
+could track a list of hovered blocks relative to the canvas
+
+for non-layout reflow we can just change colors and fonts, maybe borders as well.
+identify the hovered block, look up the hover styles. call restyle() on the block with the hovered
+style. x,y,w,h won't change. then repaint the screen()
 
 --------------------
 --------------------

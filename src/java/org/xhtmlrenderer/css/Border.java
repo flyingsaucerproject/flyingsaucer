@@ -36,6 +36,12 @@ public class Border {
         this.left = bd.left;
         this.right = bd.right;
     }
+    public Border(int top, int right, int bottom, int left) {
+        this.top = top;
+        this.bottom = bottom;
+        this.right = right;
+        this.left = left;
+    }
 
     /** Description of the Field */
     public int top;
@@ -65,6 +71,16 @@ public class Border {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/09 15:53:48  joshy
+ * initial support for hover (currently disabled)
+ * moved justification code into it's own class in a new subpackage for inline
+ * layout (because it's so blooming complicated)
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/11/02 17:13:59  joshy
  * implemented double borders
  *

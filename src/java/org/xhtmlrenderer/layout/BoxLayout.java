@@ -322,36 +322,6 @@ public class BoxLayout extends DefaultLayout {
      * @param box  PARAM
      * @return     The border value
      */
-    public static Border getBorder( Context c, Box box ) {
-        //if text but parent is not block, then do border
-        // if block then do border
-        // if text but parent is block, then no border
-        if(isBlockOrInlineElementBox(c,box)) {
-           //u.p("doing border for: " + box);
-           //u.p("hascode = " + box.hashCode());
-            if ( box.border == null ) {
-                //if(box instanceof BlockBox) {
-                    box.border = c.css.getBorderWidth( box.getRealElement() );
-                //}
-            }
-        }
-        return box.border;
-    }
-    
-    public static boolean isBlockOrInlineElementBox(Context c, Box box) {
-        if((box.node.getNodeType()==Node.TEXT_NODE && 
-           !DefaultLayout.isBlockNode(box.getRealElement(),c)) ||
-           box.isElement()) {
-           // u.p("box = " + box);
-           // u.p("node type = " + box.node.getNodeType());
-           // u.p("text node == " + Node.TEXT_NODE);
-           // u.p("real element = " + box.getRealElement());
-           // u.p("is block node = " + DefaultLayout.isBlockNode(box.getRealElement(),c));
-           // u.p("is element = " + box.isElement());
-           return true;
-        }
-        return false;
-    }
 
 
     /**
@@ -505,6 +475,16 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/11/09 15:53:48  joshy
+ * initial support for hover (currently disabled)
+ * moved justification code into it's own class in a new subpackage for inline
+ * layout (because it's so blooming complicated)
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.15  2004/11/08 20:50:58  joshy
  * improved float support
  *

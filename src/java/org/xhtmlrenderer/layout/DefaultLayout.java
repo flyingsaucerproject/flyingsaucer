@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.layout;
 
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import org.w3c.dom.Element;
@@ -27,6 +28,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.*;
@@ -414,12 +417,68 @@ public class DefaultLayout implements Layout {
         return false;
     }
 
+
+    public static Border getBorder( Context c, Box box ) {
+        //if text but parent is not block, then do border
+        // if block then do border
+        // if text but parent is block, then no border
+        if(isBlockOrInlineElementBox(c,box)) {
+           //u.p("doing border for: " + box);
+           //u.p("hascode = " + box.hashCode());
+            if ( box.border == null ) {
+                //if(box instanceof BlockBox) {
+                    box.border = c.css.getBorderWidth( box.getRealElement() );
+                //}
+            }
+        }
+        return box.border;
+    }
+    
+    public static boolean isBlockOrInlineElementBox(Context c, Box box) {
+        if((box.node.getNodeType()==Node.TEXT_NODE && 
+           !DefaultLayout.isBlockNode(box.getRealElement(),c)) ||
+           box.isElement()) {
+           // u.p("box = " + box);
+           // u.p("node type = " + box.node.getNodeType());
+           // u.p("text node == " + Node.TEXT_NODE);
+           // u.p("real element = " + box.getRealElement());
+           // u.p("is block node = " + DefaultLayout.isBlockNode(box.getRealElement(),c));
+           // u.p("is element = " + box.isElement());
+           return true;
+        }
+        return false;
+    }
+
+    public void restyleNormal(Context ctx, Box box) {
+        box.color = ctx.css.getColor(box.getRealElement());
+        box.setBorderColor(ctx.css.getBorderColor( box.getRealElement() ));
+        box.border_style = ctx.css.getStringProperty( box.getRealElement(), "border-top-style" );
+        box.background_color = ctx.css.getBackgroundColor( box.getRealElement() );
+    }
+    public void restyleHover(Context c, Box box) {
+        box.color = Color.black;
+        box.setBorderColor(new BorderColor(new Color(.7f,.7f,1f)));
+        box.border_style = "solid";
+        box.background_color = new Color(.9f,.9f,.9f);
+    }
+
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/11/09 15:53:48  joshy
+ * initial support for hover (currently disabled)
+ * moved justification code into it's own class in a new subpackage for inline
+ * layout (because it's so blooming complicated)
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.14  2004/11/08 20:50:58  joshy
  * improved float support
  *

@@ -464,6 +464,10 @@ public class LineBreaker {
             }
         }
         
+        //CascadedStyle hover = c.css.getPseudoClassStyle(getNearestBlockElement(node,c),"hover");
+        //u.p("hover style = " + hover);
+        
+        
 
         // adjust width based on borders and padding
         box.width += box.totalHorizontalPadding();
@@ -556,6 +560,16 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/11/09 15:53:49  joshy
+ * initial support for hover (currently disabled)
+ * moved justification code into it's own class in a new subpackage for inline
+ * layout (because it's so blooming complicated)
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.14  2004/11/09 00:41:44  joshy
  * fixed merge error
  * Issue number:

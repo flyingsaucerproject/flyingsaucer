@@ -137,7 +137,7 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add( new LoadAction( "Selectors", "demo:demos/selectors.xhtml" ) );
         demos.add( new LoadAction( "Images", "demo:demos/image.xhtml" ) );
         demos.add( new LoadAction( "Lists", "demo:demos/list.xhtml" ) );
-        demos.add( new LoadAction( "Tables", "demo:demos/table.xhtml"));
+        //demos.add( new LoadAction( "Tables", "demo:demos/table.xhtml"));
         demos.add( new LoadAction( "Hamlet", "demo:demos/hamlet.xhtml"));
         demos.add( new LoadAction( "Alice", "demo:demos/alice/alice.xhtml"));
         demos.add( new LoadAction( "Financial Report", "demo:demos/report.xhtml"));
@@ -420,6 +420,16 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/11/09 15:53:47  joshy
+ * initial support for hover (currently disabled)
+ * moved justification code into it's own class in a new subpackage for inline
+ * layout (because it's so blooming complicated)
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.10  2004/11/09 03:52:25  joshy
  * added financial report demo
  *
