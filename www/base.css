@@ -30,6 +30,9 @@ body, #fs {
 	color: #FFFFFF;
 	background-color: #3366FF;
 }
+#fs a:link, #fs a:visited, #fs a:hover, #fs a:active {
+	color:#0000ff;
+	}
 #fs #menu li {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	color: #FFFFFF;
