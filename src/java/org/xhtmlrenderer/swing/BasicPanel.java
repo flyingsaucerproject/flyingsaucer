@@ -32,6 +32,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.x;
 import org.xml.sax.ErrorHandler;
 
 import javax.swing.*;
@@ -693,6 +694,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2004/11/16 10:14:11  pdoubleya
+ * Was not importing util.x, so was assuming that x was a member variable in the superclass. Added import.
+ *
  * Revision 1.1  2004/11/16 07:25:13  tobega
  * Renamed HTMLPanel to BasicPanel
  *
