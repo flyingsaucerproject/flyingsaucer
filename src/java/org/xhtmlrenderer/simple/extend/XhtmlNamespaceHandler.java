@@ -27,6 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.swing.*;
+
+import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -187,7 +189,7 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
             org.w3c.dom.NodeList children = elem.getChildNodes();
             for ( int j = 0; j < children.getLength(); j++ ) {
                 org.w3c.dom.Node txt = children.item( j );
-                if ( txt.getNodeType() == org.w3c.dom.Node.TEXT_NODE ) {
+                if ( txt instanceof CharacterData ) {
                     style.append( txt.getNodeValue() );
                 }
             }
