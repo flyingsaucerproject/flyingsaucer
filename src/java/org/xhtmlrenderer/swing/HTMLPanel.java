@@ -163,7 +163,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
             ( (Graphics2D)g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         }
         doPaint( g );
-        u.p("paint ending");
+        //u.p("paint ending");
     }
 
     /**
@@ -172,7 +172,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
      * @param g  PARAM
      */
     public void doPaint( Graphics g ) {
-        u.p("do paint begin");
+        //u.p("do paint begin");
 
         if ( body_box == null ) {
             calcLayout( g );
@@ -184,7 +184,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
 
         newContext( g );
         layout_thread.startRender(g);
-        u.p("do paint end");
+        //u.p("do paint end");
     }
 
 
@@ -238,11 +238,11 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         // start painting
         c.setMaxWidth( 0 );
         long start_time = new java.util.Date().getTime();
-        u.p("starting the real layout");
-        u.p("thread = " + Thread.currentThread());
+        //u.p("starting the real layout");
+        //u.p("thread = " + Thread.currentThread());
         body_box = layout.layout( c, body );
         long end_time = new java.util.Date().getTime();
-        u.p("ending count = " + (end_time-start_time) + " msec");
+        //u.p("ending count = " + (end_time-start_time) + " msec");
 
         if ( enclosingScrollPane != null ) {
             if ( this.body_box != null ) {
@@ -709,7 +709,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
      * @param g  PARAM
      */
     private void newContext( Graphics g ) {
-        u.p("new context begin");
+        //u.p("new context begin");
         Point origin = new Point( 0, 0 );
         Point last = new Point( 0, 0 );
         c.canvas = this;
@@ -729,7 +729,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
         c.viewport = this.enclosingScrollPane;
         c.cursor = last;
         c.setMaxWidth( 0 );
-        u.p("new context end");
+        //u.p("new context end");
     }
 
     /**
@@ -739,7 +739,7 @@ public class HTMLPanel extends JPanel implements ComponentListener {
      * @param tab  PARAM
      */
     private void printTree( Box box, String tab ) {
-        u.p( tab + "Box = " + box );
+        //u.p( tab + "Box = " + box );
         Iterator it = box.getChildIterator();
         while ( it.hasNext() ) {
             Box bx = (Box)it.next();
@@ -794,16 +794,13 @@ class LayoutThread implements Runnable {
             graphics = g;
             new Thread(this).start();
         } else {
-            u.p("layout already in progress. skipping layout");
+            //u.p("layout already in progress. skipping layout");
         }
     }
     
     public void run() {
-        u.p("layout thread starting");
+        //u.p("layout thread starting");
         //u.p("graphics = " + graphics);
-        try {
-            Thread.currentThread().sleep(3000);
-        } catch (Exception ex) { }
         panel.startLayout(graphics);
         this.completeLayout();
     }
@@ -825,12 +822,13 @@ class LayoutThread implements Runnable {
         g.setColor(Color.black);
         if(this.isLayoutDone()) {
             if(panel.body_box != null) {
-                u.p("really painting");
+                //u.p("really painting");
                 try {
                     panel.layout.paint( panel.c, panel.body_box );
                 } catch (Throwable thr) {
                     u.p("current thread = " + Thread.currentThread());
                     u.p(thr);
+                    thr.printStackTrace();
                 }
             } else {
                 g.drawString("body box is null", 50,50);
@@ -838,7 +836,7 @@ class LayoutThread implements Runnable {
             }
         } else {
             g.drawString("still doing layout", 50,50);
-            u.p("still doing layout");
+            //u.p("still doing layout");
         }
     }
 
@@ -848,6 +846,9 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/10/27 04:08:44  joshy
+ * removed debugging code
+ *
  * Revision 1.11  2004/10/26 00:13:14  joshy
  * added threaded layout support to the HTMLPanel
  *
