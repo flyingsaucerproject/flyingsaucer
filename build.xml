@@ -182,6 +182,8 @@
         </delete>
     </target>
 
+    <target name="clean-for-core-debug" depends="clean,resources.core"/>
+
     <!-- cleans all javadoc/api files -->
     <target name="clean-javadoc" description="clean project javadoc files" depends="properties">
         <delete dir="${dest.javadoc.full.dir}"/>
@@ -785,6 +787,9 @@
 $Id$
 
 $Log$
+Revision 1.81  2004/12/14 01:50:13  tobega
+Why is there always one more bug ;-) Now line-breaking should be cast-iron (I hope)
+
 Revision 1.80  2004/12/12 16:11:04  tobega
 Fixed bug concerning order of inline content. Added a demo for pseudo-elements.
 

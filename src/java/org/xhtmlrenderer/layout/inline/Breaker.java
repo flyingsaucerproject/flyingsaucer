@@ -54,22 +54,22 @@ public class Breaker {
         //just find a space that works
         String currentString = inline.getSubstring();
         int n = currentString.length();
-        int pn;
+        int possibleWrap;
         do {
-            pn = n;
-            n = currentString.lastIndexOf(WhitespaceStripper.SPACE, pn - 1);
+            possibleWrap = n;
+            n = currentString.lastIndexOf(WhitespaceStripper.SPACE, possibleWrap - 1);
         } while (n >= 0 && FontUtil.len(c, currentString.substring(0, n), font) >= avail);
 
-        if (n < 0) {//unbreakable string
-            if (prev_align != null) {
+        if (n <= 0) {//unbreakable string (0 is a boundary condition when the first was a space
+            inline.setSubstring(inline.start_index, inline.start_index + possibleWrap);//the best we can do
+            if (prev_align != null && !prev_align.break_after) {
                 inline.break_before = true;
             }
-            return;
         } else {//found a place to wrap
             inline.setSubstring(inline.start_index, inline.start_index + n);
-            inline.break_after = true;
-            return;
         }
+        inline.break_after = true;
+        return;
 
     }
 

@@ -182,8 +182,9 @@ public class InlineLayout extends BoxLayout {
                     curr_line = newLine(box, bounds, prev_line);
                     remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
                     //have to discard it and recalculate, particularly if this was the first line
-                    new_inline = calculateInline(c, currentContent, remaining_width, bounds.width,
-                            prev_inline, prev_align_inline, isFirstLetter, block.firstLetterStyle, block.firstLineStyle);
+                    //HACK: is my thinking straight? - tobe
+                    prev_align_inline.break_after = true;
+                    continue;
                 }
 
                 if (!(currentContent instanceof InlineBlockContent)) {
@@ -420,6 +421,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.57  2004/12/14 01:50:13  tobega
+* Why is there always one more bug ;-) Now line-breaking should be cast-iron (I hope)
+*
 * Revision 1.56  2004/12/14 00:32:20  tobega
 * Cleaned and fixed line breaking. Renamed BodyContent to DomToplevelNode
 *
