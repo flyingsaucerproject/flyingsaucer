@@ -2,12 +2,12 @@ package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.css.*;
-import org.xhtmlrenderer.css.constants.*;
 
 public class LayoutUtil {
 
@@ -38,17 +38,18 @@ public class LayoutUtil {
         }
         return false;
     }
-    
+
     public static boolean shouldDrawBackground(Box box) {
-        if(!isBlockOrInlineElementBox(box)) {
+        if (!isBlockOrInlineElementBox(box)) {
             return false;
         }
-        if(box.content instanceof AnonymousBlockContent) {
+        if (box.content instanceof AnonymousBlockContent) {
             return false;
         }
         return true;
     }
 
+    //TODO: move this to Box
     public static boolean isBlockOrInlineElementBox(Box box) {
         //Uu.p("box = " + box);
         if (box.content instanceof BlockContent) {
@@ -72,11 +73,11 @@ public class LayoutUtil {
         if (box.content instanceof InlineBlockContent) {
             return true;
         }
-        
+
         if (box.content instanceof AbsolutelyPositionedContent) {
             return true;
         }
-        
+
         if (box.content instanceof FloatedBlockContent) {
             return true;
         }
@@ -91,18 +92,19 @@ public class LayoutUtil {
         return true;
     }
 
-    public static Border getBorder(Context c, Box box) {
-        //TODO: can I skip this? 
+    //TODO: move this to Box
+    public static Border getBorder(Box box, CalculatedStyle style) {
+        Border border = null;
         if (isBlockOrInlineElementBox(box)) {
-            if (box.border == null) {
-                box.border = c.getCurrentStyle().getBorderWidth();
-                box.border_style = c.getCurrentStyle().getStringProperty(CSSName.BORDER_STYLE_TOP);
-                if(box.border_style.equals("none")) {
-                    box.border = new Border(0,0,0,0);
+            if (border == null) {
+                border = style.getBorderWidth();
+                String border_style = style.getStringProperty(CSSName.BORDER_STYLE_TOP);
+                if (border_style.equals("none")) {
+                    border = new Border(0, 0, 0, 0);
                 }
             }
         }
-        return box.border;
+        return border;
     }
 
     /**

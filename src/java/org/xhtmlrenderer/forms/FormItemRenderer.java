@@ -114,9 +114,9 @@ public class FormItemRenderer extends CustomBlockRenderer {
         // nested inside of an inline. when we redo the inline-block code
         // this should be fixed
 
-        coords.x += box.totalLeftPadding() + box.getParent().totalLeftPadding();
-        coords.y += box.totalTopPadding() + box.getParent().totalTopPadding();
-        FormItemLayout.adjustVerticalAlign(coords, box);
+        coords.x += box.totalLeftPadding(c.getCurrentStyle()) + box.getParent().totalLeftPadding(c.getCurrentStyle());
+        coords.y += box.totalTopPadding(c.getCurrentStyle()) + box.getParent().totalTopPadding(c.getCurrentStyle());
+        FormItemLayout.adjustVerticalAlign(c, coords, box);
         //Uu.p("abs coords = " + coords);
         //Uu.p("comp coords = " + ib.component.getLocation());
 

@@ -22,10 +22,12 @@ package org.xhtmlrenderer.table;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.BoxLayout;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.Layout;
+import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.layout.content.BlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
@@ -107,7 +109,7 @@ public class TableLayout
 
         getPadding(c, table);
 
-        getBorder(c, table);
+        //getBorder(c, table);
 
         float border_spacing = c.getCurrentStyle().getFloatProperty("border-spacing");
 
@@ -123,8 +125,9 @@ public class TableLayout
 
         int orig_fixed_width = fixed_width;
 
-        fixed_width -= table.margin.left + table.border.left + table.padding.left +
-                table.spacing.x + table.padding.right + table.border.right + table.margin.right;
+        Border border = LayoutUtil.getBorder(table, c.getCurrentStyle());
+        fixed_width -= table.margin.left + border.left + table.padding.left +
+                table.spacing.x + table.padding.right + border.right + table.margin.right;
 
         //Uu.p("fixed width = " + fixed_width);
 
@@ -267,9 +270,11 @@ public class TableLayout
             }
         }
 
+        Border border = LayoutUtil.getBorder(table, c.getCurrentStyle());
+
         // Xx is always 0 (rel to the parent table)
 
-        rowbox.x = +table.margin.left + table.border.left +
+        rowbox.x = +table.margin.left + border.left +
                 table.padding.left;
 
         // y is prev row.y + prev row.height
@@ -316,7 +321,7 @@ public class TableLayout
         //TODO: use content for tables too
         //cellbox.setNode(cell);
 
-        getBorder(c, cellbox);
+        //getBorder(c, cellbox);
 
         getMargin(c, cellbox);
 
@@ -447,7 +452,9 @@ public class TableLayout
 
         RowBox prev_row = new RowBox(0, 0, 0, 0);
 
-        prev_row.y = table.margin.top + table.border.top +
+        Border border = LayoutUtil.getBorder(table, c.getCurrentStyle());
+
+        prev_row.y = table.margin.top + border.top +
                 table.padding.top - fudge;
 
         // loop through all of the table rows
@@ -467,7 +474,7 @@ public class TableLayout
 
 
         table.height = prev_row.y + prev_row.height + table.spacing.y +
-                table.padding.bottom + table.border.bottom +
+                table.padding.bottom + border.bottom +
                 table.margin.bottom;
 
         table.width = orig_fixed_width;
@@ -529,6 +536,9 @@ public class TableLayout
 /*
    $Id$
    $Log$
+   Revision 1.13  2004/12/27 07:43:33  tobega
+   Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+
    Revision 1.12  2004/12/12 04:18:58  tobega
    Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
 

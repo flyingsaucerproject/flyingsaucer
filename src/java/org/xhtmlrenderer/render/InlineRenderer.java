@@ -147,7 +147,7 @@ public class InlineRenderer extends BoxRenderer {
         // Uu.p("adjusted inline by: " + inline.totalLeftPadding());
         // Uu.p("inline = " + inline);
         // Uu.p("padding = " + inline.padding);
-        ix += inline.totalLeftPadding();
+        ix += inline.totalLeftPadding(c.getCurrentStyle());
 
         paintSelection(c, inline, lx, ly);
         paintText(c, lx, ly, ix, iy, inline);
@@ -308,7 +308,7 @@ public class InlineRenderer extends BoxRenderer {
         //Uu.p("painting border: " + inline.border);
         // paint the background
         int padding_xoff = 0;
-        int padding_yoff = inline.totalTopPadding();
+        int padding_yoff = inline.totalTopPadding(c.getCurrentStyle());
 
         int ty = line.baseline - inline.y - inline.height - padding_yoff + line.y;
 
@@ -317,7 +317,7 @@ public class InlineRenderer extends BoxRenderer {
         c.translate(-padding_xoff, ty);
         int old_width = inline.width;
         int old_height = inline.height;
-        inline.height += inline.totalVerticalPadding();
+        inline.height += inline.totalVerticalPadding(c.getCurrentStyle());
         paintBackground(c, inline);
         paintBorder(c, inline);
         inline.width = old_width;

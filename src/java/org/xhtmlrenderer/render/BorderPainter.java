@@ -23,7 +23,7 @@ import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.content.TextContent;
+import org.xhtmlrenderer.layout.LayoutUtil;
 
 import java.awt.*;
 
@@ -44,24 +44,27 @@ public class BorderPainter {
     public void paint(Context ctx, Box box) {
         //Uu.p("checking: " + box);
         //Uu.p("hashcode = " + box.hashCode());
-        if (box.content != null && box.content instanceof TextContent && !box.isInlineElement()) return;
-        if (box.border == null) return;
+        //if (box.content != null && box.content instanceof TextContent && !box.isInlineElement()) return;
+        if (!LayoutUtil.shouldDrawBackground(box)) return;
+        //if (box.border == null) return;
         Graphics g = ctx.getGraphics();
 
         // TODO: color is per-side ((PWW 13/08/04)). Is it already done? (tobe 2004-12-12)
         //Uu.p("border = " + ctx.css.getBorderColor(box.getRealElement()).bottomColor);
-        if (box.border_color == null) {
-            box.border_color = ctx.getCurrentStyle().getBorderColor();
-        }
+        //if (box.border_color == null) {
+        //box.border_color = ctx.getCurrentStyle().getBorderColor();
+        BorderColor border_color = ctx.getCurrentStyle().getBorderColor();
+        //}
         //Uu.p("set the border colors to: " + box.getBorderColor());
 
         // ASK: border-style is a shorthand property for 4 border sides
         // CSSBank/Accessor leave it as a single property, but XRStyleReference
         // explodes it to individual values. Which way to go? (PWW 13/08/04)
-        if (box.border_style == null) {
-            box.border_style = ctx.getCurrentStyle().getStringProperty(CSSName.BORDER_STYLE_TOP);
-        }
-
+        //if (box.border_style == null) {
+        //box.border_style = ctx.getCurrentStyle().getStringProperty(CSSName.BORDER_STYLE_TOP);
+        String border_style = ctx.getCurrentStyle().getStringProperty(CSSName.BORDER_STYLE_TOP);
+        //}
+        Border border = LayoutUtil.getBorder(box, ctx.getCurrentStyle());
 
         Rectangle bounds = new Rectangle(box.x + box.margin.left,
                 box.y + box.margin.top,
@@ -72,97 +75,105 @@ public class BorderPainter {
 
         //Uu.p("border style = " + border_style);
 
-        if (box.border_style == null) {
-            box.border_style = "none";
-        }
+        //if (box.border_style == null) {
+        //    box.border_style = "none";
+        //}
 
 
         // return if border = none
-        if (box.border_style.equals("none")) {
+        //if (box.border_style.equals("none")) {
+        if (border_style.equals("none")) {
             return;
         }
 
 
-        if (box.border_style.equals("ridge") ||
-                box.border_style.equals("groove")) {
+        //if (box.border_style.equals("ridge") ||
+        //box.border_style.equals("groove")) {
+        if (border_style.equals("ridge") ||
+                border_style.equals("groove")) {
             Border bd2 = new Border();
-            bd2.top = box.border.top / 2;
-            bd2.bottom = box.border.bottom / 2;
-            bd2.left = box.border.left / 2;
-            bd2.right = box.border.right / 2;
-            if (box.border_style.equals("ridge")) {
-                paintGoodBevel(g, bounds, box.border, box.getBorderColor().darker(), box.getBorderColor().brighter());
-                paintGoodBevel(g, bounds, bd2, box.getBorderColor().brighter(), box.getBorderColor().darker());
+            bd2.top = border.top / 2;
+            bd2.bottom = border.bottom / 2;
+            bd2.left = border.left / 2;
+            bd2.right = border.right / 2;
+            //if (box.border_style.equals("ridge")) {
+            if (border_style.equals("ridge")) {
+                paintGoodBevel(g, bounds, border, border_color.darker(), border_color.brighter());
+                paintGoodBevel(g, bounds, bd2, border_color.brighter(), border_color.darker());
             } else {
-                paintGoodBevel(g, bounds, box.border, box.getBorderColor().brighter(), box.getBorderColor().darker());
-                paintGoodBevel(g, bounds, bd2, box.getBorderColor().darker(), box.getBorderColor().brighter());
+                paintGoodBevel(g, bounds, border, border_color.brighter(), border_color.darker());
+                paintGoodBevel(g, bounds, bd2, border_color.darker(), border_color.brighter());
             }
             return;
         }
 
 
-        if (box.border_style.equals("outset")) {
-            paintGoodBevel(g, bounds, box.border,
-                    box.getBorderColor().brighter(),
-                    box.getBorderColor().darker());
+//        if (box.border_style.equals("outset")) {
+        if (border_style.equals("outset")) {
+            paintGoodBevel(g, bounds, border,
+                    border_color.brighter(),
+                    border_color.darker());
             return;
         }
 
-        if (box.border_style.equals("inset")) {
-            paintGoodBevel(g, bounds, box.border,
-                    box.getBorderColor().darker(),
-                    box.getBorderColor().brighter());
+//        if (box.border_style.equals("inset")) {
+        if (border_style.equals("inset")) {
+            paintGoodBevel(g, bounds, border,
+                    border_color.darker(),
+                    border_color.brighter());
             return;
         }
 
-        if (box.border_style.equals("solid")) {
-            paintSolid(g, bounds, box.border, box.getBorderColor());
+//        if (box.border_style.equals("solid")) {
+        if (border_style.equals("solid")) {
+            paintSolid(g, bounds, border, border_color);
         }
 
-        if (box.border_style.equals("double")) {
+//        if (box.border_style.equals("double")) {
+        if (border_style.equals("double")) {
             // this may need to be modified to account for rounding errors
             // create a new border only 1/3 the thickness
             Border outer = new Border();
-            outer.top = box.border.top / 3;
-            outer.bottom = box.border.bottom / 3;
-            outer.left = box.border.left / 3;
-            outer.right = box.border.right / 3;
+            outer.top = border.top / 3;
+            outer.bottom = border.bottom / 3;
+            outer.left = border.left / 3;
+            outer.right = border.right / 3;
             Border center = new Border(outer);
 
             Border inner = new Border(outer);
-            if (box.border.top == 1) {
+            if (border.top == 1) {
                 outer.top = 1;
                 center.top = 0;
             }
-            if (box.border.bottom == 1) {
+            if (border.bottom == 1) {
                 outer.bottom = 1;
                 center.bottom = 0;
             }
-            if (box.border.left == 1) {
+            if (border.left == 1) {
                 outer.left = 1;
                 center.left = 0;
             }
-            if (box.border.right == 1) {
+            if (border.right == 1) {
                 outer.right = 1;
                 center.right = 0;
             }
 
-            if (box.border.top == 2) {
+            if (border.top == 2) {
                 outer.top = 1;
                 center.top = 0;
                 inner.top = 1;
             }
-            if (box.border.bottom == 2) {
+            if (border.bottom == 2) {
                 outer.bottom = 1;
                 center.bottom = 0;
                 inner.bottom = 1;
             }
-            if (box.border.left == 2) {
+            if (border.left == 2) {
                 outer.left = 1;
                 center.left = 0;
                 inner.left = 1;
             }
-            if (box.border.right == 2) {
+            if (border.right == 2) {
                 outer.right = 1;
                 center.right = 0;
                 inner.right = 1;
@@ -171,22 +182,24 @@ public class BorderPainter {
             Rectangle b2 = shrinkRect(bounds, outer);
             b2 = shrinkRect(b2, center);
             // draw outer border
-            paintSolid((Graphics2D) g, bounds, outer, box.getBorderColor());
+            paintSolid((Graphics2D) g, bounds, outer, border_color);
             // draw inner border
-            paintSolid((Graphics2D) g, b2, inner, box.getBorderColor());
+            paintSolid((Graphics2D) g, b2, inner, border_color);
         }
 
-        if (box.border_style.equals("dashed")) {
+//        if (box.border_style.equals("dashed")) {
+        if (border_style.equals("dashed")) {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-            paintPatternedRect(g2, bounds, box.border, box.getBorderColor(), new float[]{10.0f, 4.0f});
+            paintPatternedRect(g2, bounds, border, border_color, new float[]{10.0f, 4.0f});
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
-        if (box.border_style.equals("dotted")) {
+//        if (box.border_style.equals("dotted")) {
+        if (border_style.equals("dotted")) {
             Graphics2D g2 = (Graphics2D) g;
             // turn off anti-aliasing or the dots will be all blurry
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-            paintPatternedRect(g2, bounds, box.border, box.getBorderColor(), new float[]{box.border.top, box.border.top});
+            paintPatternedRect(g2, bounds, border, border_color, new float[]{border.top, border.top});
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
     }
@@ -414,6 +427,9 @@ public void paintSimpleBorder( Graphics2D g, Rectangle bounds, Border border, Bo
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/12/27 07:43:32  tobega
+ * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+ *
  * Revision 1.12  2004/12/13 02:12:53  tobega
  * Borders are working again
  *

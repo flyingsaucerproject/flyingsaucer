@@ -133,8 +133,8 @@ public class DefaultRenderer implements Renderer {
     public void restyle(Context ctx, Box box) {
         CalculatedStyle style = ctx.getCurrentStyle();
         box.color = style.getColor();
-        box.border_color = style.getBorderColor();
-        box.border_style = style.getStringProperty("border-top-style");
+        //box.border_color = style.getBorderColor();
+        //box.border_style = style.getStringProperty("border-top-style");
         box.background_color = style.getBackgroundColor();
         restyleChildren(box);
     }

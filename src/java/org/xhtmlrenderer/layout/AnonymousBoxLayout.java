@@ -98,7 +98,7 @@ public class AnonymousBoxLayout extends InlineLayout {
         //HACK: set empty styles here
         block.margin = new Border();
         block.padding = new Border();
-        block.border = new Border();
+        //block.border = new Border();
         block.background_color = new Color(0, 0, 0, 0);//transparent
 
         // set up a float bfc
@@ -239,6 +239,9 @@ public class AnonymousBoxLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/12/27 07:43:30  tobega
+ * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+ *
  * Revision 1.10  2004/12/26 10:14:45  tobega
  * Starting to get some semblance of order concerning floats. Still needs more work.
  *

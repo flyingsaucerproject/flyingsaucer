@@ -47,7 +47,7 @@ public class InlineBox extends Box {
         y = box.y;
         width = box.width;
         height = box.height;
-        border = box.border;
+        //border = box.border;
         margin = box.margin;
         padding = box.padding;
         color = box.color;
@@ -339,6 +339,9 @@ public class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2004/12/27 07:43:32  tobega
+ * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+ *
  * Revision 1.22  2004/12/15 00:53:40  tobega
  * Started playing a bit with inline box, provoked a few nasties, probably created some, seems to work now
  *

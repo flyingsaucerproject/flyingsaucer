@@ -42,7 +42,9 @@ public class XLayout extends CustomBlockLayout {
      * @param box PARAM
      */
     public void paintComponent(Context c, Box box) {
-        Dimension dim = box.getInternalDimension();
+        int w = box.getWidth() - box.totalHorizontalPadding(c.getCurrentStyle());
+        int h = box.getHeight() - box.totalVerticalPadding(c.getCurrentStyle());
+        Dimension dim = new Dimension(w, h);
         Uu.p("dim = " + dim);
         c.getGraphics().drawLine(box.x,
                 box.y,
@@ -71,6 +73,9 @@ public class XLayout extends CustomBlockLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/12/27 07:43:34  tobega
+ * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+ *
  * Revision 1.4  2004/12/12 03:33:04  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

@@ -97,7 +97,7 @@ public class Absolute {
         // handle the left and right
         if (child_box.right_set) {
             child_box.x = -bfc.getX() + bfc.getWidth() - child_box.right - child_box.width
-                    - bfc.getMaster().totalRightPadding();
+                    - bfc.getMaster().totalRightPadding(c.getCurrentStyle());
         } else {
             child_box.x = bfc.getX() + child_box.left;
         }

@@ -20,12 +20,12 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.Border;
-import org.xhtmlrenderer.css.value.BorderColor;
-import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.LayoutUtil;
+import org.xhtmlrenderer.layout.content.Content;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -137,12 +137,12 @@ public class Box {
     /**
      * Description of the Field
      */
-    public BorderColor border_color;
+//    public BorderColor border_color;
 
     //TODO: get rid of this
-    public BorderColor getBorderColor() {
+/*    public BorderColor getBorderColor() {
         return border_color;
-    }
+    }*/
 
     /**
      * Description of the Field
@@ -151,7 +151,7 @@ public class Box {
     /**
      * Description of the Field
      */
-    public Border border;
+    //public Border border;
     /**
      * Description of the Field
      */
@@ -159,7 +159,7 @@ public class Box {
     /**
      * Description of the Field
      */
-    public String border_style;
+//    public String border_style;
 
     /**
      * Description of the Field
@@ -261,9 +261,10 @@ public class Box {
     /**
      * Description of the Method
      *
+     * @param style
      * @return Returns
      */
-    public int totalHorizontalPadding() {
+    public int totalHorizontalPadding(CalculatedStyle style) {
         int pd = 0;
         if (this.margin != null) {
             pd += this.margin.left + this.margin.right;
@@ -271,8 +272,9 @@ public class Box {
         if (this.padding != null) {
             pd += this.padding.left + this.padding.right;
         }
-        if (this.border != null) {
-            pd += this.border.left + this.border.right;
+        Border border = LayoutUtil.getBorder(this, style);
+        if (border != null) {
+            pd += border.left + border.right;
         }
         return pd;
     }
@@ -280,9 +282,10 @@ public class Box {
     /**
      * Description of the Method
      *
+     * @param style
      * @return Returns
      */
-    public int totalVerticalPadding() {
+    public int totalVerticalPadding(CalculatedStyle style) {
         int pd = 0;
         if (this.margin != null) {
             pd += this.margin.top + this.margin.bottom;
@@ -290,8 +293,9 @@ public class Box {
         if (this.padding != null) {
             pd += this.padding.top + this.padding.bottom;
         }
-        if (this.border != null) {
-            pd += this.border.top + this.border.bottom;
+        Border border = LayoutUtil.getBorder(this, style);
+        if (border != null) {
+            pd += border.top + border.bottom;
         }
         return pd;
     }
@@ -299,9 +303,10 @@ public class Box {
     /**
      * Description of the Method
      *
+     * @param style
      * @return Returns
      */
-    public int totalTopPadding() {
+    public int totalTopPadding(CalculatedStyle style) {
         int pd = 0;
         if (this.margin != null) {
             pd += this.margin.top;
@@ -309,8 +314,9 @@ public class Box {
         if (this.padding != null) {
             pd += this.padding.top;
         }
-        if (this.border != null) {
-            pd += this.border.top;
+        Border border = LayoutUtil.getBorder(this, style);
+        if (border != null) {
+            pd += border.top;
         }
         return pd;
     }
@@ -318,9 +324,10 @@ public class Box {
     /**
      * Description of the Method
      *
+     * @param style
      * @return Returns
      */
-    public int totalLeftPadding() {
+    public int totalLeftPadding(CalculatedStyle style) {
         int pd = 0;
         if (this.margin != null) {
             pd += this.margin.left;
@@ -328,13 +335,14 @@ public class Box {
         if (this.padding != null) {
             pd += this.padding.left;
         }
-        if (this.border != null) {
-            pd += this.border.left;
+        Border border = LayoutUtil.getBorder(this, style);
+        if (border != null) {
+            pd += border.left;
         }
         return pd;
     }
 
-    public int totalRightPadding() {
+    public int totalRightPadding(CalculatedStyle style) {
         int pd = 0;
         if (this.margin != null) {
             pd += this.margin.right;
@@ -342,8 +350,9 @@ public class Box {
         if (this.padding != null) {
             pd += this.padding.right;
         }
-        if (this.border != null) {
-            pd += this.border.right;
+        Border border = LayoutUtil.getBorder(this, style);
+        if (border != null) {
+            pd += border.right;
         }
         return pd;
     }
@@ -361,11 +370,11 @@ public class Box {
             sb.append(" null content, ");
         } else {
             String nm = content.getClass().getName();
-            nm = nm.substring(nm.lastIndexOf('.')+1,nm.length());
+            nm = nm.substring(nm.lastIndexOf('.') + 1, nm.length());
             sb.append(nm);// + " (" + content.hashCode() + ")");
             sb.append("-");
-            if(content.getElement() != null) {
-            sb.append(content.getElement().getNodeName());
+            if (content.getElement() != null) {
+                sb.append(content.getElement().getNodeName());
             }
         }
         sb.append(" (" + x + "," + y + ")->(" + width + " x " + height + ")");
@@ -465,17 +474,6 @@ public class Box {
         return false;
     }
 
-    /**
-     * Gets the internalDimension attribute of the Box object
-     *
-     * @return The internalDimension value
-     */
-    public Dimension getInternalDimension() {
-        int w = this.getWidth() - totalHorizontalPadding();
-        int h = this.getHeight() - totalVerticalPadding();
-        return new Dimension(w, h);
-    }
-
     private boolean children_exceeds;
 
     public boolean isChildrenExceedBounds() {
@@ -551,9 +549,9 @@ public class Box {
         sb.append("-colors(for" + getColorTestString(color));
         //sb.append("-bor" + getColorTestString(border_color));
         sb.append("-bak" + getColorTestString(background_color) + ")");
-        sb.append("-style(" + border_style + ")");
+        //sb.append("-style(" + border_style + ")");
         sb.append("-insets(mar" + getBorderTestString(margin));
-        sb.append("-bor" + getBorderTestString(border));
+        //sb.append("-bor" + getBorderTestString(border));
         sb.append("-pad" + getBorderTestString(padding) + ")");
 
         // background images
@@ -610,6 +608,7 @@ public class Box {
     public boolean isInlineElement() {
         return false;
     }
+
     public CascadedStyle firstLineStyle;
     public CascadedStyle firstLetterStyle;
 }
@@ -618,6 +617,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2004/12/27 07:43:32  tobega
+ * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+ *
  * Revision 1.29  2004/12/16 15:53:10  joshy
  * fixes for absolute layout
  *

@@ -19,10 +19,10 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -52,11 +52,12 @@ public class BackgroundPainter {
             return;
         }
 
-        if (block.border == null) return;
-        Rectangle box = new Rectangle(block.x + block.margin.left + block.border.left,
-                block.y + block.margin.top + block.border.top,
-                block.width - block.margin.left - block.margin.right - block.border.left - block.border.right,
-                block.height - block.margin.top - block.border.top - block.border.bottom - block.margin.bottom);
+        Border border = LayoutUtil.getBorder(block, c.getCurrentStyle());
+        if (border == null) return;
+        Rectangle box = new Rectangle(block.x + block.margin.left + border.left,
+                block.y + block.margin.top + border.top,
+                block.width - block.margin.left - block.margin.right - border.left - border.right,
+                block.height - block.margin.top - border.top - border.bottom - block.margin.bottom);
                  
         // paint the background
         if (block.background_color != null) {
@@ -211,6 +212,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/12/27 07:43:32  tobega
+ * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+ *
  * Revision 1.9  2004/12/14 02:28:49  joshy
  * removed some comments
  * some bugs with the backgrounds still

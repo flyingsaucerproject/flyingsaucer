@@ -21,7 +21,7 @@ public class BoxBuilder {
         // prepare the font, colors, border, etc
         box.setFont(font);
         BoxLayout.getBackgroundColor(c, box);
-        BoxLayout.getBorder(c, box);
+        //BoxLayout.getBorder(c, box);
         //Uu.p("set border on inline box: " + box);
         BoxLayout.getMargin(c, box);
         BoxLayout.getPadding(c, box);
@@ -149,7 +149,7 @@ public class BoxBuilder {
         
         
         // adjust width based on borders and padding
-        box.width += box.totalHorizontalPadding();
+        box.width += box.totalHorizontalPadding(c.getCurrentStyle());
     }
 
 }

@@ -1,6 +1,8 @@
 package org.xhtmlrenderer.table;
 
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BoxRenderer;
 import org.xhtmlrenderer.render.Renderer;
@@ -82,8 +84,10 @@ public class TableRenderer extends BoxRenderer {
 
         c.getGraphics().translate(table.x, table.y);
 
-        c.getGraphics().translate(table.margin.left + table.border.left + table.padding.left,
-                table.margin.top + table.border.top + table.padding.top);
+        Border border = LayoutUtil.getBorder(table, c.getCurrentStyle());
+
+        c.getGraphics().translate(table.margin.left + border.left + table.padding.left,
+                table.margin.top + border.top + table.padding.top);
 
         // loop over the rows
 
@@ -114,8 +118,8 @@ public class TableRenderer extends BoxRenderer {
 
         }
 
-        c.getGraphics().translate(-table.margin.left - table.border.left - table.padding.left,
-                -table.margin.top - table.border.top - table.padding.top);
+        c.getGraphics().translate(-table.margin.left - border.left - table.padding.left,
+                -table.margin.top - border.top - table.padding.top);
 
         c.getGraphics().translate(-table.x, -table.y);
 

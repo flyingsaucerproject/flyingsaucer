@@ -24,11 +24,9 @@ import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.DefaultRenderer;
 import org.xhtmlrenderer.render.Renderer;
-import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Color;
 
@@ -95,7 +93,7 @@ public class DefaultLayout implements Layout {
      * @param c   PARAM
      */
     public void prepareBox(Context c, Box box) {
-        getBorder(c, box);
+        //getBorder(c, box);
         getPadding(c, box);
         getMargin(c, box);
         getBackgroundColor(c, box);
@@ -118,7 +116,7 @@ public class DefaultLayout implements Layout {
      * @return The padding value
      */
     public static Border getPadding(Context c, Box box) {
-        if(LayoutUtil.isBlockOrInlineElementBox(box)) {
+        if (LayoutUtil.isBlockOrInlineElementBox(box)) {
             if (box.padding == null) {
                 box.padding = c.getCurrentStyle().getPaddingWidth();
             }
@@ -135,7 +133,7 @@ public class DefaultLayout implements Layout {
      * @return The margin value
      */
     public static Border getMargin(Context c, Box box) {
-        if(LayoutUtil.isBlockOrInlineElementBox(box)) {
+        if (LayoutUtil.isBlockOrInlineElementBox(box)) {
             if (box.margin == null) {
                 box.margin = c.getCurrentStyle().getMarginWidth();
             }
@@ -144,7 +142,7 @@ public class DefaultLayout implements Layout {
     }
 
     public static Border getBorder(Context c, Box block) {
-        Border border = LayoutUtil.getBorder(c, block);
+        Border border = LayoutUtil.getBorder(block, c.getCurrentStyle());
         return border;
     }
 
@@ -179,6 +177,9 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2004/12/27 07:43:31  tobega
+ * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+ *
  * Revision 1.36  2004/12/14 02:28:48  joshy
  * removed some comments
  * some bugs with the backgrounds still

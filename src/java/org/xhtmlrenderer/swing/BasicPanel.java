@@ -325,9 +325,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
             int tx = x;
             int ty = y;
             tx -= bx.x;
-            tx -= bx.totalLeftPadding();
+            //is this needed? tx -= bx.totalLeftPadding(c.getCurrentStyle());
             ty -= bx.y;
-            ty -= bx.totalTopPadding();
+            //is this needed? ty -= bx.totalTopPadding(c.getCurrentStyle());
 
             // test the contents
             Box retbox = null;
@@ -365,9 +365,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
             int tx = x;
             int ty = y;
             tx -= bx.x;
-            tx -= bx.totalLeftPadding();
+            //is this needed? tx -= bx.totalLeftPadding(c.getCurrentStyle());
             ty -= bx.y;
-            ty -= bx.totalTopPadding();
+            //is this needed? ty -= bx.totalTopPadding(c.getCurrentStyle());
 
             // test the contents
             Box retbox = null;
@@ -440,9 +440,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
             int tx = x;
             int ty = y;
             tx -= bx.x;
-            tx -= bx.totalLeftPadding();
+            //is this needed? tx -= bx.totalLeftPadding(c.getCurrentStyle());
             ty -= bx.y;
-            ty -= bx.totalTopPadding();
+            //is this needed? ty -= bx.totalTopPadding(c.getCurrentStyle());
 
             // test the contents
             int retbox = findBoxX(bx, tx, ty);
@@ -869,6 +869,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2004/12/27 07:43:33  tobega
+ * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+ *
  * Revision 1.18  2004/12/22 05:32:57  tobega
  * Hover is working
  *

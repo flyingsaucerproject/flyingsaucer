@@ -20,8 +20,10 @@
 package org.xhtmlrenderer.forms;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.CustomBlockLayout;
+import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
@@ -69,7 +71,7 @@ public abstract class FormItemLayout extends CustomBlockLayout {
         //Uu.p("added a component to the viewport: " + comp);
         //Uu.p("pref size = " + comp.getPreferredSize());
         InputBox box = new InputBox();
-        box.content=content;
+        box.content = content;
         box.component = comp;
 
         // this is so the context has a reference to all forms, fields,
@@ -87,7 +89,7 @@ public abstract class FormItemLayout extends CustomBlockLayout {
      * @param coords PARAM
      * @param box    PARAM
      */
-    public static void adjustVerticalAlign(Point coords, Box box) {
+    public static void adjustVerticalAlign(Context c, Point coords, Box box) {
         if (box.getParent() instanceof InlineBox) {
             InlineBox ib = (InlineBox) box.getParent();
             LineBox lb = (LineBox) ib.getParent();
@@ -104,11 +106,12 @@ public abstract class FormItemLayout extends CustomBlockLayout {
             coords.x += 5;
             coords.y += off;
 
+            Border border = LayoutUtil.getBorder(box, c.getCurrentStyle());
             coords.x -= box.margin.left;
-            coords.x -= box.border.left;
+            coords.x -= border.left;
             coords.x -= box.padding.left;
             coords.y -= box.margin.top;
-            coords.y -= box.border.top;
+            coords.y -= border.top;
             coords.y -= box.padding.top;
         }
     }
@@ -174,6 +177,9 @@ public abstract class FormItemLayout extends CustomBlockLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/12/27 07:43:29  tobega
+ * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+ *
  * Revision 1.9  2004/12/12 03:32:55  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

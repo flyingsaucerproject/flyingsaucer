@@ -135,8 +135,8 @@ public class BoxLayout extends DefaultLayout {
         // do children's layout
         boolean old_sub = c.isSubBlock();
         c.setSubBlock(false);
-        int tx = block.totalLeftPadding();
-        int ty = block.totalTopPadding();
+        int tx = block.totalLeftPadding(c.getCurrentStyle());
+        int ty = block.totalTopPadding(c.getCurrentStyle());
         c.translate(tx, ty);
         layoutChildren(c, block);//when this is really an anonymous, InlineLayout.layoutChildren is called
         c.translate(-tx, -ty);
@@ -155,8 +155,8 @@ public class BoxLayout extends DefaultLayout {
         Absolute.postChildrenLayout(c, block);
         
         // calculate the total outer width
-        block.width = block.totalHorizontalPadding() + block.width;
-        block.height = block.totalVerticalPadding() + block.height;
+        block.width = block.totalHorizontalPadding(c.getCurrentStyle()) + block.width;
+        block.height = block.totalVerticalPadding(c.getCurrentStyle()) + block.height;
         
         //restore the extents
         c.setExtents(oe);
@@ -373,6 +373,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.55  2004/12/27 07:43:30  tobega
+ * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+ *
  * Revision 1.54  2004/12/24 08:46:49  tobega
  * Starting to get some semblance of order concerning floats. Still needs more work.
  *

@@ -375,7 +375,7 @@ public class LineBreaker {
             box.setSubstring(start, end);
         }
         BoxLayout.getBackgroundColor(c, box);
-        BoxLayout.getBorder(c, box);
+        //BoxLayout.getBorder(c, box);
         BoxLayout.getMargin(c, box);
         BoxLayout.getPadding(c, box);
 
@@ -460,7 +460,7 @@ public class LineBreaker {
         
 
         // adjust width based on borders and padding
-        box.width += box.totalHorizontalPadding();
+        box.width += box.totalHorizontalPadding(c.getCurrentStyle());
         //box.height += box.totalVerticalPadding();
         
         return box;
@@ -516,6 +516,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2004/12/27 07:43:31  tobega
+ * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+ *
  * Revision 1.38  2004/12/15 00:53:40  tobega
  * Started playing a bit with inline box, provoked a few nasties, probably created some, seems to work now
  *

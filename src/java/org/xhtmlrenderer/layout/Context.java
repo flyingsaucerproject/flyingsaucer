@@ -288,14 +288,13 @@ public class Context {
         extents_stack.push(getExtents());
 
         
-        Border border = block.border;
-        Border padding = block.padding;
-        Border margin = block.margin;
+        //Border border = block.border;
+        //Border padding = block.padding;
+        //Border margin = block.margin;
 
         Rectangle rect = new Rectangle(0, 0,
-                getExtents().width - block.totalHorizontalPadding(),
-                getExtents().height - block.totalVerticalPadding()
-                );
+                getExtents().width - block.totalHorizontalPadding(getCurrentStyle()),
+                getExtents().height - block.totalVerticalPadding(getCurrentStyle()));
 
         setExtents(rect);
     }
@@ -317,6 +316,7 @@ public class Context {
      * @param box PARAM
      */
     public void translateInsets(Box box) {
+        Border border = LayoutUtil.getBorder(box, getCurrentStyle());
         if (box == null) {
             XRLog.render(Level.WARNING, "null box");
             return;//TODO: why?
@@ -326,7 +326,7 @@ public class Context {
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
-        if (box.border == null) {
+        if (border == null) {
             XRLog.render(Level.WARNING, "translate insets: null border on box of type " + box.getClass().getName() +
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
@@ -336,8 +336,8 @@ public class Context {
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
-        translate(box.margin.left + box.border.left + box.padding.left,
-                box.margin.top + box.border.top + box.padding.top);
+        translate(box.margin.left + border.left + box.padding.left,
+                box.margin.top + border.top + box.padding.top);
     }
 
     /**
@@ -346,12 +346,13 @@ public class Context {
      * @param box PARAM
      */
     public void untranslateInsets(Box box) {
+        Border border = LayoutUtil.getBorder(box, getCurrentStyle());
         if (box.margin == null) {
             XRLog.render(Level.WARNING, "translate insets: null margin on box of type " + box.getClass().getName() +
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
-        if (box.border == null) {
+        if (border == null) {
             XRLog.render(Level.WARNING, "translate insets: null border on box of type " + box.getClass().getName() +
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
@@ -361,8 +362,8 @@ public class Context {
                     " content " + (box.content == null ? "null" : box.content.getClass().getName()));
             return;
         }
-        translate(-(box.margin.left + box.border.left + box.padding.left),
-                -(box.margin.top + box.border.top + box.padding.top));
+        translate(-(box.margin.left + border.left + box.padding.left),
+                -(box.margin.top + border.top + box.padding.top));
     }
 
 
@@ -372,9 +373,9 @@ public class Context {
      * @return A string representation of the object.
      */
     public String toString() {
-        return "Context: extents = " + 
-        "("+extents.x+","+extents.y+") -> ("+extents.width+"x"+extents.height+")"
-        //" cursor = " + cursor +
+        return "Context: extents = " +
+                "(" + extents.x + "," + extents.y + ") -> (" + extents.width + "x" + extents.height + ")"
+                //" cursor = " + cursor +
                 //"\n color = " + color + " background color = " + background_color;
                 + " offset = " + xoff + "," + yoff
                 ;
@@ -823,6 +824,9 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2004/12/27 07:43:31  tobega
+ * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+ *
  * Revision 1.36  2004/12/16 17:22:25  joshy
  * minor code cleanup
  * Issue number:

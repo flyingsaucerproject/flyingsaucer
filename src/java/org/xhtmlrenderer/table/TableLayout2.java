@@ -68,7 +68,7 @@ public class TableLayout2 extends TableLayout {
         // set up the box properties
         getMargin(c, table);
         getPadding(c, table);
-        getBorder(c, table);
+        //getBorder(c, table);
         return table;
     }
 
@@ -98,7 +98,7 @@ public class TableLayout2 extends TableLayout {
         //not used: int orig_fixed_width = fixed_width;
 
         //subtract off the margin, border, padding, and spacing
-        fixed_width -= table_box.totalHorizontalPadding() + table_box.spacing.x;
+        fixed_width -= table_box.totalHorizontalPadding(c.getCurrentStyle()) + table_box.spacing.x;
                
         // create the table
         // table is just for calculations. it's not a real box
@@ -110,8 +110,8 @@ public class TableLayout2 extends TableLayout {
         
         //pull out the boxes
         calculateBoxes(fixed_width, table_box, c, table);
-        table_box.width += table_box.totalHorizontalPadding();
-        table_box.height += table_box.totalVerticalPadding();
+        table_box.width += table_box.totalHorizontalPadding(c.getCurrentStyle());
+        table_box.height += table_box.totalVerticalPadding(c.getCurrentStyle());
 
         c.popStyle();
 
@@ -293,6 +293,9 @@ public class TableLayout2 extends TableLayout {
 /*
    $Id$
    $Log$
+   Revision 1.13  2004/12/27 07:43:33  tobega
+   Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
+
    Revision 1.12  2004/12/12 04:18:58  tobega
    Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
 
