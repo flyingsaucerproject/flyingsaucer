@@ -22,6 +22,7 @@ package org.xhtmlrenderer.layout.content;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
@@ -75,7 +76,7 @@ public class ContentUtil {
             //<br/> handling should be done by :before content
             CascadedStyle before = c.css.getPseudoElementStyle(parentElement, "before");
             if (before != null && before.hasProperty(CSSName.CONTENT)) {
-                String content = before.propertyByName(CSSName.CONTENT).getValue().getCssText();
+                String content = ((CSSPrimitiveValue) before.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
                 if (!content.equals("")) {
                     inlineList.add(new StylePush(before));
                     textContent = new TextContent((Element) parentElement);
@@ -240,7 +241,7 @@ public class ContentUtil {
             //TODO: after may be block!
             CascadedStyle after = c.css.getPseudoElementStyle(parentElement, "after");
             if (after != null && after.hasProperty(CSSName.CONTENT)) {
-                String content = after.propertyByName(CSSName.CONTENT).getValue().getCssText();
+                String content = ((CSSPrimitiveValue) after.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
                 if (!content.equals("")) {
                     if (textContent != null) {
                         inlineList.add(textContent);
@@ -419,6 +420,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/12/12 06:05:29  tobega
+ * Small improvement to value of :before and :after. Wonder why inline elements get floated out?
+ *
  * Revision 1.9  2004/12/12 05:51:48  tobega
  * Now things run. But there is a lot to do before it looks as nice as it did. At least we now have :before and :after content and handling of breaks by css.
  *
