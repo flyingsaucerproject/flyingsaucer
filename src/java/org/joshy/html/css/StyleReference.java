@@ -365,6 +365,15 @@ public interface StyleReference {
     public void parse( String source, int origin )
         throws IOException;
 
+    /**
+     * Parses the CSS style information from a "<link>" Element (for example in
+     * XHTML), and loads these rules into the associated RuleBank.
+     *
+     * @param elem             The Element from which to pull a style attribute.
+     * @exception IOException  Throws
+     */
+    void parseLinkedStyles( Element elem )
+        throws IOException;
 
     /**
      * Parses the CSS style information from a "<style>" Element (for example in
