@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.demo.browser;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -47,6 +48,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.swing.HTMLPanel;
 import org.xhtmlrenderer.simple.XHTMLPanel;
@@ -106,6 +108,13 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         reload = new JButton( "Reload" );
         url = new JTextField();
         view = new XHTMLPanel();
+        RenderingContext rc = view.getRenderingContext();
+        try {
+            rc.setFontMapping("Fuzz",Font.createFont(Font.TRUETYPE_FONT,
+                new DemoMarker().getClass().getResourceAsStream("/demos/fonts/fuzz.ttf")));
+        } catch (Exception ex) {
+            u.p(ex);
+        }
         view.setErrorHandler( root.error_handler );
         status = new JLabel( "Status" );
 
@@ -440,6 +449,14 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/12 20:43:29  joshy
+ * added demo of custom font
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/11/12 02:23:56  joshy
  * added new APIs for rendering context, xhtmlpanel, and graphics2drenderer.
  * initial support for font mapping additions

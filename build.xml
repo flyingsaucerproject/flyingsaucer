@@ -111,6 +111,7 @@
       <include name="splash/**"/>
       <include name="about/**"/>
       <include name="alice/**"/>
+      <include name="fonts/**"/>
     </patternset>
       
     <!-- zip file reference for all XHTML in the demos directory, and supporting files -->
@@ -629,6 +630,14 @@
 $Id$
 
 $Log$
+Revision 1.70  2004/11/12 20:43:29  joshy
+added demo of custom font
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.69  2004/11/12 18:51:00  joshy
 fixed repainting issue for background-attachment: fixed
 added static util methods and get minimum size to graphics 2d renderer

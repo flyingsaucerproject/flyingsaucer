@@ -29,12 +29,8 @@
 //fix fixed background clipping error (set clip rect to whole viewport?)
 //fixed pos support
 //support getMinimumSize() on headless interface
+//build hover demo
 
-build hover demo
-    show a hovered block
-    show a hover style change on a parent element [possible?]
-    show a menu with bg, text, and border changes
-    show body text w/ hovered links. bgimage ?
 build browser test of custom font from 1001fonts.com
 
 redesign layout factory
