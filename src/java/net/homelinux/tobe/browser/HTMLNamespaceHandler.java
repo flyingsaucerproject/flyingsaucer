@@ -38,18 +38,18 @@ public class HTMLNamespaceHandler extends XhtmlNamespaceHandler {
         if(!s.equals("")) {
             sb.append("border-width: ").append(s).append(";");
         }
-        s = e.getAttribute("height");
+        /*s = e.getAttribute("height");
         if(!s.equals("")) {
             sb.append("height: ").append(s).append(";");
-        }
+        }*/
         s = e.getAttribute("valign");
         if(!s.equals("")) {
             sb.append("vertical-align: ").append(s).append(";");
         }
-        s = e.getAttribute("width");
+        /*s = e.getAttribute("width");
         if(!s.equals("")) {
             sb.append("width: ").append(s).append(";");
-        }
+        }*/
         //a special one
         if(e.getTagName().equals("font")) {
             s = e.getAttribute("size");
