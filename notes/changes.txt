@@ -1,3 +1,15 @@
+08/27/2004    
+    fixed scrollbar reset when loading new document
+
+08/26/2004
+fixed bugs
+    table and table cell widths don't work with percentages
+    table cells previously were sized twice, which breaks with relative sizing
+    changed contains to indexOf()>=0 since contains is a 1.5 addition
+
+
+/// missing stuff
+
 08/19/2004
     added more form accessors
     added submit support for GETs
