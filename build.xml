@@ -157,6 +157,8 @@
             encoding="iso-8859-1"
             >
             <classpath refid="libraries.all"/>
+            <exclude name="**/net/**" />
+            <exclude name="**/prototype/**" />
         </javac>
     </presetdef>
 
@@ -195,6 +197,7 @@
             <fileset dir="${src.java.dir}">
                 <include name="**"/>
                 <exclude name="**/net/**"/>
+                <exclude name="**/prototype/**"/>
             </fileset>
         </copy>
         <copy todir="${nb_profile}/src/conf">
@@ -842,6 +845,9 @@
 $Id$
 
 $Log$
+Revision 1.85  2005/01/29 12:20:06  pdoubleya
+Exclude /prototype src directory from build.
+
 Revision 1.84  2005/01/29 10:07:27  pdoubleya
 Added task to sync nb_profile directory, and for running the SimplePageTest class.
 
