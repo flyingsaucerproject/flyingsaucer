@@ -25,10 +25,8 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.DefaultRenderer;
-import org.xhtmlrenderer.render.Renderer;
 
-import java.awt.Color;
+import java.awt.*;
 
 
 /**
@@ -70,11 +68,6 @@ public class DefaultLayout implements Layout {
     }
 
 
-    public Renderer getRenderer() {
-        return new DefaultRenderer();
-    }
-
-    
     /* prepare box and it's support code. 
     
     MORE OF THE CSS SHOULD GO HERE
@@ -183,6 +176,9 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2005/01/01 23:38:38  tobega
+ * Cleaned out old rendering code
+ *
  * Revision 1.40  2004/12/29 10:39:32  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

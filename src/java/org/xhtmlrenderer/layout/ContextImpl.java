@@ -30,7 +30,6 @@ import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -427,10 +426,6 @@ public class ContextImpl implements Context {
 
     public Layout getLayout(Node node) {
         return getCtx().getLayoutFactory().getLayout(this, node);
-    }
-
-    public Renderer getRenderer(Node node) {
-        return getCtx().getLayoutFactory().getRenderer(this, node);
     }
 
     /**

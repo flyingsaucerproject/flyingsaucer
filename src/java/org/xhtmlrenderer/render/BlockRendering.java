@@ -20,15 +20,13 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.util.logging.Level;
 
-public class BlockRendering extends DefaultRenderer {
+public class BlockRendering {
 
     /**
      * Description of the Method
@@ -56,32 +54,14 @@ public class BlockRendering extends DefaultRenderer {
         } else
             for (int i = 0; i < box.getChildCount(); i++) {
                 Box child = (Box) box.getChild(i);
-                //Uu.p("child = " + child);
-                Renderer renderer = null;
-                if (child.content instanceof AnonymousBlockContent) {
-                    renderer = c.getRenderingContext().getLayoutFactory().getAnonymousRenderer();
-                } else {
-                    if (child.content == null) {
-                        XRLog.render(Level.WARNING, "null node of child: " + child + " of type " + child.getClass().getName());
-                        renderer = new InlineRenderer();
-                    } else {
-                        /*if(isBlockLayedOut(box)) {
-                            renderer = new BoxRenderer();
-                        } else if(isInlineLayedOut(box)) {
-                            renderer = new InlineRenderer();
-                        } else*/
-                        //TODO: find another way to work out the renderer
-                        renderer = c.getRenderer(child.content.getElement());
-                    }
-                }
-                paintChild(c, child, null);
+                paintChild(c, child);
             }
         if (box.getBlockFormattingContext() != null) c.popBFC();
         c.translate(-box.x, -box.y);
         //if (box.getBlockFormattingContext() != null) c.popBFC();
     }
 
-    public static void paintChild(Context c, Box box, Renderer layout) {
+    public static void paintChild(Context c, Box box) {
         if (box.isChildrenExceedBounds()) {
             BoxRendering.paint(c, box);
             return;

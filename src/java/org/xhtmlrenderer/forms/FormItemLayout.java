@@ -28,11 +28,9 @@ import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.render.Renderer;
 
 import javax.swing.*;
-import java.awt.Dimension;
-import java.awt.Point;
+import java.awt.*;
 
 
 /**
@@ -169,16 +167,15 @@ public abstract class FormItemLayout extends CustomBlockLayout {
             comp.setEnabled(false);
         }
     }
-
-    public Renderer getRenderer() {
-        return new FormItemRenderer();
-    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/01/01 23:38:37  tobega
+ * Cleaned out old rendering code
+ *
  * Revision 1.15  2004/12/29 15:06:40  tobega
  * Referencing Context instead of SharedContext where it was wrongly set before.
  *

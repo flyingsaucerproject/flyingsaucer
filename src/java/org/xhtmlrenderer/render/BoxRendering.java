@@ -113,7 +113,7 @@ public class BoxRendering {
         //paintChildren(c, block);
         if (block instanceof TableBox) {
             TableRendering.paintTable(c, (TableBox) block);
-        } else if (DefaultRenderer.isInlineLayedOut(block)) {
+        } else if (isInlineLayedOut(block)) {
             InlineRendering.paintInlineContext(c, block);
         } else {
             BlockRendering.paintBlockContext(c, block);

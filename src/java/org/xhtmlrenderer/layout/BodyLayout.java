@@ -22,9 +22,7 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.BodyRenderer;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.Renderer;
 
 /**
  * Description of the Class
@@ -57,17 +55,15 @@ public class BodyLayout extends InlineLayout {
         return bodybox;*/
     }
 
-
-    public Renderer getRenderer() {
-        return new BodyRenderer();
-    }
-
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/01/01 23:38:37  tobega
+ * Cleaned out old rendering code
+ *
  * Revision 1.15  2004/12/29 10:39:32  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

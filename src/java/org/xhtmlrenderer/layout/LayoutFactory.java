@@ -23,7 +23,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.forms.*;
-import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.table.TableCellLayout;
 import org.xhtmlrenderer.table.TableLayout2;
 
@@ -191,21 +190,6 @@ public class LayoutFactory {
         throw new RuntimeException("Bad node into getLayout");//fail fast, crash hard
     }
 
-
-    /**
-     * Gets the renderer attribute of the LayoutFactory object
-     *
-     * @param node PARAM
-     * @return The renderer value
-     */
-    public Renderer getRenderer(Context c, Node node) {
-        return getLayout(c, node).getRenderer();
-    }
-
-    public Renderer getAnonymousRenderer() {
-        return new AnonymousBoxLayout().getRenderer();
-    }
-
     public boolean isBreak(Node node) {
 
         if (node instanceof Element) {
@@ -306,8 +290,8 @@ public class LayoutFactory {
         addDisplayLayout("list-item", inline);
         addDisplayLayout("none", inline);
 
-        addCustomLayout("ol", new ListLayout());
-        addCustomLayout("ul", new ListLayout());
+        addCustomLayout("ol", new BoxLayout());
+        addCustomLayout("ul", new BoxLayout());
         addCustomLayout("img", new ImageLayout());
 
         Layout table = new TableLayout2();
@@ -333,6 +317,9 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.29  2005/01/01 23:38:38  tobega
+* Cleaned out old rendering code
+*
 * Revision 1.28  2004/12/29 10:39:33  tobega
 * Separated current state Context into ContextImpl and the rest into SharedContext.
 *

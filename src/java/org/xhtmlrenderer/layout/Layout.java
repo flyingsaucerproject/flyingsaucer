@@ -21,7 +21,6 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.Renderer;
 
 
 /**
@@ -39,17 +38,15 @@ public interface Layout {
      * @return Returns
      */
     public Box layout(Context c, Content content);
-
-    /**
-     * @deprecated find another way, box type maybe?
-     */
-    public Renderer getRenderer();
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/01/01 23:38:38  tobega
+ * Cleaned out old rendering code
+ *
  * Revision 1.11  2004/12/29 10:39:33  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *

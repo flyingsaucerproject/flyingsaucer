@@ -23,7 +23,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.ImageBox;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Uu;
 
@@ -190,10 +192,6 @@ public class ImageLayout extends BoxLayout {
         return img;
     }
 
-    public Renderer getRenderer() {
-        return new ImageRenderer();
-    }
-
     /*
      * public void paintComponent(Context c, Element elem, InlineBox box) {
      * c.getGraphics().drawImage(img,box.Xx,box.y,null);
@@ -206,6 +204,9 @@ public class ImageLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/01/01 23:38:38  tobega
+ * Cleaned out old rendering code
+ *
  * Revision 1.13  2004/12/31 11:14:09  tobega
  * Rendering now mainly through a few static methods. Need to clean up still
  *

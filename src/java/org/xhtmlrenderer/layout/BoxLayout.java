@@ -27,8 +27,6 @@ import org.xhtmlrenderer.layout.block.FloatUtil;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.BoxRenderer;
-import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.table.TableLayout2;
 import org.xhtmlrenderer.util.Uu;
 
@@ -361,16 +359,15 @@ public class BoxLayout extends DefaultLayout {
         }
     }*/
 
-
-    public Renderer getRenderer() {
-        return new BoxRenderer();
-    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.60  2005/01/01 23:38:37  tobega
+ * Cleaned out old rendering code
+ *
  * Revision 1.59  2005/01/01 22:37:43  tobega
  * Started adding in the table support.
  *

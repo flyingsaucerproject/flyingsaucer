@@ -26,7 +26,9 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.*;
-import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -474,20 +476,15 @@ public class InlineLayout extends BoxLayout {
         block.addChild(line_to_save);
     }
 
-    /**
-     * @deprecated use the boxes to find a renderer
-     */
-    public Renderer getRenderer() {
-        return new InlineRenderer();
-    }
-
-
 }
 
 /*
 * $Id$
 *
 * $Log$
+* Revision 1.76  2005/01/01 23:38:38  tobega
+* Cleaned out old rendering code
+*
 * Revision 1.75  2005/01/01 22:37:43  tobega
 * Started adding in the table support.
 *

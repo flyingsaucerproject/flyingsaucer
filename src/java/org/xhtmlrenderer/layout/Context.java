@@ -189,5 +189,4 @@ public interface Context {
 
     Layout getLayout(Node node);
 
-    org.xhtmlrenderer.render.Renderer getRenderer(Node node);
 }

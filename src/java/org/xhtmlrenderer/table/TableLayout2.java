@@ -42,10 +42,8 @@ import org.xhtmlrenderer.layout.Layout;
 import org.xhtmlrenderer.layout.content.BlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.Renderer;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 
 
 /**
@@ -256,10 +254,6 @@ public class TableLayout2 extends TableLayout {
         //return box;
     }
 
-    public Renderer getRenderer() {
-        return new TableRenderer();
-    }
-
 }
 
 /*
@@ -293,6 +287,9 @@ public class TableLayout2 extends TableLayout {
 /*
    $Id$
    $Log$
+   Revision 1.16  2005/01/01 23:38:41  tobega
+   Cleaned out old rendering code
+
    Revision 1.15  2004/12/29 10:39:36  tobega
    Separated current state Context into ContextImpl and the rest into SharedContext.
 
