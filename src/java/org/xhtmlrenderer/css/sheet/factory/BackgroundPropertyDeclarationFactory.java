@@ -68,6 +68,7 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
         CSSPrimitiveValue bgPosPrimitive = null;
         StringBuffer bgPos = null;
         String val = null;
+        FSCssValue fsCssValue = null;
 
         for ( int i = 0; i < primVals.length; i++ ) {
             primitive = primVals[i];
@@ -78,7 +79,7 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
             // multiple pieces of info; see parseSingle() method
             Object[] ret = parseSingle( val, primitive, bgPos );
             names[0] = (CSSName)ret[0];
-            primitives[0] = (CSSPrimitiveValue)ret[1];
+            primitives[0] = new FSCssValue( cssName, (CSSPrimitiveValue)ret[1] );
 
             // handle background-position. the issue here is that
             // the position will have either one or two assignments
@@ -98,10 +99,8 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
                 if ( bgPosPrimitive == null ) {
                     bgPosPrimitive = (CSSPrimitiveValue)ret[3];
                 }
-                // System.out.println("  --WAS A BGPOS, SKIPPING ADD");
                 continue;
             }
-            // System.out.println("   --ADDING " + names[0]);
             addProperties( declarations, primitives, names, origin, important );
 
         }
@@ -135,23 +134,17 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
         Boolean wasBGP = Boolean.FALSE;
         CSSName expPropName = null;
         CSSPrimitiveValue bgPosPrimitive = null;
-        //System.out.println("  TESTING '" + val + "'");
 
         if ( Idents.looksLikeAColor( val ) ) {
-            // System.out.println("    BG COLOR");
             expPropName = CSSName.BACKGROUND_COLOR;
             primitive = new FSCssValue( CSSName.BACKGROUND_COLOR, primitive );
         } else if ( Idents.looksLikeAURI( val ) || "none".equals( val ) ) {
-            // System.out.println("    BG URI-IMAGE");
             expPropName = CSSName.BACKGROUND_IMAGE;
         } else if ( Idents.looksLikeABGRepeat( val ) ) {
-            // System.out.println("    BG REPEAT");
             expPropName = CSSName.BACKGROUND_REPEAT;
         } else if ( Idents.looksLikeABGAttachment( val ) ) {
-            // System.out.println("    BGN ATTACHMENT");
             expPropName = CSSName.BACKGROUND_ATTACHMENT;
         } else if ( Idents.looksLikeABGPosition( val ) ) {
-            // System.out.println("    BG POSITION (I THINK)");
             if ( bgPos == null ) {
                 bgPos = new StringBuffer( val );
                 bgPosPrimitive = primitive;
@@ -160,7 +153,6 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
             }
             wasBGP = Boolean.TRUE;
         } else {
-            // System.out.println("UNRECOGNIZED VALUE IN CSS STRING: " + val);
             expPropName = null;
         }
         return new Object[]{expPropName, primitive, bgPos, bgPosPrimitive, wasBGP};
@@ -183,6 +175,9 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/02/02 12:11:25  pdoubleya
+ * Instantiate properties with FSCSSValue to handle URIs correctly; remove printlns.
+ *
  * Revision 1.4  2005/01/29 20:24:25  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
