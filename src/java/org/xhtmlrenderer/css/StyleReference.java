@@ -455,6 +455,12 @@ public interface StyleReference {
      * get the CalculatedStyle once for the element, then query that
      */
     public CalculatedStyle getStyle(Element e);
+    
+    /**
+     * Handle a restyle because of a change in hover state. If the element (and its children) was restyled
+     *because of this, true is returned
+     */
+    public boolean wasHoverRestyled(Element e);
 
 }// end interface
 
@@ -462,6 +468,9 @@ public interface StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/09 23:57:41  tobega
+ * Added hook to StyleReference for dynamic hover restyling
+ *
  * Revision 1.8  2004/11/08 23:15:55  tobega
  * Changed pseudo-element styling to just return CascadedStyle
  *

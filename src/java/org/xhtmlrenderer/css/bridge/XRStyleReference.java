@@ -1207,12 +1207,19 @@ public class XRStyleReference implements StyleReference {
         return null;//not supported
     }
     
+    public boolean wasHoverRestyled(Element e) {
+        return false;//not supported
+    }
+    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/11/09 23:57:42  tobega
+ * Added hook to StyleReference for dynamic hover restyling
+ *
  * Revision 1.13  2004/11/08 23:15:56  tobega
  * Changed pseudo-element styling to just return CascadedStyle
  *

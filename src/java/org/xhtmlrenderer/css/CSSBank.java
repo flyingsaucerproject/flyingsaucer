@@ -352,12 +352,19 @@ public class CSSBank extends CSSAccessor {
         return null;//not supported
     }
     
+    public boolean wasHoverRestyled(Element e) {
+        return false;//not supported
+    }
+    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/11/09 23:57:41  tobega
+ * Added hook to StyleReference for dynamic hover restyling
+ *
  * Revision 1.10  2004/11/08 23:15:55  tobega
  * Changed pseudo-element styling to just return CascadedStyle
  *

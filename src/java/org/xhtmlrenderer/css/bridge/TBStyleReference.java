@@ -611,6 +611,14 @@ import org.xhtmlrenderer.util.XRLog;
         return _styler.getCalculatedStyle(e);
     }
     
+    public boolean wasHoverRestyled(Element e) {
+        if(_tbStyleMap.isHoverStyled(e)) {
+            _styler.restyleTree(e);
+            return true;
+        }
+        return false;
+    }
+    
 }
 /*
  * :folding=java:collapseFolds=1:noTabs=true:tabSize=4:indentSize=4:
