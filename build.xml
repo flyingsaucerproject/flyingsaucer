@@ -55,9 +55,9 @@
     <property name="src.java.dir" location="${src.dir}/java" />
     <property name="dest.java.dir" location="${dest.dir}/classes" />
     <property name="src.resources.css.dir" location="${src.dir}/css" />
-    <property name="dest.resources.css.dir" location="${dest.dir}/resources/css" />
+    <property name="dest.resources.css.dir" location="${dest.java.dir}/resources/css" />
     <property name="src.resources.conf.dir" location="${src.dir}/conf" />
-    <property name="dest.resources.conf.dir" location="${dest.dir}/resources/conf" />
+    <property name="dest.resources.conf.dir" location="${dest.java.dir}/resources/conf" />
     <property name="src.packaging.dir" location="${src.dir}/packaging" />
     <property name="src.demo.xhtml.dir" location="demos/browser/xhtml" />
     <property name="src.demo.splash.dir" location="demos/splash" />
@@ -188,6 +188,9 @@
     <!-- Cleans all build files, then recompiles. -->
     <target name="clean-compile" description="clean compile" depends="clean,compile" />
 
+    <!-- Cleans all build files, then recompiles. -->
+    <target name="demo-compile" description="clean compile" depends="clean-compile,compile.browser,compile.about" />
+
     <!-- Compiles application and copies resources to destination directory. -->
     <target name="compile" description="compile" depends="init">
         <javac-full>
@@ -200,6 +203,16 @@
     <!-- Compiles the Flying Saucer browser along with the main codebase -->
     <target name="compile.browser" depends="compile">
         <javac-full srcdir="${src.browser.java.dir}" />
+        <mkdir dir="build/classes/demos"/>
+        <copy todir="build/classes/demos">
+            <fileset dir="demos/browser/xhtml">
+                <include name="*.xhtml"/>
+                <include name="*.gif"/>
+                <include name="*.png"/>
+                <include name="splash/**"/>
+                <include name="about/**"/>
+            </fileset>
+        </copy>
     </target>
     
     <!-- Compiles the Help/About Box demo along with the main codebase -->
@@ -592,6 +605,9 @@
 $Id$
 
 $Log$
+Revision 1.54  2004/10/31 21:30:43  tobega
+is now sane without building jars
+
 Revision 1.53  2004/10/28 02:13:38  joshy
 finished moving the painting code into the renderers
 
