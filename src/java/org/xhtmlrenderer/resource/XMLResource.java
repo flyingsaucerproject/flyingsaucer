@@ -186,7 +186,7 @@ public class XMLResource extends AbstractResource {
             try {
                 idTransform.transform( input, output );
             } catch (Exception ex) {
-                throw new XRRuntimeException("Failed on loading the requested XML resource using TRaX transformer.", ex);
+                throw new XRRuntimeException("Can't load the XML resource (using TRaX transformer). " + ex.getMessage());
             }
             
             long end = System.currentTimeMillis();
@@ -272,6 +272,9 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/03/28 18:33:03  pdoubleya
+ * Don't show stack trace if XML can't be loaded.
+ *
  * Revision 1.6  2005/03/22 15:34:23  pdoubleya
  * Changed to use XMLReaderFactory, appears to solve namespaces issue (thanks to Elliot Rusty Harold, again!).
  *
