@@ -25,7 +25,10 @@ public class InlineBlockBox extends InlineBox {
     }
 
     public String toString() {
-        return "Inline-Block: (" + x + "," + y + ") -> (" + width + "Xx" + height + ")";
+        StringBuffer sb = new StringBuffer();
+        sb.append("InlineBlockBox:");
+        sb.append(super.toString());
+        return sb.toString();
     }
 
 }

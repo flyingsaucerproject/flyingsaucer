@@ -5,9 +5,11 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FloatedBlockContent;
+import org.xhtmlrenderer.layout.content.AbsoluteBlockContent;
 import org.xhtmlrenderer.layout.content.InlineBlockContent;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -16,13 +18,15 @@ import java.awt.font.LineMetrics;
 public class VerticalAlign {
 
     public static void setupVerticalAlign(Context c, CalculatedStyle style, InlineBox box) {
+        // Uu.p("setup vert align: " + box);
         Content content = box.content;
 
         //not used: CalculatedStyle parent_style = c.css.getStyle(LineBreaker.getElement(parent));
         Font parent_font = FontUtil.getFont(c, style);
         LineMetrics parent_metrics = null;
         if (!(content instanceof InlineBlockContent)) {
-            if (!(content instanceof FloatedBlockContent)) {
+            if (!(content instanceof FloatedBlockContent) &&
+                !(content instanceof AbsoluteBlockContent)) {
                 parent_metrics = parent_font.getLineMetrics(box.getSubstring(), ((Graphics2D) c.getGraphics()).getFontRenderContext());
             } else {
                 parent_metrics = parent_font.getLineMetrics("Test", ((Graphics2D) c.getGraphics()).getFontRenderContext());
@@ -37,7 +41,8 @@ public class VerticalAlign {
         String vertical_align = style.propertyByName("vertical-align").computedValue().asString();
 
         // set the height of the box to the height of the font
-        if (!(content instanceof InlineBlockContent)) {
+        if (!(content instanceof InlineBlockContent) &&
+            !(content instanceof AbsoluteBlockContent)) {
             box.height = FontUtil.lineHeight(c, box);
         }
 
@@ -115,6 +120,10 @@ public class VerticalAlign {
             if (inline.floated) {
                 continue;
             }
+            if (inline.content instanceof AbsoluteBlockContent) {
+                // Uu.p("inline = " + inline);
+                continue;
+            }
             if (inline.vset) {
                 // compare the top of the box
                 if (inline.y - inline.height < top) {
@@ -144,7 +153,9 @@ public class VerticalAlign {
         // loop through all inlines to set the last ones
         for (int i = 0; i < box.getChildCount(); i++) {
             InlineBox inline = (InlineBox) box.getChild(i);
-            if (inline.floated) {
+            if (inline.floated ||
+                inline.content instanceof AbsoluteBlockContent) {
+                    // Uu.p("skipping: " + inline);
                 // Uu.p("adjusting floated inline:");
                 // Uu.p("inline = " + inline);
                 //inline.y = inline.y;// - box.baseline + inline.height;

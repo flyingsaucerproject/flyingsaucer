@@ -2,6 +2,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.content.AbsoluteBlockContent;
 import org.xhtmlrenderer.layout.content.FloatedBlockContent;
 import org.xhtmlrenderer.layout.content.InlineBlockContent;
 import org.xhtmlrenderer.layout.content.StylePop;
@@ -22,6 +23,7 @@ public class InlineRenderer extends BoxRenderer {
      * @param box PARAM
      */
     public void paintComponent(Context c, Box box) {
+        // Uu.p("InlineRenderer.paintComponent: " + box);
         if (isBlockLayedOut(box)) {
             super.paintComponent(c, box);
             return;
@@ -105,6 +107,7 @@ public class InlineRenderer extends BoxRenderer {
     // containing line box though
 
     private void paintInline(Context c, InlineBox inline, int lx, int ly, LineBox line) {
+        // Uu.p("paintInline: " + inline);
         if (inline.content instanceof InlineBlockContent) {
             paintReplaced(c, inline, line);
             debugInlines(c, inline, lx, ly);
@@ -113,6 +116,12 @@ public class InlineRenderer extends BoxRenderer {
 
         if (inline.content instanceof FloatedBlockContent) {
             paintFloat(c, inline, line);
+            debugInlines(c, inline, lx, ly);
+            return;
+        }
+
+        if (inline.content instanceof AbsoluteBlockContent) {
+            paintAbsolute(c, inline, line);
             debugInlines(c, inline, lx, ly);
             return;
         }
@@ -183,10 +192,19 @@ public class InlineRenderer extends BoxRenderer {
 
 
     private void paintReplaced(Context c, InlineBox inline, LineBox line) {
+        // Uu.p("paint replaced: " + inline);
         c.translate(line.x, line.y + (line.baseline - inline.height));
         Renderer rend = c.getRenderer(inline.content.getElement());
         rend.paint(c, inline);
         c.translate(-line.x, -(line.y + (line.baseline - inline.height)));
+    }
+
+    private void paintAbsolute(Context c, InlineBox inline, LineBox line) {
+        // Uu.p("paint absolute: " + inline);
+        //c.translate(line.x, line.y + (line.baseline - inline.height));
+        Renderer rend = c.getRenderer(inline.content.getElement());
+        rend.paint(c, inline);
+        //c.translate(-line.x, -(line.y + (line.baseline - inline.height)));
     }
 
 

@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Torbjörn Gannholm, Joshua Marinacci
+ * Copyright (c) 2004 Torbjï¿½rn Gannholm, Joshua Marinacci
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -28,6 +28,7 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.layout.inline.WhitespaceStripper;
+import org.xhtmlrenderer.util.Uu;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -122,7 +123,7 @@ public class ContentUtil {
                     inlineList.add(new TextContent(parentElement, textContent.toString()));
                     textContent = null;
                 }
-                inlineList.add(new InlineBlockContent((Element) curr, style));
+                inlineList.add(new AbsoluteBlockContent((Element) curr, style));
                 c.popStyle();
                 continue;
             }
@@ -320,6 +321,8 @@ public class ContentUtil {
     }
 
     static List resolveRunInContent(List pendingInlines, Element parentElement, Context c) {
+        return new LinkedList(pendingInlines);//pendingInlines.clone();
+        /*
         List inline = new LinkedList();
         List block = new LinkedList();
         for (Iterator i = pendingInlines.iterator(); i.hasNext();) {
@@ -327,6 +330,7 @@ public class ContentUtil {
             if (o instanceof RunInContent) {
                 inline = WhitespaceStripper.stripInlineContent(c, inline);
                 if (inline.size() != 0) {
+                    Uu.p("resove runin : new anony");
                     block.add(new AnonymousBlockContent(parentElement, inline));
                     inline = new LinkedList();
                 }
@@ -337,9 +341,12 @@ public class ContentUtil {
         }
         inline = WhitespaceStripper.stripInlineContent(c, inline);
         if (inline.size() != 0) {
+            Uu.p("resove runin : new anony 2");
+            Uu.p("stripped list = " + inline);
             block.add(new AnonymousBlockContent(parentElement, inline));
         }
         return block;
+*/
     }
 
     //TODO: following methods should not need to be public
@@ -440,6 +447,7 @@ public class ContentUtil {
     }
 
     public static boolean isBlockContent(List childContent) {
+        // Uu.p("checking block content: " + childContent);
         if (childContent.size() == 0) return false;
         Object o = childContent.get(childContent.size() - 1);
         if (o instanceof BlockContent) return true;
@@ -454,6 +462,14 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/12/16 15:53:09  joshy
+ * fixes for absolute layout
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.17  2004/12/14 00:32:19  tobega
  * Cleaned and fixed line breaking. Renamed BodyContent to DomToplevelNode
  *

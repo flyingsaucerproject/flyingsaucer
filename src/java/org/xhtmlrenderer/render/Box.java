@@ -22,6 +22,7 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -609,12 +610,22 @@ public class Box {
     public boolean isInlineElement() {
         return false;
     }
+    public CascadedStyle firstLineStyle;
+    public CascadedStyle firstLetterStyle;
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2004/12/16 15:53:10  joshy
+ * fixes for absolute layout
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.28  2004/12/13 15:15:57  joshy
  * fixed bug where inlines would pick up parent styles when they aren't supposed to
  * fixed extra Xx's in printed text

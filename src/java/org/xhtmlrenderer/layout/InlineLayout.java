@@ -24,6 +24,7 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.*;
+import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
@@ -52,10 +53,12 @@ public class InlineLayout extends BoxLayout {
         }*/
 
         List contentList = box.content.getChildContent(c);
+        if(contentList == null) return box;
         if (contentList.size() == 0) return box;//we can do this if there is no content, right?
 
-        BlockBox block = (BlockBox) box;//I think this should work - tobe 2004-12-11
+        Box block = box;//I think this should work - tobe 2004-12-11
 
+        // Uu.p("testing block content: " + box);
         if (ContentUtil.isBlockContent(contentList)) {//this should be block layed out
             //BoxLayout.layoutContent(c, box, contentList, block);
             super.layoutChildren(c, box);
@@ -63,11 +66,12 @@ public class InlineLayout extends BoxLayout {
             layoutContent(c, box, contentList, block);
         }
 
-
+        // Uu.p("finished block = " + block);
         return block;
     }
 
-    public static void layoutContent(Context c, Box box, List contentList, BlockBox block) {
+    public static void layoutContent(Context c, Box box, List contentList, Box block) {
+        // Uu.p("+ InlineLayout.layoutContent(): " + box);
         Rectangle bounds = new Rectangle();
         bounds.width = c.getExtents().width;
         bounds.width -= box.margin.left + box.border.left + box.padding.left +
@@ -167,14 +171,18 @@ public class InlineLayout extends BoxLayout {
                 // Uu.p("got back inline: " + new_inline);
                 if (!(currentContent instanceof InlineBlockContent)) {
                     if (!(currentContent instanceof FloatedBlockContent)) {
-                        if (new_inline.getSubstring().equals("")) break;
+                        if (!(currentContent instanceof AbsoluteBlockContent)) {
+                            if (new_inline.getSubstring().equals("")) break;
+                        }
                     }
                 }
+                // Uu.p("current line = " + curr_line);
 
                 isFirstLetter = false;
 
                 // if this inline needs to be on a new line
                 if (new_inline.break_before && !new_inline.floated) {
+                    // Uu.p("break before");
                     remaining_width = bounds.width;
                     saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, block, false);
                     bounds.height += curr_line.height;
@@ -192,6 +200,7 @@ public class InlineLayout extends BoxLayout {
                 pendingPushStyles = null;
 
                 // save the new inline to the list
+                // Uu.p("adding inline child: " + new_inline);
                 curr_line.addInlineChild(c, new_inline);
 
 
@@ -200,7 +209,9 @@ public class InlineLayout extends BoxLayout {
                 // line baseline if it's a floating inline.
                 if (!(currentContent instanceof InlineBlockContent)) {
                     if (!(currentContent instanceof FloatedBlockContent)) {
-                        adjustLineHeight(curr_line, new_inline);
+                        if (!(currentContent instanceof AbsoluteBlockContent)) {
+                            adjustLineHeight(curr_line, new_inline);
+                        }
                     }
                 }
 
@@ -214,6 +225,7 @@ public class InlineLayout extends BoxLayout {
 
                 // if the last inline was at the end of a line, then go to next line
                 if (new_inline.break_after) {
+                    // Uu.p("break after");
                     // then remaining_width = max_width
                     remaining_width = bounds.width;
                     // save the line
@@ -228,7 +240,9 @@ public class InlineLayout extends BoxLayout {
 
                 // set the inline to use for left alignment
                 if (!(currentContent instanceof FloatedBlockContent)) {
-                    prev_align_inline = new_inline;
+                    if (!(currentContent instanceof AbsoluteBlockContent)) {
+                        prev_align_inline = new_inline;
+                    }
                 }
 
                 prev_inline = new_inline;
@@ -241,6 +255,7 @@ public class InlineLayout extends BoxLayout {
         // save the final line
         saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, block, true);
         finishBlock(block, curr_line, bounds);
+        // Uu.p("- InlineLayout.layoutContent(): " + box);
     }
 
     private static LineBox newLine(Box box, Rectangle bounds, LineBox prev_line) {
@@ -284,6 +299,9 @@ public class InlineLayout extends BoxLayout {
             return true;
         }
         if (content instanceof FloatedBlockContent) {
+            return true;
+        }
+        if (content instanceof AbsoluteBlockContent) {
             return true;
         }
         /*if (c.getRenderingContext().getLayoutFactory().isBreak(current_node)) {//not needed with content
@@ -336,9 +354,14 @@ public class InlineLayout extends BoxLayout {
         } else if (content instanceof FloatedBlockContent) {
             //Uu.p("calcinline: is floated block");
             result = FloatUtil.generateFloatedBlockInlineBox(c, content, avail, prev_align, font);
+        } else if (content instanceof AbsoluteBlockContent) {
+             // Uu.p("this might be a problem, but it could just be an absolute block");
+        //     result = new BoxLayout().layout(c,content);
+            result = Absolute.generateInlineBox(c, content, avail, prev_align, font);
         } else {
 
             //OK, now we should have only TextContent left, fail fast if not
+            // Uu.p("real content = " + content);
             TextContent textContent = (TextContent) content;
 
             // calculate the starting index
@@ -425,8 +448,9 @@ public class InlineLayout extends BoxLayout {
         // new float code
         line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(line_to_save);
 
-
+        // Uu.p("before line = " + line_to_save);
         VerticalAlign.setupVerticalAlign(line_to_save);
+        // Uu.p("finished line = " + line_to_save);
         block.addChild(line_to_save);
     }
 
@@ -444,6 +468,14 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.62  2004/12/16 15:53:08  joshy
+* fixes for absolute layout
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.61  2004/12/15 00:53:40  tobega
 * Started playing a bit with inline box, provoked a few nasties, probably created some, seems to work now
 *

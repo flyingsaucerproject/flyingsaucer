@@ -7,6 +7,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.StylePop;
 import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.content.TextContent;
+import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Font;
 import java.util.ArrayList;
@@ -110,7 +111,8 @@ public class WhitespaceStripper {
         //there may be relevant StylePushes pending, e.g. if this is content of AnonymousBlock
         stripped.addAll(pendingStylePushes);
         
-        //Uu.p("final stripped = " + stripped);
+        // Uu.p("final stripped = " + stripped);
+        // Uu.p("all whitespace = " + allWhitespace);
         if (allWhitespace) {
             stripWhitespaceContent(stripped);
         }

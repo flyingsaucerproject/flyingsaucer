@@ -50,8 +50,6 @@ public class BlockBox extends Box {
     }
 
     //A block box may have special styles for the first line and first letter
-    public CascadedStyle firstLineStyle;
-    public CascadedStyle firstLetterStyle;
 
 
     /**
@@ -81,6 +79,14 @@ public class BlockBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/12/16 15:53:10  joshy
+ * fixes for absolute layout
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/12/11 23:36:49  tobega
  * Progressing on cleaning up layout and boxes. Still broken, won't even compile at the moment. Working hard to fix it, though.
  *

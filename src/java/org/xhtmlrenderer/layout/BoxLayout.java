@@ -180,6 +180,7 @@ public class BoxLayout extends DefaultLayout {
         //and now, back to previous style
         if (pushed != null) c.popStyle();
 
+        // Uu.p("BoxLayout: finished with block: " + block);
         return block;
     }
 
@@ -256,6 +257,7 @@ public class BoxLayout extends DefaultLayout {
     }
 
     public static void layoutContent(Context c, Box box, List contentList, BlockBox block) {
+        // Uu.p("BoxLayout.layoutContent(): " + block);
         Iterator contentIterator = contentList.iterator();
         //TODO: how does a block's firstLineStyle and firstLetterStyle propagate downwards?
         while (contentIterator.hasNext()) {
@@ -352,6 +354,14 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.50  2004/12/16 15:53:08  joshy
+ * fixes for absolute layout
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.49  2004/12/14 02:28:47  joshy
  * removed some comments
  * some bugs with the backgrounds still
