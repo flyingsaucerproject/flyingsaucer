@@ -23,21 +23,43 @@ import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
 
 /**
- * Holds a MatchedProperty for each unique property name
+ * Holds a set of {@link org.xhtmlrenderer.css.sheet.PropertyDeclaration}s for
+ * each unique CSS property name. What properties belong in the set is not
+ * determined, except that multiple entries are resolved into a single set using
+ * cascading rules. The set is cascaded during instantiation, so once you have a
+ * CascadedStyle, the PropertyDeclarations you retrieve from it will have been
+ * resolved following the CSS cascading rules. Note that this class knows
+ * nothing about CSS selector-matching rules. Before creating a CascadedStyle,
+ * you will need to determine which PropertyDeclarations belong in the set--for
+ * example, by matching {@link org.xhtmlrenderer.css.sheet.Ruleset}s to {@link
+ * org.w3c.dom.Document} {@link org.w3c.dom.Element}s via their selectors. You
+ * can get individual properties by using {@link #propertyByName(String)} or an
+ * {@link java.util.Iterator} of properties with {@link
+ * #getMatchedPropertyDeclarations()}. Check for individual property assignments
+ * using {@link #hasProperty(String)}. A CascadedStyle is immutable, as
+ * properties can not be added or removed from it once instantiated.
  *
- * @author   empty
+ * @author   Torbjörn Gannholm
+ * @author   Patrick Wright
  */
 public class CascadedStyle {
-
     /**
-     * The main Map of MatchedProperties keyed by property name, after cascade
-     * takes place.
+     * The main Map of MatchedProperties keyed by CSS property name, after
+     * cascade takes place.
      */
     private java.util.Map _cascadedPropertiesByName;
 
     /**
-     * @param iter        PARAM should contain PropertyDeclaration in order of
-     *      specificity
+     * Constructs a new CascadedStyle, given an {@link java.util.Iterator} of
+     * {@link org.xhtmlrenderer.css.sheet.PropertyDeclaration}s already sorted
+     * by specificity of the CSS selector they came from. The Iterator can have
+     * multiple PropertyDeclarations with the same name; the property cascade
+     * will be resolved during instantiation, resulting in a set of
+     * PropertyDeclarations. Once instantiated, properties may be retrieved
+     * using the normal API for the class.
+     *
+     * @param iter  An Iterator containing PropertyDeclarations in order of
+     *      specificity.
      */
     public CascadedStyle( java.util.Iterator iter ) {
         this();
@@ -64,7 +86,11 @@ public class CascadedStyle {
     }
 
 
-    /** Constructor for the CascadedStyle object */
+    /**
+     * Default constructor with no initialization. Don't use this to instantiate
+     * the class, as the class is immutable and this will leave it without any
+     * properties.
+     */
     protected CascadedStyle() {
         _cascadedPropertiesByName = new java.util.TreeMap();
     }
@@ -73,8 +99,8 @@ public class CascadedStyle {
     /**
      * Returns true if property has been defined in this style.
      *
-     * @param propName  PARAM
-     * @return          Returns
+     * @param propName  The CSS property name, e.g. "font-family".
+     * @return          True if the property is defined in this set.
      */
     public boolean hasProperty( String propName ) {
         return _cascadedPropertiesByName.get( propName ) != null;
@@ -82,8 +108,14 @@ public class CascadedStyle {
 
 
     /**
-     * @param propName  PARAM
-     * @return          Returns
+     * Returns a {@link org.xhtmlrenderer.css.sheet.PropertyDeclaration} by CSS
+     * property name, e.g. "font-family". Properties are already cascaded during
+     * instantiation, so this will return the actual property (and corresponding
+     * value) to use for CSS-based layout and rendering.
+     *
+     * @param propName  The CSS property name, e.g. "font-family".
+     * @return          The PropertyDeclaration, if declared in this set, or
+     *      null if not found.
      */
     public PropertyDeclaration propertyByName( String propName ) {
         PropertyDeclaration prop = (PropertyDeclaration)_cascadedPropertiesByName.get( propName );
@@ -92,21 +124,24 @@ public class CascadedStyle {
     }
 
     /**
-     * Gets the matchedPropertyDeclarations attribute of the CascadedStyle
-     * object
+     * Returns an {@link java.util.Iterator} over the set of {@link
+     * org.xhtmlrenderer.css.sheet.PropertyDeclaration}s in this CascadedStyle.
      *
-     * @return   The matchedPropertyDeclarations value
+     * @return   Iterator over a set of properly cascaded PropertyDeclarations.
      */
     public java.util.Iterator getMatchedPropertyDeclarations() {
         return _cascadedPropertiesByName.values().iterator();
     }
 
-}
+}// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2004/11/15 13:40:14  pdoubleya
+ * Updated JavaDoc.
+ *
  * Revision 1.2  2004/11/15 12:42:22  pdoubleya
  * Across this checkin (all may not apply to this particular file)
  * Changed default/package-access members to private.
