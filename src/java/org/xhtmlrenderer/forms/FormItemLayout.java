@@ -20,9 +20,9 @@
 package org.xhtmlrenderer.forms;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.CustomBlockLayout;
+import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
@@ -56,19 +56,20 @@ public abstract class FormItemLayout extends CustomBlockLayout {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param node PARAM
+     * @param c       PARAM
+     * @param content
      * @return Returns
      */
-    public Box createBox(Context c, Node node) {
-        Element elem = (Element) node;
+    public Box createBox(Context c, Content content) {
+        Element elem = content.getElement();
         comp = createComponent(c, elem);
         c.canvas.add(comp);
         comp.setLocation(100, 100);
         //u.p("added a component to the viewport: " + comp);
         //u.p("pref size = " + comp.getPreferredSize());
         InputBox box = new InputBox();
-        box.setNode(node);
+        box.setNode(elem);
+        box.setContent(content);
         box.component = comp;
 
         // this is so the context has a reference to all forms, fields,
@@ -173,6 +174,9 @@ public abstract class FormItemLayout extends CustomBlockLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/12/09 21:18:51  tobega
+ * precaution: code still works
+ *
  * Revision 1.6  2004/12/05 00:48:55  tobega
  * Cleaned up so that now all property-lookups use the CalculatedStyle. Also added support for relative values of top, left, width, etc.
  *

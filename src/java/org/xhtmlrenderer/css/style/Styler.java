@@ -116,6 +116,7 @@ public class Styler {
      *
      * @param elem PARAM
      */
+    //TODO:this method should probably be replaced with style inheritance handling in layout
     public void restyleTree(org.w3c.dom.Element elem) {
         CalculatedStyle parent = null;
 
@@ -219,6 +220,9 @@ public class Styler {
  *
 
  * $Log$
+ * Revision 1.10  2004/12/09 21:18:51  tobega
+ * precaution: code still works
+ *
  * Revision 1.9  2004/12/05 18:11:36  tobega
  * Now uses style cache for pseudo-element styles. Also started preparing to replace inline node handling with inline content handling.
  *

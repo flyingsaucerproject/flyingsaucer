@@ -20,14 +20,12 @@
 package org.xhtmlrenderer.layout;
 
 
-import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.DefaultRenderer;
 import org.xhtmlrenderer.render.Renderer;
-import org.xhtmlrenderer.util.u;
 
 import java.awt.*;
 
@@ -51,8 +49,7 @@ public class DefaultLayout implements Layout {
      */
 
     public Box layout(Context c, Content content) {
-        //TODO: temporary hack
-        Box box = createBox(c, content.getElement());
+        Box box = createBox(c, content);
         return box;//layoutChildren( c, box );
     }
 
@@ -60,14 +57,15 @@ public class DefaultLayout implements Layout {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param node PARAM
+     * @param c       PARAM
+     * @param content
      * @return Returns
      */
 
-    public Box createBox(Context c, Node node) {
+    public Box createBox(Context c, Content content) {
         Box box = new Box();
-        box.setNode(node);
+        box.setNode(content.getElement());
+        box.setContent(content);
         return box;
     }
 
@@ -82,20 +80,20 @@ public class DefaultLayout implements Layout {
         box.setBorderColor(ctx.css.getStyle(box.getRealElement()).getBorderColor());
         box.border_style = ctx.css.getStyle(box.getRealElement()).getStringProperty("border-top-style");
         box.background_color = ctx.css.getStyle(box.getRealElement()).getBackgroundColor();
-        restyleChildren(ctx,box);
+        restyleChildren(ctx, box);
     }
-    
+
     private void restyleChildren(Context ctx, Box box) {
-        for(int i=0; i<box.getChildCount(); i++) {
+        for (int i = 0; i < box.getChildCount(); i++) {
             Box child = box.getChild(i);
-            if(child.hasNode()) {
+            if (child.hasNode()) {
                 Layout lt = ctx.getLayout(child.getRealElement());
                 if (lt instanceof InlineLayout) {
                     //u.p("restyling: " + child);
                     ((InlineLayout) lt).restyle(ctx, child);
                 }
             }
-            restyleChildren(ctx,child);
+            restyleChildren(ctx, child);
         }
     }
     
@@ -202,6 +200,9 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2004/12/09 21:18:52  tobega
+ * precaution: code still works
+ *
  * Revision 1.28  2004/12/09 18:00:04  joshy
  * fixed hover bugs
  * fixed li's not being blocks bug

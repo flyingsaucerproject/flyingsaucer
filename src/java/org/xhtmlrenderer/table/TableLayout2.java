@@ -37,7 +37,6 @@
 package org.xhtmlrenderer.table;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.Layout;
 import org.xhtmlrenderer.layout.content.BlockContent;
@@ -58,13 +57,14 @@ public class TableLayout2 extends TableLayout {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param node PARAM
+     * @param c       PARAM
+     * @param content
      * @return Returns
      */
-    public Box createBox(Context c, Node node) {
+    public Box createBox(Context c, Content content) {
         TableBox table = new TableBox();
-        table.setNode(node);
+        table.setNode(content.getElement());
+        table.setContent(content);
         // set up the box properties
         getMargin(c, table);
         getPadding(c, table);
@@ -82,8 +82,7 @@ public class TableLayout2 extends TableLayout {
      */
     public Box layout(Context c, Content content) {
         // create the table box
-        //TODO: temporary hack?
-        TableBox table_box = (TableBox) createBox(c, content.getElement());
+        TableBox table_box = (TableBox) createBox(c, content);
 
         // set up the border spacing
         float border_spacing = content.getStyle().getFloatProperty("border-spacing");
@@ -292,6 +291,9 @@ public class TableLayout2 extends TableLayout {
 /*
    $Id$
    $Log$
+   Revision 1.10  2004/12/09 21:18:53  tobega
+   precaution: code still works
+
    Revision 1.9  2004/12/09 00:11:53  tobega
    Almost ready for Content-based inline generation.
 

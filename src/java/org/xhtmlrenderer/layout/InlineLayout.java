@@ -87,7 +87,8 @@ public class InlineLayout extends BoxLayout {
 
         // account for text-indent
         Element elem = block.getElement();
-        remaining_width = TextIndent.doTextIndent(c, elem, remaining_width, curr_line);
+        CalculatedStyle style = c.css.getStyle(elem);
+        remaining_width = TextIndent.doTextIndent(style, remaining_width, curr_line);
         
         // more setup
         LineBox prev_line = new LineBox();
@@ -96,7 +97,7 @@ public class InlineLayout extends BoxLayout {
         prev_line.height = 0;
         InlineBox prev_inline = null;
         InlineBox prev_align_inline = null;
-        
+
         // get the list of inlines for this run
         List inline_node_list = null;
         if (box.isAnonymous()) {
@@ -383,6 +384,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.42  2004/12/09 21:18:52  tobega
+* precaution: code still works
+*
 * Revision 1.41  2004/12/09 00:11:51  tobega
 * Almost ready for Content-based inline generation.
 *

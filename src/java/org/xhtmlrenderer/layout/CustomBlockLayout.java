@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.BlockBox;
@@ -38,13 +37,14 @@ public class CustomBlockLayout extends BoxLayout {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param node PARAM
+     * @param c       PARAM
+     * @param content
      * @return Returns
      */
-    public Box createBox(Context c, Node node) {
+    public Box createBox(Context c, Content content) {
         BlockBox box = new BlockBox();
-        box.setNode(node);
+        box.setNode(content.getElement());
+        box.setContent(content);
         return box;
     }
 
@@ -56,8 +56,7 @@ public class CustomBlockLayout extends BoxLayout {
      * @return Returns
      */
     public Box layout(Context c, Content content) {
-        //TODO: temporary hack
-        BlockBox block = (BlockBox) createBox(c, content.getElement());
+        BlockBox block = (BlockBox) createBox(c, content);
         // load the image
 
         Border border = getBorder(c, block);
@@ -100,6 +99,9 @@ public class CustomBlockLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/12/09 21:18:52  tobega
+ * precaution: code still works
+ *
  * Revision 1.6  2004/12/09 00:11:51  tobega
  * Almost ready for Content-based inline generation.
  *

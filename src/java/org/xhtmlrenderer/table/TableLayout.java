@@ -70,15 +70,17 @@ public class TableLayout
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param node PARAM
+     * @param c       PARAM
+     * @param content
      * @return Returns
      */
-    public Box createBox(Context c, Node node) {
+    public Box createBox(Context c, Content content) {
 
         Box box = new TableBox(0, 0, 0, 0);
 
-        box.setNode(node);
+        box.setNode(content.getElement());
+
+        box.setContent(content);
 
         return box;
     }
@@ -94,8 +96,7 @@ public class TableLayout
      */
 
     public Box layout(Context c, Content content) {
-        //TODO: temporary hack?
-        TableBox table = (TableBox) createBox(c, content.getElement());
+        TableBox table = (TableBox) createBox(c, content);
 
         // calculate the available space
 
@@ -521,6 +522,9 @@ public class TableLayout
 /*
    $Id$
    $Log$
+   Revision 1.9  2004/12/09 21:18:53  tobega
+   precaution: code still works
+
    Revision 1.8  2004/12/09 00:11:53  tobega
    Almost ready for Content-based inline generation.
 

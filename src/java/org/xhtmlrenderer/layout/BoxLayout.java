@@ -55,13 +55,14 @@ public class BoxLayout extends DefaultLayout {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param node PARAM
+     * @param c       PARAM
+     * @param content
      * @return Returns
      */
-    public Box createBox(Context c, Node node) {
+    public Box createBox(Context c, Content content) {
         BlockBox block = new BlockBox();
-        block.setNode(node);
+        block.setNode(content.getElement());
+        block.setContent(content);
         //String attachment = c.css.getStringProperty(block.getRealElement(), "background-attachment", false);
         String attachment = c.css.getStyle(block.getRealElement()).propertyByName("background-attachment").computedValue().asString();
         if (attachment != null && attachment.equals("fixed")) {
@@ -79,8 +80,7 @@ public class BoxLayout extends DefaultLayout {
      * @return Returns
      */
     public Box layout(Context c, Content content) {
-        //TODO: temporary hack
-        BlockBox block = (BlockBox) createBox(c, content.getElement());
+        BlockBox block = (BlockBox) createBox(c, content);
         return layout(c, block);
     }
 
@@ -362,6 +362,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2004/12/09 21:18:52  tobega
+ * precaution: code still works
+ *
  * Revision 1.35  2004/12/09 00:11:51  tobega
  * Almost ready for Content-based inline generation.
  *

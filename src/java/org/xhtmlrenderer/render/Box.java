@@ -24,6 +24,7 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.value.BorderColor;
+import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.util.u;
 
 import java.awt.*;
@@ -49,6 +50,16 @@ public class Box {
         padding = box.padding;
         color = box.color;
     }
+
+    public Content getContent() {
+        return content;
+    }
+
+    public void setContent(Content content) {
+        this.content = content;
+    }
+
+    private Content content;
     // dimensions stuff
     /**
      * Description of the Field
@@ -531,7 +542,7 @@ public class Box {
      * @return The element value
      */
     public boolean isElement() {
-        if(this.node == null) {
+        if (this.node == null) {
             return false;
         }
         if (getNode().getNodeType() == getNode().ELEMENT_NODE) {
@@ -686,30 +697,29 @@ public class Box {
         if (node == null) throw new NullPointerException("Trying to set a null node to box");
         this.node = node;
     }
-    
+
     public boolean hasNode() {
-        if(this.node == null) {
+        if (this.node == null) {
             return false;
         } else {
             return true;
         }
     }
-    
-    /** 
-    <p>
-    If this box represents the text of an inline element then returns true.
-    Thus, the text "<i>some text</i>" if the following example would be an inline element:
-    <pre>
-        &lt;p&gt; text &lt;b&gt;some text&lt;/b&gt; text &lt;/p&gt;
-    </pre>
-    The text "<i>some text</i>" in the next example <b>would not</b> be an inline element,
-    because it is merely the text child of a block element
-    
-    <pre>
-        &lt;p&gt; some text &lt;/p&gt;
-    </pre>
-    </p>
-    */
+
+    /**
+     * If this box represents the text of an inline element then returns true.
+     * Thus, the text "<i>some text</i>" if the following example would be an inline element:
+     * <pre>
+     * &lt;p&gt; text &lt;b&gt;some text&lt;/b&gt; text &lt;/p&gt;
+     * </pre>
+     * The text "<i>some text</i>" in the next example <b>would not</b> be an inline element,
+     * because it is merely the text child of a block element
+     * <p/>
+     * <pre>
+     * &lt;p&gt; some text &lt;/p&gt;
+     * </pre>
+     * </p>
+     */
     public boolean isInlineElement() {
         return false;
     }
@@ -719,6 +729,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2004/12/09 21:18:53  tobega
+ * precaution: code still works
+ *
  * Revision 1.21  2004/12/09 18:00:05  joshy
  * fixed hover bugs
  * fixed li's not being blocks bug
