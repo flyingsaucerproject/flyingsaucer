@@ -19,24 +19,18 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.demo.browser.actions.*;
-import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.swing.BasicPanel;
-import org.xhtmlrenderer.extend.RenderingContext;
-import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.demo.browser.actions.CopySelectionAction;
+import org.xhtmlrenderer.demo.browser.actions.FontSizeAction;
+import org.xhtmlrenderer.demo.browser.actions.GenerateDiffAction;
+import org.xhtmlrenderer.demo.browser.actions.PrintAction;
+import org.xhtmlrenderer.util.U;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
+import java.awt.FileDialog;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.net.URL;
 import java.util.logging.Logger;
 
 /**
@@ -63,9 +57,9 @@ public class BrowserActions {
      * Description of the Field
      */
     public BrowserStartup root;
-    
+
     public Action increase_font, decrease_font;
-    
+
     /**
      * The system logger for app.browser
      */
@@ -122,27 +116,27 @@ public class BrowserActions {
         cut = new EmptyAction("Cut", KeyEvent.VK_X);
         cut.setEnabled(false);
         setMnemonic(cut, new Integer(KeyEvent.VK_T));
-        
+
         copy = new CopySelectionAction(root);
         copy.setEnabled(true);
         setMnemonic(copy, new Integer(KeyEvent.VK_C));
         setName(copy, "Copy");
-        
+
         paste = new EmptyAction("Paste", KeyEvent.VK_V);
         paste.setEnabled(false);
         setMnemonic(paste, new Integer(KeyEvent.VK_P));
 
 
         backward = new AbstractAction("Back") {
-                    public void actionPerformed(ActionEvent evt) {
-                        try {
-                            root.panel.goBack();
-                            root.panel.view.repaint();
-                        } catch (Exception ex) {
-                            u.p(ex);
-                        }
-                    }
-                };
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    root.panel.goBack();
+                    root.panel.view.repaint();
+                } catch (Exception ex) {
+                    U.p(ex);
+                }
+            }
+        };
 
         backward.setEnabled(false);
         backward.putValue(Action.ACCELERATOR_KEY,
@@ -150,67 +144,66 @@ public class BrowserActions {
                         InputEvent.ALT_MASK));
 
 
-        
         forward = new AbstractAction("Forward") {
-                    public void actionPerformed(ActionEvent evt) {
-                        try {
-                            root.panel.goForward();
-                            root.panel.view.repaint();
-                        } catch (Exception ex) {
-                            u.p(ex);
-                        }
-                    }
-                };
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    root.panel.goForward();
+                    root.panel.view.repaint();
+                } catch (Exception ex) {
+                    U.p(ex);
+                }
+            }
+        };
         forward.setEnabled(false);
         forward.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
                         InputEvent.ALT_MASK));
 
-                        
+
         refresh = new EmptyAction("Refresh Page") {
-                    public void actionPerformed(ActionEvent evt) {
-                        try {
-                            root.panel.view.invalidate();
-                            root.panel.view.repaint();
-                        } catch (Exception ex) {
-                            u.p(ex);
-                        }
-                    }
-                };
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    root.panel.view.invalidate();
+                    root.panel.view.repaint();
+                } catch (Exception ex) {
+                    U.p(ex);
+                }
+            }
+        };
         refresh.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke("F5"));
 
         reload = new EmptyAction("Reload") {
-                    public void actionPerformed(ActionEvent evt) {
-                        try {
-                            root.panel.reloadPage();
-                            root.panel.view.repaint();
-                        } catch (Exception ex) {
-                            u.p(ex);
-                        }
-                    }
-                };
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    root.panel.reloadPage();
+                    root.panel.view.repaint();
+                } catch (Exception ex) {
+                    U.p(ex);
+                }
+            }
+        };
         reload.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_F5,
                         InputEvent.SHIFT_MASK));
 
         load = new AbstractAction("Load") {
-                    public void actionPerformed(ActionEvent evt) {
-                        try {
-                            String url_text = root.panel.url.getText();
-                            root.panel.loadPage(url_text);
-                            root.panel.view.repaint();
-                        } catch (Exception ex) {
-                            u.p(ex);
-                        }
-                    }
-                };
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    String url_text = root.panel.url.getText();
+                    root.panel.loadPage(url_text);
+                    root.panel.view.repaint();
+                } catch (Exception ex) {
+                    U.p(ex);
+                }
+            }
+        };
 
         generate_diff = new GenerateDiffAction(root);
         increase_font = new FontSizeAction(root, 1.2f);
-        decrease_font = new FontSizeAction(root, 1f/1.2f);
-        setName(increase_font,"A+");
-        setName(decrease_font,"a-");
+        decrease_font = new FontSizeAction(root, 1f / 1.2f);
+        setName(increase_font, "A+");
+        setName(decrease_font, "a-");
     }
 
 
@@ -251,6 +244,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/12/12 02:52:20  tobega
+ * I didn't change this, strange...
+ *
  * Revision 1.10  2004/11/18 00:45:56  joshy
  * moved more browser actions into their own classes
  *
