@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Iterator;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
-import org.joshy.*;
+import org.xhtmlrenderer.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;

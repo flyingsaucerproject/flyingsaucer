@@ -21,7 +21,7 @@
 
 package org.xhtmlrenderer.demo.browser;
 
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import java.net.URL;
 import org.w3c.dom.Document;
 import java.util.ArrayList;

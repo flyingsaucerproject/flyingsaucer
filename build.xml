@@ -62,6 +62,10 @@
         </javac>
     </target>
     
+    <target name="compile.all" depends="compile, compile.browser">
+    </target>
+    
+    
     <target name="compile-test" depends="compile">
         <javac
             srcdir="src/java"

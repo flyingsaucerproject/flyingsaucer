@@ -52,7 +52,7 @@ import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.css.*;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.swing.*;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.*;

@@ -24,7 +24,7 @@ package org.xhtmlrenderer.demo.browser;
 import java.io.*;
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 public class DirectoryLister {
 

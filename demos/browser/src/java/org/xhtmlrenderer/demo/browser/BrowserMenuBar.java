@@ -26,7 +26,7 @@ import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.css.*;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.swing.*;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;

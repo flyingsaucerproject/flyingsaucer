@@ -25,7 +25,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.logging.*;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 
 public class BrowserActions {
