@@ -53,6 +53,7 @@ public class MiniumTextRenderer implements TextRenderer {
     into account. */
 
     public void setSmoothingThreshold(float fontsize) {
+        renderer.setTextRenderingHint(TextRenderingHints.KEY_OVERSAMPLING_MIN_FONTSIZE, new Integer((int)fontsize));
     }
     protected int level = HIGH;
     public int getSmoothingLevel() {
