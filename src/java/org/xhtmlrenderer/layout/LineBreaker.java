@@ -24,6 +24,7 @@ import java.awt.Rectangle;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.layout.inline.*;
+import org.xhtmlrenderer.layout.block.*;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -379,8 +380,8 @@ public class LineBreaker {
 
         box.y = 0;// it's relative to the line
         try {
-            if ( !InlineLayout.isReplaced(c, node ) ) {
-                if ( !InlineLayout.isFloatedBlock( node, c ) ) {
+            if ( !LayoutUtil.isReplaced(c, node ) ) {
+                if ( !LayoutUtil.isFloatedBlock( node, c ) ) {
                     box.width = FontUtil.len( c, node, text.substring( start, end ), font );
                 } else {
                     box.width = bounds.width;
@@ -396,9 +397,9 @@ public class LineBreaker {
             throw ex;
         }
         //u.p("box.x = " + box.x);
-        if ( InlineLayout.isReplaced(c, node ) ) {
+        if ( LayoutUtil.isReplaced(c, node ) ) {
             box.height = bounds.height;
-        } else if ( InlineLayout.isFloatedBlock( node, c ) ) {
+        } else if ( LayoutUtil.isFloatedBlock( node, c ) ) {
             box.height = bounds.height;
         } else {
             box.height = FontUtil.lineHeight( c, node );
@@ -408,8 +409,8 @@ public class LineBreaker {
 
         box.setText(text);
         
-        if ( !InlineLayout.isReplaced(c, node ) ) {
-            if ( !InlineLayout.isFloatedBlock( node, c ) ) {
+        if ( !LayoutUtil.isReplaced(c, node ) ) {
+            if ( !LayoutUtil.isFloatedBlock( node, c ) ) {
                 FontUtil.setupTextDecoration( c, node, box );
                 if ( box.getText() == null ) {
                     return box;
@@ -425,7 +426,7 @@ public class LineBreaker {
         } else {
             box.color = c.css.getColor( (Element)node, true );
         }
-        InlineLayout.setupRelative( c, box );
+        Relative.setupRelative( c, box );
 
         
         
@@ -452,7 +453,7 @@ public class LineBreaker {
     }
     
     public static Element getNearestBlockElement(Node node, Context c) {
-        if(DefaultLayout.isBlockNode(node,c)) {
+        if(LayoutUtil.isBlockNode(node,c)) {
             return (Element)node;
         } else {
             return getNearestBlockElement(node.getParentNode(),c);
@@ -535,6 +536,16 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2004/11/18 02:37:26  joshy
+ * moved most of default layout into layout util or box layout
+ *
+ * start spliting parts of box layout into the block subpackage
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.21  2004/11/15 14:33:10  joshy
  * fixed line breaking bug with certain kinds of unbreakable lines
  *

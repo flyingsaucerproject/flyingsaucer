@@ -120,7 +120,7 @@ public class InlineUtil {
                     //return curr;
                 }
 
-                if ( InlineLayout.isReplaced(c, curr ) ) {
+                if ( LayoutUtil.isReplaced(c, curr ) ) {
                     //u.p("adding: " + curr);
                     list.add( curr );
                     node = curr;
@@ -128,7 +128,7 @@ public class InlineUtil {
                     //return curr;
                 }
 
-                if ( InlineLayout.isFloatedBlock( curr, c ) ) {
+                if ( LayoutUtil.isFloatedBlock( curr, c ) ) {
                     //u.p("adding: " + curr);
                     list.add( curr );
                     node = curr;
@@ -145,7 +145,7 @@ public class InlineUtil {
                 }
 
                 if ( stop_at_blocks ) {
-                    if ( InlineLayout.isBlockNode( curr, c ) ) {
+                    if ( LayoutUtil.isBlockNode( curr, c ) ) {
                         //u.p("at block boundary");
                         return list;
                     }
@@ -155,8 +155,8 @@ public class InlineUtil {
             if ( curr.hasChildNodes() ) {
                 //u.p("about to test: " + curr);
                 // if it's a floating block we don't want to recurse
-                if ( !InlineLayout.isFloatedBlock( curr, c ) &&
-                        !InlineLayout.isReplaced(c, curr ) ) {
+                if ( !LayoutUtil.isFloatedBlock( curr, c ) &&
+                        !LayoutUtil.isReplaced(c, curr ) ) {
                     curr = curr.getFirstChild();
                     //u.p("going to first child " + curr);
                     continue;
@@ -165,7 +165,7 @@ public class InlineUtil {
                 // it's okay to recurse if it's the root that's the float,
                 // not the node being examined. this only matters when we
                 // start the loop at the root of a floated block
-                if ( InlineLayout.isFloatedBlock( node, c ) ) {
+                if ( LayoutUtil.isFloatedBlock( node, c ) ) {
                     if ( node == elem ) {
                         curr = curr.getFirstChild();
                         continue;
@@ -212,6 +212,16 @@ public class InlineUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/11/18 02:37:26  joshy
+ * moved most of default layout into layout util or box layout
+ *
+ * start spliting parts of box layout into the block subpackage
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.10  2004/11/14 16:40:58  joshy
  * refactored layout factory
  *

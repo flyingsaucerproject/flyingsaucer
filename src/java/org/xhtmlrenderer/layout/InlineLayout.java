@@ -54,11 +54,11 @@ public class InlineLayout extends BoxLayout {
     */
     public Box layoutChildren( Context c, Box box ) {
         //u.p("starting to lay out the children");
-        if ( isHiddenNode( box.getElement(), c ) ) {
+        if ( LayoutUtil.isHiddenNode( box.getElement(), c ) ) {
             return box;
         }
         if ( !box.isAnonymous() ) {
-            if ( isBlockLayout( box.getElement(), c ) ) {
+            if ( LayoutUtil.isBlockLayout( box.getElement(), c ) ) {
                 return super.layoutChildren( c, box );
             }
         }
@@ -129,10 +129,10 @@ public class InlineLayout extends BoxLayout {
                 // if there is a prev, and if the prev was part of this current node
                 if ( prev_inline != null && prev_inline.node == current_node ) {
                     // replaced elements aren't split, so done with this one
-                    if ( isReplaced(c, current_node ) ) {
+                    if ( LayoutUtil.isReplaced(c, current_node ) ) {
                         break;
                     }
-                    if ( isFloatedBlock( current_node, c ) ) {
+                    if ( LayoutUtil.isFloatedBlock( current_node, c ) ) {
                         break;
                     }
                     if ( c.getRenderingContext().getLayoutFactory().isBreak( current_node ) ) {
@@ -183,8 +183,8 @@ public class InlineLayout extends BoxLayout {
                 // calc new height of the line
                 // don't count the inline towards the line height and
                 //line baseline if it's a floating inline.
-                if ( !isFloated( new_inline, c ) ) {
-                    if ( !isFloatedBlock( new_inline.node, c ) ) {
+                if ( !LayoutUtil.isFloated( new_inline, c ) ) {
+                    if ( !LayoutUtil.isFloatedBlock( new_inline.node, c ) ) {
                         //u.p("calcing new height of line");
                         if ( new_inline.height + new_inline.y > curr_line.height ) {
                             curr_line.height = new_inline.height + new_inline.y;
@@ -223,7 +223,7 @@ public class InlineLayout extends BoxLayout {
                 }
                 
                 // set the inline to use for left alignment
-                if ( !isFloated( new_inline, c ) ) {
+                if ( !LayoutUtil.isFloated( new_inline, c ) ) {
                     prev_align_inline = new_inline;
                 } else {
                     prev_align_inline = prev_inline;
@@ -287,11 +287,11 @@ public class InlineLayout extends BoxLayout {
         Font font = FontUtil.getFont( c, node );
         
         // handle each case
-        if ( isReplaced(c, node ) ) {
+        if ( LayoutUtil.isReplaced(c, node ) ) {
             // u.p("is replaced");
             return LineBreaker.generateReplacedInlineBox( c, node, avail, prev, text, prev_align, font );
         }
-        if ( isFloatedBlock( node, c ) ) {
+        if ( LayoutUtil.isFloatedBlock( node, c ) ) {
             // u.p("is floated block");
             return FloatUtil.generateFloatedBlockInlineBox( c, node, avail, prev, text, prev_align, font );
         }
@@ -369,6 +369,16 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.25  2004/11/18 02:37:26  joshy
+* moved most of default layout into layout util or box layout
+*
+* start spliting parts of box layout into the block subpackage
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.24  2004/11/15 14:33:09  joshy
 * fixed line breaking bug with certain kinds of unbreakable lines
 *

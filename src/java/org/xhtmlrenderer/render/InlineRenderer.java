@@ -23,7 +23,7 @@ public class InlineRenderer extends BoxRenderer {
             paintInlineContext( c, box );
             return;
         }
-        if ( BoxLayout.isBlockLayout( box.getElement(), c ) ) {
+        if ( LayoutUtil.isBlockLayout( box.getElement(), c ) ) {
             super.paintComponent( c, box );
             return;
         }
@@ -40,7 +40,7 @@ public class InlineRenderer extends BoxRenderer {
         if ( box.isAnonymous() ) {
             return;
         }
-        if ( BoxLayout.isBlockLayout( box.getElement(), c ) ) {
+        if ( LayoutUtil.isBlockLayout( box.getElement(), c ) ) {
             super.paintChildren( c, box );
         }
     }
@@ -86,13 +86,13 @@ public class InlineRenderer extends BoxRenderer {
     // containing line box though
 
     private void paintInline( Context c, InlineBox inline, int lx, int ly, LineBox line ) {
-        if ( InlineLayout.isReplaced(c, inline.node ) ) {
+        if ( LayoutUtil.isReplaced(c, inline.node ) ) {
             paintReplaced(c,inline,line);
             debugInlines(c,inline,lx,ly);
             return;
         }
 
-        if ( InlineLayout.isFloatedBlock( inline.node, c ) ) {
+        if ( LayoutUtil.isFloatedBlock( inline.node, c ) ) {
             paintFloat(c,inline,line);
             debugInlines(c,inline,lx,ly);
             return;

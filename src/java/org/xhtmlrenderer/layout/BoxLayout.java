@@ -21,15 +21,17 @@ package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.render.BoxRenderer;
 import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.layout.block.*;
 
 import java.awt.*;
 
@@ -40,6 +42,9 @@ import java.awt.*;
  * @author empty
  */
 public class BoxLayout extends DefaultLayout {
+
+    /** Description of the Field */
+    public int contents_height;
 
     /**
      * Constructor for the BoxLayout object
@@ -71,9 +76,10 @@ public class BoxLayout extends DefaultLayout {
      * @param c   PARAM
      */
     public void prepareBox(Box box, Context c) {
-        Border border = getBorder(c, box);
-        Border padding = getPadding(c, box);
-        Border margin = getMargin(c, box);
+        getBorder(c, box);
+        getPadding(c, box);
+        getMargin(c, box);
+        getBackgroundColor(c, box);
     }
 
     /**
@@ -97,6 +103,8 @@ public class BoxLayout extends DefaultLayout {
         }
 
         BlockBox block = (BlockBox) createBox(c, elem);
+
+
         // set up the bfc
         BlockFormattingContext old_bfc = null;
         boolean set_bfc = false;
@@ -108,19 +116,20 @@ public class BoxLayout extends DefaultLayout {
             //u.p("extents here = " + c.getExtents());
             bfc.setWidth((int) c.getExtents().getWidth());
         }
+
+
+        // copy the extents
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
+        
+        // calculate the width and height as much as possible
         adjustWidth(c, block);
         adjustHeight(c, block);
         block.x = c.getExtents().x;
         block.y = c.getExtents().y;
 
+        // prepare the box w/ styles
         prepareBox(block, c);
-        Border border = getBorder(c, block);
-        Border padding = getPadding(c, block);
-        Border margin = getMargin(c, block);
-        getBackgroundColor(c, block);
-
 
         // do children's layout
         boolean old_sub = c.isSubBlock();
@@ -133,48 +142,38 @@ public class BoxLayout extends DefaultLayout {
         c.setSubBlock(old_sub);
 
         // calculate the inner width
+        block.width = block.margin.left + block.border.left + block.padding.left + block.width +
+                block.padding.right + block.border.right + block.margin.right;
+        block.height = block.margin.top + block.border.top + block.padding.top + block.height +
+                block.padding.bottom + block.border.bottom + block.margin.bottom;
         
-        block.width = margin.left + border.left + padding.left + block.width +
-                padding.right + border.right + margin.right;
-        block.height = margin.top + border.top + padding.top + block.height +
-                padding.bottom + border.bottom + margin.bottom;
-                
-
-        // if this is a fixed height, then set it explicitly
-        /*
-         * if (!block.auto_height) {
-         * contents.height = block.height;
-         * }
-         */
         //restore the extents
         c.setExtents(oe);
 
         // account for special positioning
-        setupRelative(c, block);
+        Relative.setupRelative(c, block);
         setupAbsolute(c, block);
         setupFixed(c, block);
         setupFloat(c, block);
-
+        setupForm(c, block);        
         this.contents_height = block.height;
-        if (c.getRenderingContext().getLayoutFactory().isForm(elem)) {
-            if (elem.hasAttribute("name")) {
-                c.setForm(null, null);
-            }
-        }
+        
         if (set_bfc) {
             c.setBlockFormattingContext(old_bfc);
         }
+        
         return block;
     }
-
+    
+    private void setupForm(Context c, Box block) {
+        if (c.getRenderingContext().getLayoutFactory().isForm(block.getRealElement())) {
+            if (block.getRealElement().hasAttribute("name")) {
+                c.setForm(null, null);
+            }
+        }
+    }
 
     // calculate the width based on css and available space
-    /**
-     * Description of the Method
-     *
-     * @param c     PARAM
-     * @param block PARAM
-     */
     private void adjustWidth(Context c, BlockBox block) {
         if (!block.isElement()) {
             return;
@@ -190,42 +189,16 @@ public class BoxLayout extends DefaultLayout {
                 }
                 return;
             }
-            // u.p("block = " + block);
-            // u.p("extents = " + c.getExtents());
-            // CalculatedStyle style = c.css.getStyle(elem);
-            // u.p("style = " + style);
-            // u.p("comp value = " + style.propertyByName("width").computedValue());
-            // u.p("width = " + style.propertyByName("width")
-            //     .computedValue().getFloatValue(CSSPrimitiveValue.CSS_PERCENTAGE));
-            // u.p("type = " + style.propertyByName("width")
-            //     .computedValue().getPrimitiveType());
-            
             //float new_width = relativeHack(c.css.getFloatProperty( elem, "width", c.getExtents().width, false ),
             //    c.getExtents().width);
             float new_width = c.css.getFloatProperty(elem, "width", c.getExtents().width, false);
-            //u.p("new width = " + new_width);
             c.getExtents().width = (int) new_width;
             block.width = (int) new_width;
             block.auto_width = false;
-            //u.p("adjusted width: = " + block);
         }
-    }
-
-    private float relativeHack(float width, float parent_width) {
-        u.p("calc width = " + width);
-        if (width > 0.0 && width <= 1.0) {
-            return width * parent_width;
-        }
-        return width;
     }
 
     // calculate the height based on css and available space
-    /**
-     * Description of the Method
-     *
-     * @param c     PARAM
-     * @param block PARAM
-     */
     private void adjustHeight(Context c, BlockBox block) {
         if (!block.isElement()) {
             return;
@@ -250,21 +223,159 @@ public class BoxLayout extends DefaultLayout {
     public Box layoutChildren(Context c, Box box) {
         BlockBox block = (BlockBox) box;
         c.shrinkExtents(block);
-        super.layoutChildren(c, block);
+
+        Element elem = (Element)box.node;
+        // prepare for the list items
+        int old_counter = c.getListCounter();
+        c.setListCounter( 0 );
+
+        // for each child
+        NodeList nl = elem.getChildNodes();
+        for ( int i = 0; i < nl.getLength(); i++ ) {
+            Node child = nl.item( i );
+
+            // get the layout for this child
+            Layout layout = c.getLayout( child );
+            if ( layout == null ) {
+                continue;
+            }
+            if ( layout instanceof NullLayout ) {
+                continue;
+            }
+            if ( c.getRenderingContext().getLayoutFactory().isBreak(child)) {
+                continue;
+            }
+            if ( child.getNodeType() == child.COMMENT_NODE ) {
+                continue;
+            }
+
+            Box child_box = null;
+            if ( child.getNodeType() == child.ELEMENT_NODE ) {
+                // update the counter for printing OL list items
+                c.setListCounter( c.getListCounter() + 1 );
+
+                Element child_elem = (Element)child;
+                // execute the layout and get the return bounds
+                //c.parent_box = box;
+                c.placement_point = new Point( 0, box.height );
+                c.getBlockFormattingContext().translate(0,box.height);
+                child_box = layout.layout( c, child_elem );
+                c.getBlockFormattingContext().translate(0,-box.height);
+                child_box.list_count = c.getListCounter();
+            } else {
+                // create anonymous block box
+                // prepare the node list of the text children
+                //child_box = new AnonymousBlockBox(child);
+                // call layout
+                child_box = ( (AnonymousBoxLayout)layout ).layout( c, elem, child );
+
+                // skip text children if the prev_child == anonymous block box
+                // because that means they were sucked into this block
+                Node last_node = ( (AnonymousBlockBox)child_box ).last_node;
+                // if anonymous box is only one node wide then skip this
+                // junk
+                if ( child != last_node ) {
+                    while ( true ) {
+                        i++;
+                        Node ch = nl.item( i );
+                        //u.p("trying to skip: " + ch);
+                        if ( ch == last_node ) {
+                            break;
+                        }
+                    }
+                }
+
+            }
+            box.addChild( child_box );
+            // set the child_box location
+            child_box.x = 0;
+            child_box.y = box.height;
+
+            //joshy fix the 'fixed' stuff later
+            // if fixed or abs then don't modify the final layout bounds
+            // because fixed elements are removed from normal flow
+            if ( child_box.fixed ) {
+                // put fixed positioning in later
+                positionFixedChild(c,child_box);
+            }
+            
+            if ( child_box.isAbsolute() ) {
+                positionAbsoluteChild(c,child_box);
+            }
+            
+            // skip adjusting the parent box if the child
+            // doesn't affect flow layout
+            if (LayoutUtil.isOutsideNormalFlow(child_box)) {
+                continue;
+            }
+
+            // increase the final layout width if the child was greater
+            if ( child_box.width > box.width ) {
+                box.width = child_box.width;
+            }
+
+            // increase the final layout height by the height of the child
+            box.height += child_box.height;
+        }
+        c.addMaxWidth( box.width );
+
+        c.setListCounter( old_counter );
+
         c.unshrinkExtents(block);
         return block;
     }
 
 
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
+    private void positionAbsoluteChild(Context c, Box child_box) {
+        BlockFormattingContext bfc = c.getBlockFormattingContext();
+        // handle the left and right
+        if(child_box.right_set) {
+            child_box.x = -bfc.getX() + bfc.getWidth() - child_box.right - child_box.width
+                          - bfc.getMaster().totalRightPadding();
+        } else {
+            child_box.x = bfc.getX() + child_box.left;
+        }
+        // handle the top
+        child_box.y = bfc.getY() + child_box.top;
+    }
 
-    public void setupFloat(Context c, Box box) {
-        if (isFloated(box.node, c)) {
+    private void positionFixedChild(Context c, Box box) {
+        if ( LayoutUtil.isFixed( c, box ) ) {
+            Point origin = c.getOriginOffset();
+            box.x = 0;
+            box.y = 0;
+            box.x -= origin.x;
+            box.y -= origin.y;
+        }
+    }
+
+    private void setupFixed( Context c, Box box ) {
+        if ( LayoutUtil.isFixed( c, box ) ) {
+            box.fixed = true;
+            box.setChildrenExceedBounds(true);
+            
+            if ( c.css.hasProperty( box.node, "top", false ) ) {
+                box.top = (int)c.css.getFloatProperty( box.node, "top", 0, false );
+                box.top_set = true;
+            }
+            if ( c.css.hasProperty( box.node, "right", false ) ) {
+                box.right = (int)c.css.getFloatProperty( box.node, "right", 0, false );
+                box.right_set = true;
+            }
+            if ( c.css.hasProperty( box.node, "bottom", false ) ) {
+                box.bottom = (int)c.css.getFloatProperty( box.node, "bottom", 0, false );
+                box.bottom_set = true;
+            }
+            if ( c.css.hasProperty( box.node, "left", false ) ) {
+                box.left = (int)c.css.getFloatProperty( box.node, "left", 0, false );
+                box.left_set = true;
+            }
+            
+        }
+    }
+
+    private void setupFloat(Context c, Box box) {
+        if (LayoutUtil.isFloated(box.node, c)) {
             String float_val = c.css.getStringProperty(box.node, CSSName.FLOAT, false);
             if (float_val == null) {
                 float_val = "none";
@@ -282,126 +393,8 @@ public class BoxLayout extends DefaultLayout {
         }
     }
 
-    /**
-     * Gets the listItem attribute of the BoxLayout object
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     * @return The listItem value
-     */
-    public static boolean isListItem(Context c, Box box) {
-        String display = c.css.getStringProperty((Element) box.node, "display", false);
-        //u.p("display = " + display);
-        if (display.equals("list-item")) {
-            return true;
-        }
-        return false;
-    }
-
-    // === caching accessors =========
-
-    /**
-     * Gets the border attribute of the BoxLayout object
-     *
-     * @param c    PARAM
-     * @param box  PARAM
-     * @return     The border value
-     */
-
-
-    /**
-     * Gets the padding attribute of the BoxLayout object
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     * @return The padding value
-     */
-    public static Border getPadding(Context c, Box box) {
-        if (isBlockOrInlineElementBox(c, box)) {
-            if (box.padding == null) {
-                box.padding = c.css.getPaddingWidth(box.getRealElement());
-            }
-        }
-        return box.padding;
-    }
-
-
-    /**
-     * Gets the margin attribute of the BoxLayout object
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     * @return The margin value
-     */
-    public static Border getMargin(Context c, Box box) {
-        if (isBlockOrInlineElementBox(c, box)) {
-            if (box.margin == null) {
-                box.margin = c.css.getMarginWidth(box.getRealElement());
-            }
-        }
-        return box.margin;
-    }
-
-    /**
-     * Gets the backgroundColor attribute of the BoxLayout object
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     * @return The backgroundColor value
-     */
-    public static Color getBackgroundColor(Context c, Box box) {
-        if (isBlockOrInlineElementBox(c, box)) {
-            if (box.background_color == null) {
-                Object obj = c.css.getProperty(box.getRealElement(), "background-color", false);
-                //u.p("got : " + obj);
-                if (obj.toString().equals("transparent")) {
-                    box.background_color = new Color(0, 0, 0, 0);
-                    return box.background_color;
-                }
-                box.background_color = c.css.getBackgroundColor(box.getRealElement());
-            }
-        }
-        return box.background_color;
-    }
-
-
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
-    public static void setupRelative(Context c, Box box) {
-        String position = getPosition(c, box);
-        if (position.equals("relative")) {
-            if (c.css.hasProperty(box.node, "right", false)) {
-                box.left = -(int) c.css.getFloatProperty(box.node, "right", 0, false);
-            }
-            if (c.css.hasProperty(box.node, "bottom", false)) {
-                box.top = -(int) c.css.getFloatProperty(box.node, "bottom", 0, false);
-            }
-            if (c.css.hasProperty(box.node, "top", false)) {
-                box.top = (int) c.css.getFloatProperty(box.node, "top", 0, false);
-            }
-            if (c.css.hasProperty(box.node, "left", false)) {
-                box.left = (int) c.css.getFloatProperty(box.node, "left", 0, false);
-            }
-            box.relative = true;
-        }
-    }
-
-    public static boolean hasIdent(Context c, Element elem, String property, boolean inherit) {
-        CSSValue prop = c.css.getProperty(elem, property, inherit);
-        CSSPrimitiveValue pval = (CSSPrimitiveValue) prop;
-        //u.p("prim type = " + pval.getPrimitiveType());
-        if (pval.getPrimitiveType() == pval.CSS_IDENT) {
-            return true;
-        }
-        return false;
-    }
-
-    public static void setupAbsolute(Context c, Box box) {
-        String position = getPosition(c, box);
+    private static void setupAbsolute(Context c, Box box) {
+        String position = LayoutUtil.getPosition(c, box);
         if (position.equals("absolute")) {
             if (c.css.hasProperty(box.node, "right", false)) {
                 //u.p("prop = " + c.css.getProperty(box.getRealElement(),"right",false));
@@ -451,6 +444,95 @@ public class BoxLayout extends DefaultLayout {
         }
     }
 
+    /**
+     * Gets the listItem attribute of the BoxLayout object
+     *
+     * @param c   PARAM
+     * @param box PARAM
+     * @return The listItem value
+     */
+    public static boolean isListItem(Context c, Box box) {
+        String display = c.css.getStringProperty((Element) box.node, "display", false);
+        //u.p("display = " + display);
+        if (display.equals("list-item")) {
+            return true;
+        }
+        return false;
+    }
+
+    // === caching accessors =========
+    /**
+     * Gets the padding attribute of the BoxLayout object
+     *
+     * @param c   PARAM
+     * @param box PARAM
+     * @return The padding value
+     */
+    public static Border getPadding(Context c, Box box) {
+        if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
+            if (box.padding == null) {
+                box.padding = c.css.getPaddingWidth(box.getRealElement());
+            }
+        }
+        return box.padding;
+    }
+
+
+    /**
+     * Gets the margin attribute of the BoxLayout object
+     *
+     * @param c   PARAM
+     * @param box PARAM
+     * @return The margin value
+     */
+    public static Border getMargin(Context c, Box box) {
+        if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
+            if (box.margin == null) {
+                box.margin = c.css.getMarginWidth(box.getRealElement());
+            }
+        }
+        return box.margin;
+    }
+
+    public static Border getBorder(Context c, Box block) {
+        Border border = LayoutUtil.getBorder(c, block);
+        return border;
+    }
+    /**
+     * Gets the backgroundColor attribute of the BoxLayout object
+     *
+     * @param c   PARAM
+     * @param box PARAM
+     * @return The backgroundColor value
+     */
+    public static Color getBackgroundColor(Context c, Box box) {
+        if (LayoutUtil.isBlockOrInlineElementBox(c, box)) {
+            if (box.background_color == null) {
+                Object obj = c.css.getProperty(box.getRealElement(), "background-color", false);
+                //u.p("got : " + obj);
+                if (obj.toString().equals("transparent")) {
+                    box.background_color = new Color(0, 0, 0, 0);
+                    return box.background_color;
+                }
+                box.background_color = c.css.getBackgroundColor(box.getRealElement());
+            }
+        }
+        return box.background_color;
+    }
+
+
+
+    public static boolean hasIdent(Context c, Element elem, String property, boolean inherit) {
+        CSSValue prop = c.css.getProperty(elem, property, inherit);
+        CSSPrimitiveValue pval = (CSSPrimitiveValue) prop;
+        //u.p("prim type = " + pval.getPrimitiveType());
+        if (pval.getPrimitiveType() == pval.CSS_IDENT) {
+            return true;
+        }
+        return false;
+    }
+
+
     public Renderer getRenderer() {
         return new BoxRenderer();
     }
@@ -460,6 +542,16 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2004/11/18 02:37:25  joshy
+ * moved most of default layout into layout util or box layout
+ *
+ * start spliting parts of box layout into the block subpackage
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.21  2004/11/16 07:25:09  tobega
  * Renamed HTMLPanel to BasicPanel
  *

@@ -80,7 +80,7 @@ layout cleanups
     create preloadbox in layout interface
     
 browser cleanups
-    move actions out into their own code
+    //move actions out into their own code
 
 --crash w/ width = 50%
 --% width for absolute layout
