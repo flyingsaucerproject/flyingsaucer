@@ -97,7 +97,14 @@ public class InlineBoxing {
                 continue;
             }
             if (o instanceof StylePush) {
-                c.pushStyle(((StylePush) o).getStyle());
+                CascadedStyle style;
+                StylePush sp = (StylePush) o;
+                if (sp.getPseudoElement() != null) {
+                    style = c.getCss().getPseudoElementStyle(sp.getElement(), sp.getPseudoElement());
+                } else {
+                    style = c.getCss().getCascadedStyle(sp.getElement());
+                }
+                c.pushStyle(style);
                 if (pendingPushStyles == null) pendingPushStyles = new LinkedList();
                 pendingPushStyles.add((StylePush) o);
                 continue;
@@ -118,7 +125,8 @@ public class InlineBoxing {
             if (currentContent.getStyle() != null) c.pushStyle(currentContent.getStyle());
 
             // loop until no more text in this node
-            InlineBox new_inline;
+            InlineBox new_inline = null;
+            int start = 0;
             do {
                 new_inline = null;
                 if (currentContent instanceof AbsolutelyPositionedContent) {
@@ -155,7 +163,7 @@ public class InlineBoxing {
                 // break off the longest section that will fit
                 new_inline = calculateInline(c, currentContent, remaining_width, bounds.width,
                         prev_inline, prev_align_inline, isFirstLetter, box.firstLetterStyle, box.firstLineStyle,
-                        curr_line);
+                        curr_line, start);
                 // Uu.p("got back inline: " + new_inline);
 
                 // if this inline needs to be on a new line
@@ -174,15 +182,15 @@ public class InlineBoxing {
                     continue;
                 }
 
+                if (new_inline instanceof InlineTextBox) {
+                    if (((InlineTextBox) new_inline).getSubstring().equals("")) break;
+                    start = ((InlineTextBox) new_inline).end_index;
+                }
+
                 // save the new inline to the list
                 // Uu.p("adding inline child: " + new_inline);
                 //the inline might be discarded after this, if it is first whitespace on line.
                 curr_line.addInlineChild(c, new_inline);
-
-                // skipp empty inlines
-                if (new_inline instanceof InlineTextBox) {
-                    if (((InlineTextBox) new_inline).getSubstring().equals("")) break;
-                }
                 // Uu.p("current line = " + curr_line);
 
                 isFirstLetter = false;
@@ -225,7 +233,7 @@ public class InlineBoxing {
                 }
 
                 prev_inline = new_inline;
-            } while (new_inline != null && !new_inline.isEndOfParentContent());
+            } while (new_inline == null || !new_inline.isEndOfParentContent());
 
             if (currentContent.getStyle() != null) c.popStyle();
 
@@ -337,7 +345,7 @@ public class InlineBoxing {
      */
     private static InlineBox calculateInline(Context c, Content content, int avail, int max_width,
                                              InlineBox prev, InlineBox prev_align, boolean isFirstLetter, CascadedStyle firstLetterStyle, CascadedStyle firstLineStyle,
-                                             LineBox curr_line) {
+                                             LineBox curr_line, int start) {
 
         if (c.isFirstLine() && firstLineStyle != null) c.pushStyle(firstLineStyle);
 
@@ -360,11 +368,11 @@ public class InlineBoxing {
             TextContent textContent = (TextContent) content;
 
             // calculate the starting index
-            int start = 0;
+            /*int start = 0;
             // if this is another box from the same node as the previous one
             if (prev != null && prev.content == textContent) {
                 start = prev.end_index;
-            }
+            }*/
 
             //might need to transform it
             // get the text of the node
@@ -378,7 +386,8 @@ public class InlineBoxing {
             int end = text.length();
 
             InlineTextBox inline = new InlineTextBox();
-            inline.content = textContent;
+            inline.element = textContent.getElement();
+            inline.pseudoElement = textContent.getPseudoElement();
 
             //Here we must set MasterText, it might have been restyled
             inline.setMasterText(text);
@@ -455,6 +464,9 @@ public class InlineBoxing {
 * $Id$
 *
 * $Log$
+* Revision 1.5  2005/01/07 00:29:29  tobega
+* Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
+*
 * Revision 1.4  2005/01/06 09:49:38  tobega
 * More cleanup, aiming to remove Content reference in box
 *

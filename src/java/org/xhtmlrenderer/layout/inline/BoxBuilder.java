@@ -33,8 +33,8 @@ public class BoxBuilder {
         
         
         // cache the metrics
-        box.text_bounds = FontUtil.getTextBounds(c, box);
-        box.line_metrics = FontUtil.getLineMetrics(c, box);
+        //box.text_bounds = FontUtil.getTextBounds(c, box);
+        //box.line_metrics = FontUtil.getLineMetrics(c, box);
         
         
         
@@ -43,8 +43,8 @@ public class BoxBuilder {
         box.y = 0;
 
 
-        box.width = (int) box.text_bounds.getWidth();
-        box.height = FontUtil.lineHeight(c, box);
+        box.width = (int) FontUtil.getTextBounds(c, box).getWidth();
+        box.height = (int) FontUtil.getLineMetrics(c, box).getHeight();
 
         // =========== setup text decorations
         /*leave it to rendering if (TextDecoration.isDecoratable(box)) {

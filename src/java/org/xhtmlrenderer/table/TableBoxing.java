@@ -63,7 +63,7 @@ public class TableBoxing {
      */
     public static Box createBox(Context c, Content content) {
         TableBox table = new TableBox();
-        table.content = content;
+        table.element = content.getElement();
         return table;
     }
 
@@ -284,6 +284,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.3  2005/01/07 00:29:31  tobega
+   Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
+
    Revision 1.2  2005/01/02 12:22:21  tobega
    Cleaned out old layout code
 

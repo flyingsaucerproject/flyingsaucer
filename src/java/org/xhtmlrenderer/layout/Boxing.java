@@ -70,7 +70,7 @@ public class Boxing {
         } else {
             block = new BlockBox();
         }
-        block.content = content;
+        block.element = content.getElement();
         return layout(c, block, content);
     }
 
@@ -160,7 +160,7 @@ public class Boxing {
         // need to add bfc/unbfc code for absolutes
         Absolute.setupAbsolute(block, c);
         Fixed.setupFixed(c, block);
-        FloatUtil.setupFloat(c, block);
+        FloatUtil.setupFloat(c, block, content.getStyle());
         //TODO: rethink: setupForm(c, block);
 
         // remove the outtermost bfc
@@ -292,6 +292,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/01/07 00:29:28  tobega
+ * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
+ *
  * Revision 1.4  2005/01/06 00:58:41  tobega
  * Cleanup of code. Aiming to get rid of references to Content in boxes
  *

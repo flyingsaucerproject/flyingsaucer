@@ -77,14 +77,14 @@ public class ContentUtil {
             if (before != null && before.hasProperty(CSSName.CONTENT)) {
                 String content = ((CSSPrimitiveValue) before.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
                 if (!content.equals("")) {
-                    inlineList.add(new StylePush(before, parentElement));
+                    inlineList.add(new StylePush("before", parentElement));
                     c.pushStyle(before);
                     textContent = new StringBuffer();
                     textContent.append(content.replaceAll("\\\\A", "\n"));
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
+                    inlineList.add(new TextContent("before", parentElement, textContent.toString()));
                     textContent = null;
                     c.popStyle();
-                    inlineList.add(new StylePop(parentElement));
+                    inlineList.add(new StylePop("before", parentElement));
                 }
                 //do not reset style here, because if this element is empty, we will not have changed context
             }
@@ -190,7 +190,7 @@ public class ContentUtil {
             }
             Content inline = new InlineContent(elem, style);
             List childList = inline.getChildContent(c);
-            inlineList.add(new StylePush(style, elem));//this is already pushed to context
+            inlineList.add(new StylePush(null, elem));//this is already pushed to context
             //the child list represents the entire contents of an element,
             //therefore we need not concern ourselves with style-changes, as they will even out
             for (Iterator ci = childList.iterator(); ci.hasNext();) {
@@ -201,7 +201,7 @@ public class ContentUtil {
                     inlineList.add(o);
                 }
             }
-            inlineList.add(new StylePop(elem));//pop from c below
+            inlineList.add(new StylePop(null, elem));//pop from c below
             c.popStyle();
         }
 
@@ -219,12 +219,12 @@ public class ContentUtil {
                         inlineList.add(new TextContent(parentElement, textContent.toString()));
                         textContent = null;
                     }
-                    inlineList.add(new StylePush(after, parentElement));
+                    inlineList.add(new StylePush("after", parentElement));
                     textContent = new StringBuffer();
                     textContent.append(content.replaceAll("\\\\A", "\n"));
                     inlineList.add(new TextContent(parentElement, textContent.toString()));
                     textContent = null;
-                    inlineList.add(new StylePop(parentElement));
+                    inlineList.add(new StylePop("after", parentElement));
                 }
             }
         }
@@ -402,6 +402,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/01/07 00:29:27  tobega
+ * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
+ *
  * Revision 1.27  2005/01/02 12:22:15  tobega
  * Cleaned out old layout code
  *

@@ -1,6 +1,5 @@
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.util.Uu;
 
 /**
@@ -23,13 +22,14 @@ public class InlineTextBox extends InlineBox {
         //margin = box.margin;
         //padding = box.padding;
         //color = box.color;
-        newBox.content = box.content;
+        newBox.element = box.element;
         newBox.master = box.master;
         //newBox.sub_block = box.sub_block;
         //font = box.font;
         //newBox.underline = box.underline;
         //newBox.overline = box.overline;
         //newBox.strikethrough = box.strikethrough;
+        newBox.pseudoElement = box.pseudoElement;
         return newBox;
     }
 
@@ -57,11 +57,11 @@ public class InlineTextBox extends InlineBox {
             }
             return getMasterText().substring(start_index, end_index);
         } else {
-            if (content instanceof TextContent) {
-                throw new RuntimeException("No master text set!");
-                //XRLog.render(Level.WARNING, "No master text set!");
-            }
-            return "";
+            //if (content instanceof TextContent) {
+            throw new RuntimeException("No master text set!");
+            //XRLog.render(Level.WARNING, "No master text set!");
+            //}
+            //return "";
         }
 
     }
@@ -89,4 +89,6 @@ public class InlineTextBox extends InlineBox {
     }
 
     public String whitespace = "normal";
+
+    public String pseudoElement;
 }

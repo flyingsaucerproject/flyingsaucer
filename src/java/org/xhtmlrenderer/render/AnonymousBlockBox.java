@@ -37,7 +37,7 @@ public class AnonymousBlockBox extends BlockBox {
     public AnonymousBlockBox(Content content) {
 
         super();
-        this.content = content;
+        this.element = content.getElement();
 
     }
 
@@ -78,6 +78,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/01/07 00:29:29  tobega
+ * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
+ *
  * Revision 1.10  2005/01/05 01:10:15  tobega
  * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
  *

@@ -1,8 +1,8 @@
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.layout.content.TextContent;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineTextBox;
 import org.xhtmlrenderer.swing.BasicPanel;
 
 import java.awt.event.MouseEvent;
@@ -92,8 +92,7 @@ public class SelectionMouseListener implements MouseListener, MouseMotionListene
                 return;
             }
             // if box is text node then start selection
-            if ((box.content != null &&
-                    box.content instanceof TextContent)) {
+            if ((box instanceof InlineTextBox)) {
                 int x = panel.findBoxX(e.getX(), e.getY());
                 panel.getContext().setSelectionEnd(box, x);
                 panel.repaint();

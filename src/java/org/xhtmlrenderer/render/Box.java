@@ -19,12 +19,12 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.LayoutUtil;
-import org.xhtmlrenderer.layout.content.Content;
 
 import javax.swing.*;
 import java.awt.*;
@@ -83,7 +83,7 @@ public class Box {
         this.blockFormattingContext = blockFormattingContext;
     }
 
-    public Content content;
+    public Element element;
 
     public JComponent component = null;
 
@@ -392,7 +392,7 @@ public class Box {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Box: ");
-        if (content == null) {
+        /*if (content == null) {
             sb.append(" null content, ");
         } else {
             String nm = content.getClass().getName();
@@ -402,7 +402,7 @@ public class Box {
             if (content.getElement() != null) {
                 sb.append(content.getElement().getNodeName());
             }
-        }
+        } */
         sb.append(" (" + x + "," + y + ")->(" + width + " x " + height + ")");
         // CLN: (PWW 13/08/04)
         //sb.append(" color: " + color + " background-color: " + background_color + " ");
@@ -649,6 +649,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2005/01/07 00:29:29  tobega
+ * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
+ *
  * Revision 1.37  2005/01/05 23:15:09  tobega
  * Got rid of some redundant code for hover-styling
  *

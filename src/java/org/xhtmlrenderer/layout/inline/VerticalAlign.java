@@ -3,12 +3,10 @@ package org.xhtmlrenderer.layout.inline;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
-import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 
-import java.awt.*;
 import java.awt.font.LineMetrics;
 
 public class VerticalAlign {
@@ -43,8 +41,7 @@ public class VerticalAlign {
         box.vset = true;
 
         if (vertical_align.equals("baseline")) {
-            Font font = FontUtil.getFont(c);
-            box.y += FontUtil.getDescent(c, box, font);
+            box.y += FontUtil.getLineMetrics(c, box).getDescent();
         }
         
         // works okay i think
@@ -104,7 +101,7 @@ public class VerticalAlign {
             if (child.floated) {
                 continue;
             }
-            if (child.content instanceof AbsolutelyPositionedContent) {
+            if (child.absolute) {
                 // Uu.p("inline = " + inline);
                 continue;
             }
@@ -139,7 +136,7 @@ public class VerticalAlign {
         for (int i = 0; i < box.getChildCount(); i++) {
             Box child = box.getChild(i);
             if (child.floated ||
-                    child.content instanceof AbsolutelyPositionedContent) {
+                    child.absolute) {
                 // Uu.p("skipping: " + inline);
                 // Uu.p("adjusting floated inline:");
                 // Uu.p("inline = " + inline);

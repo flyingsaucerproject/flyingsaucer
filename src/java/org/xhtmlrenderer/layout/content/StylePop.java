@@ -26,13 +26,19 @@ import org.w3c.dom.Element;
  * A marker for returning to the previous style
  */
 public class StylePop {
+    private String _pseudo;
     private Element element;//needed for dynamic stuff
 
-    StylePop(Element e) {
+    StylePop(String pseudo, Element e) {
+        _pseudo = pseudo;
         element = e;
     }
 
     public Element getElement() {
         return element;
+    }
+
+    public String getPseudoElement() {
+        return _pseudo;
     }
 }

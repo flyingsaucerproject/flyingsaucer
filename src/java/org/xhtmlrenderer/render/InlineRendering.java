@@ -23,7 +23,6 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
-import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
 import org.xhtmlrenderer.layout.content.StylePop;
 import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.util.GraphicsUtil;
@@ -86,7 +85,7 @@ public class InlineRendering {
         // for each inline box
         for (int j = 0; j < line.getChildCount(); j++) {
             Box child = line.getChild(j);
-            if (child.content instanceof AbsolutelyPositionedContent) {
+            if (child.absolute) {
                 paintAbsolute(c, child);
                 //debugInlines(c, child, lx, ly);
                 continue;

@@ -74,14 +74,14 @@ public class FontUtil {
         return val;
     }
 
-    public static int lineHeight(Context c, InlineBox box) {
+    /*public static int lineHeight(Context c, InlineBox box) {
         if (box.line_metrics != null) {
             return (int) box.line_metrics.getHeight();
         } else {
             CalculatedStyle style = c.getCurrentStyle();
             return lineHeight(c, style);
         }
-    }
+    }*/
 
     /**
      * PWW ADDED 14/08/04 Should be used to resolve ex properly
@@ -135,20 +135,23 @@ public class FontUtil {
                 getFont(c, style), box.getSubstring());
     }
 
-    public static float getDescent(Context c, InlineBox box, Font font) {
+    /*public static float getDescent(Context c, InlineBox box, Font font) {
         if (box.line_metrics != null) {
             return box.line_metrics.getDescent();
         } else {
             FontMetrics fm = c.getGraphics().getFontMetrics(font);
             return fm.getDescent();
         }
-    }
+    }*/
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/01/07 00:29:29  tobega
+ * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
+ *
  * Revision 1.24  2005/01/06 09:49:37  tobega
  * More cleanup, aiming to remove Content reference in box
  *

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
@@ -47,8 +48,10 @@ public class BoxRendering {
 
         //set the current style
         //CascadedStyle hoverStyle = null;
-        if (block.content.getStyle() != null) {
-            c.pushStyle(c.getCss().getCascadedStyle(block.content.getElement()));
+        CascadedStyle style = null;
+        if (block.element != null) style = c.getCss().getCascadedStyle(block.element);
+        if (style != null) {
+            c.pushStyle(style);
             /*if (block.hover) {
                 hoverStyle = c.getCss().getPseudoElementStyle(block.content.getElement(), "hover");
                 if (hoverStyle != null) c.pushStyle(hoverStyle);
@@ -69,7 +72,7 @@ public class BoxRendering {
         }
 
         //Uu.p("here it's : " + c.getListCounter());
-        if (ContentUtil.isListItem(box.content.getStyle())) {
+        if (ContentUtil.isListItem(style)) {
             paintListItem(c, box);
         }
 
@@ -78,7 +81,7 @@ public class BoxRendering {
         c.setExtents(oldBounds);
 
         //reset style
-        if (block.content.getStyle() != null) {
+        if (style != null) {
             //if (hoverStyle != null) c.popStyle();
             c.popStyle();
         }

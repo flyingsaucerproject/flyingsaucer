@@ -1,7 +1,6 @@
 package org.xhtmlrenderer.swing;
 
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 
 import javax.swing.event.MouseInputAdapter;
@@ -40,11 +39,11 @@ public class HoverListener extends MouseInputAdapter {
         if (ib == null)
             panel.hovered_element = null;
         else
-            panel.hovered_element = ib.content.getElement();
+            panel.hovered_element = ib.element;
 
         // if moved out of the old block then unstyle it
         if (prev != null) {
-            boolean restyled = panel.getContext().getCss().isHoverStyled(prev.content.getElement());
+            boolean restyled = panel.getContext().getCss().isHoverStyled(prev.element);
             if (restyled) {
                 //prev.restyle = true;//notify rendering to restyle the box
                 //prev.hover = false;
@@ -66,17 +65,17 @@ public class HoverListener extends MouseInputAdapter {
             // Uu.p("real element = " + ib.getRealElement());
             // skip it if it's just a text child of a block. we should
             // do the block instead
-            if (ib.isInlineElement() || !(ib instanceof InlineBox)) {
-                boolean restyled = panel.getContext().getCss().isHoverStyled(ib.content.getElement());
-                //Uu.p("was styled = " + ib);
+            //if (ib.isInlineElement() || !(ib instanceof InlineBox)) {
+            boolean restyled = panel.getContext().getCss().isHoverStyled(ib.element);
+            //Uu.p("was styled = " + ib);
 
-                // if the block has a hover style then restyle it
-                if (restyled) {
-                    //ib.restyle = true;
-                    //ib.hover = true;
-                    needRepaint = true;
-                }
+            // if the block has a hover style then restyle it
+            if (restyled) {
+                //ib.restyle = true;
+                //ib.hover = true;
+                needRepaint = true;
             }
+            //}
         }
         if (needRepaint) panel.repaint();
     }

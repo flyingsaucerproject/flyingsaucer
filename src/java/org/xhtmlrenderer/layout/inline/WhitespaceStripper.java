@@ -2,6 +2,7 @@ package org.xhtmlrenderer.layout.inline;
 
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.FloatedBlockContent;
@@ -71,7 +72,14 @@ public class WhitespaceStripper {
             Object o = i.next();
             if (o instanceof StylePush) {
                 pendingStylePushes.add(o);
-                c.pushStyle(((StylePush) o).getStyle());
+                CascadedStyle style;
+                StylePush sp = (StylePush) o;
+                if (sp.getPseudoElement() != null) {
+                    style = c.getCss().getPseudoElementStyle(sp.getElement(), sp.getPseudoElement());
+                } else {
+                    style = c.getCss().getCascadedStyle(sp.getElement());
+                }
+                c.pushStyle(style);
                 continue;
             }
             if (o instanceof TextContent) {

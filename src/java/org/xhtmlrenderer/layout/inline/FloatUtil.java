@@ -41,7 +41,7 @@ public class FloatUtil {
 
         //BlockBox block = (BlockBox)layout.layout( c, (Element)node );
         InlineBlockBox inline_block = new InlineBlockBox();
-        inline_block.content = content;
+        inline_block.element = content.getElement();
         Boxing.layout(c, inline_block, content);
 
         //HACK: tobe 2004-12-22 - guessing here

@@ -28,8 +28,8 @@ public class FloatUtil {
         //}
     }
 
-    public static void setupFloat(Context c, Box box) {
-        CascadedStyle style = box.content.getStyle();
+    public static void setupFloat(Context c, Box box, CascadedStyle style) {
+        //CascadedStyle style = c.getCss().getCascadedStyle(box.element);
         if (ContentUtil.isFloated(style)) {
             // Uu.p("==== setup float ====");
             String float_val = style.propertyByName(CSSName.FLOAT).getValue().getCssText();

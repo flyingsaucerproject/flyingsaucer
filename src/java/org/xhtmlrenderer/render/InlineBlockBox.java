@@ -35,7 +35,7 @@ public class InlineBlockBox extends InlineBox {
         //margin = box.margin;
         //padding = box.padding;
         //color = box.color;
-        newBox.content = box.content;
+        newBox.element = box.element;
         newBox.sub_block = box.sub_block;
         //font = box.font;
         //newBox.underline = box.underline;

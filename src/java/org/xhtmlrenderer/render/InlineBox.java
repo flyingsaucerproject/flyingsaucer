@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.font.LineMetrics;
-import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 
@@ -186,8 +184,8 @@ public abstract class InlineBox extends Box {
     }*/
 
 
-    public LineMetrics line_metrics;
-    public Rectangle2D text_bounds;
+    //public LineMetrics line_metrics;
+    //public Rectangle2D text_bounds;
 
     //private CalculatedStyle style;
 
@@ -201,11 +199,7 @@ public abstract class InlineBox extends Box {
 //    }
 // --Commented out by Inspection STOP (2005-01-05 01:07)
 
-    public boolean isInlineElement() {
-        /* just to get it to compile, for now
-        if(this.getRealElement() == this.getParent().getParent().getRealElement()) {
-            return false;
-        }*/
+    /*public boolean isInlineElement() {
         if (this.content == null) return false;
         if (this.getParent() == null) return true;
         if (this.getParent().getParent() == null) return true;
@@ -214,7 +208,7 @@ public abstract class InlineBox extends Box {
             return false;
         }
         return true;
-    }
+    }*/
 
 
 }
@@ -223,6 +217,9 @@ public abstract class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2005/01/07 00:29:30  tobega
+ * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
+ *
  * Revision 1.31  2005/01/06 21:54:32  tobega
  * Text decoration now handled in rendering only
  *

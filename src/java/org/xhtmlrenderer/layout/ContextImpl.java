@@ -417,18 +417,15 @@ public class ContextImpl implements Context {
             return;//TODO: why?
         }
         if (margin == null) {
-            XRLog.render(Level.WARNING, "translate insets: null margin on box of type " + box.getClass().getName() +
-                    " content " + (box.content == null ? "null" : box.content.getClass().getName()));
+            XRLog.render(Level.WARNING, "translate insets: null margin on box of type " + box.getClass().getName());
             return;
         }
         if (border == null) {
-            XRLog.render(Level.WARNING, "translate insets: null border on box of type " + box.getClass().getName() +
-                    " content " + (box.content == null ? "null" : box.content.getClass().getName()));
+            XRLog.render(Level.WARNING, "translate insets: null border on box of type " + box.getClass().getName());
             return;
         }
         if (padding == null) {
-            XRLog.render(Level.WARNING, "translate insets: null padding on box of type " + box.getClass().getName() +
-                    " content " + (box.content == null ? "null" : box.content.getClass().getName()));
+            XRLog.render(Level.WARNING, "translate insets: null padding on box of type " + box.getClass().getName());
             return;
         }
         translate(margin.left + border.left + padding.left,
@@ -445,18 +442,15 @@ public class ContextImpl implements Context {
         Border margin = getCurrentStyle().getMarginWidth();
         Border padding = getCurrentStyle().getPaddingWidth();
         if (margin == null) {
-            XRLog.render(Level.WARNING, "translate insets: null margin on box of type " + box.getClass().getName() +
-                    " content " + (box.content == null ? "null" : box.content.getClass().getName()));
+            XRLog.render(Level.WARNING, "translate insets: null margin on box of type " + box.getClass().getName());
             return;
         }
         if (border == null) {
-            XRLog.render(Level.WARNING, "translate insets: null border on box of type " + box.getClass().getName() +
-                    " content " + (box.content == null ? "null" : box.content.getClass().getName()));
+            XRLog.render(Level.WARNING, "translate insets: null border on box of type " + box.getClass().getName());
             return;
         }
         if (padding == null) {
-            XRLog.render(Level.WARNING, "translate insets: null padding on box of type " + box.getClass().getName() +
-                    " content " + (box.content == null ? "null" : box.content.getClass().getName()));
+            XRLog.render(Level.WARNING, "translate insets: null padding on box of type " + box.getClass().getName());
             return;
         }
         translate(-(margin.left + border.left + padding.left),

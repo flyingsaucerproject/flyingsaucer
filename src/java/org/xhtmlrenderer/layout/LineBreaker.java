@@ -66,7 +66,7 @@ public class LineBreaker {
          */
         // create new inline (null text is safe!)
         InlineBlockBox box = new InlineBlockBox();
-        box.content = content;
+        box.element = content.getElement();
         //box.width = bounds.width;
         //box.height = bounds.height;
         CalculatedStyle style = c.getCurrentStyle();
@@ -100,7 +100,7 @@ public class LineBreaker {
         box.break_after = false;
 
         // if it won't fit on this line, then put it on the next one
-        if (box.width > avail) {
+        if (box.width > avail && prev_align != null && !prev_align.break_after) {
             box.break_before = true;
             box.x = 0;
         }
@@ -116,6 +116,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.51  2005/01/07 00:29:29  tobega
+ * Removed Content reference from Box (mainly to reduce memory footprint). In the process stumbled over and cleaned up some messy stuff.
+ *
  * Revision 1.50  2005/01/06 21:54:32  tobega
  * Text decoration now handled in rendering only
  *

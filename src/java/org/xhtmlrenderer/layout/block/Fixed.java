@@ -1,16 +1,16 @@
 package org.xhtmlrenderer.layout.block;
 
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.render.Box;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 
 public class Fixed {
     public static void positionFixedChild(Context c, Box box) {
-        if (LayoutUtil.isFixed(box.content.getStyle())) {
+        if (LayoutUtil.isFixed(c.getCss().getCascadedStyle(box.element))) {
             Point origin = c.getOriginOffset();
             box.x = 0;
             box.y = 0;
@@ -20,7 +20,7 @@ public class Fixed {
     }
 
     public static void setupFixed(Context c, Box box) {
-        if (LayoutUtil.isFixed(box.content.getStyle())) {
+        if (c.getCurrentStyle().getStringProperty(CSSName.POSITION).equals("fixed")) {
             box.fixed = true;
             box.setChildrenExceedBounds(true);
             Rectangle rect = c.getFixedRectangle();

@@ -20,22 +20,21 @@
 package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 
 /**
  * A marker for changing the style of the first letter
  */
 public class StylePush {
-    private CascadedStyle _style;
+    private String _pseudo;
     private Element _elem;//needed for dynamic stuff
 
-    StylePush(CascadedStyle style, Element e) {
-        _style = style;
+    StylePush(String pseudo, Element e) {
+        _pseudo = pseudo;
         _elem = e;
     }
 
-    public CascadedStyle getStyle() {
-        return _style;
+    public String getPseudoElement() {
+        return _pseudo;
     }
 
     public Element getElement() {

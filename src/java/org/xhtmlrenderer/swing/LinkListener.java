@@ -41,7 +41,7 @@ public class LinkListener extends MouseInputAdapter {
         Box box = panel.findBox(evt.getX(), evt.getY());
         if (box == null) return;
 
-        Element elem = box.content.getElement();
+        Element elem = box.element;
         if (elem == null) return;
 
         if (panel.getContext().getAttributeResolver().isLink(elem)) {
@@ -64,7 +64,7 @@ public class LinkListener extends MouseInputAdapter {
         //box.clicked = true;
         panel.repaint();
         try {
-            Element elem = box.content.getElement();
+            Element elem = box.element;
             if (elem.hasAttribute("href")) {
                 panel.setDocumentRelative(elem.getAttribute("href"));
             }
@@ -80,15 +80,11 @@ public class LinkListener extends MouseInputAdapter {
             return;
         }
 
-        if (box.content == null) {
+        if (box.element == null) {
             return;
         }
 
-        if (box.content.getElement() == null) {
-            return;
-        }
-
-        if (panel.getContext().getAttributeResolver().isLink(box.content.getElement())) {
+        if (panel.getContext().getAttributeResolver().isLink(box.element)) {
             if (!panel.getCursor().equals(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))) {
                 panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             }

@@ -33,12 +33,23 @@ import java.util.List;
  */
 public class TextContent implements Content {
     private Element _elem;//will need this for handling dynamic content!
+    private String _pseudo;
     private String _text;
     private boolean removableWhitespace = false;
 
     TextContent(Element e, String text) {
         _elem = e;
         _text = text;
+    }
+
+    TextContent(String pseudoElement, Element e, String text) {
+        _pseudo = pseudoElement;
+        _elem = e;
+        _text = text;
+    }
+
+    public String getPseudoElement() {
+        return _pseudo;
     }
 
     public Element getElement() {
