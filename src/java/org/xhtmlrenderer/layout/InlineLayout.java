@@ -29,6 +29,8 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlinePainter;
 import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.render.InlineRenderer;
+import org.xhtmlrenderer.render.Renderer;
 import org.xhtmlrenderer.util.InfiniteLoopError;
 import org.xhtmlrenderer.util.u;
 /**
@@ -266,45 +268,8 @@ public class InlineLayout extends BoxLayout {
         //u.p("debug counter = " + debug_counter);
         return block;
     }
-    /**
-    * Description of the Method
-    *
-    * @param c    PARAM
-    * @param box  PARAM
-    */
-    public void paintComponent( Context c, Box box ) {
-        //u.p("InlineLayout.paintComponent() " + box);
-        //u.dump_stack();
-        if ( box.isAnonymous() ) {
-            //u.p("InlineLayout.paintComponent() : " + box);
-            InlinePainter.paintInlineContext( c, box );
-            return;
-        }
-        if ( this.isBlockLayout( box.getElement(), c ) ) {
-            //u.p("InlineLayout.paintComponent is block context: " + box);
-            super.paintComponent( c, box );
-            return;
-        }
-        //u.p("InlineLayout.paintComponent()" + box);
-        InlinePainter.paintInlineContext( c, box );
-    }
-    /**
-    * Description of the Method
-    *
-    * @param c    PARAM
-    * @param box  PARAM
-    */
-    public void paintChildren( Context c, Box box ) {
-        //u.p("InlineLayout.paintChildren() " + box);
-        if ( box.isAnonymous() ) {
-            //u.p("it's anonymous so no children");
-            return;
-        }
-        if ( this.isBlockLayout( box.getElement(), c ) ) {
-            //u.p("is block. doing super");
-            super.paintChildren( c, box );
-        }
-    }
+
+
     /**
     * Description of the Method
     *
@@ -324,9 +289,10 @@ public class InlineLayout extends BoxLayout {
         }
         return remaining_width;
      }
-// get longest inline possible
+
+     
     /**
-    * Description of the Method
+    * Get the longest inline possible.
     *
     * @param c                 PARAM
     * @param node              PARAM
@@ -448,11 +414,25 @@ public class InlineLayout extends BoxLayout {
         //u.p("final saved line = " + line_to_save);
         //u.p("block = " + block.hashCode());
     }
+    
+    
+    public Renderer getRenderer() {
+        return new InlineRenderer();
+    }
+
 }
 /*
 * $Id$
 *
 * $Log$
+* Revision 1.5  2004/10/27 13:39:56  joshy
+* moved more rendering code out of the layouts
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.4  2004/10/27 02:00:19  joshy
 * removed double spacing from inline layout
 *

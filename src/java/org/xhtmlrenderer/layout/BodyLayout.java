@@ -22,6 +22,8 @@ package org.xhtmlrenderer.layout;
 import java.awt.Point;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.BodyRenderer;
+import org.xhtmlrenderer.render.Renderer;
 
 
 /**
@@ -49,19 +51,9 @@ public class BodyLayout extends BoxLayout {
         return super.layout( c, elem );
     }
 
-
-    /**
-     * Description of the Method
-     *
-     * @param c    PARAM
-     * @param box  PARAM
-     */
-    public void paintBackground( Context c, Box box ) {
-
-        c.getGraphics().fillRect( 0, 0, c.canvas.getWidth(), c.canvas.getHeight() );
-
-        super.paintBackground( c, box );
-
+    
+    public Renderer getRenderer() {
+        return new BodyRenderer();
     }
 
 }
@@ -70,6 +62,14 @@ public class BodyLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/10/27 13:39:56  joshy
+ * moved more rendering code out of the layouts
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:46:46  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

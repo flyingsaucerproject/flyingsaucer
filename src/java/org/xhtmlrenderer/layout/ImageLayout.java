@@ -27,6 +27,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.render.*;
 
 /**
  * Description of the Class
@@ -155,81 +156,6 @@ public class ImageLayout extends BoxLayout {
      * c.setExtents(oldExtents);
      * }
      */
-    /**
-     * Description of the Method
-     *
-     * @param c    PARAM
-     * @param box  PARAM
-     */
-    public void paint( Context c, Box box ) {
-
-        //u.p("box = " + box);
-
-        Box block = box;
-
-        // set the contents size
-
-        //Rectangle contents = layout(c,elem);
-
-        // get the border and padding
-
-        Border border = getBorder( c, block );
-
-        Border padding = getPadding( c, block );
-
-        Border margin = getMargin( c, block );
-
-        // calculate the insets
-
-        int top_inset = margin.top + border.top + padding.top;
-
-        int left_inset = margin.left + border.left + padding.left;
-
-        // shrink the bounds to be based on the contents
-
-        c.getExtents().width = block.width;
-
-        // do all of the painting
-
-        paintBackground( c, block );
-
-        //u.p("insets = " + left_inset  + " " + top_inset);
-
-        c.getGraphics().translate( left_inset, top_inset );
-
-        //c.getExtents().translate(left_inset,top_inset);
-
-        paintComponent( c, block );
-
-        c.getGraphics().translate( -left_inset, -top_inset );
-
-        //c.getExtents().translate(-left_inset,-top_inset);
-
-        paintBorder( c, block );
-
-        // move the origin down now that we are done painting (should move this later)
-
-        c.getExtents().y = c.getExtents().y + block.height;
-
-    }
-
-
-    /**
-     * Description of the Method
-     *
-     * @param c    PARAM
-     * @param box  PARAM
-     */
-    public void paintComponent( Context c, Box box ) {
-
-        Image img = getImage( c, box.node );
-
-        if ( img != null ) {
-
-            c.getGraphics().drawImage( img, box.x, box.y, null );
-
-        }
-    }
 
 
     /**
@@ -239,7 +165,7 @@ public class ImageLayout extends BoxLayout {
      * @param node  PARAM
      * @return      The image value
      */
-    private Image getImage( Context c, Node node ) {
+    protected Image getImage( Context c, Node node ) {
 
         if ( node.getNodeType() != node.ELEMENT_NODE ) {
 
@@ -262,6 +188,10 @@ public class ImageLayout extends BoxLayout {
 
         return img;
     }
+    
+    public Renderer getRenderer() {
+        return new ImageRenderer();
+    }
 
     /*
      * public void paintComponent(Context c, Element elem, InlineBox box) {
@@ -275,6 +205,14 @@ public class ImageLayout extends BoxLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/10/27 13:39:56  joshy
+ * moved more rendering code out of the layouts
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2004/10/23 13:46:47  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).

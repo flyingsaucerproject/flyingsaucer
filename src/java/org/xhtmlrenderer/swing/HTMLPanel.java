@@ -824,7 +824,7 @@ class LayoutThread implements Runnable {
             if(panel.body_box != null) {
                 //u.p("really painting");
                 try {
-                    panel.layout.paint( panel.c, panel.body_box );
+                    panel.layout.getRenderer().paint( panel.c, panel.body_box );
                 } catch (Throwable thr) {
                     u.p("current thread = " + Thread.currentThread());
                     u.p(thr);
@@ -846,6 +846,14 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/10/27 13:39:57  joshy
+ * moved more rendering code out of the layouts
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.13  2004/10/27 13:17:02  joshy
  * beginning to split out rendering code
  * Issue number:
