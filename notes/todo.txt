@@ -1,3 +1,17 @@
+plans for rendering
+
+further separate the rendering from the layout
+    move inline paint to rendering
+
+make render only do the viewport
+    calculate if box entirely outside of the current cliprect.
+    if so then don't paint the children.
+    
+make boolean to turn off layout threading
+
+--------------------
+
+
 plans for threading
 
 need to move layout to it's own thread
@@ -26,7 +40,7 @@ last bit for R4
 //add javadocs online
 --remove java.net stuff from javadocs pages
 //build new news release
-link to RSS feed
+/link to RSS feed
 //update src, binary, and java webstart links
 //create sub document links on FAQ page
 //update demo xhtml files w/ new information
