@@ -21,18 +21,18 @@
 
 package net.homelinux.tobe.xhtmlrenderer.stylerImpl;
 
-import com.pdoubleya.xhtmlrenderer.css.constants.ValueConstants;
+import org.xhtmlrenderer.css.constants.ValueConstants;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.*;
 import java.util.logging.*;
 
-import org.joshy.html.Border;
-import org.joshy.html.css.RuleNormalizer;
+import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.RuleNormalizer;
 
-import com.pdoubleya.xhtmlrenderer.css.constants.CSSName;
-import com.pdoubleya.xhtmlrenderer.css.value.BorderColor;
-import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.value.BorderColor;
+import org.xhtmlrenderer.util.LoggerUtil;
 
 import net.homelinux.tobe.xhtmlrenderer.PropertyDeclaration;
 
@@ -162,7 +162,7 @@ public class CalculatedStyle {
                     throw new RuntimeException("Property '" + propName + "' has no initial values assigned.");
                 }
                 initialValue = RuleNormalizer.convertIdent(propName, initialValue);
-                com.pdoubleya.xhtmlrenderer.css.impl.DefaultCSSPrimitiveValue cssval = new com.pdoubleya.xhtmlrenderer.css.impl.DefaultCSSPrimitiveValue(initialValue);
+                org.xhtmlrenderer.css.impl.DefaultCSSPrimitiveValue cssval = new org.xhtmlrenderer.css.impl.DefaultCSSPrimitiveValue(initialValue);
                 //a default value should always be absolute?
                 DerivedValue xrVal = new DerivedValue(cssval, _parent);
                 prop = new DerivedProperty(propName, xrVal);

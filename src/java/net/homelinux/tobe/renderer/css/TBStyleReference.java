@@ -39,10 +39,11 @@ import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
 
-import org.joshy.html.Border;
-import org.joshy.html.Context;
+import org.xhtmlrenderer.css.Border;
+//import org.joshy.html.Context;
 //import org.joshy.html.css.JStyle;
-import org.joshy.html.css.StyleReference;
+import org.xhtmlrenderer.css.StyleReference;
+import org.xhtmlrenderer.layout.*;
 
 import net.homelinux.tobe.xhtmlrenderer.stylerImpl.DerivedProperty;
 
@@ -51,8 +52,8 @@ import net.homelinux.tobe.xhtmlrenderer.Stylesheet;
 import net.homelinux.tobe.renderer.UserAgentCallback;
 import net.homelinux.tobe.renderer.Document;
 
-import com.pdoubleya.xhtmlrenderer.css.value.BorderColor;
-import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
+import org.xhtmlrenderer.css.value.BorderColor;
+import org.xhtmlrenderer.util.LoggerUtil;
 
 /** Does not really implement StyleReference, but anyway */
  public class TBStyleReference implements StyleReference {
@@ -290,7 +291,7 @@ System.err.println("No of stylesheets = "+_stylesheets.size());
      * @param elem  The DOM element to find the property for.
      * @return      The border-color Color property
      */
-    public BorderColor getBorderColor( Element elem ) {
+    public BorderColor getBorderColor(Element elem) {
         return _styler.getCalculatedStyle(elem).getBorderColor( );
     }
 
@@ -301,7 +302,7 @@ System.err.println("No of stylesheets = "+_stylesheets.size());
      * @param elem  The DOM element to find the property for.
      * @return      The Border property (for widths)
      */
-    public Border getBorderWidth( Element elem ) {
+    public Border getBorderWidth(Element elem) {
         return _styler.getCalculatedStyle(elem).getBorderWidth( );
     }
 
@@ -449,7 +450,7 @@ System.err.println("No of stylesheets = "+_stylesheets.size());
      * @param elem  The DOM element to find the property for.
      * @return      The margin property as a Border (for widths)
      */
-    public Border getMarginWidth( Element elem ) {
+    public Border getMarginWidth(Element elem) {
         return _styler.getCalculatedStyle(elem).getMarginWidth( );
     }
 
@@ -460,7 +461,7 @@ System.err.println("No of stylesheets = "+_stylesheets.size());
      * @param elem  The DOM element to find the property for.
      * @return      The padding property as a Border (for widths)
      */
-    public Border getPaddingWidth( Element elem ) {
+    public Border getPaddingWidth(Element elem) {
         sDbgLogger.finest( "getPaddingWidth() on Element: " + elem.hashCode() );
         return _styler.getCalculatedStyle(elem).getPaddingWidth( );
     }

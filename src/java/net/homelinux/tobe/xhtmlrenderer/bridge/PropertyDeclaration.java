@@ -21,7 +21,7 @@
 
 package net.homelinux.tobe.xhtmlrenderer.bridge;
 
-import com.pdoubleya.xhtmlrenderer.css.impl.XRPropertyImpl;
+import org.xhtmlrenderer.css.impl.XRPropertyImpl;
 
 /**
  *
@@ -29,12 +29,12 @@ import com.pdoubleya.xhtmlrenderer.css.impl.XRPropertyImpl;
  */
 public class PropertyDeclaration implements net.homelinux.tobe.xhtmlrenderer.PropertyDeclaration {
     
-    com.pdoubleya.xhtmlrenderer.css.XRProperty base;
+    org.xhtmlrenderer.css.XRProperty base;
     boolean important;
     int origin;
     
     /** Creates a new instance of PropertyDeclaration */
-    public PropertyDeclaration(com.pdoubleya.xhtmlrenderer.css.XRProperty p, boolean imp, int orig) {
+    public PropertyDeclaration(org.xhtmlrenderer.css.XRProperty p, boolean imp, int orig) {
         base = p;
         important = imp;
         origin = orig;

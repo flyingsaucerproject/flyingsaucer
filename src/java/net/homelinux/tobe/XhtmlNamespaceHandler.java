@@ -26,8 +26,6 @@ import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.xpath.XPathAPI;
 
-import org.joshy.html.css.DefaultCSSMarker;
-
 /**
  * Handles xhtml documents
  *
@@ -145,11 +143,13 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
         java.io.Reader reader = null;
         try {
 
-            Object marker = new DefaultCSSMarker();
+            //Object marker = new DefaultCSSMarker();
             
-            if(marker.getClass().getResourceAsStream("default.css") != null) {
+            if(this.getClass().getResourceAsStream("default.css") != null) {
 
-            reader = new java.io.InputStreamReader(marker.getClass().getResource("default.css").openStream());
+            reader = new java.io.InputStreamReader(this.getClass().getResource("default.css").openStream());
+            } else {
+                System.err.println("Could not find css for "+this.getClass().getName());
             }
 
         } catch (Exception ex) {

@@ -33,7 +33,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
 import java.io.File;
-import org.joshy.html.box.Box;
+import org.xhtmlrenderer.render.Box;
 
 import net.homelinux.tobe.renderer.HTMLPanel;
 import net.homelinux.tobe.renderer.UserAgentCallback;
@@ -55,8 +55,6 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
         scroll.setVerticalScrollBarPolicy(scroll.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(scroll.HORIZONTAL_SCROLLBAR_ALWAYS);
         //scroll.setPreferredSize(new Dimension(text_width,text_width));
-        panel.setViewportComponent(scroll);
-        panel.setJScrollPane(scroll);
         panel.addMouseListener(new ClickMouseListener(panel));
 
         if(args.length > 0) {
@@ -85,29 +83,32 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
         mb.add(test);
         test.setMnemonic('T');
 
-        addFileLoadAction(test, "One Liner", "demos/one-line.xhtml");
-        addFileLoadAction(test, "Background Colors/Images", "demos/background.xhtml");
-        addFileLoadAction(test, "Borders", "demos/border.xhtml");
-        addFileLoadAction(test, "Box Sizing", "demos/box-sizing.xhtml");
-        addFileLoadAction(test, "Mixed Test (1)", "demos/content.xhtml");
-        addFileLoadAction(test, "Line Breaking", "demos/breaking.xhtml");
-        addFileLoadAction(test, "Headers", "demos/header.xhtml");
-        addFileLoadAction(test, "Inline Image", "demos/image.xhtml");
-        addFileLoadAction(test, "List ", "demos/list.xhtml");
-        addFileLoadAction(test, "Nesting", "demos/nested.xhtml");
-        addFileLoadAction(test, "General Styled Text", "demos/paragraph.xhtml");
-        addFileLoadAction(test, "CSS Selectors", "demos/selectors.xhtml");
-        addFileLoadAction(test, "Table", "demos/table.xhtml");
-        addFileLoadAction(test, "Text Alignment", "demos/text-alignment.xhtml");
-        addFileLoadAction(test, "Whitespace Handling", "demos/whitespace.xhtml");
-        addFileLoadAction(test, "iTunes Email", "demos/itunes/itunes1.xhtml");
-        addFileLoadAction(test, "Follow Links", "demos/link.xhtml");
-        addFileLoadAction(test, "Hamlet (slow!)", "demos/hamlet.xhtml");
-        addFileLoadAction(test, "extended", "demos/extended.xhtml");
-        addFileLoadAction(test, "XML-like", "demos/xml.xhtml");
-        addFileLoadAction(test, "XML", "demos/xml.xml");
+        String demoRootDir = "demos/browser/xhtml";
+        addFileLoadAction(test, "One Liner", demoRootDir + "/one-line.xhtml");
+        addFileLoadAction(test, "Background Colors/Images", demoRootDir + "/background.xhtml");
+        addFileLoadAction(test, "Borders", demoRootDir + "/border.xhtml");
+        addFileLoadAction(test, "Box Sizing", demoRootDir + "/box-sizing.xhtml");
+        addFileLoadAction(test, "Mixed Test (1)", demoRootDir + "/content.xhtml");
+        addFileLoadAction(test, "Line Breaking", demoRootDir + "/breaking.xhtml");
+        addFileLoadAction(test, "Headers", demoRootDir + "/header.xhtml");
+        addFileLoadAction(test, "Inline Image", demoRootDir + "/image.xhtml");
+        addFileLoadAction(test, "List ", demoRootDir + "/list.xhtml");
+        addFileLoadAction(test, "Nesting", demoRootDir + "/nested.xhtml");
+        addFileLoadAction(test, "General Styled Text", demoRootDir + "/paragraph.xhtml");
+        addFileLoadAction(test, "CSS Selectors", demoRootDir + "/selectors.xhtml");
+        addFileLoadAction(test, "Table", demoRootDir + "/table.xhtml");
+        addFileLoadAction(test, "Text Alignment", demoRootDir + "/text-alignment.xhtml");
+        addFileLoadAction(test, "Whitespace Handling", demoRootDir + "/whitespace.xhtml");
+        addFileLoadAction(test, "iTunes Email", demoRootDir + "/itunes/itunes1.xhtml");
+        addFileLoadAction(test, "Follow Links", demoRootDir + "/link.xhtml");
+        addFileLoadAction(test, "Hamlet (slow!)", demoRootDir + "/hamlet.xhtml");
+        addFileLoadAction(test, "extended", demoRootDir + "/extended.xhtml");
+        addFileLoadAction(test, "XML-like", demoRootDir + "/xml.xhtml");
+        addFileLoadAction(test, "XML", demoRootDir + "/xml.xml");
+        addFileLoadAction(test, "http://www.simpleedit.org", new java.net.URL("http://www.simpleedit.org"));
         addFileLoadAction(test, "Element styling", "demos/element-style.xhtml");
         addFileLoadAction(test, "UL bug", "demos/ulbug.xhtml");
+        addFileLoadAction(test, "descendant of class", new java.net.URL("file:///home/tobe/foo/inherit.xhtml"));
 
         JMenu debug = new JMenu("Debug");
         mb.add(debug);
@@ -137,6 +138,14 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
             public void actionPerformed(ActionEvent evt) {
                 loadDocument(file);
         
+            }
+        });
+    }
+
+    public void addFileLoadAction(JMenu menu, String display, final java.net.URL url) {
+        menu.add(new AbstractAction(display) {
+            public void actionPerformed(ActionEvent evt) {
+                loadDocument(url);
             }
         });
     }
@@ -257,6 +266,33 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
                     HTMLTest.this.setTitle(BASE_TITLE + "-  " + 
                                   _doc.getDocumentTitle() + "  " + 
                                   "(" + file + ")");
+                } catch (Exception ex) {
+                    u.p(ex);
+                }
+                //panel.repaint();
+            }
+        });
+    }
+
+    private void loadDocument(final java.net.URL url) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    long st = System.currentTimeMillis();
+                    java.net.URI uri = new java.net.URI(url.toString());
+                    _doc = new Document(HTMLTest.this, getInputStreamForURI(uri), uri);
+                    
+                    long el = System.currentTimeMillis() - st;
+                    System.out.println("TIME: loadDocument(" + url + ")  " + el + "ms, render may take longer");
+                    st = System.currentTimeMillis();
+
+                    panel.setDocument(_doc);
+                    
+                    el = System.currentTimeMillis() - st;
+                    System.out.println("TIME: setDocument(" + url + ")  " + el + "ms, render may take longer");
+                    HTMLTest.this.setTitle(BASE_TITLE + "-  " + 
+                                  _doc.getDocumentTitle() + "  " + 
+                                  "(" + url + ")");
                 } catch (Exception ex) {
                     u.p(ex);
                 }

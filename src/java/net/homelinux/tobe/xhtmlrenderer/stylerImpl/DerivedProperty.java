@@ -21,7 +21,7 @@
 
 package net.homelinux.tobe.xhtmlrenderer.stylerImpl;
 
-import com.pdoubleya.xhtmlrenderer.css.constants.ValueConstants;
+import org.xhtmlrenderer.css.constants.ValueConstants;
 import java.util.*;
 import java.util.logging.*;
 
@@ -31,7 +31,7 @@ import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSStyleRule;
 import org.w3c.dom.css.CSSValue;
 
-import com.pdoubleya.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.CSSName;
 
 import org.joshy.html.css.RuleNormalizer;
 

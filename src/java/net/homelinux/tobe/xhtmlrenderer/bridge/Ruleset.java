@@ -21,7 +21,7 @@
 
 package net.homelinux.tobe.xhtmlrenderer.bridge;
 
-import com.pdoubleya.xhtmlrenderer.css.impl.XRPropertyImpl;
+import org.xhtmlrenderer.css.impl.XRPropertyImpl;
 
 /**
  *

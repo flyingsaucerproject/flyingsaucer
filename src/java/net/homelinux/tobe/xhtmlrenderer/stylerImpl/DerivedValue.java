@@ -31,10 +31,10 @@ import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.Counter;
 import org.w3c.dom.css.Rect;
 
-import com.pdoubleya.xhtmlrenderer.css.constants.CSSName;
-import com.pdoubleya.xhtmlrenderer.css.constants.ValueConstants;
-import com.pdoubleya.xhtmlrenderer.css.util.ConversionUtil;
-import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.ValueConstants;
+import org.xhtmlrenderer.css.util.ConversionUtil;
+import org.xhtmlrenderer.util.LoggerUtil;
 
 
 /**
