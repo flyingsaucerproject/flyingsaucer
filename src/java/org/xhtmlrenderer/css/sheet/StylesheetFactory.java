@@ -26,6 +26,8 @@ import org.w3c.css.sac.InputSource;
 import org.w3c.dom.css.*;
 import org.w3c.dom.stylesheets.MediaList;
 import com.steadystate.css.parser.CSSOMParser;
+import java.io.BufferedReader;
+import java.io.LineNumberReader;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -41,24 +43,24 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 // ASK: tested for multi-thread access? (PW 12-11-04)
 // TODO: add timestamp check (PW 12-11-04)
 public class StylesheetFactory {
-
+    
     /** the UserAgentCallback to resolve uris  */
     private UserAgentCallback _userAgent;
-
+    
     /** Description of the Field  */
     private CSSOMParser parser = new CSSOMParser();
-
+    
     /** Description of the Field  */
     private int _cacheCapacity = 16;
-
+    
     /** an LRU cache  */
     private java.util.LinkedHashMap _cache =
-        new java.util.LinkedHashMap( _cacheCapacity, 0.75f, true ) {
-            protected boolean removeEldestEntry( java.util.Map.Entry eldest ) {
-                return size() > _cacheCapacity;
-            }
-        };
-
+            new java.util.LinkedHashMap( _cacheCapacity, 0.75f, true ) {
+        protected boolean removeEldestEntry( java.util.Map.Entry eldest ) {
+            return size() > _cacheCapacity;
+        }
+    };
+    
     /**
      * Creates a new instance of StylesheetFactory
      *
@@ -67,7 +69,7 @@ public class StylesheetFactory {
     public StylesheetFactory( UserAgentCallback userAgent ) {
         _userAgent = userAgent;
     }
-
+    
     /**
      * Description of the Method
      *
@@ -83,14 +85,14 @@ public class StylesheetFactory {
         } catch ( java.io.IOException e ) {
             throw new XRRuntimeException( "IOException on parsing style seet from a Reader; don't know the URI.", e );
         }
-
+        
         Stylesheet sheet = new Stylesheet( info.getUri(), info.getOrigin() );
         CSSRuleList rl = style.getCssRules();
         pullRulesets( rl, sheet, info );
-
+        
         return sheet;
     }
-
+    
     /**
      * Description of the Method
      *
@@ -99,12 +101,43 @@ public class StylesheetFactory {
      */
     public Stylesheet parse( StylesheetInfo info ) {
         Reader r = _userAgent.getStylesheet( info.getUri() );
-        if ( r != null ) {
-            return parse( r, info );
+        
+        Stylesheet sheet = null;
+        
+        try {
+            if ( r != null ) {
+                sheet = parse( r, info );
+            }
+        } catch ( Exception e ) {
+            debugBadStyleSheet(info);
+            if ( e instanceof XRRuntimeException ) {
+                throw (XRRuntimeException)e;
+            } else {
+                throw new XRRuntimeException("Failed on parsing CSS sheet at " + info.getUri(), e);
+            }
+            
         }
-        return null;
+        return sheet;
     }
-
+    
+    private void debugBadStyleSheet(StylesheetInfo info ){
+        Reader r = _userAgent.getStylesheet(info.getUri());
+        if ( r!= null ) {
+            try {
+                LineNumberReader lnr = new LineNumberReader(new BufferedReader(r));
+                StringBuffer sb = new StringBuffer();
+                String line = null;
+                while ( (line = lnr.readLine()) != null ) {
+                    sb.append(line + "\n");
+                }
+                XRLog.cssParse(sb.toString());
+            } catch ( Exception ex ) {
+                XRLog.cssParse("Failed to read CSS sheet at " + info.getUri() + " for debugging.");
+            }
+            
+        }
+    }
+    
     /**
      * Description of the Method
      *
@@ -126,7 +159,7 @@ public class StylesheetFactory {
         }
         return sheet;
     }
-
+    
     /**
      * Description of the Method
      *
@@ -145,7 +178,7 @@ public class StylesheetFactory {
             throw new XRRuntimeException( "Cannot parse style declaration from string.", ex );
         }
     }
-
+    
     /**
      * Adds a stylesheet to the factory cache. Will overwrite older entry for
      * same key.
@@ -157,7 +190,7 @@ public class StylesheetFactory {
     public void putStylesheet( Object key, Stylesheet sheet ) {
         _cache.put( key, sheet );
     }
-
+    
     /**
      * @param key
      * @return     true if a Stylesheet with this key has been put in the cache.
@@ -166,7 +199,7 @@ public class StylesheetFactory {
     public boolean containsStylesheet( Object key ) {
         return _cache.containsKey( key );
     }
-
+    
     /**
      * Returns a cached sheet by its key; null if no entry for that key.
      *
@@ -177,7 +210,7 @@ public class StylesheetFactory {
     public Stylesheet getCachedStylesheet( Object key ) {
         return (Stylesheet)_cache.get( key );
     }
-
+    
     /**
      * Returns a cached sheet by its key; loads and caches it if not in cache;
      * null if not able to load
@@ -195,7 +228,7 @@ public class StylesheetFactory {
         }
         return s;
     }
-
+    
     /**
      * Given the SAC sheet input, extracts all CSSStyleRules and loads Rulesets
      * from them.
@@ -251,6 +284,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/03/24 23:17:58  pdoubleya
+ * Added debug dump on bad CSS input.
+ *
  * Revision 1.14  2005/02/03 23:08:26  pdoubleya
  * .
  *
