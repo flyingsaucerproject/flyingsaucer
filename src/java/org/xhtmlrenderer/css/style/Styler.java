@@ -30,7 +30,7 @@ import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 public class Styler {
     
     java.util.HashMap _styleMap = new java.util.HashMap();
-    java.util.HashMap _peStyleMap = new java.util.HashMap();
+    //java.util.HashMap _peStyleMap = new java.util.HashMap();
     
     java.util.HashMap _styleCache = new java.util.HashMap();
     
@@ -47,7 +47,7 @@ public class Styler {
     }
     
     /** May return null */
-    public CalculatedStyle getPECalculatedStyle(org.w3c.dom.Element e, String pseudoElement) {
+    /*public CalculatedStyle getPECalculatedStyle(org.w3c.dom.Element e, String pseudoElement) {
         java.util.Map elm = (java.util.Map) _peStyleMap.get(e);
         if(elm == null) {
             elm = resolvePEStyles(e);
@@ -77,7 +77,7 @@ public class Styler {
             elm.put( me.getKey(), cs );
         }
         return elm;
-    }
+    }*/
     
     //changing this should cause a restyle
     public void setMatcher(org.xhtmlrenderer.css.newmatch.Matcher m) {

@@ -47,6 +47,7 @@ import org.xhtmlrenderer.layout.*;
 
 import org.xhtmlrenderer.css.style.DerivedProperty;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetFactory;
@@ -602,8 +603,8 @@ import org.xhtmlrenderer.util.XRLog;
         return null;//not supported yet
     }
     
-    public CalculatedStyle getPseudoElementStyle(Element e, String pseudoElement) {
-        return _styler.getPECalculatedStyle(e, pseudoElement);
+    public CascadedStyle getPseudoElementStyle(Element e, String pseudoElement) {
+        return _tbStyleMap.getPECascadedStyle(e, pseudoElement);
     }
     
     public CalculatedStyle getStyle(Element e) {

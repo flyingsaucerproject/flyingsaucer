@@ -352,14 +352,15 @@ XRLog.match("Matcher called with "+sorter.size()+" selectors");
         return cs;
 }
 
-    public java.util.Map getPECascadedStyleMap(org.w3c.dom.Element e) {
+    /** May return null */
+    public CascadedStyle getPECascadedStyle(org.w3c.dom.Element e, String pseudoElement) {
         if(_peMap == null) _peMap = new java.util.HashMap();
         java.util.Map elm = (java.util.Map) _peMap.get(e);
         if(elm == null) {
             elm = resolvePseudoElements(e);
             _peMap.put(e,elm);
         }
-        return elm;
+        return (CascadedStyle) elm.get(pseudoElement);
         
     }
     

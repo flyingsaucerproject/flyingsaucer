@@ -1199,7 +1199,7 @@ public class XRStyleReference implements StyleReference {
         return props;
     }
     
-    public org.xhtmlrenderer.css.style.CalculatedStyle getPseudoElementStyle(Element e, String pseudoElement) {
+    public org.xhtmlrenderer.css.newmatch.CascadedStyle getPseudoElementStyle(Element e, String pseudoElement) {
         return null;//not supported
     }
     
@@ -1213,6 +1213,9 @@ public class XRStyleReference implements StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/11/08 23:15:56  tobega
+ * Changed pseudo-element styling to just return CascadedStyle
+ *
  * Revision 1.12  2004/11/08 08:22:16  tobega
  * Added support for pseudo-elements
  *

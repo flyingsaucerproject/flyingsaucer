@@ -24,7 +24,8 @@ import java.awt.Rectangle;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.css.style.*;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.util.InfiniteLoopError;
 import org.xhtmlrenderer.util.u;
@@ -494,7 +495,7 @@ public class LineBreaker {
             return false;
         }
         //u.p("it's the first child");
-        CalculatedStyle cs = c.css.getPseudoElementStyle(getElement(node),"first-letter");
+        CascadedStyle cs = c.css.getPseudoElementStyle(getElement(node),"first-letter");
         if(cs != null) {
           //  return true;
           return false;
@@ -527,7 +528,9 @@ public class LineBreaker {
         int len = FontUtil.len( c, node, text.substring(start,end), font);
         InlineBox box = newBox( c, node, start, end, prev, text, prev_align, font );
         Element elem = getElement(node);
-        CalculatedStyle cs = c.css.getPseudoElementStyle(elem,"first-letter");
+        CascadedStyle ps = c.css.getPseudoElementStyle(elem,"first-letter");
+        CalculatedStyle parent = c.css.getStyle(elem);
+        CalculatedStyle cs = new CalculatedStyle(parent, ps);
         //u.p("style = " + cs);
         styleInlineBox(c, cs, box);
         box.break_after = false;
@@ -549,6 +552,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/08 23:15:56  tobega
+ * Changed pseudo-element styling to just return CascadedStyle
+ *
  * Revision 1.9  2004/11/08 22:08:00  joshy
  * improved inline border formatting and text drawing
  *

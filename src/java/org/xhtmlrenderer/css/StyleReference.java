@@ -29,6 +29,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.extend.AttributeResolver;
@@ -448,7 +449,7 @@ public interface StyleReference {
     /**
      * Handle the pseudoElements, may return null
      */
-    public CalculatedStyle getPseudoElementStyle(Element e, String pseudoElement);
+    public CascadedStyle getPseudoElementStyle(Element e, String pseudoElement);
     
     /**
      * get the CalculatedStyle once for the element, then query that
@@ -461,6 +462,9 @@ public interface StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/08 23:15:55  tobega
+ * Changed pseudo-element styling to just return CascadedStyle
+ *
  * Revision 1.7  2004/11/08 08:22:15  tobega
  * Added support for pseudo-elements
  *

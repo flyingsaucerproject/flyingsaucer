@@ -344,7 +344,7 @@ public class CSSBank extends CSSAccessor {
         return new java.util.HashMap();//not supported
     }
     
-    public org.xhtmlrenderer.css.style.CalculatedStyle getPseudoElementStyle(Element e, String pseudoElement) {
+    public org.xhtmlrenderer.css.newmatch.CascadedStyle getPseudoElementStyle(Element e, String pseudoElement) {
         return null;//not supported
     }
     
@@ -358,6 +358,9 @@ public class CSSBank extends CSSAccessor {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/08 23:15:55  tobega
+ * Changed pseudo-element styling to just return CascadedStyle
+ *
  * Revision 1.9  2004/11/08 08:22:15  tobega
  * Added support for pseudo-elements
  *
