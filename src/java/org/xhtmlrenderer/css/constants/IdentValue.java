@@ -68,6 +68,8 @@ public class IdentValue {
     public static final IdentValue HIRAGANA = addValue("hiragana");
     public static final IdentValue HIRAGANA_IROHA = addValue("hiragana-iroha");
     public static final IdentValue INLINE = addValue("inline");
+    // HACK: inline-block is not a valid CSS value, but was being used in CSS/demos. should prob be inline or block (PWW 25-01-05)
+    public static final IdentValue INLINE_BLOCK = addValue("inline-block");
     public static final IdentValue INLINE_TABLE = addValue("inline-table");
     public static final IdentValue INSET = addValue("inset");
     public static final IdentValue ITALIC = addValue("italic");
@@ -163,3 +165,13 @@ public class IdentValue {
         return val;
     }
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.3  2005/01/25 14:38:03  pdoubleya
+ * Added temporary support for invalid identifier "inline-block" to support existing code.
+ *
+ *
+*/
