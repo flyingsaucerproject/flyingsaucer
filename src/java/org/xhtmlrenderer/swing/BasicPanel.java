@@ -23,6 +23,7 @@ import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.print.PrinterGraphics;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
@@ -47,9 +48,10 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.resource.ResourceProviderFactory;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.Xx;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
 
 //hmm, IntelliJ sees references to Xx below as being Xx in Component!
 
@@ -66,43 +68,43 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public Element active_element = null;
     /** Description of the Field */
     public Element focus_element = null;
-
+    
     /** Description of the Field  */
     protected Document doc = null;
-
+    
     /** Description of the Field  */
     protected Box body_box = null;
-
+    
     /** Description of the Field  */
     protected ErrorHandler error_handler;
-
+    
     /** Description of the Field  */
     protected RenderingContext ctx;
-
+    
     /** Description of the Field  */
     protected LayoutThread layout_thread;
-
+    
     /** Description of the Field  */
     protected URL url;
-
+    
     /** Description of the Field  */
     private Map documentListeners;
-
+    
     /** Description of the Field  */
     private JScrollPane enclosingScrollPane;
-
+    
     /** Description of the Field  */
     private Dimension intrinsic_size;
-
+    
     /** Description of the Field  */
     private boolean anti_aliased = true;
-
+    
     /** Constructor for the BasicPanel object  */
     public BasicPanel() {
         ctx = new RenderingContext();
         init();
     }
-
+    
     /**
      * Constructor for the BasicPanel object
      *
@@ -112,7 +114,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         ctx = new RenderingContext( uac );
         init();
     }
-
+    
     /**
      * Adds the specified Document listener to receive Document events from this
      * component. If listener l is null, no exception is thrown and no action is
@@ -123,16 +125,16 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public void addDocumentListener( DocumentListener listener ) {
         this.documentListeners.put( listener, listener );
     }
-
-
+    
+    
     /** Description of the Method  */
     public void resetScrollPosition() {
         if ( this.enclosingScrollPane != null ) {
             this.enclosingScrollPane.getVerticalScrollBar().setValue( 0 );
         }
     }
-
-
+    
+    
     /**
      * Overrides the default implementation to test for and configure any {@link
      * JScrollPane} parent.
@@ -147,7 +149,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             }
         }
     }
-
+    
     /**
      * Overrides the default implementation unconfigure any {@link JScrollPane}
      * parent.
@@ -156,8 +158,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         super.removeNotify();
         setEnclosingScrollPane( null );
     }
-
-
+    
+    
     /**
      * Description of the Method
      *
@@ -168,20 +170,20 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             // TODO:
             // ( (Graphics2D)g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         }
-
+        
         if ( doc == null ) {
             return;
         }
-
+        
         // if this is the first time painting this document, then calc layout
         if ( body_box == null ) {
             calcLayout( g );
         }
-
+        
         Context c = newContext( (Graphics2D)g );
         layout_thread.startRender( c );
     }
-
+    
     /**
      * Description of the Method
      *
@@ -195,18 +197,18 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         if ( doc == null ) {
             return;
         }
-
+        
         // set up CSS
         Context c = newContext( (Graphics2D)g );
         //getContext().setMaxWidth(0);
-
+        
         getRenderingContext().getTextRenderer().setupGraphics( c.getGraphics() );
         //TODO: maybe temporary hack
         //Context c = getContext();
         body_box = Boxing.layout( c, new DomToplevelNode( doc ) );
-
+        
         XRLog.layout( Level.FINEST, "is a fixed child: " + body_box.isChildrenExceedBounds() );
-
+        
         // if there is a fixed child then we need to set opaque to false
         // so that the entire viewport will be repainted. this is slower
         // but that's the hit you get from using fixed layout
@@ -215,16 +217,16 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         } else {
             setOpaque( true );
         }
-
+        
         getRenderingContext().setRootBox( body_box );
-
+        
         XRLog.layout( Level.FINEST, "after layout: " + body_box );
-
+        
         intrinsic_size = new Dimension( getContext().getMaxWidth(), body_box.height );
         if ( enclosingScrollPane != null ) {
             XRLog.layout( Level.FINEST, "enclosing scroll pane = " + this.enclosingScrollPane );
             int view_height = this.enclosingScrollPane.getViewport().getHeight();
-
+            
             // resize the outter most box incase it is too small for the viewport
             if ( intrinsic_size.getHeight() < view_height ) {
                 if ( body_box != null ) {
@@ -232,15 +234,15 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
                 }
             }
         }
-
+        
         if ( !intrinsic_size.equals( this.getSize() ) ) {
             this.setPreferredSize( intrinsic_size );
             this.revalidate();
         }
-
+        
         this.fireDocumentLoaded();
     }
-
+    
     /*
      * ========= The box finding routines. Should probably move out to another
      * class
@@ -255,7 +257,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public Box findBox( int x, int y ) {
         return findBox( this.body_box, x, y );
     }
-
+    
     /**
      * Description of the Method
      *
@@ -266,7 +268,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public Box findElementBox( int x, int y ) {
         return findElementBox( this.body_box, x, y );
     }
-
+    
     /**
      * Description of the Method
      *
@@ -276,7 +278,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @return     Returns
      */
     public Box findBox( Box box, int x, int y ) {
-
+        
         if ( box == null ) {
             return null;
         }
@@ -289,16 +291,16 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             //is this needed?
             tx -= bx.totalLeftPadding();
             ty -= bx.y;
-            //is this needed? 
+            //is this needed?
             ty -= bx.totalTopPadding();
-
+            
             // test the contents
             Box retbox = null;
             retbox = findBox( bx, tx, ty );
             if ( retbox != null ) {
                 return retbox;
             }
-
+            
             // test the box itself
             int tty = y;
             if ( bx instanceof InlineBox ) {
@@ -307,15 +309,15 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
                 int off = lbx.getBaseline() + ibx.y - ibx.height;//this is not really correct, what about vertical align?
                 tty -= off;
             }
-
+            
             if ( bx.contains( x - bx.x, tty - bx.y ) ) {
                 return bx;
             }
         }
-
+        
         return null;
     }
-
+    
     /**
      * Description of the Method
      *
@@ -325,11 +327,11 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @return     Returns
      */
     public Box findElementBox( Box box, int x, int y ) {//TODO: why is this used? A better way? should be in a render util?
-
+        
         if ( box == null ) {
             return null;
         }
-
+        
         Iterator it = box.getChildIterator();
         while ( it.hasNext() ) {
             Box bx = (Box)it.next();
@@ -339,23 +341,23 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             tx -= bx.totalLeftPadding();
             ty -= bx.y;
             ty -= bx.totalTopPadding();
-
+            
             // test the contents
             Box retbox = null;
             retbox = findElementBox( bx, tx, ty );
             if ( retbox != null ) {
                 return retbox;
             }
-
+            
             // test the box itself
-
+            
             // skip if it's text only so that we can
             // hit the parent instead
             // skip line boxes
             if ( bx instanceof LineBox ) {
                 continue;
             }
-
+            
             int tty = y;
             if ( bx instanceof InlineBox ) {
                 InlineBox ibx = (InlineBox)bx;
@@ -363,7 +365,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
                 int off = lbx.getBaseline() + ibx.y - ibx.height;//not really correct
                 tty -= off;
             }
-
+            
             // Uu.p("bx = " + bx);
             // Uu.p("tx = " + tx + " ty = " + ty);
             if ( bx.contains( x - bx.x, tty - bx.y ) ) {
@@ -372,10 +374,10 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
                 return bx;
             }
         }
-
+        
         return null;
     }
-
+    
     /**
      * Description of the Method
      *
@@ -386,8 +388,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public int findBoxX( int x, int y ) {
         return findBoxX( this.body_box, x, y );
     }
-
-
+    
+    
     /**
      * Description of the Method
      *
@@ -399,7 +401,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public int findBoxX( Box box, int x, int y ) {
         XRLog.layout( Level.FINEST, "findBox(" + box + " at (" + x + "," + y + ")" );
         Iterator it = box.getChildIterator();
-
+        
         while ( it.hasNext() ) {
             Box bx = (Box)it.next();
             int tx = x;
@@ -408,13 +410,13 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             //is this needed? tx -= bx.totalLeftPadding(c.getCurrentStyle());
             ty -= bx.y;
             //is this needed? ty -= bx.totalTopPadding(c.getCurrentStyle());
-
+            
             // test the contents
             int retbox = findBoxX( bx, tx, ty );
             if ( retbox != -1 ) {
                 return retbox;
             }
-
+            
             int tty = y;
             if ( bx instanceof InlineBox ) {
                 InlineBox ibx = (InlineBox)bx;
@@ -427,31 +429,31 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
                 XRLog.layout( Level.FINEST, "off = " + off );
                 tty -= off;
             }
-
+            
             // test the box itself
             XRLog.layout( Level.FINEST, "bx test = " + bx + " " + x + "," + y );
             if ( bx.contains( x - bx.x, tty - bx.y ) ) {
                 return x - bx.x;
             }
         }
-
+        
         return -1;
     }
-
+    
     /**
      * Description of the Method
      *
      * @param e  PARAM
      */
     public void componentHidden( ComponentEvent e ) { }
-
+    
     /**
      * Description of the Method
      *
      * @param e  PARAM
      */
     public void componentMoved( ComponentEvent e ) { }
-
+    
     /**
      * Description of the Method
      *
@@ -460,27 +462,27 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public void componentResized( ComponentEvent e ) {
         calcLayout();
     }
-
+    
     /**
      * Description of the Method
      *
      * @param e  PARAM
      */
     public void componentShown( ComponentEvent e ) { }
-
-
+    
+    
     /** Description of the Method  */
     public void printTree() {
         printTree( this.body_box, "" );
     }
-
+    
     /**
      * Sets the layout attribute of the BasicPanel object
      *
      * @param l  The new layout value
      */
     public void setLayout( LayoutManager l ) { }
-
+    
     /**
      * Sets the threadedLayout attribute of the BasicPanel object
      *
@@ -489,7 +491,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public void setThreadedLayout( boolean threaded ) {
         layout_thread.setThreadedLayout( threaded );
     }
-
+    
     /**
      * Sets the renderingContext attribute of the BasicPanel object
      *
@@ -498,7 +500,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public void setRenderingContext( RenderingContext ctx ) {
         this.ctx = ctx;
     }
-
+    
     /**
      * Sets the errorHandler attribute of the BasicPanel object
      *
@@ -507,8 +509,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public void setErrorHandler( ErrorHandler error_handler ) {
         this.error_handler = error_handler;
     }
-
-
+    
+    
     /**
      * Sets the antiAliased attribute of the BasicPanel object
      *
@@ -517,8 +519,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public void setAntiAliased( boolean anti_aliased ) {
         this.anti_aliased = anti_aliased;
     }
-
-
+    
+    
     /**
      * Sets the size attribute of the BasicPanel object
      *
@@ -529,7 +531,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         super.setSize( d );
         //this.calcLayout();//this causes a second layout to be done!
     }
-
+    
     /**
      * Sets the document attribute of the BasicPanel object
      *
@@ -541,16 +543,16 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         resetScrollPosition();
         this.doc = doc;
         this.url = url;
-
+        
         //have to do this first
         getRenderingContext().setBaseURL( url );
         getContext().setNamespaceHandler( nsh );
         getRenderingContext().getStyleReference().setDocumentContext( getContext(), getContext().getNamespaceHandler(), doc, this );
-
+        
         calcLayout();
         repaint();
     }
-
+    
     /**
      * Sets the document attribute of the BasicPanel object
      *
@@ -560,12 +562,13 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @exception Exception  Throws
      */
     public void setDocument( InputStream stream, URL url, NamespaceHandler nsh )
-        throws Exception {
-        Document dom = Xx.loadDocument( stream );
+    throws Exception {
+        Document dom = ResourceProviderFactory.newDefaultResourceProvider().newXMLResource(new InputSource(new BufferedInputStream(stream))).getDocument();
+        
         setDocument( dom, url, nsh );
     }
-
-
+    
+    
     /**
      * Sets the document attribute of the BasicPanel object
      *
@@ -575,7 +578,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public void setDocument( Document doc, URL url ) {
         setDocument( doc, url, new NoNamespaceHandler() );
     }
-
+    
     /**
      * Gets the hover attribute of the BasicPanel object
      *
@@ -588,7 +591,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         }
         return false;
     }
-
+    
     /**
      * Gets the active attribute of the BasicPanel object
      *
@@ -601,7 +604,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         }
         return false;
     }
-
+    
     /**
      * Gets the focus attribute of the BasicPanel object
      *
@@ -614,7 +617,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         }
         return false;
     }
-
+    
     /**
      * Gets the renderingContext attribute of the BasicPanel object
      *
@@ -623,7 +626,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public RenderingContext getRenderingContext() {
         return ctx;
     }
-
+    
     /**
      * Gets the intrinsicSize attribute of the BasicPanel object
      *
@@ -632,7 +635,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public Dimension getIntrinsicSize() {
         return intrinsic_size;
     }
-
+    
     /**
      * Gets the uRL attribute of the BasicPanel object
      *
@@ -641,7 +644,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public URL getURL() {
         return this.url;
     }
-
+    
     /**
      * Gets the rootBox attribute of the BasicPanel object
      *
@@ -650,7 +653,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public Box getRootBox() {
         return body_box;
     }
-
+    
     /**
      * Gets the context attribute of the BasicPanel object
      *
@@ -659,7 +662,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public SharedContext getContext() {
         return getRenderingContext().getContext();
     }
-
+    
     /**
      * Gets the document attribute of the BasicPanel object
      *
@@ -668,7 +671,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public Document getDocument() {
         return doc;
     }
-
+    
     /**
      * Gets the documentTitle attribute of the BasicPanel object
      *
@@ -677,7 +680,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     public String getDocumentTitle() {
         return getContext().getNamespaceHandler().getDocumentTitle( doc );
     }
-
+    
     /**
      * Gets the fixedRectangle attribute of the BasicPanel object
      *
@@ -691,8 +694,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             return new Rectangle( 0, 0, dim.width, dim.height );
         }
     }
-
-
+    
+    
     /**
      * Recalculate the layout of the panel. Normally developers should never
      * need to call this. Call repaint or validate instead.
@@ -701,8 +704,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         // set body box to null to trigger new layout
         body_box = null;
     }
-
-
+    
+    
     /**
      * Recalculate the layout of the panel. Only called by paintComponent(). Use
      * calcLayout() instead.
@@ -712,7 +715,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     protected void calcLayout( Graphics g ) {
         layout_thread.startLayout( g );
     }
-
+    
     /**
      * Description of the Method
      *
@@ -729,7 +732,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         // start painting the box tree
         BoxRendering.paint( c, body_box, false, false );//no restyle demanded on top level
     }
-
+    
     /** Description of the Method  */
     protected void fireDocumentLoaded() {
         Iterator it = this.documentListeners.keySet().iterator();
@@ -738,7 +741,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             list.documentLoaded();
         }
     }
-
+    
     /**
      * Description of the Method
      *
@@ -747,14 +750,14 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @throws Exception  Throws
      */
     protected Document loadDocument( final URL url )
-        throws Exception {
+    throws Exception {
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = fact.newDocumentBuilder();
         builder.setErrorHandler( error_handler );
         Document doc = builder.parse( url.openStream() );
         return doc;
     }
-
+    
     /**
      * Sets the document attribute of the BasicPanel object
      *
@@ -763,30 +766,32 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @exception Exception  Throws
      */
     protected void setDocument( InputStream stream, URL url )
-        throws Exception {
+    throws Exception {
         setDocument( stream, url, new NoNamespaceHandler() );
     }
-
+    
     /**
-     * Sets the new current document, where the new document 
+     * Sets the new current document, where the new document
      * is located relative, e.g using a relative URL.
      *
      * @param filename       The new document to load
      * @exception Exception  Throws
      */
     protected void setDocumentRelative( String filename )
-        throws Exception {
+    throws Exception {
         if ( getContext() != null && ( !filename.startsWith( "http" ) ) ) {
             URL base = new URL( getRenderingContext().getBaseURL(), filename );
             XRLog.load( "Loading URL " + base );
-            Document dom = Xx.loadDocument( base );
-
+            Document dom = ResourceProviderFactory.newDefaultResourceProvider().newXMLResource(base).getDocument();
+            
             setDocument( dom, base );
             return;
         }
-        setDocument( Xx.loadDocument( filename ), new File( filename ).toURL() );
-    }
+        Document dom = ResourceProviderFactory.newDefaultResourceProvider().newXMLResource(new InputSource(filename)).getDocument();
 
+        setDocument( dom, new File( filename ).toURL() );
+    }
+    
     /** Description of the Method */
     private void init() {
         layout_thread = new LayoutThread( this );
@@ -794,8 +799,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         setBackground( Color.white );
         super.setLayout( null );
     }
-
-
+    
+    
     /**
      * Description of the Method
      *
@@ -804,10 +809,10 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      */
     private Context newContext( Graphics2D g ) {
         XRLog.layout( Level.FINEST, "new context begin" );
-
+        
         getContext().setCanvas( this );
         getContext().setGraphics( g );
-
+        
         Rectangle extents;
         if ( enclosingScrollPane != null ) {
             Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
@@ -816,12 +821,12 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         } else {
             extents = new Rectangle( getWidth(), getHeight() );//200, 200 ) );
         }
-
+        
         getContext().setMaxWidth( 0 );
         XRLog.layout( Level.FINEST, "new context end" );
         return getContext().newContextInstance( extents );
     }
-
+    
     /**
      * Description of the Method
      *
@@ -835,7 +840,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             Box bx = (Box)it.next();
             printTree( bx, tab + " " );
         }
-
+        
         if ( box instanceof InlineBlockBox ) {
             InlineBlockBox ib = (InlineBlockBox)box;
             if ( ib.sub_block != null ) {
@@ -843,7 +848,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             }
         }
     }
-
+    
     /**
      * The method is invoked by {@link #addNotify} and {@link #removeNotify} to
      * ensure that any enclosing {@link JScrollPane} works correctly with this
@@ -857,9 +862,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         if ( enclosingScrollPane != null ) {
             enclosingScrollPane.removeComponentListener( this );
         }
-
+        
         enclosingScrollPane = scrollPane;
-
+        
         if ( enclosingScrollPane != null ) {
             enclosingScrollPane.addComponentListener( this );
         }
@@ -870,6 +875,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2005/02/03 23:02:31  pdoubleya
+ * Uses ResourceProvider for loading files.
+ *
  * Revision 1.37  2005/01/31 22:54:14  pdoubleya
  * Adjusted calcs for findBox and findElementBox.
  *
