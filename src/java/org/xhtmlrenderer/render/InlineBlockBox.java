@@ -38,11 +38,13 @@ public class InlineBlockBox extends InlineBox {
         newBox.content = box.content;
         newBox.sub_block = box.sub_block;
         //font = box.font;
-        newBox.underline = box.underline;
-        newBox.overline = box.overline;
-        newBox.strikethrough = box.strikethrough;
+        //newBox.underline = box.underline;
+        //newBox.overline = box.overline;
+        //newBox.strikethrough = box.strikethrough;
         return newBox;
     }
+
+    public BlockBox sub_block = null;
 
     public boolean isEndOfParentContent() {
         return true;

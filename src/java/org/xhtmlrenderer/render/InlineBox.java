@@ -50,7 +50,6 @@ public abstract class InlineBox extends Box {
     /**
      * Description of the Field
      */
-    public BlockBox sub_block = null;
 
 // --Commented out by Inspection START (2005-01-05 01:07):
 //    /**
@@ -72,23 +71,6 @@ public abstract class InlineBox extends Box {
      */
     public boolean break_before = false;
 
-
-    // decoration stuff
-
-    /**
-     * Description of the Field
-     */
-    public boolean underline = false;
-
-    /**
-     * Description of the Field
-     */
-    public boolean strikethrough = false;
-
-    /**
-     * Description of the Field
-     */
-    public boolean overline = false;
 
 
     // vertical alignment stuff
@@ -241,6 +223,9 @@ public abstract class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/01/06 21:54:32  tobega
+ * Text decoration now handled in rendering only
+ *
  * Revision 1.30  2005/01/06 09:49:38  tobega
  * More cleanup, aiming to remove Content reference in box
  *

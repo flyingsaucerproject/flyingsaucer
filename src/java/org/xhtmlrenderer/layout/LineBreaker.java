@@ -65,7 +65,7 @@ public class LineBreaker {
          * a  new one
          */
         // create new inline (null text is safe!)
-        InlineBox box = new InlineBlockBox();
+        InlineBlockBox box = new InlineBlockBox();
         box.content = content;
         //box.width = bounds.width;
         //box.height = bounds.height;
@@ -116,6 +116,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.50  2005/01/06 21:54:32  tobega
+ * Text decoration now handled in rendering only
+ *
  * Revision 1.49  2005/01/06 09:49:38  tobega
  * More cleanup, aiming to remove Content reference in box
  *

@@ -24,7 +24,6 @@ import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.ContentUtil;
-import org.xhtmlrenderer.layout.inline.TextDecoration;
 import org.xhtmlrenderer.table.TableBox;
 import org.xhtmlrenderer.table.TableRendering;
 import org.xhtmlrenderer.util.Configuration;
@@ -55,11 +54,6 @@ public class BoxRendering {
                 if (hoverStyle != null) c.pushStyle(hoverStyle);
             }*/
         }
-
-        //if (box.restyle) {
-        restyle(c, box);
-        //box.restyle = false;
-        //}
 
         // copy the bounds to we don't mess it up
         Rectangle oldBounds = new Rectangle(c.getExtents());
@@ -317,18 +311,6 @@ public class BoxRendering {
 //        return Boxing.getMargin(c, box);
 //    }
 // --Commented out by Inspection STOP (2005-01-05 01:06)
-
-
-    public static void restyle(Context ctx, Box box) {
-        for (int i = 0; i < box.getChildCount(); i++) {
-            Box child = box.getChild(i);
-            //child.restyle = true;
-            //child.hover = box.hover;
-        }
-        if (box instanceof InlineBox) {//should this always be true?
-            TextDecoration.setupTextDecoration(ctx, (InlineBox) box);
-        }
-    }
 
 
 // --Commented out by Inspection START (2005-01-05 01:06):

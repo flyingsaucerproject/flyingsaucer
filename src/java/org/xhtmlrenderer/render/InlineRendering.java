@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
@@ -62,10 +63,6 @@ public class InlineRendering {
         if (box instanceof BlockBox) {//Why isn't it always a BlockBox?
             block = (BlockBox) box;
         }
-        //if (box.restyle) {
-        BoxRendering.restyle(c, box);
-        //box.restyle = false;
-        //}
 
         for (int i = 0; i < box.getChildCount(); i++) {
             if (i == 0 && block != null && block.firstLineStyle != null) c.pushStyle(block.firstLineStyle);
@@ -86,7 +83,6 @@ public class InlineRendering {
         int lx = line.x;
         int ly = line.y + line.baseline;
 
-        BoxRendering.restyle(c, line);
         // for each inline box
         for (int j = 0; j < line.getChildCount(); j++) {
             Box child = line.getChild(j);
@@ -141,13 +137,7 @@ public class InlineRendering {
                 paintPadding(c, line, inline);
             }
         }
-        //if (box.restyle) {
-        BoxRendering.restyle(c, inline);
-        //box.restyle = false;
-        //}
 
-        //handleRelativePre(c, inline);
-        //paintPadding(c, line, inline);
         c.updateSelection(inline);
         
         // calculate the Xx and y relative to the baseline of the line (ly) and the
@@ -163,7 +153,6 @@ public class InlineRendering {
         paintSelection(c, inline, lx, ly);
         paintText(c, lx, ly, ix, iy, inline);
         debugInlines(c, inline, lx, ly);
-        //handleRelativePost(c, inline);
 
         if (inline.popstyles != null) {
             for (Iterator i = inline.popstyles.iterator(); i.hasNext();) {
@@ -287,19 +276,18 @@ public class InlineRendering {
                         c.getGraphics().getFont(),
                         text).getWidth());
 
-        if (inline.underline) {
+        // override based on settings
+        String text_decoration = c.getCurrentStyle().getStringProperty(CSSName.TEXT_DECORATION);
+
+        if (text_decoration != null && text_decoration.equals("underline")) {
             float down = lm.getUnderlineOffset();
             float thick = lm.getUnderlineThickness();
             g.fillRect(ix, iy - (int) down, stringWidth, (int) thick);
-        }
-
-        if (inline.strikethrough) {
+        } else if (text_decoration != null && text_decoration.equals("line-through")) {
             float down = lm.getStrikethroughOffset();
             float thick = lm.getStrikethroughThickness();
             g.fillRect(ix, iy + (int) down, stringWidth, (int) thick);
-        }
-
-        if (inline.overline) {
+        } else if (text_decoration != null && text_decoration.equals("overline")) {
             float down = lm.getAscent();
             float thick = lm.getUnderlineThickness();
             g.fillRect(ix, iy - (int) down, stringWidth, (int) thick);

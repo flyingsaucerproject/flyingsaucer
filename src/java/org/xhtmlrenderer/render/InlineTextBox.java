@@ -25,11 +25,11 @@ public class InlineTextBox extends InlineBox {
         //color = box.color;
         newBox.content = box.content;
         newBox.master = box.master;
-        newBox.sub_block = box.sub_block;
+        //newBox.sub_block = box.sub_block;
         //font = box.font;
-        newBox.underline = box.underline;
-        newBox.overline = box.overline;
-        newBox.strikethrough = box.strikethrough;
+        //newBox.underline = box.underline;
+        //newBox.overline = box.overline;
+        //newBox.strikethrough = box.strikethrough;
         return newBox;
     }
 

@@ -30,9 +30,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.BoxRendering;
-import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.Xx;
 import org.xml.sax.ErrorHandler;
@@ -834,8 +832,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
             printTree(bx, tab + " ");
         }
 
-        if (box instanceof InlineBox) {
-            InlineBox ib = (InlineBox) box;
+        if (box instanceof InlineBlockBox) {
+            InlineBlockBox ib = (InlineBlockBox) box;
             if (ib.sub_block != null) {
                 printTree(ib.sub_block, tab + " ");
             }
@@ -868,6 +866,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/01/06 21:54:33  tobega
+ * Text decoration now handled in rendering only
+ *
  * Revision 1.28  2005/01/05 01:10:16  tobega
  * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
  *

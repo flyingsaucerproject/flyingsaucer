@@ -47,9 +47,9 @@ public class BoxBuilder {
         box.height = FontUtil.lineHeight(c, box);
 
         // =========== setup text decorations
-        if (TextDecoration.isDecoratable(box)) {
-            TextDecoration.setupTextDecoration(style, box);
-        }
+        /*leave it to rendering if (TextDecoration.isDecoratable(box)) {
+            TextDecoration.setupTextDecoration(c, box);
+        }*/
         
         
         // =========== setup vertical alignment
