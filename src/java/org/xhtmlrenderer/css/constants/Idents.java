@@ -3,11 +3,15 @@ package org.xhtmlrenderer.css.constants;
 
 import java.util.*;
 import java.util.regex.*;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 
 /**
  * Booch utility class for working with ident values in CSS.
  */
+
+// TODO: idents are also defined in Ident, but then need to decide whether lookup is useful or not; here we use strings (PWW 28-01-05)
+// TODO: check idents list against CSS 2.1 spec (not 2.0 spec) (PWW 28-01-05)
 public final class Idents {
     /*
     Useful regexes to remember for later, from http://www.javapractices.com/Topic151.cjp
@@ -46,6 +50,9 @@ public final class Idents {
      */
     private static final Pattern CSS_LENGTH_PATTERN = Pattern.compile(RCSS_LENGTH);
 
+    /**
+     * Pattern instance, for Hex-colors
+     **/
     private static final Pattern COLOR_HEX_PATTERN = Pattern.compile("#((((\\d)|[a-fA-F]){6})|(((\\d)|[a-fA-F]){3}))");
 
     /**
@@ -94,6 +101,8 @@ public final class Idents {
      * @return The colorHex value
      */
     public static String getColorHex(String value) {
+        if ( value == null )
+            throw new XRRuntimeException("value is null on getColorHex()");
         String retval = (String) COLOR_MAP.get(value.toLowerCase());
         if (retval == null) {
             if (value.indexOf("rgb") >= 0) {
@@ -455,6 +464,9 @@ public final class Idents {
  *
 
  * $Log$
+ * Revision 1.3  2005/01/29 12:17:18  pdoubleya
+ * .
+ *
  * Revision 1.2  2005/01/24 19:01:07  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *
