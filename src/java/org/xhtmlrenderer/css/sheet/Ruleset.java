@@ -45,6 +45,12 @@ public class Ruleset {
     /** Convenience parser for selector text */
     private final static com.steadystate.css.parser.CSSOMParser CSOM_PARSER;
 
+    /** Default constructor */
+    private Ruleset(int orig) {
+        _origin = orig;
+        _props = new java.util.LinkedList();
+    }
+    
     /**
      * Creates a new instance of Ruleset
      *
@@ -52,10 +58,19 @@ public class Ruleset {
      * @param orig  PARAM
      */
     public Ruleset( org.w3c.dom.css.CSSStyleRule rule, int orig ) {
-        _origin = orig;
-        _props = new java.util.LinkedList();
+        this(orig);
         pullPropertiesFromDOMRule( rule );
         pullSelectorsFromDOMRule( rule );
+    }
+    
+    /**
+     * Instantiates a Ruleset for a specific {@link SelectorList}, List of {@link PropertyDeclaration}
+     * and origin. Can be used when you have these outside of a {@link CSSStyleRule}.
+     */
+    public Ruleset( org.w3c.css.sac.SelectorList selectorList, List propertyDeclarations, int orig ) {
+        this(orig);
+        this.sacSelectorList = selectorList;
+        this._props.addAll(propertyDeclarations);        
     }
 
     /**
@@ -132,6 +147,9 @@ public class Ruleset {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/01/29 12:08:23  pdoubleya
+ * Added constructor for SelectorList/PD List, for possible use of our own SAC DocumentHandler in the future.
+ *
  * Revision 1.5  2005/01/24 19:01:08  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *
