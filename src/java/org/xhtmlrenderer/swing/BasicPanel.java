@@ -225,7 +225,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
             setOpaque( true );
         }
 
-        getRenderingContext().root_box = body_box;
+        getRenderingContext().setRootBox(body_box);
         
         XRLog.layout( Level.FINEST, "after layout: " + body_box);
         //long end_time = new java.util.Date().getTime();
@@ -771,6 +771,15 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/29 23:28:11  joshy
+ * updated the javadocs
+ * added media methods to RenderingContext
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.7  2004/11/23 21:19:22  joshy
  * added support for loading a document from an InputStream
  * (for cases where you don't have a Document or URL)

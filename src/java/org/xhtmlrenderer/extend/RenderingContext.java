@@ -60,13 +60,14 @@ public class RenderingContext {
 
 
     /**
-     *  Description of the Field
+     *  Internal member variable for the css module
      */
     protected StyleReference css;
 
 
     /**
-     *  Gets the styleReference attribute of the RenderingContext object
+     *  Sets the StyleReference implemenation. This is part of the CSS
+     * module. Developers should normally never need to call this
      *
      * @return    The styleReference value
      */
@@ -78,7 +79,7 @@ public class RenderingContext {
     /**
      *  <b>need to make this protected</b>
      */
-    public Box root_box;
+    protected Box root_box;
 
 
     /**
@@ -88,6 +89,10 @@ public class RenderingContext {
      */
     public Box getRootBox() {
         return root_box;
+    }
+    
+    public void setRootBox(Box root_box) {
+        this.root_box = root_box;
     }
 
 
@@ -225,32 +230,6 @@ public class RenderingContext {
     }
 
 
-    //private boolean printing = false;
-
-
-    /**
-     *  Gets the printing attribute of the RenderingContext object
-     *
-     * @return    The printing value
-     */
-     /*
-    public boolean isPrinting() {
-        return printing;
-    }
-    */
-
-    /**
-     *  Sets the printing attribute of the RenderingContext object
-     *
-     * @param  printing  The new printing value
-     */
-     /*
-    public void setPrinting(boolean printing) {
-        this.printing = printing;
-    }
-    */
-
-
     /*
      *  is this really a property of the component that uses
      *  this rendering context ??
@@ -270,6 +249,9 @@ public class RenderingContext {
         threaded_layout = threaded;
     }
 
+    
+    
+    
 
     /**
      *  Description of the Field
@@ -296,23 +278,49 @@ public class RenderingContext {
         this.text_renderer = text_renderer;
     }
 
-    /*
-     *  public void incrementFontScale() {
-     *  }
-     *  public void decrementFontScale() {
-     *  }
-     *  public void setFontIncrementStepValue(float inc) {
-     *  }
+    
+     /** The member variable which holds the currently
+     * media setting.*/
+     protected String media = "screen";
+     /** <p>Set the current media type. This is usually something
+     like <i>screen</i> or <i>print</i>. See the
+     <a href="http://www.w3.org/TR/CSS21/media.html">media section</a>
+     of the CSS 2.1 spec for more information on media types.</p>
      */
+     public void setMedia(String media) {
+         this.media = media;
+     }
+     public String getMedia(String media) {
+         return this.media;
+     }
+     /** Returns true if the currently set media type is paged. Currently
+     returns true only for <i>print</i>, <i>projection</i>, and
+     <i>embossed</i>, <i>handheld</i>, and <i>tv</i>. 
+     See the
+     <a href="http://www.w3.org/TR/CSS21/media.html">media section</a>
+     of the CSS 2.1 spec for more information on media types.
+     */
+     public boolean isPaged() {
+         if(media.equals("print")) {
+             return true;
+         }
+         if(media.equals("projection")) {
+             return true;
+         }
+         if(media.equals("embossed")) {
+             return true;
+         }
+         if(media.equals("handheld")) {
+             return true;
+         }
+         if(media.equals("tv")) {
+             return true;
+         }
+         return false;
+     }
+    
     /*
      *  utility methods
-     */
-    /*
-     *  you will need to re-layout the document after you call these
-     *  method.
-     */
-    /*
-     *  what type should this take?
      */
     /*
      *  public void addUserCSS(File file) {
@@ -365,28 +373,12 @@ public class RenderingContext {
     /*
      *  public void setLogging(boolean logging) { }
      */
-    /*
+
+     /*
      *  the default is browser, but you could change it to
-     *  aural, paged, print, tv, slideshow, etc. should this be
-     *  in the rendering context instead?
+     *  aural, paged, print, tv, slideshow, etc.
      */
-    /*
-     *  public void setMediaType(String media) {
-     *  }
-     */
-    /*
-     *  are all of these variations overkill?
-     */
-    /*
-     *  public void addMediaType(String type) {
-     *  }
-     *  public void addMediaTypes(String[] types) {
-     *  }
-     *  public String[] getMediaTypes() {
-     *  }
-     *  public void clearMediaTypes() {
-     *  }
-     */
+     
     /*
      *  public void setProperties(Properties props) { }
      *  public void setProperty(String name, String value) { }

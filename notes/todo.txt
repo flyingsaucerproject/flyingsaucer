@@ -78,43 +78,36 @@
 //remove isPrinting(). check the graphics instanceof printablegraphics
 //show current resources in browser
 
-AA the bullets
 
 //can we separate inline and box more? maybe do that later?    
 //cache linemetrics and ascend/dscend more
 //take out redundant functions in font stuff
 //check for multiple calls to fontutil stuff 
-get a performance testing tool.
+//get a performance testing tool.
 
+AA the bullets
 fix n test space collapsing w/ images
 fix n test tab alignment
-
-before avg: 2660
+javadoc xhtmlpanel
+javadoc graphic2drenderer
+test docs uploaded
+make graphic2drenderer not use basicpanel
+fix float bugs w/ more than one float on a line
+implement media support for printing and test it
+    make financial table demo print differently
+fix bugs in unit tests and get them all to run properly
+make demo w/ fixed pos (menu w/ hovers?)
+make hover work on parents and children
 
 demos:
     better financial table
     chapter of something else w/ pictures
     photo gallery that uses all floats
     realtime resize panel (on photo gallery?)
-    file browser that uses a slim html panel for info
-        two panels, one for details and one for file list
-        tasks   [^]
-            rename
-            delete
-        places  [^]
-            drives?
-            desktop?
-            homedir?
-        details [^]
-            name, type (from file system view)
-            date modified
-            size in human readable KB (make a smart label)
-        grab icons from filesystemview
-        arrows to hide each panel
-        make webstartable
+    codify the demo filebrowser
+    codify the demo html editor
+    make all demos webstartable
 
-javadoc xhtmlpanel
-javadoc graphic2drenderer
 
 
 
