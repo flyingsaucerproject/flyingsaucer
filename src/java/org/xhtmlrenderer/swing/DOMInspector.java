@@ -52,12 +52,10 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.css.CSSPrimitiveValue;
-import org.xhtmlrenderer.css.XRElement;
-import org.xhtmlrenderer.css.XRProperty;
-import org.xhtmlrenderer.css.XRValue;
-import org.xhtmlrenderer.css.bridge.XRStyleReference;
+import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.layout.Context;
 
@@ -70,7 +68,7 @@ import org.xhtmlrenderer.layout.Context;
 public class DOMInspector extends JPanel {
     // PW
     /** Description of the Field */
-    XRStyleReference xrStyleReference;
+    StyleReference styleReference;
     /** Description of the Field */
     Context context;
     /** Description of the Field */
@@ -107,7 +105,7 @@ public class DOMInspector extends JPanel {
      * @param context  PARAM
      * @param xsr      PARAM
      */
-    public DOMInspector( Document doc, Context context, XRStyleReference xsr ) {
+    public DOMInspector( Document doc, Context context, StyleReference sr ) {
         super();
 
         this.setLayout( new java.awt.BorderLayout() );
@@ -118,7 +116,7 @@ public class DOMInspector extends JPanel {
         this.scroll = new JScrollPane( tree );
 
         splitPane = null;
-        if ( xsr == null ) {
+        if ( sr == null ) {
             add( scroll, "Center" );
         } else {
             splitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
@@ -133,7 +131,7 @@ public class DOMInspector extends JPanel {
         this.add( close, "South" );
         this.setPreferredSize( new Dimension( 300, 300 ) );
 
-        setForDocument( doc, context, xsr );
+        setForDocument( doc, context, sr );
 
         close.addActionListener(
                     new ActionListener() {
@@ -172,9 +170,9 @@ public class DOMInspector extends JPanel {
      * @param context  The new forDocument value
      * @param xsr      The new forDocument value
      */
-    public void setForDocument( Document doc, Context context, XRStyleReference xsr ) {
+    public void setForDocument( Document doc, Context context, StyleReference sr ) {
         this.doc = doc;
-        this.xrStyleReference = xsr;
+        this.styleReference = sr;
         this.context = context;
         this.initForCurrentDocument();
     }
@@ -201,16 +199,17 @@ public class DOMInspector extends JPanel {
             tree.setCellRenderer( new DOMTreeCellRenderer() );
         }
 
-        if ( xrStyleReference != null ) {
+        if ( styleReference != null ) {
             if ( elementPropPanel != null ) {
                 splitPane.remove( elementPropPanel );
             }
-            elementPropPanel = new ElementPropertiesPanel( context, xrStyleReference );
+            elementPropPanel = new ElementPropertiesPanel( context, styleReference );
             splitPane.setRightComponent( elementPropPanel );
 
             tree.removeTreeSelectionListener( nodeSelectionListener );
 
-            nodeSelectionListener = new DOMSelectionListener( tree, xrStyleReference, elementPropPanel );
+            //nodeSelectionListener = new DOMSelectionListener( tree, styleReference, elementPropPanel );
+            nodeSelectionListener = new DOMSelectionListener( tree, elementPropPanel );
             tree.addTreeSelectionListener( nodeSelectionListener );
         }
     }
@@ -227,7 +226,7 @@ class ElementPropertiesPanel extends JPanel {
     /** Description of the Field */
     private Context _context;
     /** Description of the Field */
-    private XRStyleReference _xsr;
+    private StyleReference _sr;
     /** Description of the Field */
     private JTable _properties;
     /** Description of the Field */
@@ -239,10 +238,10 @@ class ElementPropertiesPanel extends JPanel {
      * @param context  PARAM
      * @param xsr      PARAM
      */
-    ElementPropertiesPanel( Context context, XRStyleReference xsr ) {
+    ElementPropertiesPanel( Context context, StyleReference sr ) {
         super();
         this._context = context;
-        this._xsr = xsr;
+        this._sr = sr;
 
         this._properties = new PropertiesJTable();
         this._defaultTableModel = new DefaultTableModel();
@@ -277,18 +276,11 @@ class ElementPropertiesPanel extends JPanel {
      */
     private TableModel tableModel( Node node )
         throws Exception {
-        List props = new ArrayList();
-        XRElement xrElem = _xsr.getNodeXRElement( node );
-        if ( xrElem == null ) {
+        if ( node.getNodeType() != Node.ELEMENT_NODE ) {
             Toolkit.getDefaultToolkit().beep();
             return _defaultTableModel;
         }
-        Iterator iter = xrElem.derivedStyle().listXRProperties();
-        while ( iter.hasNext() ) {
-            XRProperty prop = (XRProperty)iter.next();
-            prop = xrElem.derivedStyle().propertyByName( _context, prop.propertyName() );
-            props.add( prop );
-        }
+        Map props = _sr.getDerivedPropertiesMap((Element) node);
         return new PropertiesTableModel( props );
     }
 
@@ -328,10 +320,10 @@ class ElementPropertiesPanel extends JPanel {
                 label.setFont( propLabelFont );
             } else if ( col == 2 ) {
                 PropertiesTableModel pmodel = (PropertiesTableModel)this.getModel();
-                XRProperty prop = (XRProperty)pmodel._properties.get( row );
-                XRValue actual = prop.actualValue();
-                if ( actual.cssValue().getCssText().startsWith( "rgb" ) ) {
-                    label.setBackground( actual.asColor() );
+                Map.Entry me = (Map.Entry) pmodel._properties.entrySet().toArray()[row];
+                CSSPrimitiveValue cpv = (CSSPrimitiveValue) me.getValue();
+                if ( cpv.getCssText().startsWith( "rgb" ) ) {
+                    label.setBackground( org.xhtmlrenderer.css.util.ConversionUtil.rgbToColor( cpv.getRGBColorValue() ));
                 }
             }
             return (TableCellRenderer)label;
@@ -345,18 +337,19 @@ class ElementPropertiesPanel extends JPanel {
      */
     class PropertiesTableModel extends AbstractTableModel {
         /** Description of the Field */
-        String _colNames[] = {"Property Name", "Text", "Value", "Important-Inherit"};
+        //String _colNames[] = {"Property Name", "Text", "Value", "Important-Inherit"};
+        String _colNames[] = {"Property Name", "Text", "Value"};
 
         /** Description of the Field */
-        List _properties;
+        Map _properties;
 
         /**
          * Constructor for the PropertiesTableModel object
          *
          * @param xrProperties  PARAM
          */
-        PropertiesTableModel( List xrProperties ) {
-            _properties = xrProperties;
+        PropertiesTableModel( Map cssProperties ) {
+            _properties = cssProperties;
         }
 
         /**
@@ -395,30 +388,31 @@ class ElementPropertiesPanel extends JPanel {
          * @return     The valueAt value
          */
         public Object getValueAt( int row, int col ) {
-            XRProperty prop = (XRProperty)_properties.get( row );
-            XRValue actual = prop.actualValue();
+            Map.Entry me = (Map.Entry) _properties.entrySet().toArray()[row];
+            CSSPrimitiveValue cpv = (CSSPrimitiveValue) me.getValue();
 
             Object val = null;
             switch ( col ) {
 
                 case 0:
-                    val = prop.propertyName();
+                    val = me.getKey();
                     break;
                 case 1:
-                    val = actual.cssValue().getCssText();
+                    val = cpv.getCssText();
                     break;
                 case 2:
-                    if ( ValueConstants.isNumber( ( (CSSPrimitiveValue)actual.cssValue() ).getPrimitiveType() ) ) {
-                        val = new Float( actual.asFloat() );
+                    if ( ValueConstants.isNumber( cpv.getPrimitiveType() ) ) {
+                        val = new Float(cpv.getFloatValue(cpv.getPrimitiveType()));
                     } else {
                         val = "";//actual.cssValue().getCssText();
                     }
                     break;
-                case 3:
-                    val = ( actual.isImportant() ? "!Imp" : "" ) +
+                /* ouch, can't do this now: case 3:
+                    val = ( cpv.actual.isImportant() ? "!Imp" : "" ) +
                             " " +
                             ( actual.forcedInherit() ? "Inherit" : "" );
                     break;
+                 */
             }
             return val;
         }
@@ -447,7 +441,7 @@ class DOMSelectionListener implements TreeSelectionListener {
     /** Description of the Field */
     private JTree _tree;
     /** Description of the Field */
-    private XRStyleReference _xsr;
+    //private StyleReference _sr;
     /** Description of the Field */
     private ElementPropertiesPanel _elemPropPanel;
 
@@ -458,9 +452,10 @@ class DOMSelectionListener implements TreeSelectionListener {
      * @param xsr    PARAM
      * @param panel  PARAM
      */
-    DOMSelectionListener( JTree tree, XRStyleReference xsr, ElementPropertiesPanel panel ) {
+    //DOMSelectionListener( JTree tree, StyleReference sr, ElementPropertiesPanel panel ) {
+    DOMSelectionListener( JTree tree, ElementPropertiesPanel panel ) {
         _tree = tree;
-        _xsr = xsr;
+        //_sr = sr;
         _elemPropPanel = panel;
     }
 
@@ -752,6 +747,9 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/07 01:17:56  tobega
+ * DOMInspector now works with any StyleReference
+ *
  * Revision 1.5  2004/10/28 13:46:33  joshy
  * removed dead code
  * moved code about specific elements to the layout factory (link and br)

@@ -541,7 +541,7 @@ public class XRStyleReference implements StyleReference {
      * @param node  See comments.
      * @return      See comments.
      */
-    public XRElement getNodeXRElement( Node node ) {
+    private XRElement getNodeXRElement( Node node ) {
         return (XRElement)_nodeXRElementMap.get( node );
     }
 
@@ -1187,12 +1187,27 @@ public class XRStyleReference implements StyleReference {
 
     }
     
+    public java.util.Map getDerivedPropertiesMap(Element e) {
+        XRElement xrElem = getNodeXRElement( e );
+        Iterator iter = xrElem.derivedStyle().listXRProperties();
+        java.util.LinkedHashMap props = new java.util.LinkedHashMap();
+        while ( iter.hasNext() ) {
+            XRProperty prop = (XRProperty)iter.next();
+            prop = xrElem.derivedStyle().propertyByName( _context, prop.propertyName() );
+            props.put( prop.propertyName(), prop.actualValue().cssValue() );
+        }
+        return props;
+    }
+    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/07 01:17:55  tobega
+ * DOMInspector now works with any StyleReference
+ *
  * Revision 1.9  2004/11/05 23:53:59  tobega
  * no message
  *

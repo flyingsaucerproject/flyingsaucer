@@ -242,7 +242,7 @@ public class CSSBank extends CSSAccessor {
      * @param inherit  PARAM
      * @return         The property value
      */
-    public CSSValue getProperty( Element elem, String prop, boolean inherit ) {
+    public CSSValue getProperty(Element elem, String prop, boolean inherit) {
 
         //RuleFinder rf = new RuleFinder(this.styles);
 
@@ -340,12 +340,19 @@ public class CSSBank extends CSSAccessor {
         }
     }
     
+    public java.util.Map getDerivedPropertiesMap(Element e) {
+        return new java.util.HashMap();
+    }
+    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/07 01:17:55  tobega
+ * DOMInspector now works with any StyleReference
+ *
  * Revision 1.6  2004/11/05 23:56:41  tobega
  * no message
  *

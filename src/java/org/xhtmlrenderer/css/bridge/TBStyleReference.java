@@ -587,6 +587,16 @@ import org.xhtmlrenderer.util.XRLog;
         return (Element) node;
     }
     
+    public java.util.Map getDerivedPropertiesMap(Element e) {
+        org.xhtmlrenderer.css.style.CalculatedStyle cs = _styler.getCalculatedStyle(e);
+        java.util.LinkedHashMap props = new java.util.LinkedHashMap();
+        for(java.util.Iterator i = cs.getAvailablePropertyNames().iterator(); i.hasNext();) {
+            String propName = (String) i.next();
+            props.put(propName, cs.propertyByName(propName).computedValue().cssValue());
+        }
+        return props;
+    }
+    
 }
 /*
  * :folding=java:collapseFolds=1:noTabs=true:tabSize=4:indentSize=4:

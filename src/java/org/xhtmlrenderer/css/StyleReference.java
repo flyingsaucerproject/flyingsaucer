@@ -427,6 +427,12 @@ public interface StyleReference {
     //void parseElementStyling( Element elem )
     //    throws IOException;
     
+    /**
+     * List the derived (calculated) properties for an Element.
+     * with the property name as key and the cssValue as value.
+     */
+    public java.util.Map getDerivedPropertiesMap(Element e);
+    
     
     /**
      * Does what is needed to handle a new document (called when a new document is loaded).
@@ -444,6 +450,9 @@ public interface StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/07 01:17:55  tobega
+ * DOMInspector now works with any StyleReference
+ *
  * Revision 1.4  2004/11/04 21:50:54  tobega
  * Preparation for new matching/styling code
  *

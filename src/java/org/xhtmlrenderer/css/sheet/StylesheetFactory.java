@@ -27,6 +27,8 @@ import org.w3c.css.sac.InputSource;
 import org.w3c.dom.css.CSSStyleSheet;
 import org.w3c.dom.css.CSSStyleRule;
 
+import org.xhtmlrenderer.util.XRLog;
+
 /**
  *
  * @author  Torbjörn Gannholm
@@ -58,7 +60,7 @@ public class StylesheetFactory {
                 style = parser.parseStyleSheet( is );
             }
             catch(java.io.IOException e) {
-                
+                XRLog.exception("oops", e);
             }
 
         return new Stylesheet(style, origin);

@@ -49,7 +49,7 @@ public class CalculatedStyle {
     private CascadedStyle _matched;
 
     /** The styles matched to our owner element. */
-    private List _matchedProps;
+    //private List _matchedProps;
 
     /** The main Map of XRProperties keyed by property name, after cascade/inherit takes place. This is the map we look up properties with. Do NOT call clear() (haha). */
     private Map _derivedPropertiesByName;
@@ -84,6 +84,11 @@ public class CalculatedStyle {
 
     protected CalculatedStyle() {
         _derivedPropertiesByName = new TreeMap();
+    }
+    
+    /** Implemented for the DOMInspector of HTMLTest. Might be useful for other things too */
+    public java.util.Set getAvailablePropertyNames() {
+        return _derivedPropertiesByName.keySet();
     }
 
 

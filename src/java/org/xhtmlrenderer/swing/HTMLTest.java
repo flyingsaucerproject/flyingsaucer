@@ -342,10 +342,10 @@ public class HTMLTest extends JFrame {
                 // DOM Tree Inspector needs to work with either CSSBank
                 // or XRStyleReference--implementations are not perfectly
                 // so we have different constructors
-                if ( panel.c.css instanceof XRStyleReference ) {
-                    inspector = new DOMInspector( panel.doc, panel.c, (XRStyleReference)panel.c.css );
-                } else {
+                if ( panel.c.css instanceof CSSBank ) {
                     inspector = new DOMInspector( panel.doc );
+                } else {
+                    inspector = new DOMInspector( panel.doc, panel.c, panel.c.css );
                 }
 
                 inspectorFrame.getContentPane().add( inspector );
@@ -354,10 +354,10 @@ public class HTMLTest extends JFrame {
                 inspectorFrame.setSize( text_width, 600 );
                 inspectorFrame.show();
             } else {
-                if ( panel.c.css instanceof XRStyleReference ) {
-                    inspector.setForDocument( panel.doc, panel.c, (XRStyleReference)panel.c.css );
-                } else {
+                if ( panel.c.css instanceof CSSBank ) {
                     inspector.setForDocument( panel.doc );
+                } else {
+                    inspector.setForDocument( panel.doc, panel.c, panel.c.css );
                 }
             }
             inspectorFrame.show();
@@ -510,6 +510,9 @@ class ClickMouseListener extends MouseAdapter {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/07 01:17:56  tobega
+ * DOMInspector now works with any StyleReference
+ *
  * Revision 1.9  2004/11/06 22:15:15  tobega
  * Quick fix to run old DOMInspector
  *
