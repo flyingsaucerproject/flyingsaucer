@@ -36,8 +36,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
-import org.xhtmlrenderer.css.CSSBank;
-import org.xhtmlrenderer.css.bridge.XRStyleReference;
 import org.xhtmlrenderer.swing.DOMInspector;
 import org.xhtmlrenderer.util.u;
 
@@ -228,15 +226,7 @@ public class BrowserMenuBar extends JMenuBar {
             if ( inspector == null ) {
                 // inspectorFrame = new JFrame("DOM Tree Inspector");
 
-                // CLEAN: this is more complicated than it needs to be
-                // DOM Tree Inspector needs to work with either CSSBank
-                // or XRStyleReference--implementations are not perfectly
-                // so we have different constructors
-                if ( root.panel.view.getContext().css instanceof CSSBank ) {
-                    inspector = new DOMInspector( root.panel.view.getDocument() );
-                } else {
-                    inspector = new DOMInspector( root.panel.view.getDocument(), root.panel.view.getContext(), (XRStyleReference)root.panel.view.getContext().css );
-                }
+                inspector = new DOMInspector( root.panel.view.getDocument(), root.panel.view.getContext(), root.panel.view.getContext().css );
 
                 inspectorFrame.getContentPane().add( inspector );
 
@@ -244,11 +234,7 @@ public class BrowserMenuBar extends JMenuBar {
                 inspectorFrame.setSize( 500, 600 );
                 inspectorFrame.show();
             } else {
-                if ( root.panel.view.getContext().css instanceof CSSBank ) {
-                    inspector.setForDocument( root.panel.view.getDocument() );
-                } else {
-                    inspector.setForDocument( root.panel.view.getDocument(), root.panel.view.getContext(), (XRStyleReference)root.panel.view.getContext().css );
-                }
+               inspector.setForDocument( root.panel.view.getDocument(), root.panel.view.getContext(), root.panel.view.getContext().css );
             }
             inspectorFrame.show();
         }
@@ -420,6 +406,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/11/10 04:53:59  tobega
+ * cleaned up
+ *
  * Revision 1.11  2004/11/09 15:53:47  joshy
  * initial support for hover (currently disabled)
  * moved justification code into it's own class in a new subpackage for inline
