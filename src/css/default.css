@@ -12,7 +12,8 @@ html {
     color: #000000;
     background-color: transparent;
     background-image: none;
-    background-position: 0% 0%;
+    /* background-position: 0% 0%; */
+    background-position: top left;
     background-attachment: scroll;
     background-repeat: none;
 
