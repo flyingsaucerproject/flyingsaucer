@@ -1,3 +1,4 @@
+* { display: block; }
 meta {
 	display: none;
 }
@@ -6,10 +7,6 @@ section {
 	background-color: #ffffcc;
 	color: black;
     font-size: 12pt;
-    font-style: normal;
-    font-family: sans-serif;
-    font-weight: normal;
-    display: block;
 }
 
 pre {
