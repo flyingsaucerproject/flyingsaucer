@@ -166,9 +166,11 @@
         <jar jarfile="${dest.dir}/core-renderer.jar" compress="true" >
             <fileset dir="${dest.java.dir}">
                 <include name="**/*.class"/>
-                <include name="resources/**"/>
                 <exclude name="org/joshy/html/app"/>
                 <exclude name="**/demo/**"/>
+            </fileset>
+            <fileset dir="${dest.dir}">
+                <include name="resources/**"/>
             </fileset>
         </jar>
     </target>
@@ -299,15 +301,15 @@
     <!-- Runs a speed test after a compile -->
     <target name="test-css-speed" depends="compile">
         <java classname="org.xhtmlrenderer.test.CSSSpeedTest" 
-              classpath="${dest.java.dir}" 
               fork="${java-exec.fork.tests}">
             <sysproperty key="show-config" value="${show-config}" />
             <syspropertyset>
               <propertyref prefix="xr." />
             </syspropertyset> 
             <classpath>
-              <pathelement path="${dest.dir}" />
               <pathelement path="${basedir}" />
+              <pathelement path="${dest.dir}" />
+              <pathelement path="${dest.java.dir}" />
               <fileset dir="${libraries.dir}">
                 <include name="*.jar"/>
               </fileset>
@@ -476,6 +478,9 @@
 $Id$
 
 $Log$
+Revision 1.5  2004/10/18 17:05:06  pdoubleya
+include resources in core jar, adjust classpath for test-css-speed
+
 Revision 1.4  2004/10/18 16:45:05  pdoubleya
 Added show-config as pass-thru Sys property to targets running app from cmd line. Defined preset definition for Javac to reduce redundancy. Removed compile-test as it was redundant.
 
