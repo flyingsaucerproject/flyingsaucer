@@ -12,7 +12,7 @@ package org.xhtmlrenderer.css;
  *
  * @author  Torbj�rn Gannholm
  */
-public class StaticHtmlAttributeResolver implements net.homelinux.tobe.css.AttributeResolver {
+public class StaticHtmlAttributeResolver implements org.xhtmlrenderer.css.match.AttributeResolver {
     
     /** Creates a new instance of StaticHtmlAttributeResolver */
     public StaticHtmlAttributeResolver() {
