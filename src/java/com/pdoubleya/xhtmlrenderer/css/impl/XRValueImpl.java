@@ -393,14 +393,17 @@ public class XRValueImpl implements XRValue {
      */
     public String getStringValue() {
         assert( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
-        if ( getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT ) {
-            return _domCSSValue.getCssText(); 
-        } else {
-            if ( cssSACPrimitiveValueType() == CSSPrimitiveValue.CSS_STRING ){
-                return ( (CSSPrimitiveValue)_domCSSValue ).getStringValue();
-            } else {
-                return "NOT-A-STRING";
-            }
+        
+        switch ( getPrimitiveType()) {
+            case CSSPrimitiveValue.CSS_IDENT: // fall-thru
+            case CSSPrimitiveValue.CSS_URI:
+            return _domCSSValue.getCssText();
+        
+            case CSSPrimitiveValue.CSS_STRING:
+            return ( (CSSPrimitiveValue)_domCSSValue ).getStringValue();
+        
+            default:
+            return "NOT-A-STRING";
         }
     }
 
