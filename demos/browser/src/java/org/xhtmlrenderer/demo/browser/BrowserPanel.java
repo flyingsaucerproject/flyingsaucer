@@ -75,7 +75,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     /** Description of the Field */
     JLabel status;
     /** Description of the Field */
-    XHTMLPanel view;
+    public XHTMLPanel view;
     /** Description of the Field */
     JScrollPane scroll;
     /** Description of the Field */
@@ -449,6 +449,13 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/16 03:43:25  joshy
+ * first pass at printing support
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/11/12 20:43:29  joshy
  * added demo of custom font
  *

@@ -17,7 +17,7 @@ import java.awt.image.*;
 */
 public class Graphics2DRenderer {
     protected XHTMLPanel panel;
-    private Dimension dim;
+    protected Dimension dim;
     
     public Graphics2DRenderer() {
         panel = new XHTMLPanel();

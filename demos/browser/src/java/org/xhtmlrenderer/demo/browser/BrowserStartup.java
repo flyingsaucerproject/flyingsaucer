@@ -39,7 +39,7 @@ import org.xhtmlrenderer.util.u;
  */
 public class BrowserStartup {
     /** Description of the Field */
-    protected BrowserPanel panel;
+    public BrowserPanel panel;
     /** Description of the Field */
     protected BrowserMenuBar menu;
     /** Description of the Field */
@@ -134,6 +134,13 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/11/16 03:43:25  joshy
+ * first pass at printing support
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/11/10 17:28:54  joshy
  * initial support for anti-aliased text w/ minium
  *

@@ -113,6 +113,8 @@ public class BrowserMenuBar extends JMenuBar {
     /** Description of the Method */
     public void createLayout() {
         file.add( root.actions.open_file );
+        file.add( root.actions.print );
+        file.add( new JSeparator() );
         file.add( root.actions.quit );
         add( file );
 
@@ -478,6 +480,13 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2004/11/16 03:43:25  joshy
+ * first pass at printing support
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.17  2004/11/15 14:50:45  joshy
  * removed text code
  * Issue number:

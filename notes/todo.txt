@@ -46,18 +46,23 @@
 
 //redesign font rendering interface
     
+//make sure nested content inside of a float or abs block works
+//    (new block formatting context?)
+//add font scaling
+//add dpi awareness
+//fix line breaking bugs
+
 if something is floated or absolute it should be turned into a block
 floated divs work, but not floated spans. span should turn into a block when floated
 
-make sure nested content inside of a float or abs block works
-    (new block formatting context?)
+
+rachel in town arrive 20th @ 7, leave 5th @ 7
 
 table crashes on tbody
 table crashes on empty tr
 
 abs pos w/ bottom align
 initial printing (no media or paging support)
-fix line breaking bugs
 
 --crash w/ width = 50%
 --% width for absolute layout

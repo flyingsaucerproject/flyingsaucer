@@ -37,6 +37,7 @@ import org.xhtmlrenderer.test.*;
 import org.xhtmlrenderer.swing.*;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.layout.*;
+import org.xhtmlrenderer.demo.browser.actions.*;
 
 /**
  * Description of the Class
@@ -45,7 +46,7 @@ import org.xhtmlrenderer.layout.*;
  */
 public class BrowserActions {
     /** Description of the Field */
-    Action open_file, quit;
+    Action open_file, quit, print;
     /** Description of the Field */
     Action cut, copy, paste;
     /** Description of the Field */
@@ -88,6 +89,10 @@ public class BrowserActions {
         setAccel( open_file, KeyEvent.VK_O );
         setMnemonic( open_file, new Integer( KeyEvent.VK_O ) );
 
+        print = new PrintAction(root);
+        setAccel( print, KeyEvent.VK_P);
+        setMnemonic( print, new Integer( KeyEvent.VK_P ) );
+        
         quit =
             new AbstractAction() {
                 public void actionPerformed( ActionEvent evt ) {
@@ -302,6 +307,13 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2004/11/16 03:43:25  joshy
+ * first pass at printing support
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2004/11/13 00:16:33  joshy
  * finished copy support
  * Issue number:

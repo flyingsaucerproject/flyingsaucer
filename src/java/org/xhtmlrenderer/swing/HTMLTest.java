@@ -27,8 +27,37 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.AbstractAction;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.JSeparator;
+import javax.swing.event.MouseInputAdapter;
+import org.w3c.dom.Element;
+import java.util.Map;
+import org.w3c.dom.Node;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.simple.*;
+import org.xhtmlrenderer.extend.*;
+import org.xhtmlrenderer.layout.LayoutFactory;
+import org.xhtmlrenderer.layout.Layout;
+import org.xhtmlrenderer.layout.InlineLayout;
+import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.u;
+import java.io.*;
 import java.io.File;
 import java.net.URL;
+
+import java.awt.print.*;
+import java.awt.Graphics;
 
 
 /**
@@ -77,16 +106,19 @@ public class HTMLTest extends JFrame {
         getContentPane().add("Center", scroll);
 
         JMenuBar mb = new JMenuBar();
-        JMenu file = new JMenu("File");
-        mb.add(file);
-        file.setMnemonic('F');
-        file.add(new QuitAction());
+        JMenu file = new JMenu( "File" );
+        mb.add( file );
+        file.setMnemonic( 'F' );
+        file.add( new PrintAction("Print") );
+        file.add( new JSeparator());
+        file.add( new QuitAction() );
 
         JMenu view = new JMenu("View");
         mb.add(view);
         view.setMnemonic('V');
         view.add(new RefreshPageAction());
         view.add(new ReloadPageAction());
+
 
         /*
         JMenu test = new JMenu( "Test" );
@@ -130,14 +162,14 @@ public class HTMLTest extends JFrame {
         debugShow.add(new JCheckBoxMenuItem(new InlineBoxesAction()));
         debugShow.add(new JCheckBoxMenuItem(new FontMetricsAction()));
         
-        /*
+        
         JMenu anti = new JMenu("Anti Aliasing");
         anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("None", TextRenderer.NONE) ) );
         anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Low (Default)", TextRenderer.LOW) ) );
         anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Medium", TextRenderer.MEDIUM) ) );
         anti.add( new JCheckBoxMenuItem( new AntiAliasedAction("Highest", TextRenderer.HIGH) ) );
         debug.add( anti );
-        */
+        
         debug.add(new ShowDOMInspectorAction());
 /*
         debug.add(
@@ -450,7 +482,39 @@ public class HTMLTest extends JFrame {
             System.out.println("Reload Page triggered");
         }
     }
+
+    
+    class PrintAction extends AbstractAction {
+        public PrintAction(String text) {
+            super(text);
+        }
+        public void actionPerformed(ActionEvent evt) {
+            try {
+                u.p("printing");
+                PrinterJob printJob = PrinterJob.getPrinterJob();
+                printJob.setPrintable(new Printable() {
+                    public int print(Graphics g, PageFormat pf, int page) {
+                        u.p("printing page: " + page);
+                        if(page > 0) {
+                            return Printable.NO_SUCH_PAGE;
+                        }
+                        panel.paintComponent(g);
+                        return Printable.PAGE_EXISTS;
+                    }
+                });
+                
+                if(printJob.printDialog()) {
+                    printJob.print();
+                }
+            
+            } catch (PrinterException ex) {
+                u.p(ex);
+            }
+        }
+    }
 }
+
+
 
 
 /**
@@ -463,6 +527,13 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2004/11/16 03:43:27  joshy
+ * first pass at printing support
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.20  2004/11/15 23:02:35  tobega
  * Modified so that a http url may be given on command-line
  *
