@@ -26,6 +26,7 @@ import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.EmptyStyle;
+import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
@@ -188,5 +189,9 @@ public interface Context {
     Rectangle getFixedRectangle();
 
     Layout getLayout(Node node);
+
+    public void setNamespaceHandler(NamespaceHandler nh);
+
+    public NamespaceHandler getNamespaceHandler();
 
 }

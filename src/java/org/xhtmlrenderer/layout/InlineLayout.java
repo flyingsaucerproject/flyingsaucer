@@ -482,6 +482,9 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.77  2005/01/02 01:00:09  tobega
+* Started sketching in code for handling replaced elements in the NamespaceHandler
+*
 * Revision 1.76  2005/01/01 23:38:38  tobega
 * Cleaned out old rendering code
 *

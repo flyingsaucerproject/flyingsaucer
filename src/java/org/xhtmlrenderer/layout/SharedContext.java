@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.style.EmptyStyle;
+import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
@@ -600,12 +601,25 @@ public class SharedContext {
         return rect;
     }
 
+    private NamespaceHandler namespaceHandler;
+
+    public void setNamespaceHandler(NamespaceHandler nh) {
+        namespaceHandler = nh;
+    }
+
+    public NamespaceHandler getNamespaceHandler() {
+        return namespaceHandler;
+    }
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/01/02 01:00:09  tobega
+ * Started sketching in code for handling replaced elements in the NamespaceHandler
+ *
  * Revision 1.2  2005/01/01 08:09:20  tobega
  * Now using entirely static methods for render. Need to implement table. Need to clean.
  *

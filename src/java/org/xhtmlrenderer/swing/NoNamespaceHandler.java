@@ -22,9 +22,12 @@
 package org.xhtmlrenderer.swing;
 
 import org.apache.xpath.XPathAPI;
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -131,6 +134,10 @@ System.err.println("NoNamespace class!");
         }
 
         return refs;
+    }
+
+    public JComponent getCustomComponent(Element e, UserAgentCallback ua) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
     
     /* Not a good idea. NO good way of witing a selector. Use UserAgent defaults and css defaults

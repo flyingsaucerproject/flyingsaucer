@@ -26,8 +26,8 @@ import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.layout.content.Content;
 
-import java.awt.Color;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -84,6 +84,8 @@ public class Box {
     }
 
     public Content content;
+
+    public JComponent component = null;
 
     //public boolean restyle;//used during render if things have changed because of e.g. hover
     public boolean hover;//dynamic attribute set
@@ -637,6 +639,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/01/02 01:00:09  tobega
+ * Started sketching in code for handling replaced elements in the NamespaceHandler
+ *
  * Revision 1.34  2004/12/29 12:57:27  tobega
  * Trying to handle BFC:s right
  *

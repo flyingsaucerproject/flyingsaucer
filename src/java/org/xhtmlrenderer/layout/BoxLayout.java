@@ -365,6 +365,9 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.61  2005/01/02 01:00:08  tobega
+ * Started sketching in code for handling replaced elements in the NamespaceHandler
+ *
  * Revision 1.60  2005/01/01 23:38:37  tobega
  * Cleaned out old rendering code
  *

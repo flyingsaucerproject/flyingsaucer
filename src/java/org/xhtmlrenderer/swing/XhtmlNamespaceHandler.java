@@ -22,11 +22,14 @@
 package org.xhtmlrenderer.swing;
 
 import org.apache.xpath.XPathAPI;
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -208,6 +211,16 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
 
         return reader;
 
+    }
+
+    public JComponent getCustomComponent(Element e, UserAgentCallback ua) {
+        JComponent cc = null;
+        if (e == null) return null;
+        if (e.getNodeName().equals("img")) {
+            //TODO: this is a hack. Go via ua to get url content
+            cc = new JButton(new ImageIcon(e.getAttribute("href")));
+        }
+        return cc;
     }
 
 }

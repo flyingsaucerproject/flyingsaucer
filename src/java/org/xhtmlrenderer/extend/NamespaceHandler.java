@@ -22,8 +22,11 @@
 package org.xhtmlrenderer.extend;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+
+import javax.swing.*;
 
 /**
  * Provides knowledge specific to a certain document type, like resolving style-sheets
@@ -71,5 +74,12 @@ public interface NamespaceHandler {
     
     /** may return null */
     //public String getLang(org.w3c.dom.Element e);
+
+    /**
+     * @param e
+     * @param ua
+     * @return null if no custom component, else the custom component to draw in place of this element and its descendants.
+     */
+    public JComponent getCustomComponent(Element e, UserAgentCallback ua);
 
 }

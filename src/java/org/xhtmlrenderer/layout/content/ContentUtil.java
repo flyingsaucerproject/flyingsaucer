@@ -26,7 +26,6 @@ import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.layout.inline.WhitespaceStripper;
 
 import java.util.Iterator;
@@ -180,18 +179,6 @@ public class ContentUtil {
                 }
                 BlockContent block = new BlockContent(elem, style);
                 inlineList.add(block);
-                c.popStyle();
-                continue;
-            }
-
-            //TODO: this replaced thing is Namespace-dependent
-            if (LayoutUtil.isReplaced(c, curr)) {
-                // Uu.p("adding replaced: " + curr);
-                if (textContent != null) {
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
-                    textContent = null;
-                }
-                inlineList.add(new InlineBlockContent((Element) curr, style));
                 c.popStyle();
                 continue;
             }
@@ -415,6 +402,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/01/02 01:00:08  tobega
+ * Started sketching in code for handling replaced elements in the NamespaceHandler
+ *
  * Revision 1.25  2005/01/01 22:37:43  tobega
  * Started adding in the table support.
  *

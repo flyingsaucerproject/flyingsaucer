@@ -544,6 +544,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         this.doc = doc;
         this.url = url;
 
+        //TODO: find a reasonable way to set the namespace handler, this is wrong.
         //have to do this first
         getRenderingContext().setBaseURL(url);
         StaticXhtmlAttributeResolver ar =
@@ -555,7 +556,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
                         return false;
                     }
                 };
-        getRenderingContext().getStyleReference().setDocumentContext(getContext(), new XhtmlNamespaceHandler(), ar, doc);
+        getContext().setNamespaceHandler(new XhtmlNamespaceHandler());
+        getRenderingContext().getStyleReference().setDocumentContext(getContext(), getContext().getNamespaceHandler(), ar, doc);
 
         calcLayout();
         repaint();
@@ -874,6 +876,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/01/02 01:00:09  tobega
+ * Started sketching in code for handling replaced elements in the NamespaceHandler
+ *
  * Revision 1.23  2005/01/01 08:09:21  tobega
  * Now using entirely static methods for render. Need to implement table. Need to clean.
  *

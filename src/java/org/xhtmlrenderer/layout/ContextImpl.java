@@ -27,6 +27,7 @@ import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.EmptyStyle;
+import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
@@ -227,6 +228,14 @@ public class ContextImpl implements Context {
 
     public Rectangle getFixedRectangle() {
         return sharedContext.getFixedRectangle();
+    }
+
+    public void setNamespaceHandler(NamespaceHandler nh) {
+        sharedContext.setNamespaceHandler(nh);
+    }
+
+    public NamespaceHandler getNamespaceHandler() {
+        return sharedContext.getNamespaceHandler();
     }
 
     //the stuff that needs to have a separate instance for each run.
