@@ -299,7 +299,7 @@ public class XRPropertyImpl implements XRProperty {
         // HACK: special cases for RuleNormalizer...need to work this out cleanly
         PropertyFactory factory = (PropertyFactory)PRP_FACTORIES.get( propName );
 
-        if ( ( factory == null && cssRule.getType() == CSSRule.STYLE_RULE ) ||
+        if ( /*( factory == null && cssRule.getType() == CSSRule.STYLE_RULE ) ||*/
                 propName.indexOf( "color" ) >= 0 && !propName.equals( "border" ) ) {
             RULE_NORMALIZER.normalize( (CSSStyleRule)cssRule );
             style = ( (CSSStyleRule)cssRule ).getStyle();
@@ -376,6 +376,9 @@ public class XRPropertyImpl implements XRProperty {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2004/11/06 01:38:52  tobega
+ * fixed (?) bug of repetitive property expansions
+ *
  * Revision 1.3  2004/10/23 13:21:14  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc).
