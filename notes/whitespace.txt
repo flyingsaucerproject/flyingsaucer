@@ -1,0 +1,196 @@
+whitespace notes
+------------
+
+create new whitespace class
+redirect the code path conditionally
+
+if(prev_inline == null ||
+  prev_inline.node != node) {
+    text = node.text
+    text = transform(text)
+    whitespace = css.getwhitespace(node)
+    // do step 1
+    text = whitespace.cleanlinefeeds(text)
+    // do step 2
+    // pull out pre's for breaking
+    // still not sure here
+    
+    // do step 3
+    // convert line feeds to spaces
+    if(whitespace.equals("normal") ||
+       whitespace.equals("nowrap")) {
+       text = lf -> space regex
+    }
+    
+    // do step 4
+    if(whitespace.equals("normal") ||
+       whitespace.equals("nowrap") ||
+       whitespace.equals("preline")) {
+       text = tab -> space regex
+       text = (space)+ -> space regex
+       if(text.startsWith(space) &&
+          (prev_inline != null) &&
+          (prev_inline.whitespace == normal ||
+           prev_inline.whitespace == nowrap ||
+           prev_inline.whitespace == preline) &&
+          (prev_inline.text.endsWith(space))){
+           remove start space;
+           }
+    }
+} else {
+  text = prev_inline.mastertext
+  //adjust text for new start & ends
+}
+
+// do step 5
+// do the actual layout of lines
+
+/* skip for now
+if(is first on line) {
+    if(text.startsWith(space) &&
+        whitespace = normal ||
+        whitespace = nowrap ||
+        whitespace = preline) {
+        text.trimStartSpace
+    }
+}
+*/
+
+
+if(contains tabs) {
+    //split inlines on tabs
+    List boxes = new ArrayList();
+    String[] sections = tab_regex.split();
+    inlinebox = new inlinebox
+    inline.text = section[0]
+    inline.tab_aligned = true;
+        /*
+        // adjust avail width
+        //shift over for tab if not first one
+        sw = font.len(space) * 8
+        inline.x = inline.x + sw - (inline.x % sw)
+        */
+    //setup master start & end
+} else {
+    inline = new inlinebox()
+    inline.text = text;
+    //setup master start & end
+}
+
+breakText() {
+
+    //text pre
+    if(text pre) {
+        inline.text = break on lf
+        update start/end
+    }
+    
+    //text fits on one line
+    if(FontUtil.len(text) < avail) {
+        //inline okay so drop out early
+    }
+    
+    //text too long and pre
+    if too long for line && pre {
+        inline.text = break at lf
+        return;
+    }
+    
+    //text too long
+    if(FontUtil.len(text) > avail) {
+        //loop to find substring
+        while(true) {
+            return inline
+        }
+    }
+    
+}
+
+/* skip for now? 
+if(inline is at end of line) {
+    if(space at end and
+        normal, nowrap or preline) {
+        remove space
+    }
+}
+*/
+
+inline.master_text = text;
+return inline
+
+------------
+for each inline:
+
+           1. Each non-linefeed whitespace character surrounding a linefeed character is removed if 'white-space' is set to 'normal', 'no-wrap', or 'pre-line'.
+
+if(normal || no-wrap || pre-line) {
+    remove all whitespace before or after linefeeds
+}
+
+           2. If 'white-space' is set to 'pre' or 'pre-wrap', any sequence of spaces (U+0020) unbroken by an element boundary is treated as a sequence of non-breaking spaces. However, a line breaking opportunity exists at the end of the sequence.
+
+if(pre or pre-wrap) {
+    
+}
+
+           3. If 'white-space' is set to 'normal' or 'nowrap', linefeed characters are transformed for rendering purpose into one of the following characters: a space character, a zero width space character (U+200B), or no character (i.e. not rendered), according to UA-specific algorithms based on the content script.
+
+if(normal or nowrap) {
+    turn linefeeds into spaces (use U+200B instead?)
+}
+
+
+           4. If 'white-space' is set to 'normal', 'nowrap', or 'pre-line',
+                 1. every tab (U+0009) is converted to a space (U+0020)
+                 2. any space (U+0020) following another space (U+0020) — even a space before the inline, if that space also has 'white-space' set to 'normal', 'nowrap' or 'pre-line' — is removed.
+
+if(normal, nowrap, or preline) {
+    (\t) -> (space)
+    (space)+ -> (space)
+    if(space at beginning and
+        is prev inline and
+        prev inline ends w/ space
+        and prev inlne = normal or nowrap or preline) {
+        remove space at beginning
+    }
+}
+
+if(inline is first on line) {
+    if(space at beginning and
+        normal, nowrap or preline) {
+        remove space
+    }
+}
+
+split inlines on tabs
+inline.tabstop_aligned = true;
+position by tab stops {
+    sw = font.len(' ') * 8
+    inline.x = inline.x + sw - (inline.x % sw)
+}
+
+if(inline is at end of line) {
+    if(space at end and
+        normal, nowrap or preline) {
+        remove space
+    }
+}
+
+---------------------
+For "normal" and "no-wrap":
+Pattern normal = Pattern.compile("\s");
+String mangled = normal.matcher(original).replaceAll(" ");
+
+For "pre" and "pre-wrap":
+Pattern pre = Pattern.compile("\t");
+String[] tabbedParts = pre.split(original);
+
+For "pre-line" (there may exist alternative ways):
+Pattern preLineSplit = Pattern.compile("[ \t\x0B\f\r]*\n[ \t\x0B\f\r]*");
+String[] lines = preLineSplit.split(original);
+
+
+String mangled = normal.matcher(lines[i]).replaceAll(" ");
+
+
+
