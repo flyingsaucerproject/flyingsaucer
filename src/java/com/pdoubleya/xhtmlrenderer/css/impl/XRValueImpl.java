@@ -20,14 +20,10 @@
  */
 package com.pdoubleya.xhtmlrenderer.css.impl;
 
-import com.pdoubleya.xhtmlrenderer.css.constants.ValueConstants;
 import java.awt.Color;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.*;
 import java.util.logging.*;
-import org.w3c.dom.DOMException;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
@@ -37,6 +33,7 @@ import org.w3c.dom.css.Rect;
 import com.pdoubleya.xhtmlrenderer.css.XRElement;
 import com.pdoubleya.xhtmlrenderer.css.XRValue;
 import com.pdoubleya.xhtmlrenderer.css.constants.CSSName;
+import com.pdoubleya.xhtmlrenderer.css.constants.ValueConstants;
 import com.pdoubleya.xhtmlrenderer.css.util.ConversionUtil;
 import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
 
