@@ -1199,12 +1199,19 @@ public class XRStyleReference implements StyleReference {
         return props;
     }
     
+    public org.xhtmlrenderer.css.style.CalculatedStyle getFirstLetterStyle(Element e) {
+        return null;//not supported
+    }
+    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2004/11/07 01:31:38  tobega
+ * Added hooks for handling First-letter pseudo-element
+ *
  * Revision 1.10  2004/11/07 01:17:55  tobega
  * DOMInspector now works with any StyleReference
  *

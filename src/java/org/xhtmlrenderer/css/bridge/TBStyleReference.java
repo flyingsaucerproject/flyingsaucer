@@ -46,6 +46,7 @@ import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.layout.*;
 
 import org.xhtmlrenderer.css.style.DerivedProperty;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetFactory;
@@ -595,6 +596,10 @@ import org.xhtmlrenderer.util.XRLog;
             props.put(propName, cs.propertyByName(propName).computedValue().cssValue());
         }
         return props;
+    }
+    
+    public CalculatedStyle getFirstLetterStyle(Element e) {
+        return null;//not supported yet
     }
     
 }

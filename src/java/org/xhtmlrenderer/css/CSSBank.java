@@ -341,7 +341,11 @@ public class CSSBank extends CSSAccessor {
     }
     
     public java.util.Map getDerivedPropertiesMap(Element e) {
-        return new java.util.HashMap();
+        return new java.util.HashMap();//not supported
+    }
+    
+    public org.xhtmlrenderer.css.style.CalculatedStyle getFirstLetterStyle(Element e) {
+        return null;//not supported
     }
     
 }
@@ -350,6 +354,9 @@ public class CSSBank extends CSSAccessor {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/07 01:31:37  tobega
+ * Added hooks for handling First-letter pseudo-element
+ *
  * Revision 1.7  2004/11/07 01:17:55  tobega
  * DOMInspector now works with any StyleReference
  *

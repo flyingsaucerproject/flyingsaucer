@@ -28,6 +28,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.value.BorderColor;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.extend.AttributeResolver;
@@ -443,6 +444,11 @@ public interface StyleReference {
      * @param doc       DOM document
      **/
     public void setDocumentContext(Context context, NamespaceHandler nsh, AttributeResolver ar, Document doc);
+    
+    /**
+     * Handle the pseudoElement first-letter
+     */
+    public CalculatedStyle getFirstLetterStyle(Element e);
 
 }// end interface
 
@@ -450,6 +456,9 @@ public interface StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/07 01:31:38  tobega
+ * Added hooks for handling First-letter pseudo-element
+ *
  * Revision 1.5  2004/11/07 01:17:55  tobega
  * DOMInspector now works with any StyleReference
  *
