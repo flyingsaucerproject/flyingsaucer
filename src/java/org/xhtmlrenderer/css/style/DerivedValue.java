@@ -63,8 +63,6 @@ public class DerivedValue {
     /** Constant for CSS2 value of "inherit"  */
     private String INHERIT = "inherit";
 
-    // ASK: need to clarify if this class is for both List and Primitives, or just primitives...
-
     /** The DOM CSSValue we are given from the Parse  */
     private CSSPrimitiveValue _domCSSPrimitiveValue;
 
@@ -555,7 +553,7 @@ public class DerivedValue {
                         "Asked to convert " + _cssName + " from relative to absolute, " +
                         " don't recognize the datatype " +
                         "'" + ValueConstants.stringForSACPrimitiveType( _lengthPrimitiveType ) + "' "
-                        + _lengthPrimitiveType );
+                        + _lengthPrimitiveType + "(" + _domCSSPrimitiveValue.getCssText() + ")");
         }
         assert ( new Float( absVal ).intValue() > 0 );
 
