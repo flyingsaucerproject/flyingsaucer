@@ -1,0 +1,169 @@
+<style type="text/css">
+<!--
+.style3 {font-family: Verdana, Arial, Helvetica, sans-serif}
+body,td,th {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+body {
+	background-color: #FFFFFF;
+	margin: 5px 15% 5px 15%;
+}
+h1,h2,h3 {
+	color: #0066FF;
+	border-top: thin none #999999;
+	border-right: thin none #999999;
+	border-bottom: thin solid #999999;
+	border-left: thin none #999999;
+	background: #eee;
+	margin: 3em 0px 0px;
+}
+-->
+</style>
+
+<h1 class="headings">Flying Saucer Roadmap</h1>
+<p class="style3"><strong>Abstract:</strong> This roadmap is designed to take us from where
+  we are now, a slow partial implementation of CSS with no real use, to a fast
+  completely CSS 2.1 compliant renderer with demonstration applications and a
+  viable userbase. This document is comprised of six releases each with a distinct
+  focus and timetable. These are the definitive milestones of Flying Saucer that
+  will drive development and ensure we make real progress</p>
+<h2 class="headings">Releases:</h2>
+<ol class="style3">
+  <li>Initial release to Java.net</li>
+  <li> First progress release (7/14/04)</li>
+  <li>Cleanup release</li>
+  <li>Major infrastructure planning </li>
+</ol>
+<h3 class="headings">Release 3 : Cleanup </h3>
+<p class="style3"><strong class="headings">Purpose: </strong>to clean up the code base, fix a few outstanding bugs, and get it
+into shape for some major infrastructure changes. Also to show off the new AboutBox
+  demo and hopefully get some developer interest. This release needs to be good
+  enough to get us through the long cycle of release 4. </p>
+<p class="style3"><strong>Timetable: </strong>1 month
+(8/31?) </p>
+<ol class="style3">
+  <li>html: test jtidy add on  </li>
+  <li>html: good enough for javadocs  </li>
+  <li>tables: finish standard table layout  </li>
+  <li>tables: finish table styling  </li>
+  <li>forms: all form elements  </li>
+  <li>forms: programmatic access  </li>
+  <li>forms: get and post support  </li>
+  <li>browser: add get title to the htmlpanel  </li>
+  <li>browser: splashpage on browser  </li>
+  <li>browser: fix webstart security issues. load demos via web  </li>
+  <li>browser: reload  </li>
+  <li>apps: javadoc viewer  </li>
+  <li>apps: quickpanel (stuff html url and go)  </li>
+  <li>doc: getting started tutorial  </li>
+  <li>doc: links to good css references  </li>
+  <li>bugs: fix show stopper bugs (inft loop prob)  </li>
+</ol>
+<h3 class="headings">Release 4: Rearchitecture </h3>
+<p class="style3"><strong>Purpose: </strong>This release will have no new features. It's entire purpose is to
+  refactor the codebase, design proper interfaces to each module, and put in
+  solid unit/regression/speed tests. This will require a CVS branch, probably,
+  since we want the main branch (from v3) to still be able to take bug fixes.
+  We will also take this time to drum up more publicity.</p>
+<p class="style3"><strong>Timetable:</strong> 2 months (10/31?)</p>
+<ol class="style3">
+  <li> css: new modular infrastructure </li>
+  <li>css: new XR style objects  </li>
+  <li>css: configurable default/useragent/user/author css  </li>
+  <li>testing: headless unit tests for current supported properties </li>
+  <li>testing: auto generates compliance report  </li>
+  <li>testing: speed report
+                      logging: comprehensive configurable logging  </li>
+  <li>browser: resource caching layer  </li>
+  <li>browser: network access layer (jakarta http get?)  </li>
+  <li>doc: javadocs  </li>
+  <li>publicity: solicit other projects  </li>
+  <li>publicity: interviews  </li>
+  <li>publicity: press releases</li>
+</ol>
+<h3 class="style3">Release 5: Compliance and Advanced Features</h3>
+<p class="style3"><strong>Date:</strong> 1 month (11/31?) </p>
+<p class="style3"><strong>Purpose:</strong> build on the existing infrastructure to
+finish up the low hanging fruit in terms of missing css features.</p>
+<ol class="style3">
+  <li>css: @media
+  selection </li>
+  <li>css: @import linking to style sheets  </li>
+  <li>layout: proper list bullet positioning  </li>
+  <li>rendering: support other border types  </li>
+  <li>browser: ssl support  </li>
+  <li>browser: full mouse selection w/ styled copy
+  and paste </li>
+  <li>browser: mouse selection w/ plain text copy and paste  </li>
+  <li>apps: docbook viewer via XSLT  </li>
+  <li>browser: inline directory generation (make
+  it pretty) </li>
+  <li>doc: faq</li>
+</ol>
+<h3 class="style3">Release 6: Compliance and Advanced Features</h3>
+<p class="style3"><strong>Timetable:</strong> 2 months</p>
+<p class="style3"><strong>Purpose: </strong>full compliance for positioning
+      and partial reflow. finally implement the old non-incremental table layout
+algorithm, and do more internal refactoring. </p>
+<ol class="style3">
+  <li>layout: partial dynamic
+  reflow for :hover </li>
+  <li>rendering: partial repainting (dirty bits)  </li>
+  <li>tables: old netscape style table
+  algorithm </li>
+  <li>layout: compliant CSS positioning (absolute,
+  fixed, relative) </li>
+  <li>layout: compliant CSS float positioning  </li>
+  <li>html: good enough for standard
+  docbooks </li>
+  <li>html: good enough for yahoo and amazon  </li>
+  <li>layout: factor out hardcoded element
+  names. just use layout property </li>
+  <li>apps: docbook viewer via direct CSS  </li>
+  <li>doc: embedding/configuration docs
+  for each subsystem </li>
+  <li>doc: XML rendering</li>
+</ol>
+<h3 class="style3">Release 7: Speed </h3>
+<p class="style3"><strong>Timetable:</strong> ???</p>
+<p class="style3"><strong>Purpose: </strong>rewrite some of the
+    crufty modules for cleanness and speed. finally get proper dynamic reflow.
+    push ahead on printing and the remaining missing pieces of the renderer.</p>
+<ol class="style3">
+  <li>layout: rewrite line breaking, whitespace (fix bugs. no regex) </li>
+  <li>layout: full
+  text support (em font sizes, line spacing, word spacing) </li>
+  <li>layout: full
+  dynamic reflow </li>
+  <li>rendering: full list item support (all
+  of the weird stuff) </li>
+  <li>other: native docbook support  </li>
+  <li>css: support
+  inches and cm units </li>
+  <li>printing: basic printing  </li>
+  <li>printing:
+  css printing attributes, pagination </li>
+  <li>browser: visual display of validation  </li>
+  <li>browser:
+  font zooming </li>
+  <li>apps: chat application     </li>
+</ol>
+<h3 class="style3">Release 8: Compliance and Advanced Features</h3>
+<p class="style3"><strong>Timetable: </strong>??? </p>
+<p class="style3"><strong>Purpose: </strong>finally be able to render the css zen garden, and push ahead
+   on advanced features like frames, javascript, and aural stylesheeets. </p>
+<ol class="style3">
+  <li>layout:
+   good enough support for the css zen garden </li>
+  <li>layout: scrolling and
+     overflow </li>
+  <li>other: javascript support </li>
+  <li>other: frames support     </li>
+  <li>browser: copy and paste for table data? (to excel?) </li>
+  <li>apps: OSX Tiger Desktop
+     Widget demo </li>
+  <li>apps: rss reader     </li>
+  <li>apps: gutenberg ebook viewer </li>
+  <li>other: aural support     </li>
+</ol>
+<p class="style3">&nbsp;</p>
