@@ -65,16 +65,27 @@ bugs:
     abs pos w/ bottom align
     whitespace bugs
     
-    font family resolution
-    bottom border resolution
-    
     javadoc xhtmlpanel
     javadoc graphic2drenderer
     remove isPrinting(). check the graphics instanceof printablegraphics
     
     show current resources in browser
+    
+layout cleanups
+    cache linemetrics and ascend/dscend more
+    take out redundant functions
+    collapse fontresolver and fontresolvertest
+    move defaultlayout into boxlayout and get it all to compile
+    make layoututil w/ util functions from defaultlayout
+    create preloadbox in layout interface
+    
+browser cleanups
+    move actions out into their own code
 
 --crash w/ width = 50%
 --% width for absolute layout
 --styles on each border side
+--font family resolution
+--bottom border resolution
+    
 

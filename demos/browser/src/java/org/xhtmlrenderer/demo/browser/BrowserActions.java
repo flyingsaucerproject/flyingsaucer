@@ -25,7 +25,6 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.swing.BasicPanel;
-import org.xhtmlrenderer.test.DocumentDiffTest;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.util.u;
 
@@ -115,6 +114,7 @@ public class BrowserActions {
                         System.exit(0);
                     }
                 };
+
         setName(quit, "Quit");
         setAccel(quit, KeyEvent.VK_Q);
         setMnemonic(quit, new Integer(KeyEvent.VK_Q));
@@ -122,62 +122,18 @@ public class BrowserActions {
         cut = new EmptyAction("Cut", KeyEvent.VK_X);
         cut.setEnabled(false);
         setMnemonic(cut, new Integer(KeyEvent.VK_T));
-        copy = new EmptyAction("Copy", KeyEvent.VK_C) {
-
-            public void actionPerformed(ActionEvent evt) {
-                BasicPanel panel = root.panel.view;
-                Box start = panel.getContext().getSelectionStart();
-                Box end = panel.getContext().getSelectionEnd();
-                StringBuffer sb = new StringBuffer();
-                collectSelection(panel.getContext(), panel.getRootBox(), start, end, sb, false);
-                Toolkit tk = Toolkit.getDefaultToolkit();
-                Clipboard clip = tk.getSystemClipboard();
-                clip.setContents(new StringSelection(sb.toString()), null);
-            }
-
-            public boolean collectSelection(Context ctx, Box root, Box current, Box last, StringBuffer sb, boolean in_selection) {
-
-                if (root == current) {
-                    in_selection = true;
-                }
-                if (in_selection) {
-                    if (root instanceof LineBox) {
-                        sb.append("\n");
-                    }
-                    if (root instanceof InlineBox) {
-                        InlineBox ib = (InlineBox) root;
-                        int start = 0;
-                        int end = ib.getSubstring().length();
-                        if (ib == current) {
-                            start = ib.getTextIndex(ctx, ctx.getSelectionStartX());
-                        }
-                        if (ib == last) {
-                            end = ib.getTextIndex(ctx, ctx.getSelectionEndX());
-                        }
-                        String st = ib.getSubstring().substring(Math.max(0, start - 1), end);
-                        sb.append(st);
-                    }
-                }
-                if (root == last) {
-                    in_selection = false;
-                }
-                for (int i = 0; i < root.getChildCount(); i++) {
-                    Box child = root.getChild(i);
-                    in_selection = collectSelection(ctx, child, current, last, sb, in_selection);
-                }
-
-                return in_selection;
-            }
-        };
+        
+        copy = new CopySelectionAction(root);
         copy.setEnabled(true);
         setMnemonic(copy, new Integer(KeyEvent.VK_C));
+        setName(copy, "Copy");
+        
         paste = new EmptyAction("Paste", KeyEvent.VK_V);
         paste.setEnabled(false);
         setMnemonic(paste, new Integer(KeyEvent.VK_P));
 
 
-        backward =
-                new AbstractAction("Back") {
+        backward = new AbstractAction("Back") {
                     public void actionPerformed(ActionEvent evt) {
                         try {
                             root.panel.goBack();
@@ -187,14 +143,15 @@ public class BrowserActions {
                         }
                     }
                 };
+
         backward.setEnabled(false);
         backward.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
                         InputEvent.ALT_MASK));
 
 
-        forward =
-                new AbstractAction("Forward") {
+        
+        forward = new AbstractAction("Forward") {
                     public void actionPerformed(ActionEvent evt) {
                         try {
                             root.panel.goForward();
@@ -209,8 +166,8 @@ public class BrowserActions {
                 KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
                         InputEvent.ALT_MASK));
 
-        refresh =
-                new EmptyAction("Refresh Page") {
+                        
+        refresh = new EmptyAction("Refresh Page") {
                     public void actionPerformed(ActionEvent evt) {
                         try {
                             root.panel.view.invalidate();
@@ -223,8 +180,7 @@ public class BrowserActions {
         refresh.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke("F5"));
 
-        reload =
-                new EmptyAction("Reload") {
+        reload = new EmptyAction("Reload") {
                     public void actionPerformed(ActionEvent evt) {
                         try {
                             root.panel.reloadPage();
@@ -238,8 +194,7 @@ public class BrowserActions {
                 KeyStroke.getKeyStroke(KeyEvent.VK_F5,
                         InputEvent.SHIFT_MASK));
 
-        load =
-                new AbstractAction("Load") {
+        load = new AbstractAction("Load") {
                     public void actionPerformed(ActionEvent evt) {
                         try {
                             String url_text = root.panel.url.getText();
@@ -251,38 +206,7 @@ public class BrowserActions {
                     }
                 };
 
-        generate_diff =
-                new AbstractAction("Generate Diff") {
-                    public void actionPerformed(ActionEvent evt) {
-                        try {
-
-                            URL url = root.panel.view.getURL();
-                            if (url != null) {
-                                if (url.toString().startsWith("file:")) {
-                                    String str = url.toString();
-                                    str = str.substring(6, str.length() - 6);
-                                    if (new File(str + ".diff").exists()) {
-                                        int n = JOptionPane.showConfirmDialog(root.panel.view,
-                                                "Diff already exists. Overwrite?",
-                                                "Warning",
-                                                JOptionPane.OK_CANCEL_OPTION);
-                                        if (n != JOptionPane.OK_OPTION) {
-                                            return;
-                                        }
-                                    }
-                                    DocumentDiffTest.generateTestFile(str + ".xhtml",
-                                            str + ".diff",
-                                            500, 500);
-                                    u.p("wrote out: " + str + ".diff");
-                                }
-                            }
-
-                        } catch (Exception ex) {
-                            u.p(ex);
-                        }
-                    }
-                };
-                
+        generate_diff = new GenerateDiffAction(root);
         increase_font = new FontSizeAction(root, 1.2f);
         decrease_font = new FontSizeAction(root, 1f/1.2f);
         setName(increase_font,"A+");
@@ -327,6 +251,15 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2004/11/18 00:45:56  joshy
+ * moved more browser actions into their own classes
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.9  2004/11/17 14:58:17  joshy
  * added actions for font resizing
  *
