@@ -96,6 +96,7 @@
 //codify the demo filebrowser
 //codify the photo gallery demo
 
+call mike wolf at: 603 624 7370
 
 AA the bullets
 fix explict height bug (in photo gallery)
@@ -115,6 +116,7 @@ jtable -> report -> printed doc demo
 
 
 rachel in town arrive 20th @ 7, leave 5th @ 7
+
 
 --crash w/ width = 50%
 --% width for absolute layout

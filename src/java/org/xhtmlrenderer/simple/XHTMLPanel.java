@@ -5,6 +5,7 @@ import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.util.u;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.io.InputStream;
 import java.net.URL;
 import org.w3c.dom.Document;
@@ -73,8 +74,8 @@ public class XHTMLPanel extends BasicPanel {
         setDocument(url);
     }
 
-    public void setDocument(Document doc) {
-        setDocument(doc, null);
+    public void setDocument(Document doc) throws MalformedURLException {
+        setDocument(doc, new File(".").toURL());
     }
 
     public void setDocument(URL url) throws Exception {
