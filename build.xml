@@ -34,7 +34,8 @@
         <javac
             srcdir="src/java"
             destdir="build/classes"
-            debug="on">
+            debug="on"
+            source="1.4">
             <classpath>
                 <fileset dir="lib">
                     <include name="*.jar"/>
