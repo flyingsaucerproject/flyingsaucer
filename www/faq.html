@@ -225,11 +225,11 @@ Configuration file.</p>
 <p>If you think an override is not taking, you can change the logging behavior
 of the Configuration class. Because of inter-dependencies between Configuration
 and the logging system, this is a special-case key, using the System property
-<code>show_config</code>. The allowed values are from the 
+<code>show-config</code>. The allowed values are from the 
 <code>java.util.logging.Level</code> class. Use ALL to show a lot of detail about
 Configuration startup, OFF for none, and INFO for regular output, like this
 <pre>
-java -Dshow_config=ALL org.xhtmlrenderer.HTMLPanel
+java -Dshow-config=ALL org.xhtmlrenderer.HTMLPanel
 </pre>
 This will output messages to the console as Configuration is loading and looking
 for overrides to the default property values for the renderer.
