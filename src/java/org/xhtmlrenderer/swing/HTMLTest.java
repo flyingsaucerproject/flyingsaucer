@@ -132,6 +132,7 @@ public class HTMLTest extends JFrame {
         debugShow.add( new JCheckBoxMenuItem( new BoxOutlinesAction() ) );
         debugShow.add( new JCheckBoxMenuItem( new LineBoxOutlinesAction() ) );
         debugShow.add( new JCheckBoxMenuItem( new InlineBoxesAction() ) );
+        debugShow.add( new JCheckBoxMenuItem( new FontMetricsAction() ) );
 
         debug.add( new ShowDOMInspectorAction() );
 
@@ -305,6 +306,24 @@ public class HTMLTest extends JFrame {
          */
         public void actionPerformed( ActionEvent evt ) {
             panel.c.debug_draw_inline_boxes = !panel.c.debug_draw_inline_boxes;
+            panel.repaint();
+        }
+    }
+
+    class FontMetricsAction extends AbstractAction {
+        /** Constructor for the InlineBoxesAction object */
+        FontMetricsAction() {
+            super( "Show Font Metrics" );
+            putValue( MNEMONIC_KEY, new Integer( KeyEvent.VK_F ) );
+        }
+
+        /**
+         * Description of the Method
+         *
+         * @param evt  PARAM
+         */
+        public void actionPerformed( ActionEvent evt ) {
+            panel.c.debug_draw_font_metrics = !panel.c.debug_draw_font_metrics;
             panel.repaint();
         }
     }
@@ -510,6 +529,15 @@ class ClickMouseListener extends MouseAdapter {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/11/09 00:36:09  joshy
+ * fixed more text alignment
+ * added menu item to show font metrics
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.11  2004/11/08 08:22:17  tobega
  * Added support for pseudo-elements
  *

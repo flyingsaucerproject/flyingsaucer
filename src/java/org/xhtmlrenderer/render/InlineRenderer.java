@@ -233,6 +233,16 @@ public class InlineRenderer extends BoxRenderer {
             GraphicsUtil.draw( c.getGraphics(), new Rectangle( lx + inline.x + 1, ly + inline.y + 1 - inline.height,
                     inline.width - 2, inline.height - 2 ), Color.green );
         }
+        
+        if ( c.debugDrawFontMetrics() ) {
+            g.setColor(Color.red);
+            g.drawLine(ix,iy, ix+inline.width, iy);
+            iy += lm.getDescent();
+            g.drawLine(ix,iy, ix+inline.width, iy);
+            iy -= lm.getDescent();
+            iy -= lm.getAscent();
+            g.drawLine(ix,iy, ix+inline.width, iy);
+        }
 
         // restore the old font
         c.getGraphics().setFont( oldfont );

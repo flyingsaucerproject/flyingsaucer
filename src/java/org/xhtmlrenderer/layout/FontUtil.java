@@ -227,7 +227,8 @@ public class FontUtil {
             //u.p("font = " + font);
             FontMetrics fm = c.getGraphics().getFontMetrics( font );
             //noop    box.y = box.y;
-            box.y -= fm.getDescent();
+            box.y += fm.getDescent();
+            //u.p("fm.descent = " + fm.getDescent());
         }
         // works okay i think
         if ( vertical_align.equals( "super" ) ) {
@@ -266,6 +267,8 @@ public class FontUtil {
             //u.p("after y = " + box.y);
             box.vset = false;
         }
+        
+        //u.p("box.y = " + box.y);
         //u.p("returning box: " + box);
     }
 
@@ -479,6 +482,15 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/09 00:36:08  joshy
+ * fixed more text alignment
+ * added menu item to show font metrics
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/11/08 21:18:21  joshy
  * preliminary small-caps implementation
  *

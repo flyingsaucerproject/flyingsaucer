@@ -93,6 +93,7 @@ public class Context {
 
     /** Description of the Field */
     public boolean debug_draw_inline_boxes;
+    public boolean debug_draw_font_metrics;
 
 
     /** Description of the Field */
@@ -184,9 +185,7 @@ public class Context {
 
     /** Constructor for the Context object */
     public Context() {
-
         font_resolver = new FontResolverTest();
-
     }
 
     /**
@@ -195,7 +194,6 @@ public class Context {
      * @return   Returns
      */
     public boolean debugDrawBoxes() {
-
         return debug_draw_boxes;
     }
 
@@ -205,7 +203,6 @@ public class Context {
      * @return   Returns
      */
     public boolean debugDrawLineBoxes() {
-
         return debug_draw_line_boxes;
     }
 
@@ -215,8 +212,11 @@ public class Context {
      * @return   Returns
      */
     public boolean debugDrawInlineBoxes() {
-
         return debug_draw_inline_boxes;
+    }
+    
+    public boolean debugDrawFontMetrics() {
+        return debug_draw_font_metrics;
     }
 
     /**
@@ -843,6 +843,15 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2004/11/09 00:36:08  joshy
+ * fixed more text alignment
+ * added menu item to show font metrics
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.7  2004/11/08 16:56:51  joshy
  * added first-line pseudo-class support
  *

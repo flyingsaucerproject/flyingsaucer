@@ -156,6 +156,7 @@ public class BrowserMenuBar extends JMenuBar {
         debugShow.add( new JCheckBoxMenuItem( new BoxOutlinesAction() ) );
         debugShow.add( new JCheckBoxMenuItem( new LineBoxOutlinesAction() ) );
         debugShow.add( new JCheckBoxMenuItem( new InlineBoxesAction() ) );
+        debugShow.add( new JCheckBoxMenuItem( new FontMetricsAction() ) );
 
         debug.add( new ShowDOMInspectorAction() );
         debug.add(
@@ -321,6 +322,24 @@ public class BrowserMenuBar extends JMenuBar {
         }
     }
 
+    class FontMetricsAction extends AbstractAction {
+        /** Constructor for the InlineBoxesAction object */
+        FontMetricsAction() {
+            super( "Show Font Metrics" );
+            putValue( MNEMONIC_KEY, new Integer( KeyEvent.VK_F ) );
+        }
+
+        /**
+         * Description of the Method
+         *
+         * @param evt  PARAM
+         */
+        public void actionPerformed( ActionEvent evt ) {
+            root.panel.view.getContext().debug_draw_font_metrics = !root.panel.view.getContext().debug_draw_font_metrics;
+            root.panel.view.repaint();
+        }
+    }
+
     /**
      * Description of the Class
      *
@@ -400,6 +419,15 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2004/11/09 00:36:07  joshy
+ * fixed more text alignment
+ * added menu item to show font metrics
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.8  2004/11/07 23:24:19  joshy
  * added menu item to generate diffs
  * added diffs for multi-colored borders and inline borders

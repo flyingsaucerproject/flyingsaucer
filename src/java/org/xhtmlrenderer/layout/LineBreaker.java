@@ -457,13 +457,11 @@ public class LineBreaker {
             //u.p("block elem = " + getNearestBlockElement(node,c));
             // if there is a first line pseudo class
             CascadedStyle pseudo = c.css.getPseudoElementStyle(getNearestBlockElement(node,c),"first-line");
-            CalculatedStyle normal = c.css.getStyle(box.getRealElement());
-            CalculatedStyle merged = new CalculatedStyle(normal,pseudo);
-            //CalculatedStyle cs = c.css.getPseudoElementStyle(getNearestBlockElement(node,c),"first-line");
-            //u.p("cs = " + cs);
-            //u.p("weight = " + cs.propertyByName("font-weight").computedValue().asString());
-            //u.p("===========");
-            styleInlineBox(c,merged,box);
+            if(pseudo != null) {
+                CalculatedStyle normal = c.css.getStyle(box.getRealElement());
+                CalculatedStyle merged = new CalculatedStyle(normal,pseudo);
+                styleInlineBox(c,merged,box);
+            }
         }
         
 
@@ -553,6 +551,15 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/11/09 00:36:08  joshy
+ * fixed more text alignment
+ * added menu item to show font metrics
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.11  2004/11/08 23:53:27  joshy
  * update for first-line support
  *
