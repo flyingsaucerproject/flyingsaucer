@@ -14,7 +14,6 @@ public class BrowserMenuBar extends JMenuBar {
     public static Logger logger = Logger.getLogger("app.browser");
     BrowserStartup root;
     
-    
     JMenu file;
     JMenu edit;
     JMenu view;
@@ -85,6 +84,7 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add(new LoadAction("Selectors","demo:demos/selectors.xhtml"));
         demos.add(new LoadAction("Images","demo:demos/image.xhtml"));
         demos.add(new LoadAction("Lists","demo:demos/list.xhtml"));
+        demos.add(new LoadAction("Tables","demo:demos/table.xhtml"));
         try {
             demos.add(new LoadAction("File Listing (Win)","file:///c:"));
             demos.add(new LoadAction("File Listing (Unix)","file:///"));
