@@ -1,3 +1,28 @@
+/*
+todo:
+
+recombine the tablelayout and tablelayout2
+move more of the calculation code into the table package
+make a set of tests in addition to the demo
+    no span
+    col span
+    row span
+    col and row span
+    col span contents that are too big
+    row span contents that are too big
+    col and row span contents that are too big
+implement row height growing based on row spanned contents
+
+investigate margin collapsing
+support captions, headers, and footers
+
+
+
+
+
+ - joshy
+*/
+
 package org.joshy.html;
 
 import java.awt.Point;
@@ -93,11 +118,7 @@ public class TableLayout2
         
         // loop throw the rows
         CellGrid grid = table.getCellGrid();
-        //Iterator row_it = table.getRowIterator();
-        //while(row_it.hasNext()) {
         for(int y=0; y<grid.getHeight(); y++) { 
-            //Row row = (Row)row_it.next();
-            
             // create a new row box for this row
             RowBox row_box = new RowBox(0,0,0,0);
             //row_box.node = row.node;
@@ -108,63 +129,102 @@ public class TableLayout2
             
             // loop through the cells
             for(int x=0; x<grid.getWidth(); x++) {
-                //u.p("x = " + x);
+                u.p("x = " + x);
                 //u.p("grid width = " + grid.getWidth());
                 if(grid.isReal(x,y)) {
-                    //u.p("it's real");
+                    u.p("it's real");
                     
                     Cell cell = grid.getCell(x,y);
                     
                     // create a new cell box for this cell
                     CellBox cell_box = new CellBox(0,0,10,10);
-                    // set the column
+                    cell.cb = cell_box;
+                    cell_box.rb = row_box;
+                    // set the x coord based on the current column
                     cell_box.x = table.calcColumnX(column_count);
-                    //cell_box.y = table.calcRowY(row_count);
                     // set the width
                     //u.p("column count = " + column_count + " col span = " + cell.col_span);
                     cell_box.width = table.calcColumnWidth(column_count, cell.col_span);
                     cell_box.node = cell.node;
+                    
+                    // do the internal layout
+                        // save the old extents and create new with smaller width
+                        Rectangle oe = c.getExtents();
+                        c.setExtents(new Rectangle(c.getExtents().x,c.getExtents().y,
+                            cell_box.width, 100));
+                        // do child layout
+                        Layout layout = LayoutFactory.getLayout(cell.node);
+                        Box cell_contents = layout.layout(c,(Element)cell_box.node);
+                        cell_box.sub_box = cell_contents;
+                        cell_box.height = cell_box.sub_box.height;
+                        column_count += cell.col_span;
+                        // restore old extents
+                        c.setExtents(oe);
+                    
+                    
+                    // y is relative to the rowbox so it's just 0
+                    cell_box.y = 0;
                     // add the cell to the row
                     row_box.cells.add(cell_box);
                     
-                    // save the old extents and create new with smaller width
-                    Rectangle oe = c.getExtents();
-                    c.setExtents(new Rectangle(c.getExtents().x,c.getExtents().y,
-                        cell_box.width, 100));
-                    
-                    // do child layout
-                    Layout layout = LayoutFactory.getLayout(cell.node);
-                    Box cell_contents = layout.layout(c,(Element)cell_box.node);
-                    cell_box.sub_box = cell_contents;
-                    cell_box.height = cell_box.sub_box.height;
-                    column_count += cell.col_span;
-                    
-                    // restore old extents
-                    c.setExtents(oe);
                                     
-                    // adjust the row to fit this cell
-                    if(cell_box.height > row_box.height) {
-                        row_box.height = cell_box.height;
+                    // if this is a non row spanning cell then
+                    // adjust the row height to fit this cell
+                    if(cell.row_span == 1) {
+                        if(cell_box.height > row_box.height) {
+                            row_box.height = cell_box.height;
+                        }
                     }
                     row_box.width += cell_box.width;
                     
+                } else {
+                    u.p("it's virtual");
+                    Cell cell = grid.getCell(x,y);
+                    // create a virtual cell box for this cell
+                    CellBox cell_box = CellBox.createVirtual(cell.cb);
+                    // skip doing layout
+                    row_box.cells.add(cell_box);
+                    // skip adjusting the row height for now
+                    // set row height based on real cell contents
+                    // set row width based on real cell contents
                 }
                 //u.p("looping");
             }
             //u.p("loop done");
             
-            for(int k=0; k<row_box.cells.size(); k++) {
-                CellBox cb = (CellBox)row_box.cells.get(k);
-                cb.height = row_box.height;
-                cb.sub_box.height = row_box.height;
-            }
-            
+            // move the row to the right y position
             row_height = 0;
             row_box.y = prev_row.y + prev_row.height;
             prev_row = row_box;
+            // adjust the max width
             if(row_box.width > max_width) {
                 max_width = row_box.width;
             }
+            
+            // adjust the height of each cell in this row to be the height of
+            // the row
+            for(int k=0; k<row_box.cells.size(); k++) {
+                CellBox cb = (CellBox)row_box.cells.get(k);
+                if(cb.isReal()) {
+                    cb.height = row_box.height;
+                    cb.sub_box.height = row_box.height;
+                } else {
+                    // adjusting height based on virtual
+                    //u.p("adjusting height based on virtual");
+                    CellBox real = cb.getReal();
+                    //u.p("the real cb = " + real);
+                    RowBox orig_row = real.rb;
+                    //u.p("orig row = " + orig_row);
+                    RowBox cur_row = row_box;
+                    //u.p("cur row = " + cur_row);
+                    
+                    real.height = cur_row.y - orig_row.y + cur_row.height;
+                    real.sub_box.height = real.height;
+                    //u.p("now real = " + real);
+                }
+                u.p("cell = " + cb);
+            }
+            
             
         }
         

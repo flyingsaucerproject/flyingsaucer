@@ -2,6 +2,7 @@ package org.joshy.html.table;
 
 import java.util.*;
 import org.w3c.dom.*;
+import org.joshy.html.box.CellBox;
 
 public class Cell {
     public Node node;
@@ -21,5 +22,7 @@ public class Cell {
     int getHeight() {
         return this.height;
     }
+    
+    public CellBox cb;
 }
 

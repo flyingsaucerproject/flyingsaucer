@@ -152,7 +152,15 @@ public class Box {
     }
     
     public String toString() {
-        return "Box: " + node.getNodeName()+ " (" + x + ","+y+")->("+width+" x "+height+")";
+        StringBuffer sb = new StringBuffer();
+        sb.append("Box: ");
+        if(node == null) {
+            sb.append(" null node, ");
+        } else {
+            sb.append(node.getNodeName());
+        }
+        sb.append(" (" + x + ","+y+")->("+width+" x "+height+")");
+        return sb.toString();
     }
 
 }

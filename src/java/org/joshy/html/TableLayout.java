@@ -382,19 +382,19 @@ public class TableLayout
     }
 
     protected void paintCell(Context c, CellBox cell) {
-
-        Rectangle oe = c.getExtents();
-        c.getGraphics().translate(oe.x, oe.y);
-        c.setExtents(new Rectangle(0, 0, cell.width, cell.height));
-
-        Layout layout = LayoutFactory.getLayout(cell.node);
-        layout.paint(c, cell.sub_box);
-
-        //u.p("painting cell: " + cell);
-        c.getGraphics().translate(-oe.x, -oe.y);
-        c.setExtents(oe);
-
-        // debug draw the bounds of the cell
+        if(cell.isReal()) {
+            Rectangle oe = c.getExtents();
+            c.getGraphics().translate(oe.x, oe.y);
+            c.setExtents(new Rectangle(0, 0, cell.width, cell.height));
+    
+            Layout layout = LayoutFactory.getLayout(cell.node);
+            u.p("doing cell: " + cell);
+            layout.paint(c, cell.sub_box);
+    
+            c.getGraphics().translate(-oe.x, -oe.y);
+            c.setExtents(oe);
+    
+        }
     }
 
     
