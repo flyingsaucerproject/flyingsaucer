@@ -20,6 +20,26 @@ public class BrowserStartup {
     BrowserMenuBar menu;
     JFrame frame;
     protected HistoryManager history;
+    
+    ErrorHandler error_handler =  new ErrorHandler() {
+            public void error(SAXParseException ex) {
+                logger.info("error: " + print(ex));
+            }
+            public void fatalError(SAXParseException ex) {
+                logger.info("fatal error: " + print(ex));
+            }
+            public void warning(SAXParseException ex) {
+                logger.info("warning: " + print(ex));
+            }
+            public String print(SAXParseException ex) {
+                StringBuffer sb = new StringBuffer();
+                sb.append("Exception: " + ex.getMessage());
+                sb.append("failed at column : " + ex.getColumnNumber() +
+                " on line " + ex.getLineNumber());
+                sb.append("entity:\n" + ex.getPublicId() + "\n" + ex.getSystemId());
+                return sb.toString();
+            }
+        };
         
     public BrowserStartup() {
         logger.info("starting up");
@@ -37,6 +57,8 @@ public class BrowserStartup {
         menu.init();
         menu.createLayout();
         menu.createActions();
+        
+        
     }
     
     public static void main(String[] args) {
@@ -151,9 +173,22 @@ class BrowserMenuBar extends JMenuBar {
                 System.exit(0);
             }
         });
+        SelectionMouseListener ma = new SelectionMouseListener();
+        view.addMouseListener(ma);
+        view.addMouseMotionListener(ma);
     }
     
     public static Logger logger = Logger.getLogger("app.browser");
+
+class SelectionMouseListener implements MouseListener, MouseMotionListener {
+    public void mouseClicked(MouseEvent e) { }
+    public void mouseEntered(MouseEvent e) { }
+    public void mouseExited(MouseEvent e) { }
+    public void mousePressed(MouseEvent e) { }
+    public void mouseReleased(MouseEvent e) { }
+    public void mouseDragged(MouseEvent e) { }
+    public void mouseMoved(MouseEvent e) { } 
+}
 
 class LoadAction extends AbstractAction {
     protected String url;
@@ -199,6 +234,7 @@ class BrowserPanel extends JPanel {
         reload = new JButton("Reload");
         url = new JTextField();
         view = new HTMLPanel();
+        view.setErrorHandler(root.error_handler);
         status = new JLabel("Status");
         
         int text_width = 200;
@@ -361,8 +397,9 @@ class BrowserPanel extends JPanel {
         
         
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
+        fact.setValidating(true);
         DocumentBuilder builder = fact.newDocumentBuilder();
-        builder.setErrorHandler(new ErrorHandler() {
+        builder.setErrorHandler(root.error_handler);/*  new ErrorHandler() {
             public void warning(SAXParseException ex) throws SAXException {
                 logger.info("warning: " + ex);
             }
@@ -377,7 +414,7 @@ class BrowserPanel extends JPanel {
                 setStatus("Error Loading Document");
             }
         });
-        
+        */
         Document doc = null;
         
         

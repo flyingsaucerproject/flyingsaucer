@@ -18,8 +18,13 @@ import java.awt.Rectangle;
 import javax.swing.JPanel;
 import javax.swing.JComponent;
 import javax.swing.Scrollable;
+
+import java.util.logging.*;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import javax.xml.parsers.*;
+import org.xml.sax.*;
 import org.joshy.u;
 import org.joshy.x;
 import java.net.URL;
@@ -28,6 +33,8 @@ import java.io.File;
 import org.joshy.html.forms.*;
 
 public class HTMLPanel extends JPanel implements  ComponentListener {
+    public static Logger logger = Logger.getLogger("app.browser");
+    
     //private int html_height = -1;
     //private int max_width = -1;
     public Document doc;
@@ -54,12 +61,27 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         }
         setDocument(x.loadDocument(filename),new File(filename).toURL());
     }
+    
+    protected ErrorHandler error_handler;
+    public void setErrorHandler(ErrorHandler error_handler) {
+        this.error_handler = error_handler;
+    }
+    
+    
+    private Document loadDocument(final URL url) throws Exception  {
+        DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = fact.newDocumentBuilder();
+        builder.setErrorHandler(error_handler);
+        return builder.parse(url.openStream());
+    }
+    
     public void setDocument(String filename) throws Exception {
-        setDocument(x.loadDocument(filename),new File(filename).toURL());
+        URL url = new File(filename).toURL();
+        setDocument(loadDocument(url),url);
     }
     
     public void setDocument(URL url) throws Exception {
-        setDocument(x.loadDocument(url),url);
+        setDocument(loadDocument(url),url);
     }
     
     public void setDocument(Document doc) {

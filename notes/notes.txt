@@ -118,39 +118,6 @@ redocument layout algorithm
     implement selection
     implement letter, word, and line spacing
     proper fixed width and horizontal scrolling
-    
-    
-plan to release
-    create project at java.net and get it approved
-    create home page with description
-    
-        Flying Saucer is a 100% Java strictly compliant XHTML + CSS1/2/3 renderer. We are focusing
-        on strict compliance with the complete CSS standard, mainly for embedded applications
-        like the iTunes Music Store and other next gen thick clients. This means legacy /non-compliant
-        pages (ie, the general internet) will be supported through compatibility libs rather
-        than modifying the renderer itself. We aim to be the definitive open 100% Java renderer for
-        HTML content.
-        
-        If you want to contribute or just see what's going on then please join
-        the mailing list! [link]. We need developers, beta testers, doc writers, evangelists,
-        and users. Even if you are just curious please join it.
-        
-        This is a *very challenging project* and we need some top flight people to work on
-        it. In particular we want module owners for the following:
-            CSS (parsing, converting, optimizing, rendering new features)
-            HTML->XHTML converter (support for HTML 4.0 browsers)
-            Browser component (a standalone webbrowser based on Flying Saucer)
-            Javascript support (how do we plug in rhino)
-            Rendering compliance (research the latest standards, build it, test it)
-            I18N efforts (how do we make sure the whole thing is i18n-able)
-            forms (input, select, text area, etc)
-            object and plugin support (SVG, xforms, flash, pdf)
-            printing module (we can't print anything yet!)
-            network module (ssl, redirects, image loading, etc.)
-            performance and memory optimization (how do we make the whole thing as fast and light as possible)
-    
-
-
 
 
 

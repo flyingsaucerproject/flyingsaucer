@@ -47,7 +47,11 @@ public class RuleFinder implements RuleBank {
         // since we didn't find anything, recurse up the chain
         if(inherit) {
             if(elem.getParentNode() != null) {
-                return findRule((Element)elem.getParentNode(),property,inherit);
+                Node parent = elem.getParentNode();
+                //u.p("Parent node = " + parent.getNodeName());
+                if(parent instanceof Element) {
+                    return findRule((Element)elem.getParentNode(),property,inherit);
+                }
             }
         }
         

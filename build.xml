@@ -325,7 +325,7 @@
     </target>
     
     
-    <target name="browser" depends="compile">
+    <target name="browser" depends="compile, jar">
         <java classname="org.joshy.html.app.browser.BrowserStartup" classpath="build/flyingsaucer.jar" fork="true">
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
         </java>
