@@ -186,6 +186,8 @@ public class StylesheetFactory {
      * @return      The stylesheet
      */
     public Stylesheet getStylesheet( StylesheetInfo info ) {
+        XRLog.load("Requesting stylesheet: " + info.getUri());
+        
         Stylesheet s = getCachedStylesheet( info.getUri() );
         if ( s == null && !containsStylesheet( info.getUri() ) ) {
             s = parse( info );
@@ -249,6 +251,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/02/03 23:08:26  pdoubleya
+ * .
+ *
  * Revision 1.13  2005/01/29 20:19:21  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

@@ -51,56 +51,70 @@ public class Box {
     public boolean restyle = false;
 
     // dimensions stuff
-    /** Description of the Field */
+    /** Box x-pos. */
     public int x;
-    /** Description of the Field */
+    
+    /** Box y-pos. */
     public int y;
-    /** Description of the Field */
+    
+    /** Box width. */
     public int width;
-    /** Description of the Field */
+    
+    /** Box height. */
     public int height;
 
     // position stuff
-    /** Description of the Field */
-    //public boolean relative = false;
+    /** True if the box is in fixed position. */
     public boolean fixed = false;
-    /** Description of the Field */
+    
+    /** True if the box is absolute-positioned. */
     public boolean absolute = false;
 
-    /** Description of the Field */
+    /** True if the box is floated. */
     public boolean floated = false;
 
     /** Description of the Field */
     public int top = 0;
+    
     /** Description of the Field */
     public boolean top_set = false;
+    
     /** Description of the Field */
     public int right = 0;
+    
     /** Description of the Field */
     public boolean right_set = false;
+    
     /** Description of the Field */
     public int bottom = 0;
+    
     /** Description of the Field */
     public boolean bottom_set = false;
+    
     /** Description of the Field */
     public int left = 0;
+    
     /** Description of the Field */
     public boolean left_set = false;
 
-    /** Description of the Field */
+    /** The Image shown as the Box's background. */
     public Image background_image;
+    
     /**
      * The URI for a background image; used in debugging (so we know which bg is
      * being painted)
      */
     public String background_uri;
-    /** Description of the Field */
+    
+    /** The background-repeat IdentValue. */
     public IdentValue repeat;
-    /** Description of the Field */
+    
+    /** The background-attachment IdentValue. */
     public IdentValue attachment;
 
     /** Description of the Field */
     public int background_position_vertical = 0;
+    
     /** Description of the Field */
     public int background_position_horizontal = 0;
 
@@ -114,6 +128,7 @@ public class Box {
 
     /** Description of the Field */
     public CascadedStyle firstLineStyle;
+    
     /** Description of the Field */
     public CascadedStyle firstLetterStyle;
 
@@ -121,13 +136,17 @@ public class Box {
     protected BlockFormattingContext blockFormattingContext = null;
 
     /** Description of the Field */
-    boolean haveBorders;
+    private boolean haveBorders;
+    
     /** Description of the Field */
-    Border margin;
+    private Border margin;
+    
     /** Description of the Field */
-    Border padding;
+    private Border padding;
+    
     /** Description of the Field */
-    Border border;
+    private Border border;
+    
     /** Description of the Field */
     private Box parent;
 
@@ -155,10 +174,10 @@ public class Box {
     /**
      * Constructor for the Box object
      *
-     * @param x       PARAM
-     * @param y       PARAM
-     * @param width   PARAM
-     * @param height  PARAM
+     * @param x       x-pos
+     * @param y       y-pos
+     * @param width   width
+     * @param height  height
      */
     public Box( int x, int y, int width, int height ) {
         this();
@@ -555,15 +574,6 @@ public class Box {
         margin = style.getMarginWidth( width, height );
         padding = style.getPaddingWidth( width, height );
         border = style.getBorderWidth( width, height );
-        /*
-         * CLEAN
-         * if ( margin == null ) margin = new Border();
-         * if ( padding == null ) padding = new Border();
-         * if ( border == null ) border = new Border();
-         * System.out.println("Margin " + margin);
-         * System.out.println("Padding " + padding);
-         * System.out.println("Border " + border);
-         */
         haveBorders = true;// this flag is not checked, ask patrick
     }
 }
@@ -572,6 +582,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.46  2005/02/03 23:16:16  pdoubleya
+ * .
+ *
  * Revision 1.45  2005/01/31 22:51:35  pdoubleya
  * Added caching for padding/margin/border calcs, plus alternate calls to get their totals (with and without style available). Reformatted.
  *

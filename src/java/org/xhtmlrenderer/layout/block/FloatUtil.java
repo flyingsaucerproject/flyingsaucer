@@ -154,3 +154,12 @@ public class FloatUtil {
 
 }
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.17  2005/02/03 23:14:53  pdoubleya
+ * .
+ *
+ *
+ */

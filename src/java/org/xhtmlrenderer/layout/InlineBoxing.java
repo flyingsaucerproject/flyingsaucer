@@ -59,7 +59,9 @@ public class InlineBoxing {
         Rectangle bounds = new Rectangle();
         bounds.width = c.getExtents().width;
         Border border = c.getCurrentStyle().getBorderWidth( c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight() );
+        
         Border margin = c.getCurrentStyle().getMarginWidth( c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight() );
+        
         Border padding = c.getCurrentStyle().getPaddingWidth( c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight() );
 
         //below should maybe be done somewhere else?
@@ -182,11 +184,7 @@ public class InlineBoxing {
                 // Uu.p("got back inline: " + new_inline);
 
                 // if this inline needs to be on a new line
-                if ( prev_align_inline != null && new_inline.break_before
-                /*
-                 * && !new_inline.floated
-                 */
-                         ) {
+                if ( prev_align_inline != null && new_inline.break_before ) {
                     // Uu.p("break before");
                     remaining_width = bounds.width;
                     saveLine( curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, false, blockLineHeight );
@@ -194,7 +192,7 @@ public class InlineBoxing {
                     prev_line = curr_line;
                     curr_line = newLine( box, bounds, prev_line );
                     remaining_width = FloatUtil.adjustForTab( c, curr_line, remaining_width );
-                    //c.translate(curr_line.x-prev_line.x, curr_line.y-prev_line.y);
+                    
                     //have to discard it and recalculate, particularly if this was the first line
                     //HACK: is my thinking straight? - tobe
                     prev_align_inline.break_after = true;
@@ -505,6 +503,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/02/03 23:10:10  pdoubleya
+ * .
+ *
  * Revision 1.13  2005/01/29 20:21:06  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
