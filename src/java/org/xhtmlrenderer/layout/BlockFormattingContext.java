@@ -120,10 +120,14 @@ public class BlockFormattingContext {
     }
 
     public Box pushDownLeft(Box box) {
+        return pushDownLeftRight(box, left_floats);
+    }
+
+    private Box pushDownLeftRight(Box box, List floatList) {
         // make sure the box doesn't overlap any floats
         // Uu.p("pushing down box: " + box);
-        for (int i = 0; i < left_floats.size(); i++) {
-            Box floater = (Box) left_floats.get(i);
+        for (int i = 0; i < floatList.size(); i++) {
+            Box floater = (Box) floatList.get(i);
             // Uu.p("testing against: " + floater);
             if (floater.y >= box.y && (box.x >= floater.x &&
                     box.x < floater.x + floater.width)) {
@@ -135,18 +139,7 @@ public class BlockFormattingContext {
     }
 
     public Box pushDownRight(Box box) {
-        // make sure the box doesn't overlap any floats
-        // Uu.p("pushing down box: " + box);
-        for (int i = 0; i < right_floats.size(); i++) {
-            Box floater = (Box) right_floats.get(i);
-            // Uu.p("testing against: " + floater);
-            if (floater.y >= box.y && (box.x >= floater.x &&
-                    box.x < floater.x + floater.width)) {
-                // Uu.p("pushing down " + box);
-                box.y = floater.y + floater.height;
-            }
-        }
-        return box;
+        return pushDownLeftRight(box, right_floats);
     }
 
     public Box getRightFloatX(Box box) {
