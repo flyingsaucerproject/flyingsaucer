@@ -2,8 +2,6 @@
 <project name="Flying Saucer Build File" default="help" basedir=".">
     <description>Checkout, build, test, and package the Flying Saucer project.</description>
 
-    <target name="build" depends="compile"/>
-    <target name="build-clean" depends="clean-compile"/>
     <target name="help">
         <echo message=" ant settings:       show all Ant properties to be used"/>
         <echo message=" ant clean:          clean up any compilation or distribution files made"/>
@@ -14,7 +12,7 @@
         <echo message=" ant about:          build run the about box demo"/>
     </target>
 
-    
+
     <!-- =====================================================
          init and prefab settings
          ===================================================== -->
@@ -515,57 +513,60 @@
 
     <!-- target just shows how a single test can be run -->
     <target name="test.junit.simple" depends="compile.junit">
-        <junit printsummary="withOutAndErr"
-            timeout="60000"
-            filtertrace="on"
-            haltonerror="on"
-            haltonfailure="on">
+      <junit printsummary="withOutAndErr"
+             timeout="60000"
+             filtertrace="on"
+             haltonerror="on" 
+             showoutput="on"
+             haltonfailure="on">
+             
+        <classpath>
+          <pathelement path="${basedir}" />
+          <pathelement path="${dest.dir}" />
+          <pathelement path="${dest.java.dir}" />
+          <fileset dir="${libraries.dir}">
+            <include name="*.jar"/>
+          </fileset>
+        </classpath>
+             
+        <formatter type="plain" usefile="false" />
 
-            <classpath>
-                <pathelement path="${basedir}"/>
-                <pathelement path="${dest.dir}"/>
-                <pathelement path="${dest.java.dir}"/>
-                <fileset dir="${libraries.dir}">
-                    <include name="*.jar"/>
-                </fileset>
-            </classpath>
-
-            <formatter type="plain" usefile="false"/>
-
-            <!-- run a single test -->
-            <test name="tests.public_apis.SimpleTest"/>
-        </junit>
+        <!-- run a single test -->
+        <test name="tests.public_apis.SimpleJUnitTest" />
+      </junit>
     </target>
 
-    <target name="test.junit.public-apis" depends="compile.junit">
-        <junit printsummary="withOutAndErr"
-            timeout="60000"
-            filtertrace="on"
-            haltonerror="on"
-            haltonfailure="on">
+    <target name="test.junit.public-apis" depends="compile.junit" description="Runs all JUnit unit tests.">
+      <junit printsummary="withOutAndErr" 
+             timeout="60000"
+             filtertrace="on"
+             haltonerror="on" 
+             showoutput="on"
+             haltonfailure="on">
+             
+        <!-- <sysproperty key="show-config" value="${show-config}" /> -->
+        <!-- <sysproperty key="show-config" value="ALL" /> -->
 
-            <sysproperty key="show-config" value="${show-config}"/>
+        <classpath>
+          <pathelement path="${basedir}" />
+          <pathelement path="${dest.dir}" />
+          <pathelement path="${dest.java.dir}" />
+          <fileset dir="${libraries.dir}">
+            <include name="*.jar"/>
+          </fileset>
+        </classpath>
+             
+        <formatter type="plain" usefile="false" />
 
-            <classpath>
-                <pathelement path="${basedir}"/>
-                <pathelement path="${dest.dir}"/>
-                <pathelement path="${dest.java.dir}"/>
-                <fileset dir="${libraries.dir}">
-                    <include name="*.jar"/>
-                </fileset>
-            </classpath>
-
-            <formatter type="plain" usefile="false"/>
-
-            <!-- run all class files with Test in the name in the java dest directory -->
-            <batchtest fork="no">
-                <fileset dir="${dest.java.dir}">
-                    <include name="tests/**/*Test*"/>
-                    <exclude name="tests/**/SimpleTest*"/>
-                    <exclude name="tests/**/FSCssTestCase*"/>
-                </fileset>
-            </batchtest>
-        </junit>
+        <!-- run all class files with Test in the name in the java dest directory -->
+        <batchtest fork="no">
+          <fileset dir="${dest.java.dir}">
+            <include name="tests/**/factory/*Test*" />
+            <exclude name="tests/**/Abstract*Test*" />
+            <exclude name="tests/**/SimpleJUnitTest*" />
+          </fileset>
+        </batchtest>        
+      </junit>
     </target>
 
     <!-- Builds and jars the browser demo, and runs it -->
@@ -787,6 +788,9 @@
 $Id$
 
 $Log$
+Revision 1.83  2005/01/24 14:58:05  pdoubleya
+Modified public-api test settings.
+
 Revision 1.82  2005/01/13 00:47:48  tobega
 Added preparation of values for a form submission
 
