@@ -11,11 +11,12 @@ link to RSS feed
 //    change class names and packages
 //    update code for 'showing a page'
 //        remove calls to setViewport blah
-make general util use object classloader
-host jnlp on my website
-upload zips to java.net files
+//make general util use object classloader
+//host jnlp on my website
+//upload zips to leased server
 add version number to html panel and manifest of core-renderer.jar
 //add java2html
+//update build.xml
 
     
 

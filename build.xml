@@ -501,6 +501,9 @@
             <fileset dir="${dest.dir}">
                 <include name="docs/**"/>
             </fileset>
+            <fileset dir=".">
+                <include name="doc/**"/>
+            </fileset>
         </scp>
     </target>
     
@@ -585,6 +588,14 @@
 $Id$
 
 $Log$
+Revision 1.49  2004/10/22 13:48:05  joshy
+added missing files and a quick change to fix upload support for docs
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.48  2004/10/19 18:11:07  pdoubleya
 Synchronized with test build file. CLASSPATH and other paths are now externalized in set references (fileset, patternset). Docs now uses build file javadoc target to run javadoc routine.
 
