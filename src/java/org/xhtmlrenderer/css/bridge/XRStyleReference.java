@@ -989,15 +989,15 @@ public class XRStyleReference implements StyleReference {
         SimpleSelector simple = null;
         switch ( selector.getSelectorType() ) {
             case Selector.SAC_DIRECT_ADJACENT_SELECTOR:
-                axis = net.homelinux.tobe.css.Selector.IMMEDIATE_SIBLING_AXIS;
+                axis = org.xhtmlrenderer.css.match.Selector.IMMEDIATE_SIBLING_AXIS;
                 simple = ( (SiblingSelector)selector ).getSiblingSelector();
                 break;
             case Selector.SAC_CHILD_SELECTOR:
-                axis = net.homelinux.tobe.css.Selector.CHILD_AXIS;
+                axis = org.xhtmlrenderer.css.match.Selector.CHILD_AXIS;
                 simple = ( (DescendantSelector)selector ).getSimpleSelector();
                 break;
             case Selector.SAC_DESCENDANT_SELECTOR:
-                axis = net.homelinux.tobe.css.Selector.DESCENDANT_AXIS;
+                axis = org.xhtmlrenderer.css.match.Selector.DESCENDANT_AXIS;
                 simple = ( (DescendantSelector)selector ).getSimpleSelector();
                 break;
             default:
