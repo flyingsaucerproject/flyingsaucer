@@ -225,6 +225,9 @@ public class Context {
         if(box == selection_start) {
             in_selection = true;
         }
+        if(box == selection_end && box == selection_start) {
+            in_selection = false;
+        }
     }
     public boolean inSelection(Box box) {
         if(box == selection_end ||

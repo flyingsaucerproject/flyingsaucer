@@ -320,9 +320,10 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
     public Box findBox(int x, int y) {
         return findBox(this.body_box,x,y);
     }
-    
     public Box findBox(Box box, int x, int y) {
-        //u.p("findBox(" + box + " at ("+x+","+y+")");
+        if(box instanceof LineBox || box instanceof InlineBox) {
+            //u.p("findBox(" + box + " at ("+x+","+y+")");
+        }
         Iterator it = box.getChildIterator();
         while(it.hasNext()) {
             Box bx = (Box)it.next();
@@ -334,13 +335,26 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
             ty -= bx.totalTopPadding();
             
             // test the contents
-            Box retbox = findBox(bx,tx,ty);
+            Box retbox = null;
+            retbox = findBox(bx,tx,ty);
             if(retbox != null) {
                 return retbox;
             }
             // test the box itself
             //u.p("bx test = " + bx + " " + x +","+y);
-            if(bx.contains(x-bx.x,y-bx.y)) {
+            int tty = y;
+            if(bx instanceof InlineBox) {
+                InlineBox ibx = (InlineBox)bx;
+                LineBox lbx = (LineBox)box;
+                //u.p("inline = " + ibx);
+                //u.p("inline y = " + ibx.y);
+                //u.p("inline height = " + ibx.height);
+                //u.p("line = " + lbx);
+                int off = lbx.baseline + ibx.y - ibx.height;
+                //u.p("off = " + off);
+                tty -= off;
+            }
+            if(bx.contains(x-bx.x,tty-bx.y)) {
                 return bx;
             }
         }
@@ -369,9 +383,21 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
             if(retbox != -1) {
                 return retbox;
             }
+            int tty = y;
+            if(bx instanceof InlineBox) {
+                InlineBox ibx = (InlineBox)bx;
+                LineBox lbx = (LineBox)box;
+                //u.p("inline = " + ibx);
+                //u.p("inline y = " + ibx.y);
+                //u.p("inline height = " + ibx.height);
+                //u.p("line = " + lbx);
+                int off = lbx.baseline + ibx.y - ibx.height;
+                //u.p("off = " + off);
+                tty -= off;
+            }
             // test the box itself
             //u.p("bx test = " + bx + " " + x +","+y);
-            if(bx.contains(x-bx.x,y-bx.y)) {
+            if(bx.contains(x-bx.x,tty-bx.y)) {
                 return x-bx.x;
             }
         }

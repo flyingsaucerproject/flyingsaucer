@@ -101,6 +101,8 @@ class BrowserMenuBar extends JMenuBar {
     JMenu file;
     JMenuItem quit;
     JMenuItem open_file;
+    JMenu edit;
+    JMenuItem copy;
     JMenu view;
     JMenuItem view_source;
     JMenu debug;
@@ -119,12 +121,18 @@ class BrowserMenuBar extends JMenuBar {
         demos = new JMenu("Demos");
         view = new JMenu("View");
         view_source = new JMenuItem("Page Source");
+        edit = new JMenu("Edit");
+        copy = new JMenuItem("Copy");
+        
     }
     
     public void createLayout() {
         file.add(open_file);
         file.add(quit);
         add(file);
+        
+        edit.add(copy);
+        add(edit);
         
         view.add(view_source);
         add(view);
@@ -218,6 +226,8 @@ class SelectionMouseListener implements MouseListener, MouseMotionListener {
                 int x = panel.findBoxX(e.getX(),e.getY());
                 panel.getContext().setSelectionStart(box);
                 panel.getContext().setSelectionStartX(x);
+                panel.getContext().setSelectionEnd(box);
+                panel.getContext().setSelectionEndX(x+1);
                 panel.repaint();
             }
         }
@@ -238,8 +248,9 @@ class SelectionMouseListener implements MouseListener, MouseMotionListener {
             //u.p("pressed " + box);
             // if box is text node then start selection
             if((box.node != null &&
-                box.node.getNodeName() != "body")) {
-                    
+                box.node.getNodeName() != "body") &&
+                !(box instanceof BlockBox)) {
+                //u.p("box = " + box);
                 int x = panel.findBoxX(e.getX(),e.getY());
                 panel.getContext().setSelectionEnd(box);
                 panel.getContext().setSelectionEndX(x);

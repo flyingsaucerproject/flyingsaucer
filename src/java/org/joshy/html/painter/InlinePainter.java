@@ -110,11 +110,32 @@ public class InlinePainter {
         int iy = ly + inline.y;
         int ix = lx + inline.x;
         
+        
+        // draw a selection rectangle
+        if(c.inSelection(inline)) {
+            int dw = inline.width -2;
+            int xoff = 0;
+            if(c.getSelectionEnd() == inline) {
+                dw = c.getSelectionEndX();
+            }
+            if(c.getSelectionStart() == inline) {
+                xoff = c.getSelectionStartX();
+            }
+            c.getGraphics().setColor(new Color(200,200,255));
+            c.getGraphics().fillRect(
+                lx+inline.x+xoff, ly+inline.y-inline.height,
+                dw-xoff,inline.height);
+        }
+
+        
         //adjust font for current settings
         Font oldfont = c.getGraphics().getFont();
         c.getGraphics().setFont(inline.getFont());
         Color oldcolor = c.getGraphics().getColor();
         c.getGraphics().setColor(inline.color);
+        
+
+        
         //draw the line
         //u.p("drawing: " + text + " at " + x + "," + iy);
         if(text!= null && text.length() > 0) {
@@ -146,20 +167,7 @@ public class InlinePainter {
             GraphicsUtil.draw(c.getGraphics(),new Rectangle(lx+inline.x+1,ly+inline.y+1-inline.height,
                     inline.width-2,inline.height-2),Color.green);
         }
-        if(c.inSelection(inline)) {
-            int dw = inline.width -2;
-            int xoff = 0;
-            if(c.getSelectionEnd() == inline) {
-                dw = c.getSelectionEndX();
-            }
-            if(c.getSelectionStart() == inline) {
-                xoff = c.getSelectionStartX();
-            }
-            GraphicsUtil.draw(c.getGraphics(),
-                new Rectangle(lx+inline.x+xoff,ly+inline.y-inline.height,
-                                dw-xoff,inline.height),
-                Color.red);
-        }
+        
         
         // restore the old font
         c.getGraphics().setFont(oldfont);
