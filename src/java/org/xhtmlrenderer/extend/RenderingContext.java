@@ -8,7 +8,8 @@ import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Toolkit;
 import java.net.URL;
 
 /**
@@ -24,9 +25,9 @@ public class RenderingContext {
     public RenderingContext() {
         setMedia("screen");
         setContext(new Context());
-        getContext().ctx = this;
-        getContext().css = new StyleReference(new NaiveUserAgent());
-        XRLog.render("Using CSS implementation from: " + getContext().css.getClass().getName());
+        getContext().setCtx(this);
+        getContext().setCss(new StyleReference(new NaiveUserAgent()));
+        XRLog.render("Using CSS implementation from: " + getContext().getCss().getClass().getName());
         layout_factory = new LayoutFactory();
         setTextRenderer(new Java2DTextRenderer());
     }
@@ -71,7 +72,7 @@ public class RenderingContext {
      * @return The styleReference value
      */
     public StyleReference getStyleReference() {
-        return ctx.css;
+        return ctx.getCss();
     }
 
 

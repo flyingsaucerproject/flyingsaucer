@@ -54,35 +54,35 @@ public class Context {
      * The media for this context
      */
     public String getMedia() {
-        return ctx.getMedia();
+        return getCtx().getMedia();
     }
 
     /**
      * Description of the Field
      */
-    public Graphics2D graphics;
+    private Graphics2D graphics;
 
     /**
      * Description of the Field
      */
-    public StyleReference css;
+    private StyleReference css;
 
     /**
      * Description of the Field
      */
-    public boolean debug_draw_boxes;
+    private boolean debug_draw_boxes;
 
     /**
      * Description of the Field
      */
-    public boolean debug_draw_line_boxes;
-    public boolean debug_draw_inline_boxes;
-    public boolean debug_draw_font_metrics;
+    private boolean debug_draw_line_boxes;
+    private boolean debug_draw_inline_boxes;
+    private boolean debug_draw_font_metrics;
 
     /**
      * Description of the Field
      */
-    public BasicPanel canvas;
+    private BasicPanel canvas;
 
     //public Graphics canvas_graphics;
 
@@ -94,7 +94,9 @@ public class Context {
     /**
      * Description of the Field
      */
-    //public Point placement_point;
+    public void setGraphics(Graphics2D graphics) {
+        this.graphics = graphics;
+    }
 
     /*
      * selection management code
@@ -102,24 +104,24 @@ public class Context {
     /**
      * Description of the Field
      */
-    protected Box selection_start, selection_end;
+    private Box selection_start, selection_end;
 
     /**
      * Description of the Field
      */
-    protected int selection_end_x, selection_start_x;
-
-
-    /**
-     * Description of the Field
-     */
-    protected boolean in_selection = false;
+    private int selection_end_x, selection_start_x;
 
 
     /**
      * Description of the Field
      */
-    protected int list_counter;
+    private boolean in_selection = false;
+
+
+    /**
+     * Description of the Field
+     */
+    private int list_counter;
 
     /*
      * =========== form access code =============
@@ -127,25 +129,25 @@ public class Context {
     /**
      * Description of the Field
      */
-    protected String form_name = null;
+    private String form_name = null;
     /**
      * Description of the Field
      */
-    protected Map forms = new HashMap();
+    private Map forms = new HashMap();
     /**
      * Description of the Field
      */
-    protected Map actions = new HashMap();
+    private Map actions = new HashMap();
     /**
      * the current block formatting context
      */
-    protected BlockFormattingContext bfc;
+    private BlockFormattingContext bfc;
     protected Stack bfc_stack;
 
     /**
      * Description of the Field
      */
-    Stack extents_stack = new Stack();
+    private Stack extents_stack = new Stack();
 
     /**
      * Description of the Field
@@ -176,14 +178,14 @@ public class Context {
      */
     private boolean sub_block = false;
 
-    public RenderingContext ctx;
+    private RenderingContext ctx;
 
     public RenderingContext getRenderingContext() {
-        return ctx;
+        return getCtx();
     }
 
     public TextRenderer getTextRenderer() {
-        return ctx.getTextRenderer();
+        return getCtx().getTextRenderer();
     }
 
     /**
@@ -204,7 +206,7 @@ public class Context {
 
     public void pushStyle(CascadedStyle s) {
         CalculatedStyle parent = (CalculatedStyle) styleStack.peek();
-        CalculatedStyle derived = css.getDerivedStyle(parent, s);
+        CalculatedStyle derived = getCss().getDerivedStyle(parent, s);
         styleStack.push(derived);
     }
 
@@ -222,7 +224,7 @@ public class Context {
      * @return Returns
      */
     public boolean debugDrawBoxes() {
-        return debug_draw_boxes;
+        return isDebug_draw_boxes();
     }
 
     /**
@@ -231,7 +233,7 @@ public class Context {
      * @return Returns
      */
     public boolean debugDrawLineBoxes() {
-        return debug_draw_line_boxes;
+        return isDebug_draw_line_boxes();
     }
 
     /**
@@ -240,11 +242,11 @@ public class Context {
      * @return Returns
      */
     public boolean debugDrawInlineBoxes() {
-        return debug_draw_inline_boxes;
+        return isDebug_draw_inline_boxes();
     }
 
     public boolean debugDrawFontMetrics() {
-        return debug_draw_font_metrics;
+        return isDebug_draw_font_metrics();
     }
 
     /**
@@ -256,8 +258,8 @@ public class Context {
     public void translate(int x, int y) {
         //Uu.p("trans: " + x + "," + y);
         this.graphics.translate(x, y);
-        if (bfc != null) {
-            bfc.translate(x, y);
+        if (getBfc() != null) {
+            getBfc().translate(x, y);
         }
         xoff += x;
         yoff += y;
@@ -390,10 +392,10 @@ public class Context {
      * Description of the Method
      */
     public void clearSelection() {
-        selection_end = null;
-        selection_start = null;
-        selection_start_x = -1;
-        selection_end_x = -1;
+        setSelection_end(null);
+        setSelection_start(null);
+        setSelection_start_x(-1);
+        setSelection_end_x(-1);
     }
 
     /**
@@ -402,14 +404,14 @@ public class Context {
      * @param box PARAM
      */
     public void updateSelection(Box box) {
-        if (box == selection_end) {
-            in_selection = false;
+        if (box == getSelection_end()) {
+            setIn_selection(false);
         }
-        if (box == selection_start) {
-            in_selection = true;
+        if (box == getSelection_start()) {
+            setIn_selection(true);
         }
-        if (box == selection_end && box == selection_start) {
-            in_selection = false;
+        if (box == getSelection_end() && box == getSelection_start()) {
+            setIn_selection(false);
         }
     }
 
@@ -420,11 +422,11 @@ public class Context {
      * @return Returns
      */
     public boolean inSelection(Box box) {
-        if (box == selection_end ||
-                box == selection_start) {
+        if (box == getSelection_end() ||
+                box == getSelection_start()) {
             return true;
         }
-        return in_selection;
+        return isIn_selection();
     }
 
     /**
@@ -440,7 +442,7 @@ public class Context {
             Uu.p("warning! attempted to add input field: '" + name + "' to a form without a 'name' attribute");
             return null;
         }
-        Map fields = (Map) forms.get(getForm());
+        Map fields = (Map) getForms().get(getForm());
         List field_list = new ArrayList();
         if (fields.containsKey(name)) {
             field_list = (List) fields.get(name);
@@ -483,8 +485,8 @@ public class Context {
      * @param box The new selectionStart value
      */
     public void setSelectionStart(Box box, int x) {
-        selection_start = box;
-        selection_start_x = x;
+        setSelection_start(box);
+        setSelection_start_x(x);
         if (box instanceof InlineBox) {
             InlineBox ib = (InlineBox) box;
             int i = ib.getTextIndex(this, x);
@@ -497,12 +499,12 @@ public class Context {
      * @param box The new selectionEnd value
      */
     public void setSelectionEnd(Box box, int x) {
-        selection_end = box;
-        selection_end_x = x;
+        setSelection_end(box);
+        setSelection_end_x(x);
         if (box instanceof InlineBox) {
             InlineBox ib = (InlineBox) box;
             int i = ib.getTextIndex(this, x);
-            selection_end_x = ib.getAdvance(this, i);
+            setSelection_end_x(ib.getAdvance(this, i));
         }
     }
 
@@ -513,7 +515,7 @@ public class Context {
      * @param counter The new listCounter value
      */
     public void setListCounter(int counter) {
-        this.list_counter = counter;
+        this.setList_counter(counter);
     }
 
     /**
@@ -523,10 +525,10 @@ public class Context {
      * @param action    The new form value
      */
     public void setForm(String form_name, String action) {
-        this.form_name = form_name;
+        this.setForm_name(form_name);
         if (form_name != null) {
-            forms.put(form_name, new HashMap());
-            actions.put(form_name, action);
+            getForms().put(form_name, new HashMap());
+            getActions().put(form_name, action);
         }
     }
 
@@ -624,7 +626,7 @@ public class Context {
      * @return The selectionStart value
      */
     public Box getSelectionStart() {
-        return selection_start;
+        return getSelection_start();
     }
 
     /**
@@ -633,7 +635,7 @@ public class Context {
      * @return The selectionEnd value
      */
     public Box getSelectionEnd() {
-        return selection_end;
+        return getSelection_end();
     }
 
     /**
@@ -642,7 +644,7 @@ public class Context {
      * @return The selectionStartX value
      */
     public int getSelectionStartX() {
-        return selection_start_x;
+        return getSelection_start_x();
     }
 
     /**
@@ -651,7 +653,7 @@ public class Context {
      * @return The selectionEndX value
      */
     public int getSelectionEndX() {
-        return selection_end_x;
+        return getSelection_end_x();
     }
 
     
@@ -664,7 +666,7 @@ public class Context {
      * @return The listCounter value
      */
     public int getListCounter() {
-        return list_counter;
+        return getList_counter();
     }
 
     
@@ -677,7 +679,7 @@ public class Context {
      * @return The form value
      */
     public String getForm() {
-        return this.form_name;
+        return this.getForm_name();
     }
 
     /**
@@ -687,7 +689,7 @@ public class Context {
      * @return The inputFieldComponents value
      */
     public Iterator getInputFieldComponents(String form_name) {
-        Map fields = (Map) forms.get(form_name);
+        Map fields = (Map) getForms().get(form_name);
         return fields.values().iterator();
     }
 
@@ -699,7 +701,7 @@ public class Context {
      * @return The inputFieldComponents value
      */
     public List getInputFieldComponents(String form_name, String field_name) {
-        Map fields = (Map) forms.get(form_name);
+        Map fields = (Map) getForms().get(form_name);
         List field_list = (List) fields.get(field_name);
         if (field_list == null) {
             return new ArrayList();
@@ -714,7 +716,7 @@ public class Context {
      * @return The formAction value
      */
     public String getFormAction(String form_name) {
-        return (String) actions.get(form_name);
+        return (String) getActions().get(form_name);
     }
 
     /**
@@ -724,6 +726,138 @@ public class Context {
      */
     public Map getForms() {
         return forms;
+    }
+
+    public StyleReference getCss() {
+        return css;
+    }
+
+    public void setCss(StyleReference css) {
+        this.css = css;
+    }
+
+    public boolean isDebug_draw_boxes() {
+        return debug_draw_boxes;
+    }
+
+    public void setDebug_draw_boxes(boolean debug_draw_boxes) {
+        this.debug_draw_boxes = debug_draw_boxes;
+    }
+
+    public boolean isDebug_draw_line_boxes() {
+        return debug_draw_line_boxes;
+    }
+
+    public void setDebug_draw_line_boxes(boolean debug_draw_line_boxes) {
+        this.debug_draw_line_boxes = debug_draw_line_boxes;
+    }
+
+    public boolean isDebug_draw_inline_boxes() {
+        return debug_draw_inline_boxes;
+    }
+
+    public void setDebug_draw_inline_boxes(boolean debug_draw_inline_boxes) {
+        this.debug_draw_inline_boxes = debug_draw_inline_boxes;
+    }
+
+    public boolean isDebug_draw_font_metrics() {
+        return debug_draw_font_metrics;
+    }
+
+    public void setDebug_draw_font_metrics(boolean debug_draw_font_metrics) {
+        this.debug_draw_font_metrics = debug_draw_font_metrics;
+    }
+
+    public BasicPanel getCanvas() {
+        return canvas;
+    }
+
+    public void setCanvas(BasicPanel canvas) {
+        this.canvas = canvas;
+    }
+
+    public Box getSelection_start() {
+        return selection_start;
+    }
+
+    public void setSelection_start(Box selection_start) {
+        this.selection_start = selection_start;
+    }
+
+    public Box getSelection_end() {
+        return selection_end;
+    }
+
+    public void setSelection_end(Box selection_end) {
+        this.selection_end = selection_end;
+    }
+
+    public int getSelection_end_x() {
+        return selection_end_x;
+    }
+
+    public void setSelection_end_x(int selection_end_x) {
+        this.selection_end_x = selection_end_x;
+    }
+
+    public int getSelection_start_x() {
+        return selection_start_x;
+    }
+
+    public void setSelection_start_x(int selection_start_x) {
+        this.selection_start_x = selection_start_x;
+    }
+
+    public boolean isIn_selection() {
+        return in_selection;
+    }
+
+    public void setIn_selection(boolean in_selection) {
+        this.in_selection = in_selection;
+    }
+
+    public int getList_counter() {
+        return list_counter;
+    }
+
+    public void setList_counter(int list_counter) {
+        this.list_counter = list_counter;
+    }
+
+    public String getForm_name() {
+        return form_name;
+    }
+
+    public void setForm_name(String form_name) {
+        this.form_name = form_name;
+    }
+
+    public void setForms(Map forms) {
+        this.forms = forms;
+    }
+
+    public Map getActions() {
+        return actions;
+    }
+
+    public void setActions(Map actions) {
+        this.actions = actions;
+    }
+
+    public BlockFormattingContext getBfc() {
+        return bfc;
+    }
+
+    public void setBfc(BlockFormattingContext bfc) {
+        this.bfc = bfc;
+    }
+
+    public RenderingContext getCtx() {
+        return ctx;
+    }
+
+    public void setCtx(RenderingContext ctx) {
+        this.ctx = ctx;
     }
 
     /**
@@ -768,20 +902,20 @@ public class Context {
 
 
     public BlockFormattingContext getBlockFormattingContext() {
-        return bfc;
+        return getBfc();
     }
 
     public void pushBFC(BlockFormattingContext bfc) {
-        bfc_stack.push(this.bfc);
-        this.bfc = bfc;
+        bfc_stack.push(this.getBfc());
+        this.setBfc(bfc);
     }
 
     public void popBFC() {
-        this.bfc = (BlockFormattingContext) bfc_stack.pop();
+        this.setBfc((BlockFormattingContext) bfc_stack.pop());
     }
 
     public void setBlockFormattingContext(BlockFormattingContext bfc) {
-        this.bfc = bfc;
+        this.setBfc(bfc);
     }
 
     
@@ -809,17 +943,17 @@ public class Context {
 
     public Rectangle getFixedRectangle() {
         //Uu.p("this = " + canvas);
-        Rectangle rect = canvas.getFixedRectangle();
-        rect.translate(canvas.getX(), canvas.getY());
+        Rectangle rect = getCanvas().getFixedRectangle();
+        rect.translate(getCanvas().getX(), getCanvas().getY());
         return rect;
     }
 
     public Layout getLayout(Node node) {
-        return ctx.getLayoutFactory().getLayout(this, node);
+        return getCtx().getLayoutFactory().getLayout(this, node);
     }
 
     public Renderer getRenderer(Node node) {
-        return ctx.getLayoutFactory().getRenderer(this, node);
+        return getCtx().getLayoutFactory().getRenderer(this, node);
     }
 
 }
@@ -828,6 +962,9 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2004/12/29 07:35:38  tobega
+ * Prepared for cloned Context instances by encapsulating fields
+ *
  * Revision 1.39  2004/12/28 01:48:23  tobega
  * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
  *

@@ -101,7 +101,7 @@ public class TableLayout
         TableBox table = (TableBox) createBox(c, content);
 
         //handle style
-        CascadedStyle cs = c.css.getCascadedStyle(content.getElement());
+        CascadedStyle cs = c.getCss().getCascadedStyle(content.getElement());
         c.pushStyle(cs);
         // calculate the available space
 
@@ -357,7 +357,7 @@ public class TableLayout
         Layout layout = c.getLayout(cell);
 
         //TODO: temporary hack
-        Box cell_contents = layout.layout(c, new BlockContent((Element) cell, c.css.getCascadedStyle((Element) cell)));
+        Box cell_contents = layout.layout(c, new BlockContent((Element) cell, c.getCss().getCascadedStyle((Element) cell)));
 
         cellbox.sub_box = cell_contents;
 
@@ -414,7 +414,7 @@ public class TableLayout
 
                 //if(cell.width)
 
-                if (c.css.getCascadedStyle(td).hasProperty("width")) {
+                if (c.getCss().getCascadedStyle(td).hasProperty("width")) {
 
                     //save column.width;
 
@@ -542,6 +542,9 @@ public class TableLayout
 /*
    $Id$
    $Log$
+   Revision 1.16  2004/12/29 07:35:40  tobega
+   Prepared for cloned Context instances by encapsulating fields
+
    Revision 1.15  2004/12/28 01:48:25  tobega
    More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
 

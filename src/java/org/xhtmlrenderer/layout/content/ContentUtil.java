@@ -58,7 +58,7 @@ public class ContentUtil {
         if (parentElement != null) {
             if (mayHaveFirstLine(parentStyle)) {
                 //put in a marker if there is first-line styling
-                CascadedStyle firstLine = c.css.getPseudoElementStyle(parentElement, "first-line");
+                CascadedStyle firstLine = c.getCss().getPseudoElementStyle(parentElement, "first-line");
                 if (firstLine != null) {
                     firstLineStyle = new FirstLineStyle(firstLine);
                 }
@@ -66,7 +66,7 @@ public class ContentUtil {
 
             if (mayHaveFirstLetter(parentStyle)) {
                 //put in a marker if there is first-letter styling
-                CascadedStyle firstLetter = c.css.getPseudoElementStyle(parentElement, "first-letter");
+                CascadedStyle firstLetter = c.getCss().getPseudoElementStyle(parentElement, "first-letter");
                 if (firstLetter != null) {
                     firstLetterStyle = new FirstLetterStyle(firstLetter);
                 }
@@ -74,7 +74,7 @@ public class ContentUtil {
 
             //TODO: before and after may be block!
             //<br/> handling should be done by :before content
-            CascadedStyle before = c.css.getPseudoElementStyle(parentElement, "before");
+            CascadedStyle before = c.getCss().getPseudoElementStyle(parentElement, "before");
             if (before != null && before.hasProperty(CSSName.CONTENT)) {
                 String content = ((CSSPrimitiveValue) before.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
                 if (!content.equals("")) {
@@ -107,7 +107,7 @@ public class ContentUtil {
             }
 
             Element elem = (Element) curr;
-            CascadedStyle style = c.css.getCascadedStyle(elem);
+            CascadedStyle style = c.getCss().getCascadedStyle(elem);
             c.pushStyle(style);//just remember to pop it before continue
 
             if (isHidden(style)) {
@@ -213,7 +213,7 @@ public class ContentUtil {
         }
         if (parentElement != null) {
             //TODO: after may be block!
-            CascadedStyle after = c.css.getPseudoElementStyle(parentElement, "after");
+            CascadedStyle after = c.getCss().getPseudoElementStyle(parentElement, "after");
             if (after != null && after.hasProperty(CSSName.CONTENT)) {
                 String content = ((CSSPrimitiveValue) after.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
                 if (!content.equals("")) {//a worthwhile reduncancy-check
@@ -402,6 +402,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2004/12/29 07:35:37  tobega
+ * Prepared for cloned Context instances by encapsulating fields
+ *
  * Revision 1.22  2004/12/28 01:48:23  tobega
  * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
  *

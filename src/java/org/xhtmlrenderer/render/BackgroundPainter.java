@@ -76,9 +76,9 @@ public class BackgroundPainter {
         int yoff = 0;
 
         if (block.attachment != null && block.attachment.equals("fixed")) {
-            yoff = c.canvas.getLocation().y;
+            yoff = c.getCanvas().getLocation().y;
             //TODO. make conf controlled Uu.p("setting the clip rect for fixed background");
-            c.graphics.setClip(c.canvas.getVisibleRect());
+            c.getGraphics().setClip(c.getCanvas().getVisibleRect());
         }
 
         if (block.background_image != null) {
@@ -215,6 +215,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2004/12/29 07:35:38  tobega
+ * Prepared for cloned Context instances by encapsulating fields
+ *
  * Revision 1.11  2004/12/27 09:40:48  tobega
  * Moved more styling to render stage. Now inlines have backgrounds and borders again.
  *

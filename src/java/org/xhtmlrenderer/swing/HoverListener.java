@@ -44,7 +44,7 @@ public class HoverListener extends MouseInputAdapter {
 
         // if moved out of the old block then unstyle it
         if (prev != null) {
-            boolean restyled = panel.getContext().css.isHoverStyled(prev.content.getElement());
+            boolean restyled = panel.getContext().getCss().isHoverStyled(prev.content.getElement());
             if (restyled) {
                 //prev.restyle = true;//notify rendering to restyle the box
                 prev.hover = false;
@@ -67,7 +67,7 @@ public class HoverListener extends MouseInputAdapter {
             // skip it if it's just a text child of a block. we should
             // do the block instead
             if (ib.isInlineElement() || !(ib instanceof InlineBox)) {
-                boolean restyled = panel.getContext().css.isHoverStyled(ib.content.getElement());
+                boolean restyled = panel.getContext().getCss().isHoverStyled(ib.content.getElement());
                 //Uu.p("was styled = " + ib);
 
                 // if the block has a hover style then restyle it

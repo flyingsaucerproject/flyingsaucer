@@ -313,7 +313,7 @@ public class BrowserMenuBar extends JMenuBar {
             if (inspector == null) {
                 // inspectorFrame = new JFrame("DOM Tree Inspector");
 
-                inspector = new DOMInspector(root.panel.view.getDocument(), root.panel.view.getContext(), root.panel.view.getContext().css);
+                inspector = new DOMInspector(root.panel.view.getDocument(), root.panel.view.getContext(), root.panel.view.getContext().getCss());
 
                 inspectorFrame.getContentPane().add(inspector);
 
@@ -321,7 +321,7 @@ public class BrowserMenuBar extends JMenuBar {
                 inspectorFrame.setSize(500, 600);
                 inspectorFrame.show();
             } else {
-                inspector.setForDocument(root.panel.view.getDocument(), root.panel.view.getContext(), root.panel.view.getContext().css);
+                inspector.setForDocument(root.panel.view.getDocument(), root.panel.view.getContext(), root.panel.view.getContext().getCss());
             }
             inspectorFrame.show();
         }
@@ -347,7 +347,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getContext().debug_draw_boxes = !root.panel.view.getContext().debug_draw_boxes;
+            root.panel.view.getContext().setDebug_draw_boxes(!root.panel.view.getContext().isDebug_draw_boxes());
             root.panel.view.repaint();
         }
     }
@@ -372,7 +372,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getContext().debug_draw_line_boxes = !root.panel.view.getContext().debug_draw_line_boxes;
+            root.panel.view.getContext().setDebug_draw_line_boxes(!root.panel.view.getContext().isDebug_draw_line_boxes());
             root.panel.view.repaint();
         }
     }
@@ -397,7 +397,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getContext().debug_draw_inline_boxes = !root.panel.view.getContext().debug_draw_inline_boxes;
+            root.panel.view.getContext().setDebug_draw_inline_boxes(!root.panel.view.getContext().isDebug_draw_inline_boxes());
             root.panel.view.repaint();
         }
     }
@@ -417,7 +417,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getContext().debug_draw_font_metrics = !root.panel.view.getContext().debug_draw_font_metrics;
+            root.panel.view.getContext().setDebug_draw_font_metrics(!root.panel.view.getContext().isDebug_draw_font_metrics());
             root.panel.view.repaint();
         }
     }
@@ -520,6 +520,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2004/12/29 07:35:40  tobega
+ * Prepared for cloned Context instances by encapsulating fields
+ *
  * Revision 1.24  2004/12/12 16:11:04  tobega
  * Fixed bug concerning order of inline content. Added a demo for pseudo-elements.
  *

@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.swing;
 
+import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Color;
@@ -68,12 +69,13 @@ public class LayoutThread implements Runnable {
         return false;
     }
 
-    public void startRender(Graphics g) {
+    public void startRender(Context c) {
+        Graphics g = c.getGraphics();
         g.setColor(Color.black);
         if (this.isLayoutDone()) {
             if (panel.body_box != null) {
                 try {
-                    panel.doRender();
+                    panel.doRender(c);
                 } catch (Throwable thr) {
                     Uu.p("current thread = " + Thread.currentThread());
                     Uu.p(thr);

@@ -142,7 +142,7 @@ public class LayoutFactory {
 
 
             // check for floats
-            CascadedStyle style = c.css.getCascadedStyle((Element) elem);
+            CascadedStyle style = c.getCss().getCascadedStyle((Element) elem);
             if (LayoutUtil.isFloated(style)) {
                 //Uu.p("in layout factory, found a floated element. forcing display: block");
                 return getCustomLayout("block");
@@ -333,6 +333,9 @@ public class LayoutFactory {
 * $Id$
 *
 * $Log$
+* Revision 1.27  2004/12/29 07:35:38  tobega
+* Prepared for cloned Context instances by encapsulating fields
+*
 * Revision 1.26  2004/12/12 04:18:57  tobega
 * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
 *

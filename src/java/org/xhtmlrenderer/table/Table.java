@@ -104,7 +104,7 @@ public class Table {
             return false;
         }
         // check the display value
-        CascadedStyle style = c.css.getCascadedStyle((Element) node);
+        CascadedStyle style = c.getCss().getCascadedStyle((Element) node);
         if (LayoutUtil.getDisplay(style).equals("table-row-group")) {
             return true;
         }
@@ -117,7 +117,7 @@ public class Table {
             return false;
         }
         // check the display value
-        CascadedStyle style = c.css.getCascadedStyle((Element) node);
+        CascadedStyle style = c.getCss().getCascadedStyle((Element) node);
         if (LayoutUtil.getDisplay(style).equals("table-row")) {
             return true;
         }
@@ -182,7 +182,7 @@ public class Table {
             return false;
         }
         // check the display value
-        CascadedStyle style = c.css.getCascadedStyle((Element) node);
+        CascadedStyle style = c.getCss().getCascadedStyle((Element) node);
         if (LayoutUtil.getDisplay(style).equals("table-cell")) {
             return true;
         }
@@ -268,7 +268,7 @@ public class Table {
         int col_count = 0;
         for (int i = 0; i < top_cells.size(); i++) {
             Cell cell = (Cell) top_cells.get(i);
-            if (c.css.getCascadedStyle((Element) cell.node).hasProperty("width")) {
+            if (c.getCss().getCascadedStyle((Element) cell.node).hasProperty("width")) {
                 // fixed bug that made cell sizing fail w/ %s
                 int width = (int) c.getCurrentStyle().getFloatPropertyRelative("width", avail_width);
                 //Uu.p("got width: " + width);
@@ -377,6 +377,9 @@ public class Table {
 /*
    $Id$
    $Log$
+   Revision 1.11  2004/12/29 07:35:39  tobega
+   Prepared for cloned Context instances by encapsulating fields
+
    Revision 1.10  2004/12/12 04:18:58  tobega
    Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over
 

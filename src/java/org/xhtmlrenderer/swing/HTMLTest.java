@@ -261,7 +261,7 @@ public class HTMLTest extends JFrame {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            panel.getRenderingContext().getContext().debug_draw_boxes = !panel.getRenderingContext().getContext().debug_draw_boxes;
+            panel.getRenderingContext().getContext().setDebug_draw_boxes(!panel.getRenderingContext().getContext().isDebug_draw_boxes());
             panel.repaint();
         }
     }
@@ -286,7 +286,7 @@ public class HTMLTest extends JFrame {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            panel.getRenderingContext().getContext().debug_draw_line_boxes = !panel.getRenderingContext().getContext().debug_draw_line_boxes;
+            panel.getRenderingContext().getContext().setDebug_draw_line_boxes(!panel.getRenderingContext().getContext().isDebug_draw_line_boxes());
             panel.repaint();
         }
     }
@@ -311,7 +311,7 @@ public class HTMLTest extends JFrame {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            panel.getRenderingContext().getContext().debug_draw_inline_boxes = !panel.getRenderingContext().getContext().debug_draw_inline_boxes;
+            panel.getRenderingContext().getContext().setDebug_draw_inline_boxes(!panel.getRenderingContext().getContext().isDebug_draw_inline_boxes());
             panel.repaint();
         }
     }
@@ -331,7 +331,7 @@ public class HTMLTest extends JFrame {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            panel.getRenderingContext().getContext().debug_draw_font_metrics = !panel.getRenderingContext().getContext().debug_draw_font_metrics;
+            panel.getRenderingContext().getContext().setDebug_draw_font_metrics(!panel.getRenderingContext().getContext().isDebug_draw_font_metrics());
             panel.repaint();
         }
     }
@@ -385,7 +385,7 @@ public class HTMLTest extends JFrame {
             if (inspector == null) {
                 // inspectorFrame = new JFrame("DOM Tree Inspector");
 
-                inspector = new DOMInspector(panel.doc, panel.getRenderingContext().getContext(), panel.getRenderingContext().getContext().css);
+                inspector = new DOMInspector(panel.doc, panel.getRenderingContext().getContext(), panel.getRenderingContext().getContext().getCss());
 
                 inspectorFrame.getContentPane().add(inspector);
 
@@ -393,7 +393,7 @@ public class HTMLTest extends JFrame {
                 inspectorFrame.setSize(400, 600);
                 inspectorFrame.show();
             } else {
-                inspector.setForDocument(panel.doc, panel.getRenderingContext().getContext(), panel.getRenderingContext().getContext().css);
+                inspector.setForDocument(panel.doc, panel.getRenderingContext().getContext(), panel.getRenderingContext().getContext().getCss());
             }
             inspectorFrame.show();
         }
@@ -467,6 +467,9 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2004/12/29 07:35:39  tobega
+ * Prepared for cloned Context instances by encapsulating fields
+ *
  * Revision 1.24  2004/12/12 03:33:02  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

@@ -180,7 +180,7 @@ public class TableLayout2 extends TableLayout {
                     //Uu.p("cell_box properly = " + cell_box);
                     c.setSubBlock(true);
                     //TODO: temporary hack
-                    Box cell_contents = layout.layout(c, new BlockContent((Element) cell.node, c.css.getCascadedStyle((Element) cell.node)));
+                    Box cell_contents = layout.layout(c, new BlockContent((Element) cell.node, c.getCss().getCascadedStyle((Element) cell.node)));
                     c.setSubBlock(false);
                     cell_box.sub_box = cell_contents;
                     cell_box.height = cell_box.sub_box.height;
@@ -293,6 +293,9 @@ public class TableLayout2 extends TableLayout {
 /*
    $Id$
    $Log$
+   Revision 1.14  2004/12/29 07:35:40  tobega
+   Prepared for cloned Context instances by encapsulating fields
+
    Revision 1.13  2004/12/27 07:43:33  tobega
    Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?
 

@@ -124,9 +124,9 @@ public class InlineRenderer extends BoxRenderer {
         if (inline.pushstyles != null) {
             for (Iterator i = inline.pushstyles.iterator(); i.hasNext();) {
                 StylePush sp = (StylePush) i.next();
-                c.pushStyle(c.css.getCascadedStyle(sp.getElement()));
+                c.pushStyle(c.getCss().getCascadedStyle(sp.getElement()));
                 if (inline.hover) {
-                    CascadedStyle hs = c.css.getPseudoElementStyle(sp.getElement(), "hover");
+                    CascadedStyle hs = c.getCss().getPseudoElementStyle(sp.getElement(), "hover");
                     if (hs != null) c.pushStyle(hs);
                 }
                 //Now we know that an inline element started here, handle borders and such?
@@ -166,7 +166,7 @@ public class InlineRenderer extends BoxRenderer {
                 //TODO: paint right edge and pop current border-list
                 Relative.untranslateRelative(c);
                 if (inline.hover) {
-                    CascadedStyle hs = c.css.getPseudoElementStyle(sp.getElement(), "hover");
+                    CascadedStyle hs = c.getCss().getPseudoElementStyle(sp.getElement(), "hover");
                     if (hs != null) c.popStyle();
                 }
                 c.popStyle();

@@ -206,8 +206,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
             calcLayout(g);
         }
 
-        newContext((Graphics2D) g);
-        layout_thread.startRender(g);
+        Context c = newContext((Graphics2D) g);
+        layout_thread.startRender(c);
     }
 
     /**
@@ -224,23 +224,23 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
             return;
         }
 
-        Element html = (Element) doc.getDocumentElement();
+        //Element html = (Element) doc.getDocumentElement();
         
         // CLEAN
         //Element body = Xx.child( html, "body" );
         //body = html;
 
         // set up CSS
-        newContext((Graphics2D) g);
-        getContext().setMaxWidth(0);
+        Context c = newContext((Graphics2D) g);
+        //getContext().setMaxWidth(0);
         
         // DEBUG
         XRLog.layout(Level.FINEST, "layout = " + layout);
 
-        getRenderingContext().getTextRenderer().setupGraphics(getContext().getGraphics());
+        getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
         //TODO: maybe temporary hack
-        Context c = getContext();
-        body_box = layout.layout(getContext(), new DomToplevelNode(doc));
+        //Context c = getContext();
+        body_box = layout.layout(c, new DomToplevelNode(doc));
 
         XRLog.layout(Level.FINEST, "is a fixed child: " + body_box.isChildrenExceedBounds());
         
@@ -710,17 +710,19 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
 
     /**
      * Description of the Method
+     *
+     * @param c
      */
-    protected void doRender() {
+    protected void doRender(Context c) {
         // paint the normal swing background first
         // but only if we aren't printing.
-        Graphics g = getRenderingContext().getContext().getGraphics();
+        Graphics g = c.getGraphics();
         if (!(g instanceof PrinterGraphics)) {
             g.setColor(getBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
         }
         // start painting the box tree
-        (new BodyRenderer()).paint(getRenderingContext().getContext(),
+        (new BodyRenderer()).paint(c,
                 body_box);
     }
 
@@ -784,15 +786,15 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
      *
      * @param g PARAM
      */
-    private void newContext(Graphics2D g) {
+    private Context newContext(Graphics2D g) {
         XRLog.layout(Level.FINEST, "new context begin");
         
         // CLEAN
         //Point origin = new Point( 0, 0 );
         //Point last = new Point( 0, 0 );
         
-        getContext().canvas = this;
-        getContext().graphics = g;
+        getContext().setCanvas(this);
+        getContext().setGraphics(g);
         
         // CLEAN
         // set up the dimensions of the html canvas
@@ -819,6 +821,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         
         getContext().setMaxWidth(0);
         XRLog.layout(Level.FINEST, "new context end");
+        return getContext();
     }
 
     /**
@@ -869,6 +872,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2004/12/29 07:35:39  tobega
+ * Prepared for cloned Context instances by encapsulating fields
+ *
  * Revision 1.20  2004/12/28 01:48:24  tobega
  * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
  *

@@ -59,7 +59,7 @@ public class BodyRenderer extends InlineRenderer {
         if (background_color != null) {
             if (!background_color.equals(transparent)) {
                 c.getGraphics().setColor(background_color);
-                c.getGraphics().fillRect(0, 0, c.canvas.getWidth(), c.canvas.getHeight());
+                c.getGraphics().fillRect(0, 0, c.getCanvas().getWidth(), c.getCanvas().getHeight());
             }
             super.paintBackground(c, box);
         }

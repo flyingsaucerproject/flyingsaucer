@@ -66,7 +66,7 @@ public abstract class FormItemLayout extends CustomBlockLayout {
     public Box createBox(Context c, Content content) {
         Element elem = content.getElement();
         comp = createComponent(c, elem);
-        c.canvas.add(comp);
+        c.getCanvas().add(comp);
         comp.setLocation(100, 100);
         //Uu.p("added a component to the viewport: " + comp);
         //Uu.p("pref size = " + comp.getPreferredSize());
@@ -179,6 +179,9 @@ public abstract class FormItemLayout extends CustomBlockLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2004/12/29 07:35:37  tobega
+ * Prepared for cloned Context instances by encapsulating fields
+ *
  * Revision 1.12  2004/12/28 01:48:22  tobega
  * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
  *

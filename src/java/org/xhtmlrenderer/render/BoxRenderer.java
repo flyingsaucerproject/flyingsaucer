@@ -31,9 +31,9 @@ public class BoxRenderer extends DefaultRenderer {
         //set the current style
         CascadedStyle hoverStyle = null;
         if (block.content.getStyle() != null) {
-            c.pushStyle(c.css.getCascadedStyle(block.content.getElement()));
+            c.pushStyle(c.getCss().getCascadedStyle(block.content.getElement()));
             if (block.hover) {
-                hoverStyle = c.css.getPseudoElementStyle(block.content.getElement(), "hover");
+                hoverStyle = c.getCss().getPseudoElementStyle(block.content.getElement(), "hover");
                 if (hoverStyle != null) c.pushStyle(hoverStyle);
             }
         }
