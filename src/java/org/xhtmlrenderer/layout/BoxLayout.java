@@ -448,7 +448,7 @@ public class BoxLayout extends DefaultLayout {
             if ( c.css.hasProperty( box.node, "top", false ) ) {
                 box.top = (int)c.css.getFloatProperty( box.node, "top", 0, false );
             }
-            box.absolute = true;
+            box.setAbsolute(true);
             
             // if right and left are set calculate width
             if(box.right_set && box.left_set) {
@@ -466,6 +466,14 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2004/11/15 15:20:38  joshy
+ * fixes for absolute layout
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.19  2004/11/14 16:40:58  joshy
  * refactored layout factory
  *

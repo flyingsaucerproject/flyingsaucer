@@ -71,7 +71,13 @@ public class Box {
     /** Description of the Field */
     public boolean relative = false;
     public boolean fixed = false;
-    public boolean absolute = false;
+    private boolean absolute = false;
+    public void setAbsolute(boolean abs) {
+        this.absolute = abs;
+    }
+    public boolean isAbsolute() {
+        return absolute;
+    }
     public boolean floated = false;
     
     /** Description of the Field */
@@ -581,6 +587,14 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/11/15 15:20:39  joshy
+ * fixes for absolute layout
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.13  2004/11/12 20:25:18  joshy
  * added hover support to the browser
  * created hover demo

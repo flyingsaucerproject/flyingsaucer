@@ -158,6 +158,9 @@ public class DefaultLayout implements Layout {
             // set the child_box location
             child_box.x = 0;
             child_box.y = box.height;
+            //u.p("adding child to parent: ");
+            //u.p("child = " + child_box);
+            //u.p("parent = " + box);
 
             //joshy fix the 'fixed' stuff later
             // if fixed or abs then don't modify the final layout bounds
@@ -167,13 +170,14 @@ public class DefaultLayout implements Layout {
                 positionFixedChild(c,child_box);
             }
             
-            if ( child_box.absolute ) {
+            if ( child_box.isAbsolute() ) {
                 positionAbsoluteChild(c,child_box);
             }
             
             // skip adjusting the parent box if the child
             // doesn't affect flow layout
             if (isOutsideNormalFlow(child_box)) {
+                //u.p("child box is outside normal flow: " + child_box);
                 continue;
             }
 
@@ -185,8 +189,8 @@ public class DefaultLayout implements Layout {
 
             // increase the final layout height by the height of the child
             box.height += child_box.height;
-            //u.p("final extents = " + lt);
-            //u.p("final child box was: " + child_box);
+            // u.p("final child box was: " + child_box);
+            // u.p("final box = " + box);
         }
         c.addMaxWidth( box.width );
 
@@ -207,7 +211,8 @@ public class DefaultLayout implements Layout {
         if(box.fixed) {
             return true;
         }
-        if(box.absolute) {
+        if(box.isAbsolute()) {
+            //u.p("box is abs: " + box);
             return true;
         }
         if(box.floated) {
@@ -312,9 +317,11 @@ public class DefaultLayout implements Layout {
      */
     public static String getPosition( Context c, Box box ) {
         String position = c.css.getStringProperty( box.node, "position", false );
+        //u.p("position for : " + box.node.getNodeName() + " = " + position);
         if ( position == null ) {
             position = "static";
         }
+        //u.p("get position on " + box + " = " + position);
         return position;
     }
 
@@ -487,6 +494,14 @@ public class DefaultLayout implements Layout {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2004/11/15 15:20:38  joshy
+ * fixes for absolute layout
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.20  2004/11/14 16:40:58  joshy
  * refactored layout factory
  *

@@ -1,4 +1,7 @@
 /* this applies to all elements */
+* {
+    position: static;
+}
 html {
     /* type and positioning */
     display: inline;
