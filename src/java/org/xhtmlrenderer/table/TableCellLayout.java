@@ -28,7 +28,7 @@ import java.awt.Font;
 import java.awt.Rectangle;
 
 import org.w3c.dom.*;
-import org.joshy.*;
+import org.xhtmlrenderer.util.*;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.layout.*;
 

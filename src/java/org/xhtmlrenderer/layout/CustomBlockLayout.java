@@ -23,7 +23,7 @@ package org.xhtmlrenderer.layout;
 
 import java.util.*;
 import java.awt.Dimension;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.css.*;
 import org.w3c.dom.*;

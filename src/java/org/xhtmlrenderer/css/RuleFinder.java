@@ -181,7 +181,7 @@ public class RuleFinder implements RuleBank {
 
         } catch (Exception ex) {
 
-            org.joshy.u.p(ex);
+            org.xhtmlrenderer.util.u.p(ex);
 
         }
 
@@ -219,7 +219,7 @@ public class RuleFinder implements RuleBank {
 
         }
 
-        org.joshy.u.p("unrecognized selector type: " + selector + " node = " + node.getNodeName());
+        org.xhtmlrenderer.util.u.p("unrecognized selector type: " + selector + " node = " + node.getNodeName());
 
         return false;
 

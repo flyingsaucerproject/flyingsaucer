@@ -26,7 +26,7 @@ import org.w3c.dom.*;
 import org.w3c.dom.css.*;
 import org.w3c.css.sac.*;
 import java.util.*;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 public class RuleNormalizer {
     private static final Map COLOR_MAP;

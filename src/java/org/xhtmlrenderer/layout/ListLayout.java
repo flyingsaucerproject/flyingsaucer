@@ -23,7 +23,7 @@ package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.*;
 import java.awt.Color;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.render.Box;
 
 public class ListLayout extends BoxLayout {

@@ -21,7 +21,7 @@
 
 package org.xhtmlrenderer.table;
 
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 public class CellGrid {
     private Cell[][] grid;

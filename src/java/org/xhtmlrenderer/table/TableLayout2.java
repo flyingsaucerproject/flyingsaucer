@@ -55,7 +55,7 @@ import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.table.*;
 import org.xhtmlrenderer.layout.*;
 
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 import org.w3c.dom.*;
 

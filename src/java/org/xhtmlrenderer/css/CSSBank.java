@@ -49,9 +49,9 @@ import org.w3c.css.sac.*;
 
 
 
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
-import org.joshy.x;
+import org.xhtmlrenderer.util.x;
 
 // CLEAN
 import org.xhtmlrenderer.css.XRStyleSheet;

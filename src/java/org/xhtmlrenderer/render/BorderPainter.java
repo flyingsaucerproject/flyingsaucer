@@ -27,7 +27,7 @@ import java.awt.*;
 
 import org.w3c.dom.*;
 
-import org.joshy.*;
+import org.xhtmlrenderer.util.*;
 
 import org.xhtmlrenderer.layout.*;
 

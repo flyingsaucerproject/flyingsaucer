@@ -23,7 +23,7 @@ package org.xhtmlrenderer.util;
 
 
 
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 import org.xhtmlrenderer.layout.Context;
 

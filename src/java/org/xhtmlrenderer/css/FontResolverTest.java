@@ -24,7 +24,7 @@ package org.xhtmlrenderer.css;
 import java.awt.*;
 import org.xhtmlrenderer.layout.*;
 import java.util.HashMap;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 public class FontResolverTest extends FontResolver {
     String[] available_fonts;
@@ -152,7 +152,7 @@ public class FontResolverTest extends FontResolver {
             //u.p("subbing in base sans : " + fnt);
             return fnt;
         } catch (Exception ex) {
-            org.joshy.u.p("exception: " + ex);
+            org.xhtmlrenderer.util.u.p("exception: " + ex);
             return c.getGraphics().getFont();
         }
 

@@ -23,7 +23,7 @@ package org.xhtmlrenderer.css;
 
 import java.awt.*;
 import org.w3c.dom.*;
-import org.joshy.*;
+import org.xhtmlrenderer.util.*;
 
 class CSSUtil {
     public static Color getColor(String val) {

@@ -24,7 +24,7 @@ package org.xhtmlrenderer.layout;
 import java.awt.Font;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 public class TextUtil {
 public static String transformText(Context c, Node node, String text) {

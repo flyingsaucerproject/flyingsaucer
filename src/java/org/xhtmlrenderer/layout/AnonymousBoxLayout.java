@@ -42,7 +42,7 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.css.*;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import org.w3c.dom.*;
 
 public class AnonymousBoxLayout extends InlineLayout {

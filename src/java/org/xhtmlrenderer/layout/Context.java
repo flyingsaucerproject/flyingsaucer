@@ -50,7 +50,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import org.w3c.dom.Element;
 import javax.swing.JTextField;
 import javax.swing.ButtonGroup;

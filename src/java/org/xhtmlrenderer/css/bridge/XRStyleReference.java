@@ -457,7 +457,7 @@ public class XRStyleReference implements StyleReference {
             if ( !_inlineStyleElements.contains( elem ) ) {
 
                 // import the style
-                parse( org.joshy.x.text( elem ), XRStyleSheet.AUTHOR );
+                parse( org.xhtmlrenderer.util.x.text( elem ), XRStyleSheet.AUTHOR );
 
                 // TODO: we actually need to trap the rules that come out of this parse
                 // and force the association to the Element, allowing no other match.

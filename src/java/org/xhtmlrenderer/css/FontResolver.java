@@ -23,7 +23,7 @@ package org.xhtmlrenderer.css;
 
 import java.awt.Font;
 import org.xhtmlrenderer.layout.*;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 public class FontResolver {
 

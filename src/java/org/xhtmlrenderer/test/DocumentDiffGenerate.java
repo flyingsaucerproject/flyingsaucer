@@ -1,6 +1,6 @@
 package org.xhtmlrenderer.test;
 
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import java.io.File;
 
 public class DocumentDiffGenerate {

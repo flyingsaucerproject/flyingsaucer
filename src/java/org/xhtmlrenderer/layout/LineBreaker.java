@@ -23,7 +23,7 @@ package org.xhtmlrenderer.layout;
 
 import org.w3c.dom.*;
 import org.xhtmlrenderer.render.*;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.util.*;
 import java.awt.Rectangle;
 import java.awt.Font;

@@ -21,7 +21,7 @@
 
 package org.xhtmlrenderer.table;
 
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import java.util.*;
 import org.w3c.dom.*;
 import org.xhtmlrenderer.render.*;

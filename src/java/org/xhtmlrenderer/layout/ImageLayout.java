@@ -30,7 +30,7 @@ import java.awt.Rectangle;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import java.net.URL;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 public class ImageLayout extends BoxLayout {
     //Image img;

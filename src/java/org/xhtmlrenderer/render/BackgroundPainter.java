@@ -28,7 +28,7 @@ import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.render.Box;
 

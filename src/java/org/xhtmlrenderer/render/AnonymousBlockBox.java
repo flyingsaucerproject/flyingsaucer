@@ -28,7 +28,7 @@ import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.layout.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.layout.InlineUtil;
 
 public class AnonymousBlockBox extends BlockBox {

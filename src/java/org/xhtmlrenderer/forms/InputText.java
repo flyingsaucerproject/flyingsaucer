@@ -26,7 +26,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import javax.swing.JTextField;
 import javax.swing.JComponent;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.layout.*;
 import org.w3c.dom.*;

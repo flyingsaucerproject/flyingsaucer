@@ -28,7 +28,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.ImageIcon;
 import java.awt.Insets;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.layout.*;
 import org.w3c.dom.*;

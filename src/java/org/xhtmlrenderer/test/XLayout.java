@@ -26,7 +26,7 @@ import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.css.*;
 import java.awt.Dimension;
 import org.w3c.dom.*;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 public class XLayout extends CustomBlockLayout {
 
     public Dimension getIntrinsicDimensions(Context c, Element elem) {

@@ -37,9 +37,9 @@ import java.awt.*;
 
 import java.awt.event.*;
 
-import org.joshy.x;
+import org.xhtmlrenderer.util.x;
 
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 import org.w3c.dom.*;
 

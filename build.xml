@@ -43,7 +43,6 @@
                 </fileset>
             </classpath>
             <include name="org/xhtmlrenderer/**"/>
-            <exclude name="com/pdoubleya/**"/>
         </javac>
         <mkdir dir="build/classes/resources/css"/>
         <copy todir="build/classes/resources/css/" file="src/css/default.css"/>
@@ -145,7 +144,6 @@
     <target name="jnlp-dist" depends="init, jars" description="Build JNLP Distro">
         <copy todir="build">
             <fileset dir="lib">
-                <include name="joshy-common.jar"/>
                 <include name="ss_css2.jar"/>
                 <include name="xalan.jar"/>
             </fileset>
@@ -154,7 +152,6 @@
         </copy>
         <signjar jar="build/core-renderer.jar" alias="joshy" storepass="password" keystore="teststore"/>
         <signjar jar="build/browser.jar" alias="joshy" storepass="password" keystore="teststore"/>
-        <signjar jar="build/joshy-common.jar" alias="joshy" storepass="password" keystore="teststore"/>
         <signjar jar="build/ss_css2.jar" alias="joshy" storepass="password" keystore="teststore"/>
         <signjar jar="build/xalan.jar" alias="joshy" storepass="password" keystore="teststore"/>
 

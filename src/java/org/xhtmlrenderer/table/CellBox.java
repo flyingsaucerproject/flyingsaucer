@@ -25,7 +25,7 @@ import java.awt.Point;
 import java.util.List;
 import java.util.ArrayList;
 import org.w3c.dom.*;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 public class CellBox extends BlockBox {
     public Box sub_box;

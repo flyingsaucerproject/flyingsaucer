@@ -29,7 +29,7 @@ import java.awt.Graphics;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import org.w3c.dom.*;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import java.awt.Component;
 import java.awt.Color;
 import java.awt.Font;

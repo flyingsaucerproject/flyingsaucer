@@ -33,8 +33,8 @@ import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.*;
 import org.xhtmlrenderer.layout.*;
 
-import org.joshy.u;
-import org.joshy.x;
+import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.x;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

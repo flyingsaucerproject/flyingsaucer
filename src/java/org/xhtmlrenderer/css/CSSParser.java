@@ -130,7 +130,7 @@ public class CSSParser {
 
                 CSSOMParser parser = new CSSOMParser();
 
-                CSSStyleSheet style = parser.parseStyleSheet(new InputSource(new StringReader(org.joshy.x.text(elem))));
+                CSSStyleSheet style = parser.parseStyleSheet(new InputSource(new StringReader(org.xhtmlrenderer.util.x.text(elem))));
 
                 // save the new style to the list
 

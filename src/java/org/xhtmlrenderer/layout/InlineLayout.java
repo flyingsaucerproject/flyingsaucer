@@ -32,7 +32,7 @@ import java.awt.Font;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
@@ -162,7 +162,7 @@ public Box layoutChildren(Context c, Box box) {
             }
             if(debug_counter > limit+3 && bounds.width < 10) {
                 u.p("element = " + elem);
-                org.joshy.x.p(elem);
+                org.xhtmlrenderer.util.x.p(elem);
                 u.p("previous inline = " + prev_inline);
                 u.p("current inline = " + curr_line);
                 u.p("lines = ");

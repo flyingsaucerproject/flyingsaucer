@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.awt.Dimension;
 import java.util.Iterator;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 public class Box {
     // dimensions stuff

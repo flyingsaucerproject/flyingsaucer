@@ -33,7 +33,7 @@ import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.util.*;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 
 /**
  *  Description of the Class

@@ -25,7 +25,7 @@ import java.util.*;
 import java.awt.Dimension;
 import java.awt.Point;
 import javax.swing.JComponent;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.layout.*;

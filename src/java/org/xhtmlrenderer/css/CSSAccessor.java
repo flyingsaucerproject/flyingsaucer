@@ -26,8 +26,8 @@ import java.awt.Color;
 import org.w3c.dom.*;
 import org.w3c.dom.css.*;
 
-import org.joshy.u;
-import org.joshy.x;
+import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.x;
 import org.xhtmlrenderer.css.value.BorderColor;
 /**
 * 

@@ -24,7 +24,7 @@ package org.xhtmlrenderer.layout;
 import java.util.HashMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.forms.InputButton;
 import org.xhtmlrenderer.forms.*;
 import org.xhtmlrenderer.table.*;

@@ -26,7 +26,7 @@ import java.awt.Graphics;
 import java.awt.FontMetrics;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import java.awt.Graphics2D;
 import java.awt.font.*;
 import org.xhtmlrenderer.render.*;

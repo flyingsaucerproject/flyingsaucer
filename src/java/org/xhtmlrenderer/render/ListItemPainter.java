@@ -21,7 +21,7 @@
 
 package org.xhtmlrenderer.render;
 
-import org.joshy.u;
+import org.xhtmlrenderer.util.u;
 import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.render.*;
 import java.awt.Image;

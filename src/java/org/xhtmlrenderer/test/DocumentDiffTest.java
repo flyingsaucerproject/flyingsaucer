@@ -1,7 +1,7 @@
 package org.xhtmlrenderer.test;
 
-import org.joshy.u;
-import org.joshy.x;
+import org.xhtmlrenderer.util.u;
+import org.xhtmlrenderer.util.x;
 import java.io.*;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.swing.*;
