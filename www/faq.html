@@ -23,7 +23,28 @@
 
 <h1>The Flying Saucer FAQ </h1>
 
+<h3>General</h3>
+<ul>
+<li><a href="#what_is">What is Flying Saucer?</a></li>
+<li><a href="#legacy_html">Does Flying Saucer support legacy HTML?</a></li>
+<li><a href="#web_browser">Is Flying Saucer a web browser?</a></li>
+<li><a href="#applications">What kind of applications can I use Flying Saucer for?</a></li>
+<li><a href="#xhtml_css_support">What XHTML/CSS features does Flying Saucer currently support?</a></li>
+<li><a href="#xhtml_css_missing">What XHTML/CSS features is Flying Saucer missing? </a></li>
+<li><a href="#hyperlinks">How do I make my program follow hyperlinks?</a></li>
+<li><a href="#forms_and_swing">How do I get access to the Swing components that make up my form fields?</a></li>
+</ul>
 
+<h3>Developers</h3>
+<ul>
+<li><a href="#classpath">How do I set up my CLASSPATH?</a></li>
+<li><a href="#without_ant">How do I build XR without Ant?</a></li>
+<li><a href="#without_ant">How do I build XR from within my IDE?</a></li>
+<li><a href="#configuration">How do I change the runtime configuration for XR?</a></li>
+<li><a href="#logging">How do I write to the log within XR?</a></li>
+</ul>   
+
+<a name="what_is"></a>
 <h2>What is Flying Saucer?</h2>
 <p>Flying Saucer is an XHTML renderer written in Java. It's 100% Java, not a
   native wrapper, and it only handles valid XHTML + CSS. It is intended for
@@ -34,6 +55,7 @@
   integration</p>
 
 
+<a name="legacy_html"></a>
 <h2>Does Flying Saucer support legacy HTML?</h2>
 <p>Flying Saucer is not an HTML component. It is a rendering component for XHTML
   content, but it cannot handle the malformed HTML 4.0 of general webpages,
@@ -52,21 +74,23 @@
   more information. </p>
 -->
   
+<a name="web_browser"></a>
 <h2>Is Flying Saucer a web browser?</h2>
-<p>  The core renderer just handles XHTML and CSS. It doesn't know anything about
-    form submission, managing cookies, or tracking the browsing history. It
-    just renders XHTML/CSS to the screen. However, Flying Saucer does include
-    a Browser application which provides these features an more. You can use
+<p>The core renderer just handles XHTML and CSS. It doesn't know anything about
+  form submission, managing cookies, or tracking the browsing history. It
+  just renders XHTML/CSS to the screen. However, Flying Saucer does include
+  a Browser application which provides these features an more. You can use
   this as a good starting point for your own applications.</p>
   
   
   
+<a name="applications"></a>
 <h2>What kind of applications
 can I use Flying Saucer for?</h2>
 <p>Flying Saucer can be used for any Java application
-    that requires some sort of styled text. This can be as simple as a chat program
-    or as complicated as a complete ebook reader with dynamic stylesheets. Flying
-    Saucer is very forward thinking and is designed to be a part of the next
+  that requires some sort of styled text. This can be as simple as a chat program
+  or as complicated as a complete ebook reader with dynamic stylesheets. Flying
+  Saucer is very forward thinking and is designed to be a part of the next
   generation of applications that combine rich desktop clients with web content.
   Some examples of application types are:</p>
 
@@ -90,10 +114,9 @@ can I use Flying Saucer for?</h2>
     </li>
 </ul>
 
-
-
+<a name="xhtml_css_support"></a>
 <h2>What XHTML/CSS features does Flying Saucer currently support?</h2>
-<p>  With our third release it supports most of
+<p>With our third release it supports most of
   the common XHTML and CSS features. This includes:</p>
 <ul>
   <li>text and images (paragraphs, bold, italics, fonts, alignment, etc)</li>
@@ -106,93 +129,139 @@ can I use Flying Saucer for?</h2>
 </ul>
 
 
+<a name="xhtml_css_missing"></a>
 <h2>What XHTML/CSS features is Flying Saucer missing?</h2>
-<p> The main things that are missing as of R3 is the automatic table model (the
+<p>The main things that are missing as of R3 is the automatic table model (the
   old Netscape style of tables where the size of the content determined the size
   of the cells.) Fixed layout tables are supported. Floats and positioning (absolute,
   relative, fixed) are there but buggy. There is also no support for things outside
   the scope of XHTML/CSS such as Javascript, printing, Flash, SVG, or legacy
-HTML (though there is interest in all of those).</p>
+  HTML (though there is interest in all of those).</p>
 
 
 
-<h2>How do I make my program follow
-hyperlinks?</h2>
+<a name="hyperlinks"></a>
+<h2>How do I make my program follow hyperlinks?</h2>
 
-<p>You'll need to create a mouse listener that detects link clicks
-    and does the HTTP request. See <a href="gettingstarted.html#hyperlinks">Creating a HyperLink Listener</a> in
-    the <a href="gettingstarted.html">Getting
-Started Guide</a>.</p>
+<p>You'll need to create a mouse listener that detects link clicks and does the 
+HTTP request. See <a href="gettingstarted.html#hyperlinks">Creating a HyperLink
+Listener</a> in the <a href="gettingstarted.html">Getting Started Guide</a>.</p>
 
-<h2>How do I get access to the Swing components that make up
-my form fields?</h2>
+<a name="forms_and_swing"></a>
+<h2>How do I get access to the Swing components that make up my form fields?</h2>
 
-<p> You can use the form accessor methods on the context. See <a href="gettingstarted.html#formaccess">Form
-    Field Access</a>  in the <a href="gettingstarted.html#hyperlinks">Getting Started Guide</a>.<br>
+<p> You can use the form accessor methods on the context. See 
+<a href="gettingstarted.html#formaccess">Form Field Access</a> in the 
+<a href="gettingstarted.html#hyperlinks">Getting Started Guide</a>.<br>
 </p>
 
 <br/>
 <br/>
 <h3>Developer's FAQ</h3>
 
-<h2>CLASSPATH Setup</h2>
-<p>You should include all JAR files in the /lib directory, plus the /resources directory
-tree, to your classpath. If running from our Ant build file, this is taken care of automatically.</p>
+<a name="classpath"></a>
+<h2>How do I set up my CLASSPATH?</h2>
+<p>You should include all JAR files in the <code>/lib</code> directory, plus the
+<code>/resources</code> directory tree, to your classpath. If running from our 
+Ant build file, this is taken care of automatically.</p>
 
-<h2>Building or Running without Ant</h2>
-<p>Our Ant <code>build.xml</code> file includes all JAR files in the /lib directory, plus the <code>/resources</code> directory
-tree in the classpath. The <b>compile</b> target also copies CSS and properties resources from <code>/src/css</code>
-and <code>src/conf</code> to <code>/build/resources</code>. If running from an IDE, you will need to synchronize this yourself.</p>
+<a name="without_ant"></a>
+<h2>How do I build XR without Ant? How do I build XR from within my IDE?</h2>
+<p>Our Ant <code>build.xml</code> file includes all JAR files in the <code>/lib</code>
+directory, plus the <code>/resources</code> directory tree in the classpath. The 
+<b>compile</b> target also copies CSS and properties resources from <code>/src/css</code> and 
+<code>src/conf</code> to <code>/build/resources</code>. If running from an IDE, you
+will need to synchronize this yourself.</p>
 
-<h2>Runtime Configuration</h2>
-<p>The renderer works with a simple, <code>java.util.Properties</code>-based configuration system--no XML!
-Our <code>org.xhtmlrenderer.util.Confuration</code> class loads properties on first access and makes them available 
-at runtime.</p>
+<a name="configuration"></a>
+<h2>How do I change the runtime configuration for XR?</h2>
+<p>The renderer works with a simple, <code>java.util.Properties</code>-based 
+configuration system--no XML! Our <code>org.xhtmlrenderer.util.Confuration</code> class 
+loads properties on first access and makes them available at runtime.</p>
 
-<p>When you are using the renderer, <code>Configuration</code> needs to know where to find the properties
-file. If you are running from the renderer JAR file, our default properties will be read from there.
-If you have unpacked, or re-packed, the JAR, the location of the file is currently hard-coded
-as <code>/resources/conf/xhtmlrenderer.conf</code>. This path must be on the CLASSPATH as it is loaded as a
-system resource using a ClassLoader. You need to add the parent directory for <code>/resources</code> to
-your classpath, or include <code>/resources</code> in your JAR with no parent directory.</p>
+<p>When you are using the renderer, <code>Configuration</code> needs to know where
+to find the properties file. If you are running from the renderer JAR file, our 
+default properties will be read from there. If you have unpacked, or re-packed, 
+the JAR, the location of the file is currently hard-coded as 
+<code>/resources/conf/xhtmlrenderer.conf</code>. This path must be on the CLASSPATH
+as it is loaded as a system resource using a ClassLoader. You need to add the parent
+directory for <code>/resources</code> to your classpath, or include 
+<code>/resources</code> in your JAR with no parent directory.</p>
 
-<p>You can change the default properties for the application right in the <code>.conf</code> file. However, 
-this is not a good idea, as you will have to merge your changes back on new releases. Plus, it
-will make reporting bugs more complicated. Instead, you can use one of two override mechanisms
-for changing the value of individual properties.</p>
+<p>You can change the default properties for the application right in the <code>.conf</code> 
+file. However, this is not a good idea, as you will have to merge your changes back on 
+new releases. Plus, it will make reporting bugs more complicated. Instead, you can use 
+one of two override mechanisms for changing the value of individual properties.</p>
 
-<p><b>Override with Second Conf File:</b> You can override properties by specifying the location
-of a second properties file as a System property when starting your app. Specifically, you need
-to define the System property <b>"xr-props"</b>. This should be the location of the second file
-relative to the CLASSPATH, e.g. 
-<pre>
-java -Dxr-props=resources/conf/myprops.conf
-</pre>
-Your override file should just re-assign values for properties originally given in 
-<conf>xhtmlrenderer.conf</conf>. Please see the documentation in that file for a 
-description of what each property affects.</p>
+<p><b>Override with Second Conf File:</b> Your override file should just re-assign 
+values for properties originally given in <conf>xhtmlrenderer.conf</conf>. Please 
+see the documentation in that file for a description of what each property affects.
+As of R3, we look for a specific override file in a specific location, e.g.
+
+<pre>$user.home/.flyingsaucer/local.xhtmlrenderer.conf</pre>
+
+The <code>user.home</code> variable is a system property. If you call the 
+<code>System.getProperty("user.home")</code> from within any Java program on your
+machine, you will find out where this is. The location is usually 
+<code>c:\Documents And Settings\{username}</code> and under the <code>/usr</code>
+directory on UNIX systems. Try that method call to see where it is on your machine.
+</p>
+
 
 <p><b>Override with System Properties:</b> You can also override properties one-by-one
 on the command line, using System properties. To override a property using the System 
 properties, just re-define the property on the command line. e.g. 
 <pre>
-java -Dxr.property-name=new_value
+java -Dxr.property-name=new_value org.xhtmlrenderer.HTMLPanel
 </pre>
 </p>
 
 <p>You can override as many properties as you like. Note that overrides are driven
 by the property names in the default configuration file. Specifying a
 property name not in that file will have no effect--the property will not be
-loaded or available for lookup. Configuration is NOT used to control logging
-levels or output; see LogStartupConfig.</p>
+loaded or available for lookup. Logging output is also controlled in this
+Configuration file.</p>
 
-<h2>Runtime Logging</h2>
+<p>If you think an override is not taking, you can change the logging behavior
+of the Configuration class. Because of inter-dependencies between Configuration
+and the logging system, this is a special-case key, using the System property
+<code>show_config</code>. The allowed values are from the 
+<code>java.util.logging.Level</code> class. Use ALL to show a lot of detail about
+Configuration startup, OFF for none, and INFO for regular output, like this
+<pre>
+java -Dshow_config=ALL org.xhtmlrenderer.HTMLPanel
+</pre>
+This will output messages to the console as Configuration is loading and looking
+for overrides to the default property values for the renderer.
+</p>
+
+<p>We have just started using the Configuration system late in preparing release R4.
+Some runtime behavior that should be configurable (like XHTML parser) is not. If you
+would like to see some behavior made configurable, shoot us an email.</p>
+
+<p>To access a parameter from Configuration at runtime, just use on of the many
+static methods on the Configuration class. All of these just take the full name
+of the property:
+<ul>
+	<li><code>String Configuration.valueFor(String)</code></li>
+	<li><code>String Configuration.valueFor(String key, String default)</code></li>
+	<li><code>byte Configuration.valueAsByte(String key, byte default)</code></li>
+	<li><code>double Configuration.valueAsDouble(String key, double default)</code></li>
+	<li><code>float Configuration.valueAsFloat(String key, float default)</code></li>
+	<li><code>int Configuration.valueAsInt(String key, int default)</code></li>
+	<li><code>long Configuration.valueAsLong(String key, long default)</code></li>
+	<li><code>short Configuration.valueAsShort(String key, short default)</code></li>
+	<li><code>boolean Configuration.isTrue(String key, boolean default)</code></li>
+	<li><code>boolean Configuration.isFalse(String key, boolean default)</code></li>
+</ul>
+</p>
+
+<a name="logging"></a>
+<h2>How do I write to the log within XR?</h2>
 <p>The renderer uses the <code>java.util.logging</code> package for logging information and 
-exceptions at runtime. Logging behavior (output) is controlled via a properties file,
-<code>/resources/conf/xr-logging.properties</code>. As with configuration, this is loaded from 
-the CLASSPATH. If you are running the renderer from the JAR, it will be picked up 
-automatically. Otherwise, make sure it is on your classpath, or mounted to the root of
-your JAR if you re-jar the renderer.</p>
+exceptions at runtime. Logging behavior (output) is controlled via the main 
+<a href="#configuration">configuration file</a>. The defaults may be overridden just like
+any other configuration properties.</p>
 
 <p>Please review the <code>java.util.logging</code> package docs before proceeding.</p>
 
@@ -203,6 +272,13 @@ logged. INFO messages are useful and but can be excluded if you want a quiet rid
 below INFO (FINE, FINER, FINEST) is generally only interesting for core renderer developers.
 We don't guarrantee that anything below INFO will be useful, correct, practical or informative.
 You can usually leave log levels at INFO for most purposes.</p>
+
+<p>If you are modifying the renderer core code and want to add log messages, we recommend
+you always use the <code>org.xhtmlrenderer.XRLog</code> class. Using this class ensures that
+our log configuration is read properly before we write anything out to the log system.
+The class is pretty self-explanatory, and all logging methods in it are static. If for some
+reason you need to use the <code>java.util.logging.Logger</code> class directly, please
+use <code>XRLog.getLogger()</code> to retrieve the instance to use.</p>
 
 <!-- TODO: Update logging docs once we figure out how we will handle distribution log
 controls versus dev log controls with override files. PW -->
