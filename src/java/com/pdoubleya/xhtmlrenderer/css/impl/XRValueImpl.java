@@ -47,9 +47,7 @@ import org.joshy.html.util.FontUtil;
  * a CSSValue from a SAC CSS parser. Note that not all type conversions make
  * sense, and that some won't make sense until relative values are resolved. You
  * should check with the cssSACPrimitiveValueType() to see if the value
- * conversion you are requesting is rational. STATUS: this class is currently
- * mostly unfinished--there is lots to be done for type conversion, computed
- * value derivation, etc. Currently proof of concept for the class design.
+ * conversion you are requesting is rational. 
  *
  * @author    Patrick Wright
  *
@@ -62,6 +60,9 @@ public class XRValueImpl implements XRValue {
 
     /** The DOM CSSValue we are given from the Parse */
     private CSSValue _domCSSValue;
+    
+    /** HACK: if the DOM value was relative, and we convert to absolute, the new type of our value, after conversion; we have to store this separately for now because CSSValue has no API for changing type at runtime. */
+    private short _newPrimitiveValueType;
 
     /** The value as text */
     private String _domValueTextClean;
@@ -75,6 +76,8 @@ public class XRValueImpl implements XRValue {
     /** CLEANUP: is this needed (PWW 13/08/04) */
     private boolean _requiresComputation;
 
+    /** String array, if there is one to split from value */
+    private String[] _stringAsArray;
 
     /**
      * Constructor for the XRValueImpl object
@@ -86,6 +89,9 @@ public class XRValueImpl implements XRValue {
         _domCSSValue = domCSSValue;
         _domValueTextClean = getCssTextClean();
         _domPriority = domPriority;
+        _newPrimitiveValueType = -1;
+        _requiresComputation = ! ValueConstants.isAbsoluteUnit(domCSSValue);
+        
         if ( ValueConstants.isNumber(cssSACPrimitiveValueType()) ) {
             if ( shouldConvertToPixels() ) {
                 _asFloat = convertValueToPixels();
@@ -103,7 +109,9 @@ public class XRValueImpl implements XRValue {
      * @return   Returns
      */
     public XRValue copyOf() {
-        return new XRValueImpl( _domCSSValue, _domPriority );
+        XRValueImpl nv = new XRValueImpl( _domCSSValue, _domPriority );
+        //nv._newPrimitiveValueType = this._newPrimitiveValueType;
+        return nv;
     }
 
 
@@ -136,13 +144,16 @@ public class XRValueImpl implements XRValue {
 
 
     /**
-     * value as a string...same as cssText() but kept for parallel with other as
-     * <type>... methods
+     * Returns the value as assigned, split into a string array on comma.
      *
      * @return   Returns
      */
     public String[] asStringArray() {
-        return _domCSSValue.getCssText().split( "," );
+        if ( _stringAsArray == null ) {
+            String str = getStringValue();
+            _stringAsArray = ( str == null ? new String[0] : str.split( "," ));
+        }
+        return _stringAsArray;
     }
 
 
@@ -199,6 +210,7 @@ public class XRValueImpl implements XRValue {
 
         float relVal = new Float( _domValueTextClean ).floatValue();
         float absVal = 0F;
+        String newTypeSuffix = "px";
 
         switch ( cssSACPrimitiveValueType() ) {
             case CSSPrimitiveValue.CSS_EMS:
@@ -207,6 +219,7 @@ public class XRValueImpl implements XRValue {
                 // the ’font-size’ property itself, in which case it refers
                 // to the font size of the parent element (spec: 4.3.2)
                 absVal = relVal * deriveFontSize( context, ownerElement, propName );
+                _newPrimitiveValueType = CSSPrimitiveValue.CSS_PX;
 
                 break;
             case CSSPrimitiveValue.CSS_EXS:
@@ -217,9 +230,10 @@ public class XRValueImpl implements XRValue {
                 int xHeight = FontUtil.fontXHeightForElement( context, (Element)ownerElement.domNode() );
 
                 absVal = relVal * xHeight;
+                _newPrimitiveValueType = CSSPrimitiveValue.CSS_PX;
                 break;
             case CSSPrimitiveValue.CSS_PX:
-                // nothing to do...why is this case here? CLEAN
+                // nothing to do
                 absVal = relVal;
                 break;
             case CSSPrimitiveValue.CSS_PERCENTAGE:
@@ -261,8 +275,12 @@ public class XRValueImpl implements XRValue {
                 } else if ( propName.equals( CSSName.FONT_SIZE ) ) {
                     // same as with EM
                     base = deriveFontSize( context, ownerElement, propName );
+                    _newPrimitiveValueType = CSSPrimitiveValue.CSS_PT;
+                    newTypeSuffix = "pt";
+                    _newPrimitiveValueType = CSSPrimitiveValue.CSS_PX;
                 }
                 absVal = ( relVal / 100 ) * base;
+                // CLEAN System.out.println("New calculated abs val: " + absVal);
                 break;
             default:
                 // nothing to do, we only convert those listed above
@@ -270,9 +288,16 @@ public class XRValueImpl implements XRValue {
         }
         assert( new Float( absVal ).intValue() > 0 );
         sDbgLogger.finer( "Converted '" + propName + "' relative value of " + relVal + " (" + _domCSSValue.getCssText() + ") to absolute value of " + absVal );
-        _asFloat = absVal;
-
-        _requiresComputation = true;
+        
+        // round down
+        double d = Math.floor((double)absVal);
+        _asFloat = new Float(d).floatValue();
+        
+        // note--this is an important step, because if the value is ever
+        // inherited, the child will inherit a copy, which will at some
+        // point parse the text looking for the type code--so need the suffix
+        setCssText("" + _asFloat + newTypeSuffix);
+        _requiresComputation = false;
     }
 
 
@@ -283,7 +308,11 @@ public class XRValueImpl implements XRValue {
      */
     public Color asColor() {
         assert( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
-        return ConversionUtil.rgbToColor( ( (CSSPrimitiveValue)_domCSSValue ).getRGBColorValue() );
+        String str = getCssText();
+        if ( "transparent".equals(str)) 
+            return new Color(0,0,0,0);
+        else
+            return ConversionUtil.rgbToColor( ( (CSSPrimitiveValue)_domCSSValue ).getRGBColorValue() );
     }
 
 
@@ -295,10 +324,6 @@ public class XRValueImpl implements XRValue {
      * @return   The relativeUnitComputed value
      */
     public boolean requiresComputation() {
-        if ( ValueConstants.isAbsoluteUnit(cssValue()) ) {
-            sDbgLogger.info( "Was asked about converting a relative value, but value is absolute. Call isAbsolute() first." );
-            return false;
-        }
         return _requiresComputation;
     }
 
@@ -455,7 +480,11 @@ public class XRValueImpl implements XRValue {
      */
     private short cssSACPrimitiveValueType() {
         assert( getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE );
-        return ( (CSSPrimitiveValue)_domCSSValue ).getPrimitiveType();
+        
+        if ( _newPrimitiveValueType >= 0 ) 
+            return _newPrimitiveValueType;
+        else 
+            return ( (CSSPrimitiveValue)_domCSSValue ).getPrimitiveType();
     }
 
 
