@@ -74,13 +74,33 @@ public class CSSBank extends CSSAccessor {
 
     }
 
+    // HACK: origin flag is new feature in XRStyleReference, added here for
+    // common interface, though it is ignored in CSSBank
+    public void parse(Reader reader, int origin) throws IOException {
+
+        parser.parse(reader);
+
+    }
+
     public void parse(String reader) throws IOException {
 
         parser.parse(reader);
 
     }
 
-    
+    /**
+     * Same as {@link #parse(Reader, int)} for a String datasource.
+     *
+     * @param source           A String containing CSS style rules
+     * @param origin           See {@link #parse(Reader, int)}
+     * @exception IOException  {@link #parse(Reader, int)}
+     */
+    // HACK: origin flag is new feature in XRStyleReference, added here for
+    // common interface, though it is ignored in CSSBank
+    public void parse( String source, int origin )
+    throws IOException {
+        parse(source);   
+    }
 
     public void parseInlineStyles(Element elem) throws IOException {
 
