@@ -25,7 +25,7 @@ public class RuleFinder implements RuleBank {
     
     
     
-    public CSSStyleDeclaration findRule(Node elem, String property, boolean inherit) {
+    public CSSStyleDeclaration findRule(Element elem, String property, boolean inherit) {
         // loop through the styles in reverse order
         for(int s=styles.size()-1; s>=0; s--) {
             JStyle style = (JStyle)styles.get(s);
@@ -47,7 +47,7 @@ public class RuleFinder implements RuleBank {
         // since we didn't find anything, recurse up the chain
         if(inherit) {
             if(elem.getParentNode() != null) {
-                return findRule(elem.getParentNode(),property,inherit);
+                return findRule((Element)elem.getParentNode(),property,inherit);
             }
         }
         
