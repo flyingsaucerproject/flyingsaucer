@@ -101,17 +101,6 @@ public class BrowserMenuBar extends JMenuBar {
         debugShow.add(new JCheckBoxMenuItem(new LineBoxOutlinesAction()));
         debugShow.add(new JCheckBoxMenuItem(new InlineBoxesAction()));
 
-        /* 
-         debug.add(new AbstractAction("DOM tree inspector") {
-            public void actionPerformed(ActionEvent evt) {
-                JFrame frame = new JFrame();
-                frame.getContentPane().add(new DOMInspector(root.panel.view.doc));
-                frame.pack();
-                frame.setSize(250,500);
-                frame.show();
-            }
-        });
-         **/
         debug.add(new ShowDOMInspectorAction());
         debug.add(new AbstractAction("Validation Console") {
             public void actionPerformed(ActionEvent evt) {

@@ -17,6 +17,7 @@ import org.joshy.html.event.DocumentListener;
 
 public class BrowserPanel extends JPanel implements DocumentListener {
     public static Logger logger = Logger.getLogger("app.browser");
+    
     JButton forward;
     JButton backward;
     JButton stop;
@@ -201,22 +202,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
         fact.setValidating(true);
         DocumentBuilder builder = fact.newDocumentBuilder();
-        builder.setErrorHandler(root.error_handler);/*  new ErrorHandler() {
-            public void warning(SAXParseException ex) throws SAXException {
-                logger.info("warning: " + ex);
-            }
-            public void error(SAXParseException ex) throws SAXException {
-                logger.info("error: " + ex);
-                logger.info("error on line: " + ex.getLineNumber() + " column: " + ex.getColumnNumber());
-                setStatus("Error Loading Document");
-            }
-            public void fatalError(SAXParseException ex) throws SAXException {
-                logger.info("fatal error: " + ex);
-                logger.info("error on line: " + ex.getLineNumber() + " column: " + ex.getColumnNumber());
-                setStatus("Error Loading Document");
-            }
-        });
-        */
+        builder.setErrorHandler(root.error_handler);
         Document doc = null;
         
         

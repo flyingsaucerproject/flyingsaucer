@@ -1,41 +1,23 @@
 package org.joshy.html.util;
 
-
-
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.FontMetrics;
-
 import org.w3c.dom.Node;
-
 import org.w3c.dom.Element;
-
 import org.joshy.u;
-
 import java.awt.Graphics2D;
-
 import java.awt.font.*;
-
 import org.joshy.html.box.*;
-
 import org.joshy.html.Context;
-
 import org.joshy.html.InlineLayout;
 import java.util.logging.*;
-
-
 public class FontUtil {
     public static Logger logger = Logger.getLogger("layout");
 
-    
-
 public static int len(Context c, Node node, String str, Font font) {
-
     return c.getGraphics().getFontMetrics(font).stringWidth(str);
-
 }
-
-
 
 public static int lineHeight(Context c, Node node) {
     return c.getGraphics().getFontMetrics(getFont(c,node)).getHeight();
@@ -43,185 +25,96 @@ public static int lineHeight(Context c, Node node) {
 
 /** PWW ADDED 14/08/04 */
 public static int fontXHeightForElement(Context context, Element elem) {
-    // TODO
     return lineHeight(context, elem);
 }
 
-
 public static Font getFont(Context c, Node e) {
-
     //u.p("testing node: " + e);
-
     //Font f = c.getGraphics().getFont();
 
-    
-
     // if plain text then get the styling from the parent node
-
     if(e.getNodeType() == e.TEXT_NODE) {
-
         //u.p("it's a node");
-
         Element el = (Element)e.getParentNode();
-
         return getElementFont(c,el);
-
     }
-
-    
 
     if(e.getNodeType() == e.ELEMENT_NODE) {
-
         Element el = (Element)e;
-
         return getElementFont(c,el);
-
     }
-
-    
 
     u.p("big error in getFont(). Got a node that is neither txt nor element");
-
     return null;
-
 }
 
-
-
 static boolean quick = false;
-
 public static Font getElementFont(Context c, Element el) {
-
     // TODO: need to discuss what sort of caching should be going on here, because relative
-    // datatypes like EM and EX depend in part on the 'current' font for an element (PWW 14/08/04) 
-    
+    // datatypes like EM and EX depend in part on the 'current' font for an element (PWW 14/08/04)
     //u.p("testing node: " + e);
-
     Font f = c.getGraphics().getFont();
-
     if(quick) {
-
         //f = f.deriveFont((float)((int)(Math.random()*10)));
-
         return f;
-
     }
-
-    
 
     if(el.getParentNode().getNodeType() == el.DOCUMENT_NODE) {
-
         //u.p("ended up at the top somehow!: ");
-
         return c.getGraphics().getFont().deriveFont((float)10);
-
     }
-
-    
-
-    
 
 
 
     // calculate the font size
-
     // look up the parent and use it's font size to scale against
-
     // joshy: this will fail if the parent also has a relative size
-
     //  need to fix this by passing down the enclosing block's font size
-
     //  in the context
-
     Element par = (Element)el.getParentNode();
-
     float parent_size = c.css.getFloatProperty(par,"font-size",true);
-
     float size = c.css.getFloatProperty(el,"font-size",parent_size,true);
 
-
-
     String weight = c.css.getStringProperty(el,"font-weight");
-
     String[] family = c.css.getStringArrayProperty(el,"font-family");
-
     //u.p("families");
-
     //u.p(family);
-
     /*
-
     if(!family[0].equals("sans-serif")) {
-
         //u.p("family = ");
-
         //u.p(family);
-
         //u.p("");
-
     }
-
     */
-
     String style = c.css.getStringProperty(el,"font-style");
-
-
     // CLEAN System.out.println("family=" + family + ", size=" + size + ", weight=" + weight + ", style=" + style);
     f = c.getFontResolver().resolveFont(c,family,size,weight,style);
 
-
-
     // calculate the font color
-
     c.getGraphics().setColor(c.css.getColor(el));
-
     return f;
-
 }
-
-
-
 
 
 public static void setupTextDecoration(Context c, Node node, InlineBox box) {
-
     Element el = null;
-
     if(node instanceof Element) {
-
         el = (Element)node;
-
     } else {
-
         el = (Element)node.getParentNode();
-
     }
-
     String text_decoration = c.css.getStringProperty(el,"text-decoration");
-
     if(text_decoration != null && text_decoration.equals("underline")) {
-
         box.underline = true;
-
     }
-
     if(text_decoration != null && text_decoration.equals("line-through")) {
-
         box.strikethrough = true;
-
     }
-
     if(text_decoration != null && text_decoration.equals("overline")) {
-
         box.overline = true;
-
     }
-
-
 
 }
-
-
 
 public static void setupVerticalAlign(Context c, Node node, InlineBox box) {
     //u.p("setup vertical align: node = " + node + " box = " + box);
@@ -248,18 +141,15 @@ public static void setupVerticalAlign(Context c, Node node, InlineBox box) {
     } else {
         parent_metrics = parent_font.getLineMetrics("Test", ((Graphics2D)c.getGraphics()).getFontRenderContext());
     }
-
     // the height of the font
     float parent_height = parent_metrics.getHeight();
     //u.p("parent strikethrough height = " + parent_metrics.getStrikethroughOffset());
     String vertical_align = c.css.getStringProperty(elem,"vertical-align");
-
     // set the height of the box to the height of the font
     if(!InlineLayout.isReplaced(node)) {
         box.height = FontUtil.lineHeight(c,node);
     }
     //u.p("vertical align = " + vertical_align);
-
     if(vertical_align == null) {
         vertical_align = "baseline";
     }
@@ -268,7 +158,6 @@ public static void setupVerticalAlign(Context c, Node node, InlineBox box) {
     box.y = 0;
     // do nothing for 'baseline'
     box.vset = true;
-    
     if(vertical_align.equals("baseline")) {
         //u.p("doing baseline");
         Font font = FontUtil.getFont(c,node);
@@ -277,17 +166,14 @@ public static void setupVerticalAlign(Context c, Node node, InlineBox box) {
         //noop    box.y = box.y;
         box.y -= fm.getDescent();
     }
-    
     // works okay i think
     if(vertical_align.equals("super")) {
         box.y = box.y + (int) (parent_metrics.getStrikethroughOffset()*2.0);
     }
-
     // works okay, i think
     if(vertical_align.equals("sub")) {
         box.y = box.y - (int) parent_metrics.getStrikethroughOffset();
     }
-
     // joshy: this is using the current baseline instead of the parent's baseline
     // must fix
     if(vertical_align.equals("text-top")) {
@@ -296,12 +182,10 @@ public static void setupVerticalAlign(Context c, Node node, InlineBox box) {
         // height above the baseline
         box.y = -((int)parent_height - box.height);//(int) (parent_metrics.getStrikethroughOffset()*2.0);
     }
-
     // not implemented correctly yet
     if(vertical_align.equals("text-bottom")) {
         box.y = 0;
     }
-
     // not implemented correctly yet.
     if(vertical_align.equals("top")) {
         //u.p("before y = " + box.y);
@@ -311,7 +195,6 @@ public static void setupVerticalAlign(Context c, Node node, InlineBox box) {
         //u.p("after y = " + box.y);
         box.vset = false;
     }
-
     if(vertical_align.equals("bottom")) {
         //u.p("before y = " + box.y);
         //u.p("baseline = " + box.baseline);
@@ -322,8 +205,6 @@ public static void setupVerticalAlign(Context c, Node node, InlineBox box) {
     }
     //u.p("returning box: " + box);
 }
-
-
 
 public static void setupVerticalAlign(Context c, Node node, LineBox box) {
     //u.p("doing line box: " + box);
@@ -336,8 +217,6 @@ public static void setupVerticalAlign(Context c, Node node, LineBox box) {
     } else {
         elem = (Element)node;
     }
-
-
     // top and bottom are max dist from baseline
     int top = 0;
     int bot = 0;
@@ -367,9 +246,7 @@ public static void setupVerticalAlign(Context c, Node node, LineBox box) {
             }
         }
     }
-
     //u.p("line bot = " + bot + " top = " + top);
-
     if(bot-top > height) {
         box.height = bot-top;
         box.baseline = box.height - bot;
@@ -400,8 +277,6 @@ public static void setupVerticalAlign(Context c, Node node, LineBox box) {
     }
 }
 
-
-
 public static void dumpFontMetrics(Font font, Graphics g) {
     FontMetrics fm = g.getFontMetrics(font);
     logger.info("Font: " + font.toString());
@@ -415,9 +290,5 @@ public static void dumpFontMetrics(Font font, Graphics g) {
     logger.info("Max Char Bounds: " + fm.getMaxCharBounds(g));
     logger.info("Max Descent: " + fm.getMaxDescent());
     logger.info("hasUniformLineMetrics: " + fm.hasUniformLineMetrics());
-    
 }
-
-
 }
-

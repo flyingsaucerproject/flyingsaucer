@@ -1,6 +1,7 @@
 package org.joshy.html.painter;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -213,13 +214,26 @@ public class InlinePainter {
             }
             c.getGraphics().setColor(new Color(200, 200, 255));
 
+            
             ((Graphics2D) c.getGraphics()).setPaint(new GradientPaint(
                     0, 0, new Color(235, 235, 255),
                     0, inline.height / 2, new Color(190, 190, 235),
                     true));
+            /*        
+            u.p("height = " + inline.height);
+            u.p("baseline = " + inline.baseline);
+            u.p("font = " + inline.getFont());
+            FontUtil.dumpFontMetrics(inline.getFont(),c.getGraphics());
+            */
+            FontMetrics fm = c.getGraphics().getFontMetrics(inline.getFont());
+
+            int top = ly + inline.y - fm.getAscent();
+            int height = fm.getAscent() + fm.getDescent();
             c.getGraphics().fillRect(
-                    lx + inline.x + xoff, ly + inline.y - inline.height,
-                    dw - xoff, inline.height);
+                    lx + inline.x + xoff, 
+                    top, //ly + inline.y - inline.height,
+                    dw - xoff, 
+                    height); //inline.height);
         }
     }
 

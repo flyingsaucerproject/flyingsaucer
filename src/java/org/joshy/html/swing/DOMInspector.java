@@ -31,6 +31,7 @@ import org.joshy.html.*;
 import com.pdoubleya.xhtmlrenderer.css.*;
 import com.pdoubleya.xhtmlrenderer.css.constants.*;
 import com.pdoubleya.xhtmlrenderer.css.bridge.*;
+import java.awt.event.*;
 
 public class DOMInspector extends JPanel {
     // PW
@@ -42,7 +43,7 @@ public class DOMInspector extends JPanel {
     // PW 
     
     Document doc;
-
+    JButton close;
     JTree tree;
 
     JScrollPane scroll;
@@ -73,10 +74,24 @@ public class DOMInspector extends JPanel {
             splitPane.setLeftComponent(scroll);
         }
 
-        this.add(new JButton("close"),"South");
+        close = new JButton("close");
+        this.add(close,"South");
         this.setPreferredSize(new Dimension(300,300));
 
         setForDocument(doc, context, xsr);
+        
+        close.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                getFrame(DOMInspector.this).hide();
+            }
+        });
+    }
+    
+    public JFrame getFrame(Component comp) {
+        if(comp instanceof JFrame) {
+            return (JFrame)comp;
+        }
+        return getFrame(comp.getParent());
     }
 
     public void setForDocument(Document doc) {
