@@ -45,42 +45,16 @@ public class Matcher {
         /**
          * Creates a new instance of Mapper
          */
-        Mapper(java.util.Collection selectors, org.w3c.dom.Node node) {
-            _node = node;
+        Mapper(java.util.Collection selectors) {
             axes.addAll(selectors);
         }
 
-        private Mapper(org.w3c.dom.Node node) {
-            _node = node;
-            /* do nothing! Add descendant selectors when iterating!*/
-        }
-        /** Maps the children of the given document */
-        /*void mapChildren(org.w3c.dom.Document doc) {
-            org.w3c.dom.NodeList children = doc.getChildNodes();
-            mapElements(children);
-        }*/
-
-        /**
-         * Maps the children of the node connected with this mapper
-         */
-        //NB handling of immediate sibling requires child elements to be traversed in order
-        void mapChildren() {
-            org.w3c.dom.NodeList children = _node.getChildNodes();
-            mapElements(children);
-        }
-
-        private void mapElements(org.w3c.dom.NodeList children) {
-            for (int i = 0; i < children.getLength(); i++) {
-                org.w3c.dom.Node child = children.item(i);
-                if (child.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-                    mapChild((org.w3c.dom.Element) child);
-                }
-            }
+        private Mapper() {
         }
 
         //should now preserve sort order of rules
-        private void mapChild(org.w3c.dom.Element e) {
-            Mapper childMapper = new Mapper(e);
+        void mapChild(org.w3c.dom.Element e) {
+            Mapper childMapper = new Mapper();
             for (int i = 0; i < axes.size(); i++) {
                 Selector sel = (Selector) axes.get(i);
                 if (sel.getAxis() == Selector.DESCENDANT_AXIS) {
@@ -118,13 +92,12 @@ public class Matcher {
                 }
             }
             link(e, childMapper);
-            //childMapper.mapChildren();// No, let the styler request the recursion
         }
 
         /**
          * the node connected to this mapper
          */
-        org.w3c.dom.Node _node;
+        //org.w3c.dom.Node _node;
 
         java.util.List axes = new java.util.ArrayList();
 
@@ -168,7 +141,7 @@ public class Matcher {
             count = appendStylesheet((StylesheetInfo) stylesheets.next(), count, sorter, media);
         }
         XRLog.match("Matcher created with " + sorter.size() + " selectors");
-        return new Mapper(sorter.values(), _doc);
+        return new Mapper(sorter.values());
     }
 
     private int appendStylesheet(StylesheetInfo si, int count, java.util.TreeMap sorter, String media) {
@@ -429,9 +402,9 @@ public class Matcher {
         org.w3c.dom.Node parent = e.getParentNode();
         if (parent.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
             Mapper m = getMapper((org.w3c.dom.Element) parent);
-            m.mapChildren();
-        } else {//has to be document node, we don't do fragments
-            docMapper.mapChildren();
+            m.mapChild(e);
+        } else {//has to be document or fragment node
+            docMapper.mapChild(e);
         }
         return createCascadedStyle(e);
     }
