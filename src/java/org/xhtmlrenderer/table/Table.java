@@ -151,9 +151,9 @@ public class Table {
                 // add the cell
                 Cell cl = null;
                 if ( first_row ) {
-                    cl = addTopCell( cell, col_counter, y );
+                    cl = addTopCell(c, cell, col_counter, y );
                 } else {
-                    cl = addCell( cell, col_counter, y );
+                    cl = addCell(c, cell, col_counter, y );
                 }
                 col_counter += cl.getColumnSpan();
                 added = true;
@@ -195,8 +195,8 @@ public class Table {
      * @param y     The feature to be added to the TopCell attribute
      * @return      Returns
      */
-    public Cell addTopCell( Node node, int x, int y ) {
-        Cell cl = addCell( node, x, y );
+    public Cell addTopCell(Context c, Node node, int x, int y ) {
+        Cell cl = addCell(c, node, x, y );
         top_cells.add( cl );
         return cl;
     }
@@ -209,7 +209,7 @@ public class Table {
      * @param y     The feature to be added to the Cell attribute
      * @return      Returns
      */
-    public Cell addCell( Node node, int x, int y ) {
+    public Cell addCell(Context c, Node node, int x, int y ) {
         //u.p("addCell("+node+","+x+","+y+")");
         if ( node.getNodeType() != node.ELEMENT_NODE ) {
             throw new Error( "this isn't an element" + node );
@@ -217,9 +217,18 @@ public class Table {
         Element cell = (Element)node;
         Cell cl = new Cell();
         cl.node = node;
+        /*
+        u.p("style = " + c.css.getStyle(cell));
+        if(c.css.hasProperty(cell,"-fs-table-cell-colspan")) {
+            u.p("has colspan");
+            cl.col_span = (int)c.css.getFloatProperty(cell,"-fs-table-cell-colspan");
+        }
+        */
+        
         if ( cell.hasAttribute( "colspan" ) ) {
             cl.col_span = Integer.parseInt( cell.getAttribute( "colspan" ) );
         }
+        
         if ( cell.hasAttribute( "rowspan" ) ) {
             cl.row_span = Integer.parseInt( cell.getAttribute( "rowspan" ) );
         }
@@ -355,6 +364,18 @@ public class Table {
 /*
    $Id$
    $Log$
+   Revision 1.6  2004/11/23 18:38:48  joshy
+   removed isPrinting() method from rendering context because it's
+   not needed. the panel can detect printing by checking for
+   instanceof PrinterGraphics
+
+   -j
+
+   Issue number:
+   Obtained from:
+   Submitted by:
+   Reviewed by:
+
    Revision 1.5  2004/11/19 14:39:08  joshy
    fixed crash when a tr is empty
 

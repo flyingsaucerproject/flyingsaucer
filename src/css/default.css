@@ -241,6 +241,7 @@ td, th {
     border-width: 0px 0px 0px 0px;
     padding: 3px 3px 3px 3px;
     margin: 0px 0px 0px 0px;
+    -fs-table-cell-colspan: 1;
 }
 
 th {

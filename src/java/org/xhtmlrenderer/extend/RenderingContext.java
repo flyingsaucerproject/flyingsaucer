@@ -225,7 +225,7 @@ public class RenderingContext {
     }
 
 
-    private boolean printing = false;
+    //private boolean printing = false;
 
 
     /**
@@ -233,19 +233,22 @@ public class RenderingContext {
      *
      * @return    The printing value
      */
+     /*
     public boolean isPrinting() {
         return printing;
     }
-
+    */
 
     /**
      *  Sets the printing attribute of the RenderingContext object
      *
      * @param  printing  The new printing value
      */
+     /*
     public void setPrinting(boolean printing) {
         this.printing = printing;
     }
+    */
 
 
     /*

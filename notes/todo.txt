@@ -66,24 +66,28 @@
 //table crashes on tbody. skip tbody? 
 //table crashes on empty tr
 //reimplement whitespace handling
-remove isPrinting(). check the graphics instanceof printablegraphics
-show current resources in browser
-
 //post about dpi to units issue
 //fix n test vertical align
 //fix n test horizontal align
 //fix n test line wrapping w/ floats
-fix n test space collapsing w/ images
-fix n test tab alignment
 //fix n test preformatted lines
 //test first line pseudo
 //test first char pseudo
+
+
+remove isPrinting(). check the graphics instanceof printablegraphics
+show current resources in browser
+
+fix n test space collapsing w/ images
+fix n test tab alignment
 
 javadoc xhtmlpanel
 javadoc graphic2drenderer
 can we separate inline and box more? maybe do that later?    
 cache linemetrics and ascend/dscend more
 take out redundant functions in font stuff
+
+
 
 rachel in town arrive 20th @ 7, leave 5th @ 7
 

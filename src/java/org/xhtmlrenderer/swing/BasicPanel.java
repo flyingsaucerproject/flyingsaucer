@@ -27,12 +27,13 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.print.PrinterGraphics;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.*;
+import java.util.logging.Level;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
@@ -53,7 +54,6 @@ import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.x;
-import org.xhtmlrenderer.util.u;
 import org.xml.sax.ErrorHandler;
 
 
@@ -613,8 +613,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
     protected void doRender() {
         // paint the normal swing background first
         // but only if we aren't printing.
-        if(!getRenderingContext().isPrinting()) {
-            Graphics g = getRenderingContext().getContext().getGraphics();
+        Graphics g = getRenderingContext().getContext().getGraphics();
+        if(!(g instanceof PrinterGraphics)) {
             g.setColor(getBackground());
             g.fillRect(0,0,getWidth(),getHeight());
         }
@@ -766,6 +766,18 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2004/11/23 18:38:48  joshy
+ * removed isPrinting() method from rendering context because it's
+ * not needed. the panel can detect printing by checking for
+ * instanceof PrinterGraphics
+ *
+ * -j
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.5  2004/11/22 21:34:04  joshy
  * created new whitespace handler.
  * new whitespace routines only work if you set a special property. it's
