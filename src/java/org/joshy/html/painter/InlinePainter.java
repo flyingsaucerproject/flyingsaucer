@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GradientPaint;
 import java.awt.Font;
 import java.awt.font.*;
 import org.joshy.u;
@@ -112,21 +113,7 @@ public class InlinePainter {
         
         
         // draw a selection rectangle
-        if(c.inSelection(inline)) {
-            int dw = inline.width -2;
-            int xoff = 0;
-            if(c.getSelectionEnd() == inline) {
-                dw = c.getSelectionEndX();
-            }
-            if(c.getSelectionStart() == inline) {
-                xoff = c.getSelectionStartX();
-            }
-            c.getGraphics().setColor(new Color(200,200,255));
-            c.getGraphics().fillRect(
-                lx+inline.x+xoff, ly+inline.y-inline.height,
-                dw-xoff,inline.height);
-        }
-
+        paintSelection(c,inline,lx,ly);
         
         //adjust font for current settings
         Font oldfont = c.getGraphics().getFont();
@@ -176,6 +163,29 @@ public class InlinePainter {
         if(inline.relative) {
             g.translate(-inline.left, -inline.top);
         }
+    }
+    
+    public static void paintSelection(Context c, InlineBox inline, int lx, int ly) {
+        if(c.inSelection(inline)) {
+            int dw = inline.width -2;
+            int xoff = 0;
+            if(c.getSelectionEnd() == inline) {
+                dw = c.getSelectionEndX();
+            }
+            if(c.getSelectionStart() == inline) {
+                xoff = c.getSelectionStartX();
+            }
+            c.getGraphics().setColor(new Color(200,200,255));
+            
+            ((Graphics2D)c.getGraphics()).setPaint(new GradientPaint(
+                0,0, new Color(235,235,255),
+                0,inline.height/2, new Color(190,190,235),
+                true));
+            c.getGraphics().fillRect(
+                lx+inline.x+xoff, ly+inline.y-inline.height,
+                dw-xoff,inline.height);
+        }
+
     }
 
 }
