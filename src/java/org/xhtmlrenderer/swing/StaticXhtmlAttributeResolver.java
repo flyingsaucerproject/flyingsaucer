@@ -22,54 +22,62 @@
 package org.xhtmlrenderer.swing;
 
 /**
- *
- * @author  Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class StaticXhtmlAttributeResolver implements org.xhtmlrenderer.extend.AttributeResolver {
-    
-    /** Creates a new instance of StaticHtmlAttributeResolver */
+
+    /**
+     * Creates a new instance of StaticHtmlAttributeResolver
+     */
     public StaticXhtmlAttributeResolver() {
     }
-    
+
     public String getAttributeValue(org.w3c.dom.Element e, String attrName) {
         return e.getAttribute(attrName);
     }
-    
+
     public String getClass(org.w3c.dom.Element e) {
         return e.getAttribute("class");
     }
-    
+
     public String getID(org.w3c.dom.Element e) {
         return e.getAttribute("id");
-   }
-    
+    }
+
     public String getLang(org.w3c.dom.Element e) {
         return e.getAttribute("lang");
     }
-    
+
     public String getElementStyling(org.w3c.dom.Element e) {
-        return e.getAttribute("style");
+        StringBuffer style = new StringBuffer();
+        if (e.getNodeName().equals("td") && !e.getAttribute("colspan").equals("")) {
+            style.append("fs-table-cell-colspan: ");
+            style.append(e.getAttribute("colspan"));
+            style.append(";");
+        }
+        style.append(e.getAttribute("style"));
+        return style.toString();
     }
-    
+
     public boolean isActive(org.w3c.dom.Element e) {
         return false;
     }
-    
+
     public boolean isFocus(org.w3c.dom.Element e) {
         return false;
     }
-    
+
     public boolean isHover(org.w3c.dom.Element e) {
         return false;
     }
-    
+
     public boolean isLink(org.w3c.dom.Element e) {
-        if(e.getNodeName().equalsIgnoreCase("a") && !e.getAttribute("href").equals("")) return true;
+        if (e.getNodeName().equalsIgnoreCase("a") && !e.getAttribute("href").equals("")) return true;
         return false;
-   }
-    
+    }
+
     public boolean isVisited(org.w3c.dom.Element e) {
         return false;
     }
-    
+
 }
