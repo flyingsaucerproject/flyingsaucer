@@ -21,8 +21,7 @@
 package org.xhtmlrenderer.css;
 
 import java.util.*;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSStyleSheet;
+
 
 /**
  * Interface for CSS rules (@ rules, style rules). An XRRule is also a DOM
@@ -34,30 +33,43 @@ import org.w3c.dom.css.CSSStyleSheet;
  */
 public interface XRRuleSet {
 
-  /**
-   * An iterator of all XRProperties in this rule.
-   *
-   * @return   Returns
-   */
-  Iterator listXRProperties();
+    /**
+     * An iterator of all XRProperties in this rule.
+     *
+     * @return   Returns
+     */
+    Iterator listXRProperties();
 
 
-  /**
-   * Value of a single XRProperty, by name.
-   *
-   * @param propName  PARAM
-   * @return          Returns
-   */
-  XRProperty propertyByName( String propName );
+    /**
+     * Value of a single XRProperty, by name.
+     *
+     * @param propName  PARAM
+     * @return          Returns
+     */
+    XRProperty propertyByName( String propName );
 
-  /** 
-   * Merges two XRRuleSets, combining all properties. This is not used for cascading, rather for
-   * two rules defined separately in the same sheet with the same selector. Any properties with the
-   * same name in fromRuleSet will replace existing properties with that name in this XRRuleSet.
-   */
-   void mergeProperties(XRRuleSet fromRuleSet);
-  
+    /**
+     * Merges two XRRuleSets, combining all properties. This is not used for
+     * cascading, rather for two rules defined separately in the same sheet with
+     * the same selector. Any properties with the same name in fromRuleSet will
+     * replace existing properties with that name in this XRRuleSet.
+     *
+     * @param fromRuleSet  PARAM
+     */
+    void mergeProperties( XRRuleSet fromRuleSet );
+
 }// end interface
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:03:46  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 
-// :folding=indent:collapseFolds=2:

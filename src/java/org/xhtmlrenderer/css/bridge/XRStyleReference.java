@@ -49,8 +49,11 @@ import org.w3c.dom.css.CSSStyleSheet;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
 
+import com.steadystate.css.parser.CSSOMParser;
+
+import org.apache.xpath.XPathAPI;
+
 import org.xhtmlrenderer.css.Border;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.css.StaticHtmlAttributeResolver;
 import org.xhtmlrenderer.css.StyleReference;
 
@@ -61,17 +64,14 @@ import org.xhtmlrenderer.css.XRStyleSheet;
 import org.xhtmlrenderer.css.impl.XRElementImpl;
 import org.xhtmlrenderer.css.impl.XRStyleRuleImpl;
 import org.xhtmlrenderer.css.impl.XRStyleSheetImpl;
-import org.xhtmlrenderer.css.value.BorderColor;
-import org.xhtmlrenderer.util.LoggerUtil;
-
-import com.steadystate.css.parser.CSSOMParser;
 
 import org.xhtmlrenderer.css.match.AttributeResolver;
 import org.xhtmlrenderer.css.match.Ruleset;
 import org.xhtmlrenderer.css.match.StyleMap;
-import org.xhtmlrenderer.util.*;
+import org.xhtmlrenderer.css.value.BorderColor;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.util.XRLog;
 
-import org.apache.xpath.XPathAPI;
 
 /**
  * <p>
@@ -79,8 +79,8 @@ import org.apache.xpath.XPathAPI;
  * Implementation of {@link org.xhtmlrenderer.css.StyleReference} which uses the
  * output of a SAC CSS parser to parse stylesheets, uses the {@link
  * net.homelinux.tobe.css.StyleMap} and related classes as a CSS-DOM matcher,
- * and a {@link org.xhtmlrenderer.layout.Context} instance for property resolution where
- * neeeded. Idiomatic use is </p>
+ * and a {@link org.xhtmlrenderer.layout.Context} instance for property
+ * resolution where neeeded. Idiomatic use is </p>
  * <ul>
  *   <li> to {@link XRStyleReference#XRStyleReference(Context)} with a Context
  *   </li>
@@ -114,10 +114,13 @@ public class XRStyleReference implements StyleReference {
      * to flag that match is required before retrieving properties.
      */
     private boolean _matchedSinceLastParse;
-    
-    /** Whether elements in the current document have been checked for style attributes */
+
+    /**
+     * Whether elements in the current document have been checked for style
+     * attributes
+     */
     private boolean _elementStyleAttributesPulled;
-    
+
     /** Map from Element to XRStyleRules created from style attribute on it */
     private Map _elementXRStyleMap;
 
@@ -136,13 +139,13 @@ public class XRStyleReference implements StyleReference {
 
     /** One-one map from DOM Elements to XRElements. */
     private Map _nodeXRElementMap;
-    
+
     /** seems to need a list of XRStyleRules.... */
     private List _xrStyleRuleList;
 
     /**
-     * Map from XRStyleRules to the Rulesets that contain them. Rulesets are passed
-     * to Tobe's matching routine, hence...
+     * Map from XRStyleRules to the Rulesets that contain them. Rulesets are
+     * passed to Tobe's matching routine, hence...
      */
     private Map _ruleSetMap;
 
@@ -236,18 +239,18 @@ public class XRStyleReference implements StyleReference {
         if ( _tbStyleMap == null ) {
             if ( !_elementStyleAttributesPulled ) {
                 try {
-                    NodeList nl = XPathAPI.selectNodeList(document.getDocumentElement(), "//*[@style!='']");
+                    NodeList nl = XPathAPI.selectNodeList( document.getDocumentElement(), "//*[@style!='']" );
                     // HACK: better on first parse and avoid this second sweep (PWW 24-08-04)
-                    for ( int i=0, len=nl.getLength(); i < len; i++ ) {
-                        parseElementStyling((Element)nl.item(i));
+                    for ( int i = 0, len = nl.getLength(); i < len; i++ ) {
+                        parseElementStyling( (Element)nl.item( i ) );
                     }
                     _elementStyleAttributesPulled = true;
-                } catch (Exception ex) {
-                    System.err.println("Couldn't pull element style attribute.");
+                } catch ( Exception ex ) {
+                    System.err.println( "Couldn't pull element style attribute." );
                     ex.printStackTrace();
                 }
             }
-            
+
             // we are going to pass a list of pre-sorted XRStyleRules to the mapping routines
             // The sort is on origin, specificity, and sequence...in principle, this means
             // that rules appearing later in the sort always override rules appearing higher
@@ -261,7 +264,7 @@ public class XRStyleReference implements StyleReference {
             List sortedRulesets = new ArrayList();
             iter = sortedXRRules.iterator();
             while ( iter.hasNext() ) {
-                
+
                 Ruleset rs = (Ruleset)_ruleSetMap.get( iter.next() );
                 sortedRulesets.add( rs );
             }
@@ -286,8 +289,8 @@ public class XRStyleReference implements StyleReference {
      *      information.
      * @param origin           The origin of the enclosed style information--an
      *      int constant from XRStyleSheet, e.g. {@link
-     *      org.xhtmlrenderer.css.XRStyleSheet#AUTHOR}. Used to
-     *      determine precedence of rules derived from the parse sheet.
+     *      org.xhtmlrenderer.css.XRStyleSheet#AUTHOR}. Used to determine
+     *      precedence of rules derived from the parse sheet.
      * @exception IOException  On errors reading the Reader.
      */
     public void parse( Reader reader, int origin )
@@ -328,8 +331,8 @@ public class XRStyleReference implements StyleReference {
 
     /**
      * Same as {@link #parse(Reader, int)} for {@link
-     * org.xhtmlrenderer.css.XRStyleSheet#USER_AGENT} stylesheet and
-     * String that contains the styles.
+     * org.xhtmlrenderer.css.XRStyleSheet#USER_AGENT} stylesheet and String that
+     * contains the styles.
      *
      * @param source           See {@link #parse(Reader, int)}
      * @exception IOException  {@link #parse(Reader, int)}
@@ -341,93 +344,98 @@ public class XRStyleReference implements StyleReference {
 
 
     /**
-     * Parses the CSS style information from a <?xml-stylesheet?> PI
-     *  and loads these rules into the associated RuleBank.
+     * Parses the CSS style information from a <?xml-stylesheet?> PI and loads
+     * these rules into the associated RuleBank.
      *
-     * @param root             Root of the document for which to search for link tags.
+     * @param root             Root of the document for which to search for link
+     *      tags.
      * @exception IOException  Throws
      */
     public void parseDeclaredStylesheets( Element root )
-    throws IOException {
+        throws IOException {
         try {
-            NodeList nl = XPathAPI.selectNodeList(root, "//processing-instruction('xml-stylesheet')");
-            for ( int i=0, len=nl.getLength(); i < len; i++ ) {
-                Node piNode = nl.item(i);
+            NodeList nl = XPathAPI.selectNodeList( root, "//processing-instruction('xml-stylesheet')" );
+            for ( int i = 0, len = nl.getLength(); i < len; i++ ) {
+                Node piNode = nl.item( i );
                 String pi = piNode.getNodeValue();
-                String s = pi.substring(pi.indexOf("type=")+5);
-                String type = s.substring(1, s.indexOf(s.charAt(0),1));
-                if(type.equals("text/css")) {
-                    s = pi.substring(pi.indexOf("href=")+5);
-                    String href = s.substring(1, s.indexOf(s.charAt(0),1));
-                    parseStylesheet(href);
+                String s = pi.substring( pi.indexOf( "type=" ) + 5 );
+                String type = s.substring( 1, s.indexOf( s.charAt( 0 ), 1 ) );
+                if ( type.equals( "text/css" ) ) {
+                    s = pi.substring( pi.indexOf( "href=" ) + 5 );
+                    String href = s.substring( 1, s.indexOf( s.charAt( 0 ), 1 ) );
+                    parseStylesheet( href );
                 }
             }
         } catch ( Exception ex ) {
-            ex.printStackTrace();   
+            ex.printStackTrace();
         }
     }
 
     /**
-     * Parses the CSS style information from a "<link>" Elements (for example in
-     * XHTML), and loads these rules into the associated RuleBank.
+     * Parses the CSS style information from a "
+     * <link> " Elements (for example in XHTML), and loads these rules into the
+     * associated RuleBank.
      *
-     * @param root             Root of the document for which to search for link tags.
+     * @param root             Root of the document for which to search for link
+     *      tags.
      * @exception IOException  Throws
      */
     public void parseLinkedStyles( Element root )
-    throws IOException {
+        throws IOException {
         try {
-            NodeList nl = XPathAPI.selectNodeList(root, "//link[@type='text/css']/@href");
-            for ( int i=0, len=nl.getLength(); i < len; i++ ) {
-                Node hrefNode = nl.item(i);
+            NodeList nl = XPathAPI.selectNodeList( root, "//link[@type='text/css']/@href" );
+            for ( int i = 0, len = nl.getLength(); i < len; i++ ) {
+                Node hrefNode = nl.item( i );
                 String href = hrefNode.getNodeValue();
-                parseStylesheet(href);
+                parseStylesheet( href );
             }
         } catch ( Exception ex ) {
-            ex.printStackTrace();   
+            ex.printStackTrace();
         }
     }
 
     /**
-     * Parses the CSS style information from a URL
-     * and loads these rules into the associated RuleBank.
+     * Parses the CSS style information from a URL and loads these rules into
+     * the associated RuleBank.
      *
-     * @param root             Root of the document for which to search for link tags.
+     * @param href             PARAM
      * @exception IOException  Throws
      */
     public void parseStylesheet( String href )
-    throws IOException {
+        throws IOException {
         try {
-                // HACK: need clean way to check if this is local reference...local references will need to be resolved to server reference, won't they?
-                Reader reader = null;
-                try {
-                    URL url = null;
-                    if ( !href.startsWith("http://") && !href.startsWith("file://")) {
-                        url = new URL(_context.getBaseURL(),href);
-                    } else url = new URL(href);
-                    
-                    InputStream is = url.openStream();
-                    BufferedInputStream bis = new BufferedInputStream(is);
-                    reader = new InputStreamReader(bis);
-                } catch ( java.net.MalformedURLException ex ) {
-                    System.err.println("Stylesheet link " + href + " doesn't appear to be a url.");   
+            // HACK: need clean way to check if this is local reference...local references will need to be resolved to server reference, won't they?
+            Reader reader = null;
+            try {
+                URL url = null;
+                if ( !href.startsWith( "http://" ) && !href.startsWith( "file://" ) ) {
+                    url = new URL( _context.getBaseURL(), href );
+                } else {
+                    url = new URL( href );
                 }
-                
-                if ( reader == null ) {
-                    File f = new File(href);
-                    if ( f.exists()) {
-                        reader = new BufferedReader(new FileReader(f));
-                        System.out.println("Loading CSS " + href + " as a file.");
-                    } else {
-                        System.err.println("Can't figure out how to load stylesheet '" + href + "' with base URL "+_context.getBaseURL());   
-                    }
-                } 
-                if ( reader != null ) {
-                    parse(reader, XRStyleSheet.AUTHOR);
-                    reader.close();
+
+                InputStream is = url.openStream();
+                BufferedInputStream bis = new BufferedInputStream( is );
+                reader = new InputStreamReader( bis );
+            } catch ( java.net.MalformedURLException ex ) {
+                System.err.println( "Stylesheet link " + href + " doesn't appear to be a url." );
+            }
+
+            if ( reader == null ) {
+                File f = new File( href );
+                if ( f.exists() ) {
+                    reader = new BufferedReader( new FileReader( f ) );
+                    System.out.println( "Loading CSS " + href + " as a file." );
+                } else {
+                    System.err.println( "Can't figure out how to load stylesheet '" + href + "' with base URL " + _context.getBaseURL() );
                 }
+            }
+            if ( reader != null ) {
+                parse( reader, XRStyleSheet.AUTHOR );
+                reader.close();
+            }
         } catch ( Exception ex ) {
-            ex.printStackTrace();   
+            ex.printStackTrace();
         }
     }
 
@@ -435,8 +443,8 @@ public class XRStyleReference implements StyleReference {
      * Parses the CSS style information from a "<style>" Element (for example in
      * XHTML), and loads these styles for later lookup, and processes child
      * nodes as well. Inline stylesheets are always considered {@link
-     * org.xhtmlrenderer.css.XRStyleSheet#AUTHOR} stylesheets for the
-     * purposes of cascading.
+     * org.xhtmlrenderer.css.XRStyleSheet#AUTHOR} stylesheets for the purposes
+     * of cascading.
      *
      * @param elem             The Element from which to pull a style attribute.
      * @exception IOException  If there was an error reading the styling
@@ -489,12 +497,11 @@ public class XRStyleReference implements StyleReference {
         _matchedSinceLastParse = false;
 
         // Pull attribute
-        Node styleNode = elem.getAttributes().getNamedItem("style");
+        Node styleNode = elem.getAttributes().getNamedItem( "style" );
         if ( styleNode == null ) {
-            System.err.println("Element requested to parse style attribute but it had none.");
+            System.err.println( "Element requested to parse style attribute but it had none." );
         } else {
             String styleStr = "* { " + styleNode.getNodeValue() + " }";
-            
 
             // can't use parse routines because we will lose track
             // that style belongs only to this element (as if it had
@@ -503,17 +510,17 @@ public class XRStyleReference implements StyleReference {
             XRStyleSheet sheet = null;
             try {
                 CSSOMParser parser = new CSSOMParser();
-                StringReader reader = new StringReader(styleStr);
+                StringReader reader = new StringReader( styleStr );
                 InputSource is = new InputSource( reader );
                 CSSStyleSheet style = parser.parseStyleSheet( is );
                 reader.close();
-                
+
                 // HACK: this is overkill, but the constructors of the
                 // XRStyleRuleImpl class are not set up for non-sheet
                 // rule loading.
                 sheet = XRStyleSheetImpl.newAuthorStyleSheet( style, 0 );
                 XRStyleRule rule = (XRStyleRule)sheet.styleRules().next();
-                _elementXRStyleMap.put(elem, rule);
+                _elementXRStyleMap.put( elem, rule );
             } catch ( Exception ex ) {
                 ex.printStackTrace();
             }
@@ -533,15 +540,18 @@ public class XRStyleReference implements StyleReference {
     public XRElement getNodeXRElement( Node node ) {
         return (XRElement)_nodeXRElementMap.get( node );
     }
-    
+
     /**
      * Returns the XRProperty associated with the given Element.
      *
+     * @param elem      PARAM
+     * @param propName  PARAM
+     * @return          The xRProperty value
      */
-     public XRProperty getXRProperty(Element elem, String propName) {
+    public XRProperty getXRProperty( Element elem, String propName ) {
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( elem );
-        return xrElement.derivedStyle().propertyByName( _context, propName );     
-     }
+        return xrElement.derivedStyle().propertyByName( _context, propName );
+    }
 
 
     /**
@@ -631,9 +641,9 @@ public class XRStyleReference implements StyleReference {
      * parent and ancestor elements.
      *
      * @param elem     The DOM element to find the property for.
+     * @param prop     The property name
      * @param inherit  If true and property not found on this element, searches
      *      through element ancestors for property
-     * @param prop     The property name
      * @return         The named property as a Point
      */
     public Point getFloatPairProperty( Element elem, String prop, boolean inherit ) {
@@ -885,7 +895,6 @@ public class XRStyleReference implements StyleReference {
             matchStyles( node.getOwnerDocument() );
         }
 
-
         XRElement xrElement = (XRElement)_nodeXRElementMap.get( node );
         if ( xrElement == null ) {
             return null;
@@ -919,7 +928,7 @@ public class XRStyleReference implements StyleReference {
             _nodeXRElementMap.put( elem, xrElement );
         }
 
-        // StyleMap will return a List of XRStyleRules matched to the element, 
+        // StyleMap will return a List of XRStyleRules matched to the element,
         // in the same sort order we originally passed in.
         List styleList = _tbStyleMap.getMappedProperties( elem );
         Iterator iter = styleList.iterator();
@@ -928,9 +937,9 @@ public class XRStyleReference implements StyleReference {
             xrElement.addMatchedStyle( rule );
         }
         // apply rules from style attribute on element, if any
-        XRStyleRule attrRule = (XRStyleRule)_elementXRStyleMap.get(elem);
+        XRStyleRule attrRule = (XRStyleRule)_elementXRStyleMap.get( elem );
         if ( attrRule != null ) {
-            xrElement.addMatchedStyle(attrRule);
+            xrElement.addMatchedStyle( attrRule );
         }
 
         NodeList nl = elem.getChildNodes();
@@ -944,32 +953,34 @@ public class XRStyleReference implements StyleReference {
 
 
     /**
-     * Adds the top-level or leftmost selector of the XRStyleReference
-     * object.
+     * Adds the top-level or leftmost selector of the XRStyleReference object.
      *
-     * @param rs         The feature to be added to the ChainedSelector attribute
+     * @param rs        The feature to be added to the ChainedSelector attribute
      * @param selector  The feature to be added to the ChainedSelector attribute
+     * @return          Returns
      */
-    private org.xhtmlrenderer.css.match.Selector addSelector(Ruleset rs, Selector selector) {
-            org.xhtmlrenderer.css.match.Selector s = null;
-            if ( selector.getSelectorType() == Selector.SAC_DIRECT_ADJACENT_SELECTOR ) {
-                s = addSelector(rs, ( (SiblingSelector)selector ).getSelector());
-                addChainedSelector(s, selector);
-            } else if ( selector.getSelectorType() == Selector.SAC_CHILD_SELECTOR ) {
-                s = addSelector(rs, ( (DescendantSelector)selector ).getAncestorSelector());
-                addChainedSelector(s, selector);
-            } else if ( selector.getSelectorType() == Selector.SAC_DESCENDANT_SELECTOR ) {
-                s = addSelector(rs, ( (DescendantSelector)selector ).getAncestorSelector());
-                addChainedSelector(s, selector);
-            } else if ( selector.getSelectorType() == Selector.SAC_CONDITIONAL_SELECTOR ) {
-                Condition cond = ( (ConditionalSelector)selector ).getCondition();
-                s = addSelector(rs, ( (ConditionalSelector)selector ).getSimpleSelector());
-                addConditions( s, cond );
-            } else if ( selector.getSelectorType() == Selector.SAC_ELEMENT_NODE_SELECTOR ) {
-                s = rs.createSelector( org.xhtmlrenderer.css.match.Selector.DESCENDANT_AXIS, ( (ElementSelector)selector ).getLocalName() );
-            } else System.err.println("bad selector in addSelector");
+    private org.xhtmlrenderer.css.match.Selector addSelector( Ruleset rs, Selector selector ) {
+        org.xhtmlrenderer.css.match.Selector s = null;
+        if ( selector.getSelectorType() == Selector.SAC_DIRECT_ADJACENT_SELECTOR ) {
+            s = addSelector( rs, ( (SiblingSelector)selector ).getSelector() );
+            addChainedSelector( s, selector );
+        } else if ( selector.getSelectorType() == Selector.SAC_CHILD_SELECTOR ) {
+            s = addSelector( rs, ( (DescendantSelector)selector ).getAncestorSelector() );
+            addChainedSelector( s, selector );
+        } else if ( selector.getSelectorType() == Selector.SAC_DESCENDANT_SELECTOR ) {
+            s = addSelector( rs, ( (DescendantSelector)selector ).getAncestorSelector() );
+            addChainedSelector( s, selector );
+        } else if ( selector.getSelectorType() == Selector.SAC_CONDITIONAL_SELECTOR ) {
+            Condition cond = ( (ConditionalSelector)selector ).getCondition();
+            s = addSelector( rs, ( (ConditionalSelector)selector ).getSimpleSelector() );
+            addConditions( s, cond );
+        } else if ( selector.getSelectorType() == Selector.SAC_ELEMENT_NODE_SELECTOR ) {
+            s = rs.createSelector( org.xhtmlrenderer.css.match.Selector.DESCENDANT_AXIS, ( (ElementSelector)selector ).getLocalName() );
+        } else {
+            System.err.println( "bad selector in addSelector" );
+        }
 
-            return s;
+        return s;
     }
 
     /**
@@ -1029,9 +1040,9 @@ public class XRStyleReference implements StyleReference {
         _ruleSetMap.put( rule, rs );
 
         org.w3c.css.sac.SelectorList selector_list = rule.selectorsAsSACList();
-	for ( int i = 0; i < selector_list.getLength(); i++ ) {
+        for ( int i = 0; i < selector_list.getLength(); i++ ) {
             Selector selector = selector_list.item( i );
-            org.xhtmlrenderer.css.match.Selector s = addSelector(rs, selector);
+            org.xhtmlrenderer.css.match.Selector s = addSelector( rs, selector );
         }
     }
 
@@ -1145,7 +1156,15 @@ public class XRStyleReference implements StyleReference {
     }
 
 }
-/*
- * :folding=java:collapseFolds=1:noTabs=true:tabSize=4:indentSize=4:
- */
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.7  2004/10/23 13:06:54  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Added CVS log comments at bottom.
+ *
+ *
+ */

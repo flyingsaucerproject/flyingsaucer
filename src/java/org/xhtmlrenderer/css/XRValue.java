@@ -21,17 +21,14 @@
 package org.xhtmlrenderer.css;
 
 import java.awt.Color;
-
 import org.w3c.dom.css.CSSValue;
-
 import org.xhtmlrenderer.layout.Context;
 
 
 /**
  * A CSSValue as parsed from a stylesheet.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 // HACK: need to sort out conceptual confusion betw. CSSValue and CSSPrimitive value. Many of these methods
 // are single-value specific but for just a couple of cases it is nice to store the value list as we read it...
@@ -131,9 +128,9 @@ public interface XRValue extends CSSValue {
      * Computes a relative unit (e.g. percentage) as an absolute value, using
      * the property's XRElement context.
      *
+     * @param context       PARAM
      * @param ownerElement  PARAM
      * @param propName      PARAM
-     * @param context       PARAM
      */
     // TODO: clean all PARAM
     void computeRelativeUnit( Context context, XRElement ownerElement, String propName );
@@ -147,4 +144,15 @@ public interface XRValue extends CSSValue {
     XRValue copyOf();
 }// end interface
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:03:47  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

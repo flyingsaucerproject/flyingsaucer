@@ -21,12 +21,24 @@
 package org.xhtmlrenderer.css;
 
 
+
 /**
  * An @ rule, such as (at)page, (at)import, etc. Currently a marker interface.
  *
- * @author    Patrick Wright
+ * @author   Patrick Wright
  */
 public interface XRAtRule extends XRSheetRule {
 }// end interface
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:03:46  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

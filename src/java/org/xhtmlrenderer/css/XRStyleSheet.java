@@ -21,7 +21,6 @@
 package org.xhtmlrenderer.css;
 
 import java.util.*;
-
 import org.w3c.dom.css.CSSStyleSheet;
 
 
@@ -33,6 +32,8 @@ import org.w3c.dom.css.CSSStyleSheet;
  * include:</p>
  * <ul>
  *   <li> .css text-format files included with <code>
+ *
+ *
  *
  *
  *
@@ -55,8 +56,7 @@ import org.w3c.dom.css.CSSStyleSheet;
  * sheet, so that the owner sheet rules override matching selectors (see CSS2
  * spec).</p>
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public interface XRStyleSheet extends CSSStyleSheet {
     /** Origin of stylesheet - user agent */
@@ -116,4 +116,15 @@ public interface XRStyleSheet extends CSSStyleSheet {
     String orginLabel();
 }// end interface
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:03:47  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

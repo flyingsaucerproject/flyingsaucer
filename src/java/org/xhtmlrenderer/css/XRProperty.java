@@ -60,8 +60,8 @@ public interface XRProperty {
     XRValue specifiedValue();
 
     /**
-     * The specified value, if absolute, or the relative value as 
-     * absolute, if relative :).
+     * The specified value, if absolute, or the relative value as absolute, if
+     * relative :).
      *
      * @return   See desc.
      */
@@ -105,16 +105,26 @@ public interface XRProperty {
 
 
     /**
-     * Deep copy operation for the purposes of inheriting a computed value.
-     * Used when a child element needs the parent element's computed value
-     * for a property. The following is true of the copy: 1) is resolved
-     * 2) computed value is same as parent's computed 3) actual value
-     * is same as parent's actual value. Any contained SAC instances are not
-     * deep-copied.
+     * Deep copy operation for the purposes of inheriting a computed value. Used
+     * when a child element needs the parent element's computed value for a
+     * property. The following is true of the copy: 1) is resolved 2) computed
+     * value is same as parent's computed 3) actual value is same as parent's
+     * actual value. Any contained SAC instances are not deep-copied.
      *
      * @return   See desc
      */
     XRProperty copyForInherit();
 }// end interface
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:03:46  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

@@ -21,11 +21,8 @@
 package org.xhtmlrenderer.css;
 
 import java.awt.Color;
-
-import org.xhtmlrenderer.css.Border;
-import org.xhtmlrenderer.layout.Context;
-
 import org.xhtmlrenderer.css.value.BorderColor;
+import org.xhtmlrenderer.layout.Context;
 
 
 /**
@@ -38,10 +35,11 @@ import org.xhtmlrenderer.css.value.BorderColor;
  * only one value in this class (e.g. one-one map). An <code>XRDerivedStyle</code>
  * is retrieved from an {@link XRElement} using the {@link
  * XRElement#derivedStyle()} method. Any methods to retrieve property values
- * from an instance of this class require a valid {@link org.xhtmlrenderer.layout.Context} be given to
- * it, for some cases of property resolution. Generally, a programmer will not
- * use this class directly, but will retrieve properties using a {@link
- * org.joshy.html.css.StyleReference} implementation.
+ * from an instance of this class require a valid {@link
+ * org.xhtmlrenderer.layout.Context} be given to it, for some cases of property
+ * resolution. Generally, a programmer will not use this class directly, but
+ * will retrieve properties using a {@link org.joshy.html.css.StyleReference}
+ * implementation.
  *
  * @author   Patrick Wright
  * @see      XRElement
@@ -55,8 +53,8 @@ public interface XRDerivedStyle extends XRRule {
      * the four-sided border width. Uses the actual value (computed actual
      * value) for this element.
      *
-     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used in resolving relative
-     *      property values.
+     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used
+     *      in resolving relative property values.
      * @return         The borderWidth value
      */
     Border getBorderWidth( Context context );
@@ -67,8 +65,8 @@ public interface XRDerivedStyle extends XRRule {
      * the four-sided margin width. Uses the actual value (computed actual
      * value) for this element.
      *
-     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used in resolving relative
-     *      property values.
+     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used
+     *      in resolving relative property values.
      * @return         The marginWidth value
      */
     Border getMarginWidth( Context context );
@@ -79,8 +77,8 @@ public interface XRDerivedStyle extends XRRule {
      * the four-sided padding width. Uses the actual value (computed actual
      * value) for this element.
      *
-     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used in resolving relative
-     *      property values.
+     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used
+     *      in resolving relative property values.
      * @return         The paddingWidth value
      */
     Border getPaddingWidth( Context context );
@@ -91,8 +89,8 @@ public interface XRDerivedStyle extends XRRule {
      * the background color value; Uses the actual value (computed actual value)
      * for this element.
      *
-     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used in resolving relative
-     *      property values.
+     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used
+     *      in resolving relative property values.
      * @return         The backgroundColor value
      */
     Color getBackgroundColor( Context context );
@@ -103,8 +101,8 @@ public interface XRDerivedStyle extends XRRule {
      * with the four-sided border color. Uses the actual value (computed actual
      * value) for this element.
      *
-     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used in resolving relative
-     *      property values.
+     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used
+     *      in resolving relative property values.
      * @return         The borderColor value
      */
     BorderColor getBorderColor( Context context );
@@ -115,11 +113,22 @@ public interface XRDerivedStyle extends XRRule {
      * the foreground color Uses the actual value (computed actual value) for
      * this element.
      *
-     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used in resolving relative
-     *      property values.
+     * @param context  A {@link org.xhtmlrenderer.layout.Context} instance used
+     *      in resolving relative property values.
      * @return         The color value
      */
     Color getColor( Context context );
 }// end interface
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:03:46  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

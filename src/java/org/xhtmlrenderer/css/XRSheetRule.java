@@ -29,10 +29,9 @@ import org.w3c.dom.css.CSSRule;
  * their stylesheet. A rule belongs to a CSS stylesheet, and is marked important
  * iff it contains only properties marked !important
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
-public interface XRSheetRule extends XRRule, CSSRule {
+public interface XRSheetRule extends CSSRule, XRRule {
 
     /**
      * Returns the stylesheet for this rule...rules always exist in the context
@@ -63,4 +62,16 @@ public interface XRSheetRule extends XRRule, CSSRule {
     int sequenceInStyleSheet();
 
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:03:47  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

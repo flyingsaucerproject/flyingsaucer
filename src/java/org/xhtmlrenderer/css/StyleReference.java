@@ -1,37 +1,32 @@
-
-/* 
- * {{{ header & license 
- * Copyright (c) 2004 Joshua Marinacci 
- * 
- * This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU Lesser General Public License 
- * as published by the Free Software Foundation; either version 2.1 
- * of the License, or (at your option) any later version. 
- * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the 
- * GNU Lesser General Public License for more details. 
- * 
- * You should have received a copy of the GNU Lesser General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
- * }}} 
+/*
+ * {{{ header & license
+ * Copyright (c) 2004 Joshua Marinacci
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
  */
-
 package org.xhtmlrenderer.css;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.io.IOException;
 import java.io.Reader;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.css.CSSStyleSheet;
 import org.w3c.dom.css.CSSValue;
-
 import org.xhtmlrenderer.css.value.BorderColor;
 
 
@@ -120,9 +115,9 @@ public interface StyleReference {
      * parent and ancestor elements.
      *
      * @param elem     The DOM element to find the property for.
+     * @param prop     The property name
      * @param inherit  If true and property not found on this element, searches
      *      through element ancestors for property
-     * @param prop     The property name
      * @return         The named property as a Point
      */
     Point getFloatPairProperty( Element elem, String prop, boolean inherit );
@@ -357,8 +352,8 @@ public interface StyleReference {
      *      information.
      * @param origin           The origin of the enclosed style information--an
      *      int constant from XRStyleSheet, e.g. {@link
-     *      org.xhtmlrenderer.css.XRStyleSheet#AUTHOR}. Used to
-     *      determine precedence of rules derived from the parse sheet.
+     *      org.xhtmlrenderer.css.XRStyleSheet#AUTHOR}. Used to determine
+     *      precedence of rules derived from the parse sheet.
      * @exception IOException  Throws
      */
     void parse( Reader reader, int origin )
@@ -385,18 +380,20 @@ public interface StyleReference {
         throws IOException;
 
     /**
-     * Parses the CSS style information from a <?xml-stylesheet?> PI
-     *  and loads these rules into the associated RuleBank.
+     * Parses the CSS style information from a <?xml-stylesheet?> PI and loads
+     * these rules into the associated RuleBank.
      *
-     * @param root             Root of the document for which to search for link tags.
+     * @param root             Root of the document for which to search for link
+     *      tags.
      * @exception IOException  Throws
      */
     public void parseDeclaredStylesheets( Element root )
-    throws IOException;
+        throws IOException;
 
     /**
-     * Parses the CSS style information from a "<link>" Element (for example in
-     * XHTML), and loads these rules into the associated RuleBank.
+     * Parses the CSS style information from a "
+     * <link> " Element (for example in XHTML), and loads these rules into the
+     * associated RuleBank.
      *
      * @param elem             The Element from which to pull a style attribute.
      * @exception IOException  Throws
@@ -427,4 +424,16 @@ public interface StyleReference {
         throws IOException;
 
 }// end interface
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.3  2004/10/23 13:03:46  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

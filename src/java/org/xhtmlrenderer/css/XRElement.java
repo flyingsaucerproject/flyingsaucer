@@ -21,7 +21,6 @@
 package org.xhtmlrenderer.css;
 
 import java.util.*;
-
 import org.w3c.dom.Node;
 
 
@@ -36,8 +35,8 @@ import org.w3c.dom.Node;
  * #addMatchedStyle(XRStyleRule)} for each style that matches the element. Once
  * all styles are matched, {@link #derivedStyle()} returns a {@link
  * XRDerivedStyle} instance with all the applicable properties for the element.
- * If using the {@link org.xhtmlrenderer.css.bridge.XRStyleReference}
- * for style lookup, you will not need to use this class directly, as it handles
+ * If using the {@link org.xhtmlrenderer.css.bridge.XRStyleReference} for style
+ * lookup, you will not need to use this class directly, as it handles
  * instantiation of XRElements.
  *
  * @author   Patrick Wright
@@ -97,4 +96,15 @@ public interface XRElement {
     Iterator listMatchedStyleSelectors();
 }// end interface
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:03:46  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

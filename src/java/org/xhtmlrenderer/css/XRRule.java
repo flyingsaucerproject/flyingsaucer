@@ -21,7 +21,6 @@
 package org.xhtmlrenderer.css;
 
 import java.util.*;
-
 import org.xhtmlrenderer.layout.Context;
 
 
@@ -30,8 +29,7 @@ import org.xhtmlrenderer.layout.Context;
  * CSSRule. Rules have a sequence which is the order they were found within
  * their stylesheet.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public interface XRRule {
     /**
@@ -45,8 +43,8 @@ public interface XRRule {
     /**
      * Value of a single XRProperty, by name.
      *
-     * @param propName  PARAM
      * @param context   PARAM
+     * @param propName  PARAM
      * @return          Returns
      */
     XRProperty propertyByName( Context context, String propName );
@@ -72,4 +70,16 @@ public interface XRRule {
      */
     void mergeProperties( XRRule fromRuleSet );
 }
+
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:03:46  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 

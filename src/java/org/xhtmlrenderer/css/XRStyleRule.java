@@ -27,8 +27,7 @@ import org.w3c.css.sac.SelectorList;
  * A rule defining a styling for elements--has a String selector used for
  * matching to elements.
  *
- * @author    Patrick Wright
- *
+ * @author   Patrick Wright
  */
 public interface XRStyleRule extends XRSheetRule {
     /**
@@ -49,8 +48,24 @@ public interface XRStyleRule extends XRSheetRule {
     int selectorSpecificity();
 
 
+    /**
+     * Description of the Method
+     *
+     * @return   Returns
+     */
     SelectorList selectorsAsSACList();
-    
+
 }// end interface
 
+/*
+ * $Id$
+ *
+ * $Log$
+ * Revision 1.2  2004/10/23 13:03:47  pdoubleya
+ * Re-formatted using JavaStyle tool.
+ * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+ * Added CVS log comments at bottom.
+ *
+ *
+ */
 
