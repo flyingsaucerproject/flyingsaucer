@@ -97,7 +97,7 @@ public class XRElementImpl implements XRElement {
      * @return   Returns
      */
     //ASK: synchronized?
-    public synchronized XRDerivedStyle derivedStyle() {
+    public XRDerivedStyle derivedStyle() {
         if ( _derivedStyle == null ) {
             _derivedStyle = new XRDerivedStyleImpl( this, _matchedStyles.iterator() );
         }
@@ -110,7 +110,7 @@ public class XRElementImpl implements XRElement {
      *
      * @param style  The feature to be added to the MatchedStyle attribute
      */
-    public synchronized void addMatchedStyle( XRStyleRule style ) {
+    public void addMatchedStyle( XRStyleRule style ) {
         _derivedStyle = null;
         _matchedStyles.add( style );
     }
