@@ -92,7 +92,9 @@ public class BrowserStartup {
         menu.createActions();
 
         try {
-            panel.loadPage("demo:demos/splash/splash.html");
+            //panel.loadPage("demo:demos/splash/splash.html");
+            //panel.loadPage("demo:demos/paragraph.xhtml");
+            panel.loadPage("demo:demos/layout/multicol/glish/nested-float.xhtml");
         } catch (Exception ex) {
             Uu.p(ex);
         }
@@ -106,6 +108,7 @@ public class BrowserStartup {
      */
     public static void main(String[] args)
             throws Exception {
+                //System.out.println(new URI("images/Stop24.gif"));
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         BrowserStartup bs = new BrowserStartup();
@@ -145,6 +148,9 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/03/28 19:03:32  pdoubleya
+ * Changed startup page.
+ *
  * Revision 1.8  2004/12/12 03:33:07  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *
