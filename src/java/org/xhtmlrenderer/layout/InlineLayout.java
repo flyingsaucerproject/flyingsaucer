@@ -57,8 +57,10 @@ public class InlineLayout extends BoxLayout {
 
         BlockBox block = (BlockBox) box;//I think this should work - tobe 2004-12-11
 
+        // Uu.p("block content = " + ContentUtil.isBlockContent(contentList));
         if (ContentUtil.isBlockContent(contentList)) {//this should be block layed out
-            BoxLayout.layoutContent(c, box, contentList, block);
+            //BoxLayout.layoutContent(c, box, contentList, block);
+            super.layoutChildren(c,box);
         } else {
             layoutContent(c, box, contentList, block);
         }
@@ -421,6 +423,15 @@ public class InlineLayout extends BoxLayout {
 * $Id$
 *
 * $Log$
+* Revision 1.58  2004/12/14 01:56:23  joshy
+* fixed layout width bugs
+* fixed extra border on document bug
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
 * Revision 1.57  2004/12/14 01:50:13  tobega
 * Why is there always one more bug ;-) Now line-breaking should be cast-iron (I hope)
 *

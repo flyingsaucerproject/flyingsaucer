@@ -139,7 +139,9 @@ public class BoxLayout extends DefaultLayout {
         int tx = block.totalLeftPadding();
         int ty = block.totalTopPadding();
         c.translate(tx, ty);
+        // Uu.p("before: " + block);
         layoutChildren(c, block);//when this is really an anonymous, InlineLayout.layoutChildren is called
+        // Uu.p("after: " + block);
         c.translate(-tx, -ty);
         c.setSubBlock(old_sub);
 
@@ -159,6 +161,7 @@ public class BoxLayout extends DefaultLayout {
         block.width = block.totalHorizontalPadding() + block.width;
         block.height = block.totalVerticalPadding() + block.height;
         
+        // Uu.p("final: " + block);
         //restore the extents
         c.setExtents(oe);
 
@@ -181,6 +184,7 @@ public class BoxLayout extends DefaultLayout {
         //and now, back to previous style
         if (pushed != null) c.popStyle();
 
+        // Uu.p("layout: " + block + " " + c);
         return block;
     }
 
@@ -355,6 +359,15 @@ public class BoxLayout extends DefaultLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.48  2004/12/14 01:56:22  joshy
+ * fixed layout width bugs
+ * fixed extra border on document bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.47  2004/12/13 15:15:56  joshy
  * fixed bug where inlines would pick up parent styles when they aren't supposed to
  * fixed extra Xx's in printed text

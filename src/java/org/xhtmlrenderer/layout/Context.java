@@ -198,11 +198,13 @@ public class Context {
     private Stack styleStack;
 
     public void initializeStyles(EmptyStyle c) {
+        // Uu.p("empty style = " + c.hashCode() + " " + c);
         styleStack = new Stack();
         styleStack.push(c);
     }
 
     public void pushStyle(CascadedStyle s) {
+        // Uu.p("pushing style: " + s);
         CalculatedStyle parent = (CalculatedStyle) styleStack.peek();
         CalculatedStyle derived = css.getDerivedStyle(parent, s);
         styleStack.push(derived);
@@ -213,6 +215,7 @@ public class Context {
     }
 
     public CalculatedStyle getCurrentStyle() {
+        // Uu.p("style hash = " + styleStack.peek().hashCode() + " " + styleStack.peek());
         return (CalculatedStyle) styleStack.peek();
     }
 
@@ -824,6 +827,15 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2004/12/14 01:56:23  joshy
+ * fixed layout width bugs
+ * fixed extra border on document bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.32  2004/12/13 15:15:57  joshy
  * fixed bug where inlines would pick up parent styles when they aren't supposed to
  * fixed extra Xx's in printed text

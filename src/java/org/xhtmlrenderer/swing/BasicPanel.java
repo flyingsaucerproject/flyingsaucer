@@ -35,6 +35,8 @@ import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.Xx;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.ErrorHandler;
 
 import javax.swing.*;
@@ -804,6 +806,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         if (enclosingScrollPane != null) {
             Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
             getContext().setExtents(new Rectangle(0, 0, bnds.width, bnds.height));
+            // Uu.p("bnds = " + bnds);
         } else {
             getContext().setExtents(new Rectangle(getWidth(), getHeight()));//200, 200 ) );
         }
@@ -868,6 +871,15 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2004/12/14 01:56:23  joshy
+ * fixed layout width bugs
+ * fixed extra border on document bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.16  2004/12/14 00:32:21  tobega
  * Cleaned and fixed line breaking. Renamed BodyContent to DomToplevelNode
  *

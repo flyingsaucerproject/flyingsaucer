@@ -138,7 +138,9 @@ notes of the changes that tobe has made
 
 Whitespace only inlines are not being dropped. they produce anonymous inlines that take up some screen space.
 
-Anonymous Inlines are picking up border, padding, and margins from their parent. Only element inlines should inherit those.
+fixed: Anonymous Inlines are picking up border, padding, and margins from their parent. Only element inlines should inherit those.
+
+the document box width is too big, making everything on screen too wide.
 
 ============
 thoughts on an fs game

@@ -6,6 +6,8 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.css.*;
+import org.xhtmlrenderer.css.constants.*;
 
 public class LayoutUtil {
 
@@ -73,17 +75,14 @@ public class LayoutUtil {
 
     public static Border getBorder(Context c, Box box) {
         //TODO: can I skip this? 
-        //Uu.p("box on: " + box);
-        //Uu.p("is inline element = " + box.isInlineElement());
-        //Uu.p("text content = " + (box.content instanceof TextContent));
         if (isBlockOrInlineElementBox(box)) {
-            // if (box.isInlineElement() || !(box.content instanceof TextContent)) {
-            // Uu.p("setting border for: " + box);
             if (box.border == null) {
                 box.border = c.getCurrentStyle().getBorderWidth();
+                box.border_style = c.getCurrentStyle().getStringProperty(CSSName.BORDER_STYLE_TOP);
+                if(box.border_style.equals("none")) {
+                    box.border = new Border(0,0,0,0);
+                }
             }
-            //} else {
-            // Uu.p("skipping border for: " + box);
         }
         return box.border;
     }
