@@ -26,8 +26,7 @@ import org.xhtmlrenderer.css.sheet.factory.*;
 
 /**
  * Represents a single property declared in a CSS rule set. A
- * PropertyDeclaration is created from an {@link
- * org.xhtmlrenderer.css.XRProperty} and is immutable. The declaration knows its
+ * PropertyDeclaration is created from an CSSValue and is immutable. The declaration knows its
  * origin, importance and specificity, and thus is prepared to be sorted out
  * among properties of the same name, within a matched group, for the CSS
  * cascade, into a {@link org.xhtmlrenderer.css.newmatch.CascadedStyle}.
@@ -40,11 +39,6 @@ public class PropertyDeclaration {
 
     private final static Map PD_FACTORIES;
     private final static PropertyDeclarationFactory DEFAULT_PD_FACTORY;
-    
-    /**
-     * The XRProperty instance we are wrapping.
-     */
-    private org.xhtmlrenderer.css.XRProperty base;
 
     /**
      * Whether the property was declared as important! by the user.
@@ -53,7 +47,7 @@ public class PropertyDeclaration {
 
     /**
      * Origin constant from the list defined in {@link Stylesheet}. See {@link
-     * Stylesheet#USER_AGENT}, {@link Stylesheet#USER}, and {@link
+     * Stylesheet#USER_AGENT}, {@link StylesheetInfo#USER}, and {@link
      * Stylesheet#AUTHOR}.
      */
     private int origin;
@@ -62,11 +56,6 @@ public class PropertyDeclaration {
      * ImportanceAndOrigin of stylesheet - how many different
      */
     public final static int IMPORTANCE_AND_ORIGIN_COUNT = 6;
-
-    /**
-     * ImportanceAndOrigin of stylesheet - user agent
-     */
-    private final static int CSS_DEFAULT = 0;
 
     /**
      * ImportanceAndOrigin of stylesheet - user agent
@@ -95,28 +84,22 @@ public class PropertyDeclaration {
 
     /**
      * Creates a new instance of PropertyDeclaration from an {@link
-     * org.xhtmlrenderer.css.XRProperty} instance.
+     * CSSPrimitiveValue} instance.
      *
-     * @param p    The XRProperty instance to create the PropertyDeclaration
-     *             from.
+     * @param name The property name, e.g. background-position
+     * @param value The CSSValue to wrap
      * @param imp  True if property was declared important! and false if not.
      * @param orig int constant from {@link Stylesheet} for the origin of the
      *             property declaration, that is, the origin of the style sheet where
-     *             it was declared. See {@link Stylesheet#USER_AGENT}, {@link
-     *             Stylesheet#USER}, and {@link Stylesheet#AUTHOR}.
+     *             it was declared. See {@link StylesheetInfo#USER_AGENT}, {@link
+     *             StylesheetInfo#USER}, and {@link StylesheetInfo#AUTHOR}.
      */
-    //public PropertyDeclaration( org.xhtmlrenderer.css.XRProperty p, boolean imp, int orig ) {
-    public PropertyDeclaration( String name, 
+    public PropertyDeclaration( String name,
                                 org.w3c.dom.css.CSSPrimitiveValue value,
                                 boolean imp, 
                                 int orig ) {
-        //base = p;
         propName = name;
         cssPrimitiveValue = value;
-    }
-
-    public PropertyDeclaration(org.xhtmlrenderer.css.XRProperty p, boolean imp, int orig) {
-        base = p;
         important = imp;
         origin = orig;
     }
@@ -158,7 +141,6 @@ public class PropertyDeclaration {
      * @return See desc.
      */
     public String getName() {
-        // CLEAN return base.propertyName();
         return propName;
     }
     
@@ -225,6 +207,9 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/01/24 14:54:32  pdoubleya
+ * Removed references to XRProperty (unused).
+ *
  * Revision 1.6  2005/01/24 14:36:30  pdoubleya
  * Mass commit, includes: updated for changes to property declaration instantiation, and new use of DerivedValue. Removed any references to older XR... classes (e.g. XRProperty). Cleaned imports.
  *
