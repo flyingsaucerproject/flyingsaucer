@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
@@ -48,13 +47,13 @@ public class BoxRendering {
         Box block = (Box) box;
 
         //set the current style
-        CascadedStyle hoverStyle = null;
+        //CascadedStyle hoverStyle = null;
         if (block.content.getStyle() != null) {
             c.pushStyle(c.getCss().getCascadedStyle(block.content.getElement()));
-            if (block.hover) {
+            /*if (block.hover) {
                 hoverStyle = c.getCss().getPseudoElementStyle(block.content.getElement(), "hover");
                 if (hoverStyle != null) c.pushStyle(hoverStyle);
-            }
+            }*/
         }
 
         //if (box.restyle) {
@@ -86,7 +85,7 @@ public class BoxRendering {
 
         //reset style
         if (block.content.getStyle() != null) {
-            if (hoverStyle != null) c.popStyle();
+            //if (hoverStyle != null) c.popStyle();
             c.popStyle();
         }
 
@@ -324,7 +323,7 @@ public class BoxRendering {
         for (int i = 0; i < box.getChildCount(); i++) {
             Box child = box.getChild(i);
             //child.restyle = true;
-            child.hover = box.hover;
+            //child.hover = box.hover;
         }
         if (box instanceof InlineBox) {//should this always be true?
             TextDecoration.setupTextDecoration(ctx, (InlineBox) box);

@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
@@ -127,10 +126,10 @@ public class InlineRendering {
             for (Iterator i = inline.pushstyles.iterator(); i.hasNext();) {
                 StylePush sp = (StylePush) i.next();
                 c.pushStyle(c.getCss().getCascadedStyle(sp.getElement()));
-                if (inline.hover) {
+                /*if (inline.hover) {
                     CascadedStyle hs = c.getCss().getPseudoElementStyle(sp.getElement(), "hover");
                     if (hs != null) c.pushStyle(hs);
-                }
+                }*/
                 //Now we know that an inline element started here, handle borders and such?
                 Relative.translateRelative(c);
                 //TODO: push to current border-list (and paint left edge)
@@ -167,10 +166,10 @@ public class InlineRendering {
                 StylePop sp = (StylePop) i.next();
                 //TODO: paint right edge and pop current border-list
                 Relative.untranslateRelative(c);
-                if (inline.hover) {
+                /*if (inline.hover) {
                     CascadedStyle hs = c.getCss().getPseudoElementStyle(sp.getElement(), "hover");
                     if (hs != null) c.popStyle();
-                }
+                } */
                 c.popStyle();
             }
         }

@@ -88,7 +88,7 @@ public class Box {
     public JComponent component = null;
 
     //public boolean restyle;//used during render if things have changed because of e.g. hover
-    public boolean hover;//dynamic attribute set
+    //public boolean hover;//dynamic attribute set
 
     // dimensions stuff
     /**
@@ -649,6 +649,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2005/01/05 23:15:09  tobega
+ * Got rid of some redundant code for hover-styling
+ *
  * Revision 1.36  2005/01/05 01:10:15  tobega
  * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
  *
