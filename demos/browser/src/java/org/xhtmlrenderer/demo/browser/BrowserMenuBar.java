@@ -227,10 +227,10 @@ public class BrowserMenuBar extends JMenuBar {
                 // DOM Tree Inspector needs to work with either CSSBank
                 // or XRStyleReference--implementations are not perfectly
                 // so we have different constructors
-                if ( root.panel.view.c.css instanceof CSSBank ) {
-                    inspector = new DOMInspector( root.panel.view.doc );
+                if ( root.panel.view.getContext().css instanceof CSSBank ) {
+                    inspector = new DOMInspector( root.panel.view.getDocument() );
                 } else {
-                    inspector = new DOMInspector( root.panel.view.doc, root.panel.view.c, (XRStyleReference)root.panel.view.c.css );
+                    inspector = new DOMInspector( root.panel.view.getDocument(), root.panel.view.getContext(), (XRStyleReference)root.panel.view.getContext().css );
                 }
 
                 inspectorFrame.getContentPane().add( inspector );
@@ -239,10 +239,10 @@ public class BrowserMenuBar extends JMenuBar {
                 inspectorFrame.setSize( 500, 600 );
                 inspectorFrame.show();
             } else {
-                if ( root.panel.view.c.css instanceof CSSBank ) {
-                    inspector.setForDocument( root.panel.view.doc );
+                if ( root.panel.view.getContext().css instanceof CSSBank ) {
+                    inspector.setForDocument( root.panel.view.getDocument() );
                 } else {
-                    inspector.setForDocument( root.panel.view.doc, root.panel.view.c, (XRStyleReference)root.panel.view.c.css );
+                    inspector.setForDocument( root.panel.view.getDocument(), root.panel.view.getContext(), (XRStyleReference)root.panel.view.getContext().css );
                 }
             }
             inspectorFrame.show();
@@ -267,7 +267,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt  PARAM
          */
         public void actionPerformed( ActionEvent evt ) {
-            root.panel.view.c.debug_draw_boxes = !root.panel.view.c.debug_draw_boxes;
+            root.panel.view.getContext().debug_draw_boxes = !root.panel.view.getContext().debug_draw_boxes;
             root.panel.view.repaint();
         }
     }
@@ -290,7 +290,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt  PARAM
          */
         public void actionPerformed( ActionEvent evt ) {
-            root.panel.view.c.debug_draw_line_boxes = !root.panel.view.c.debug_draw_line_boxes;
+            root.panel.view.getContext().debug_draw_line_boxes = !root.panel.view.getContext().debug_draw_line_boxes;
             root.panel.view.repaint();
         }
     }
@@ -313,7 +313,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt  PARAM
          */
         public void actionPerformed( ActionEvent evt ) {
-            root.panel.view.c.debug_draw_inline_boxes = !root.panel.view.c.debug_draw_inline_boxes;
+            root.panel.view.getContext().debug_draw_inline_boxes = !root.panel.view.getContext().debug_draw_inline_boxes;
             root.panel.view.repaint();
         }
     }
@@ -397,6 +397,16 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2004/10/28 14:18:22  joshy
+ * cleaned up the htmlpanel and made more of the variables protected
+ * fixed the bug where the body is too small for the viewport
+ * fixed the bug where the screen isn't re-laid out when the window is resized
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2004/10/23 14:38:58  pdoubleya
  * Re-formatted using JavaStyle tool.
  * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)

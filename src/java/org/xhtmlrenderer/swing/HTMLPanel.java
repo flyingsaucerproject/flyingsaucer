@@ -73,19 +73,19 @@ public class HTMLPanel extends JPanel implements ComponentListener {
     //private int max_width = -1;
 
     /** Description of the Field */
-    public Document doc;
+    protected Document doc;
     /** Description of the Field */
-    public Context c;
+    protected Context c;
     /** Description of the Field */
-    public Box body_box = null;
+    protected Box body_box = null;
 
     /** Description of the Field */
     protected ErrorHandler error_handler;
     /** Description of the Field */
-    BodyLayout layout;
+    protected BodyLayout layout;
 
     /** Description of the Field */
-    Map documentListeners;
+    private Map documentListeners;
     /** Description of the Field */
     private JScrollPane enclosingScrollPane;
     /** Description of the Field */
@@ -154,26 +154,11 @@ public class HTMLPanel extends JPanel implements ComponentListener {
      * @param g  PARAM
      */
     public void paintComponent( Graphics g ) {
-        //g.setColor(Color.blue);
-        //g.drawLine(0,0,50,50);
-        //u.p("paint() size = " + this.getSize());
-        //u.p("viewport size = " + this.viewport.getSize());
-        //u.p("w/o scroll = " + this.viewport.getViewportBorderBounds());
         if ( anti_aliased ) {
             ( (Graphics2D)g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         }
-        doPaint( g );
-        //u.p("paint ending");
-    }
 
-    /**
-     * Description of the Method
-     *
-     * @param g  PARAM
-     */
-    public void doPaint( Graphics g ) {
-        //u.p("do paint begin");
-
+        // if this is the first time painting this document, then calc layout
         if ( body_box == null ) {
             calcLayout( g );
         }
@@ -184,13 +169,16 @@ public class HTMLPanel extends JPanel implements ComponentListener {
 
         newContext( g );
         layout_thread.startRender(g);
-        //u.p("do paint end");
     }
 
 
-    /** Description of the Method */
-    public void calcLayout() {
-        u.p("bad calc layout called!");
+    /** Recalculate the layout of the panel. Normally
+     * developers should never need to call this. Call
+     * repaint or validate instead.
+     */
+    protected void calcLayout() {
+        // set body box to null to trigger new layout
+        body_box = null;
         /*
         calcLayout( this.getGraphics() );
         this.setOpaque( false );
@@ -199,31 +187,22 @@ public class HTMLPanel extends JPanel implements ComponentListener {
 
 
     /**
-     * Description of the Method
+     * Recalculate the layout of the panel. Only
+     * called by paintComponent(). Use calcLayout() instead.
      *
      * @param g  PARAM
      */
-    public void calcLayout( Graphics g ) {
-        u.p("legacy calc layout called");
+    protected void calcLayout( Graphics g ) {
         layout_thread.startLayout(g);
     }
-    
 
 
-
-    LayoutThread layout_thread;
+    protected LayoutThread layout_thread;
     protected void startLayout(Graphics g) {
-        //u.p("calcLayout()");
         this.removeAll();
-        //u.p("this = ");
-        //u.dump_stack();
         if ( g == null ) {
-            //u.p("bad first graphics");
             return;
         }
-        //u.p("layout");
-        //u.p("size = " + this.getSize());
-        //u.dump_stack();
         if ( doc == null ) {
             return;
         }
@@ -234,104 +213,40 @@ public class HTMLPanel extends JPanel implements ComponentListener {
 
         newContext( g );
         // set up CSS
-        // the last added is used first
-        // start painting
         c.setMaxWidth( 0 );
         long start_time = new java.util.Date().getTime();
-        //u.p("starting the real layout");
-        //u.p("thread = " + Thread.currentThread());
+        
         body_box = layout.layout( c, body );
         long end_time = new java.util.Date().getTime();
-        //u.p("ending count = " + (end_time-start_time) + " msec");
 
         if ( enclosingScrollPane != null ) {
             if ( this.body_box != null ) {
-                // CLN
-                //u.p("bcolor = " + body_box.background_color);
-                //u.p("body box = " + body_box.hashCode());
                 this.enclosingScrollPane.getViewport().setBackground( body_box.background_color );
             }
         }
 
-        //u.p("calced height = " + layout.contents_height);//this.html_height);
-        //u.p("max width = " + c.getMaxWidth());
         intrinsic_size = new Dimension( c.getMaxWidth(), layout.contents_height );
-        //u.p("intrinsic size = " + intrinsic_size);
-        //u.p("real size = " + this.getSize());
+        int view_height = this.enclosingScrollPane.getViewport().getHeight();
+        
+        // resize the outter most box incase it is too small for the viewport
+        if(intrinsic_size.getHeight() < view_height) {
+            if(body_box != null) {
+                body_box.height = view_height;
+            }
+        }
+        
         if ( !intrinsic_size.equals( this.getSize() ) ) {
-            //u.dump_stack();
             this.setPreferredSize( intrinsic_size );
-            //u.p("setting preferred to : " + this.getPreferredSize());
-            //this.setSize(intrinsic_size);
             this.revalidate();
-            //this.repaint();
-            //this.setPreferredSize(intrinsic_size);
         }
 
-        //this.html_height = layout.contents_height;
-        /*
-         * if(c.getMaxWidth() > this.getSize().getWidth()) {
-         * this.max_width = c.getMaxWidth();
-         * }
-         * //u.p("html height = " + this.html_height);
-         * if(c.getMaxWidth() > this.getSize().getWidth()) {
-         * this.setPreferredSize(new Dimension((int)c.getMaxWidth(),this.html_height));
-         * this.max_width = c.getMaxWidth();
-         * this.setMinimumSize(this.getPreferredSize());
-         * } else {
-         * this.setPreferredSize(new Dimension((int)this.getSize().getWidth(),this.html_height));
-         * this.max_width = (int)this.getSize().getWidth();
-         * }
-         */
-        /*
-         * u.p("size = " + this.getSize());
-         * u.p("pref size = " + this.getPreferredSize());
-         * if(!this.getSize().equals(this.getPreferredSize())) {
-         * u.p("need a repaint");
-         * u.p("size = " + this.getSize());
-         * u.p("pref size = " + this.getPreferredSize());
-         * super.setSize(this.getPreferredSize());
-         * repaint();
-         * }
-         */
-        //c.getGraphics().setColor(Color.blue);
-        //c.getGraphics().drawLine(0,0,50,50);
         this.fireDocumentLoaded();
     }
 
 
-    /*
-     * === scrollable implementation ===
-     */
-    /*
-     * public Dimension getPreferredScrollableViewportSize() {
-     * u.p("get pref scrll view called");
-     * //u.dump_stack();
-     * //u.p("size of viewport = " + viewport.getSize());
-     * //u.p("size of intrinsic = " + intrinsic_size);
-     * u.dump_stack();
-     * if(intrinsic_size == null) {
-     * return new Dimension(400,400);
-     * }
-     * if(intrinsic_size.getWidth() > viewport.getWidth()) {
-     * //u.p("intrinsic  = " + this.intrinsic_size);
-     * return new Dimension((int)intrinsic_size.getWidth(),400);
-     * }
-     * return null;
-     * }
-     * public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-     * return 20;
-     * }
-     * public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-     * return 100;
-     * }
-     * public boolean getScrollableTracksViewportWidth() {
-     * return false;
-     * }
-     * public boolean getScrollableTracksViewportHeight() {
-     * return false;
-     * }
-     */
+    /* ========= The box finding routines. Should probably move out to another
+     class */
+
     /**
      * Description of the Method
      *
@@ -353,10 +268,6 @@ public class HTMLPanel extends JPanel implements ComponentListener {
      */
     public Box findBox( Box box, int x, int y ) {
 
-        if ( box instanceof LineBox || box instanceof InlineBox ) {
-            //u.p("findBox(" + box + " at ("+x+","+y+")");
-        }
-
         Iterator it = box.getChildIterator();
         while ( it.hasNext() ) {
             Box bx = (Box)it.next();
@@ -375,17 +286,11 @@ public class HTMLPanel extends JPanel implements ComponentListener {
             }
 
             // test the box itself
-            //u.p("bx test = " + bx + " " + x +","+y);
             int tty = y;
             if ( bx instanceof InlineBox ) {
                 InlineBox ibx = (InlineBox)bx;
                 LineBox lbx = (LineBox)box;
-                //u.p("inline = " + ibx);
-                //u.p("inline y = " + ibx.y);
-                //u.p("inline height = " + ibx.height);
-                //u.p("line = " + lbx);
                 int off = lbx.baseline + ibx.y - ibx.height;
-                //u.p("off = " + off);
                 tty -= off;
             }
 
@@ -604,7 +509,6 @@ public class HTMLPanel extends JPanel implements ComponentListener {
             XRLog.exception( "Could not parse CSS in the XHTML source: declared, linked or inline.", ex );
         }
 
-        this.body_box = null;
         calcLayout();
         repaint();
     }
@@ -647,6 +551,10 @@ public class HTMLPanel extends JPanel implements ComponentListener {
      */
     public Context getContext() {
         return c;
+    }
+    
+    public Document getDocument() {
+        return doc;
     }
 
     /**
@@ -846,6 +754,16 @@ class LayoutThread implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/10/28 14:18:23  joshy
+ * cleaned up the htmlpanel and made more of the variables protected
+ * fixed the bug where the body is too small for the viewport
+ * fixed the bug where the screen isn't re-laid out when the window is resized
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.15  2004/10/28 13:46:33  joshy
  * removed dead code
  * moved code about specific elements to the layout factory (link and br)

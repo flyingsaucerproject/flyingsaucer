@@ -51,6 +51,9 @@ html {
     list-style-type: none;
     list-style-image: none;
 }
+html {
+    background-color: white;
+}
 head {
     display: none;
 }
