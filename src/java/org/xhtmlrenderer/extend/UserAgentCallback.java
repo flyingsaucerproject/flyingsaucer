@@ -21,20 +21,31 @@
 
 package org.xhtmlrenderer.extend;
 
+import java.io.InputStream;
+
 /**
  * To be implemented by any user agent using the panel
- *
+ * <p/>
  * Provides services only the current user agent should provide
  */
 public interface UserAgentCallback {
-    
-    /** returns null if UserAgent does not wish to access the URI */
+
+    /**
+     * returns null if UserAgent does not wish to access the URI
+     */
     public java.io.Reader getReaderForURI(String uri);
-    
-    /** UserAgent should consider if it should answer truthfully or not for privacy reasons */
+
+    /**
+     * returns null if UserAgent does not wish to access the URI
+     */
+    public InputStream getInputStreamForURI(String uri);
+
+    /**
+     * UserAgent should consider if it should answer truthfully or not for privacy reasons
+     */
     public boolean isVisited(String uri);
     
     /** returns a NamespaceHandler for a namespace */
     //public NamespaceHandler getNamespaceHandler(String namespace);
-    
+
 }

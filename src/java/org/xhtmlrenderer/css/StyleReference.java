@@ -22,13 +22,13 @@ package org.xhtmlrenderer.css;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.css.newmatch.AttributeResolver;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.extend.AttributeResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
@@ -236,6 +236,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/01/08 15:56:54  tobega
+ * Further work on extensibility interfaces. Documented it - see website.
+ *
  * Revision 1.18  2005/01/08 11:55:16  tobega
  * Started massaging the extension interfaces
  *

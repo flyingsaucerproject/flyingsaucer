@@ -90,3 +90,4 @@ pre {
 	margin: 10px;
 	padding: 6px;
 }
+.invalid {text-decoration: line-through;}

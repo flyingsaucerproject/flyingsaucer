@@ -24,7 +24,6 @@ package org.xhtmlrenderer.css.newmatch;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.sheet.Ruleset;
-import org.xhtmlrenderer.extend.AttributeResolver;
 import org.xhtmlrenderer.util.XRLog;
 
 /**

@@ -8,6 +8,7 @@ package org.xhtmlrenderer.swing;
 
 import org.xhtmlrenderer.util.XRLog;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
@@ -38,6 +39,19 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
             XRLog.exception("IO problem for " + uri, e);
         }
         return isr;
+    }
+
+    public InputStream getInputStreamForURI(String uri) {
+        java.io.InputStream is = null;
+        try {
+            //is = _baseURI.resolve(uri).toURL().openStream();
+            is = (new java.net.URL(uri)).openStream();
+        } catch (java.net.MalformedURLException e) {
+            XRLog.exception("bad URL given: " + uri, e);
+        } catch (java.io.IOException e) {
+            XRLog.exception("IO problem for " + uri, e);
+        }
+        return is;
     }
 
     public boolean isVisited(String uri) {

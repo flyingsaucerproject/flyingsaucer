@@ -24,7 +24,6 @@ package org.xhtmlrenderer.css.newmatch;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-import org.xhtmlrenderer.extend.AttributeResolver;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.lang.ref.SoftReference;
@@ -582,7 +581,7 @@ public class Matcher {
     }
 
     Mapper docMapper;
-    private org.xhtmlrenderer.extend.AttributeResolver _attRes;
+    private org.xhtmlrenderer.css.newmatch.AttributeResolver _attRes;
     private org.xhtmlrenderer.css.sheet.StylesheetFactory _styleFactory;
 
     private java.util.HashMap _map;

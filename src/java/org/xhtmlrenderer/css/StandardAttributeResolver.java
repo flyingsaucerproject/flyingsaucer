@@ -1,7 +1,7 @@
 package org.xhtmlrenderer.css;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.extend.AttributeResolver;
+import org.xhtmlrenderer.css.newmatch.AttributeResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;

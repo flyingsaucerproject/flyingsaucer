@@ -19,7 +19,7 @@
  *
  */
 
-package org.xhtmlrenderer.swing;
+package org.xhtmlrenderer.simple.extend;
 
 import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Element;
@@ -27,6 +27,7 @@ import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.swing.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 

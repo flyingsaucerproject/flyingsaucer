@@ -21,7 +21,6 @@
 
 package org.xhtmlrenderer.css.newmatch;
 
-import org.xhtmlrenderer.extend.AttributeResolver;
 
 /**
  * Part of a Selector

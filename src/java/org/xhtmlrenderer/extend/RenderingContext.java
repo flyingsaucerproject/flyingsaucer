@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.extend;
 
 import org.xhtmlrenderer.css.StyleReference;
+import org.xhtmlrenderer.css.newmatch.AttributeResolver;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Java2DTextRenderer;

@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
@@ -150,6 +151,15 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      */
     public BasicPanel() {
         ctx = new RenderingContext();
+        init();
+    }
+
+    public BasicPanel(UserAgentCallback uac) {
+        ctx = new RenderingContext(uac);
+        init();
+    }
+
+    private void init() {
         layout_thread = new LayoutThread(this);
         documentListeners = new HashMap();
         setBackground(Color.white);
@@ -876,6 +886,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2005/01/08 15:56:55  tobega
+ * Further work on extensibility interfaces. Documented it - see website.
+ *
  * Revision 1.31  2005/01/08 11:55:18  tobega
  * Started massaging the extension interfaces
  *

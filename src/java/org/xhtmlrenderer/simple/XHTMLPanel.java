@@ -2,8 +2,9 @@ package org.xhtmlrenderer.simple;
 
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.RenderingContext;
+import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.BasicPanel;
-import org.xhtmlrenderer.swing.XhtmlNamespaceHandler;
 
 import java.io.File;
 import java.io.InputStream;
@@ -65,6 +66,10 @@ public class XHTMLPanel extends BasicPanel {
     public XHTMLPanel(URL url) throws Exception {
         this();
         setDocument(url);
+    }
+
+    public XHTMLPanel(UserAgentCallback uac) {
+        super(uac);
     }
 
     /* various forms of setDocument() */

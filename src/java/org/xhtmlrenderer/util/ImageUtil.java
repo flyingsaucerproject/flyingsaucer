@@ -21,8 +21,10 @@ package org.xhtmlrenderer.util;
 
 import org.xhtmlrenderer.layout.Context;
 
-import javax.swing.*;
-import java.awt.Image;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -39,14 +41,42 @@ public class ImageUtil {
      * @param c   PARAM
      * @param src PARAM
      * @return Returns
-     * @throws MalformedURLException Throws
+     *         //* @throws MalformedURLException Throws
      */
     public static Image loadImage(Context c, String src)
-            throws MalformedURLException {
+            /*throws MalformedURLException*/ {
 
         Image img = null;
 
-        if (src.startsWith("http")) {
+        //XRLog.load("Getting image for src = " + src);
+
+        //TODO: make sure that the src uri is already resolved before calling this method!
+        //HACK:meanwhile...
+        if (!src.startsWith("http") && !src.startsWith("file")) {
+
+            URL base = c.getRenderingContext().getBaseURL();
+
+            if (base != null) {
+                try {
+                    src = new URL(base, src).toString();
+                } catch (MalformedURLException e) {
+                    XRLog.exception("Bad image url", e);
+                }
+            } else {
+                XRLog.init("No base URL set!");
+            }
+        }
+
+        InputStream is = c.getCtx().getUac().getInputStreamForURI(src);
+        if (is != null) {
+            try {
+                img = ImageIO.read(is);
+            } catch (IOException e) {
+                XRLog.exception("Couldn't get image " + src, e);
+            }
+        }
+
+        /*if (src.startsWith("http")) {
 
             img = new ImageIcon(new URL(src)).getImage();
 
@@ -70,7 +100,7 @@ public class ImageUtil {
 
             }
 
-        }
+        }*/
         if (img != null && img.getWidth(null) == -1) {
 
             return null;
@@ -85,6 +115,9 @@ public class ImageUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/01/08 15:56:56  tobega
+ * Further work on extensibility interfaces. Documented it - see website.
+ *
  * Revision 1.6  2004/12/29 10:39:37  tobega
  * Separated current state Context into ContextImpl and the rest into SharedContext.
  *
