@@ -90,7 +90,7 @@ public class Layout {
 
 
             }
-            box.boxes.add(child_box);
+            box.addChild(child_box);
             // set the child_box location
             child_box.x = 0;
             child_box.y = box.height;
@@ -141,8 +141,8 @@ public class Layout {
     public void paintChildren(Context c, Box box) {
         //u.p("Layout.paintChildren(): " + box);
         //u.p("child count = " + box.boxes.size());
-        for(int i=0; i<box.boxes.size(); i++) {
-            Box child = (Box)box.boxes.get(i);
+        for(int i=0; i<box.getChildCount(); i++) {
+            Box child = (Box)box.getChild(i);
             //u.p("child = " + child);
             Layout layout = null;
             if(child.isAnonymous()) {

@@ -24,6 +24,8 @@ import org.joshy.x;
 import java.net.URL;
 import java.io.File;
 
+import org.joshy.html.forms.*;
+
 public class HTMLPanel extends JPanel implements  ComponentListener {
     //private int html_height = -1;
     //private int max_width = -1;
@@ -37,6 +39,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
     public HTMLPanel() {
         c = new Context();
         layout = new BodyLayout();
+        setLayout(new AbsoluteLayoutManager());
     }
     
     public void setDocumentRelative(String filename ) throws Exception {
@@ -92,7 +95,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         this.pane = pane;
     }
     
-    public void paint(Graphics g) {
+    public void paintComponent(Graphics g) {
         //g.setColor(Color.blue);
         //g.drawLine(0,0,50,50);
         //u.p("paint() size = " + this.getSize());
@@ -148,7 +151,8 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
     }
     
     public void calcLayout(Graphics g) {
-        //u.p("calcLayout()");
+        u.p("calcLayout()");
+        this.removeAll();
         //u.p("this = ");
         //u.dump_stack();
         if(g == null) {
@@ -286,7 +290,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
     
     public Box findBox(Box box, int x, int y) {
         //u.p("findBox(" + box + " at ("+x+","+y+")");
-        Iterator it = box.boxes.iterator();
+        Iterator it = box.getChildIterator();
         while(it.hasNext()) {
             Box bx = (Box)it.next();
             int tx = x;

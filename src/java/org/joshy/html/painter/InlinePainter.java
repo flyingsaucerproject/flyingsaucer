@@ -23,10 +23,10 @@ public class InlinePainter {
         // for each line box
         c.getGraphics().setColor(Color.black);
         //u.p("line count = " + block.boxes.size());
-        for(int i=0; i<block.boxes.size(); i++) {
+        for(int i=0; i<block.getChildCount(); i++) {
             // get the line box
             //u.p("line = " + block.boxes.get(i));
-            paintLine(c,(LineBox)block.boxes.get(i));
+            paintLine(c,(LineBox)block.getChild(i));
         }
         
         
@@ -43,8 +43,8 @@ public class InlinePainter {
         int ly = line.y + line.baseline;
         
         // for each inline box
-        for(int j=0; j<line.boxes.size(); j++) {
-            paintInline(c,(InlineBox)line.boxes.get(j),lx,ly,line);
+        for(int j=0; j<line.getChildCount(); j++) {
+            paintInline(c,(InlineBox)line.getChild(j),lx,ly,line);
         }
         if(c.debugDrawLineBoxes()) {
             GraphicsUtil.drawBox(c.getGraphics(),line,Color.blue);

@@ -70,6 +70,9 @@ public class Context {
     public JComponent canvas;
     //public Graphics canvas_graphics;
     public JComponent viewport;
+    public JComponent getViewport() {
+        return this.viewport;
+    }
     
     
     private int xoff = 0;

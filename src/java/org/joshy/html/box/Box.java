@@ -8,6 +8,8 @@ import org.w3c.dom.Element;
 import java.util.List;
 import java.util.ArrayList;
 import java.awt.Dimension;
+import java.util.Iterator;
+import org.joshy.u;
 
 public class Box {
     // dimensions stuff
@@ -49,6 +51,14 @@ public class Box {
 
     // element stuff
     public Node node;
+    private Box parent;
+    
+    public Box getParent() {
+        return parent;
+    }
+    public void setParent(Box box) {
+        this.parent = box;
+    }
 
     // display stuff
     public boolean display_none = false;
@@ -86,7 +96,24 @@ public class Box {
     public boolean clicked = false;
 
     // children stuff
-    public List boxes;
+    private List boxes;
+    public void addChild(Box child) {
+        child.setParent(this);
+        boxes.add(child);
+        //u.p("added child: " + child + " to " + this);
+    }
+    
+    public int getChildCount() {
+        return boxes.size();
+    }
+    
+    public Box getChild(int i) {
+        return (Box) boxes.get(i);
+    }
+    
+    public Iterator getChildIterator() {
+        return boxes.iterator();
+    }
     
     
     // element stuff

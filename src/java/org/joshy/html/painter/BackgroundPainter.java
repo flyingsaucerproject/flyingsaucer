@@ -55,6 +55,7 @@ public class BackgroundPainter {
             }
             */
         }
+        
         //u.p("got here");
         if(block.background_image != null) {
             int left_insets = box.x;

@@ -240,8 +240,8 @@ public static void setupVerticalAlign(Context c, Node node, LineBox box) {
     int top = 0;
     int bot = 0;
     int height = 0;
-    for(int i=0; i<box.boxes.size(); i++) {
-        InlineBox inline = (InlineBox)box.boxes.get(i);
+    for(int i=0; i<box.getChildCount(); i++) {
+        InlineBox inline = (InlineBox)box.getChild(i);
         // skip floated inlines. they don't affect height calculations
         if(inline.floated) { continue; }
         if(inline.vset) {
@@ -276,8 +276,8 @@ public static void setupVerticalAlign(Context c, Node node, LineBox box) {
     //u.p("line height = " + box.height);
 
     // loop through all inlines to set the last ones
-    for(int i=0; i<box.boxes.size(); i++) {
-        InlineBox inline = (InlineBox)box.boxes.get(i);
+    for(int i=0; i<box.getChildCount(); i++) {
+        InlineBox inline = (InlineBox)box.getChild(i);
         if(inline.floated) {
             inline.y = -box.baseline+inline.height;
         } else {

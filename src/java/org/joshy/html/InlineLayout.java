@@ -166,7 +166,7 @@ public Box layoutChildren(Context c, Box box) {
             }
 
             // save the new inline to the list
-            curr_line.boxes.add(new_inline);
+            curr_line.addChild(new_inline);
 
             // calc new height of the line
             // don't count the inline towards the line height and
@@ -353,7 +353,7 @@ private void saveLine(LineBox line_to_save, LineBox prev_line, Element containin
     //}
 
     FontUtil.setupVerticalAlign(c,containing_block,line_to_save);
-    block.boxes.add(line_to_save);
+    block.addChild(line_to_save);
     //u.p("final saved line = " + line_to_save);
     //u.p("block = " + block.hashCode());
 }
