@@ -468,7 +468,8 @@ public class DerivedValue {
         if ( _color == null ) {
             String str = _domCSSPrimitiveValue.getCssText();
             try {
-                if ("transparent".equals(str))
+
+                if (isTransparent(str))
                     _color = COLOR_TRANSPARENT;
                 else if (_domCSSPrimitiveValue.getPrimitiveType() == CSSPrimitiveValue.CSS_RGBCOLOR)
                     _color = ConversionUtil.rgbToColor(_domCSSPrimitiveValue.getRGBColorValue());
@@ -479,6 +480,17 @@ public class DerivedValue {
             }
         }
         return _color;
+    }
+
+    private boolean _isTransparent;
+    private boolean _transparentChecked;
+    private boolean isTransparent(String str) {
+        if ( !_transparentChecked ) {
+            _isTransparent = "transparent".equals(str);
+            _transparentChecked = true;
+        }
+
+        return _isTransparent;
     }
 
     /**
@@ -553,7 +565,7 @@ public class DerivedValue {
     }
 
     public IdentValue asIdentValue() {
-        if ( _identVal == null ) {
+        if ( _identVal == null && _lengthAsString == null ) {
             _identVal = IdentValue.getByIdentString(asString());
         }
         return _identVal;
