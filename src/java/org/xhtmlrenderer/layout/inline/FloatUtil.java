@@ -1,6 +1,6 @@
 package org.xhtmlrenderer.layout.inline;
 
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.BoxLayout;
 import org.xhtmlrenderer.layout.Context;
@@ -123,6 +123,7 @@ public class FloatUtil {
         //Uu.p("generate floated block inline box");
         //TODO: this might be dangerous
         BoxLayout layout = (BoxLayout) c.getLayout(content.getElement()); //
+        //InlineLayout layout = new InlineLayout(); //
         Rectangle oe = c.getExtents(); // copy the extents for safety
         c.setExtents(new Rectangle(oe));
         
@@ -131,6 +132,28 @@ public class FloatUtil {
         InlineBlockBox inline_block = new InlineBlockBox();
         inline_block.content = content;
         layout.layout(c, inline_block);
+
+        //HACK: tobe 2004-12-22 - guessing here
+        // calculate the float property
+        String float_val = c.getCurrentStyle().getStringProperty(CSSName.FLOAT);
+        if (float_val == null) {
+            float_val = "none";
+        }
+        if (float_val.equals("none")) {
+            throw new RuntimeException("Bad call of this method");
+        }
+
+        inline_block.floated = true;
+
+        if (float_val.equals("left")) {
+            inline_block.x = 0;
+        }
+
+
+        if (float_val.equals("right")) {
+            inline_block.x = oe.width - inline_block.width;
+        }
+        //HACK: tobe 2004-12-22 end
 
         //Uu.p("got a block box from the sub layout: " + block);
         Rectangle bounds = new Rectangle(inline_block.x, inline_block.y,
@@ -141,10 +164,6 @@ public class FloatUtil {
         // Uu.p("before newbox block = " + inline_block);
         int x = inline_block.x;
         int y = inline_block.y;
-        //TODO: is firstLineStyle needed? To my mind it could have already been handled in layout.layout above...
-        CascadedStyle firstLineStyle = c.css.getPseudoElementStyle(content.getElement(), "first-line");
-        //TODO: refactor styleBox
-        //for now, null is safe
         LineBreaker.styleBox(c, content.getElement(), 0, 0, bounds, prev_align, font, inline_block);
         inline_block.x = x;
         inline_block.y = y;
