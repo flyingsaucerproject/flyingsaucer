@@ -1,5 +1,6 @@
 package org.joshy.html;
 
+import java.util.HashMap;
 import org.w3c.dom.Node;
 import org.joshy.u;
 
@@ -13,6 +14,7 @@ to specify the particular layout here.
 
 */
 public class LayoutFactory {
+    private static HashMap element_map = new HashMap();
     public static Layout getLayout(Node elem) {
         //u.p("node = " + elem);
         //u.p("getting layout for: " + elem.getNodeName());
@@ -84,6 +86,11 @@ public class LayoutFactory {
         if(elem.getNodeType() == elem.COMMENT_NODE) {
             return new NullLayout();
         }
+        
+        Layout lyt = getCustomLayout(elem);
+        if(lyt != null) {
+            return lyt;
+        }
         u.p("error! returning null! type = " + elem.getNodeType());
         u.p("name = " + elem.getNodeName());
         /*
@@ -103,5 +110,28 @@ public class LayoutFactory {
         */
         return null;
     }
+    
+    
+    public static void addCustomLayout(String elem_name, Layout layout) {
+        element_map.put(elem_name,layout);
+    }
+    
+    private static Layout getCustomLayout(Node elem) {
+        if(element_map.containsKey(elem.getNodeName())) {
+            return (Layout) element_map.get(elem.getNodeName());
+        }
+        return null;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
 

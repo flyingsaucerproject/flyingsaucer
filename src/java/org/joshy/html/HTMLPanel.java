@@ -132,7 +132,11 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
         //c.canvas_graphics = g.create();
         //c.setExtents(new Rectangle(0,0,this.getWidth(),this.getHeight()));
         //u.p("viewport size = " + viewport.getSize());
-        c.setExtents(new Rectangle(viewport.getViewportBorderBounds()));
+        if(viewport != null) {
+            c.setExtents(new Rectangle(viewport.getViewportBorderBounds()));
+        } else {
+            c.setExtents(new Rectangle(200,200));
+        }
         //c.setExtents(new Rectangle(0,0,viewport.getWidth(),viewport.getHeight()));
         c.viewport = this.viewport;
         c.cursor = last;

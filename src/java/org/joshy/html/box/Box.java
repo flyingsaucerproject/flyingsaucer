@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import java.util.List;
 import java.util.ArrayList;
+import java.awt.Dimension;
 
 public class Box {
     // dimensions stuff
@@ -14,8 +15,16 @@ public class Box {
     public int y;
     public int width;
     public int height;
+    
+    public int getHeight() {
+        return height;
+    }
+    
+    public int getWidth() {
+        return width;
+    }
 
-    /** Return true of the target coordinates are inside of this box. The
+    /** Return true if the target coordinates are inside of this box. The
     target coordinates are already translated to be relative to the origin
     of this box. ie x=0 & y=0. Thus the point 100,100 in a box with coordinates
     20,20 x 90x90 would have the target coordinates passed in as 80,80 and
@@ -114,7 +123,24 @@ public class Box {
         this.height = height;
     }
 
-    
+    public Dimension getInternalDimension() {
+       int w = this.getWidth() - totalHorizontalPadding();
+       int h = this.getHeight() - totalVerticalPadding();
+       return new Dimension(w,h);
+    }
+    public int totalHorizontalPadding() {
+        int pd = 0;
+        if(this.margin != null) {
+            pd+= this.margin.left + this.margin.right;
+        }
+        if(this.padding != null) {
+            pd+= this.padding.left + this.padding.right;
+        }
+        if(this.border != null) {
+            pd+= this.border.left + this.border.right;
+        }
+        return pd;
+    }
     public int totalVerticalPadding() {
         int pd = 0;
         if(this.margin != null) {
