@@ -20,7 +20,7 @@ public class FontSizeAction extends AbstractAction {
     public void actionPerformed(ActionEvent evt) {
         RenderingContext rc = root.panel.view.getRenderingContext();
         rc.getTextRenderer().setFontScale(rc.getTextRenderer().getFontScale()*scale);
-        u.p("new font scale = " + rc.getTextRenderer().getFontScale());
+        //u.p("new font scale = " + rc.getTextRenderer().getFontScale());
         root.panel.view.relayout();
         root.panel.view.repaint();
     }

@@ -96,7 +96,8 @@
 //codify the demo filebrowser
 //codify the photo gallery demo
 
-AA the bullets
+//AA the bullets
+//fix new NPEs
 //fix explict height bug (in photo gallery)
 unit test space collapsing w/ images
 implement tab alignment for pres

@@ -686,12 +686,27 @@ public class Box {
         if (node == null) throw new NullPointerException("Trying to set a null node to box");
         this.node = node;
     }
+    
+    public boolean hasNode() {
+        if(this.node == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2004/12/05 05:22:36  joshy
+ * fixed NPEs in selection listener
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.19  2004/12/05 05:18:02  joshy
  * made bullets be anti-aliased
  * fixed bug in link listener that caused NPEs

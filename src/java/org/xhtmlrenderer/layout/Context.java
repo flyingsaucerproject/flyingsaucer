@@ -49,7 +49,6 @@ public class Context {
      * The media for this context
      */
     public String getMedia() {
-         u.p("media = " + ctx.getMedia());
          return ctx.getMedia();
     }
 
@@ -783,6 +782,13 @@ public class Context {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2004/12/05 05:22:35  joshy
+ * fixed NPEs in selection listener
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.26  2004/12/02 15:50:58  joshy
  * added debugging
  * Issue number:
