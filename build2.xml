@@ -82,12 +82,14 @@
     <!-- Java.exe flags -->
     <property name="java-exec.fork.tests" value="true" />    
 
+    <!-- path reference for all JAR files in /lib -->
     <path id="libraries.all">
       <fileset dir="${libraries.dir}">
           <include name="*.jar"/>
       </fileset>
     </path>
         
+    <!-- path reference for all JAR files in /lib, plus all our built jars -->
     <path id="libraries-and-dest.all">
       <path refid="libraries.all" />
       <fileset dir="${dest.dir}">
@@ -95,6 +97,7 @@
       </fileset>
     </path>
 
+    <!-- zip file reference for all XHTML in the demos directory, and supporting files -->
     <zipfileset id="xhtml.demos" dir="${src.demo.xhtml.dir}" prefix="demos/">
       <include name="*.xhtml"/>
       <include name="*.gif"/>
@@ -103,11 +106,16 @@
       <include name="about/**"/>
     </zipfileset>
     
+    <!-- zip file reference for all splash XHTML in the demos directory, and supporting files -->
     <zipfileset id="xhtml.splash" dir="${src.demo.splash.dir}" prefix="demos/splash">
         <include name="*.html"/>
         <include name="images/**"/>
     </zipfileset>
 
+    <!-- 
+         definition of a javac task with all compiler parameters read from
+         properties. can be used for most uses of javac in this file.
+    -->
     <presetdef name="javac-full">
       <javac
             srcdir="${src.java.dir}"
@@ -460,6 +468,9 @@
 $Id$
 
 $Log$
+Revision 1.7  2004/10/19 13:58:17  pdoubleya
+Comments to new blocks.
+
 Revision 1.6  2004/10/19 13:41:46  pdoubleya
 Externalized additional classpath elements to use by refid.
 
