@@ -86,31 +86,25 @@ public class XhtmlDocument implements Document {
         return e.getAttribute("id");
     }
     
-    public String[] getInlineStyles() {
-        java.util.List list = new java.util.ArrayList();
+    public String getInlineStyle() {
+        StringBuffer style = new StringBuffer();
         try {
             org.w3c.dom.NodeList nl = XPathAPI.selectNodeList(_doc.getDocumentElement(), "//style[@type='text/css']");
             for ( int i=0, len=nl.getLength(); i < len; i++ ) {
                 org.w3c.dom.Node elem = nl.item(i);
                 org.w3c.dom.NodeList children = elem.getChildNodes();
-                StringBuffer style = new StringBuffer();
                 for(int j=0; j < children.getLength(); j++) {
                     org.w3c.dom.Node txt = children.item(j);
                     if(txt.getNodeType() == org.w3c.dom.Node.TEXT_NODE) {
                         style.append(txt.getNodeValue());
                     }
                 }
-                list.add(style.toString());
             }
         } catch ( Exception ex ) {
             ex.printStackTrace();   
         }
         
-        String[] styles = new String[list.size()];
-        for(int i=0; i<styles.length; i++) {
-            styles[i] = (String) list.get(i);
-        }
-        return styles;
+        return style.toString();
     }
     
     public String getLang(org.w3c.dom.Element e) {

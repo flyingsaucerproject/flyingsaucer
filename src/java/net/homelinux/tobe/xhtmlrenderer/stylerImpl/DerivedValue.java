@@ -63,6 +63,8 @@ public class DerivedValue {
     /** The DOM CSSValue we are given from the Parse */
     private CSSValue _domCSSValue;
     
+    private CalculatedStyle _inheritedStyle;
+    
     /** HACK: if the DOM value was relative, and we convert to absolute, the new type of our value, after conversion; we have to store this separately for now because CSSValue has no API for changing type at runtime. */
     private short _newPrimitiveValueType;
 
@@ -81,7 +83,7 @@ public class DerivedValue {
      * @param domCSSValue  PARAM
      * @param domPriority  PARAM
      */
-    public DerivedValue(CSSValue domCSSValue) {
+    /*public DerivedValue(CSSValue domCSSValue) {
         _domCSSValue = domCSSValue;
         //_domValueTextClean = getCssTextClean(domCSSValue);
         _newPrimitiveValueType = -1;
@@ -94,7 +96,7 @@ public class DerivedValue {
                 _asFloat = new Float( getCssTextClean(domCSSValue) ).floatValue();
             }
         }
-    }
+    }*/
 
     /**
      * Constructor for the XRValueImpl object
@@ -107,6 +109,8 @@ public class DerivedValue {
         //_domValueTextClean = getCssTextClean(domCSSValue);
         _newPrimitiveValueType = -1;
         _requiresComputation = ! ValueConstants.isAbsoluteUnit(domCSSValue);
+        
+        _inheritedStyle = inheritedStyle;
         
         if ( ValueConstants.isNumber(cssSACPrimitiveValueType()) ) {
             if ( shouldConvertToPixels() ) {
@@ -126,7 +130,7 @@ public class DerivedValue {
      */
     //What is this used for?
     public DerivedValue copyOf() {
-        DerivedValue nv = new DerivedValue( _domCSSValue );
+        DerivedValue nv = new DerivedValue( _domCSSValue, _inheritedStyle );
         //nv._newPrimitiveValueType = this._newPrimitiveValueType;
         return nv;
     }
@@ -241,7 +245,7 @@ public class DerivedValue {
                 // on the default system font.
                 // To convert EMS to pixels, we need the height of the lowercase 'x' character in the current
                 // element...
-                float xHeight = parentStyle.propertyByName("font-height").computedValue().asFloat();
+                float xHeight = parentStyle.propertyByName("font-size").computedValue().asFloat();
 
                 absVal = relVal * xHeight;
                 _newPrimitiveValueType = CSSPrimitiveValue.CSS_PX;

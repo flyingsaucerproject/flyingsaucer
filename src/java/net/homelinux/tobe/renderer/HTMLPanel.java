@@ -130,7 +130,7 @@ public class HTMLPanel extends JPanel implements  ComponentListener {
     public HTMLPanel(UserAgentCallback userAgent) {
 
         c = new Context();
-        c.css = new net.homelinux.tobe.renderer.css.TBStyleReference(_userAgent);
+        c.css = new net.homelinux.tobe.renderer.css.TBStyleReference(userAgent);
 
         layout = new BodyLayout();
 

@@ -164,7 +164,7 @@ public class CalculatedStyle {
                 initialValue = RuleNormalizer.convertIdent(propName, initialValue);
                 com.pdoubleya.xhtmlrenderer.css.impl.DefaultCSSPrimitiveValue cssval = new com.pdoubleya.xhtmlrenderer.css.impl.DefaultCSSPrimitiveValue(initialValue);
                 //a default value should always be absolute?
-                DerivedValue xrVal = new DerivedValue(cssval);
+                DerivedValue xrVal = new DerivedValue(cssval, _parent);
                 prop = new DerivedProperty(propName, xrVal);
             }
             _derivedPropertiesByName.put(propName, prop);
@@ -315,7 +315,7 @@ public class CalculatedStyle {
     }
     
     private DerivedProperty deriveProperty(String name, org.w3c.dom.css.CSSValue value) {
-        DerivedValue specified = new DerivedValue(value);
+        DerivedValue specified = new DerivedValue(value, _parent);
         DerivedValue computed = specified;
         //isResolvable
         if(specified.isPrimitiveType() && !ValueConstants.isAbsoluteUnit(specified.cssValue())) {

@@ -107,10 +107,10 @@ import com.pdoubleya.xhtmlrenderer.util.LoggerUtil;
      * @param context  Context instance used for property resolution when
      *      necessary.
      */
-    public TBStyleReference(Context context, UserAgentCallback userAgent, Document doc) {
+    /*public TBStyleReference(Context context, UserAgentCallback userAgent, Document doc) {
         this(userAgent);
         setDocumentContext(context, doc);
-    }
+    }*/
 
     /** Default constructor for initializing members. */
     public TBStyleReference(UserAgentCallback userAgent) {
@@ -211,12 +211,18 @@ long st = System.currentTimeMillis();
             }
         }
         
-        String[] styles = _doc.getInlineStyles();
-        if(styles != null) {
-            for(int i=0; i<styles.length; i++) {
-                reader = new java.io.StringReader(styles[i]);
-                _stylesheets.add(_stylesheetFactory.parse(Stylesheet.AUTHOR, reader));
+        uri = _doc.getURI();
+        sheet = _stylesheetFactory.getStylesheet(uri);
+        if(sheet == null) {
+            String inlineStyle = _doc.getInlineStyle();
+            if(inlineStyle != null) {
+                reader = new java.io.StringReader(inlineStyle);
+                sheet = _stylesheetFactory.parse(Stylesheet.AUTHOR, reader);
+                _stylesheetFactory.putStylesheet(uri, sheet);
             }
+        }
+        if(sheet != null){
+            _stylesheets.add(sheet);
         }
         
         //here we should also get user stylesheet from userAgent

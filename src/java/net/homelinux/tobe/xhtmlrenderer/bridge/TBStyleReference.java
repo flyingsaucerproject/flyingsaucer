@@ -221,8 +221,8 @@ public class TBStyleReference implements StyleReference {
      */
     public void matchStyles( Document document ) {
         try {
-        if ( _tbStyleMap == null ) {
-            if ( !_elementStyleAttributesPulled ) {
+        //if ( _tbStyleMap == null ) {
+            /*if ( !_elementStyleAttributesPulled ) {
                 try {
                     NodeList nl = XPathAPI.selectNodeList(document.getDocumentElement(), "//*[@style!='']");
                     // HACK: better on first parse and avoid this second sweep (PWW 24-08-04)
@@ -234,7 +234,7 @@ public class TBStyleReference implements StyleReference {
                     System.err.println("Couldn't pull element style attribute.");
                     ex.printStackTrace();
                 }
-            }
+            }*/
             
             // we are going to pass a list of pre-sorted XRStyleRules to the mapping routines
             // The sort is on origin, specificity, and sequence...in principle, this means
@@ -245,7 +245,7 @@ public class TBStyleReference implements StyleReference {
             _tbStyleMap = new net.homelinux.tobe.xhtmlrenderer.matcherImpl.Matcher(document, new StaticHtmlAttributeResolver(), _stylesheets.iterator());
             _tbStyleMap.setStylesheetFactory(new StylesheetFactory());
             
-        }
+        //}
 
         // now we have a match-map, apply against our entire Document....restyleTree() is recursive
         Element root = document.getDocumentElement();
@@ -461,6 +461,7 @@ public class TBStyleReference implements StyleReference {
             }
         }
         _matchedSinceLastParse = false;
+        _tbStyleMap = null;
     }
 
 

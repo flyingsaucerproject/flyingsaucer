@@ -51,7 +51,8 @@ public class Ruleset implements net.homelinux.tobe.xhtmlrenderer.Ruleset {
             boolean importance = decl.getPropertyPriority(decl.item(i)).compareToIgnoreCase("important") == 0;
             while ( iter.hasNext() ) {
                 XRPropertyImpl xrProp = (XRPropertyImpl)iter.next();
-                _props.add( new PropertyDeclaration(xrProp, importance, origin) );
+                PropertyDeclaration prop = new PropertyDeclaration(xrProp, importance, origin);
+                _props.add( prop );
             }
         }
     }

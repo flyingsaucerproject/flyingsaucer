@@ -108,6 +108,7 @@ public class HTMLTest extends JFrame implements UserAgentCallback {
         addFileLoadAction(test, "XML-like", "demos/xml.xhtml");
         addFileLoadAction(test, "XML", "demos/xml.xml");
         addFileLoadAction(test, "Element styling", "demos/element-style.xhtml");
+        addFileLoadAction(test, "UL bug", "demos/ulbug.xhtml");
 
         JMenu debug = new JMenu("Debug");
         mb.add(debug);

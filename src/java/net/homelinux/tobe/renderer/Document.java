@@ -36,7 +36,7 @@ public interface Document {
     
     java.io.Reader getDefaultStylesheet();
     
-    String[] getInlineStyles();
+    String getInlineStyle();
     
     java.net.URI[] getStylesheetURIs();
     

@@ -87,13 +87,13 @@ public class Styler implements net.homelinux.tobe.xhtmlrenderer.Styler {
             }
             _styleMap.put( elem, cs );
 
-        // apply rules from style attribute on element, if any
+            // apply rules from style attribute on element, if any
         // elementStyling is now responsibility of Matcher
 
         org.w3c.dom.NodeList nl = elem.getChildNodes();
         for ( int i = 0, len = nl.getLength(); i < len; i++ ) {
             org.w3c.dom.Node n = nl.item( i );
-            if ( n instanceof org.w3c.dom.Element ) {
+            if ( n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE ) {
                 restyleTree( (org.w3c.dom.Element)n );
             }
         }
