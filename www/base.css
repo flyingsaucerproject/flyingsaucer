@@ -1,5 +1,5 @@
 #fs h1, #fs h2 {
-	background: #FFFFFF url(images/scanbg.gif) left top;
+	background: #FFFFFF left top;
 	border-top: 0px none #000000;
 	border-right: 0px none #000000;
 	border-bottom: 1px solid #000000;
@@ -10,9 +10,10 @@
 	font-weight: normal;
 	padding-top: 15px;
 	padding-left: 15px;
-	color: #FFFFFF;
+	color: #1777A4;
 	word-spacing: normal;
 	letter-spacing: normal;
+	font-style: italic;
 }
 body, #fs {
 	background: #FFFFFF;
