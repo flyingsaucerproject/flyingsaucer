@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.awt.*;
+
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -33,10 +35,6 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Uu;
-
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
 
 public class BoxRendering {
 
@@ -163,27 +161,11 @@ public class BoxRendering {
      * @param restyle
      */
     public static void paintFixed(Context c, Box block, boolean restyle) {
-        Rectangle rect = c.getFixedRectangle();
-        //Uu.p("rect = " + rect);
-        //Graphics g = c.getGraphics();
-        int xoff = -rect.x;
-        int yoff = -rect.y;
+        paintFixedOrAbsolute(c, block, restyle);
+    }
 
-        if (block.top_set) {
-            yoff += block.top;
-        }
-        if (block.right_set) {
-            xoff = -rect.x + rect.width - block.width - block.right;
-        }
-        if (block.left_set) {
-            xoff = block.left;
-        }
-        if (block.bottom_set) {
-            yoff = -rect.y + rect.height - block.height - block.bottom;
-        }
-        c.translate(xoff, yoff);
-        paintNormal(c, block, restyle);
-        c.translate(-xoff, -yoff);
+    private static void paintFixedOrAbsolute(Context c, Box block, boolean restyle) {
+        paintFixedOrAbsolute(c, block, restyle);
     }
 
     /**
@@ -194,6 +176,7 @@ public class BoxRendering {
      * @param restyle
      */
     //HACK: more or less copied paintFixed - tobe
+    //TODO: these were duplicates code blocks--need to decide how they differ, or leave as common method (PWW 25-01-05)
     public static void paintAbsoluteBox(Context c, Box block, boolean restyle) {
         Rectangle rect = c.getExtents();
         //why this?
