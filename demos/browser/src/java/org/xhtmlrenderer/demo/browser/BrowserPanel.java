@@ -1,22 +1,22 @@
 
-/* 
- * {{{ header & license 
- * Copyright (c) 2004 Joshua Marinacci 
- * 
- * This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU Lesser General Public License 
- * as published by the Free Software Foundation; either version 2.1 
- * of the License, or (at your option) any later version. 
- * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the 
- * GNU Lesser General Public License for more details. 
- * 
- * You should have received a copy of the GNU Lesser General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
- * }}} 
+/*
+ * {{{ header & license
+ * Copyright (c) 2004 Joshua Marinacci
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
  */
 
 package org.xhtmlrenderer.demo.browser;
@@ -44,7 +44,7 @@ import org.xhtmlrenderer.event.*;
 
 public class BrowserPanel extends JPanel implements DocumentListener {
     public static Logger logger = Logger.getLogger("app.browser");
-    
+
     JButton forward;
     JButton backward;
     JButton stop;
@@ -55,13 +55,13 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     JScrollPane scroll;
     BrowserStartup root;
     BrowserPanelListener listener;
-    
+
     public BrowserPanel(BrowserStartup root, BrowserPanelListener listener) {
         this.root = root;
         this.listener = listener;
     }
 
-    
+
     public void init() {
         forward = new JButton();
         backward = new JButton("Back");
@@ -71,7 +71,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         view = new HTMLPanel();
         view.setErrorHandler(root.error_handler);
         status = new JLabel("Status");
-        
+
         int text_width = 200;
         view.setPreferredSize(new Dimension(text_width,text_width));
         scroll = new JScrollPane(view);
@@ -80,39 +80,36 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         scroll.setPreferredSize(new Dimension(text_width,text_width));
         scroll.getVerticalScrollBar().setBlockIncrement(100);
         scroll.getVerticalScrollBar().setUnitIncrement(15);
-        view.setViewportComponent(scroll);
-        view.setJScrollPane(scroll);
-        
     }
-    
+
     public void createLayout() {
         GridBagLayout gbl = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
         setLayout(gbl);
-        
+
         c.gridx = 0; c.gridy = 0;
         c.weightx = c.weighty = 0.0;
         gbl.setConstraints(backward,c);
         add(backward);
-        
+
         c.gridx++;
         gbl.setConstraints(forward,c);
         add(forward);
-        
+
         c.gridx++;
         gbl.setConstraints(stop,c);
         add(stop);
-        
+
         c.gridx++;
         gbl.setConstraints(reload,c);
         add(reload);
-        
+
         c.gridx++;
         c.fill = c.HORIZONTAL;
         c.weightx = 10.0;
         gbl.setConstraints(url,c);
         add(url);
-        
+
         c.gridx = 0;
         c.gridy++;
         c.fill = c.BOTH;
@@ -120,18 +117,18 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         c.weightx = c.weighty = 10.0;
         gbl.setConstraints(scroll,c);
         add(scroll);
-        
+
         c.gridx = 0;
         c.gridy++;
         c.fill = c.HORIZONTAL;
         c.weighty = 0.1;
         gbl.setConstraints(status,c);
         add(status);
-        
+
     }
-    
+
     String current_url = null;
-    
+
     public void createActions() {
         backward.setAction(root.actions.backward);
         forward.setAction(root.actions.forward);
@@ -171,37 +168,37 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                 sb.getModel().setValue(sb.getModel().getValue()-sb.getUnitIncrement());
             }
         });
-        
+
     }
 
-    
+
     public void goForward() {
        root.history.goNext();
        view.setDocument(root.history.getCurrentDocument(),root.history.getCurrentURL());
        //root.history.dumpHistory();
        updateButtons();
     }
-    
+
     public void goBack() throws Exception {
        root.history.goPrevious();
        view.setDocument(root.history.getCurrentDocument(),root.history.getCurrentURL());
        //root.history.dumpHistory();
        updateButtons();
     }
-    
+
     public void reloadPage() throws Exception {
         logger.info("Reloading Page: ");
         if(current_url != null) {
             loadPage(current_url);
         }
     }
-    
-    
+
+
     public void setStatus(String txt) {
         status.setText(txt);
     }
-        
-    
+
+
     protected void updateButtons() {
        if(root.history.hasPrevious()) {
            root.actions.backward.setEnabled(true);
@@ -214,7 +211,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
            root.actions.forward.setEnabled(false);
        }
     }
-    
+
     public void loadPage(Document doc, URL url) throws Exception {
         view.setDocument(doc,url);
         view.addDocumentListener(this);
@@ -224,17 +221,17 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     public void loadPage(String url_text) throws Exception {
         logger.info("Loading Page: " + url_text);
         current_url = url_text;
-        
-        
+
+
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
         fact.setValidating(true);
         DocumentBuilder builder = fact.newDocumentBuilder();
         builder.setErrorHandler(root.error_handler);
         Document doc = null;
-        
-        
+
+
         URL ref = null;
-        
+
         if(url_text.startsWith("demo:")) {
             DemoMarker marker = new DemoMarker();
             //u.p("marker = " + marker);
@@ -257,25 +254,25 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                 doc = builder.parse(file);
                 ref = file.toURL();
             }
-            
+
         } else {
             doc = builder.parse(url_text);
             ref = new File(url_text).toURL();
         }
         loadPage(doc,ref);
-        
+
         setStatus("Successfully loaded: " + url_text);
         if ( listener != null ) {
             listener.pageLoadSuccess(url_text, view.getDocumentTitle());
         }
     }
-    
-    
+
+
     public void documentLoaded() {
         //u.p("got a document loaded event");
         setupSubmitActions();
     }
-    
+
     public void setupSubmitActions() {
         //u.p("setup submit actions");
         Context cx = view.getContext();
@@ -291,17 +288,17 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                 String field_name = (String)fields.next();
                 List field_list = (List)form.get(field_name);
                 //u.p("got field set: " + field_name);
-                
+
                 ButtonGroup bg = new ButtonGroup();
                 for(int i=0; i<field_list.size(); i++) {
                     Context.FormComponent comp = (Context.FormComponent)field_list.get(i);
                     //u.p("got component: " + comp);
-                    
+
                     // bind radio buttons together
                     if(comp.component instanceof JRadioButton) {
                         bg.add((JRadioButton)comp.component);
                     }
-                    
+
                     // add reset action listeners
                     if(comp.component instanceof JButton) {
                         //u.p("it's a jbutton");
@@ -309,7 +306,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                             ((JButton)comp.component).addActionListener(new ActionListener() {
                                 public void actionPerformed(ActionEvent evt) {
                                     u.p("reset button hit");
-                                    
+
                                     Context ctx = view.getContext();
                                     Iterator fields = ctx.getInputFieldComponents(form_name);
                                     while(fields.hasNext()) {
@@ -319,7 +316,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                                             comp.reset();
                                         }
                                     }
-                                    
+
                                 }
                             });
                         }
