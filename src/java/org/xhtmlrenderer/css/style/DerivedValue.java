@@ -68,7 +68,7 @@ public class DerivedValue {
     private CSSPrimitiveValue _domCSSPrimitiveValue;
 
     /** */
-    private CalculatedStyle _inheritedStyle;
+    private CalculatedStyle _style;
 
     /** String array, if there is one to split from value  */
     private String[] _stringAsArray;
@@ -144,13 +144,13 @@ public class DerivedValue {
     private final static Color COLOR_TRANSPARENT = new Color( 0, 0, 0, 0 );
 
     /** Description of the Field */
-    private final static float MM__PER__PX = 0.28F;
+    private final float MM__PER__PX;
     /** Description of the Field */
     private final static int MM__PER__CM = 10;
     /** Description of the Field */
     private final static float CM__PER__IN = 2.54F;
     /** Description of the Field */
-    private final static float PT__PER__IN = ( 1 / 72 );
+    private final static float PT__PER__IN = 1f / 72f;
     /** Description of the Field */
     private final static float PC__PER__PT = 12;
 
@@ -159,7 +159,7 @@ public class DerivedValue {
      * @param primitive
      * @param inheritedStyle
      */
-    public DerivedValue( CSSName cssName, CSSPrimitiveValue primitive, CalculatedStyle inheritedStyle ) {
+    public DerivedValue( CSSName cssName, CSSPrimitiveValue primitive, CalculatedStyle style ) {
         _cssName = cssName;
         _domCSSPrimitiveValue = primitive;
         String org = _domCSSPrimitiveValue.getCssText();
@@ -168,7 +168,9 @@ public class DerivedValue {
             throw new XRRuntimeException( "CSSValue for '" + cssName + "' is null after " +
                     "resolving CSS identifier for value '" + org + "'" );
         }
-        _inheritedStyle = inheritedStyle;
+        _style = style;
+        // We must calculate this based on the current DPI
+        MM__PER__PX = ( CM__PER__IN * MM__PER__CM ) / style.getContext().getCtx().getDPI();
 
         try {
             if ( _cssName == CSSName.BACKGROUND_POSITION ) {
@@ -180,8 +182,8 @@ public class DerivedValue {
                 }
             }
         } catch ( Exception ex ) {
-            if ( inheritedStyle != null ) {
-                inheritedStyle.dumpProperties();
+            if ( _style.getParent() != null ) {
+                _style.getParent().dumpProperties();
             }
             throw new XRRuntimeException( "For " + cssName + ": '" + org + "', failed to instantiate DerivedValue. " + ex.getMessage() );
         }
@@ -210,7 +212,7 @@ public class DerivedValue {
      *      same SAC {@link CSSValue} as the original.
      */
     public DerivedValue copyOf() {
-        DerivedValue nv = new DerivedValue( _cssName, _domCSSPrimitiveValue, _inheritedStyle );
+        DerivedValue nv = new DerivedValue( _cssName, _domCSSPrimitiveValue, _style );
         return nv;
     }
 
@@ -523,9 +525,7 @@ public class DerivedValue {
                 }
                 break;
             case CSSPrimitiveValue.CSS_PT:
-                if ( _cssName == CSSName.FONT_SIZE ) {
-                    absVal = relVal;
-                } else if ( _hasAbsCalculated ) {
+                if ( _hasAbsCalculated ) {
                     absVal = _absoluteLengthAsFloat;
                 } else {
                     absVal = ( ( ( relVal * PT__PER__IN ) * CM__PER__IN ) * MM__PER__CM ) / MM__PER__PX;
@@ -563,7 +563,7 @@ public class DerivedValue {
                 if ( _cssName == CSSName.LINE_HEIGHT ) {
                     absVal = relVal * baseValue;
                 } else {
-                    float xHeight = _inheritedStyle.getFloatPropertyProportionalHeight( CSSName.FONT_SIZE, baseValue );
+                    float xHeight = _style.getParent().getFloatPropertyProportionalHeight( CSSName.FONT_SIZE, baseValue );
                     absVal = relVal * xHeight;
                 }
 
@@ -571,7 +571,7 @@ public class DerivedValue {
             case CSSPrimitiveValue.CSS_PERCENTAGE:
                 // percentage depends on the property this value belongs to
                 if ( _cssName == CSSName.VERTICAL_ALIGN ) {
-                    relVal = _inheritedStyle.getFloatPropertyProportionalHeight( CSSName.LINE_HEIGHT, baseValue );
+                    relVal = _style.getParent().getFloatPropertyProportionalHeight( CSSName.LINE_HEIGHT, baseValue );
                 } else if ( _cssName == CSSName.FONT_SIZE ) {
                     // same as with EM
                     baseValue = deriveFontSize( baseValue );
@@ -613,9 +613,9 @@ public class DerivedValue {
      */
     private float deriveFontSize( float parentHeight ) {
         float fontSize = 0F;
-        if ( _inheritedStyle != null ) {
+        if ( _style.getParent() != null ) {
             //TODO: this is probably wrong
-            fontSize = _inheritedStyle.getFloatPropertyProportionalHeight( CSSName.FONT_SIZE, parentHeight );
+            fontSize = _style.getParent().getFloatPropertyProportionalHeight( CSSName.FONT_SIZE, parentHeight );
         } else {
             throw new XRRuntimeException( "ERROR: Trying to derive font size incorrectly in " + GeneralUtil.classNameOnly(this) );
         }
