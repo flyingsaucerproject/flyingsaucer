@@ -73,6 +73,7 @@ public class DefaultRenderer implements Renderer {
      * @param box PARAM
      */
     public void paintChildren(Context c, Box box) {
+        if (box.getBlockFormattingContext() != null) c.pushBFC(box.getBlockFormattingContext());
         //Uu.p("Layout.paintChildren(): " + box);
         //Uu.p("child count = " + box.getChildCount());
         //XRLog.render(Level.WARNING, "using default renderer paintChildren for " + box.getClass().getName());
@@ -98,6 +99,7 @@ public class DefaultRenderer implements Renderer {
             }
             paintChild(c, child, renderer);
         }
+        if (box.getBlockFormattingContext() != null) c.popBFC();
     }
 
     /**

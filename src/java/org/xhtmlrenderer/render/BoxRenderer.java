@@ -233,9 +233,11 @@ public class BoxRenderer extends DefaultRenderer {
      * @param box PARAM
      */
     public void paintChildren(Context c, Box box) {
+        if (box.getBlockFormattingContext() != null) c.pushBFC(box.getBlockFormattingContext());
         c.translate(box.x, box.y);
         super.paintChildren(c, box);
         c.translate(-box.x, -box.y);
+        if (box.getBlockFormattingContext() != null) c.popBFC();
     }
 
 

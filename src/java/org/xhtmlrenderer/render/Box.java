@@ -22,6 +22,7 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.layout.content.Content;
 
@@ -70,6 +71,16 @@ public class Box {
         this.y = y;
         this.width = width;
         this.height = height;
+    }
+
+    protected BlockFormattingContext blockFormattingContext = null;
+
+    public BlockFormattingContext getBlockFormattingContext() {
+        return blockFormattingContext;
+    }
+
+    public void setBlockFormattingContext(BlockFormattingContext blockFormattingContext) {
+        this.blockFormattingContext = blockFormattingContext;
     }
 
     public Content content;
@@ -626,6 +637,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2004/12/29 12:57:27  tobega
+ * Trying to handle BFC:s right
+ *
  * Revision 1.33  2004/12/28 02:15:19  tobega
  * More cleaning.
  *

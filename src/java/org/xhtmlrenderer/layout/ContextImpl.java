@@ -261,9 +261,9 @@ public class ContextImpl implements Context {
         bfc = (BlockFormattingContext) bfc_stack.pop();
     }
 
-    public void setBlockFormattingContext(BlockFormattingContext bfc) {
+    /*public void setBlockFormattingContext(BlockFormattingContext bfc) {
         this.bfc = bfc;
-    }
+    }*/
 
     /**
      * Description of the Field

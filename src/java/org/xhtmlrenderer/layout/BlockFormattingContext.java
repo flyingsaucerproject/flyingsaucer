@@ -19,6 +19,7 @@ public class BlockFormattingContext {
 
     public BlockFormattingContext(Box master) {
         this.master = master;
+        master.setBlockFormattingContext(this);
         left_floats = new ArrayList();
         right_floats = new ArrayList();
         offset_map = new HashMap();

@@ -25,7 +25,9 @@ public class InlineRenderer extends BoxRenderer {
             super.paintComponent(c, box);
             return;
         }
+        if (box.getBlockFormattingContext() != null) c.pushBFC(box.getBlockFormattingContext());
         paintInlineContext(c, box);
+        if (box.getBlockFormattingContext() != null) c.popBFC();
     }
 
     /**
