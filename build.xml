@@ -46,6 +46,7 @@
     <property name="libraries.dir" location="lib" />
     <property name="src.dir" location="src" />
     <property name="doc.dir" location="doc" />
+    <property name="src.junit-test.java.dir" location="${src.dir}/junit" />
     <property name="src.browser.java.dir" location="demos/browser/src/java" />
     <property name="src.about.java.dir" location="demos/about/src/java" />
     <property name="dest.dir" location="build" />
@@ -221,6 +222,11 @@
     <!-- Compiles the Help/About Box demo along with the main codebase -->
     <target name="compile.about" depends="compile">
         <javac-full srcdir="${src.about.java.dir}" />
+    </target>
+
+    <!-- Compiles the JUnit tests along with the main codebase -->
+    <target name="compile.junit" depends="compile">
+        <javac-full srcdir="${src.junit-test.java.dir}" />
     </target>
 
     <!-- Compiles main codebase, browser and about box -->
@@ -405,11 +411,11 @@
     </target>
 
     <!-- Runs a speed test after a compile -->
-    <target name="test-speed" depends="test-css-speed">
+    <target name="test.speed" depends="test.css-speed">
     </target>
 
     <!-- Runs a speed test after a compile -->
-    <target name="test-css-speed" depends="compile">
+    <target name="test.css-speed" depends="compile">
         <java classname="org.xhtmlrenderer.test.CSSSpeedTest" 
               fork="${java-exec.fork.tests}">
             <sysproperty key="show-config" value="${show-config}" />
@@ -428,7 +434,7 @@
     </target>
 
     <!-- Runs a custom block test after a compile -->
-    <target name="test-customblock" depends="compile">
+    <target name="test.customblock" depends="compile">
         <java classname="org.xhtmlrenderer.test.CustomBlockTest" 
               classpath="${dest.java.dir}" 
               fork="${java-exec.fork.tests}">
@@ -438,6 +444,60 @@
             </syspropertyset> 
             <classpath refid="libraries.all" />
         </java>
+    </target>
+
+    <!-- target just shows how a single test can be run -->
+    <target name="test.junit.simple" depends="compile.junit">
+      <junit printsummary="withOutAndErr" 
+             timeout="60000"
+             filtertrace="on"
+             haltonerror="on" 
+             haltonfailure="on">
+             
+        <classpath>
+          <pathelement path="${basedir}" />
+          <pathelement path="${dest.dir}" />
+          <pathelement path="${dest.java.dir}" />
+          <fileset dir="${libraries.dir}">
+            <include name="*.jar"/>
+          </fileset>
+        </classpath>
+             
+        <formatter type="plain" usefile="false" />
+
+        <!-- run a single test -->
+        <test name="tests.public_apis.SimpleTest" />
+      </junit>
+    </target>
+
+    <target name="test.junit.public-apis" depends="compile.junit">
+      <junit printsummary="withOutAndErr" 
+             timeout="60000"
+             filtertrace="on"
+             haltonerror="on" 
+             haltonfailure="on">
+             
+        <sysproperty key="show-config" value="${show-config}" />
+
+        <classpath>
+          <pathelement path="${basedir}" />
+          <pathelement path="${dest.dir}" />
+          <pathelement path="${dest.java.dir}" />
+          <fileset dir="${libraries.dir}">
+            <include name="*.jar"/>
+          </fileset>
+        </classpath>
+             
+        <formatter type="plain" usefile="false" />
+
+        <!-- run all class files with Test in the name in the java dest directory -->
+        <batchtest fork="no">
+          <fileset dir="${dest.java.dir}">
+            <include name="tests/**/*Test*" />
+            <exclude name="tests/**/SimpleTest*" />
+          </fileset>
+        </batchtest>        
+      </junit>
     </target>
 
     <!-- Builds and jars the browser demo, and runs it -->
@@ -466,7 +526,7 @@
     </target>
 
     <!-- Compiles, then runs HTML test -->
-    <target name="test-headless" depends="compile" description="Test">
+    <target name="test.headless" depends="compile" description="Test">
         <java
             classname="org.xhtmlrenderer.test.Graphics2DRendererTest"
             classpath="${dest.java.dir};${dest.dir}"
@@ -634,6 +694,10 @@
 $Id$
 
 $Log$
+Revision 1.72  2004/11/16 14:37:48  pdoubleya
+Added support for JUnit tests.
+Renamed test- targets to test. to be like other names.
+
 Revision 1.71  2004/11/15 13:41:02  pdoubleya
 Renamed javadoc target to _javadoc, as it is meant for internal use; use 'docs' target to generate javadocs for the project.
 
