@@ -4,6 +4,7 @@ package org.xhtmlrenderer.layout.inline;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.content.FloatedBlockContent;
 import org.xhtmlrenderer.layout.content.StylePop;
 import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.content.TextContent;
@@ -99,7 +100,9 @@ public class WhitespaceStripper {
                 continue;
             }
             //Here we have some other object, just add it with preceding styles
-            //let's try removing this and see: allWhitespace = false;
+            if (!(o instanceof FloatedBlockContent)) {
+                allWhitespace = false;
+            }
             stripped.addAll(pendingStylePushes);
             pendingStylePushes.clear();
             stripped.add(o);
