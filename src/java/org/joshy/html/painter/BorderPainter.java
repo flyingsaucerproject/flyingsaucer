@@ -29,7 +29,7 @@ public class BorderPainter {
         // ASK: border-style is a shorthand property for 4 border sides
         // CSSBank/Accessor leave it as a single property, but XRStyleReference
         // explodes it to individual values. Which way to go? (PWW 13/08/04)
-        box.border_style = ctx.css.getStringProperty(box.getElement(), "border-style");
+        box.border_style = ctx.css.getStringProperty(box.getElement(), "border-top-style");
 
         
 

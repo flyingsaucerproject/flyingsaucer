@@ -1,14 +1,10 @@
-fixed bugs
-    table and table cell widths don't work with percentages
-    table cells previously were sized twice, which breaks with relative sizing.
-changed contains to indexOf()>=0 since contains is a 1.5 addition
-    
+
 known bugs
-table cell and table widths don't work with percentages.
+//table cell and table widths don't work with percentages.
 ex: 50% => 50px instead of .5 of parent width
 fixed.
 
-bug where a table cell will get sized twice if it has an explict size,
+//bug where a table cell will get sized twice if it has an explict size,
 once from the table and once directly from css
 
 bug where it goes into an infinite loop if the available width < 0 or

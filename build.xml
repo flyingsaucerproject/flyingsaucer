@@ -417,7 +417,7 @@
 
         <java classname="org.joshy.html.HTMLTest" classpath="build/classes" fork="true">
 
-            <arg value="demos/list.xhtml"/>
+            <arg value="border.xhtml"/>
 
             <classpath><fileset dir="lib"><include name="*.jar"/></fileset></classpath>
 

@@ -1,6 +1,7 @@
 08/27/2004    
     fixed scrollbar reset when loading new document
-
+    made border painter use border-style-top instead of border-style
+        (styles on the other sides will come later)
 08/26/2004
 fixed bugs
     table and table cell widths don't work with percentages
