@@ -27,6 +27,7 @@ import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.forms.AbsoluteLayoutManager;
 import org.xhtmlrenderer.layout.BodyLayout;
+import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
@@ -241,7 +242,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
         //TODO: maybe temporary hack
         //Context c = getContext();
-        body_box = layout.layout(c, new DomToplevelNode(doc));
+        body_box = Boxing.layout(c, new DomToplevelNode(doc));
 
         XRLog.layout(Level.FINEST, "is a fixed child: " + body_box.isChildrenExceedBounds());
         
@@ -267,7 +268,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
         }
         */
 
-        intrinsic_size = new Dimension(getContext().getMaxWidth(), layout.contents_height);
+        intrinsic_size = new Dimension(getContext().getMaxWidth(), body_box.height);
         if (enclosingScrollPane != null) {
             XRLog.layout(Level.FINEST, "enclosing scroll pane = " + this.enclosingScrollPane);
             int view_height = this.enclosingScrollPane.getViewport().getHeight();
@@ -876,6 +877,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/01/02 09:32:41  tobega
+ * Now using mostly static methods for layout
+ *
  * Revision 1.24  2005/01/02 01:00:09  tobega
  * Started sketching in code for handling replaced elements in the NamespaceHandler
  *

@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004 Joshua Marinacci
+ * Copyright (c) 2004 Joshua Marinacci, Torbjšrn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,19 +19,23 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Fixed;
 import org.xhtmlrenderer.layout.block.FloatUtil;
-import org.xhtmlrenderer.layout.content.*;
+import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
+import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.layout.content.ContentUtil;
+import org.xhtmlrenderer.layout.content.TableContent;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.table.TableLayout2;
+import org.xhtmlrenderer.table.TableBoxing;
 import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -40,17 +44,12 @@ import java.util.List;
  *
  * @author empty
  */
-public class BoxLayout extends DefaultLayout {
-
-    /**
-     * Description of the Field
-     */
-    //public int contents_height;
+public class Boxing {
 
     /**
      * Constructor for the BoxLayout object
      */
-    public BoxLayout() {
+    private Boxing() {
     }
 
     /**
@@ -60,7 +59,7 @@ public class BoxLayout extends DefaultLayout {
      * @param content
      * @return Returns
      */
-    public Box createBox(Context c, Content content) {
+    public static Box createBox(Context c, Content content) {
         BlockBox block = new BlockBox();
         block.content = content;
         //String attachment = c.css.getStringProperty(block.getRealElement(), "background-attachment", false);
@@ -79,18 +78,30 @@ public class BoxLayout extends DefaultLayout {
      * @param content PARAM
      * @return Returns
      */
-    public Box layout(Context c, Content content) {
-        BlockBox block = (BlockBox) createBox(c, content);
+    public static Box layout(Context c, Content content) {
+        Box block = null;
+        if (content instanceof AnonymousBlockContent) {
+            return AnonymousBoxing.layout(c, content);
+        } else if (content instanceof TableContent) {
+            return TableBoxing.layout(c, content);
+        } else {
+            block = new BlockBox();
+        }
+        block.content = content;
         return layout(c, block);
     }
 
-    public Box layout(Context c, Box block) {
+    public static Box layout(Context c, Box block) {
         //OK, first set up the current style. All depends on this...
         CascadedStyle pushed = block.content.getStyle();
         if (pushed != null) c.pushStyle(pushed);
         // this is to keep track of when we are inside of a form
         //TODO: rethink: saveForm(c, (Element) block.getNode());
 
+        String attachment = c.getCurrentStyle().getStringProperty(CSSName.BACKGROUND_ATTACHMENT);
+        if (attachment != null && attachment.equals("fixed")) {
+            block.setChildrenExceedBounds(true);
+        }
         // install a block formatting context for the body,
         // ie. if it's null.
         
@@ -115,7 +126,7 @@ public class BoxLayout extends DefaultLayout {
         block.y = c.getExtents().y;
 
         // prepare the box w/ styles
-        prepareBox(c, block);
+        (new DefaultLayout()).prepareBox(c, block);
 
         // set up a float bfc
         FloatUtil.preChildrenLayout(c, block);
@@ -163,8 +174,7 @@ public class BoxLayout extends DefaultLayout {
         Fixed.setupFixed(c, block);
         FloatUtil.setupFloat(c, block);
         //TODO: rethink: setupForm(c, block);
-        //this.contents_height = block.height;
-        
+
         // remove the outtermost bfc
         if (set_bfc) {
             c.getBlockFormattingContext().doFinalAdjustments();
@@ -179,7 +189,7 @@ public class BoxLayout extends DefaultLayout {
     }
 
     // calculate the width based on css and available space
-    private void adjustWidth(Context c, Box block) {
+    private static void adjustWidth(Context c, Box block) {
         if (block.content instanceof AnonymousBlockContent) {
             return;
         }
@@ -204,7 +214,7 @@ public class BoxLayout extends DefaultLayout {
     }
 
     // calculate the height based on css and available space
-    private void adjustHeight(Context c, Box block) {
+    private static void adjustHeight(Context c, Box block) {
         if (block.content instanceof AnonymousBlockContent) {
             return;
         }
@@ -225,147 +235,75 @@ public class BoxLayout extends DefaultLayout {
      * @param box PARAM
      * @return Returns
      */
-    public Box layoutChildren(Context c, Box box) {
-        BlockBox block = (BlockBox) box;
-        java.util.List contentList = block.content.getChildContent(c);
-        if (contentList == null) return block;
-        if (contentList.size() == 0) return block;//we can do this if there is no content, right?
+    public static Box layoutChildren(Context c, Box box) {
+        List contentList = box.content.getChildContent(c);
+        if (contentList == null) return box;
+        if (contentList.size() == 0) return box;//we can do this if there is no content, right?
 
-        layoutContent(c, box, contentList, block);
-
-        return block;
+        if (ContentUtil.hasBlockContent(contentList)) {//this should be block layed out
+            BoxLayout.layoutContent(c, box, contentList, box);
+        } else {
+            InlineLayout.layoutContent(c, box, contentList);
+        }
+        return box;
     }
 
-    public static void layoutContent(Context c, Box box, List contentList, Box block) {
-        c.shrinkExtents(block);
-
-        // save the original height in case it
-        // has a fixed height
-        //not used: int original_height = block.height;
-
-        // prepare for the list items
-        int old_counter = c.getListCounter();
-        c.setListCounter(0);
-        // Uu.p("BoxLayout.layoutContent(): " + block);
-        Iterator contentIterator = contentList.iterator();
-        //TODO: how does a block's firstLineStyle and firstLetterStyle propagate downwards?
-        while (contentIterator.hasNext()) {
-            Object o = contentIterator.next();
-            if (o instanceof FirstLineStyle) {//can actually only be the first object in list
-                block.firstLineStyle = ((FirstLineStyle) o).getStyle();
-                continue;
-            }
-            if (o instanceof FirstLetterStyle) {//can actually only be the first or second object in list
-                block.firstLetterStyle = ((FirstLetterStyle) o).getStyle();
-                continue;
-            }
-            Content currentContent = (Content) o;
-
-            Box child_box = null;
-            /*if (!(currentContent instanceof AnonymousBlockContent)) {
-                //TODO:handle run-ins. For now, treat them as blocks
-                Layout layout = c.getLayout(currentContent.getElement());
-                // update the counter for printing OL list items
-                c.setListCounter(c.getListCounter() + 1);
-
-                // execute the layout and get the return bounds
-                //c.parent_box = box;
-                c.placement_point = new Point(0, box.height);
-                c.getBlockFormattingContext().translate(0, box.height);
-                child_box = layout.layout(c, currentContent);
-                c.getBlockFormattingContext().translate(0, -box.height);
-                child_box.list_count = c.getListCounter();
-            } else { //AnonymousBlockContent, fail fast if not
-                AnonymousBlockContent anonymous = (AnonymousBlockContent) currentContent;
-                Layout layout = new AnonymousBoxLayout();
-                child_box = layout.layout(c, anonymous);
-            } */
-            Layout layout;
-            if (currentContent instanceof TableContent) {
-                layout = new TableLayout2();
-            } else if (!(currentContent instanceof AnonymousBlockContent)) {
-                //TODO:handle run-ins. For now, treat them as blocks
-                layout = c.getLayout(currentContent.getElement());
-            } else { //AnonymousBlockContent, fail fast if not
-                AnonymousBlockContent anonymous = (AnonymousBlockContent) currentContent;
-                layout = new AnonymousBoxLayout();
-            }
-            // update the counter for printing OL list items
-            c.setListCounter(c.getListCounter() + 1);
-
-            // execute the layout and get the return bounds
-            //c.parent_box = box;
-            //c.placement_point = new Point(0, box.height);
-            c.getBlockFormattingContext().translate(0, box.height);
-            child_box = layout.layout(c, currentContent);
-            c.getBlockFormattingContext().translate(0, -box.height);
-            child_box.list_count = c.getListCounter();
-
-            box.addChild(child_box);
-            // set the child_box location
-            child_box.x = 0;
-            child_box.y = box.height;
-
-            //joshy fix the 'fixed' stuff later
-            // if fixed or abs then don't modify the final layout bounds
-            // because fixed elements are removed from normal flow
-            if (child_box.fixed) {
-                // put fixed positioning in later
-                Fixed.positionFixedChild(c, child_box);
-            }
-
-            if (child_box.absolute) {
-                Absolute.positionAbsoluteChild(c, child_box);
-            }
-
-            // skip adjusting the parent box if the child
-            // doesn't affect flow layout
-            if (LayoutUtil.isOutsideNormalFlow(child_box)) {
-                continue;
-            }
-
-            // increase the final layout width if the child was greater
-            if (child_box.width > box.width) {
-                box.width = child_box.width;
-            }
-
-            // increase the final layout height by the height of the child
-            box.height += child_box.height;
-        }
-        c.addMaxWidth(box.width);
-
-        c.setListCounter(old_counter);
-
-        c.unshrinkExtents(block);
-
+    /**
+     * Gets the padding attribute of the BoxLayout object
+     *
+     * @param c   PARAM
+     * @param box PARAM
+     * @return The padding value
+     */
+    public static Border getPadding(Context c, Box box) {
+        Border padding = c.getCurrentStyle().getPaddingWidth();
+        return padding;
     }
 
-    //TODO: look over form handling. Should be handled through NamespaceHandler and DOM-events, I think
-    /*private void saveForm(Context c, Element elem) {
-        if (c.getRenderingContext().getLayoutFactory().isForm(elem)) {
-            if (elem.hasAttribute("name")) {
-                String name = elem.getAttribute("name");
-                String action = elem.getAttribute("action");
-                c.setForm(name, action);
-            }
-        }
+
+    /**
+     * Gets the margin attribute of the BoxLayout object
+     *
+     * @param c   PARAM
+     * @param box PARAM
+     * @return The margin value
+     */
+    public static Border getMargin(Context c, Box box) {
+        Border margin = c.getCurrentStyle().getMarginWidth();
+        return margin;
     }
 
-    private void setupForm(Context c, Box block) {
-        if (c.getRenderingContext().getLayoutFactory().isForm(block.getRealElement())) {
-            if (block.getRealElement().hasAttribute("name")) {
-                c.setForm(null, null);
+    public static Border getBorder(Context c, Box block) {
+        Border border = LayoutUtil.getBorder(block, c.getCurrentStyle());
+        return border;
+    }
+
+    /**
+     * Gets the backgroundColor attribute of the BoxLayout object
+     *
+     * @param c   PARAM
+     * @param box PARAM
+     * @return The backgroundColor value
+     */
+    public static Color getBackgroundColor(Context c, Box box) {
+        Color bgc = new Color(0, 0, 0, 0);
+        CalculatedStyle style = c.getCurrentStyle();
+        if (style.isIdentifier(CSSName.BACKGROUND_COLOR)) {
+            String value = style.getStringProperty("background-color");
+            if (value.equals("transparent")) {
+                return bgc;
             }
         }
-    }*/
-
+        bgc = style.getBackgroundColor();
+        return bgc;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
- * Revision 1.62  2005/01/02 09:32:40  tobega
+ * Revision 1.1  2005/01/02 09:32:41  tobega
  * Now using mostly static methods for layout
  *
  * Revision 1.61  2005/01/02 01:00:08  tobega

@@ -43,7 +43,7 @@ import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Rectangle;
+import java.awt.*;
 
 
 /**
@@ -145,7 +145,7 @@ public class AnonymousBoxLayout extends InlineLayout {
         //Fixed.setupFixed(c, block);
         //FloatUtil.setupFloat(c, block);
         //TODO: rethink: setupForm(c, block);
-        this.contents_height = block.height;
+        //this.contents_height = block.height;
 
         // remove the outtermost bfc
         /*if (set_bfc) {
@@ -237,6 +237,9 @@ public class AnonymousBoxLayout extends InlineLayout {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/01/02 09:32:40  tobega
+ * Now using mostly static methods for layout
+ *
  * Revision 1.15  2004/12/29 15:06:41  tobega
  * Referencing Context instead of SharedContext where it was wrongly set before.
  *
