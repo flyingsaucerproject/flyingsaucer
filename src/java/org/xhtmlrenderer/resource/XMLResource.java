@@ -119,11 +119,20 @@ public class XMLResource extends AbstractResource {
         if ( saxParser == null ) {
             try {
                 // JDK default
+                // HACK: if 
+                if ( System.getProperty("org.xml.sax.driver") == null ) {
+                    System.setProperty("org.xml.sax.driver","org.apache.crimson.parser.XMLReaderImpl");
+                }
                 saxParser = XMLReaderFactory.createXMLReader();
                 xmlReaderClass = "{JDK default}";
             } catch ( Exception ex ) {
                 XRLog.general(ex.getMessage());
             }
+        }
+        if ( saxParser == null ) {
+            throw new XRRuntimeException("Could not instantiate any SAX 2 parser, including JDK default. " +
+                    "The name of the class to use should have been read from the org.xml.sax.driver System " +
+                    "property, which is set to: " + System.getProperty("org.xml.sax.driver"));
         }
         XRLog.load( "SAX XMLReader in use (parser): " + saxParser.getClass().getName() );
         return saxParser;
@@ -241,6 +250,9 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/02/05 18:09:39  pdoubleya
+ * Add specific SAX class name if none was specified and if system property is not already set.
+ *
  * Revision 1.3  2005/02/05 17:19:47  pdoubleya
  * Refactoring for features support, static factory method for XMLReaders.
  *
