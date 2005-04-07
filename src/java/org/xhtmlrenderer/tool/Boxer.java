@@ -10,11 +10,12 @@ public class Boxer {
   private void run(String filen) {
     try {
         File file = new File(filen);
-        if ( !file.exists()) {
-          System.out.println(filen + " not a file.");
+        if ( !file.exists() || file.isDirectory()) {
+          System.out.println(filen + " not a file, or is a directory. Give me a single file name.");
           System.exit(-1);
         }
-         System.out.println(DocumentDiffTest.xhtmlToDiff(filen, 1024, 768));
+        
+        System.out.println(DocumentDiffTest.xhtmlToDiff(filen, 1024, 768));
      } catch (Exception ex) {
        ex.printStackTrace();
      } 
@@ -31,6 +32,5 @@ public class Boxer {
     } catch ( Exception ex ) {
       ex.printStackTrace();
     }
-    System.out.println("Done. Exiting.");
   }
 } // end class
