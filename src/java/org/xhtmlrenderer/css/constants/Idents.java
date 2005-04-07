@@ -310,54 +310,54 @@ public final class Idents {
 
     static {
         COLOR_MAP = new HashMap();
-        COLOR_MAP.put( "black", "#000000" );
-        COLOR_MAP.put( "white", "#FFFFFF" );
-        COLOR_MAP.put( "red", "#FF0000" );
-        COLOR_MAP.put( "yellow", "#FFFF00" );
-        COLOR_MAP.put( "lime", "#00ff00" );
-        COLOR_MAP.put( "aqua", "#00ffff" );
-        COLOR_MAP.put( "blue", "#0000ff" );
-        COLOR_MAP.put( "fuchsia", "#ff00ff" );
-        COLOR_MAP.put( "gray", "#808080" );
-        COLOR_MAP.put( "silver", "#c0c0c0" );
-        COLOR_MAP.put( "maroon", "#800000" );
-        COLOR_MAP.put( "olive", "#808000" );
-        COLOR_MAP.put( "green", "#008000" );
-        COLOR_MAP.put( "teal", "#008080" );
-        COLOR_MAP.put( "navy", "#000080" );
-        COLOR_MAP.put( "purple", "#800080" );
-        COLOR_MAP.put( "orange", "#FFA500" );
+        COLOR_MAP.put( "black",       "#000000" );
+        COLOR_MAP.put( "white",       "#FFFFFF" );
+        COLOR_MAP.put( "red",         "#FF0000" );
+        COLOR_MAP.put( "yellow",      "#FFFF00" );
+        COLOR_MAP.put( "lime",        "#00ff00" );
+        COLOR_MAP.put( "aqua",        "#00ffff" );
+        COLOR_MAP.put( "blue",        "#0000ff" );
+        COLOR_MAP.put( "fuchsia",     "#ff00ff" );
+        COLOR_MAP.put( "gray",        "#808080" );
+        COLOR_MAP.put( "silver",      "#c0c0c0" );
+        COLOR_MAP.put( "maroon",      "#800000" );
+        COLOR_MAP.put( "olive",       "#808000" );
+        COLOR_MAP.put( "green",       "#008000" );
+        COLOR_MAP.put( "teal",        "#008080" );
+        COLOR_MAP.put( "navy",        "#000080" );
+        COLOR_MAP.put( "purple",      "#800080" );
+        COLOR_MAP.put( "orange",      "#FFA500" );
         COLOR_MAP.put( "transparent", "transparent" );
 
         FONT_SIZES = new HashMap();
         FONT_SIZES.put( "xx-small", "6.9pt" );
-        FONT_SIZES.put( "x-small", "8.3pt" );
-        FONT_SIZES.put( "small", "10pt" );
-        FONT_SIZES.put( "medium", "12pt" );
-        FONT_SIZES.put( "large", "14.4pt" );
-        FONT_SIZES.put( "x-large", "17.3pt" );
+        FONT_SIZES.put( "x-small",  "8.3pt" );
+        FONT_SIZES.put( "small",    "10pt" );
+        FONT_SIZES.put( "medium",   "12pt" );
+        FONT_SIZES.put( "large",    "14.4pt" );
+        FONT_SIZES.put( "x-large",  "17.3pt" );
         FONT_SIZES.put( "xx-large", "20.7pt" );
 
         FONT_WEIGHTS = new HashMap();
-        FONT_WEIGHTS.put( "normal", "400" );
-        FONT_WEIGHTS.put( "bold", "700" );
-        FONT_WEIGHTS.put( "100", "100" );
-        FONT_WEIGHTS.put( "200", "200" );
-        FONT_WEIGHTS.put( "300", "300" );
-        FONT_WEIGHTS.put( "400", "400" );
-        FONT_WEIGHTS.put( "500", "500" );
-        FONT_WEIGHTS.put( "600", "600" );
-        FONT_WEIGHTS.put( "700", "700" );
-        FONT_WEIGHTS.put( "800", "800" );
-        FONT_WEIGHTS.put( "900", "900" );
-        FONT_WEIGHTS.put( "bolder", "bolder" );
+        FONT_WEIGHTS.put( "normal",  "400" );
+        FONT_WEIGHTS.put( "bold",    "700" );
+        FONT_WEIGHTS.put( "100",     "100" );
+        FONT_WEIGHTS.put( "200",     "200" );
+        FONT_WEIGHTS.put( "300",     "300" );
+        FONT_WEIGHTS.put( "400",     "400" );
+        FONT_WEIGHTS.put( "500",     "500" );
+        FONT_WEIGHTS.put( "600",     "600" );
+        FONT_WEIGHTS.put( "700",     "700" );
+        FONT_WEIGHTS.put( "800",     "800" );
+        FONT_WEIGHTS.put( "900",     "900" );
+        FONT_WEIGHTS.put( "bolder",  "bolder" );
         FONT_WEIGHTS.put( "lighter", "lighter" );
         // NOTE: 'bolder' and 'lighter' need to be handled programmatically
 
         BORDER_WIDTHS = new HashMap();
-        BORDER_WIDTHS.put( "thin", "1px" );
+        BORDER_WIDTHS.put( "thin",   "1px" );
         BORDER_WIDTHS.put( "medium", "2px" );
-        BORDER_WIDTHS.put( "thick", "3px" );
+        BORDER_WIDTHS.put( "thick",  "3px" );
 
         BACKGROUND_POSITIONS_IDENTS = new ArrayList();
         BACKGROUND_POSITIONS_IDENTS.add( "top" );
@@ -451,6 +451,9 @@ public final class Idents {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/04/07 16:21:34  pdoubleya
+ * Formatting.
+ *
  * Revision 1.5  2005/03/17 20:22:32  pdoubleya
  * Added orange (Kevin).
  *
