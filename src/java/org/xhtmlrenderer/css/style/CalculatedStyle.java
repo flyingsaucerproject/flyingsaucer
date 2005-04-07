@@ -211,6 +211,18 @@ public class CalculatedStyle {
                     new CSSName[]{CSSName.BORDER_WIDTH_TOP, CSSName.BORDER_WIDTH_BOTTOM, CSSName.BORDER_WIDTH_LEFT, CSSName.BORDER_WIDTH_RIGHT},
                     parentHeight,
                     parentWidth );
+            if ( propertyByName( CSSName.BORDER_STYLE_TOP ).asIdentValue() == IdentValue.NONE ) {
+                _drvBorderWidth.top = 0;
+            }
+            if ( propertyByName( CSSName.BORDER_STYLE_BOTTOM ).asIdentValue() == IdentValue.NONE ) {
+                _drvBorderWidth.bottom = 0;
+            }
+            if ( propertyByName( CSSName.BORDER_STYLE_LEFT ).asIdentValue() == IdentValue.NONE ) {
+                _drvBorderWidth.left = 0;
+            }
+            if ( propertyByName( CSSName.BORDER_STYLE_RIGHT ).asIdentValue() == IdentValue.NONE ) {
+                _drvBorderWidth.right = 0;
+            }
         }
         return _drvBorderWidth;
     }
@@ -487,6 +499,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/04/07 16:33:34  pdoubleya
+ * Fix border width if set to "none" in CSS (Kevin).
+ *
  * Revision 1.15  2005/03/24 23:16:33  pdoubleya
  * Added use of SharedContext (Kevin).
  *
