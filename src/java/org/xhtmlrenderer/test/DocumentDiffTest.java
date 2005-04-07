@@ -132,17 +132,9 @@ public class DocumentDiffTest {
         BufferedImage buff = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D g = (Graphics2D) buff.getGraphics();
 
-        //panel.setSize( width, height );
-
-        //panel.setThreadedLayout(false);
-        
         Dimension dim = new Dimension(width, height);
-        System.out.println("dim = " + dim);
         renderer.layout(g, dim);
         renderer.render(g);
-        
-        //panel.paintComponent( g );
-        
         
         StringBuffer sb = new StringBuffer();
         getDiff(sb, renderer.getRenderingContext().getRootBox(), "");
@@ -209,9 +201,15 @@ public class DocumentDiffTest {
             throws Exception {
         //String testfile = "tests/diff/background/01.xhtml";
         //String difffile = "tests/diff/background/01.diff";
-
+        String file = null;
+        if ( args.length == 0 ) {
+          file = "tests/diff"; 
+        } else {
+          file = args[0]; 
+        }
         DocumentDiffTest ddt = new DocumentDiffTest();
-        ddt.runTests(new File("tests/diff"), width, height);
+        //ddt.runTests(new File(file), width, height);
+        System.out.println(ddt.xhtmlToDiff(file, 1280, 768));
     }
 
 }
@@ -220,6 +218,9 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/04/07 16:34:52  pdoubleya
+ * Silly cleanups
+ *
  * Revision 1.12  2005/01/29 20:22:18  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
