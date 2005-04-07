@@ -27,13 +27,15 @@ import org.xhtmlrenderer.DefaultCSSMarker;
 
 
 /**
+* TODO: docs out of date; need to mention override file in user home dir
  * <p>
  *
  * Stores runtime configuration information for application parameters that may
  * vary on restarting. This implements the Singleton pattern, but through static
  * methods. That is, the first time Configuration is used, the properties are
  * loaded into the Singleton instance. Subsequent calls to valueFor() retrieve
- * values from the Singleton. To look up a property, use <code>Configuration.valueFor("property name");</code>
+ * values from the Singleton. To look up a property, use 
+ * {@link Configuration#valueFor(String)}.
  * </p> <p>
  *
  * Properties may be overridden using a second properties file, or individually
@@ -53,7 +55,7 @@ import org.xhtmlrenderer.DefaultCSSMarker;
  * LogStartupConfig.</p> <p>
  *
  * There are convenience converstion method for all the primitive types, in
- * methods like valueAsInt(). A default must always be provided for these
+ * methods like {@link #valueAsInt()}. A default must always be provided for these
  * methods. The default is returned if the value is not found, or if the
  * conversion from String fails. If the value is not present, or the conversion
  * fails, a warning message is written to the log.</p>
@@ -64,17 +66,27 @@ public class Configuration {
     /** Our backing data store of properties. */
     private Properties properties;
 
-    /** Description of the Field */
+    /** The log Level for Configuration messages; taken from show-config System property. */
     private Level logLevel;
 
     /** The Singleton instance of the class. */
     private static Configuration sInstance;
+    
+    /** 
+     * List of LogRecords for messages from Configuration startup; used to hold these
+     * temporarily as we can't use XRLog while starting up, as it depends on Configuration.
+     */
+    private List startupLogRecords;
+    
+    private Logger configLogger;
 
     /** The location of our default properties file; must be on the CLASSPATH. */
     private final static String SF_FILE_NAME = "resources/conf/xhtmlrenderer.conf";
 
     /** Default constructor. */
     private Configuration() {
+        startupLogRecords = new ArrayList();
+        
         // read logging level from System properties
         String val = System.getProperty( "show-config" );
         logLevel = Level.INFO;
@@ -113,15 +125,32 @@ public class Configuration {
         loadSystemProperties();
         logAfterLoad();
     }
-
+    
+    public static void setConfigLogger(Logger logger) {
+      Configuration config = instance();
+      config.configLogger = logger;
+      if ( config.startupLogRecords != null ) {
+        Iterator iter = config.startupLogRecords.iterator();
+        while ( iter.hasNext()) {
+          LogRecord lr = (LogRecord)iter.next();
+          logger.log(lr.getLevel(), lr.getMessage()); 
+        }
+        config.startupLogRecords = null;
+      }
+    }
+    
     /**
      * Description of the Method
      *
      * @param msg  PARAM
      */
-    private void println( String msg ) {
+    private void println( Level level, String msg ) {
         if ( logLevel != Level.OFF ) {
-            System.out.println( "Configuration: " + msg );
+          if ( configLogger == null ) {
+            startupLogRecords.add(new LogRecord(level, msg));
+          } else {
+            configLogger.log(level, msg);
+          }
         }
     }
 
@@ -132,7 +161,7 @@ public class Configuration {
      */
     private void info( String msg ) {
         if ( logLevel.intValue() <= Level.INFO.intValue() ) {
-            println( msg );
+            println( Level.INFO, msg );
         }
     }
 
@@ -143,7 +172,7 @@ public class Configuration {
      */
     private void warning( String msg ) {
         if ( logLevel.intValue() <= Level.WARNING.intValue() ) {
-            println( msg );
+            println( Level.WARNING, msg );
         }
     }
 
@@ -165,7 +194,7 @@ public class Configuration {
      */
     private void fine( String msg ) {
         if ( logLevel.intValue() <= Level.FINE.intValue() ) {
-            println( msg );
+            println( Level.FINE, msg );
         }
     }
 
@@ -176,7 +205,7 @@ public class Configuration {
      */
     private void finer( String msg ) {
         if ( logLevel.intValue() <= Level.FINER.intValue() ) {
-            println( msg );
+            println( Level.FINER, msg );
         }
     }
 
@@ -207,7 +236,7 @@ public class Configuration {
      * is optional. See class documentation.
      */
     private void loadOverrideProperties() {
-        String overrideName = System.getProperty( "user.home" ) + File.separator + ".flyingsaucer/local.xhtmlrenderer.conf";
+        String overrideName = System.getProperty( "user.home" ) + File.separator + ".flyingsaucer" + File.separator + "local.xhtmlrenderer.conf";
 
         File f = new File( overrideName );
         if ( f.exists() ) {
@@ -222,9 +251,13 @@ public class Configuration {
             }
 
             Enumeration elem = this.properties.keys();
+            List lp = Collections.list(elem);
+            Collections.sort(lp);
+            Iterator iter = lp.iterator();
+
             int cnt = 0;
-            while ( elem.hasMoreElements() ) {
-                String key = (String)elem.nextElement();
+            while ( iter.hasNext() ) {
+                String key = (String)iter.next();
                 String val = temp.getProperty( key );
                 if ( val != null ) {
                     this.properties.setProperty( key, val );
@@ -242,10 +275,13 @@ public class Configuration {
      */
     private void loadSystemProperties() {
         Enumeration elem = properties.keys();
+        List lp = Collections.list(elem);
+        Collections.sort(lp);
+        Iterator iter = lp.iterator();
         fine( "Overriding loaded configuration from System properties." );
         int cnt = 0;
-        while ( elem.hasMoreElements() ) {
-            String key = (String)elem.nextElement();
+        while ( iter.hasNext() ) {
+            String key = (String)iter.next();
             if ( !key.startsWith( "xr." ) ) {
                 continue;
             }
@@ -263,10 +299,13 @@ public class Configuration {
     /** Writes a log of loaded properties to the plumbing.init Logger. */
     private void logAfterLoad() {
         Enumeration elem = properties.keys();
+        List lp = Collections.list(elem);
+        Collections.sort(lp);
+        Iterator iter = lp.iterator();
         finer( "Configuration contains " + properties.size() + " keys." );
         finer( "List of configuration properties, after override:" );
-        while ( elem.hasMoreElements() ) {
-            String key = (String)elem.nextElement();
+        while ( iter.hasNext() ) {
+            String key = (String)iter.next();
             String val = properties.getProperty( key );
             finer( "  " + key + " = " + val );
         }
@@ -564,6 +603,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/04/07 16:14:28  pdoubleya
+ * Updated to clarify relationship between Configuration and XRLog on load; Configuration must load first, but holds off on logging until XRLog is initialized. LogStartupConfig no longer used.
+ *
  * Revision 1.8  2005/01/29 20:22:24  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
