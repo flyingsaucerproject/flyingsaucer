@@ -1,6 +1,6 @@
 /*
  * {{{ header & license
- * LogStartupConfig.java
+ * XRSimpleLogFormatter.java
  * Copyright (c) 2004, 2005 Patrick Wright
  *
  * This program is free software; you can redistribute it and/or
@@ -129,6 +129,9 @@ public class XRSimpleLogFormatter extends Formatter {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/04/07 16:15:47  pdoubleya
+ * Typo.
+ *
  * Revision 1.5  2005/01/29 20:18:37  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
