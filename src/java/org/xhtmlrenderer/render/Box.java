@@ -139,13 +139,13 @@ public class Box {
     private boolean haveBorders;
     
     /** Description of the Field */
-    private Border margin;
+    protected Border margin;
     
     /** Description of the Field */
-    private Border padding;
+    protected Border padding;
     
     /** Description of the Field */
-    private Border border;
+    protected Border border;
     
     /** Description of the Field */
     private Box parent;
@@ -342,6 +342,16 @@ public class Box {
         }
         return pd;
     }
+	
+	
+	public Border getPaddingEdge() {
+		Border border = new Border();
+		border.top = margin.top + border.top;
+		border.bottom = margin.bottom + border.bottom;
+		border.right = margin.right + border.right;
+		border.left = margin.left + border.left;
+		return border;
+	}
 
 
     /**
@@ -526,11 +536,21 @@ public class Box {
         if ( fixed ) {
             sb.append( "-fixed" );
         }
+        if ( absolute ) {
+            sb.append( "-absolute" );
+        }
         sb.append( "-pos(" + top + "," + right + "," + bottom + "," + left + ")" );
         if ( floated ) {
             sb.append( "-floated" );
         }
-
+		
+		// insets
+		sb.append("\n");
+		sb.append(" margin = " + this.margin +"\n");
+		sb.append(" border = " + this.border +"\n");
+		sb.append(" padding = " + this.padding +"\n");
+		
+		
         // background images
         sb.append( "-backimg(" + background_image );
         sb.append( "-" + repeat );
@@ -585,6 +605,14 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.48  2005/04/19 17:51:18  joshy
+ * fixed absolute positioning bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.47  2005/04/19 13:59:48  pdoubleya
  * Added defaults for margin, padding, border.
  *

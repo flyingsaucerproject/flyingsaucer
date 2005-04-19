@@ -26,6 +26,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Boxing;
+import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.ContentUtil;
@@ -55,7 +56,6 @@ public class BoxRendering {
      */
     //HACK: the stylePushed is because we need to set style for inline blocks earlier
     public static void paint( Context c, Box box, boolean stylePushed, boolean restyle ) {
-        // Uu.p("BoxRenderer.paint " + box);
         Box block = (Box)box;
         restyle = restyle || box.restyle;//cascade it down
         box.restyle = false;//reset
@@ -197,12 +197,20 @@ public class BoxRendering {
      */
     //HACK: more or less copied paintFixed - tobe
     //TODO: paint fixed & absolute are duplicates code blocks--need to decide how they differ, or leave as common method (PWW 25-01-05)
+	//Fixed to use the BFC to calculate the absolute position
     public static void paintAbsoluteBox( Context c, Box block, boolean restyle ) {
         Rectangle rect = c.getExtents();
         //why this?
-        int xoff = -rect.x;
-        int yoff = -rect.y;
+		
+        int xoff = 0;
+        int yoff = 0;
+        BlockFormattingContext bfc = c.getBlockFormattingContext();
+		xoff += bfc.getX();
+		yoff += bfc.getY();
+		xoff += bfc.getMaster().getPaddingEdge().left;
+		yoff += bfc.getMaster().getPaddingEdge().top;
 
+		
         if ( block.top_set ) {
             yoff += block.top;
         }
@@ -215,6 +223,7 @@ public class BoxRendering {
         if ( block.bottom_set ) {
             yoff = -rect.y + rect.height - block.height - block.bottom;
         }
+		
         c.translate( xoff, yoff );
         paintNormal( c, block, restyle );
         c.translate( -xoff, -yoff );
@@ -316,6 +325,14 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/04/19 17:51:18  joshy
+ * fixed absolute positioning bug
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.18  2005/03/26 11:53:30  pdoubleya
  * paintFixed() was badly refactored before--now again a duplicate of paintAbsolute; added check for absolute boxes on paint(), so that they are not moved after render operation.
  *

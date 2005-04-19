@@ -24,7 +24,7 @@ import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
-
+import org.xhtmlrenderer.util.Uu;
 
 /**
  * Description of the Class
@@ -47,8 +47,6 @@ public class BlockRendering {
         if ( box.getBlockFormattingContext() != null ) {
             c.pushBFC( box.getBlockFormattingContext() );
         }
-        //Uu.p("Layout.paintChildren(): " + box);
-        //Uu.p("child count = " + box.getChildCount());
         //XRLog.render(Level.WARNING, "using default renderer paintChildren for " + box.getClass().getPropertyName());
         //TODO: work out how images and other replaced content really should be handled
         if ( box.component != null ) {
