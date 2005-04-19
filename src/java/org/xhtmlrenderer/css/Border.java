@@ -81,12 +81,17 @@ public class Border {
 
         return "Border: top = " + top + " right = " + right + " bottom = " + bottom + " left = " + left;
     }
+    
+    public static final Border EMPTY_BORDER = new Border(0,0,0,0);
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/04/19 13:59:29  pdoubleya
+ * Added EMPTY_BORDER for defaults.
+ *
  * Revision 1.5  2005/01/29 20:24:26  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
