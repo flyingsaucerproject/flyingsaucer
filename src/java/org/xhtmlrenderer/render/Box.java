@@ -169,6 +169,9 @@ public class Box {
      */
     public Box( boolean create_substyles ) {
         boxes = new ArrayList();
+        this.margin = Border.EMPTY_BORDER;
+        this.padding = Border.EMPTY_BORDER;
+        this.border = Border.EMPTY_BORDER;
     }
 
     /**
@@ -582,6 +585,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.47  2005/04/19 13:59:48  pdoubleya
+ * Added defaults for margin, padding, border.
+ *
  * Revision 1.46  2005/02/03 23:16:16  pdoubleya
  * .
  *
