@@ -19,11 +19,12 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
-import java.util.*;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -43,8 +44,8 @@ import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
  * using {@link #hasProperty(CSSName)}. A CascadedStyle is immutable, as
  * properties can not be added or removed from it once instantiated.
  *
- * @author   Torbjörn Gannholm
- * @author   Patrick Wright
+ * @author Torbjörn Gannholm
+ * @author Patrick Wright
  */
 public class CascadedStyle {
 
@@ -62,27 +63,27 @@ public class CascadedStyle {
      * PropertyDeclarations. Once instantiated, properties may be retrieved
      * using the normal API for the class.
      *
-     * @param iter  An Iterator containing PropertyDeclarations in order of
-     *      specificity.
+     * @param iter An Iterator containing PropertyDeclarations in order of
+     *             specificity.
      */
-    public CascadedStyle( java.util.Iterator iter ) {
+    public CascadedStyle(java.util.Iterator iter) {
         this();
 
         //do a bucket-sort on importance and origin
         //properties should already be in order of specificity
         java.util.List[] buckets = new java.util.List[PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT];
-        for ( int i = 0; i < buckets.length; i++ ) {
+        for (int i = 0; i < buckets.length; i++) {
             buckets[i] = new java.util.LinkedList();
         }
 
-        while ( iter.hasNext() ) {
-            PropertyDeclaration prop = (PropertyDeclaration)iter.next();
-            buckets[prop.getImportanceAndOrigin()].add( prop );
+        while (iter.hasNext()) {
+            PropertyDeclaration prop = (PropertyDeclaration) iter.next();
+            buckets[prop.getImportanceAndOrigin()].add(prop);
         }
 
-        for ( int i = 0; i < buckets.length; i++ ) {
-            for ( java.util.Iterator it = buckets[i].iterator(); it.hasNext();  ) {
-                PropertyDeclaration prop = (PropertyDeclaration)it.next();
+        for (int i = 0; i < buckets.length; i++) {
+            for (java.util.Iterator it = buckets[i].iterator(); it.hasNext();) {
+                PropertyDeclaration prop = (PropertyDeclaration) it.next();
                 _cascadedPropertiesByID[prop.getCSSName().getAssignedID()] = prop;
             }
         }
@@ -94,7 +95,7 @@ public class CascadedStyle {
      * the class, as the class is immutable and this will leave it without any
      * properties.
      */
-    protected CascadedStyle() {
+    public CascadedStyle() {
         _cascadedPropertiesByID = new PropertyDeclaration[CSSName.countCSSNames()];
     }
 
@@ -102,10 +103,10 @@ public class CascadedStyle {
     /**
      * Returns true if property has been defined in this style.
      *
-     * @param cssName  The CSS property name, e.g. "font-family".
-     * @return         True if the property is defined in this set.
+     * @param cssName The CSS property name, e.g. "font-family".
+     * @return True if the property is defined in this set.
      */
-    public boolean hasProperty( CSSName cssName ) {
+    public boolean hasProperty(CSSName cssName) {
         //return _cascadedPropertiesByName.get( cssName ) != null;
         return _cascadedPropertiesByID[cssName.getAssignedID()] != null;
     }
@@ -117,11 +118,11 @@ public class CascadedStyle {
      * instantiation, so this will return the actual property (and corresponding
      * value) to use for CSS-based layout and rendering.
      *
-     * @param cssName  The CSS property name, e.g. "font-family".
-     * @return         The PropertyDeclaration, if declared in this set, or null
-     *      if not found.
+     * @param cssName The CSS property name, e.g. "font-family".
+     * @return The PropertyDeclaration, if declared in this set, or null
+     *         if not found.
      */
-    public PropertyDeclaration propertyByName( CSSName cssName ) {
+    public PropertyDeclaration propertyByName(CSSName cssName) {
         PropertyDeclaration prop = _cascadedPropertiesByID[cssName.getAssignedID()];
 
         return prop;
@@ -130,12 +131,12 @@ public class CascadedStyle {
     /**
      * Gets the ident attribute of the CascadedStyle object
      *
-     * @param cssName  PARAM
-     * @return         The ident value
+     * @param cssName PARAM
+     * @return The ident value
      */
-    public IdentValue getIdent( CSSName cssName ) {
-        PropertyDeclaration pd = propertyByName( cssName );
-        return ( pd == null ? null : pd.asIdentValue() );
+    public IdentValue getIdent(CSSName cssName) {
+        PropertyDeclaration pd = propertyByName(cssName);
+        return (pd == null ? null : pd.asIdentValue());
     }
 
 
@@ -146,16 +147,16 @@ public class CascadedStyle {
      * case there will be no <code>PropertyDeclaration</code> for that property
      * name in the Iterator.
      *
-     * @return   Iterator over a set of properly cascaded PropertyDeclarations.
+     * @return Iterator over a set of properly cascaded PropertyDeclarations.
      */
     public java.util.Iterator getMatchedPropertyDeclarations() {
-        List list = new ArrayList( _cascadedPropertiesByID.length );
-        for ( int i = 0; i < _cascadedPropertiesByID.length; i++ ) {
+        List list = new ArrayList(_cascadedPropertiesByID.length);
+        for (int i = 0; i < _cascadedPropertiesByID.length; i++) {
             PropertyDeclaration propertyDeclaration = _cascadedPropertiesByID[i];
-            if ( propertyDeclaration == null ) {
+            if (propertyDeclaration == null) {
                 continue;
             }
-            list.add( propertyDeclaration );
+            list.add(propertyDeclaration);
         }
         return list.iterator();
     }
@@ -166,6 +167,12 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/04/20 14:13:07  tobega
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.6  2005/01/29 20:22:25  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
