@@ -162,10 +162,15 @@ public class InlineRendering {
 
         LineMetrics lm = FontUtil.getLineMetrics(c, inline);
         ty += (int) lm.getDescent();
-        c.translate(-padding_xoff, ty);
+		// adjust because padding isn't used for position on inlines
+		// JMM: This isn't correct!!
+        //c.translate(-padding_xoff, ty);
+		// just doing adjustments for vertical insets now
+		c.translate(0,ty);
         int old_width = inline.width;
         int old_height = inline.height;
         inline.height += inline.totalVerticalPadding(c.getCurrentStyle());
+		// paint the actual background
         BoxRendering.paintBackground(c, inline);
         Border margin = c.getCurrentStyle().getMarginWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
 
@@ -176,7 +181,8 @@ public class InlineRendering {
         BorderPainter.paint(c, bounds, BorderPainter.ALL);
         inline.width = old_width;
         inline.height = old_height;
-        c.translate(+padding_xoff, -ty);
+        //c.translate(+padding_xoff, -ty);
+		c.translate(0,-ty);
     }
 
     /**
@@ -319,7 +325,11 @@ public class InlineRendering {
             // Uu.p("padding = " + inline.padding);
 
             paintSelection(c, inline, lx, ly);
+			// JMM: new adjustments to move the text to account for horizontal insets
+			int padding_xoff = inline.totalLeftPadding(c.getCurrentStyle());
+			c.translate(padding_xoff,0);
             paintText(c, lx, ly, ix, iy, inline);
+			c.translate(-padding_xoff,0);
             debugInlines(c, inline, lx, ly);
         }
 
