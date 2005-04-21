@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
     <head>
         <title>Test : Absolute : Upper Left</title>
         <style type="text/css">
-           p { border: 1px solid black;}
+           p { border: 1px dotted black; color: blue; 
+		   padding:0px; margin: 0px;}
            #abs { 
-            border: 1px solid blue;
+            border: 1px dotted blue;
             position: absolute;
             width: 100px;
             height: 100px;
             top: 0px;
             left: 0px;
+			margin: 0px;
+			padding: 10px;
            }
         </style>
     </head>
@@ -19,7 +25,7 @@
     
     <p>This is the main paragraph</p>
     
-    <div id="abs">This is an absolutely positioned
+    <div id="abs">This is an absolutely positioneddd
         div in the upper left</div>
         
     <p>This is the main paragraph</p>
