@@ -7,11 +7,10 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">-->
 
 
-
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-  <title>Test: Nested Inline Elements</title>
-  <style type="text/css">
+    <head>
+        <title>Test: Nested Inline Elements</title>
+        <style type="text/css">
   
       span, p {
   
@@ -20,7 +19,7 @@
           padding: 5px;
   
           margin: 5px;
-  
+
           border-color: black;
   
           }
@@ -37,49 +36,53 @@
   
       span.unpadded { background-color: #00ffff;
       		padding: 0;}
-  </style>
-</head>
-<body>
-<div>testing padding of inlines</div>
-<div>
-    First some text<span class="box1">
+        </style>
+    </head>
+    <body>
+        <div>testing padding of inlines</div>
+        <div>
+    First some text
+            <span class="box1">
 
-        <span class="box2">
+                <span class="box2">
 
-            <span class="box3">
+                    <span class="box3">
 
-                <span class="box4">
+                        <span class="box4">
 
-                    <span class="box5">
+                            <span class="box5">
 
                         Should be 5 pieces of padding around text
+
+                            </span>
+
+                        </span>
 
                     </span>
 
                 </span>
 
             </span>
-
-        </span>
-
-    </span>
     And ending with some more text to see the effect of vertical padding
-</div>
-<div>    
+        </div>
+        <div>
 
-    <span class="box1">
+            <span class="box1">
 
-        Witing a fair bit of text <span class="box2">with a different colour center</span>
+        Witing a fair bit of text
+                <span class="box2">with a different colour center</span>
 
         and back again for the ending to test line breaking and padding
 
-    </span>
-</div>
-<div>Now below: </div>
-<div><span class="unpadded">what about with no padding?</span></div>
-        
+            </span>
+        </div>
+        <div>Now below: </div>
+        <div>
+            <span class="unpadded">what about with no padding?</span>
+        </div>
 
-</body>
+
+    </body>
 
 </html>
 
