@@ -175,7 +175,7 @@ public class InlineRendering {
         //Border margin = c.getCurrentStyle().getMarginWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
         Rectangle box = new Rectangle(inline.x,
                 inline.y + inline.margin.top + inline.border.top,
-                inline.width,
+                inline.width + 1,
                 inline.height - inline.margin.top - inline.border.top - inline.border.bottom - inline.margin.bottom);
 
         // paint the background
@@ -191,7 +191,7 @@ public class InlineRendering {
 
         Rectangle bounds = new Rectangle(inline.x,
                 inline.y + inline.margin.top,
-                inline.width,
+                inline.width + 1,
                 inline.height - inline.margin.top - inline.margin.bottom);
         BorderPainter.paint(c, bounds, BorderPainter.TOP + BorderPainter.BOTTOM);
         inline.width = old_width;
@@ -223,7 +223,7 @@ public class InlineRendering {
         //Border margin = c.getCurrentStyle().getMarginWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
         Rectangle box = new Rectangle(inline.x + inline.margin.left + inline.border.left,
                 inline.y + inline.margin.top + inline.border.top,
-                inline.width - inline.margin.left - inline.border.left,
+                inline.width - inline.margin.left - inline.border.left + 1,
                 inline.height - inline.margin.top - inline.border.top - inline.border.bottom - inline.margin.bottom);
 
         // paint the background
@@ -239,7 +239,7 @@ public class InlineRendering {
 
         Rectangle bounds = new Rectangle(inline.x + padX + inline.margin.left,
                 inline.y + inline.margin.top,
-                inline.width - inline.margin.left,
+                inline.width - inline.margin.left + 1,
                 inline.height - inline.margin.top - inline.margin.bottom);
         BorderPainter.paint(c, bounds, BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM);
         inline.width = old_width;
@@ -285,7 +285,7 @@ public class InlineRendering {
             }
         }
 
-        Rectangle bounds = new Rectangle(inline.x + padX + inline.margin.right,
+        Rectangle bounds = new Rectangle(inline.x + inline.margin.right,
                 inline.y + inline.margin.top,
                 inline.width - inline.margin.right,
                 inline.height - inline.margin.top - inline.margin.bottom);
