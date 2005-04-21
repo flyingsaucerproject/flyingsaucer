@@ -148,7 +148,13 @@ public class InlineBoxing {
                 if (pendingPushStyles != null && pendingPushStyles.size() != 0) {
                     pendingPushStyles.remove(pendingPushStyles.size() - 1);//was a redundant one
                 } else {
-                    //can't happen unless it's a bad error somewhere: if (prev_inline != null) {
+                    if (prev_inline == null) {
+                        prev_inline = new InlineTextBox();//hope it is decently initialised as empty
+                        ((InlineTextBox) prev_inline).setMasterText("");
+                        ((InlineTextBox) prev_inline).start_index = 0;
+                        ((InlineTextBox) prev_inline).end_index = 0;
+                        curr_line.addChild(prev_inline);
+                    }
                     //CHECK: not sure this is where the padding really goes, always
                     int rp = prev_inline.totalRightPadding(c.getCurrentStyle());
                     prev_inline.rightPadding += rp;
@@ -159,7 +165,6 @@ public class InlineBoxing {
                         prev_inline.popstyles = new LinkedList();
                     }
                     prev_inline.popstyles.add(o);
-                    //}
                 }
                 if (pushedOnFirstLine != null) {
                     pushedOnFirstLine.removeLast();
@@ -554,6 +559,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/04/21 22:34:56  tobega
+ * Fixed an instability in rendering arbitrary xml (added default style to start off with)
+ *
  * Revision 1.17  2005/04/21 20:09:07  tobega
  * Found another bug on inline padding, almost correct now. Oh, put back real whitespace stripping.
  *
