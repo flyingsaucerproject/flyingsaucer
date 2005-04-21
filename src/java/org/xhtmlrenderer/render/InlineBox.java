@@ -25,16 +25,23 @@ import java.util.List;
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public abstract class InlineBox extends Box {
 
     //might need to push styles before rendering this box
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public List pushstyles;
     //might need to pop styles after rendering this box
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public List popstyles;
+
+    //to keep track of right padding to be added by closing inline elements
+    public int rightPadding = 0;
 
     // if we are an inline block, then this is
     // the reference to the real block inside
@@ -43,34 +50,45 @@ public abstract class InlineBox extends Box {
 
     // line breaking stuff
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     public boolean break_after = false;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     public boolean break_before = false;
 
 
     // vertical alignment stuff
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     public int start_index = -1;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     public int end_index = -1;
 
-    /** Constructor for the InlineBox object */
-    public InlineBox() { }
+    /**
+     * Constructor for the InlineBox object
+     */
+    public InlineBox() {
+    }
 
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public abstract InlineBox copy();
 
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
 
@@ -82,7 +100,7 @@ public abstract class InlineBox extends Box {
     /**
      * Gets the endOfParentContent attribute of the InlineBox object
      *
-     * @return   The endOfParentContent value
+     * @return The endOfParentContent value
      */
     public abstract boolean isEndOfParentContent();
 
@@ -106,6 +124,9 @@ public abstract class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/04/21 18:16:08  tobega
+ * Improved handling of inline padding. Also fixed first-line handling according to spec.
+ *
  * Revision 1.34  2005/01/29 20:21:05  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

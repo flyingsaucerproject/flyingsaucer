@@ -19,12 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Image;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.*;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -33,141 +27,219 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+import javax.swing.*;
+import java.awt.Image;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class Box {
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public Element element;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public JComponent component = null;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean restyle = false;
 
     // dimensions stuff
-    /** Box x-pos. */
+    /**
+     * Box x-pos.
+     */
     public int x;
-    
-    /** Box y-pos. */
+
+    /**
+     * Box y-pos.
+     */
     public int y;
-    
-    /** Box width. */
+
+    /**
+     * Box width.
+     */
     public int width;
-    
-    /** Box height. */
+
+    /**
+     * Box height.
+     */
     public int height;
 
     // position stuff
-    /** True if the box is in fixed position. */
+    /**
+     * True if the box is in fixed position.
+     */
     public boolean fixed = false;
-    
-    /** True if the box is absolute-positioned. */
+
+    /**
+     * True if the box is absolute-positioned.
+     */
     public boolean absolute = false;
 
-    /** True if the box is floated. */
+    /**
+     * True if the box is floated.
+     */
     public boolean floated = false;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int top = 0;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     public boolean top_set = false;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     public int right = 0;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     public boolean right_set = false;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     public int bottom = 0;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     public boolean bottom_set = false;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     public int left = 0;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     public boolean left_set = false;
 
-    /** The Image shown as the Box's background. */
+    /**
+     * The Image shown as the Box's background.
+     */
     public Image background_image;
-    
+
     /**
      * The URI for a background image; used in debugging (so we know which bg is
      * being painted)
      */
     public String background_uri;
-    
-    /** The background-repeat IdentValue. */
+
+    /**
+     * The background-repeat IdentValue.
+     */
     public IdentValue repeat;
-    
-    /** The background-attachment IdentValue. */
+
+    /**
+     * The background-attachment IdentValue.
+     */
     public IdentValue attachment;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int background_position_vertical = 0;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     public int background_position_horizontal = 0;
 
     // list stuff
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int list_count = -1;
 
     // printing stuff
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public boolean auto_height = true;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public CascadedStyle firstLineStyle;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     public CascadedStyle firstLetterStyle;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected BlockFormattingContext blockFormattingContext = null;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private boolean haveBorders;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     protected Border margin;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     protected Border padding;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     protected Border border;
-    
-    /** Description of the Field */
+
+    /**
+     * Description of the Field
+     */
     private Box parent;
 
     // children stuff
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private List boxes;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private boolean children_exceeds;
 
-    /** Constructor for the Box object */
+    /**
+     * Constructor for the Box object
+     */
     public Box() {
-        this( true );
+        this(true);
     }
 
     /**
      * Constructor for the Box object
      *
-     * @param create_substyles  PARAM
+     * @param create_substyles PARAM
      */
-    public Box( boolean create_substyles ) {
+    public Box(boolean create_substyles) {
         boxes = new ArrayList();
         this.margin = Border.EMPTY_BORDER;
         this.padding = Border.EMPTY_BORDER;
@@ -177,12 +249,12 @@ public class Box {
     /**
      * Constructor for the Box object
      *
-     * @param x       x-pos
-     * @param y       y-pos
-     * @param width   width
-     * @param height  height
+     * @param x      x-pos
+     * @param y      y-pos
+     * @param width  width
+     * @param height height
      */
-    public Box( int x, int y, int width, int height ) {
+    public Box(int x, int y, int width, int height) {
         this();
         this.x = x;
         this.y = y;
@@ -198,14 +270,14 @@ public class Box {
      * x 90x90 would have the target coordinates passed in as 80,80 and the
      * function would return true.
      *
-     * @param x  PARAM
-     * @param y  PARAM
-     * @return   Returns
+     * @param x PARAM
+     * @param y PARAM
+     * @return Returns
      */
 
-    public boolean contains( int x, int y ) {
-        if ( ( x >= 0 ) && ( x <= 0 + this.width ) ) {
-            if ( ( y >= 0 ) && ( y <= 0 + this.height ) ) {
+    public boolean contains(int x, int y) {
+        if ((x >= 0) && (x <= 0 + this.width)) {
+            if ((y >= 0) && (y <= 0 + this.height)) {
                 return true;
             }
         }
@@ -216,47 +288,48 @@ public class Box {
      * Description of the Method
      *
      * @param style
-     * @return       Returns
+     * @return Returns
      */
-    public int totalHorizontalPadding( CalculatedStyle style ) {
-        calcBorders( style );
+    public int totalHorizontalPadding(CalculatedStyle style) {
+        calcBorders(style);
         return totalHorizontalPadding();
     }
 
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public int totalHorizontalPadding() {
         int pd = 0;
-        if ( haveBorders ) {
+        /*if ( haveBorders ) {
             pd += margin.left + margin.right;
             pd += padding.left + padding.right;
             pd += border.left + border.right;
         }
-        return pd;
+        return pd;*/
+        return totalLeftPadding() + totalRightPadding();
     }
 
     /**
      * Description of the Method
      *
      * @param style
-     * @return       Returns
+     * @return Returns
      */
-    public int totalVerticalPadding( CalculatedStyle style ) {
-        calcBorders( style );
+    public int totalVerticalPadding(CalculatedStyle style) {
+        calcBorders(style);
         return totalVerticalPadding();
     }
 
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public int totalVerticalPadding() {
         int pd = 0;
-        if ( haveBorders ) {
+        if (haveBorders) {
             pd += margin.top + margin.bottom;
             pd += padding.top + padding.bottom;
             pd += border.top + border.bottom;
@@ -269,21 +342,21 @@ public class Box {
      * Description of the Method
      *
      * @param style
-     * @return       Returns
+     * @return Returns
      */
-    public int totalTopPadding( CalculatedStyle style ) {
-        calcBorders( style );
+    public int totalTopPadding(CalculatedStyle style) {
+        calcBorders(style);
         return totalTopPadding();
     }
 
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public int totalTopPadding() {
         int pd = 0;
-        if ( haveBorders ) {
+        if (haveBorders) {
             pd += margin.top;
             pd += padding.top;
             pd += border.top;
@@ -295,21 +368,21 @@ public class Box {
      * Description of the Method
      *
      * @param style
-     * @return       Returns
+     * @return Returns
      */
-    public int totalLeftPadding( CalculatedStyle style ) {
-        calcBorders( style );
+    public int totalLeftPadding(CalculatedStyle style) {
+        calcBorders(style);
         return totalLeftPadding();
     }
 
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public int totalLeftPadding() {
         int pd = 0;
-        if ( haveBorders ) {
+        if (haveBorders) {
             pd += margin.left;
             pd += padding.left;
             pd += border.left;
@@ -320,69 +393,71 @@ public class Box {
     /**
      * Description of the Method
      *
-     * @param style  PARAM
-     * @return       Returns
+     * @param style PARAM
+     * @return Returns
      */
-    public int totalRightPadding( CalculatedStyle style ) {
-        calcBorders( style );
+    public int totalRightPadding(CalculatedStyle style) {
+        calcBorders(style);
         return totalRightPadding();
     }
 
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public int totalRightPadding() {
         int pd = 0;
-        if ( haveBorders ) {
+        if (haveBorders) {
             pd += margin.right;
             pd += padding.right;
             pd += border.right;
         }
         return pd;
     }
-	
-	
-	public Border getPaddingEdge() {
-		Border border = new Border();
-		border.top = margin.top + border.top;
-		border.bottom = margin.bottom + border.bottom;
-		border.right = margin.right + border.right;
-		border.left = margin.left + border.left;
-		return border;
-	}
+
+
+    public Border getPaddingEdge() {
+        Border border = new Border();
+        border.top = margin.top + border.top;
+        border.bottom = margin.bottom + border.bottom;
+        border.right = margin.right + border.right;
+        border.left = margin.left + border.left;
+        return border;
+    }
 
 
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append( "Box: " );
-        sb.append( " (" + x + "," + y + ")->(" + width + " x " + height + ")" );
+        sb.append("Box: ");
+        sb.append(" (" + x + "," + y + ")->(" + width + " x " + height + ")");
         return sb.toString();
     }
 
     /**
      * Adds a feature to the Child attribute of the Box object
      *
-     * @param child  The feature to be added to the Child attribute
+     * @param child The feature to be added to the Child attribute
      */
-    public void addChild( Box child ) {
-        if ( child == null ) {
-            throw new NullPointerException( "trying to add null child" );
+    public void addChild(Box child) {
+        if (child == null) {
+            throw new NullPointerException("trying to add null child");
         }
-        child.setParent( this );
-        boxes.add( child );
-        if ( child.isChildrenExceedBounds() ) {
-            setChildrenExceedBounds( true );
+        child.setParent(this);
+        boxes.add(child);
+        if (child.isChildrenExceedBounds()) {
+            setChildrenExceedBounds(true);
         }
     }
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     public void removeAllChildren() {
         boxes.clear();
     }
@@ -390,34 +465,34 @@ public class Box {
     /**
      * Sets the blockFormattingContext attribute of the Box object
      *
-     * @param blockFormattingContext  The new blockFormattingContext value
+     * @param blockFormattingContext The new blockFormattingContext value
      */
-    public void setBlockFormattingContext( BlockFormattingContext blockFormattingContext ) {
+    public void setBlockFormattingContext(BlockFormattingContext blockFormattingContext) {
         this.blockFormattingContext = blockFormattingContext;
     }
 
     /**
      * Sets the parent attribute of the Box object
      *
-     * @param box  The new parent value
+     * @param box The new parent value
      */
-    public void setParent( Box box ) {
+    public void setParent(Box box) {
         this.parent = box;
     }
 
     /**
      * Sets the childrenExceedBounds attribute of the Box object
      *
-     * @param children_exceeds  The new childrenExceedBounds value
+     * @param children_exceeds The new childrenExceedBounds value
      */
-    public void setChildrenExceedBounds( boolean children_exceeds ) {
+    public void setChildrenExceedBounds(boolean children_exceeds) {
         this.children_exceeds = children_exceeds;
     }
 
     /**
      * Gets the blockFormattingContext attribute of the Box object
      *
-     * @return   The blockFormattingContext value
+     * @return The blockFormattingContext value
      */
     public BlockFormattingContext getBlockFormattingContext() {
         return blockFormattingContext;
@@ -426,7 +501,7 @@ public class Box {
     /**
      * Gets the height attribute of the Box object
      *
-     * @return   The height value
+     * @return The height value
      */
     public int getHeight() {
         return height;
@@ -435,7 +510,7 @@ public class Box {
     /**
      * Gets the width attribute of the Box object
      *
-     * @return   The width value
+     * @return The width value
      */
     public int getWidth() {
         return width;
@@ -444,7 +519,7 @@ public class Box {
     /**
      * Gets the parent attribute of the Box object
      *
-     * @return   The parent value
+     * @return The parent value
      */
     public Box getParent() {
         return parent;
@@ -453,7 +528,7 @@ public class Box {
     /**
      * Gets the childCount attribute of the Box object
      *
-     * @return   The childCount value
+     * @return The childCount value
      */
     public int getChildCount() {
         return boxes.size();
@@ -462,17 +537,17 @@ public class Box {
     /**
      * Gets the child attribute of the Box object
      *
-     * @param i  PARAM
-     * @return   The child value
+     * @param i PARAM
+     * @return The child value
      */
-    public Box getChild( int i ) {
-        return (Box)boxes.get( i );
+    public Box getChild(int i) {
+        return (Box) boxes.get(i);
     }
 
     /**
      * Gets the childIterator attribute of the Box object
      *
-     * @return   The childIterator value
+     * @return The childIterator value
      */
     public Iterator getChildIterator() {
         return boxes.iterator();
@@ -481,7 +556,7 @@ public class Box {
     /**
      * Gets the childrenExceedBounds attribute of the Box object
      *
-     * @return   The childrenExceedBounds value
+     * @return The childrenExceedBounds value
      */
     public boolean isChildrenExceedBounds() {
         return children_exceeds;
@@ -495,7 +570,7 @@ public class Box {
      * text, and pretty much everything else. The test string is used by the
      * regression tests.
      *
-     * @return   The testString value
+     * @return The testString value
      */
     /*
      * display_none
@@ -522,41 +597,41 @@ public class Box {
     public String getTestString() {
         StringBuffer sb = new StringBuffer();
         // type
-        if ( this instanceof LineBox ) {
-            sb.append( "line:" );
-        } else if ( this instanceof InlineBox ) {
-            sb.append( "inline:" );
+        if (this instanceof LineBox) {
+            sb.append("line:");
+        } else if (this instanceof InlineBox) {
+            sb.append("inline:");
         } else {
-            sb.append( "box:" );
+            sb.append("box:");
         }
 
         // dimensions and location
-        sb.append( "-box(" + x + "," + y + ")-(" + width + "x" + height + ")" );
+        sb.append("-box(" + x + "," + y + ")-(" + width + "x" + height + ")");
 
-        if ( fixed ) {
-            sb.append( "-fixed" );
+        if (fixed) {
+            sb.append("-fixed");
         }
-        if ( absolute ) {
-            sb.append( "-absolute" );
+        if (absolute) {
+            sb.append("-absolute");
         }
-        sb.append( "-pos(" + top + "," + right + "," + bottom + "," + left + ")" );
-        if ( floated ) {
-            sb.append( "-floated" );
+        sb.append("-pos(" + top + "," + right + "," + bottom + "," + left + ")");
+        if (floated) {
+            sb.append("-floated");
         }
-		
-		// insets
-		sb.append("\n");
-		sb.append(" margin = " + this.margin +"\n");
-		sb.append(" border = " + this.border +"\n");
-		sb.append(" padding = " + this.padding +"\n");
+
+        // insets
+        sb.append("\n");
+        sb.append(" margin = " + this.margin + "\n");
+        sb.append(" border = " + this.border + "\n");
+        sb.append(" padding = " + this.padding + "\n");
 		
 		
         // background images
-        sb.append( "-backimg(" + background_image );
-        sb.append( "-" + repeat );
-        sb.append( "-" + attachment );
-        sb.append( "-" + background_position_vertical );
-        sb.append( "-" + background_position_horizontal + ")" );
+        sb.append("-backimg(" + background_image);
+        sb.append("-" + repeat);
+        sb.append("-" + attachment);
+        sb.append("-" + background_position_vertical);
+        sb.append("-" + background_position_horizontal + ")");
 
         return sb.toString();
     }
@@ -569,12 +644,12 @@ public class Box {
      * </pre> The text "<i>some text</i> " in the next example <b>would not</b>
      * be an inline element, because it is merely the text child of a block
      * element <p/>
-     *
+     * <p/>
      * <pre>
      * &lt;p&gt; some text &lt;/p&gt;
      * </pre> </p>
      *
-     * @return   The inlineElement value
+     * @return The inlineElement value
      */
     public boolean isInlineElement() {
         return false;
@@ -583,20 +658,20 @@ public class Box {
     /**
      * Description of the Method
      *
-     * @param style  PARAM
+     * @param style PARAM
      */
-    private void calcBorders( CalculatedStyle style ) {
+    private void calcBorders(CalculatedStyle style) {
         // HACK: may need to remove this check if sizes can change dynamically on resize (patrick)
-        if ( haveBorders ) {
+        /*if ( haveBorders ) {
             return;
-        }
-        if ( style == null ) {
-            throw new XRRuntimeException( "cant calc borders with no style" );
+        }*/
+        if (style == null) {
+            throw new XRRuntimeException("cant calc borders with no style");
         }
         // ASK: where do we get the containing height/width here
-        margin = style.getMarginWidth( width, height );
-        padding = style.getPaddingWidth( width, height );
-        border = style.getBorderWidth( width, height );
+        margin = style.getMarginWidth(width, height);
+        padding = style.getPaddingWidth(width, height);
+        border = style.getBorderWidth(width, height);
         haveBorders = true;// this flag is not checked, ask patrick
     }
 }
@@ -605,6 +680,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.49  2005/04/21 18:16:08  tobega
+ * Improved handling of inline padding. Also fixed first-line handling according to spec.
+ *
  * Revision 1.48  2005/04/19 17:51:18  joshy
  * fixed absolute positioning bug
  *
