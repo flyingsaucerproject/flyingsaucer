@@ -150,9 +150,11 @@ public class InlineBoxing {
                 } else {
                     //can't happen unless it's a bad error somewhere: if (prev_inline != null) {
                     //CHECK: not sure this is where the padding really goes, always
-                    prev_inline.rightPadding = prev_inline.totalRightPadding(c.getCurrentStyle());
-                    prev_inline.width += prev_inline.rightPadding;
-                    pendingRightPadding -= prev_inline.rightPadding;
+                    int rp = prev_inline.totalRightPadding(c.getCurrentStyle());
+                    prev_inline.rightPadding += rp;
+                    prev_inline.width += rp;
+                    pendingRightPadding -= rp;
+                    remaining_width -= rp;
                     if (prev_inline.popstyles == null) {
                         prev_inline.popstyles = new LinkedList();
                     }
@@ -552,6 +554,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/04/21 20:09:07  tobega
+ * Found another bug on inline padding, almost correct now. Oh, put back real whitespace stripping.
+ *
  * Revision 1.16  2005/04/21 18:16:06  tobega
  * Improved handling of inline padding. Also fixed first-line handling according to spec.
  *

@@ -20,10 +20,6 @@
 package org.xhtmlrenderer.layout.inline;
 
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Pattern;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -34,26 +30,43 @@ import org.xhtmlrenderer.layout.content.StylePop;
 import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.content.TextContent;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 
 /**
  * Description of the Class
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class WhitespaceStripper {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public final static String SPACE = " ";
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public final static String EOL = "\n";
     // update this to work on linefeeds on multiple platforms;
-    /** Description of the Field */
-    public final static Pattern linefeed_space_collapse = Pattern.compile( "\\s+\\n\\s+" );//Pattern is thread-safe
-            /** Description of the Field */
-    public final static Pattern linefeed_to_space = Pattern.compile( "\\n" );
-    /** Description of the Field */
-    public final static Pattern tab_to_space = Pattern.compile( "\\t" );
-    /** Description of the Field */
-    public final static Pattern space_collapse = Pattern.compile( "( )+" );
+    /**
+     * Description of the Field
+     */
+    public final static Pattern linefeed_space_collapse = Pattern.compile("\\s+\\n\\s+");//Pattern is thread-safe
+    /**
+     * Description of the Field
+     */
+    public final static Pattern linefeed_to_space = Pattern.compile("\\n");
+    /**
+     * Description of the Field
+     */
+    public final static Pattern tab_to_space = Pattern.compile("\\t");
+    /**
+     * Description of the Field
+     */
+    public final static Pattern space_collapse = Pattern.compile("( )+");
 
 
     /**
@@ -63,69 +76,69 @@ public class WhitespaceStripper {
      *
      * @param c
      * @param inlineContent
-     * @return               a list cleaned of empty content and the thereby
-     *      redundant style-changes
+     * @return a list cleaned of empty content and the thereby
+     *         redundant style-changes
      */
-    public static List stripInlineContent( Context c, List inlineContent ) {
+    public static List stripInlineContent(Context c, List inlineContent) {
         List stripped = new LinkedList();
         List pendingStylePushes = new LinkedList();
         boolean collapse = false;
         boolean allWhitespace = true;
 
-        for ( Iterator i = inlineContent.iterator(); i.hasNext();  ) {
+        for (Iterator i = inlineContent.iterator(); i.hasNext();) {
             Object o = i.next();
-            if ( o instanceof StylePush ) {
-                pendingStylePushes.add( o );
+            if (o instanceof StylePush) {
+                pendingStylePushes.add(o);
                 CascadedStyle style;
-                StylePush sp = (StylePush)o;
-                if ( sp.getPseudoElement() != null ) {
-                    style = c.getCss().getPseudoElementStyle( sp.getElement(), sp.getPseudoElement() );
+                StylePush sp = (StylePush) o;
+                if (sp.getPseudoElement() != null) {
+                    style = c.getCss().getPseudoElementStyle(sp.getElement(), sp.getPseudoElement());
                 } else {
-                    style = c.getCss().getCascadedStyle( sp.getElement(), false );//already done in ContentUtil
+                    style = c.getCss().getCascadedStyle(sp.getElement(), false);//already done in ContentUtil
                 }
-                c.pushStyle( style );
+                c.pushStyle(style);
                 continue;
             }
-            if ( o instanceof TextContent ) {
-                TextContent tc = (TextContent)o;
+            if (o instanceof TextContent) {
+                TextContent tc = (TextContent) o;
                 CalculatedStyle style = c.getCurrentStyle();
-                boolean collapseNext = stripWhitespace( style, collapse, tc );
-                if ( !tc.isRemovableWhitespace() ) {
+                boolean collapseNext = stripWhitespace(style, collapse, tc);
+                if (!tc.isRemovableWhitespace()) {
                     allWhitespace = false;
+                    stripped.addAll(pendingStylePushes);
+                    pendingStylePushes.clear();
+                    stripped.add(tc);
+                    collapse = collapseNext;
                 }
-                stripped.addAll( pendingStylePushes );
-                pendingStylePushes.clear();
-                stripped.add( tc );
-                collapse = collapseNext;
                 continue;
             }
-            if ( o instanceof StylePop ) {
+            if (o instanceof StylePop) {
                 c.popStyle();
-                if ( pendingStylePushes.size() != 0 ) {
+                if (pendingStylePushes.size() != 0) {
                     //redundant style-change
-                    pendingStylePushes.remove( pendingStylePushes.size() - 1 );
+                    pendingStylePushes.remove(pendingStylePushes.size() - 1);
                 } else {
-                    stripped.add( o );
+                    stripped.add(o);
                 }
                 continue;
             }
             //Here we have some other object, just add it with preceding styles
-            if ( !( o instanceof FloatedBlockContent ) ) {
+            if (!(o instanceof FloatedBlockContent)) {
                 allWhitespace = false;
             }
-            stripped.addAll( pendingStylePushes );
+            stripped.addAll(pendingStylePushes);
             pendingStylePushes.clear();
-            stripped.add( o );
+            stripped.add(o);
             collapse = false;//no collapsing of the next one
         }
 
         //there may be relevant StylePushes pending, e.g. if this is content of AnonymousBlock
-        stripped.addAll( pendingStylePushes );
+        stripped.addAll(pendingStylePushes);
 
         // Uu.p("final stripped = " + stripped);
         // Uu.p("all whitespace = " + allWhitespace);
-        if ( allWhitespace ) {
-            stripWhitespaceContent( stripped );
+        if (allWhitespace) {
+            stripWhitespaceContent(stripped);
         }
         return stripped;
     }
@@ -133,11 +146,11 @@ public class WhitespaceStripper {
     /**
      * Gets the whitespace attribute of the WhitespaceStripper class
      *
-     * @param style  PARAM
-     * @return       The whitespace value
+     * @param style PARAM
+     * @return The whitespace value
      */
-    public static IdentValue getWhitespace( CalculatedStyle style ) {
-        IdentValue whitespace = style.getIdent( CSSName.WHITE_SPACE );
+    public static IdentValue getWhitespace(CalculatedStyle style) {
+        IdentValue whitespace = style.getIdent(CSSName.WHITE_SPACE);
         return whitespace;
     }
 
@@ -148,19 +161,19 @@ public class WhitespaceStripper {
      *
      * @param style
      * @param collapseLeading
-     * @param tc               the TextContent to strip. The text in it is
-     *      modified.
-     * @return                 whether the next leading space should collapse or
-     *      not.
+     * @param tc              the TextContent to strip. The text in it is
+     *                        modified.
+     * @return whether the next leading space should collapse or
+     *         not.
      */
-    static boolean stripWhitespace( CalculatedStyle style, boolean collapseLeading, TextContent tc ) {
+    static boolean stripWhitespace(CalculatedStyle style, boolean collapseLeading, TextContent tc) {
 
-        IdentValue whitespace = style.getIdent( CSSName.WHITE_SPACE );
+        IdentValue whitespace = style.getIdent(CSSName.WHITE_SPACE);
         String text = tc.getText();
 
         // do step 1
-        if ( whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE ) {
-            text = linefeed_space_collapse.matcher( text ).replaceAll( EOL );
+        if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE) {
+            text = linefeed_space_collapse.matcher(text).replaceAll(EOL);
         }
 
         // do step 2
@@ -171,33 +184,33 @@ public class WhitespaceStripper {
 
         // do step 3
         // convert line feeds to spaces
-        if ( whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP ) {
-            text = linefeed_to_space.matcher( text ).replaceAll( SPACE );
+        if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
+            text = linefeed_to_space.matcher(text).replaceAll(SPACE);
         }
 
         // do step 4
-        if ( whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE ) {
-            text = tab_to_space.matcher( text ).replaceAll( SPACE );
-            text = space_collapse.matcher( text ).replaceAll( SPACE );
+        if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE) {
+            text = tab_to_space.matcher(text).replaceAll(SPACE);
+            text = space_collapse.matcher(text).replaceAll(SPACE);
 
             // collapse first space against prev inline
-            if ( text.startsWith( SPACE ) &&
-                    collapseLeading ) {
-                text = text.substring( 1, text.length() );
+            if (text.startsWith(SPACE) &&
+                    collapseLeading) {
+                text = text.substring(1, text.length());
             }
         }
 
-        boolean collapseNext = ( text.endsWith( SPACE ) &&
-                ( whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE ) );
+        boolean collapseNext = (text.endsWith(SPACE) &&
+                (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE));
 
-        tc.setText( text );
-        if ( text.trim().equals( "" ) ) {
-            if ( whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP ) {
-                tc.setRemovableWhitespace( true );
-            } else if ( whitespace == IdentValue.PRE ) {
-                tc.setRemovableWhitespace( false );//actually unnecessary, is set to this by default
-            } else if ( text.indexOf( EOL ) < 0 ) {//and whitespace.equals("pre-line"), the only one left
-                tc.setRemovableWhitespace( true );
+        tc.setText(text);
+        if (text.trim().equals("")) {
+            if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
+                tc.setRemovableWhitespace(true);
+            } else if (whitespace == IdentValue.PRE) {
+                tc.setRemovableWhitespace(false);//actually unnecessary, is set to this by default
+            } else if (text.indexOf(EOL) < 0) {//and whitespace.equals("pre-line"), the only one left
+                tc.setRemovableWhitespace(true);
             }
         }
         return collapseNext;
@@ -207,11 +220,11 @@ public class WhitespaceStripper {
     /**
      * Description of the Method
      *
-     * @param list  PARAM
+     * @param list PARAM
      */
-    private static void stripWhitespaceContent( List list ) {
-        for ( Iterator i = list.iterator(); i.hasNext();  ) {
-            if ( i.next() instanceof TextContent ) {
+    private static void stripWhitespaceContent(List list) {
+        for (Iterator i = list.iterator(); i.hasNext();) {
+            if (i.next() instanceof TextContent) {
                 i.remove();
             }
         }
