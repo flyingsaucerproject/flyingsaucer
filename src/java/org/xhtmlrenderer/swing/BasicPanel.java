@@ -37,6 +37,8 @@ import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.layout.BlockFormattingContext;
 
 import javax.swing.*;
 import java.awt.*;
@@ -299,6 +301,10 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         return findElementBox(this.body_box, x, y);
     }
 
+	
+	public Box findBox(Box box, int x, int y) {
+		return findBox(box,x,y,null);
+	}
     /**
      * Description of the Method
      *
@@ -307,7 +313,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param y   PARAM
      * @return Returns
      */
-    public Box findBox(Box box, int x, int y) {
+    public Box findBox(Box box, int x, int y, BlockFormattingContext bfc) {
 
         if (box == null) {
             return null;
@@ -323,10 +329,10 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             ty -= bx.y;
             //is this needed?
             ty -= bx.totalTopPadding();
-            
+			
             // test the contents
             Box retbox = null;
-            retbox = findBox(bx, tx, ty);
+            retbox = findBox(bx, tx, ty,bfc);
             if (retbox != null) {
                 return retbox;
             }
@@ -356,12 +362,21 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param y   PARAM
      * @return Returns
      */
-    public Box findElementBox(Box box, int x, int y) {//TODO: why is this used? A better way? should be in a render util?
+	public Box findElementBox(Box box, int x, int y) {
+		return findElementBox(box,x,y,null);
+	}
+	
+    public Box findElementBox(Box box, int x, int y,
+		BlockFormattingContext bfc) {//TODO: why is this used? A better way? should be in a render util?
         
         if (box == null) {
             return null;
         }
 
+		//Uu.p("bfc blah = " + box.getBlockFormattingContext());
+		if(box.getBlockFormattingContext() != null) {
+			bfc = box.getBlockFormattingContext();
+		}
         Iterator it = box.getChildIterator();
         while (it.hasNext()) {
             Box bx = (Box) it.next();
@@ -371,10 +386,26 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             tx -= bx.totalLeftPadding();
             ty -= bx.y;
             ty -= bx.totalTopPadding();
+
+			/*
+			if(bx.getBlockFormattingContext() != null) {
+				Uu.p("current bfc = " + bfc);
+				bfc = bx.getBlockFormattingContext();
+				Uu.p("setting bfc" + bfc);
+			}
             
+			*/
+			//Uu.p("bfc = " + box.getBlockFormattingContext());
+			if(bx.absolute) {
+				int[] adj = adjustForAbsolute(bx,tx,ty,bfc);
+				tx = adj[0];
+				ty = adj[1];
+			}
+
+
             // test the contents
             Box retbox = null;
-            retbox = findElementBox(bx, tx, ty);
+            retbox = findElementBox(bx, tx, ty, bfc);
             if (retbox != null) {
                 return retbox;
             }
@@ -396,8 +427,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
                 tty -= off;
             }
             
-            // Uu.p("bx = " + bx);
-            // Uu.p("tx = " + tx + " ty = " + ty);
+            //Uu.p("bx = " + bx);
+            //Uu.p("tx = " + tx + " ty = " + ty);
             if (bx.contains(x - bx.x, tty - bx.y)) {
                 //TODO: if this is InlineBox, we need to find the first previous sibling with a pushStyle
                 // Uu.p("matches box: " + bx);
@@ -407,6 +438,58 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
 
         return null;
     }
+	
+	private int[] adjustForAbsolute(Box bx, int tx, int ty, BlockFormattingContext bfc) {
+		//Uu.p("testing: " + bx);
+		//Uu.p("is abs");
+		//Uu.p("bfc = " + bfc);
+		BlockFormattingContext obfc = bx.getBlockFormattingContext();
+		//Uu.p("own bfc = " + obfc);
+		if(bfc != null) {
+			//int adj_x = tx += bfc.getX();
+			//Uu.p("x = " + adj_x);
+			//Uu.p("x = " + tx);
+			if(bx.left_set) {
+				tx -= bx.left;
+			}
+			if(bx.right_set) {
+				int off = (bfc.getWidth() - bx.width - bx.right);
+				//Uu.p("offset = " + off);
+				tx -=  off;
+			}
+			//Uu.p("final x = " + tx);
+			
+			//Uu.p("y = " + ty);
+			if (bx.top_set) {
+				ty -= bx.top;
+			}
+			if (bx.bottom_set) {
+				int off = (bfc.getHeight() - bx.height - bx.bottom);
+				//Uu.p("offset = " + off);
+				ty -= off;
+			}
+			//Uu.p("final y = " + ty);
+			/*
+			if (bx.right_set) {
+				adj_x = -bfc.getX() + bfc.getWidth() - bx.width - bx.right;
+			}
+			//Uu.p("adj x = " + adj_x);
+			tx = adj_x;
+			*/
+			/*
+			Uu.p("ty = " + ty);
+			if (bx.top_set) {
+				ty += bx.top;
+			}
+			Uu.p("final y = " + ty);
+			*/
+		}
+		
+		int[] adjs = new int[2];
+		adjs[0] = tx;
+		adjs[1] = ty;
+		return adjs;
+	}
 
     /**
      * Description of the Method
@@ -914,6 +997,14 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2005/04/22 17:12:50  joshy
+ * fixed hover breaking with absolute blocks
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.41  2005/04/21 22:34:57  tobega
  * Fixed an instability in rendering arbitrary xml (added default style to start off with)
  *
