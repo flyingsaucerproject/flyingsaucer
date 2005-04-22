@@ -63,8 +63,13 @@ public class DocumentDiffTest {
                 String difffile = testfile.substring(0, testfile.length() - 6) + ".diff";
                 XRLog.log("unittests", Level.WARNING, "test file = " + testfile);
                 //Uu.p( "diff file = " + difffile );
-                boolean is_correct = compareTestFile(testfile, difffile, width, height);
-                XRLog.log("unittests", Level.WARNING, "is correct = " + is_correct);
+				try {
+					boolean is_correct = compareTestFile(testfile, difffile, width, height);
+					XRLog.log("unittests", Level.WARNING, "is correct = " + is_correct);
+				} catch (Throwable thr) {
+					XRLog.log("unittests",Level.WARNING,thr.toString());
+					thr.printStackTrace();
+				}
             }
         }
 
@@ -172,7 +177,7 @@ public class DocumentDiffTest {
         XRLog.log("unittests", Level.WARNING, "writing to " + dfile + " and " + tfile);
         Uu.string_to_file(tin, tfile);
         Uu.string_to_file(din, dfile);
-        System.exit(-1);
+        //System.exit(-1);
         return false;
     }
 
@@ -199,6 +204,8 @@ public class DocumentDiffTest {
      */
     public static void main(String[] args)
             throws Exception {
+				
+		XRLog.setLevel("plumbing.general",Level.OFF);
         //String testfile = "tests/diff/background/01.xhtml";
         //String difffile = "tests/diff/background/01.diff";
         String file = null;
@@ -208,8 +215,11 @@ public class DocumentDiffTest {
           file = args[0]; 
         }
         DocumentDiffTest ddt = new DocumentDiffTest();
-        //ddt.runTests(new File(file), width, height);
-        System.out.println(ddt.xhtmlToDiff(file, 1280, 768));
+		if(new File(file).isDirectory()) {
+			ddt.runTests(new File(file), width, height);
+		} else {
+			System.out.println(ddt.xhtmlToDiff(file, 1280, 768));
+		}
     }
 
 }
@@ -218,6 +228,15 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/04/22 17:09:47  joshy
+ * minor changes to the document diff.
+ * removed system.exit
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.13  2005/04/07 16:34:52  pdoubleya
  * Silly cleanups
  *

@@ -37,7 +37,11 @@ public class DocumentDiffGenerate {
     public static void main( String[] args )
         throws Exception {
         DocumentDiffTest ddt = new DocumentDiffTest();
-        ddt.generateDiffs( new File( "tests/diff" ), 500, 500 );
+		if(args.length == 2) {
+			ddt.generateTestFile(args[0],args[1],500,500);
+		} else {
+			ddt.generateDiffs( new File( "tests/diff" ), 500, 500 );
+		}
     }
 }
 
@@ -45,6 +49,15 @@ public class DocumentDiffGenerate {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/04/22 17:09:47  joshy
+ * minor changes to the document diff.
+ * removed system.exit
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2005/01/29 20:22:18  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
