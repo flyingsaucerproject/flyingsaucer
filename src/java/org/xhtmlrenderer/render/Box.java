@@ -604,6 +604,13 @@ public class Box {
         } else {
             sb.append("box:");
         }
+		
+		sb.append("element:");
+		if(this.element != null) {
+			sb.append(this.element.getNodeName());
+		} else {
+			sb.append("null");
+		}
 
         // dimensions and location
         sb.append("-box(" + x + "," + y + ")-(" + width + "x" + height + ")");
@@ -618,20 +625,30 @@ public class Box {
         if (floated) {
             sb.append("-floated");
         }
-
-        // insets
-        sb.append("\n");
-        sb.append(" margin = " + this.margin + "\n");
-        sb.append(" border = " + this.border + "\n");
-        sb.append(" padding = " + this.padding + "\n");
+		
+		// no color support yet. wait for later
+		
+		// insets
+		sb.append("insets(");
+		sb.append("mar("+this.margin.top+","+this.margin.left+","+this.margin.bottom+","+this.margin.right+")");
+		sb.append("-bor("+this.border.top+","+this.border.left+","+this.border.bottom+","+this.border.right+")");
+		sb.append("-pad("+this.padding.top+","+this.padding.left+","+this.padding.bottom+","+this.padding.right+")");
+		sb.append(")");
 		
 		
         // background images
-        sb.append("-backimg(" + background_image);
-        sb.append("-" + repeat);
-        sb.append("-" + attachment);
-        sb.append("-" + background_position_vertical);
-        sb.append("-" + background_position_horizontal + ")");
+        sb.append( "-backimg(" + background_image );
+        sb.append( "-" + repeat );
+        sb.append( "-" + attachment );
+        sb.append( "-" + background_position_vertical );
+        sb.append( "-" + background_position_horizontal + ")" );
+		
+		sb.append("-value:");
+		if(element!=null) {
+			sb.append(element.getNodeValue());
+		} else {
+			sb.append("null");
+		}
 
         return sb.toString();
     }
@@ -680,6 +697,13 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.50  2005/04/22 17:19:19  joshy
+ * resovled conflicts in Box
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.49  2005/04/21 18:16:08  tobega
  * Improved handling of inline padding. Also fixed first-line handling according to spec.
  *
