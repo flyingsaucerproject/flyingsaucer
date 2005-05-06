@@ -486,6 +486,10 @@ public class XRLog {
   private static Logger getLogger( String log ) {
     return Logger.getLogger( log );
   }
+  
+  public static void setLevel(String log, Level level) {
+	  getLogger(log).setLevel(level);
+  }
 
   static {
   }// end main()
@@ -495,6 +499,14 @@ public class XRLog {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/05/06 16:54:32  joshy
+ * forgot to add this level stuff
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.9  2005/04/07 16:14:28  pdoubleya
  * Updated to clarify relationship between Configuration and XRLog on load; Configuration must load first, but holds off on logging until XRLog is initialized. LogStartupConfig no longer used.
  *
