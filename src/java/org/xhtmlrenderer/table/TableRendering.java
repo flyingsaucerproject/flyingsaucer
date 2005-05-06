@@ -20,10 +20,12 @@
 package org.xhtmlrenderer.table;
 
 import java.awt.Rectangle;
+import java.awt.Color;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.render.BoxRendering;
 
+import org.xhtmlrenderer.util.Uu;
 
 /**
  * Description of the Class
@@ -41,16 +43,25 @@ public class TableRendering {
      * @param restyle
      */
     public static void paintTable( Context c, TableBox table, boolean restyle ) {
+		//Uu.p("painting the table " + table);
         restyle = restyle || table.restyle;
         table.restyle = false;
-        c.getGraphics().translate( table.x, table.y );
+        //c.getGraphics().translate( table.x, table.y );
 
-        Border border = c.getCurrentStyle().getBorderWidth( c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight() );
-        Border margin = c.getCurrentStyle().getMarginWidth( c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight() );
-        Border padding = c.getCurrentStyle().getPaddingWidth( c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight() );
+        Border border = c.getCurrentStyle().getBorderWidth( 
+			c.getBlockFormattingContext().getWidth(), 
+			c.getBlockFormattingContext().getHeight() );
+        Border margin = c.getCurrentStyle().getMarginWidth( 
+			c.getBlockFormattingContext().getWidth(), 
+			c.getBlockFormattingContext().getHeight() );
+        Border padding = c.getCurrentStyle().getPaddingWidth( 
+			c.getBlockFormattingContext().getWidth(), 
+			c.getBlockFormattingContext().getHeight() );
 
-        c.getGraphics().translate( margin.left + border.left + padding.left,
-                margin.top + border.top + padding.top );
+		//Uu.p("translating by: " +  margin.left + border.left + padding.left +","
+		//+margin.top + border.top + padding.top );
+        //c.getGraphics().translate( margin.left + border.left + padding.left,
+        //        margin.top + border.top + padding.top );
 
         // loop over the rows
 
@@ -61,12 +72,15 @@ public class TableRendering {
             // save the old extents
 
             Rectangle oe = c.getExtents();
+			
 
             // move origin by row.Xx and row.y
 
             c.setExtents( new Rectangle( oe.x + row.x, oe.y + row.y, oe.width,
                     oe.height ) );
-
+			//Uu.p("old extents = " + oe);
+			//Uu.p("new extents = " + c.getExtents());
+			//Uu.p("translating by: " + row.x + " " + row.y);
             c.getGraphics().translate( row.x, row.y );
 
             // paint the row
@@ -76,15 +90,14 @@ public class TableRendering {
             // restore the old extents and translate
 
             c.getGraphics().translate( -row.x, -row.y );
-
             c.setExtents( oe );
 
         }
 
-        c.getGraphics().translate( -margin.left - border.left - padding.left,
-                -margin.top - border.top - padding.top );
+        //c.getGraphics().translate( -margin.left - border.left - padding.left,
+        //        -margin.top - border.top - padding.top );
 
-        c.getGraphics().translate( -table.x, -table.y );
+        //c.getGraphics().translate( -table.x, -table.y );
 
     }
 
