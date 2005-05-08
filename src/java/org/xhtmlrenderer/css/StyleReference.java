@@ -69,11 +69,6 @@ public class StyleReference {
      */
     private org.xhtmlrenderer.css.newmatch.Matcher _matcher;
 
-    /**
-     * Description of the Field
-     */
-    private org.xhtmlrenderer.css.style.Styler _styler;
-
     /** */
     private UserAgentCallback _uac;
 
@@ -104,7 +99,6 @@ public class StyleReference {
         List infos = getStylesheets();
         XRLog.match("media = " + _context.getMedia());
         _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
-        _styler = new org.xhtmlrenderer.css.style.Styler();
     }
 
     /**
@@ -179,7 +173,7 @@ public class StyleReference {
      * @return The derivedStyle value
      */
     public CalculatedStyle getDerivedStyle(CalculatedStyle parent, CascadedStyle matched) {
-        return _styler.getDerivedStyle(parent, matched);
+        return parent.deriveStyle(matched);
     }
 
     /**
@@ -252,6 +246,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/05/08 14:51:22  tobega
+ * Removed the need for the Styler
+ *
  * Revision 1.26  2005/05/08 14:36:54  tobega
  * Refactored away the need for having a context in a CalculatedStyle
  *

@@ -61,6 +61,11 @@ public class CalculatedStyle {
     private CalculatedStyle _parent;
 
     /**
+     * Cache child styles of this style that have the same cascaded properties
+     */
+    private java.util.HashMap _childCache = new java.util.HashMap();
+
+    /**
      * Array of DerivedProperties, keyed by the {@link CSSName#getAssignedID()).
      */
     private DerivedProperty[] _derivedPropertiesById;
@@ -117,6 +122,24 @@ public class CalculatedStyle {
         _parent = parent;
 
         derive(matched);
+    }
+
+    /**
+     * derives a child style from this style.
+     * <p/>
+     * depends on the ability to return the identical CascadedStyle each time a child style is needed
+     *
+     * @param matched the CascadedStyle to apply
+     * @return The derived child style
+     */
+    public CalculatedStyle deriveStyle(CascadedStyle matched) {
+        CalculatedStyle cs = (CalculatedStyle) _childCache.get(matched);
+
+        if (cs == null) {
+            cs = new CalculatedStyle(this, matched);
+            _childCache.put(matched, cs);
+        }
+        return cs;
     }
 
 
@@ -501,6 +524,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/05/08 14:51:21  tobega
+ * Removed the need for the Styler
+ *
  * Revision 1.17  2005/05/08 14:36:54  tobega
  * Refactored away the need for having a context in a CalculatedStyle
  *
