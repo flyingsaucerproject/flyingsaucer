@@ -25,29 +25,34 @@ import org.w3c.dom.Element;
 /**
  * A marker for returning to the previous style
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class StylePop {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private String _pseudo;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Element element;//needed for dynamic stuff
 
-            /**
+    /**
      * Constructor for the StylePop object
      *
-     * @param pseudo  PARAM
-     * @param e       PARAM
+     * @param pseudo PARAM
+     * @param e      PARAM
      */
-    StylePop( String pseudo, Element e ) {
+    StylePop(String pseudo, Element e) {
         _pseudo = pseudo;
         element = e;
     }
 
     /**
-     * Gets the element attribute of the StylePop object
+     * Gets the element attribute of the StylePop object.
+     * Should probably never be any reason to use
      *
-     * @return   The element value
+     * @return The element value
      */
     public Element getElement() {
         return element;
@@ -55,8 +60,9 @@ public class StylePop {
 
     /**
      * Gets the pseudoElement attribute of the StylePop object
+     * Should probably never be any reason to use
      *
-     * @return   The pseudoElement value
+     * @return The pseudoElement value
      */
     public String getPseudoElement() {
         return _pseudo;

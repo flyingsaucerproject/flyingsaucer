@@ -20,17 +20,14 @@
  */
 package org.xhtmlrenderer.css.sheet.factory;
 
-import java.util.*;
 import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.CSSValueList;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.Idents;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.value.FSCssValue;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -38,64 +35,69 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * be exploded, specifically background-position and font-family, instantiating
  * PropertyDeclarations; Singleton, use {@link #instance()}.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class BackgroundPositionPropertyDeclarationFactory extends AbstractPropertyDeclarationFactory {
-    /** Singleton instance. */
+    /**
+     * Singleton instance.
+     */
     private static BackgroundPositionPropertyDeclarationFactory _instance;
 
-    /** Constructor for the DefaultPropertyDeclarationFactory object */
-    private BackgroundPositionPropertyDeclarationFactory() { }
+    /**
+     * Constructor for the DefaultPropertyDeclarationFactory object
+     */
+    private BackgroundPositionPropertyDeclarationFactory() {
+    }
 
     /**
      * Subclassed implementation of redirected buildDeclarations() from abstract
      * superclass.
      *
-     * @param primVals   The SAC value for this property
-     * @param important  True if author-marked important!
-     * @param cssName    property name
-     * @param origin     The origin of the stylesheet; constant from {@link
-     *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
-     * @return           Iterator of PropertyDeclarations for the shorthand
-     *      margin property.
+     * @param primVals  The SAC value for this property
+     * @param important True if author-marked important!
+     * @param cssName   property name
+     * @param origin    The origin of the stylesheet; constant from {@link
+     *                  org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
+     * @return Iterator of PropertyDeclarations for the shorthand
+     *         margin property.
      */
-    protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
-                                            boolean important,
-                                            CSSName cssName,
-                                            int origin ) {
+    protected Iterator doBuildDeclarations(CSSPrimitiveValue[] primVals,
+                                           boolean important,
+                                           CSSName cssName,
+                                           int origin) {
 
         StringBuffer pos = new StringBuffer();
-        for ( int i = 0; i < primVals.length; i++ ) {
+        for (int i = 0; i < primVals.length; i++) {
             CSSPrimitiveValue primVal = primVals[i];
-            pos.append( primVal.getCssText().trim() + " " );
+            pos.append(primVal.getCssText().trim() + " ");
         }
-        pos.deleteCharAt( pos.length() - 1 );// remove spc
+        pos.deleteCharAt(pos.length() - 1);// remove spc
 
         String val = pos.toString().trim();
 
         // handle for single value--first will be taken as horizontal; as per CSS spec
         // if there is no " ", then we have a single value
-        if ( val.indexOf( " " ) == -1 ) {
+        if (val.indexOf(" ") == -1) {
             // check that the single value is a length
-            if ( Idents.looksLikeALength( val ) ) {
+            if (Idents.looksLikeALength(val)) {
                 val += " 50%";
             }
         }
 
-        FSCssValue fsCssValue = new FSCssValue( cssName, primVals[0], val );
-        List declarations = new ArrayList( 1 );
-        
-        declarations.add( newPropertyDeclaration( cssName, fsCssValue, origin, important ) );
+        FSCssValue fsCssValue = new FSCssValue(primVals[0], val);
+        List declarations = new ArrayList(1);
+
+        declarations.add(newPropertyDeclaration(cssName, fsCssValue, origin, important));
         return declarations.iterator();
     }
 
     /**
      * Returns the singleton instance.
      *
-     * @return   Returns
+     * @return Returns
      */
     public static synchronized PropertyDeclarationFactory instance() {
-        if ( _instance == null ) {
+        if (_instance == null) {
             _instance = new BackgroundPositionPropertyDeclarationFactory();
         }
         return _instance;
@@ -106,6 +108,9 @@ public class BackgroundPositionPropertyDeclarationFactory extends AbstractProper
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/05/08 13:02:37  tobega
+ * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
+ *
  * Revision 1.4  2005/01/29 20:24:25  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

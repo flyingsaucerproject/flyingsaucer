@@ -1,9 +1,6 @@
 package org.xhtmlrenderer.css.value;
 
 import org.w3c.dom.css.*;
-
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 
@@ -13,39 +10,50 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * so that color idents (such as 'black') are converted to valid java.awt.Color
  * strings, and other idents are resolved as possible.
  *
- * @author   empty
+ * @author empty
  */
 public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
     /** */
-    private String propName;
+    //not used private String propName;
     /** Description of the Field */
-    private CSSName cssName;
-    /** Description of the Field */
+    //not used private CSSName cssName;
+    /**
+     * Description of the Field
+     */
     private String _cssText;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Counter counter;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private float floatValue;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private short primitiveType;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Rect rectValue;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private RGBColor rgbColorValue;
 
     /**
      * Constructor for the FSCssValue object
      *
-     * @param cssName    PARAM
-     * @param primitive  PARAM
+     * @param primitive PARAM
      */
-    public FSCssValue( CSSName cssName, org.w3c.dom.css.CSSPrimitiveValue primitive ) {
-        this.cssName = cssName;
-        this.propName = cssName.toString();
+    public FSCssValue(org.w3c.dom.css.CSSPrimitiveValue primitive) {
+        //not used this.cssName = cssName;
+        //not used this.propName = cssName.toString();
         this.primitiveType = primitive.getPrimitiveType();
-        this._cssText = ( primitiveType == CSSPrimitiveValue.CSS_STRING ?
+        this._cssText = (primitiveType == CSSPrimitiveValue.CSS_STRING ?
                 primitive.getStringValue() :
-                primitive.getCssText() );
+                primitive.getCssText());
 
         // TODO
         // access on these values is not correctly supported in this class
@@ -56,7 +64,7 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
         //this.floatValue = primitive.getFloatValue( primitiveType );
 
         // convert type as necessary
-        switch ( primitiveType ) {
+        switch (primitiveType) {
             case org.w3c.dom.css.CSSPrimitiveValue.CSS_RGBCOLOR:
                 this.rgbColorValue = primitive.getRGBColorValue();
                 break;
@@ -75,52 +83,59 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
                 this._cssText = primitive.getStringValue();
                 break;
             case CSSPrimitiveValue.CSS_IN:
-            // fall-thru
+                // fall-thru
             case CSSPrimitiveValue.CSS_CM:
-            // fall-thru
+                // fall-thru
             case CSSPrimitiveValue.CSS_EMS:
-            // fall-thru
+                // fall-thru
             case CSSPrimitiveValue.CSS_EXS:
-            // fall-thru
+                // fall-thru
             case CSSPrimitiveValue.CSS_MM:
-            // fall-thru
+                // fall-thru
             case CSSPrimitiveValue.CSS_NUMBER:
-            // fall-thru
+                // fall-thru
             case CSSPrimitiveValue.CSS_PC:
-            // fall-thru
+                // fall-thru
             case CSSPrimitiveValue.CSS_PERCENTAGE:
-            // fall-thru
+                // fall-thru
             case CSSPrimitiveValue.CSS_PT:
-            // fall-thru
+                // fall-thru
             case CSSPrimitiveValue.CSS_PX:
-                this.floatValue = primitive.getFloatValue( primitiveType );
+                this.floatValue = primitive.getFloatValue(primitiveType);
                 break;
             default:
-            // leave as is
+                // leave as is
         }
-        if ( _cssText == null ) {
-            throw new XRRuntimeException( 
-                "CSSText is null for " + primitive + "   csstext " + primitive.getCssText() + "   string value " + primitive.getStringValue() );
+        if (_cssText == null) {
+            throw new XRRuntimeException("CSSText is null for " + primitive + "   csstext " + primitive.getCssText() + "   string value " + primitive.getStringValue());
         }
     }
 
     /**
      * Use a given CSSPrimitiveValue, with an overriding internal text value
      *
-     * @param cssName    PARAM
-     * @param primitive  PARAM
-     * @param newValue   PARAM
+     * @param primitive PARAM
+     * @param newValue  PARAM
      */
-    public FSCssValue( CSSName cssName, org.w3c.dom.css.CSSPrimitiveValue primitive, String newValue ) {
-        this( cssName, primitive );
+    public FSCssValue(org.w3c.dom.css.CSSPrimitiveValue primitive, String newValue) {
+        this(primitive);
         this._cssText = newValue;
+    }
+
+    private FSCssValue(short primitiveType, String value) {
+        this.primitiveType = primitiveType;
+        this._cssText = value;
+    }
+
+    public static FSCssValue getNewIdentValue(String identValue) {
+        return new FSCssValue(CSSPrimitiveValue.CSS_IDENT, identValue);
     }
 
     /**
      * Returns the string representation of the instance, in this case, the CSS
      * text value.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
         return getCssText();
@@ -130,9 +145,9 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
      * Not supported, class is immutable. Sets the string representation of the
      * current value.
      *
-     * @param cssText  The new cssText value
+     * @param cssText The new cssText value
      */
-    public void setCssText( String cssText ) {
+    public void setCssText(String cssText) {
         this._cssText = cssText;
     }
 
@@ -140,22 +155,22 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
      * Not supported, class is immutable. A method to set the float value with a
      * specified unit.
      *
-     * @param unitType    The new floatValue value
-     * @param floatValue  The new floatValue value
+     * @param unitType   The new floatValue value
+     * @param floatValue The new floatValue value
      */
-    public void setFloatValue( short unitType, float floatValue ) {
-        throw new XRRuntimeException( "FSCssValue is immutable." );
+    public void setFloatValue(short unitType, float floatValue) {
+        throw new XRRuntimeException("FSCssValue is immutable.");
     }
 
     /**
      * Not supported, class is immutable. A method to set the string value with
      * the specified unit.
      *
-     * @param stringType   The new stringValue value
-     * @param stringValue  The new stringValue value
+     * @param stringType  The new stringValue value
+     * @param stringValue The new stringValue value
      */
-    public void setStringValue( short stringType, String stringValue ) {
-        throw new XRRuntimeException( "FSCssValue is immutable." );
+    public void setStringValue(short stringType, String stringValue) {
+        throw new XRRuntimeException("FSCssValue is immutable.");
     }
 
     /**
@@ -163,23 +178,23 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
      *
      * @return   The propName value
      */
-    public String getPropName() {
+    /*public String getPropName() {
         return propName;
-    }
+    } tobe deleted: not used*/
 
     /**
      * Gets the cssName attribute of the FSCssValue object
      *
      * @return   The cssName value
      */
-    public CSSName getCssName() {
+    /*public CSSName getCssName() {
         return cssName;
-    }
+    } tobe deleted: not used */
 
     /**
      * A string representation of the current value.
      *
-     * @return   The _cssText value
+     * @return The _cssText value
      */
     public String getCssText() {
         return this._cssText;
@@ -188,7 +203,7 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
     /**
      * A code defining the type of the value as defined above.
      *
-     * @return   The cssValueType value
+     * @return The cssValueType value
      */
     public short getCssValueType() {
         // HACK: we assume that, whatever value we are wrapping, we are, in effect, a single value
@@ -199,7 +214,7 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
     /**
      * Not supported. This method is used to get the Counter value.
      *
-     * @return   The counterValue value
+     * @return The counterValue value
      */
     public Counter getCounterValue() {
         return counter;
@@ -208,17 +223,17 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
     /**
      * This method is used to get a float value in a specified unit.
      *
-     * @param unitType  PARAM
-     * @return          The floatValue value
+     * @param unitType PARAM
+     * @return The floatValue value
      */
-    public float getFloatValue( short unitType ) {
+    public float getFloatValue(short unitType) {
         return floatValue;
     }
 
     /**
      * The type of the value as defined by the constants specified above.
      *
-     * @return   The primitiveType value
+     * @return The primitiveType value
      */
     public short getPrimitiveType() {
         return primitiveType;
@@ -227,7 +242,7 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
     /**
      * Not supported. This method is used to get the Rect value.
      *
-     * @return   The rectValue value
+     * @return The rectValue value
      */
     public Rect getRectValue() {
         return rectValue;
@@ -236,7 +251,7 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
     /**
      * Not supported. This method is used to get the RGB color.
      *
-     * @return   The rGBColorValue value
+     * @return The rGBColorValue value
      */
     public RGBColor getRGBColorValue() {
         return rgbColorValue;
@@ -245,7 +260,7 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
     /**
      * This method is used to get the string value.
      *
-     * @return   The stringValue value
+     * @return The stringValue value
      */
     public String getStringValue() {
         return this._cssText;
@@ -256,6 +271,9 @@ public class FSCssValue implements org.w3c.dom.css.CSSPrimitiveValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/05/08 13:02:38  tobega
+ * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
+ *
  * Revision 1.5  2005/02/02 12:13:23  pdoubleya
  * For URIs, return string value.
  *

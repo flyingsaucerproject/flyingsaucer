@@ -95,9 +95,14 @@ public class CascadedStyle {
      * the class, as the class is immutable and this will leave it without any
      * properties.
      */
-    public CascadedStyle() {
+    private CascadedStyle() {
         _cascadedPropertiesByID = new PropertyDeclaration[CSSName.countCSSNames()];
     }
+
+    /**
+     * Get an empty singleton, used to negate inheritance of properties
+     */
+    public static final CascadedStyle emptyCascadedStyle = new CascadedStyle();
 
 
     /**
@@ -167,6 +172,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/05/08 13:02:36  tobega
+ * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
+ *
  * Revision 1.7  2005/04/20 14:13:07  tobega
  * Issue number:
  * Obtained from:

@@ -38,7 +38,7 @@ public abstract class InlineBox extends Box {
     /**
      * Description of the Field
      */
-    public List popstyles;
+    public int popstyles = 0;
 
     //to keep track of right padding to be added by closing inline elements
     public int rightPadding = 0;
@@ -124,6 +124,9 @@ public abstract class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2005/05/08 13:02:40  tobega
+ * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
+ *
  * Revision 1.35  2005/04/21 18:16:08  tobega
  * Improved handling of inline padding. Also fixed first-line handling according to spec.
  *

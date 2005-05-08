@@ -20,17 +20,13 @@
  */
 package org.xhtmlrenderer.css.sheet.factory;
 
-import java.util.*;
 import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.CSSValueList;
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.Idents;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.value.FSCssValue;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -38,52 +34,57 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * be exploded, specifically background-position and font-family, instantiating
  * PropertyDeclarations; Singleton, use {@link #instance()}.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class FontFamilyPropertyDeclarationFactory extends AbstractPropertyDeclarationFactory {
-    /** Singleton instance. */
+    /**
+     * Singleton instance.
+     */
     private static FontFamilyPropertyDeclarationFactory _instance;
 
-    /** Constructor for the DefaultPropertyDeclarationFactory object */
-    private FontFamilyPropertyDeclarationFactory() { }
+    /**
+     * Constructor for the DefaultPropertyDeclarationFactory object
+     */
+    private FontFamilyPropertyDeclarationFactory() {
+    }
 
     /**
      * Subclassed implementation of redirected buildDeclarations() from abstract
      * superclass.
      *
-     * @param primVals   The SAC value for this property
-     * @param important  True if author-marked important!
-     * @param cssName    property name
-     * @param origin     The origin of the stylesheet; constant from {@link
-     *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
-     * @return           Iterator of PropertyDeclarations for the shorthand
-     *      margin property.
+     * @param primVals  The SAC value for this property
+     * @param important True if author-marked important!
+     * @param cssName   property name
+     * @param origin    The origin of the stylesheet; constant from {@link
+     *                  org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
+     * @return Iterator of PropertyDeclarations for the shorthand
+     *         margin property.
      */
-    protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
-                                            boolean important,
-                                            CSSName cssName,
-                                            int origin ) {
+    protected Iterator doBuildDeclarations(CSSPrimitiveValue[] primVals,
+                                           boolean important,
+                                           CSSName cssName,
+                                           int origin) {
 
         StringBuffer pos = new StringBuffer();
         String suffix = ", ";
-        for ( int i = 0; i < primVals.length; i++ ) {
+        for (int i = 0; i < primVals.length; i++) {
             CSSPrimitiveValue primVal = primVals[i];
-            pos.append( primVal.getCssText().trim() + suffix );
+            pos.append(primVal.getCssText().trim() + suffix);
         }
-        pos.deleteCharAt( pos.length() - suffix.length() );// remove ,spc
-        FSCssValue fsCssValue = new FSCssValue( cssName, primVals[0], pos.toString().trim() );
-        List declarations = new ArrayList( 1 );
-        declarations.add( newPropertyDeclaration( cssName, fsCssValue, origin, important ) );
+        pos.deleteCharAt(pos.length() - suffix.length());// remove ,spc
+        FSCssValue fsCssValue = new FSCssValue(primVals[0], pos.toString().trim());
+        List declarations = new ArrayList(1);
+        declarations.add(newPropertyDeclaration(cssName, fsCssValue, origin, important));
         return declarations.iterator();
     }
 
     /**
      * Returns the singleton instance.
      *
-     * @return   Returns
+     * @return Returns
      */
     public static synchronized PropertyDeclarationFactory instance() {
-        if ( _instance == null ) {
+        if (_instance == null) {
             _instance = new FontFamilyPropertyDeclarationFactory();
         }
         return _instance;
@@ -94,6 +95,9 @@ public class FontFamilyPropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/05/08 13:02:37  tobega
+ * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
+ *
  * Revision 1.4  2005/01/29 20:21:04  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

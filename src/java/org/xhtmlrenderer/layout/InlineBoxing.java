@@ -75,7 +75,7 @@ public class InlineBoxing {
         bounds.height = 0;
 
         //dummy style to make sure that text nodes don't get extra padding and such
-        c.pushStyle(new CascadedStyle());
+        c.pushStyle(CascadedStyle.emptyCascadedStyle);
 
         int blockLineHeight = FontUtil.lineHeight(c);
         LineMetrics blockLineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(),
@@ -105,7 +105,7 @@ public class InlineBoxing {
         CalculatedStyle currentStyle = parentStyle;
         boolean isFirstLetter = true;
 
-        List pendingPushStyles = null;
+        LinkedList pendingPushStyles = null;
         int pendingLeftPadding = 0;
         int pendingRightPadding = 0;
         InlineBox helper = new InlineTextBox();
@@ -135,7 +135,7 @@ public class InlineBoxing {
                 if (pendingPushStyles == null) {
                     pendingPushStyles = new LinkedList();
                 }
-                pendingPushStyles.add((StylePush) o);
+                pendingPushStyles.addLast((StylePush) o);
                 Relative.translateRelative(c);
                 if (pushedOnFirstLine != null) {
                     pushedOnFirstLine.addLast(style);
@@ -146,7 +146,7 @@ public class InlineBoxing {
             }
             if (o instanceof StylePop) {
                 if (pendingPushStyles != null && pendingPushStyles.size() != 0) {
-                    pendingPushStyles.remove(pendingPushStyles.size() - 1);//was a redundant one
+                    pendingPushStyles.removeLast();//was a redundant one
                 } else {
                     if (prev_inline == null) {
                         prev_inline = new InlineTextBox();//hope it is decently initialised as empty
@@ -161,10 +161,7 @@ public class InlineBoxing {
                     prev_inline.width += rp;
                     pendingRightPadding -= rp;
                     remaining_width -= rp;
-                    if (prev_inline.popstyles == null) {
-                        prev_inline.popstyles = new LinkedList();
-                    }
-                    prev_inline.popstyles.add(o);
+                    prev_inline.popstyles++;
                 }
                 if (pushedOnFirstLine != null) {
                     pushedOnFirstLine.removeLast();
@@ -559,6 +556,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/05/08 13:02:40  tobega
+ * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
+ *
  * Revision 1.18  2005/04/21 22:34:56  tobega
  * Fixed an instability in rendering arbitrary xml (added default style to start off with)
  *

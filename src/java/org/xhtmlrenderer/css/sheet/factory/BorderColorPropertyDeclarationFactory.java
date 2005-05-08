@@ -20,22 +20,25 @@
  */
 package org.xhtmlrenderer.css.sheet.factory;
 
-import java.util.*;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.value.FSCssValue;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
  * A PropertyDeclarationFactory for CSS 2 "border-color" shorthand property,
  * instantiating PropertyDeclarations; Singleton, use {@link #instance()}.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDeclarationFactory {
-    /** Singleton instance. */
+    /**
+     * Singleton instance.
+     */
     private static BorderColorPropertyDeclarationFactory _instance;
 
     /**
@@ -44,10 +47,10 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName ONE_TO_FOUR[] = {
-            CSSName.BORDER_COLOR_TOP,
-            CSSName.BORDER_COLOR_RIGHT,
-            CSSName.BORDER_COLOR_BOTTOM,
-            CSSName.BORDER_COLOR_LEFT};
+        CSSName.BORDER_COLOR_TOP,
+        CSSName.BORDER_COLOR_RIGHT,
+        CSSName.BORDER_COLOR_BOTTOM,
+        CSSName.BORDER_COLOR_LEFT};
 
     /**
      * List of property names, in order, when expanding 2 prop to 4. Careful,
@@ -55,10 +58,10 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName TWO_TO_FOUR[] = {
-            CSSName.BORDER_COLOR_TOP,
-            CSSName.BORDER_COLOR_BOTTOM,
-            CSSName.BORDER_COLOR_RIGHT,
-            CSSName.BORDER_COLOR_LEFT};
+        CSSName.BORDER_COLOR_TOP,
+        CSSName.BORDER_COLOR_BOTTOM,
+        CSSName.BORDER_COLOR_RIGHT,
+        CSSName.BORDER_COLOR_LEFT};
 
     /**
      * List of property names, in order, when expanding 3 prop to 4. Careful,
@@ -66,10 +69,10 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName THREE_TO_FOUR[] = {
-            CSSName.BORDER_COLOR_TOP,
-            CSSName.BORDER_COLOR_RIGHT,
-            CSSName.BORDER_COLOR_LEFT,
-            CSSName.BORDER_COLOR_BOTTOM};
+        CSSName.BORDER_COLOR_TOP,
+        CSSName.BORDER_COLOR_RIGHT,
+        CSSName.BORDER_COLOR_LEFT,
+        CSSName.BORDER_COLOR_BOTTOM};
 
     /**
      * List of property names, in order, when expanding 4 prop to 4. Careful,
@@ -77,30 +80,33 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
      * willy-nilly.
      */
     private final static CSSName FOUR_TO_FOUR[] = {
-            CSSName.BORDER_COLOR_TOP,
-            CSSName.BORDER_COLOR_RIGHT,
-            CSSName.BORDER_COLOR_BOTTOM,
-            CSSName.BORDER_COLOR_LEFT};
+        CSSName.BORDER_COLOR_TOP,
+        CSSName.BORDER_COLOR_RIGHT,
+        CSSName.BORDER_COLOR_BOTTOM,
+        CSSName.BORDER_COLOR_LEFT};
 
-    /** Default constructor; don't use, use instance() instead. */
-    private BorderColorPropertyDeclarationFactory() { }
+    /**
+     * Default constructor; don't use, use instance() instead.
+     */
+    private BorderColorPropertyDeclarationFactory() {
+    }
 
     /**
      * Subclassed implementation of redirected buildDeclarations() from abstract
      * superclass.
      *
-     * @param primVals   The SAC value for this property
-     * @param important  True if author-marked important!
-     * @param cssName    property name
-     * @param origin     The origin of the stylesheet; constant from {@link
-     *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
-     * @return           Iterator of PropertyDeclarations for the shorthand
-     *      margin property.
+     * @param primVals  The SAC value for this property
+     * @param important True if author-marked important!
+     * @param cssName   property name
+     * @param origin    The origin of the stylesheet; constant from {@link
+     *                  org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
+     * @return Iterator of PropertyDeclarations for the shorthand
+     *         margin property.
      */
-    protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
-                                            boolean important,
-                                            CSSName cssName,
-                                            int origin ) {
+    protected Iterator doBuildDeclarations(CSSPrimitiveValue[] primVals,
+                                           boolean important,
+                                           CSSName cssName,
+                                           int origin) {
 
         List declarations = new ArrayList();
 
@@ -111,42 +117,42 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
         CSSPrimitiveValue p4 = null;
         CSSPrimitiveValue[] primitives = null;
 
-        switch ( primVals.length ) {
+        switch (primVals.length) {
             case 1:
                 // HACK: can use any color-property name here, just helps FSCssValue
                 // figure out ident conversion (PWW 20-11-04)
-                CSSPrimitiveValue primitive = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[0] );
+                CSSPrimitiveValue primitive = new FSCssValue(primVals[0]);
                 primitives = new CSSPrimitiveValue[]{
-                        primitive,
-                        primitive,
-                        primitive,
-                        primitive};
+                    primitive,
+                    primitive,
+                    primitive,
+                    primitive};
 
-                addProperties( declarations, primitives, ONE_TO_FOUR, origin, important );
+                addProperties(declarations, primitives, ONE_TO_FOUR, origin, important);
                 break;
             case 2:
-                p1 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[0] );
-                p2 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[1] );
+                p1 = new FSCssValue(primVals[0]);
+                p2 = new FSCssValue(primVals[1]);
                 primitives = new CSSPrimitiveValue[]{p1, p1, p2, p2};
 
-                addProperties( declarations, primitives, TWO_TO_FOUR, origin, important );
+                addProperties(declarations, primitives, TWO_TO_FOUR, origin, important);
                 break;
             case 3:
-                p1 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[0] );
-                p2 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[1] );
-                p3 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[2] );
+                p1 = new FSCssValue(primVals[0]);
+                p2 = new FSCssValue(primVals[1]);
+                p3 = new FSCssValue(primVals[2]);
                 primitives = new CSSPrimitiveValue[]{p1, p2, p2, p3};
 
-                addProperties( declarations, primitives, THREE_TO_FOUR, origin, important );
+                addProperties(declarations, primitives, THREE_TO_FOUR, origin, important);
                 break;
             case 4:
-                p1 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[0] );
-                p2 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[1] );
-                p3 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[2] );
-                p4 = new FSCssValue( CSSName.BORDER_COLOR_BOTTOM, primVals[3] );
+                p1 = new FSCssValue(primVals[0]);
+                p2 = new FSCssValue(primVals[1]);
+                p3 = new FSCssValue(primVals[2]);
+                p4 = new FSCssValue(primVals[3]);
                 primitives = new CSSPrimitiveValue[]{p1, p2, p3, p4};
 
-                addProperties( declarations, primitives, FOUR_TO_FOUR, origin, important );
+                addProperties(declarations, primitives, FOUR_TO_FOUR, origin, important);
                 break;
         }
         return declarations.iterator();
@@ -155,10 +161,10 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
     /**
      * Returns the singleton instance.
      *
-     * @return   See desc.
+     * @return See desc.
      */
     public static synchronized PropertyDeclarationFactory instance() {
-        if ( _instance == null ) {
+        if (_instance == null) {
             _instance = new BorderColorPropertyDeclarationFactory();
         }
         return _instance;
@@ -169,6 +175,9 @@ public class BorderColorPropertyDeclarationFactory extends AbstractPropertyDecla
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/05/08 13:02:37  tobega
+ * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
+ *
  * Revision 1.5  2005/03/24 23:16:54  pdoubleya
  * Removed commented block.
  *

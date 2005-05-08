@@ -200,11 +200,18 @@ public class ContextImpl implements Context {
     }
 
     public void popStyle() {
-        styleStack.pop();
+        if (isStylesAllPopped()) {
+            XRLog.general(Level.SEVERE, "Trying to pop base empty style");
+        } else
+            styleStack.pop();
     }
 
     public CalculatedStyle getCurrentStyle() {
         return (CalculatedStyle) styleStack.peek();
+    }
+
+    public boolean isStylesAllPopped() {
+        return styleStack.size() == 1;//Is primed with an EmptyStyle to start off with
     }
 
     /**

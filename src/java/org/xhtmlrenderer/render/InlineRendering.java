@@ -25,7 +25,6 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
-import org.xhtmlrenderer.layout.content.StylePop;
 import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.util.GraphicsUtil;
@@ -348,37 +347,39 @@ public class InlineRendering {
      */
     static void paintInlineContext(Context c, Box box, boolean restyle) {
         //dummy style to make sure that text nodes don't get extra padding and such
-        c.pushStyle(new CascadedStyle());
-        //BlockBox block = (BlockBox)box;
-        // translate into local coords
-        // account for the origin of the containing box
-        c.translate(box.x, box.y);
-        // for each line box
-        BlockBox block = null;
-        if (box instanceof BlockBox) {//Why isn't it always a BlockBox? Because of e.g. Floats!
-            block = (BlockBox) box;
-        }
-
-        int blockLineHeight = FontUtil.lineHeight(c);
-        LineMetrics blockLineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(),
-                FontUtil.getFont(c), "thequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG");
-
-        CascadedStyle firstLineStyle = null;
-        for (int i = 0; i < box.getChildCount(); i++) {
-            if (i == 0 && block != null && block.firstLineStyle != null) {
-                firstLineStyle = block.firstLineStyle;
+        {
+            c.pushStyle(CascadedStyle.emptyCascadedStyle);
+            //BlockBox block = (BlockBox)box;
+            // translate into local coords
+            // account for the origin of the containing box
+            c.translate(box.x, box.y);
+            // for each line box
+            BlockBox block = null;
+            if (box instanceof BlockBox) {//Why isn't it always a BlockBox? Because of e.g. Floats!
+                block = (BlockBox) box;
             }
-            // get the line box
-            paintLine(c, (LineBox) box.getChild(i), blockLineHeight, blockLineMetrics, restyle, firstLineStyle);
-            if (i == 0 && block != null && block.firstLineStyle != null) {
-                firstLineStyle = null;
-            }
-        }
 
-        // translate back to parent coords
-        c.translate(-box.x, -box.y);
-        //pop dummy style
-        c.popStyle();
+            int blockLineHeight = FontUtil.lineHeight(c);
+            LineMetrics blockLineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(),
+                    FontUtil.getFont(c), "thequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG");
+
+            CascadedStyle firstLineStyle = null;
+            for (int i = 0; i < box.getChildCount(); i++) {
+                if (i == 0 && block != null && block.firstLineStyle != null) {
+                    firstLineStyle = block.firstLineStyle;
+                }
+                // get the line box
+                paintLine(c, (LineBox) box.getChild(i), blockLineHeight, blockLineMetrics, restyle, firstLineStyle);
+                if (i == 0 && block != null && block.firstLineStyle != null) {
+                    firstLineStyle = null;
+                }
+            }
+
+            // translate back to parent coords
+            c.translate(-box.x, -box.y);
+            //pop dummy style
+            c.popStyle();
+        }
     }
 
     /**
@@ -513,9 +514,8 @@ public class InlineRendering {
 
         padX = ib.width - ib.rightPadding;
 
-        if (ib.popstyles != null) {
-            for (Iterator i = ib.popstyles.iterator(); i.hasNext();) {
-                StylePop sp = (StylePop) i.next();
+        if (ib.popstyles != 0) {
+            for (int i = 0; i < ib.popstyles; i++) {
                 //right padding for this inline element
                 paintRightPadding(c, line, ib, padX);
                 padX += ib.totalRightPadding() - ib.margin.right;

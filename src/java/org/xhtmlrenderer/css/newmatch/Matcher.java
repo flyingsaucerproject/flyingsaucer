@@ -19,75 +19,96 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
-import java.lang.ref.SoftReference;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.lang.ref.SoftReference;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 
 /**
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class Matcher {
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     Mapper docMapper;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private org.xhtmlrenderer.css.newmatch.AttributeResolver _attRes;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private org.xhtmlrenderer.css.sheet.StylesheetFactory _styleFactory;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private java.util.HashMap _map;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private java.util.HashMap _peMap;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private java.util.HashMap _csCache;
     //private java.util.HashMap _elStyle;
 
     //handle dynamic
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Set _hoverElements;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Set _activeElements;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Set _focusElements;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Set _visitElements;
 
     /**
      * creates a new matcher for the combination of parameters
      *
-     * @param ar           PARAM
-     * @param factory      PARAM
-     * @param stylesheets  PARAM
-     * @param media        PARAM
+     * @param ar          PARAM
+     * @param factory     PARAM
+     * @param stylesheets PARAM
+     * @param media       PARAM
      */
-    public Matcher( AttributeResolver ar, StylesheetFactory factory, Iterator stylesheets, String media ) {
+    public Matcher(AttributeResolver ar, StylesheetFactory factory, Iterator stylesheets, String media) {
         newMaps();
         _attRes = ar;
         _styleFactory = factory;
-        docMapper = createDocumentMapper( stylesheets, media );
+        docMapper = createDocumentMapper(stylesheets, media);
     }
 
     /**
      * Gets the cascadedStyle attribute of the Matcher object
      *
-     * @param e        PARAM
-     * @param restyle  PARAM
-     * @return         The cascadedStyle value
+     * @param e       PARAM
+     * @param restyle PARAM
+     * @return The cascadedStyle value
      */
-    public CascadedStyle getCascadedStyle( org.w3c.dom.Element e, boolean restyle ) {
+    public CascadedStyle getCascadedStyle(org.w3c.dom.Element e, boolean restyle) {
         Mapper em;
-        if ( !restyle ) {
-            em = getMapper( e );
+        if (!restyle) {
+            em = getMapper(e);
         } else {
-            em = matchElement( e );
+            em = matchElement(e);
         }
         return em.style;
     }
@@ -95,72 +116,72 @@ public class Matcher {
     /**
      * May return null
      *
-     * @param e              PARAM
-     * @param pseudoElement  PARAM
-     * @return               The pECascadedStyle value
+     * @param e             PARAM
+     * @param pseudoElement PARAM
+     * @return The pECascadedStyle value
      */
-    public CascadedStyle getPECascadedStyle( org.w3c.dom.Element e, String pseudoElement ) {
-        java.util.Map elm = (java.util.Map)_peMap.get( e );
-        if ( elm == null ) {
+    public CascadedStyle getPECascadedStyle(org.w3c.dom.Element e, String pseudoElement) {
+        java.util.Map elm = (java.util.Map) _peMap.get(e);
+        if (elm == null) {
             return null;
         }
-        return (CascadedStyle)elm.get( pseudoElement );
+        return (CascadedStyle) elm.get(pseudoElement);
     }
 
     /**
      * Gets the visitedStyled attribute of the Matcher object
      *
-     * @param e  PARAM
-     * @return   The visitedStyled value
+     * @param e PARAM
+     * @return The visitedStyled value
      */
-    public boolean isVisitedStyled( org.w3c.dom.Element e ) {
-        return _visitElements.contains( e );
+    public boolean isVisitedStyled(org.w3c.dom.Element e) {
+        return _visitElements.contains(e);
     }
 
     /**
      * Gets the hoverStyled attribute of the Matcher object
      *
-     * @param e  PARAM
-     * @return   The hoverStyled value
+     * @param e PARAM
+     * @return The hoverStyled value
      */
-    public boolean isHoverStyled( org.w3c.dom.Element e ) {
-        return _hoverElements.contains( e );
+    public boolean isHoverStyled(org.w3c.dom.Element e) {
+        return _hoverElements.contains(e);
     }
 
     /**
      * Gets the activeStyled attribute of the Matcher object
      *
-     * @param e  PARAM
-     * @return   The activeStyled value
+     * @param e PARAM
+     * @return The activeStyled value
      */
-    public boolean isActiveStyled( org.w3c.dom.Element e ) {
-        return _activeElements.contains( e );
+    public boolean isActiveStyled(org.w3c.dom.Element e) {
+        return _activeElements.contains(e);
     }
 
     /**
      * Gets the focusStyled attribute of the Matcher object
      *
-     * @param e  PARAM
-     * @return   The focusStyled value
+     * @param e PARAM
+     * @return The focusStyled value
      */
-    public boolean isFocusStyled( org.w3c.dom.Element e ) {
-        return _focusElements.contains( e );
+    public boolean isFocusStyled(org.w3c.dom.Element e) {
+        return _focusElements.contains(e);
     }
 
     /**
      * Description of the Method
      *
-     * @param e  PARAM
-     * @return   Returns
+     * @param e PARAM
+     * @return Returns
      */
-    protected Mapper matchElement( org.w3c.dom.Element e ) {
+    protected Mapper matchElement(org.w3c.dom.Element e) {
         org.w3c.dom.Node parent = e.getParentNode();
         Mapper child;
-        if ( parent.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE ) {
-            Mapper m = getMapper( (org.w3c.dom.Element)parent );
-            child = m.mapChild( e );
+        if (parent.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+            Mapper m = getMapper((org.w3c.dom.Element) parent);
+            child = m.mapChild(e);
         } else {//has to be document or fragment node
-            child = docMapper.mapChild( e );
+            child = docMapper.mapChild(e);
         }
         return child;
     }
@@ -168,61 +189,64 @@ public class Matcher {
     /**
      * Description of the Method
      *
-     * @param stylesheets  PARAM
-     * @param media        PARAM
-     * @return             Returns
+     * @param stylesheets PARAM
+     * @param media       PARAM
+     * @return Returns
      */
-    Mapper createDocumentMapper( java.util.Iterator stylesheets, String media ) {
+    Mapper createDocumentMapper(java.util.Iterator stylesheets, String media) {
         int count = 0;
         java.util.TreeMap sorter = new java.util.TreeMap();
-        while ( stylesheets.hasNext() ) {
-            count = appendStylesheet( (StylesheetInfo)stylesheets.next(), count, sorter, media );
+        while (stylesheets.hasNext()) {
+            count = appendStylesheet((StylesheetInfo) stylesheets.next(), count, sorter, media);
         }
-        XRLog.match( "Matcher created with " + sorter.size() + " selectors" );
-        return new Mapper( sorter.values() );
+        XRLog.match("Matcher created with " + sorter.size() + " selectors");
+        return new Mapper(sorter.values());
     }
 
     /**
      * Description of the Method
      *
-     * @param e                 PARAM
-     * @param matchedSelectors  PARAM
-     * @return                  Returns
+     * @param e                PARAM
+     * @param matchedSelectors PARAM
+     * @return Returns
      */
-    CascadedStyle createCascadedStyle( org.w3c.dom.Element e, List matchedSelectors ) {
+    CascadedStyle createCascadedStyle(org.w3c.dom.Element e, List matchedSelectors) {
         CascadedStyle cs = null;
-        org.xhtmlrenderer.css.sheet.Ruleset elementStyling = getElementStyle( e );
+        org.xhtmlrenderer.css.sheet.Ruleset elementStyling = getElementStyle(e);
         String fingerprint = null;
-        if ( elementStyling == null ) {//try to re-use a CascadedStyle
+        if (elementStyling == null) {//try to re-use a CascadedStyle
             StringBuffer sb = new StringBuffer();
-            for ( java.util.Iterator i = getMatchedRulesets( matchedSelectors ); i.hasNext();  ) {
-                sb.append( i.next().hashCode() );
-                sb.append( ":" );
+            for (java.util.Iterator i = getMatchedRulesets(matchedSelectors); i.hasNext();) {
+                sb.append(i.next().hashCode());
+                sb.append(":");
             }
             fingerprint = sb.toString();
-            if ( _csCache == null ) {
+            if (_csCache == null) {
                 _csCache = new java.util.HashMap();
             }
-            cs = (CascadedStyle)_csCache.get( fingerprint );
+            cs = (CascadedStyle) _csCache.get(fingerprint);
         }
 
-        if ( cs == null ) {
+        if (cs == null) {
             java.util.List propList = new java.util.LinkedList();
-            for ( java.util.Iterator i = getMatchedRulesets( matchedSelectors ); i.hasNext();  ) {
-                org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset)i.next();
-                for ( java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();  ) {
-                    propList.add( (org.xhtmlrenderer.css.sheet.PropertyDeclaration)j.next() );
+            for (java.util.Iterator i = getMatchedRulesets(matchedSelectors); i.hasNext();) {
+                org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
+                for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
+                    propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
                 }
             }
-            if ( elementStyling != null ) {
-                for ( java.util.Iterator j = elementStyling.getPropertyDeclarations(); j.hasNext();  ) {
-                    propList.add( (org.xhtmlrenderer.css.sheet.PropertyDeclaration)j.next() );
+            if (elementStyling != null) {
+                for (java.util.Iterator j = elementStyling.getPropertyDeclarations(); j.hasNext();) {
+                    propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
                 }
             }
-            cs = new CascadedStyle( propList.iterator() );
+            if (propList.size() == 0)
+                cs = CascadedStyle.emptyCascadedStyle;
+            else
+                cs = new CascadedStyle(propList.iterator());
 
-            if ( elementStyling == null ) {
-                _csCache.put( fingerprint, cs );
+            if (elementStyling == null) {
+                _csCache.put(fingerprint, cs);
             }
         }
         return cs;
@@ -231,14 +255,16 @@ public class Matcher {
     /**
      * Description of the Method
      *
-     * @param e  PARAM
-     * @param m  PARAM
+     * @param e PARAM
+     * @param m PARAM
      */
-    private void link( org.w3c.dom.Element e, Mapper m ) {
-        _map.put( e, new SoftReference( m ) );
+    private void link(org.w3c.dom.Element e, Mapper m) {
+        _map.put(e, new SoftReference(m));
     }
 
-    /** Description of the Method */
+    /**
+     * Description of the Method
+     */
     private void newMaps() {
         _map = new java.util.HashMap();
         _csCache = new java.util.HashMap();
@@ -253,36 +279,36 @@ public class Matcher {
     /**
      * Description of the Method
      *
-     * @param si      PARAM
-     * @param count   PARAM
-     * @param sorter  PARAM
-     * @param media   PARAM
-     * @return        Returns
+     * @param si     PARAM
+     * @param count  PARAM
+     * @param sorter PARAM
+     * @param media  PARAM
+     * @return Returns
      */
-    private int appendStylesheet( StylesheetInfo si, int count, java.util.TreeMap sorter, String media ) {
-        if ( !si.appliesToMedia( media ) ) {
+    private int appendStylesheet(StylesheetInfo si, int count, java.util.TreeMap sorter, String media) {
+        if (!si.appliesToMedia(media)) {
             return count;
         }//this is logical, and also how firefox does it
         Stylesheet ss = si.getStylesheet();
-        if ( ss == null ) {
-            ss = _styleFactory.getStylesheet( si );
-            si.setStylesheet( ss );
+        if (ss == null) {
+            ss = _styleFactory.getStylesheet(si);
+            si.setStylesheet(ss);
         }
-        if ( ss == null ) {
+        if (ss == null) {
             return count;
         }//couldn't load it
-        for ( java.util.Iterator rulesets = ss.getRulesets(); rulesets.hasNext();  ) {
+        for (java.util.Iterator rulesets = ss.getRulesets(); rulesets.hasNext();) {
             Object obj = rulesets.next();
-            if ( obj instanceof StylesheetInfo ) {
-                count = appendStylesheet( (StylesheetInfo)obj, count, sorter, media );
+            if (obj instanceof StylesheetInfo) {
+                count = appendStylesheet((StylesheetInfo) obj, count, sorter, media);
             } else {
-                org.xhtmlrenderer.css.sheet.Ruleset r = (org.xhtmlrenderer.css.sheet.Ruleset)obj;
+                org.xhtmlrenderer.css.sheet.Ruleset r = (org.xhtmlrenderer.css.sheet.Ruleset) obj;
                 //at this point all selectors in a ruleset must be placed on the descendant axis
                 org.w3c.css.sac.SelectorList selector_list = r.getSelectorList();
-                for ( int i = 0; i < selector_list.getLength(); i++ ) {
-                    org.w3c.css.sac.Selector selector = selector_list.item( i );
-                    Selector s = addSelector( count++, r, selector );
-                    sorter.put( s.getOrder(), s );
+                for (int i = 0; i < selector_list.getLength(); i++) {
+                    org.w3c.css.sac.Selector selector = selector_list.item(i);
+                    Selector s = addSelector(count++, r, selector);
+                    sorter.put(s.getOrder(), s);
                 }
             }
         }
@@ -293,303 +319,306 @@ public class Matcher {
      * Turn the selection logic inside-out: we want to start as close to the
      * root element as possible, while sac starts at the final selected element
      *
-     * @param pos       The feature to be added to the Selector attribute
-     * @param rs        The feature to be added to the ChainedSelector attribute
-     * @param selector  The feature to be added to the ChainedSelector attribute
-     * @return          Returns
+     * @param pos      The feature to be added to the Selector attribute
+     * @param rs       The feature to be added to the ChainedSelector attribute
+     * @param selector The feature to be added to the ChainedSelector attribute
+     * @return Returns
      */
-    private Selector addSelector( int pos, org.xhtmlrenderer.css.sheet.Ruleset rs, org.w3c.css.sac.Selector selector ) {
+    private Selector addSelector(int pos, org.xhtmlrenderer.css.sheet.Ruleset rs, org.w3c.css.sac.Selector selector) {
         Selector s = null;
-        if ( selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR ) {
-            s = addSiblingSelector( pos, rs, selector );
-        } else if ( selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR ) {
-            s = addSelector( pos, rs, ( (org.w3c.css.sac.DescendantSelector)selector ).getAncestorSelector() );
-            addChainedSelector( s, selector );
-        } else if ( selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_DESCENDANT_SELECTOR ) {
-            s = addSelector( pos, rs, ( (org.w3c.css.sac.DescendantSelector)selector ).getAncestorSelector() );
-            addChainedSelector( s, selector );
-        } else if ( selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR ) {
-            org.w3c.css.sac.Condition cond = ( (org.w3c.css.sac.ConditionalSelector)selector ).getCondition();
-            s = addSelector( pos, rs, ( (org.w3c.css.sac.ConditionalSelector)selector ).getSimpleSelector() );
-            addConditions( s, cond );
-        } else if ( selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR ) {
-            s = new Selector( pos, rs, Selector.DESCENDANT_AXIS, ( (org.w3c.css.sac.ElementSelector)selector ).getLocalName() );
+        if (selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR) {
+            s = addSiblingSelector(pos, rs, selector);
+        } else if (selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR) {
+            s = addSelector(pos, rs, ((org.w3c.css.sac.DescendantSelector) selector).getAncestorSelector());
+            addChainedSelector(s, selector);
+        } else if (selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_DESCENDANT_SELECTOR) {
+            s = addSelector(pos, rs, ((org.w3c.css.sac.DescendantSelector) selector).getAncestorSelector());
+            addChainedSelector(s, selector);
+        } else if (selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
+            org.w3c.css.sac.Condition cond = ((org.w3c.css.sac.ConditionalSelector) selector).getCondition();
+            s = addSelector(pos, rs, ((org.w3c.css.sac.ConditionalSelector) selector).getSimpleSelector());
+            addConditions(s, cond);
+        } else if (selector.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
+            s = new Selector(pos, rs, Selector.DESCENDANT_AXIS, ((org.w3c.css.sac.ElementSelector) selector).getLocalName());
         } else {
-            XRLog.exception( "unsupported selector in addSelector: " + selector.getSelectorType() );
+            XRLog.exception("unsupported selector in addSelector: " + selector.getSelectorType());
         }
 
         return s;
     }
 
     /**
-     * @param s         The feature to be added to the ChainedSelector attribute
-     * @param selector  The feature to be added to the ChainedSelector attribute
+     * @param s        The feature to be added to the ChainedSelector attribute
+     * @param selector The feature to be added to the ChainedSelector attribute
      */
-    private void addChainedSelector( Selector s, org.w3c.css.sac.Selector selector ) {
+    private void addChainedSelector(Selector s, org.w3c.css.sac.Selector selector) {
         int axis = 0;
         org.w3c.css.sac.SimpleSelector simple = null;
-        switch ( selector.getSelectorType() ) {
+        switch (selector.getSelectorType()) {
             case org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR:
                 axis = Selector.CHILD_AXIS;
-                simple = ( (org.w3c.css.sac.DescendantSelector)selector ).getSimpleSelector();
+                simple = ((org.w3c.css.sac.DescendantSelector) selector).getSimpleSelector();
                 break;
             case org.w3c.css.sac.Selector.SAC_DESCENDANT_SELECTOR:
                 axis = Selector.DESCENDANT_AXIS;
-                simple = ( (org.w3c.css.sac.DescendantSelector)selector ).getSimpleSelector();
+                simple = ((org.w3c.css.sac.DescendantSelector) selector).getSimpleSelector();
                 break;
             default:
-                System.err.println( "Bad selector in addChainedSelector" );
+                System.err.println("Bad selector in addChainedSelector");
         }
 
         org.w3c.css.sac.Condition cond = null;
-        if ( simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR ) {
-            cond = ( (org.w3c.css.sac.ConditionalSelector)simple ).getCondition();
+        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
+            cond = ((org.w3c.css.sac.ConditionalSelector) simple).getCondition();
             //if ConditionalSelectors can be nested, we are in trouble here
-            simple = ( (org.w3c.css.sac.ConditionalSelector)simple ).getSimpleSelector();
+            simple = ((org.w3c.css.sac.ConditionalSelector) simple).getSimpleSelector();
         }
-        if ( simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR ) {
-            s = s.appendChainedSelector( axis, ( (org.w3c.css.sac.ElementSelector)simple ).getLocalName() );
+        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
+            s = s.appendChainedSelector(axis, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
         }
-        if ( cond != null ) {
-            addConditions( s, cond );
+        if (cond != null) {
+            addConditions(s, cond);
         }
     }
 
     /**
-     * @param pos              The feature to be added to the SiblingSelector
-     *      attribute
-     * @param rs               The feature to be added to the SiblingSelector
-     *      attribute
-     * @param siblingSelector  The feature to be added to the ChainedSelector
-     *      attribute
-     * @return                 Returns
+     * @param pos             The feature to be added to the SiblingSelector
+     *                        attribute
+     * @param rs              The feature to be added to the SiblingSelector
+     *                        attribute
+     * @param siblingSelector The feature to be added to the ChainedSelector
+     *                        attribute
+     * @return Returns
      */
-    private Selector addSiblingSelector( int pos, org.xhtmlrenderer.css.sheet.Ruleset rs, org.w3c.css.sac.Selector siblingSelector ) {
+    private Selector addSiblingSelector(int pos, org.xhtmlrenderer.css.sheet.Ruleset rs, org.w3c.css.sac.Selector siblingSelector) {
         int axis = Selector.DESCENDANT_AXIS;
         org.w3c.css.sac.SimpleSelector simple = null;
         org.w3c.css.sac.Selector sib = null;
-        switch ( siblingSelector.getSelectorType() ) {
+        switch (siblingSelector.getSelectorType()) {
             case org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR:
-                simple = ( (org.w3c.css.sac.SiblingSelector)siblingSelector ).getSiblingSelector();
-                sib = ( (org.w3c.css.sac.SiblingSelector)siblingSelector ).getSelector();
+                simple = ((org.w3c.css.sac.SiblingSelector) siblingSelector).getSiblingSelector();
+                sib = ((org.w3c.css.sac.SiblingSelector) siblingSelector).getSelector();
                 break;
             default:
-                XRLog.exception( "Bad selector in addSiblingSelector" );
+                XRLog.exception("Bad selector in addSiblingSelector");
         }
 
         Selector ancestor = null;
         Selector current = null;
         org.w3c.css.sac.Selector pa = sib;
-        while ( pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR ) {
-            pa = ( (org.w3c.css.sac.SiblingSelector)pa ).getSelector();
+        while (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR) {
+            pa = ((org.w3c.css.sac.SiblingSelector) pa).getSelector();
         }
-        if ( pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR ) {
-            ancestor = addSelector( pos, rs, ( (org.w3c.css.sac.DescendantSelector)pa ).getAncestorSelector() );
+        if (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR) {
+            ancestor = addSelector(pos, rs, ((org.w3c.css.sac.DescendantSelector) pa).getAncestorSelector());
             axis = Selector.CHILD_AXIS;
-        } else if ( pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_DESCENDANT_SELECTOR ) {
-            ancestor = addSelector( pos, rs, ( (org.w3c.css.sac.DescendantSelector)pa ).getAncestorSelector() );
-        } else if ( pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR ) {
+        } else if (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_DESCENDANT_SELECTOR) {
+            ancestor = addSelector(pos, rs, ((org.w3c.css.sac.DescendantSelector) pa).getAncestorSelector());
+        } else if (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
             //do nothing, no ancestor selector exists
-        } else if ( pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR ) {
+        } else if (pa.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
             //do nothing, no ancestor selector exists
         } else {
-            XRLog.exception( "unsupported selector in addSiblingSelector: " + pa.getSelectorType() );
+            XRLog.exception("unsupported selector in addSiblingSelector: " + pa.getSelectorType());
         }
 
         org.w3c.css.sac.Condition cond = null;
-        if ( simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR ) {
-            cond = ( (org.w3c.css.sac.ConditionalSelector)simple ).getCondition();
+        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
+            cond = ((org.w3c.css.sac.ConditionalSelector) simple).getCondition();
             //if ConditionalSelectors can be nested, we are in trouble here
-            simple = ( (org.w3c.css.sac.ConditionalSelector)simple ).getSimpleSelector();
+            simple = ((org.w3c.css.sac.ConditionalSelector) simple).getSimpleSelector();
         }
-        if ( simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR ) {
-            if ( ancestor == null ) {
-                current = new Selector( pos, rs, Selector.DESCENDANT_AXIS, ( (org.w3c.css.sac.ElementSelector)simple ).getLocalName() );
+        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
+            if (ancestor == null) {
+                current = new Selector(pos, rs, Selector.DESCENDANT_AXIS, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
                 ancestor = current;
             } else {
-                current = ancestor.appendChainedSelector( axis, ( (org.w3c.css.sac.ElementSelector)simple ).getLocalName() );
+                current = ancestor.appendChainedSelector(axis, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
             }
         }
-        if ( cond != null ) {
-            addConditions( current, cond );
+        if (cond != null) {
+            addConditions(current, cond);
         }
 
-        while ( sib.getSelectorType() == org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR ) {
-            simple = ( (org.w3c.css.sac.SiblingSelector)sib ).getSiblingSelector();
+        while (sib.getSelectorType() == org.w3c.css.sac.Selector.SAC_DIRECT_ADJACENT_SELECTOR) {
+            simple = ((org.w3c.css.sac.SiblingSelector) sib).getSiblingSelector();
             cond = null;
             Selector s = null;
-            if ( simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR ) {
-                cond = ( (org.w3c.css.sac.ConditionalSelector)simple ).getCondition();
+            if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
+                cond = ((org.w3c.css.sac.ConditionalSelector) simple).getCondition();
                 //if ConditionalSelectors can be nested, we are in trouble here
-                simple = ( (org.w3c.css.sac.ConditionalSelector)simple ).getSimpleSelector();
+                simple = ((org.w3c.css.sac.ConditionalSelector) simple).getSimpleSelector();
             }
-            if ( simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR ) {
-                s = current.appendSiblingSelector( Selector.IMMEDIATE_SIBLING_AXIS, ( (org.w3c.css.sac.ElementSelector)simple ).getLocalName() );
+            if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
+                s = current.appendSiblingSelector(Selector.IMMEDIATE_SIBLING_AXIS, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
             }
-            if ( cond != null ) {
-                addConditions( s, cond );
+            if (cond != null) {
+                addConditions(s, cond);
             }
-            sib = ( (org.w3c.css.sac.SiblingSelector)sib ).getSelector();
+            sib = ((org.w3c.css.sac.SiblingSelector) sib).getSelector();
         }
         simple = null;
-        switch ( sib.getSelectorType() ) {
+        switch (sib.getSelectorType()) {
             case org.w3c.css.sac.Selector.SAC_CHILD_SELECTOR:
-                simple = ( (org.w3c.css.sac.DescendantSelector)sib ).getSimpleSelector();
+                simple = ((org.w3c.css.sac.DescendantSelector) sib).getSimpleSelector();
                 break;
             case org.w3c.css.sac.Selector.SAC_DESCENDANT_SELECTOR:
-                simple = ( (org.w3c.css.sac.DescendantSelector)sib ).getSimpleSelector();
+                simple = ((org.w3c.css.sac.DescendantSelector) sib).getSimpleSelector();
                 break;
             default:
-                simple = (org.w3c.css.sac.SimpleSelector)sib;
+                simple = (org.w3c.css.sac.SimpleSelector) sib;
         }
 
         cond = null;
         Selector s = null;
-        if ( simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR ) {
-            cond = ( (org.w3c.css.sac.ConditionalSelector)simple ).getCondition();
+        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_CONDITIONAL_SELECTOR) {
+            cond = ((org.w3c.css.sac.ConditionalSelector) simple).getCondition();
             //if ConditionalSelectors can be nested, we are in trouble here
-            simple = ( (org.w3c.css.sac.ConditionalSelector)simple ).getSimpleSelector();
+            simple = ((org.w3c.css.sac.ConditionalSelector) simple).getSimpleSelector();
         }
-        if ( simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR ) {
-            s = current.appendSiblingSelector( Selector.IMMEDIATE_SIBLING_AXIS, ( (org.w3c.css.sac.ElementSelector)simple ).getLocalName() );
+        if (simple.getSelectorType() == org.w3c.css.sac.Selector.SAC_ELEMENT_NODE_SELECTOR) {
+            s = current.appendSiblingSelector(Selector.IMMEDIATE_SIBLING_AXIS, ((org.w3c.css.sac.ElementSelector) simple).getLocalName());
         }
-        if ( cond != null ) {
-            addConditions( s, cond );
+        if (cond != null) {
+            addConditions(s, cond);
         }
         return ancestor;
     }
 
     /**
-     * @param s     The feature to be added to the Conditions attribute
-     * @param cond  The feature to be added to the Conditions attribute
+     * @param s    The feature to be added to the Conditions attribute
+     * @param cond The feature to be added to the Conditions attribute
      */
-    private void addConditions( Selector s, org.w3c.css.sac.Condition cond ) {
-        switch ( cond.getConditionType() ) {
+    private void addConditions(Selector s, org.w3c.css.sac.Condition cond) {
+        switch (cond.getConditionType()) {
             case org.w3c.css.sac.Condition.SAC_AND_CONDITION:
-                org.w3c.css.sac.CombinatorCondition comb = (org.w3c.css.sac.CombinatorCondition)cond;
-                addConditions( s, comb.getFirstCondition() );
-                addConditions( s, comb.getSecondCondition() );
+                org.w3c.css.sac.CombinatorCondition comb = (org.w3c.css.sac.CombinatorCondition) cond;
+                addConditions(s, comb.getFirstCondition());
+                addConditions(s, comb.getSecondCondition());
                 break;
             case org.w3c.css.sac.Condition.SAC_ATTRIBUTE_CONDITION:
-                org.w3c.css.sac.AttributeCondition attr = (org.w3c.css.sac.AttributeCondition)cond;
-                if ( attr.getSpecified() ) {
-                    s.addAttributeEqualsCondition( attr.getLocalName(), attr.getValue() );
+                org.w3c.css.sac.AttributeCondition attr = (org.w3c.css.sac.AttributeCondition) cond;
+                if (attr.getSpecified()) {
+                    s.addAttributeEqualsCondition(attr.getLocalName(), attr.getValue());
                 } else {
-                    s.addAttributeExistsCondition( attr.getLocalName() );
+                    s.addAttributeExistsCondition(attr.getLocalName());
                 }
                 break;
             case org.w3c.css.sac.Condition.SAC_BEGIN_HYPHEN_ATTRIBUTE_CONDITION:
-                attr = (org.w3c.css.sac.AttributeCondition)cond;
-                s.addAttributeMatchesFirstPartCondition( attr.getLocalName(), attr.getValue() );
+                attr = (org.w3c.css.sac.AttributeCondition) cond;
+                s.addAttributeMatchesFirstPartCondition(attr.getLocalName(), attr.getValue());
                 break;
             case org.w3c.css.sac.Condition.SAC_CLASS_CONDITION:
-                attr = (org.w3c.css.sac.AttributeCondition)cond;
-                s.addClassCondition( attr.getValue() );
+                attr = (org.w3c.css.sac.AttributeCondition) cond;
+                s.addClassCondition(attr.getValue());
                 break;
             case org.w3c.css.sac.Condition.SAC_ID_CONDITION:
-                attr = (org.w3c.css.sac.AttributeCondition)cond;
-                s.addIDCondition( attr.getValue() );
+                attr = (org.w3c.css.sac.AttributeCondition) cond;
+                s.addIDCondition(attr.getValue());
                 break;
             case org.w3c.css.sac.Condition.SAC_LANG_CONDITION:
-                org.w3c.css.sac.LangCondition lang = (org.w3c.css.sac.LangCondition)cond;
-                s.addLangCondition( lang.getLang() );
+                org.w3c.css.sac.LangCondition lang = (org.w3c.css.sac.LangCondition) cond;
+                s.addLangCondition(lang.getLang());
                 break;
             case org.w3c.css.sac.Condition.SAC_ONE_OF_ATTRIBUTE_CONDITION:
-                attr = (org.w3c.css.sac.AttributeCondition)cond;
-                s.addAttributeMatchesListCondition( attr.getLocalName(), attr.getValue() );
+                attr = (org.w3c.css.sac.AttributeCondition) cond;
+                s.addAttributeMatchesListCondition(attr.getLocalName(), attr.getValue());
                 break;
             case org.w3c.css.sac.Condition.SAC_POSITIONAL_CONDITION:
-                org.w3c.css.sac.PositionalCondition pos = (org.w3c.css.sac.PositionalCondition)cond;
-                if ( pos.getPosition() == 0 ) {
+                org.w3c.css.sac.PositionalCondition pos = (org.w3c.css.sac.PositionalCondition) cond;
+                if (pos.getPosition() == 0) {
                     s.addFirstChildCondition();
                 } else {
                     s.addUnsupportedCondition();
                 }
                 break;
             case org.w3c.css.sac.Condition.SAC_PSEUDO_CLASS_CONDITION:
-                attr = (org.w3c.css.sac.AttributeCondition)cond;
-                if ( attr.getValue().equals( "link" ) ) {
+                attr = (org.w3c.css.sac.AttributeCondition) cond;
+                if (attr.getValue().equals("link")) {
                     s.addLinkCondition();
-                } else if ( attr.getValue().equals( "visited" ) ) {
-                    s.setPseudoClass( Selector.VISITED_PSEUDOCLASS );
-                } else if ( attr.getValue().equals( "hover" ) ) {
-                    s.setPseudoClass( Selector.HOVER_PSEUDOCLASS );
-                } else if ( attr.getValue().equals( "active" ) ) {
-                    s.setPseudoClass( Selector.ACTIVE_PSEUDOCLASS );
-                } else if ( attr.getValue().equals( "focus" ) ) {
-                    s.setPseudoClass( Selector.FOCUS_PSEUDOCLASS );
+                } else if (attr.getValue().equals("visited")) {
+                    s.setPseudoClass(Selector.VISITED_PSEUDOCLASS);
+                } else if (attr.getValue().equals("hover")) {
+                    s.setPseudoClass(Selector.HOVER_PSEUDOCLASS);
+                } else if (attr.getValue().equals("active")) {
+                    s.setPseudoClass(Selector.ACTIVE_PSEUDOCLASS);
+                } else if (attr.getValue().equals("focus")) {
+                    s.setPseudoClass(Selector.FOCUS_PSEUDOCLASS);
                 } else {//it must be a pseudo-element
-                    s.setPseudoElement( attr.getValue() );
+                    s.setPseudoElement(attr.getValue());
                 }
                 break;
             default:
-                System.err.println( "Bad condition" );
+                System.err.println("Bad condition");
         }
     }
 
     /**
      * Description of the Method
      *
-     * @param e                PARAM
-     * @param pseudoSelectors  PARAM
+     * @param e               PARAM
+     * @param pseudoSelectors PARAM
      */
-    private void resolvePseudoElements( org.w3c.dom.Element e, HashMap pseudoSelectors ) {
+    private void resolvePseudoElements(org.w3c.dom.Element e, HashMap pseudoSelectors) {
         java.util.Iterator si = pseudoSelectors.entrySet().iterator();
-        if ( !si.hasNext() ) {
+        if (!si.hasNext()) {
             return;
         }
         java.util.Map pelm = new java.util.HashMap();
-        while ( si.hasNext() ) {
-            java.util.Map.Entry me = (java.util.Map.Entry)si.next();
+        while (si.hasNext()) {
+            java.util.Map.Entry me = (java.util.Map.Entry) si.next();
             String fingerprint = null;
             //try to re-use a CascadedStyle
             StringBuffer sb = new StringBuffer();
-            for ( java.util.Iterator i = getSelectedRulesets( (java.util.List)me.getValue() ); i.hasNext();  ) {
-                sb.append( i.next().hashCode() );
-                sb.append( ":" );
+            for (java.util.Iterator i = getSelectedRulesets((java.util.List) me.getValue()); i.hasNext();) {
+                sb.append(i.next().hashCode());
+                sb.append(":");
             }
             fingerprint = sb.toString();
-            if ( _csCache == null ) {
+            if (_csCache == null) {
                 _csCache = new java.util.HashMap();
             }
-            CascadedStyle cs = (CascadedStyle)_csCache.get( fingerprint );
+            CascadedStyle cs = (CascadedStyle) _csCache.get(fingerprint);
 
-            if ( cs == null ) {
+            if (cs == null) {
                 java.util.List propList = new java.util.LinkedList();
-                for ( java.util.Iterator i = getSelectedRulesets( (java.util.List)me.getValue() ); i.hasNext();  ) {
-                    org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset)i.next();
-                    for ( java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();  ) {
-                        propList.add( (org.xhtmlrenderer.css.sheet.PropertyDeclaration)j.next() );
+                for (java.util.Iterator i = getSelectedRulesets((java.util.List) me.getValue()); i.hasNext();) {
+                    org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
+                    for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
+                        propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
                     }
                 }
-                cs = new CascadedStyle( propList.iterator() );
-                _csCache.put( fingerprint, cs );
+                if (propList.size() == 0)
+                    cs = CascadedStyle.emptyCascadedStyle;
+                else
+                    cs = new CascadedStyle(propList.iterator());
+                _csCache.put(fingerprint, cs);
             }
 
-            pelm.put( me.getKey(), cs );
+            pelm.put(me.getKey(), cs);
         }
-        _peMap.put( e, pelm );
+        _peMap.put(e, pelm);
     }
 
     /**
      * Gets the mapper attribute of the Matcher object
      *
-     * @param e  PARAM
-     * @return   The mapper value
+     * @param e PARAM
+     * @return The mapper value
      */
-    private Mapper getMapper( org.w3c.dom.Element e ) {
-        if ( _map == null ) {
+    private Mapper getMapper(org.w3c.dom.Element e) {
+        if (_map == null) {
             _map = new java.util.HashMap();
         }
         Mapper m = null;
-        SoftReference ref = (SoftReference)_map.get( e );
-        if ( ref != null ) {
-            m = (Mapper)ref.get();
+        SoftReference ref = (SoftReference) _map.get(e);
+        if (ref != null) {
+            m = (Mapper) ref.get();
         }
-        if ( m != null ) {
+        if (m != null) {
             return m;
         }
-        m = matchElement( e );
+        m = matchElement(e);
         //ref = (SoftReference) _map.get(e);
         //if (ref != null) m = (Mapper) ref.get();
         return m;
@@ -599,79 +628,79 @@ public class Matcher {
     /**
      * Gets the matchedRulesets attribute of the Matcher object
      *
-     * @param mappedSelectors  PARAM
-     * @return                 The matchedRulesets value
+     * @param mappedSelectors PARAM
+     * @return The matchedRulesets value
      */
-    private java.util.Iterator getMatchedRulesets( final List mappedSelectors ) {
+    private java.util.Iterator getMatchedRulesets(final List mappedSelectors) {
         return
-            new java.util.Iterator() {
-                java.util.Iterator selectors = mappedSelectors.iterator();
+                new java.util.Iterator() {
+                    java.util.Iterator selectors = mappedSelectors.iterator();
 
-                public boolean hasNext() {
-                    return selectors.hasNext();
-                }
-
-                public Object next() {
-                    if ( hasNext() ) {
-                        return ( (Selector)selectors.next() ).getRuleset();
-                    } else {
-                        throw new java.util.NoSuchElementException();
+                    public boolean hasNext() {
+                        return selectors.hasNext();
                     }
-                }
 
-                public void remove() {
-                    throw new UnsupportedOperationException();
-                }
-            };
+                    public Object next() {
+                        if (hasNext()) {
+                            return ((Selector) selectors.next()).getRuleset();
+                        } else {
+                            throw new java.util.NoSuchElementException();
+                        }
+                    }
+
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
     }
 
     /**
      * Gets the selectedRulesets attribute of the Matcher object
      *
-     * @param selectorList  PARAM
-     * @return              The selectedRulesets value
+     * @param selectorList PARAM
+     * @return The selectedRulesets value
      */
-    private java.util.Iterator getSelectedRulesets( java.util.List selectorList ) {
+    private java.util.Iterator getSelectedRulesets(java.util.List selectorList) {
         final java.util.List sl = selectorList;
         return
-            new java.util.Iterator() {
-                java.util.Iterator selectors = sl.iterator();
+                new java.util.Iterator() {
+                    java.util.Iterator selectors = sl.iterator();
 
-                public boolean hasNext() {
-                    return selectors.hasNext();
-                }
-
-                public Object next() {
-                    if ( hasNext() ) {
-                        return ( (Selector)selectors.next() ).getRuleset();
-                    } else {
-                        throw new java.util.NoSuchElementException();
+                    public boolean hasNext() {
+                        return selectors.hasNext();
                     }
-                }
 
-                public void remove() {
-                    throw new UnsupportedOperationException();
-                }
-            };
+                    public Object next() {
+                        if (hasNext()) {
+                            return ((Selector) selectors.next()).getRuleset();
+                        } else {
+                            throw new java.util.NoSuchElementException();
+                        }
+                    }
+
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
     }
 
     /**
      * Gets the elementStyle attribute of the Matcher object
      *
-     * @param e  PARAM
-     * @return   The elementStyle value
+     * @param e PARAM
+     * @return The elementStyle value
      */
-    private org.xhtmlrenderer.css.sheet.Ruleset getElementStyle( org.w3c.dom.Element e ) {
-        if ( _attRes == null || _styleFactory == null ) {
+    private org.xhtmlrenderer.css.sheet.Ruleset getElementStyle(org.w3c.dom.Element e) {
+        if (_attRes == null || _styleFactory == null) {
             return null;
         }
         org.xhtmlrenderer.css.sheet.Ruleset rs;// = (org.xhtmlrenderer.css.sheet.Ruleset) _elStyle.get(e);
         //if (rs == null) {
-        String style = _attRes.getElementStyling( e );
-        if ( style == null || style.equals( "" ) ) {
+        String style = _attRes.getElementStyling(e);
+        if (style == null || style.equals("")) {
             return null;
         }
-        rs = _styleFactory.parseStyleDeclaration( org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style );
+        rs = _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
         //_elStyle.put(e, rs);
         //}
         return rs;
@@ -681,87 +710,94 @@ public class Matcher {
      * Mapper represents a local CSS for a Node that is used to match the Node's
      * children.
      *
-     * @author   Torbjörn Gannholm
+     * @author Torbjörn Gannholm
      */
     class Mapper {
 
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         java.util.List axes = new java.util.ArrayList();
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         CascadedStyle style;
 
         /**
          * Creates a new instance of Mapper
          *
-         * @param selectors  PARAM
+         * @param selectors PARAM
          */
-        Mapper( java.util.Collection selectors ) {
-            axes.addAll( selectors );
+        Mapper(java.util.Collection selectors) {
+            axes.addAll(selectors);
         }
 
-        /** Constructor for the Mapper object */
-        private Mapper() { }
+        /**
+         * Constructor for the Mapper object
+         */
+        private Mapper() {
+        }
 
         /**
          * Side effect: creates and stores a Mapper for the element
          *
          * @param e
-         * @return   The selectors that matched, sorted according to specificity
-         *      (more correct: preserves the sort order from Matcher creation)
+         * @return The selectors that matched, sorted according to specificity
+         *         (more correct: preserves the sort order from Matcher creation)
          */
-        Mapper mapChild( org.w3c.dom.Element e ) {
+        Mapper mapChild(org.w3c.dom.Element e) {
             Mapper childMapper = new Mapper();
             java.util.HashMap pseudoSelectors = new java.util.HashMap();
             java.util.List mappedSelectors = new java.util.LinkedList();
-            for ( int i = 0; i < axes.size(); i++ ) {
-                Selector sel = (Selector)axes.get( i );
-                if ( sel.getAxis() == Selector.DESCENDANT_AXIS ) {
+            for (int i = 0; i < axes.size(); i++) {
+                Selector sel = (Selector) axes.get(i);
+                if (sel.getAxis() == Selector.DESCENDANT_AXIS) {
                     //carry it forward to other descendants
-                    childMapper.axes.add( sel );
-                } else if ( sel.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS ) {
+                    childMapper.axes.add(sel);
+                } else if (sel.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
                     throw new RuntimeException();
                 }
-                if ( !sel.matches( e, _attRes ) ) {
+                if (!sel.matches(e, _attRes)) {
                     continue;
                 }
                 //Assumption: if it is a pseudo-element, it does not also have dynamic pseudo-class
                 String pseudoElement = sel.getPseudoElement();
-                if ( pseudoElement != null ) {
-                    java.util.List l = (java.util.List)pseudoSelectors.get( pseudoElement );
-                    if ( l == null ) {
+                if (pseudoElement != null) {
+                    java.util.List l = (java.util.List) pseudoSelectors.get(pseudoElement);
+                    if (l == null) {
                         l = new java.util.LinkedList();
-                        pseudoSelectors.put( pseudoElement, l );
+                        pseudoSelectors.put(pseudoElement, l);
                     }
-                    l.add( sel );
+                    l.add(sel);
                     continue;
                 }
-                if ( sel.isPseudoClass( Selector.VISITED_PSEUDOCLASS ) ) {
-                    _visitElements.add( e );
+                if (sel.isPseudoClass(Selector.VISITED_PSEUDOCLASS)) {
+                    _visitElements.add(e);
                 }
-                if ( sel.isPseudoClass( Selector.ACTIVE_PSEUDOCLASS ) ) {
-                    _activeElements.add( e );
+                if (sel.isPseudoClass(Selector.ACTIVE_PSEUDOCLASS)) {
+                    _activeElements.add(e);
                 }
-                if ( sel.isPseudoClass( Selector.HOVER_PSEUDOCLASS ) ) {
-                    _hoverElements.add( e );
+                if (sel.isPseudoClass(Selector.HOVER_PSEUDOCLASS)) {
+                    _hoverElements.add(e);
                 }
-                if ( sel.isPseudoClass( Selector.FOCUS_PSEUDOCLASS ) ) {
-                    _focusElements.add( e );
+                if (sel.isPseudoClass(Selector.FOCUS_PSEUDOCLASS)) {
+                    _focusElements.add(e);
                 }
-                if ( !sel.matchesDynamic( e, _attRes ) ) {
+                if (!sel.matchesDynamic(e, _attRes)) {
                     continue;
                 }
                 Selector chain = sel.getChainedSelector();
-                if ( chain == null ) {
-                    mappedSelectors.add( sel );
-                } else if ( chain.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS ) {
+                if (chain == null) {
+                    mappedSelectors.add(sel);
+                } else if (chain.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
                     throw new RuntimeException();
                 } else {
-                    childMapper.axes.add( chain );
+                    childMapper.axes.add(chain);
                 }
             }
-            resolvePseudoElements( e, pseudoSelectors );
-            childMapper.style = createCascadedStyle( e, mappedSelectors );
-            link( e, childMapper );
+            resolvePseudoElements(e, pseudoSelectors);
+            childMapper.style = createCascadedStyle(e, mappedSelectors);
+            link(e, childMapper);
             return childMapper;
         }
 

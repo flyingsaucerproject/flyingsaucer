@@ -17,18 +17,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-package org.xhtmlrenderer.layout.inline;
+package org.xhtmlrenderer.layout.content;
 
 
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.content.FloatedBlockContent;
-import org.xhtmlrenderer.layout.content.StylePop;
-import org.xhtmlrenderer.layout.content.StylePush;
-import org.xhtmlrenderer.layout.content.TextContent;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -80,15 +77,15 @@ public class WhitespaceStripper {
      *         redundant style-changes
      */
     public static List stripInlineContent(Context c, List inlineContent) {
-        List stripped = new LinkedList();
-        List pendingStylePushes = new LinkedList();
+        LinkedList stripped = new LinkedList();
+        LinkedList pendingStylePushes = new LinkedList();
         boolean collapse = false;
-        boolean allWhitespace = true;
+        //boolean allWhitespace = true;
 
         for (Iterator i = inlineContent.iterator(); i.hasNext();) {
             Object o = i.next();
             if (o instanceof StylePush) {
-                pendingStylePushes.add(o);
+                pendingStylePushes.addLast(o);
                 CascadedStyle style;
                 StylePush sp = (StylePush) o;
                 if (sp.getPseudoElement() != null) {
@@ -104,7 +101,7 @@ public class WhitespaceStripper {
                 CalculatedStyle style = c.getCurrentStyle();
                 boolean collapseNext = stripWhitespace(style, collapse, tc);
                 if (!tc.isRemovableWhitespace()) {
-                    allWhitespace = false;
+                    //allWhitespace = false;
                     stripped.addAll(pendingStylePushes);
                     pendingStylePushes.clear();
                     stripped.add(tc);
@@ -116,7 +113,7 @@ public class WhitespaceStripper {
                 c.popStyle();
                 if (pendingStylePushes.size() != 0) {
                     //redundant style-change
-                    pendingStylePushes.remove(pendingStylePushes.size() - 1);
+                    pendingStylePushes.removeLast();
                 } else {
                     stripped.add(o);
                 }
@@ -124,22 +121,33 @@ public class WhitespaceStripper {
             }
             //Here we have some other object, just add it with preceding styles
             if (!(o instanceof FloatedBlockContent)) {
-                allWhitespace = false;
+                //allWhitespace = false;
             }
-            stripped.addAll(pendingStylePushes);
+            //there may be relevant StylePushes pending, e.g. if this is content of AnonymousBlock
+            if (pendingStylePushes.size() != 0) {
+                stripped.addAll(pendingStylePushes);
+                //add a dummy TextContent so that an InlineBox is generated for the styles
+                Element e = ((StylePush) pendingStylePushes.getLast()).getElement();
+                stripped.addLast(new TextContent(e, ""));
+            }
             pendingStylePushes.clear();
             stripped.add(o);
             collapse = false;//no collapsing of the next one
         }
 
         //there may be relevant StylePushes pending, e.g. if this is content of AnonymousBlock
-        stripped.addAll(pendingStylePushes);
+        if (pendingStylePushes.size() != 0) {
+            stripped.addAll(pendingStylePushes);
+            //add a dummy TextContent so that an InlineBox is generated for the styles
+            Element e = ((StylePush) pendingStylePushes.getLast()).getElement();
+            stripped.addLast(new TextContent(e, ""));
+        }
 
         // Uu.p("final stripped = " + stripped);
         // Uu.p("all whitespace = " + allWhitespace);
-        if (allWhitespace) {
+        /*if (allWhitespace) {
             stripWhitespaceContent(stripped);
-        }
+        }*/
         return stripped;
     }
 
@@ -222,13 +230,13 @@ public class WhitespaceStripper {
      *
      * @param list PARAM
      */
-    private static void stripWhitespaceContent(List list) {
+    /*private static void stripWhitespaceContent(List list) {
         for (Iterator i = list.iterator(); i.hasNext();) {
             if (i.next() instanceof TextContent) {
                 i.remove();
             }
         }
 
-    }
+    }*/
 }
 

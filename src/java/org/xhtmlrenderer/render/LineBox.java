@@ -19,63 +19,71 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.util.logging.Level;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.inline.WhitespaceStripper;
+import org.xhtmlrenderer.layout.content.WhitespaceStripper;
 import org.xhtmlrenderer.util.XRLog;
+
+import java.util.logging.Level;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class LineBox extends Box {
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     public int ascent;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int descent;
 
-    /** Constructor for the LineBox object */
-    public LineBox() { }
+    /**
+     * Constructor for the LineBox object
+     */
+    public LineBox() {
+    }
 
     /**
      * Adds a feature to the InlineChild attribute of the LineBox object
      *
-     * @param c   The feature to be added to the InlineChild attribute
-     * @param ib  The feature to be added to the InlineChild attribute
+     * @param c  The feature to be added to the InlineChild attribute
+     * @param ib The feature to be added to the InlineChild attribute
      */
-    public void addInlineChild( Context c, InlineBox ib ) {
-        if ( ib == null ) {
-            throw new NullPointerException( "trying to add null child" );
+    public void addInlineChild(Context c, InlineBox ib) {
+        if (ib == null) {
+            throw new NullPointerException("trying to add null child");
         }
-        if ( getChildCount() == 0 && ib instanceof InlineTextBox ) {//first box on line
-            InlineTextBox child = (InlineTextBox)ib;
-            if ( child.getSubstring().startsWith( WhitespaceStripper.SPACE ) ) {
-                IdentValue whitespace = c.getCurrentStyle().getIdent( CSSName.WHITE_SPACE );
-                if ( whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE ) {
-                    child.setSubstring( child.start_index + 1, child.end_index );
+        if (getChildCount() == 0 && ib instanceof InlineTextBox) {//first box on line
+            InlineTextBox child = (InlineTextBox) ib;
+            if (child.getSubstring().startsWith(WhitespaceStripper.SPACE)) {
+                IdentValue whitespace = c.getCurrentStyle().getIdent(CSSName.WHITE_SPACE);
+                if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE) {
+                    child.setSubstring(child.start_index + 1, child.end_index);
                 }
             }
-            if ( child.getSubstring().equals( "" ) ) {
+            if (child.getSubstring().equals("")) {
                 child.width = 0;
                 child.height = 0;
             }
         }
-        ib.setParent( this );
-        addChild( ib );
-        if ( ib.isChildrenExceedBounds() ) {
-            setChildrenExceedBounds( true );
+        ib.setParent(this);
+        addChild(ib);
+        if (ib.isChildrenExceedBounds()) {
+            setChildrenExceedBounds(true);
         }
     }
 
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
 
@@ -85,12 +93,12 @@ public class LineBox extends Box {
     /**
      * Gets the baseline attribute of the LineBox object
      *
-     * @return   The baseline value
+     * @return The baseline value
      */
     public int getBaseline() {
         int leading = height - ascent - descent;
-        if ( leading < 0 ) {
-            XRLog.layout( Level.SEVERE, "negative leading in line box" );
+        if (leading < 0) {
+            XRLog.layout(Level.SEVERE, "negative leading in line box");
         }
         return ascent + leading / 2;
     }
@@ -101,6 +109,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/05/08 13:02:41  tobega
+ * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
+ *
  * Revision 1.13  2005/01/29 20:21:04  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

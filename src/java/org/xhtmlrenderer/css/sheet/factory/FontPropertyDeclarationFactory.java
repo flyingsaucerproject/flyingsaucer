@@ -20,44 +20,50 @@
  */
 package org.xhtmlrenderer.css.sheet.factory;
 
-import java.util.*;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.value.FSCssValue;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
  * A PropertyDeclarationFactory for CSS 2 "font" shorthand property,
  * instantiating PropertyDeclarations; Singleton, use {@link #instance()}.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class FontPropertyDeclarationFactory extends AbstractPropertyDeclarationFactory {
-    /** Singleton instance. */
+    /**
+     * Singleton instance.
+     */
     private static FontPropertyDeclarationFactory _instance;
 
-    /** Constructor for the FontPropertyDeclarationFactory object */
-    private FontPropertyDeclarationFactory() { }
+    /**
+     * Constructor for the FontPropertyDeclarationFactory object
+     */
+    private FontPropertyDeclarationFactory() {
+    }
 
     /**
      * Subclassed implementation of redirected buildDeclarations() from abstract
      * superclass.
      *
-     * @param primVals   The SAC value for this property
-     * @param important  True if author-marked important!
-     * @param cssName    property name
-     * @param origin     The origin of the stylesheet; constant from {@link
-     *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
-     * @return           Iterator of PropertyDeclarations for the shorthand
-     *      margin property.
+     * @param primVals  The SAC value for this property
+     * @param important True if author-marked important!
+     * @param cssName   property name
+     * @param origin    The origin of the stylesheet; constant from {@link
+     *                  org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
+     * @return Iterator of PropertyDeclarations for the shorthand
+     *         margin property.
      */
-    protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
-                                            boolean important,
-                                            CSSName cssName,
-                                            int origin ) {
+    protected Iterator doBuildDeclarations(CSSPrimitiveValue[] primVals,
+                                           boolean important,
+                                           CSSName cssName,
+                                           int origin) {
 
         List declarations = new ArrayList();
         List families = new ArrayList();
@@ -65,42 +71,42 @@ public class FontPropertyDeclarationFactory extends AbstractPropertyDeclarationF
         CSSPrimitiveValue primitives[] = new CSSPrimitiveValue[1];
         CSSPrimitiveValue familyPrimitive = null;
         CSSName names[] = new CSSName[1];
-        Boolean hasSize = Boolean.valueOf( false );
+        Boolean hasSize = Boolean.valueOf(false);
 
-        for ( int i = 0; i < primVals.length; i++ ) {
+        for (int i = 0; i < primVals.length; i++) {
             primitive = primVals[i];
             String val = primitive.getCssText().trim();
 
-            Object[] ret = parseSingle( val, primitive, hasSize, families );
-            names[0] = (CSSName)ret[0];
-            primitives[0] = (CSSPrimitiveValue)ret[1];
+            Object[] ret = parseSingle(val, primitive, hasSize, families);
+            names[0] = (CSSName) ret[0];
+            primitives[0] = (CSSPrimitiveValue) ret[1];
 
-            hasSize = (Boolean)ret[2];
+            hasSize = (Boolean) ret[2];
 
             // if family was found, we add outside this loop
             // once we have them all
-            if ( ret[3] != null ) {
-                if ( familyPrimitive == null ) {
-                    familyPrimitive = (CSSPrimitiveValue)ret[3];
+            if (ret[3] != null) {
+                if (familyPrimitive == null) {
+                    familyPrimitive = (CSSPrimitiveValue) ret[3];
                 }
                 continue;
             }
 
-            addProperties( declarations, primitives, names, origin, important );
+            addProperties(declarations, primitives, names, origin, important);
         }
 
-        if ( families.size() > 0 ) {
+        if (families.size() > 0) {
             StringBuffer sb = new StringBuffer();
             String sep = "";
             Iterator iter = families.iterator();
-            while ( iter.hasNext() ) {
-                sb.append( sep ).append( iter.next() );
+            while (iter.hasNext()) {
+                sb.append(sep).append(iter.next());
                 sep = ", ";
             }
 
             names[0] = CSSName.FONT_FAMILY;
-            primitives[0] = new FSCssValue( CSSName.FONT_FAMILY, familyPrimitive, sb.toString() );
-            addProperties( declarations, primitives, names, origin, important );
+            primitives[0] = new FSCssValue(familyPrimitive, sb.toString());
+            addProperties(declarations, primitives, names, origin, important);
         }
 
         return declarations.iterator();
@@ -109,29 +115,29 @@ public class FontPropertyDeclarationFactory extends AbstractPropertyDeclarationF
     /**
      * Description of the Method
      *
-     * @param val        PARAM
-     * @param primitive  PARAM
-     * @param hasSize    PARAM
-     * @param families   PARAM
-     * @return           Returns
+     * @param val       PARAM
+     * @param primitive PARAM
+     * @param hasSize   PARAM
+     * @param families  PARAM
+     * @return Returns
      */
-    private Object[] parseSingle( String val, CSSPrimitiveValue primitive, Boolean hasSize, List families ) {
+    private Object[] parseSingle(String val, CSSPrimitiveValue primitive, Boolean hasSize, List families) {
         CSSPrimitiveValue familyPrimitive = null;
         CSSName expPropName = null;
-        if ( Idents.looksLikeAFontStyle( val ) ) {
+        if (Idents.looksLikeAFontStyle(val)) {
             expPropName = CSSName.FONT_STYLE;
-        } else if ( Idents.looksLikeAFontVariant( val ) ) {
+        } else if (Idents.looksLikeAFontVariant(val)) {
             expPropName = CSSName.FONT_VARIANT;
-        } else if ( Idents.looksLikeAFontWeight( val ) ) {
+        } else if (Idents.looksLikeAFontWeight(val)) {
             expPropName = CSSName.FONT_WEIGHT;
-        } else if ( !hasSize.booleanValue() && Idents.looksLikeAFontSize( val ) ) {
+        } else if (!hasSize.booleanValue() && Idents.looksLikeAFontSize(val)) {
             expPropName = CSSName.FONT_SIZE;
-            hasSize = Boolean.valueOf( true );
-        } else if ( hasSize.booleanValue() && Idents.looksLikeALineHeight( val ) ) {
+            hasSize = Boolean.valueOf(true);
+        } else if (hasSize.booleanValue() && Idents.looksLikeALineHeight(val)) {
             expPropName = CSSName.LINE_HEIGHT;
         } else {
             // HACK: assume it is a font-family
-            families.add( val );
+            families.add(val);
             familyPrimitive = primitive;
         }
         return new Object[]{expPropName, primitive, hasSize, familyPrimitive};
@@ -140,10 +146,10 @@ public class FontPropertyDeclarationFactory extends AbstractPropertyDeclarationF
     /**
      * Returns the singleton instance.
      *
-     * @return   Returns
+     * @return Returns
      */
     public static synchronized PropertyDeclarationFactory instance() {
-        if ( _instance == null ) {
+        if (_instance == null) {
             _instance = new FontPropertyDeclarationFactory();
         }
         return _instance;
@@ -154,6 +160,9 @@ public class FontPropertyDeclarationFactory extends AbstractPropertyDeclarationF
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/05/08 13:02:37  tobega
+ * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
+ *
  * Revision 1.4  2005/01/29 20:21:04  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

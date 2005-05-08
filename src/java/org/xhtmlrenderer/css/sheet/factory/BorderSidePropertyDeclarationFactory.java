@@ -20,14 +20,13 @@
  */
 package org.xhtmlrenderer.css.sheet.factory;
 
-import java.util.*;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.value.FSCssValue;
 import org.xhtmlrenderer.util.XRRuntimeException;
+
+import java.util.*;
 
 
 /**
@@ -35,59 +34,72 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * shorthand properties, instantiating PropertyDeclarations; Singleton, use
  * {@link #instance()}.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclarationFactory {
-    /** Singleton instance. */
+    /**
+     * Singleton instance.
+     */
     private static BorderSidePropertyDeclarationFactory _instance;
 
-    /** TODO--used in property explosion */
+    /**
+     * TODO--used in property explosion
+     */
     private final static Map PROP_EXPLODE;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private final static int WIDTH_IDX;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private final static int STYLE_IDX;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private final static int COLOR_IDX;
 
-    /** Default constructor; don't use, use instance() instead. */
-    private BorderSidePropertyDeclarationFactory() { }
+    /**
+     * Default constructor; don't use, use instance() instead.
+     */
+    private BorderSidePropertyDeclarationFactory() {
+    }
 
     /**
      * Subclassed implementation of redirected buildDeclarations() from abstract
      * superclass.
      *
-     * @param primVals   The SAC value for this property
-     * @param important  True if author-marked important!
-     * @param cssName    property name
-     * @param origin     The origin of the stylesheet; constant from {@link
-     *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
-     * @return           Iterator of PropertyDeclarations for the shorthand
-     *      margin property.
+     * @param primVals  The SAC value for this property
+     * @param important True if author-marked important!
+     * @param cssName   property name
+     * @param origin    The origin of the stylesheet; constant from {@link
+     *                  org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
+     * @return Iterator of PropertyDeclarations for the shorthand
+     *         margin property.
      */
-    protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
-                                            boolean important,
-                                            CSSName cssName,
-                                            int origin ) {
+    protected Iterator doBuildDeclarations(CSSPrimitiveValue[] primVals,
+                                           boolean important,
+                                           CSSName cssName,
+                                           int origin) {
 
         List declarations = new ArrayList();
-        CSSName explodes[] = (CSSName[])PROP_EXPLODE.get( cssName );
+        CSSName explodes[] = (CSSName[]) PROP_EXPLODE.get(cssName);
         CSSPrimitiveValue primitives[] = null;
         CSSName names[] = null;
 
-        if ( explodes == null ) {
-            throw new XRRuntimeException( "Found no mapping for border side property named '" + cssName + "'." );
+        if (explodes == null) {
+            throw new XRRuntimeException("Found no mapping for border side property named '" + cssName + "'.");
         }
 
-        for ( int i = 0; i < primVals.length; i++ ) {
+        for (int i = 0; i < primVals.length; i++) {
             CSSPrimitiveValue primitive = primVals[i];
 
             String val = primitive.getCssText().trim();
-            CSSName matchedProp = matchPropName( val, explodes );
-            primitives = new CSSPrimitiveValue[]{new FSCssValue( matchedProp, primitive )};
+            CSSName matchedProp = matchPropName(val, explodes);
+            primitives = new CSSPrimitiveValue[]{new FSCssValue(primitive)};
             names = new CSSName[]{matchedProp};
-            addProperties( declarations, primitives, names, origin, important );
+            addProperties(declarations, primitives, names, origin, important);
         }
 
         return declarations.iterator();
@@ -96,15 +108,15 @@ public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclar
     /**
      * Description of the Method
      *
-     * @param val        PARAM
-     * @param explodeTo  PARAM
-     * @return           Returns
+     * @param val       PARAM
+     * @param explodeTo PARAM
+     * @return Returns
      */
-    private CSSName matchPropName( String val, CSSName[] explodeTo ) {
+    private CSSName matchPropName(String val, CSSName[] explodeTo) {
         CSSName cssName = null;
-        if ( Idents.looksLikeAColor( val ) ) {
+        if (Idents.looksLikeAColor(val)) {
             cssName = explodeTo[COLOR_IDX];
-        } else if ( Idents.looksLikeABorderStyle( val ) ) {
+        } else if (Idents.looksLikeABorderStyle(val)) {
             cssName = explodeTo[STYLE_IDX];
         } else {
             // HACK: as with background, we should go ahead and check this is a valid CSS length value (PWW 24-08-04)
@@ -116,14 +128,15 @@ public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclar
     /**
      * Returns the singleton instance.
      *
-     * @return   See desc.
+     * @return See desc.
      */
     public static synchronized PropertyDeclarationFactory instance() {
-        if ( _instance == null ) {
+        if (_instance == null) {
             _instance = new BorderSidePropertyDeclarationFactory();
         }
         return _instance;
     }
+
     static {
         WIDTH_IDX = 0;
         STYLE_IDX = 1;
@@ -138,10 +151,10 @@ public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclar
 
         CSSName left[] = new CSSName[]{CSSName.BORDER_WIDTH_LEFT, CSSName.BORDER_STYLE_LEFT, CSSName.BORDER_COLOR_LEFT};
 
-        PROP_EXPLODE.put( CSSName.BORDER_TOP_SHORTHAND, top );
-        PROP_EXPLODE.put( CSSName.BORDER_RIGHT_SHORTHAND, right );
-        PROP_EXPLODE.put( CSSName.BORDER_BOTTOM_SHORTHAND, bottom );
-        PROP_EXPLODE.put( CSSName.BORDER_LEFT_SHORTHAND, left );
+        PROP_EXPLODE.put(CSSName.BORDER_TOP_SHORTHAND, top);
+        PROP_EXPLODE.put(CSSName.BORDER_RIGHT_SHORTHAND, right);
+        PROP_EXPLODE.put(CSSName.BORDER_BOTTOM_SHORTHAND, bottom);
+        PROP_EXPLODE.put(CSSName.BORDER_LEFT_SHORTHAND, left);
     }
 
 }// end class
@@ -150,6 +163,9 @@ public class BorderSidePropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/05/08 13:02:37  tobega
+ * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
+ *
  * Revision 1.4  2005/01/29 20:24:24  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

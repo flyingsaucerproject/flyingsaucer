@@ -20,16 +20,14 @@
  */
 package org.xhtmlrenderer.css.sheet.factory;
 
-import java.util.*;
 import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.CSSValueList;
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.value.FSCssValue;
-import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -37,51 +35,56 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * require special handling, instantiating PropertyDeclarations; Singleton, use
  * {@link #instance()}.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarationFactory {
-    /** Singleton instance. */
+    /**
+     * Singleton instance.
+     */
     private static DefaultPropertyDeclarationFactory _instance;
 
-    /** Constructor for the DefaultPropertyDeclarationFactory object */
-    private DefaultPropertyDeclarationFactory() { }
+    /**
+     * Constructor for the DefaultPropertyDeclarationFactory object
+     */
+    private DefaultPropertyDeclarationFactory() {
+    }
 
     /**
      * Subclassed implementation of redirected buildDeclarations() from abstract
      * superclass.
      *
-     * @param primVals   The SAC value for this property
-     * @param important  True if author-marked important!
-     * @param cssName    property name
-     * @param origin     The origin of the stylesheet; constant from {@link
-     *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
-     * @return           Iterator of PropertyDeclarations for the shorthand
-     *      margin property.
+     * @param primVals  The SAC value for this property
+     * @param important True if author-marked important!
+     * @param cssName   property name
+     * @param origin    The origin of the stylesheet; constant from {@link
+     *                  org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
+     * @return Iterator of PropertyDeclarations for the shorthand
+     *         margin property.
      */
-    protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
-                                            boolean important,
-                                            CSSName cssName,
-                                            int origin ) {
+    protected Iterator doBuildDeclarations(CSSPrimitiveValue[] primVals,
+                                           boolean important,
+                                           CSSName cssName,
+                                           int origin) {
 
-        if ( primVals.length > 1 ) {
-            throw new XRRuntimeException( "Tried to use " + this.getClass().getName() +
+        if (primVals.length > 1) {
+            throw new XRRuntimeException("Tried to use " + this.getClass().getName() +
                     " to create PropertyDeclarations for " + cssName + ", but the" +
                     " CSS style information is not primitive--is a list of values." +
-                    " Should be handled by a shorthand property factory." );
+                    " Should be handled by a shorthand property factory.");
         }
-        FSCssValue fsCssValue = new FSCssValue( cssName, primVals[0] );
-        List declarations = new ArrayList( 1 );
-        declarations.add( newPropertyDeclaration( cssName, fsCssValue, origin, important ) );
+        FSCssValue fsCssValue = new FSCssValue(primVals[0]);
+        List declarations = new ArrayList(1);
+        declarations.add(newPropertyDeclaration(cssName, fsCssValue, origin, important));
         return declarations.iterator();
     }
 
     /**
      * Returns the singleton instance.
      *
-     * @return   Returns
+     * @return Returns
      */
     public static synchronized PropertyDeclarationFactory instance() {
-        if ( _instance == null ) {
+        if (_instance == null) {
             _instance = new DefaultPropertyDeclarationFactory();
         }
         return _instance;
@@ -92,6 +95,9 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/05/08 13:02:37  tobega
+ * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
+ *
  * Revision 1.5  2005/02/02 12:12:25  pdoubleya
  * .
  *

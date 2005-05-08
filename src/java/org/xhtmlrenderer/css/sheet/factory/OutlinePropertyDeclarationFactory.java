@@ -20,48 +20,50 @@
  */
 package org.xhtmlrenderer.css.sheet.factory;
 
-import java.util.*;
 import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSValue;
-import org.w3c.dom.css.CSSValueList;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.Idents;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.value.FSCssValue;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
  * A PropertyDeclarationFactory for CSS 2 "outline" shorthand property,
  * instantiating PropertyDeclarations; Singleton, use {@link #instance()}.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarationFactory {
-    /** Singleton instance. */
+    /**
+     * Singleton instance.
+     */
     private static OutlinePropertyDeclarationFactory _instance;
 
-    /** Constructor for the OutlinePropertyDeclarationFactory object */
-    private OutlinePropertyDeclarationFactory() { }
+    /**
+     * Constructor for the OutlinePropertyDeclarationFactory object
+     */
+    private OutlinePropertyDeclarationFactory() {
+    }
 
     /**
      * Subclassed implementation of redirected buildDeclarations() from abstract
      * superclass.
      *
-     * @param primVals   The SAC value for this property
-     * @param important  True if author-marked important!
-     * @param cssName    property name
-     * @param origin     The origin of the stylesheet; constant from {@link
-     *      org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
-     * @return           Iterator of PropertyDeclarations for the shorthand
-     *      margin property.
+     * @param primVals  The SAC value for this property
+     * @param important True if author-marked important!
+     * @param cssName   property name
+     * @param origin    The origin of the stylesheet; constant from {@link
+     *                  org.xhtmlrenderer.css.sheet.Stylesheet}, e.g. Stylesheet.AUTHOR
+     * @return Iterator of PropertyDeclarations for the shorthand
+     *         margin property.
      */
-    protected Iterator doBuildDeclarations( CSSPrimitiveValue[] primVals,
-                                            boolean important,
-                                            CSSName cssName,
-                                            int origin ) {
+    protected Iterator doBuildDeclarations(CSSPrimitiveValue[] primVals,
+                                           boolean important,
+                                           CSSName cssName,
+                                           int origin) {
 
         List declarations = new ArrayList();
         // outline shorthand can have color, image, repeat,
@@ -71,15 +73,15 @@ public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarati
         CSSPrimitiveValue primitives[] = new CSSPrimitiveValue[1];
         CSSName names[] = new CSSName[1];
 
-        for ( int i = 0; i < primVals.length; i++ ) {
+        for (int i = 0; i < primVals.length; i++) {
             primitive = primVals[i];
 
             String val = primitive.getCssText().trim();
             CSSName expPropName = null;
-            if ( Idents.looksLikeAColor( val ) ) {
+            if (Idents.looksLikeAColor(val)) {
                 expPropName = CSSName.OUTLINE_COLOR;
-                primitive = new FSCssValue( CSSName.OUTLINE_COLOR, primitive );
-            } else if ( Idents.looksLikeABorderStyle( val ) ) {
+                primitive = new FSCssValue(primitive);
+            } else if (Idents.looksLikeABorderStyle(val)) {
                 expPropName = CSSName.OUTLINE_STYLE;
             } else {
                 // HACK: as with Background, assume it is a length value
@@ -87,7 +89,7 @@ public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarati
             }
             names[0] = expPropName;
             primitives[0] = primitive;
-            addProperties( declarations, primitives, names, origin, important );
+            addProperties(declarations, primitives, names, origin, important);
         }
 
         return declarations.iterator();
@@ -96,10 +98,10 @@ public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarati
     /**
      * Returns the singleton instance.
      *
-     * @return   Returns
+     * @return Returns
      */
     public static synchronized PropertyDeclarationFactory instance() {
-        if ( _instance == null ) {
+        if (_instance == null) {
             _instance = new OutlinePropertyDeclarationFactory();
         }
         return _instance;
@@ -110,6 +112,9 @@ public class OutlinePropertyDeclarationFactory extends AbstractPropertyDeclarati
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/05/08 13:02:37  tobega
+ * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
+ *
  * Revision 1.4  2005/01/29 20:19:25  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
