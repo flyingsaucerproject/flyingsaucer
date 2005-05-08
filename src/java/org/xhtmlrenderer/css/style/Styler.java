@@ -20,14 +20,15 @@
 package org.xhtmlrenderer.css.style;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.SharedContext;
 
 
 /**
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class Styler {
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     private java.util.HashMap _styleMap = new java.util.HashMap();
 
     /**
@@ -35,26 +36,29 @@ public class Styler {
      */
     private java.util.HashMap _styleCache = new java.util.HashMap();
 
-    /** Creates a new instance of Styler  */
-    public Styler() { }
+    /**
+     * Creates a new instance of Styler
+     */
+    public Styler() {
+    }
 
     /**
      * Gets the derivedStyle attribute of the Styler object
      *
-     * @param parent   PARAM
-     * @param matched  PARAM
-     * @return         The derivedStyle value
+     * @param parent  PARAM
+     * @param matched PARAM
+     * @return The derivedStyle value
      */
-    public CalculatedStyle getDerivedStyle( CalculatedStyle parent, CascadedStyle matched, SharedContext context ) {
+    public CalculatedStyle getDerivedStyle(CalculatedStyle parent, CascadedStyle matched) {
         CalculatedStyle cs = null;
         StringBuffer sb = new StringBuffer();
-        sb.append( parent.hashCode() ).append( ":" ).append( matched.hashCode() );
+        sb.append(parent.hashCode()).append(":").append(matched.hashCode());
         String fingerprint = sb.toString();
-        cs = (CalculatedStyle)_styleCache.get( fingerprint );
+        cs = (CalculatedStyle) _styleCache.get(fingerprint);
 
-        if ( cs == null ) {
-            cs = new CalculatedStyle( parent, matched, context );
-            _styleCache.put( fingerprint, cs );
+        if (cs == null) {
+            cs = new CalculatedStyle(parent, matched);
+            _styleCache.put(fingerprint, cs);
         }
         return cs;
     }
@@ -64,6 +68,9 @@ public class Styler {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/05/08 14:36:54  tobega
+ * Refactored away the need for having a context in a CalculatedStyle
+ *
  * Revision 1.15  2005/03/24 23:13:23  pdoubleya
  * Added use of SharedContext (Kevin).
  *

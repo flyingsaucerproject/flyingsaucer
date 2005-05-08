@@ -82,19 +82,19 @@ public class TableBoxing {
 
         c.pushStyle(content.getStyle());
         // set up the border spacing
-        float border_spacing_x = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getWidth());
-        float border_spacing_y = c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getHeight());
+        float border_spacing_x = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getWidth(), c.getCtx());
+        float border_spacing_y = c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getHeight(), c.getCtx());
         table_box.spacing = new Point((int) border_spacing_x, (int) border_spacing_y);
 
         // set up the width
         int fixed_width = c.getExtents().width;
         if (content.getStyle().hasProperty(CSSName.WIDTH)) {
-            fixed_width = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width);
+            fixed_width = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
         }
         //not used: int orig_fixed_width = fixed_width;
 
         //subtract off the margin, border, padding, and spacing
-        fixed_width -= table_box.totalHorizontalPadding(c.getCurrentStyle()) + table_box.spacing.x;
+        fixed_width -= table_box.totalHorizontalPadding(c.getCurrentStyle(), c) + table_box.spacing.x;
                
         // create the table
         // table is just for calculations. it's not a real box
@@ -106,8 +106,8 @@ public class TableBoxing {
         
         //pull out the boxes
         calculateBoxes(fixed_width, table_box, c, table);
-        table_box.width += table_box.totalHorizontalPadding(c.getCurrentStyle());
-        table_box.height += table_box.totalVerticalPadding(c.getCurrentStyle());
+        table_box.width += table_box.totalHorizontalPadding(c.getCurrentStyle(), c);
+        table_box.height += table_box.totalVerticalPadding(c.getCurrentStyle(), c);
 
         c.popStyle();
 
@@ -285,6 +285,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.9  2005/05/08 14:36:59  tobega
+   Refactored away the need for having a context in a CalculatedStyle
+
    Revision 1.8  2005/01/29 20:18:43  pdoubleya
    Clean/reformat code. Removed commented blocks, checked copyright.
 

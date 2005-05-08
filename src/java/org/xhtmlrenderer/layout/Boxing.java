@@ -133,8 +133,8 @@ public class Boxing {
         // do children's layout
         boolean old_sub = c.isSubBlock();
         c.setSubBlock(false);
-        int tx = block.totalLeftPadding(c.getCurrentStyle());
-        int ty = block.totalTopPadding(c.getCurrentStyle());
+        int tx = block.totalLeftPadding(c.getCurrentStyle(), c);
+        int ty = block.totalTopPadding(c.getCurrentStyle(), c);
         c.translate(tx, ty);
         layoutChildren(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
         c.translate(-tx, -ty);
@@ -157,8 +157,8 @@ public class Boxing {
         }
 
         // calculate the total outer width
-        block.width = block.totalHorizontalPadding(c.getCurrentStyle()) + block.width;
-        block.height = block.totalVerticalPadding(c.getCurrentStyle()) + block.height;
+        block.width = block.totalHorizontalPadding(c.getCurrentStyle(), c) + block.width;
+        block.height = block.totalVerticalPadding(c.getCurrentStyle(), c) + block.height;
 
         //restore the extents
         c.setExtents(oe);
@@ -239,7 +239,7 @@ public class Boxing {
             if (c.isSubBlock()) {
                 return;
             }
-            float new_width = style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width);
+            float new_width = style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
             c.getExtents().width = (int) new_width;
             block.width = (int) new_width;
         }
@@ -258,7 +258,7 @@ public class Boxing {
         }
         CalculatedStyle style = c.getCurrentStyle();
         if (style.hasProperty(CSSName.HEIGHT)) {
-            float new_height = style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height);
+            float new_height = style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
             c.getExtents().height = (int) new_height;
             block.height = (int) new_height;
             block.auto_height = false;
@@ -270,6 +270,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/05/08 14:36:57  tobega
+ * Refactored away the need for having a context in a CalculatedStyle
+ *
  * Revision 1.11  2005/04/21 18:16:06  tobega
  * Improved handling of inline padding. Also fixed first-line handling according to spec.
  *

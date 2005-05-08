@@ -28,76 +28,76 @@ import org.xhtmlrenderer.layout.Context;
 /**
  * Description of the Class
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class Relative {
     /**
      * Description of the Method
      *
-     * @param c  PARAM
+     * @param c PARAM
      */
-    public static void translateRelative( Context c ) {
+    public static void translateRelative(Context c) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;
-        topLeft = extractLeftTopRelative( c );
-        if ( topLeft != null ) {
+        topLeft = extractLeftTopRelative(c);
+        if (topLeft != null) {
             top = topLeft[0];
             left = topLeft[1];
-            c.translate( left, top );
+            c.translate(left, top);
         }
     }
 
     /**
      * Description of the Method
      *
-     * @param c  PARAM
+     * @param c PARAM
      */
-    public static void untranslateRelative( Context c ) {
+    public static void untranslateRelative(Context c) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;
-        topLeft = extractLeftTopRelative( c );
-        if ( topLeft != null ) {
+        topLeft = extractLeftTopRelative(c);
+        if (topLeft != null) {
             top = topLeft[0];
             left = topLeft[1];
-            c.translate( -left, -top );
+            c.translate(-left, -top);
         }
     }
 
     /**
      * Gets the relative attribute of the Relative class
      *
-     * @param c  PARAM
-     * @return   The relative value
+     * @param c PARAM
+     * @return The relative value
      */
-    public static boolean isRelative( Context c ) {
-        return c.getCurrentStyle().isIdent( CSSName.POSITION, IdentValue.RELATIVE );
+    public static boolean isRelative(Context c) {
+        return c.getCurrentStyle().isIdent(CSSName.POSITION, IdentValue.RELATIVE);
     }
 
     /**
      * Description of the Method
      *
-     * @param c  PARAM
-     * @return   Returns
+     * @param c PARAM
+     * @return Returns
      */
-    private static int[] extractLeftTopRelative( Context c ) {
+    private static int[] extractLeftTopRelative(Context c) {
         CalculatedStyle style = c.getCurrentStyle();
         int top = 0;
         int left = 0;
         int topLeft[] = null;
-        if ( style.isIdent( CSSName.POSITION, IdentValue.RELATIVE ) ) {
-            if ( style.hasProperty( CSSName.RIGHT ) ) {
-                left = -(int)style.getFloatPropertyProportionalWidth( CSSName.RIGHT, c.getBlockFormattingContext().getWidth() );
+        if (style.isIdent(CSSName.POSITION, IdentValue.RELATIVE)) {
+            if (style.hasProperty(CSSName.RIGHT)) {
+                left = -(int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth(), c.getCtx());
             }
-            if ( style.hasProperty( CSSName.BOTTOM ) ) {
-                top = -(int)style.getFloatPropertyProportionalHeight( CSSName.BOTTOM, c.getBlockFormattingContext().getHeight() );
+            if (style.hasProperty(CSSName.BOTTOM)) {
+                top = -(int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, c.getBlockFormattingContext().getHeight(), c.getCtx());
             }
-            if ( style.hasProperty( CSSName.TOP ) ) {
-                top = (int)style.getFloatPropertyProportionalHeight( CSSName.TOP, c.getBlockFormattingContext().getHeight() );
+            if (style.hasProperty(CSSName.TOP)) {
+                top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c.getCtx());
             }
-            if ( style.hasProperty( CSSName.LEFT ) ) {
-                left = (int)style.getFloatPropertyProportionalWidth( CSSName.LEFT, c.getBlockFormattingContext().getWidth() );
+            if (style.hasProperty(CSSName.LEFT)) {
+                left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, c.getBlockFormattingContext().getWidth(), c.getCtx());
             }
             topLeft = new int[]{top, left};
         }

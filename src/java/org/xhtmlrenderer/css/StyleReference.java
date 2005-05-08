@@ -19,20 +19,13 @@
  */
 package org.xhtmlrenderer.css;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.AttributeResolver;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
-import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.css.sheet.Stylesheet;
-import org.xhtmlrenderer.css.sheet.StylesheetFactory;
-import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+import org.xhtmlrenderer.css.sheet.*;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
@@ -40,9 +33,13 @@ import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 
 /**
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class StyleReference {
     /**
@@ -51,13 +48,19 @@ public class StyleReference {
      */
     private SharedContext _context;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private NamespaceHandler _nsh;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Document _doc;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private StylesheetFactory _stylesheetFactory;
 
     /**
@@ -66,7 +69,9 @@ public class StyleReference {
      */
     private org.xhtmlrenderer.css.newmatch.Matcher _matcher;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private org.xhtmlrenderer.css.style.Styler _styler;
 
     /** */
@@ -75,41 +80,41 @@ public class StyleReference {
     /**
      * Default constructor for initializing members.
      *
-     * @param userAgent  PARAM
+     * @param userAgent PARAM
      */
-    public StyleReference( UserAgentCallback userAgent ) {
+    public StyleReference(UserAgentCallback userAgent) {
         _uac = userAgent;
-        _stylesheetFactory = new StylesheetFactory( userAgent );
+        _stylesheetFactory = new StylesheetFactory(userAgent);
     }
 
     /**
      * Sets the documentContext attribute of the StyleReference object
      *
-     * @param context  The new documentContext value
-     * @param nsh      The new documentContext value
-     * @param doc      The new documentContext value
+     * @param context The new documentContext value
+     * @param nsh     The new documentContext value
+     * @param doc     The new documentContext value
      * @param ui
      */
-    public void setDocumentContext( SharedContext context, NamespaceHandler nsh, Document doc, UserInterface ui ) {
+    public void setDocumentContext(SharedContext context, NamespaceHandler nsh, Document doc, UserInterface ui) {
         _context = context;
         _nsh = nsh;
         _doc = doc;
-        AttributeResolver attRes = new StandardAttributeResolver( _nsh, _uac, ui );
+        AttributeResolver attRes = new StandardAttributeResolver(_nsh, _uac, ui);
 
         List infos = getStylesheets();
-        XRLog.match( "media = " + _context.getMedia() );
-        _matcher = new org.xhtmlrenderer.css.newmatch.Matcher( attRes, _stylesheetFactory, infos.iterator(), _context.getMedia() );
+        XRLog.match("media = " + _context.getMedia());
+        _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
         _styler = new org.xhtmlrenderer.css.style.Styler();
     }
 
     /**
      * Description of the Method
      *
-     * @param e  PARAM
-     * @return   Returns
+     * @param e PARAM
+     * @return Returns
      */
-    public boolean isHoverStyled( Element e ) {
-        return _matcher.isHoverStyled( e );
+    public boolean isHoverStyled(Element e) {
+        return _matcher.isHoverStyled(e);
     }
 
     /**
@@ -121,18 +126,18 @@ public class StyleReference {
      * for an example of how to establish a StyleReference and associate to a
      * Document.
      *
-     * @param e  The DOM Element for which to find properties
-     * @return   Map of CSS property names to CSSValue instance assigned to it.
+     * @param e The DOM Element for which to find properties
+     * @return Map of CSS property names to CSSValue instance assigned to it.
      */
-    public java.util.Map getCascadedPropertiesMap( Element e ) {
-        CascadedStyle cs = _matcher.getCascadedStyle( e, false );//this is only for debug, I think
+    public java.util.Map getCascadedPropertiesMap(Element e) {
+        CascadedStyle cs = _matcher.getCascadedStyle(e, false);//this is only for debug, I think
         java.util.LinkedHashMap props = new java.util.LinkedHashMap();
-        for ( java.util.Iterator i = cs.getMatchedPropertyDeclarations(); i.hasNext();  ) {
-            PropertyDeclaration pd = (PropertyDeclaration)i.next();
+        for (java.util.Iterator i = cs.getMatchedPropertyDeclarations(); i.hasNext();) {
+            PropertyDeclaration pd = (PropertyDeclaration) i.next();
 
             String propName = pd.getPropertyName();
-            CSSName cssName = CSSName.getByPropertyName( propName );
-            props.put( propName, cs.propertyByName( cssName ).getValue() );
+            CSSName cssName = CSSName.getByPropertyName(propName);
+            props.put(propName, cs.propertyByName(cssName).getValue());
         }
         return props;
     }
@@ -140,41 +145,41 @@ public class StyleReference {
     /**
      * Gets the pseudoElementStyle attribute of the StyleReference object
      *
-     * @param node           PARAM
-     * @param pseudoElement  PARAM
-     * @return               The pseudoElementStyle value
+     * @param node          PARAM
+     * @param pseudoElement PARAM
+     * @return The pseudoElementStyle value
      */
-    public CascadedStyle getPseudoElementStyle( Node node, String pseudoElement ) {
+    public CascadedStyle getPseudoElementStyle(Node node, String pseudoElement) {
         Element e = null;
-        if ( node.getNodeType() == Node.ELEMENT_NODE ) {
-            e = (Element)node;
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            e = (Element) node;
         } else {
-            e = (Element)node.getParentNode();
+            e = (Element) node.getParentNode();
         }
-        return _matcher.getPECascadedStyle( e, pseudoElement );
+        return _matcher.getPECascadedStyle(e, pseudoElement);
     }
 
     /**
      * Gets the CascadedStyle for an element. This must then be converted in the
      * current context to a CalculatedStyle (use getDerivedStyle)
      *
-     * @param e        The element
+     * @param e       The element
      * @param restyle
-     * @return         The style value
+     * @return The style value
      */
-    public CascadedStyle getCascadedStyle( Element e, boolean restyle ) {
-        return _matcher.getCascadedStyle( e, restyle );
+    public CascadedStyle getCascadedStyle(Element e, boolean restyle) {
+        return _matcher.getCascadedStyle(e, restyle);
     }
 
     /**
      * Gets the derivedStyle attribute of the StyleReference object
      *
-     * @param parent   PARAM
-     * @param matched  PARAM
-     * @return         The derivedStyle value
+     * @param parent  PARAM
+     * @param matched PARAM
+     * @return The derivedStyle value
      */
-    public CalculatedStyle getDerivedStyle( CalculatedStyle parent, CascadedStyle matched ) {
-        return _styler.getDerivedStyle( parent, matched, _context );
+    public CalculatedStyle getDerivedStyle(CalculatedStyle parent, CascadedStyle matched) {
+        return _styler.getDerivedStyle(parent, matched);
     }
 
     /**
@@ -183,7 +188,7 @@ public class StyleReference {
      * style for the current media are loaded and cached in the
      * StyleSheetFactory by URI.
      *
-     * @return   The stylesheets value
+     * @return The stylesheets value
      */
     private List getStylesheets() {
         java.io.Reader reader;
@@ -192,52 +197,52 @@ public class StyleReference {
 
         String uri = _nsh.getNamespace();
         StylesheetInfo info = new StylesheetInfo();
-        info.setUri( _nsh.getNamespace() );
-        info.setOrigin( StylesheetInfo.USER_AGENT );
-        info.setMedia( "all" );
-        info.setType( "text/css" );
-        if ( !_stylesheetFactory.containsStylesheet( uri ) ) {
+        info.setUri(_nsh.getNamespace());
+        info.setOrigin(StylesheetInfo.USER_AGENT);
+        info.setMedia("all");
+        info.setType("text/css");
+        if (!_stylesheetFactory.containsStylesheet(uri)) {
             reader = _nsh.getDefaultStylesheet();
-            if ( reader != null ) {
-                Stylesheet sheet = _stylesheetFactory.parse( reader, info );
-                _stylesheetFactory.putStylesheet( uri, sheet );
+            if (reader != null) {
+                Stylesheet sheet = _stylesheetFactory.parse(reader, info);
+                _stylesheetFactory.putStylesheet(uri, sheet);
             }
         }
-        infos.add( info );
+        infos.add(info);
 
-        StylesheetInfo[] refs = _nsh.getStylesheetLinks( _doc );
-        if ( refs != null ) {
-            for ( int i = 0; i < refs.length; i++ ) {
+        StylesheetInfo[] refs = _nsh.getStylesheetLinks(_doc);
+        if (refs != null) {
+            for (int i = 0; i < refs.length; i++) {
                 java.net.URL baseUrl = _context.getRenderingContext().getBaseURL();
                 try {
-                    uri = new java.net.URL( baseUrl, refs[i].getUri() ).toString();
-                    refs[i].setUri( uri );
-                } catch ( java.net.MalformedURLException e ) {
-                    XRLog.exception( "bad URL for associated stylesheet", e );
+                    uri = new java.net.URL(baseUrl, refs[i].getUri()).toString();
+                    refs[i].setUri(uri);
+                } catch (java.net.MalformedURLException e) {
+                    XRLog.exception("bad URL for associated stylesheet", e);
                 }
             }
         }
-        infos.addAll( Arrays.asList( refs ) );
+        infos.addAll(Arrays.asList(refs));
 
         uri = _context.getRenderingContext().getBaseURL().toString();
         info = new StylesheetInfo();
-        info.setUri( uri );
-        info.setOrigin( StylesheetInfo.AUTHOR );
+        info.setUri(uri);
+        info.setOrigin(StylesheetInfo.AUTHOR);
         Stylesheet sheet = null;
-        if ( _stylesheetFactory.containsStylesheet( uri ) ) {
-            sheet = _stylesheetFactory.getCachedStylesheet( uri );
+        if (_stylesheetFactory.containsStylesheet(uri)) {
+            sheet = _stylesheetFactory.getCachedStylesheet(uri);
         } else {
-            InlineStyleInfo[] inlineStyle = _nsh.getInlineStyle( _doc );
-            sheet = _stylesheetFactory.parseInlines( inlineStyle, info );
-            _stylesheetFactory.putStylesheet( uri, sheet );
+            InlineStyleInfo[] inlineStyle = _nsh.getInlineStyle(_doc);
+            sheet = _stylesheetFactory.parseInlines(inlineStyle, info);
+            _stylesheetFactory.putStylesheet(uri, sheet);
         }
-        info.setStylesheet( sheet );//add it here because matcher cannot look it up, uri:s are in a twist
-        infos.add( info );
+        info.setStylesheet(sheet);//add it here because matcher cannot look it up, uri:s are in a twist
+        infos.add(info);
 
         // TODO: here we should also get user stylesheet from userAgent
 
         long el = System.currentTimeMillis() - st;
-        XRLog.load( "TIME: parse stylesheets  " + el + "ms" );
+        XRLog.load("TIME: parse stylesheets  " + el + "ms");
 
         return infos;
     }
@@ -247,6 +252,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/05/08 14:36:54  tobega
+ * Refactored away the need for having a context in a CalculatedStyle
+ *
  * Revision 1.25  2005/03/24 23:18:38  pdoubleya
  * Added use of SharedContext (Kevin).
  *

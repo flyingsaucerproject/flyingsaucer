@@ -53,7 +53,7 @@ public class SharedContext {
 
     public Context newContextInstance(Rectangle extents) {
         Context c = new ContextImpl(this, extents);
-        c.initializeStyles(new EmptyStyle( this ));
+        c.initializeStyles(new EmptyStyle());
         return c;
     }
 
@@ -455,6 +455,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/05/08 14:36:57  tobega
+ * Refactored away the need for having a context in a CalculatedStyle
+ *
  * Revision 1.10  2005/03/24 23:12:56  pdoubleya
  * EmptyStyle now takes SC in constructor.
  *

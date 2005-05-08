@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.extend;
 
-import java.awt.*;
-import java.net.URL;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.newmatch.AttributeResolver;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -29,25 +27,37 @@ import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.net.URL;
+
 
 /**
  * Description of the Class
  *
- * @author    jmarinacci
- * @created   November 16, 2004
+ * @author jmarinacci
+ * @created November 16, 2004
  */
 public class RenderingContext {
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected UserAgentCallback uac;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     protected SharedContext ctx;
 
-    /** Internal member variable for the css module  */
+    /**
+     * Internal member variable for the css module
+     */
     protected StyleReference css;
 
-    /** <b>need to make this protected</b>  */
+    /**
+     * <b>need to make this protected</b>
+     */
     protected Box root_box;
 
     /**
@@ -59,17 +69,23 @@ public class RenderingContext {
      */
     protected AttributeResolver attr_res;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     protected URL base_url;
 
     /*
      * is this really a property of the component that uses
      * this rendering context ??
      */
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     protected boolean threaded_layout;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     protected TextRenderer text_renderer;
 
     /**
@@ -80,45 +96,62 @@ public class RenderingContext {
     /*
      * used to adjust fonts, ems, points, into screen resolution
      */
-    /** Description of the Field */
-    private float dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+    /**
+     * Description of the Field
+     */
+    private float dpi;
+    /**
+     * Description of the Field
+     */
+    private final static int MM__PER__CM = 10;
+    /**
+     * Description of the Field
+     */
+    private final static float CM__PER__IN = 2.54F;
+    /**
+     * dpi in a more usable way
+     */
+    private float mm_per_px;
 
     /**
      * Constructor for the RenderingContext object
      *
-     * @param uac  PARAM
+     * @param uac PARAM
      */
-    public RenderingContext( UserAgentCallback uac ) {
-        setMedia( "screen" );
-        setContext( new SharedContext() );
-        getContext().setCtx( this );
+    public RenderingContext(UserAgentCallback uac) {
+        setMedia("screen");
+        setContext(new SharedContext());
+        getContext().setCtx(this);
         this.uac = uac;
-        getContext().setCss( new StyleReference( uac ) );
-        XRLog.render( "Using CSS implementation from: " + getContext().getCss().getClass().getName() );
-        setTextRenderer( new Java2DTextRenderer() );
+        getContext().setCss(new StyleReference(uac));
+        XRLog.render("Using CSS implementation from: " + getContext().getCss().getClass().getName());
+        setTextRenderer(new Java2DTextRenderer());
+        setDPI(Toolkit.getDefaultToolkit().getScreenResolution());
     }
 
-    /** Constructor for the RenderingContext object */
+    /**
+     * Constructor for the RenderingContext object
+     */
     public RenderingContext() {
-        this( new NaiveUserAgent() );
+        this(new NaiveUserAgent());
     }
 
 
     /**
      * Sets the context attribute of the RenderingContext object
      *
-     * @param ctx  The new context value
+     * @param ctx The new context value
      */
-    public void setContext( SharedContext ctx ) {
+    public void setContext(SharedContext ctx) {
         this.ctx = ctx;
     }
 
     /**
      * Sets the rootBox attribute of the RenderingContext object
      *
-     * @param root_box  The new rootBox value
+     * @param root_box The new rootBox value
      */
-    public void setRootBox( Box root_box ) {
+    public void setRootBox(Box root_box) {
         this.root_box = root_box;
     }
 
@@ -126,55 +159,55 @@ public class RenderingContext {
     /**
      * Sets the attributeResolver attribute of the RenderingContext object
      *
-     * @param attribute_resolver  The new attributeResolver value
+     * @param attribute_resolver The new attributeResolver value
      */
-    public void setAttributeResolver( AttributeResolver attribute_resolver ) {
+    public void setAttributeResolver(AttributeResolver attribute_resolver) {
         this.attr_res = attribute_resolver;
     }
 
 
     /**
      * <p/>
-     *
+     * <p/>
      * Adds or overrides a font mapping, meaning you can associate a particular
      * font with a particular string. For example, the following would load a
      * font out of the cool.ttf file and associate it with the name <i>CoolFont
      * </i>:</p> <p/>
-     *
+     * <p/>
      * <pre>
      *   Font font = Font.createFont(Font.TRUETYPE_FONT,
      *   new FileInputStream("cool.ttf");
      *   setFontMapping("CoolFont", font);
      * </pre> <p/>
-     *
-     * <p>
-     *
+     * <p/>
+     * <p/>
+     * <p/>
      * You could then put the following css in your page </p> <pre>
      *   p { font-family: CoolFont Arial sans-serif; }
      * </pre> <p/>
-     *
-     * <p>
-     *
+     * <p/>
+     * <p/>
+     * <p/>
      * You can also override existing font mappings, like replacing Arial with
      * Helvetica.</p>
      *
-     * @param name  The new font name
-     * @param font  The actual Font to map
+     * @param name The new font name
+     * @param font The actual Font to map
      */
     /*
      * add a new font mapping, or replace an existing one
      */
-    public void setFontMapping( String name, Font font ) {
-        getContext().getFontResolver().setFontMapping( name, font );
+    public void setFontMapping(String name, Font font) {
+        getContext().getFontResolver().setFontMapping(name, font);
     }
 
 
     /**
      * Sets the baseURL attribute of the RenderingContext object
      *
-     * @param url  The new baseURL value
+     * @param url The new baseURL value
      */
-    public void setBaseURL( URL url ) {
+    public void setBaseURL(URL url) {
         base_url = url;
     }
 
@@ -187,19 +220,20 @@ public class RenderingContext {
      * accessibility or printing purposes. Currently the DPI setting only
      * affects font sizing.
      *
-     * @param dpi  The new dPI value
+     * @param dpi The new dPI value
      */
-    public void setDPI( float dpi ) {
+    public void setDPI(float dpi) {
         this.dpi = dpi;
+        this.mm_per_px = (CM__PER__IN * MM__PER__CM) / dpi;
     }
 
 
     /**
      * Sets the threadedLayout attribute of the RenderingContext object
      *
-     * @param threaded  The new threadedLayout value
+     * @param threaded The new threadedLayout value
      */
-    public void setThreadedLayout( boolean threaded ) {
+    public void setThreadedLayout(boolean threaded) {
         threaded_layout = threaded;
     }
 
@@ -207,30 +241,30 @@ public class RenderingContext {
     /**
      * Sets the textRenderer attribute of the RenderingContext object
      *
-     * @param text_renderer  The new textRenderer value
+     * @param text_renderer The new textRenderer value
      */
-    public void setTextRenderer( TextRenderer text_renderer ) {
+    public void setTextRenderer(TextRenderer text_renderer) {
         this.text_renderer = text_renderer;
     }// = "screen";
 
     /**
-     * <p>
-     *
+     * <p/>
+     * <p/>
      * Set the current media type. This is usually something like <i>screen</i>
      * or <i>print</i> . See the <a href="http://www.w3.org/TR/CSS21/media.html">
      * media section</a> of the CSS 2.1 spec for more information on media
      * types.</p>
      *
-     * @param media  The new media value
+     * @param media The new media value
      */
-    public void setMedia( String media ) {
+    public void setMedia(String media) {
         this.media = media;
     }
 
     /**
      * Gets the uac attribute of the RenderingContext object
      *
-     * @return   The uac value
+     * @return The uac value
      */
     public UserAgentCallback getUac() {
         return uac;
@@ -240,7 +274,7 @@ public class RenderingContext {
     /**
      * Gets the context attribute of the RenderingContext object
      *
-     * @return   The context value
+     * @return The context value
      */
     public SharedContext getContext() {
         return ctx;
@@ -251,7 +285,7 @@ public class RenderingContext {
      * Sets the StyleReference implemenation. This is part of the CSS module.
      * Developers should normally never need to call this
      *
-     * @return   The styleReference value
+     * @return The styleReference value
      */
     public StyleReference getStyleReference() {
         return ctx.getCss();
@@ -261,7 +295,7 @@ public class RenderingContext {
     /**
      * Gets the root of the fully rendered box tree
      *
-     * @return   The rootBox value
+     * @return The rootBox value
      */
     public Box getRootBox() {
         return root_box;
@@ -271,7 +305,7 @@ public class RenderingContext {
     /**
      * Gets the baseURL attribute of the RenderingContext object
      *
-     * @return   The baseURL value
+     * @return The baseURL value
      */
     public URL getBaseURL() {
         return base_url;
@@ -281,17 +315,26 @@ public class RenderingContext {
     /**
      * Gets the dPI attribute of the RenderingContext object
      *
-     * @return   The dPI value
+     * @return The dPI value
      */
     public float getDPI() {
         return this.dpi;
+    }
+
+    /**
+     * Gets the dPI attribute in a more useful form of the RenderingContext object
+     *
+     * @return The dPI value
+     */
+    public float getMmPerPx() {
+        return this.mm_per_px;
     }
 
 
     /**
      * Gets the textRenderer attribute of the RenderingContext object
      *
-     * @return   The textRenderer value
+     * @return The textRenderer value
      */
     public TextRenderer getTextRenderer() {
         return text_renderer;
@@ -300,7 +343,7 @@ public class RenderingContext {
     /**
      * Gets the media attribute of the RenderingContext object
      *
-     * @return   The media value
+     * @return The media value
      */
     public String getMedia() {
         return this.media;
@@ -313,22 +356,22 @@ public class RenderingContext {
      * href="http://www.w3.org/TR/CSS21/media.html">media section</a> of the CSS
      * 2.1 spec for more information on media types.
      *
-     * @return   The paged value
+     * @return The paged value
      */
     public boolean isPaged() {
-        if ( media.equals( "print" ) ) {
+        if (media.equals("print")) {
             return true;
         }
-        if ( media.equals( "projection" ) ) {
+        if (media.equals("projection")) {
             return true;
         }
-        if ( media.equals( "embossed" ) ) {
+        if (media.equals("embossed")) {
             return true;
         }
-        if ( media.equals( "handheld" ) ) {
+        if (media.equals("handheld")) {
             return true;
         }
-        if ( media.equals( "tv" ) ) {
+        if (media.equals("tv")) {
             return true;
         }
         return false;

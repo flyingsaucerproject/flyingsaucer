@@ -58,11 +58,11 @@ public class BackgroundPainter {
 
         int width = block.getWidth();
         int height = block.getHeight();
-        Border border = c.getCurrentStyle().getBorderWidth(width, height);
+        Border border = c.getCurrentStyle().getBorderWidth(width, height, c.getCtx());
         if (border == null) {
             return;
         }
-        Border margin = c.getCurrentStyle().getMarginWidth(width, height);
+        Border margin = c.getCurrentStyle().getMarginWidth(width, height, c.getCtx());
         Rectangle box = new Rectangle(block.x + margin.left + border.left,
                 block.y + margin.top + border.top,
                 block.width - margin.left - margin.right - border.left - border.right,
@@ -183,6 +183,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/05/08 14:36:58  tobega
+ * Refactored away the need for having a context in a CalculatedStyle
+ *
  * Revision 1.21  2005/04/21 18:16:07  tobega
  * Improved handling of inline padding. Also fixed first-line handling according to spec.
  *

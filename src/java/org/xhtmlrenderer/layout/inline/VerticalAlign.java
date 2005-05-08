@@ -104,7 +104,7 @@ public class VerticalAlign {
         } else if (vertical_align == IdentValue.BOTTOM) {
             baselineOffset = descent - (curr_line.height - curr_line.getBaseline());
         } else {
-            baselineOffset = (int) c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.VERTICAL_ALIGN, c.getBlockFormattingContext().getHeight());
+            baselineOffset = (int) c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.VERTICAL_ALIGN, c.getBlockFormattingContext().getHeight(), c.getCtx());
         }
         return baselineOffset;
     }

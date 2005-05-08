@@ -19,21 +19,20 @@
  */
 package org.xhtmlrenderer.css.style;
 
-import org.xhtmlrenderer.layout.SharedContext;
-
-
 
 /**
  * Represents the outer box to be used for evaluating positioning of internal
  * boxes
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class EmptyStyle extends CalculatedStyle {
 
-    /** Creates a new instance of EmptyStyle  */
-    public EmptyStyle( SharedContext context ) {
-        super( context );
+    /**
+     * Creates a new instance of EmptyStyle
+     */
+    public EmptyStyle() {
+        super();
     }
 
 }

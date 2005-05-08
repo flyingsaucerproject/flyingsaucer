@@ -24,7 +24,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Dimension;
 
 
 /**
@@ -41,8 +41,8 @@ public class XLayout /*extends CustomBlockLayout*/ {
      * @param box PARAM
      */
     public void paintComponent(Context c, Box box) {
-        int w = box.getWidth() - box.totalHorizontalPadding(c.getCurrentStyle());
-        int h = box.getHeight() - box.totalVerticalPadding(c.getCurrentStyle());
+        int w = box.getWidth() - box.totalHorizontalPadding(c.getCurrentStyle(), c);
+        int h = box.getHeight() - box.totalVerticalPadding(c.getCurrentStyle(), c);
         Dimension dim = new Dimension(w, h);
         Uu.p("dim = " + dim);
         c.getGraphics().drawLine(box.x,
@@ -72,6 +72,9 @@ public class XLayout /*extends CustomBlockLayout*/ {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/05/08 14:36:59  tobega
+ * Refactored away the need for having a context in a CalculatedStyle
+ *
  * Revision 1.8  2005/01/29 20:18:39  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

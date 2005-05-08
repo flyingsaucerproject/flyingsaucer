@@ -134,7 +134,7 @@ public class BoxRendering {
         if (!(block instanceof AnonymousBlockBox)) {
             int width = block.getWidth();
             int height = block.getHeight();
-            Border margin = c.getCurrentStyle().getMarginWidth(width, height);
+            Border margin = c.getCurrentStyle().getMarginWidth(width, height, c.getCtx());
 
             Rectangle bounds = new Rectangle(block.x + margin.left,
                     block.y + margin.top,
@@ -272,7 +272,7 @@ public class BoxRendering {
             float width = c.getBlockFormattingContext().getWidth();
             float height = c.getBlockFormattingContext().getHeight();
 
-            Point pt = style.getBackgroundPosition(width - backImageWidth, height - backImageHeight);
+            Point pt = style.getBackgroundPosition(width - backImageWidth, height - backImageHeight, c.getCtx());
             block.background_position_horizontal = (int) pt.getX();
             block.background_position_vertical = (int) pt.getY();
         }
@@ -326,6 +326,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/05/08 14:36:58  tobega
+ * Refactored away the need for having a context in a CalculatedStyle
+ *
  * Revision 1.20  2005/04/21 18:16:08  tobega
  * Improved handling of inline padding. Also fixed first-line handling according to spec.
  *

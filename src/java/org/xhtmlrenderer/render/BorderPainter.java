@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.*;
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -27,62 +26,74 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.layout.Context;
 
+import java.awt.*;
+
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class BorderPainter {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public static int TOP = 1;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public static int LEFT = 2;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public static int BOTTOM = 4;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public static int RIGHT = 8;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public static int ALL = TOP + LEFT + BOTTOM + RIGHT;
 
     /**
      * Description of the Method
      *
-     * @param ctx     PARAM
-     * @param bounds  PARAM
-     * @param sides   PARAM
+     * @param c      PARAM
+     * @param bounds PARAM
+     * @param sides  PARAM
      */
-    public static void paint( Context ctx, Rectangle bounds, int sides ) {
-        Graphics g = ctx.getGraphics();
-        CalculatedStyle style = ctx.getCurrentStyle();
+    public static void paint(Context c, Rectangle bounds, int sides) {
+        Graphics g = c.getGraphics();
+        CalculatedStyle style = c.getCurrentStyle();
 
         BorderColor border_color = style.getBorderColor();
-        int width = (int)bounds.getWidth();
-        int height = (int)bounds.getHeight();
-        Border border = style.getBorderWidth( width, height );
+        int width = (int) bounds.getWidth();
+        int height = (int) bounds.getHeight();
+        Border border = style.getBorderWidth(width, height, c.getCtx());
         IdentValue ident = null;
-        if ( ( sides & TOP ) == TOP ) {
-            ident = ctx.getCurrentStyle().getIdent( CSSName.BORDER_STYLE_TOP );
-            if ( ident != IdentValue.NONE ) {
-                paintBorderSide( border, g, bounds, border_color, TOP, ident );
+        if ((sides & TOP) == TOP) {
+            ident = c.getCurrentStyle().getIdent(CSSName.BORDER_STYLE_TOP);
+            if (ident != IdentValue.NONE) {
+                paintBorderSide(border, g, bounds, border_color, TOP, ident);
             }
         }
-        if ( ( sides & LEFT ) == LEFT ) {
-            ident = ctx.getCurrentStyle().getIdent( CSSName.BORDER_STYLE_LEFT );
-            if ( ident != IdentValue.NONE ) {
-                paintBorderSide( border, g, bounds, border_color, LEFT, ident );
+        if ((sides & LEFT) == LEFT) {
+            ident = c.getCurrentStyle().getIdent(CSSName.BORDER_STYLE_LEFT);
+            if (ident != IdentValue.NONE) {
+                paintBorderSide(border, g, bounds, border_color, LEFT, ident);
             }
         }
-        if ( ( sides & BOTTOM ) == BOTTOM ) {
-            ident = ctx.getCurrentStyle().getIdent( CSSName.BORDER_STYLE_BOTTOM );
-            if ( ident != IdentValue.NONE ) {
-                paintBorderSide( border, g, bounds, border_color, BOTTOM, ident );
+        if ((sides & BOTTOM) == BOTTOM) {
+            ident = c.getCurrentStyle().getIdent(CSSName.BORDER_STYLE_BOTTOM);
+            if (ident != IdentValue.NONE) {
+                paintBorderSide(border, g, bounds, border_color, BOTTOM, ident);
             }
         }
-        if ( ( sides & RIGHT ) == RIGHT ) {
-            ident = ctx.getCurrentStyle().getIdent( CSSName.BORDER_STYLE_RIGHT );
-            if ( ident != IdentValue.NONE ) {
-                paintBorderSide( border, g, bounds, border_color, RIGHT, ident );
+        if ((sides & RIGHT) == RIGHT) {
+            ident = c.getCurrentStyle().getIdent(CSSName.BORDER_STYLE_RIGHT);
+            if (ident != IdentValue.NONE) {
+                paintBorderSide(border, g, bounds, border_color, RIGHT, ident);
             }
         }
     }
@@ -91,11 +102,11 @@ public class BorderPainter {
     /**
      * Description of the Method
      *
-     * @param rect    PARAM
-     * @param border  PARAM
-     * @return        Returns
+     * @param rect   PARAM
+     * @param border PARAM
+     * @return Returns
      */
-    public static Rectangle shrinkRect( final Rectangle rect, final Border border ) {
+    public static Rectangle shrinkRect(final Rectangle rect, final Border border) {
         Rectangle r2 = new Rectangle();
         r2.x = rect.x + border.left;
         r2.width = rect.width - border.left - border.right;
@@ -107,49 +118,49 @@ public class BorderPainter {
     /**
      * Description of the Method
      *
-     * @param border           PARAM
-     * @param g                PARAM
-     * @param bounds           PARAM
-     * @param border_color     PARAM
-     * @param side             PARAM
-     * @param borderSideStyle  PARAM
+     * @param border          PARAM
+     * @param g               PARAM
+     * @param bounds          PARAM
+     * @param border_color    PARAM
+     * @param side            PARAM
+     * @param borderSideStyle PARAM
      */
-    private static void paintBorderSide( final Border border, final Graphics g, final Rectangle bounds, final BorderColor border_color, final int side, final IdentValue borderSideStyle ) {
-        if ( borderSideStyle == IdentValue.RIDGE || borderSideStyle == IdentValue.GROOVE ) {
+    private static void paintBorderSide(final Border border, final Graphics g, final Rectangle bounds, final BorderColor border_color, final int side, final IdentValue borderSideStyle) {
+        if (borderSideStyle == IdentValue.RIDGE || borderSideStyle == IdentValue.GROOVE) {
             Border bd2 = new Border();
             bd2.top = border.top / 2;
             bd2.bottom = border.bottom / 2;
             bd2.left = border.left / 2;
             bd2.right = border.right / 2;
-            if ( borderSideStyle == IdentValue.RIDGE ) {
-                paintGoodBevel( g, bounds, border, border_color.darker(), border_color.brighter(), side );
-                paintGoodBevel( g, bounds, bd2, border_color.brighter(), border_color.darker(), side );
+            if (borderSideStyle == IdentValue.RIDGE) {
+                paintGoodBevel(g, bounds, border, border_color.darker(), border_color.brighter(), side);
+                paintGoodBevel(g, bounds, bd2, border_color.brighter(), border_color.darker(), side);
             } else {
-                paintGoodBevel( g, bounds, border, border_color.brighter(), border_color.darker(), side );
-                paintGoodBevel( g, bounds, bd2, border_color.darker(), border_color.brighter(), side );
+                paintGoodBevel(g, bounds, border, border_color.brighter(), border_color.darker(), side);
+                paintGoodBevel(g, bounds, bd2, border_color.darker(), border_color.brighter(), side);
             }
             return;
         }
 
-        if ( borderSideStyle == IdentValue.OUTSET ) {
-            paintGoodBevel( g, bounds, border,
+        if (borderSideStyle == IdentValue.OUTSET) {
+            paintGoodBevel(g, bounds, border,
                     border_color.brighter(),
-                    border_color.darker(), side );
+                    border_color.darker(), side);
             return;
         }
 
-        if ( borderSideStyle == IdentValue.INSET ) {
-            paintGoodBevel( g, bounds, border,
+        if (borderSideStyle == IdentValue.INSET) {
+            paintGoodBevel(g, bounds, border,
                     border_color.darker(),
-                    border_color.brighter(), side );
+                    border_color.brighter(), side);
             return;
         }
 
-        if ( borderSideStyle == IdentValue.SOLID ) {
-            paintSolid( g, bounds, border, border_color, side );
+        if (borderSideStyle == IdentValue.SOLID) {
+            paintSolid(g, bounds, border, border_color, side);
         }
 
-        if ( borderSideStyle == IdentValue.DOUBLE ) {
+        if (borderSideStyle == IdentValue.DOUBLE) {
             // this may need to be modified to account for rounding errors
             // create a new border only 1/3 the thickness
             Border outer = new Border();
@@ -157,218 +168,218 @@ public class BorderPainter {
             outer.bottom = border.bottom / 3;
             outer.left = border.left / 3;
             outer.right = border.right / 3;
-            Border center = new Border( outer );
+            Border center = new Border(outer);
 
-            Border inner = new Border( outer );
-            if ( border.top == 1 ) {
+            Border inner = new Border(outer);
+            if (border.top == 1) {
                 outer.top = 1;
                 center.top = 0;
             }
-            if ( border.bottom == 1 ) {
+            if (border.bottom == 1) {
                 outer.bottom = 1;
                 center.bottom = 0;
             }
-            if ( border.left == 1 ) {
+            if (border.left == 1) {
                 outer.left = 1;
                 center.left = 0;
             }
-            if ( border.right == 1 ) {
+            if (border.right == 1) {
                 outer.right = 1;
                 center.right = 0;
             }
 
-            if ( border.top == 2 ) {
+            if (border.top == 2) {
                 outer.top = 1;
                 center.top = 0;
                 inner.top = 1;
             }
-            if ( border.bottom == 2 ) {
+            if (border.bottom == 2) {
                 outer.bottom = 1;
                 center.bottom = 0;
                 inner.bottom = 1;
             }
-            if ( border.left == 2 ) {
+            if (border.left == 2) {
                 outer.left = 1;
                 center.left = 0;
                 inner.left = 1;
             }
-            if ( border.right == 2 ) {
+            if (border.right == 2) {
                 outer.right = 1;
                 center.right = 0;
                 inner.right = 1;
             }
 
-            Rectangle b2 = shrinkRect( bounds, outer );
-            b2 = shrinkRect( b2, center );
+            Rectangle b2 = shrinkRect(bounds, outer);
+            b2 = shrinkRect(b2, center);
             // draw outer border
-            paintSolid( (Graphics2D)g, bounds, outer, border_color, side );
+            paintSolid((Graphics2D) g, bounds, outer, border_color, side);
             // draw inner border
-            paintSolid( (Graphics2D)g, b2, inner, border_color, side );
+            paintSolid((Graphics2D) g, b2, inner, border_color, side);
         }
 
-        if ( borderSideStyle == IdentValue.DASHED ) {
-            Graphics2D g2 = (Graphics2D)g;
-            g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
-            paintPatternedRect( g2, bounds, border, border_color, new float[]{10.0f, 4.0f}, side );
-            g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+        if (borderSideStyle == IdentValue.DASHED) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+            paintPatternedRect(g2, bounds, border, border_color, new float[]{10.0f, 4.0f}, side);
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
-        if ( borderSideStyle == IdentValue.DOTTED ) {
-            Graphics2D g2 = (Graphics2D)g;
+        if (borderSideStyle == IdentValue.DOTTED) {
+            Graphics2D g2 = (Graphics2D) g;
             // turn off anti-aliasing or the dots will be all blurry
-            g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
-            paintPatternedRect( g2, bounds, border, border_color, new float[]{border.top, border.top}, side );
-            g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+            paintPatternedRect(g2, bounds, border, border_color, new float[]{border.top, border.top}, side);
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
     }
 
     /**
      * Description of the Method
      *
-     * @param g2       PARAM
-     * @param bounds   PARAM
-     * @param border   PARAM
-     * @param color    PARAM
-     * @param pattern  PARAM
+     * @param g2      PARAM
+     * @param bounds  PARAM
+     * @param border  PARAM
+     * @param color   PARAM
+     * @param pattern PARAM
      * @param side
      */
-    private static void paintPatternedRect( final Graphics2D g2, final Rectangle bounds, final Border border, final BorderColor color, final float[] pattern, final int side ) {
+    private static void paintPatternedRect(final Graphics2D g2, final Rectangle bounds, final Border border, final BorderColor color, final float[] pattern, final int side) {
         Stroke old_stroke = g2.getStroke();
         int x = bounds.x;
         int y = bounds.y;
         int w = bounds.width;
         int h = bounds.height;
 
-        if ( side == TOP ) {
-            g2.setColor( color.topColor );
-            g2.setStroke( new BasicStroke( border.top, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0 ) );
-            g2.drawLine( x, y, x + w, y );
+        if (side == TOP) {
+            g2.setColor(color.topColor);
+            g2.setStroke(new BasicStroke(border.top, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0));
+            g2.drawLine(x, y, x + w, y);
         }
-        if ( side == LEFT ) {
-            g2.setColor( color.leftColor );
-            g2.setStroke( new BasicStroke( border.left, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0 ) );
-            g2.drawLine( x, y, x, y + h );
+        if (side == LEFT) {
+            g2.setColor(color.leftColor);
+            g2.setStroke(new BasicStroke(border.left, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0));
+            g2.drawLine(x, y, x, y + h);
         }
-        if ( side == RIGHT ) {
-            g2.setColor( color.rightColor );
-            g2.setStroke( new BasicStroke( border.right, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0 ) );
-            g2.drawLine( x + w, y, x + w, y + h );
+        if (side == RIGHT) {
+            g2.setColor(color.rightColor);
+            g2.setStroke(new BasicStroke(border.right, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0));
+            g2.drawLine(x + w, y, x + w, y + h);
         }
-        if ( side == BOTTOM ) {
-            g2.setColor( color.bottomColor );
-            g2.setStroke( new BasicStroke( border.bottom, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0 ) );
-            g2.drawLine( x, y + h, x + w, y + h );
+        if (side == BOTTOM) {
+            g2.setColor(color.bottomColor);
+            g2.setStroke(new BasicStroke(border.bottom, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0));
+            g2.drawLine(x, y + h, x + w, y + h);
         }
 
-        g2.setStroke( old_stroke );
+        g2.setStroke(old_stroke);
     }
 
 
     /**
      * Description of the Method
      *
-     * @param g       PARAM
-     * @param bounds  PARAM
-     * @param border  PARAM
-     * @param high    PARAM
-     * @param low     PARAM
-     * @param side    PARAM
+     * @param g      PARAM
+     * @param bounds PARAM
+     * @param border PARAM
+     * @param high   PARAM
+     * @param low    PARAM
+     * @param side   PARAM
      */
-    private static void paintGoodBevel( final Graphics g, final Rectangle bounds, final Border border, final BorderColor high, final BorderColor low, final int side ) {
+    private static void paintGoodBevel(final Graphics g, final Rectangle bounds, final Border border, final BorderColor high, final BorderColor low, final int side) {
         Polygon poly;
-        if ( side == TOP ) {
+        if (side == TOP) {
             poly = new Polygon();
-            poly.addPoint( bounds.x, bounds.y );
-            poly.addPoint( bounds.x + bounds.width, bounds.y );
-            poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
-            poly.addPoint( bounds.x + border.left, bounds.y + border.top );
-            g.setColor( high.topColor );
-            g.fillPolygon( poly );
+            poly.addPoint(bounds.x, bounds.y);
+            poly.addPoint(bounds.x + bounds.width, bounds.y);
+            poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + border.top);
+            poly.addPoint(bounds.x + border.left, bounds.y + border.top);
+            g.setColor(high.topColor);
+            g.fillPolygon(poly);
         }
 
-        if ( side == BOTTOM ) {
+        if (side == BOTTOM) {
             poly = new Polygon();
-            poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
-            poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
-            poly.addPoint( bounds.x, bounds.y + bounds.height );
-            poly.addPoint( bounds.x + bounds.width, bounds.y + bounds.height );
-            g.setColor( low.bottomColor );
-            g.fillPolygon( poly );
+            poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom);
+            poly.addPoint(bounds.x + border.left, bounds.y + bounds.height - border.bottom);
+            poly.addPoint(bounds.x, bounds.y + bounds.height);
+            poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height);
+            g.setColor(low.bottomColor);
+            g.fillPolygon(poly);
         }
 
-        if ( side == RIGHT ) {
+        if (side == RIGHT) {
             poly = new Polygon();
-            poly.addPoint( bounds.x + bounds.width, bounds.y );
-            poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
-            poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
-            poly.addPoint( bounds.x + bounds.width, bounds.y + bounds.height );
-            g.setColor( low.rightColor );
-            g.fillPolygon( poly );
+            poly.addPoint(bounds.x + bounds.width, bounds.y);
+            poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + border.top);
+            poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom);
+            poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height);
+            g.setColor(low.rightColor);
+            g.fillPolygon(poly);
         }
 
-        if ( side == LEFT ) {
+        if (side == LEFT) {
             poly = new Polygon();
-            poly.addPoint( bounds.x, bounds.y );
-            poly.addPoint( bounds.x + border.left, bounds.y + border.top );
-            poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
-            poly.addPoint( bounds.x, bounds.y + bounds.height );
-            g.setColor( high.leftColor );
-            g.fillPolygon( poly );
+            poly.addPoint(bounds.x, bounds.y);
+            poly.addPoint(bounds.x + border.left, bounds.y + border.top);
+            poly.addPoint(bounds.x + border.left, bounds.y + bounds.height - border.bottom);
+            poly.addPoint(bounds.x, bounds.y + bounds.height);
+            g.setColor(high.leftColor);
+            g.fillPolygon(poly);
         }
     }
 
     /**
      * Description of the Method
      *
-     * @param g       PARAM
-     * @param bounds  PARAM
-     * @param border  PARAM
-     * @param color   PARAM
-     * @param side    PARAM
+     * @param g      PARAM
+     * @param bounds PARAM
+     * @param border PARAM
+     * @param color  PARAM
+     * @param side   PARAM
      */
-    private static void paintSolid( final Graphics g, final Rectangle bounds, final Border border, final BorderColor color, final int side ) {
+    private static void paintSolid(final Graphics g, final Rectangle bounds, final Border border, final BorderColor color, final int side) {
         Polygon poly;
         // CLEAN: duplicate, except for color, with paintGoodBevel() for BOTTOM (PWW 25-01-05)
-        if ( side == TOP ) {
+        if (side == TOP) {
             poly = new Polygon();
-            poly.addPoint( bounds.x, bounds.y );
-            poly.addPoint( bounds.x + bounds.width, bounds.y );
-            poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
-            poly.addPoint( bounds.x + border.left, bounds.y + border.top );
-            g.setColor( color.topColor );
-            g.fillPolygon( poly );
+            poly.addPoint(bounds.x, bounds.y);
+            poly.addPoint(bounds.x + bounds.width, bounds.y);
+            poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + border.top);
+            poly.addPoint(bounds.x + border.left, bounds.y + border.top);
+            g.setColor(color.topColor);
+            g.fillPolygon(poly);
         }
 
         // CLEAN: duplicate, except for color, with paintGoodBevel() for BOTTOM (PWW 25-01-05)
-        if ( side == BOTTOM ) {
+        if (side == BOTTOM) {
             poly = new Polygon();
-            poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
-            poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
-            poly.addPoint( bounds.x, bounds.y + bounds.height );
-            poly.addPoint( bounds.x + bounds.width, bounds.y + bounds.height );
-            g.setColor( color.bottomColor );
-            g.fillPolygon( poly );
+            poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom);
+            poly.addPoint(bounds.x + border.left, bounds.y + bounds.height - border.bottom);
+            poly.addPoint(bounds.x, bounds.y + bounds.height);
+            poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height);
+            g.setColor(color.bottomColor);
+            g.fillPolygon(poly);
         }
 
         // CLEAN: duplicate, except for color, with paintGoodBevel() for BOTTOM (PWW 25-01-05)
-        if ( side == RIGHT ) {
+        if (side == RIGHT) {
             poly = new Polygon();
-            poly.addPoint( bounds.x + bounds.width, bounds.y );
-            poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + border.top );
-            poly.addPoint( bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom );
-            poly.addPoint( bounds.x + bounds.width, bounds.y + bounds.height );
-            g.setColor( color.rightColor );
-            g.fillPolygon( poly );
+            poly.addPoint(bounds.x + bounds.width, bounds.y);
+            poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + border.top);
+            poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom);
+            poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height);
+            g.setColor(color.rightColor);
+            g.fillPolygon(poly);
         }
 
         // CLEAN: duplicate, except for color, with paintGoodBevel() for BOTTOM (PWW 25-01-05)
-        if ( side == LEFT ) {
+        if (side == LEFT) {
             poly = new Polygon();
-            poly.addPoint( bounds.x, bounds.y );
-            poly.addPoint( bounds.x + border.left, bounds.y + border.top );
-            poly.addPoint( bounds.x + border.left, bounds.y + bounds.height - border.bottom );
-            poly.addPoint( bounds.x, bounds.y + bounds.height );
-            g.setColor( color.leftColor );
-            g.fillPolygon( poly );
+            poly.addPoint(bounds.x, bounds.y);
+            poly.addPoint(bounds.x + border.left, bounds.y + border.top);
+            poly.addPoint(bounds.x + border.left, bounds.y + bounds.height - border.bottom);
+            poly.addPoint(bounds.x, bounds.y + bounds.height);
+            g.setColor(color.leftColor);
+            g.fillPolygon(poly);
         }
     }
 
@@ -378,6 +389,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/05/08 14:36:58  tobega
+ * Refactored away the need for having a context in a CalculatedStyle
+ *
  * Revision 1.21  2005/01/29 20:24:23  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

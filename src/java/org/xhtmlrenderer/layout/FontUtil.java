@@ -19,60 +19,63 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Font;
-import java.awt.font.LineMetrics;
-import java.awt.geom.Rectangle2D;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 
+import java.awt.Font;
+import java.awt.font.LineMetrics;
+import java.awt.geom.Rectangle2D;
+
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class FontUtil {
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     static boolean quick = false;
 
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param str   PARAM
-     * @param font  PARAM
-     * @return      Returns the length of the string in graphics units
-     */
-    public static int len( Context c, String str, Font font ) {
-        return (int)Math.ceil( c.getTextRenderer().getLogicalBounds( c.getGraphics(), font, str ).getWidth() );
-    }
-
-    /**
-     * Description of the Method
-     *
      * @param c    PARAM
-     * @param box  PARAM
-     * @return     Returns
+     * @param str  PARAM
+     * @param font PARAM
+     * @return Returns the length of the string in graphics units
      */
-    public static int len( Context c, InlineTextBox box ) {
-        return (int)Math.ceil( c.getTextRenderer().getLogicalBounds( c.getGraphics(), getFont( c ), box.getSubstring() ).getWidth() );
+    public static int len(Context c, String str, Font font) {
+        return (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), font, str).getWidth());
     }
 
     /**
      * Description of the Method
      *
-     * @param c  PARAM
-     * @return   Returns
+     * @param c   PARAM
+     * @param box PARAM
+     * @return Returns
      */
-    public static int lineHeight( Context c ) {
+    public static int len(Context c, InlineTextBox box) {
+        return (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont(c), box.getSubstring()).getWidth());
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param c PARAM
+     * @return Returns
+     */
+    public static int lineHeight(Context c) {
         CalculatedStyle style = c.getCurrentStyle();
-        int val = (int)Math.ceil( c.getTextRenderer().getLogicalBounds( c.getGraphics(), getFont( c ), "Test" ).getHeight() );
-        if ( !style.isIdent( CSSName.LINE_HEIGHT, IdentValue.NORMAL ) ) {
-            val = (int)style.getFloatPropertyProportionalHeight( CSSName.LINE_HEIGHT, c.getBlockFormattingContext().getHeight() );
+        int val = (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont(c), "Test").getHeight());
+        if (!style.isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL)) {
+            val = (int) style.getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, c.getBlockFormattingContext().getHeight(), c.getCtx());
         }
         return val;
     }
@@ -80,40 +83,40 @@ public class FontUtil {
     /**
      * PWW ADDED 14/08/04 Should be used to resolve ex properly
      *
-     * @param context  PARAM
+     * @param context PARAM
      * @param style
-     * @return         Returns
+     * @return Returns
      */
     //TODO: use this method!
-    public static int fontXHeightForElement( Context context, CalculatedStyle style ) {
-        return lineHeight( context );
+    public static int fontXHeightForElement(Context context, CalculatedStyle style) {
+        return lineHeight(context);
     }
 
     //TODO: add method to get font-size for a specific XHeight
     /**
      * Gets the font attribute of the FontUtil class
      *
-     * @param c  PARAM
-     * @return   The font value
+     * @param c PARAM
+     * @return The font value
      */
-    public static Font getFont( Context c ) {
+    public static Font getFont(Context c) {
         CalculatedStyle style = c.getCurrentStyle();
 
         // CalculatedStyle should take care of all iheritance and default values
         // if a change is made to the basic font (by user action, for example), restyle
         Font f = c.getGraphics().getFont();
-        if ( quick ) {
+        if (quick) {
             return f;
         }
 
-        float size = style.getFloatPropertyProportionalHeight( CSSName.FONT_SIZE, c.getBlockFormattingContext().getHeight() );
+        float size = style.getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, c.getBlockFormattingContext().getHeight(), c.getCtx());
 
-        IdentValue fontWeight = style.getIdent( CSSName.FONT_WEIGHT );
-        String[] families = style.propertyByName( CSSName.FONT_FAMILY ).computedValue().asStringArray();
+        IdentValue fontWeight = style.getIdent(CSSName.FONT_WEIGHT);
+        String[] families = style.propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
 
-        IdentValue fontStyle = style.getIdent( CSSName.FONT_STYLE );
-        IdentValue variant = style.getIdent( CSSName.FONT_VARIANT );
-        f = c.getFontResolver().resolveFont( c, families, size, fontWeight, fontStyle, variant );
+        IdentValue fontStyle = style.getIdent(CSSName.FONT_STYLE);
+        IdentValue variant = style.getIdent(CSSName.FONT_VARIANT);
+        f = c.getFontResolver().resolveFont(c, families, size, fontWeight, fontStyle, variant);
 
         return f;
     }
@@ -122,29 +125,29 @@ public class FontUtil {
     /**
      * Gets the lineMetrics attribute of the FontUtil class
      *
-     * @param c    PARAM
-     * @param box  PARAM
-     * @return     The lineMetrics value
+     * @param c   PARAM
+     * @param box PARAM
+     * @return The lineMetrics value
      */
-    public static LineMetrics getLineMetrics( Context c, InlineBox box ) {
+    public static LineMetrics getLineMetrics(Context c, InlineBox box) {
         String sample = "Test";
-        if ( ( box instanceof InlineTextBox ) && !( (InlineTextBox)box ).getSubstring().equals( "" ) ) {
-            sample = ( (InlineTextBox)box ).getSubstring();
+        if ((box instanceof InlineTextBox) && !((InlineTextBox) box).getSubstring().equals("")) {
+            sample = ((InlineTextBox) box).getSubstring();
         }
-        return c.getTextRenderer().getLineMetrics( c.getGraphics(),
-                getFont( c ), sample );
+        return c.getTextRenderer().getLineMetrics(c.getGraphics(),
+                getFont(c), sample);
     }
 
     /**
      * Gets the textBounds attribute of the FontUtil class
      *
-     * @param c    PARAM
-     * @param box  PARAM
-     * @return     The textBounds value
+     * @param c   PARAM
+     * @param box PARAM
+     * @return The textBounds value
      */
-    public static Rectangle2D getTextBounds( Context c, InlineTextBox box ) {
-        return c.getTextRenderer().getLogicalBounds( c.getGraphics(),
-                getFont( c ), box.getSubstring() );
+    public static Rectangle2D getTextBounds(Context c, InlineTextBox box) {
+        return c.getTextRenderer().getLogicalBounds(c.getGraphics(),
+                getFont(c), box.getSubstring());
     }
 }
 
@@ -152,6 +155,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/05/08 14:36:57  tobega
+ * Refactored away the need for having a context in a CalculatedStyle
+ *
  * Revision 1.32  2005/01/29 20:21:06  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

@@ -19,10 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-
-import javax.swing.*;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.BlockBox;
@@ -30,11 +26,15 @@ import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 
+import javax.swing.*;
+import java.awt.Point;
+import java.awt.Rectangle;
+
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class LineBreaker {
 
@@ -42,19 +42,19 @@ public class LineBreaker {
     /**
      * Description of the Method
      *
-     * @param c           PARAM
-     * @param content     PARAM
-     * @param avail       PARAM
-     * @param prev_align  PARAM
-     * @param curr_line   PARAM
-     * @return            Returns
+     * @param c          PARAM
+     * @param content    PARAM
+     * @param avail      PARAM
+     * @param prev_align PARAM
+     * @param curr_line  PARAM
+     * @return Returns
      */
-    public static InlineBox generateReplacedInlineBox( Context c, Content content, int avail, InlineBox prev_align, LineBox curr_line ) {
+    public static InlineBox generateReplacedInlineBox(Context c, Content content, int avail, InlineBox prev_align, LineBox curr_line) {
         InlineBlockBox box = new InlineBlockBox();
         box.element = content.getElement();
         CalculatedStyle style = c.getCurrentStyle();
         // use the prev_align to calculate the x
-        if ( prev_align != null && !prev_align.break_after ) {
+        if (prev_align != null && !prev_align.break_after) {
             box.x = prev_align.x + prev_align.width;
         } else {
             box.x = 0;
@@ -63,44 +63,44 @@ public class LineBreaker {
         box.y = 0;// it's relative to the line
         // do vertical alignment
         //now done later VerticalAlign.setupVerticalAlign(c, style, box);
-        c.translate( box.x + curr_line.x, box.y + curr_line.y );
-        c.translateInsets( box );
+        c.translate(box.x + curr_line.x, box.y + curr_line.y);
+        c.translateInsets(box);
         Rectangle bounds = null;
         BlockBox block = null;
-        JComponent cc = c.getNamespaceHandler().getCustomComponent( content.getElement(), c );
-        if ( cc != null ) {
+        JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c);
+        if (cc != null) {
             bounds = cc.getBounds();
         } else {
-            block = (BlockBox)Boxing.layout( c, content );
+            block = (BlockBox) Boxing.layout(c, content);
             //Uu.p("got a block box from the sub layout: " + block);
-            bounds = new Rectangle( block.x, block.y, block.width, block.height );
+            bounds = new Rectangle(block.x, block.y, block.width, block.height);
             //Uu.p("bounds = " + bounds);
         }
         //box.replaced = true;
         box.sub_block = block;
-        if ( block != null ) {
-            block.setParent( box );
+        if (block != null) {
+            block.setParent(box);
         }
         box.component = cc;
 
         // set up the extents
-        box.width = bounds.width + box.totalHorizontalPadding( c.getCurrentStyle() );
-        box.height = bounds.height + box.totalVerticalPadding( c.getCurrentStyle() );
+        box.width = bounds.width + box.totalHorizontalPadding(c.getCurrentStyle(), c);
+        box.height = bounds.height + box.totalVerticalPadding(c.getCurrentStyle(), c);
         box.break_after = false;
 
         // if it won't fit on this line, then put it on the next one
         // the box will be discarded and recalculated
-        if ( box.width > avail && prev_align != null && !prev_align.break_after ) {
+        if (box.width > avail && prev_align != null && !prev_align.break_after) {
             box.break_before = true;
             box.x = 0;
         }
-        if ( cc != null && !box.break_before ) {//It will be discarded if break_before is true!
+        if (cc != null && !box.break_before) {//It will be discarded if break_before is true!
             Point origin = c.getOriginOffset();
-            cc.setLocation( (int)origin.getX(), (int)origin.getY() );
-            c.getCanvas().add( cc );
+            cc.setLocation((int) origin.getX(), (int) origin.getY());
+            c.getCanvas().add(cc);
         }
-        c.untranslateInsets( box );
-        c.translate( -box.x - curr_line.x, -box.y - curr_line.y );
+        c.untranslateInsets(box);
+        c.translate(-box.x - curr_line.x, -box.y - curr_line.y);
         return box;
     }
 
@@ -110,6 +110,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.56  2005/05/08 14:36:57  tobega
+ * Refactored away the need for having a context in a CalculatedStyle
+ *
  * Revision 1.55  2005/01/29 20:21:06  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

@@ -275,8 +275,8 @@ public class ContextImpl implements Context {
         extents_stack.push(getExtents());
 
         Rectangle rect = new Rectangle(0, 0,
-                getExtents().width - block.totalHorizontalPadding(getCurrentStyle()),
-                getExtents().height - block.totalVerticalPadding(getCurrentStyle()));
+                getExtents().width - block.totalHorizontalPadding(getCurrentStyle(), this),
+                getExtents().height - block.totalVerticalPadding(getCurrentStyle(), this));
 
         setExtents(rect);
     }
@@ -399,9 +399,9 @@ public class ContextImpl implements Context {
      */
     //TODO: this is wrong! margins can collapse, for starters!
     public void translateInsets(Box box) {
-        Border border = getCurrentStyle().getBorderWidth(box.getWidth(), box.getHeight());
-        Border margin = getCurrentStyle().getMarginWidth(box.getWidth(), box.getHeight());
-        Border padding = getCurrentStyle().getPaddingWidth(box.getWidth(), box.getHeight());
+        Border border = getCurrentStyle().getBorderWidth(box.getWidth(), box.getHeight(), getCtx());
+        Border margin = getCurrentStyle().getMarginWidth(box.getWidth(), box.getHeight(), getCtx());
+        Border padding = getCurrentStyle().getPaddingWidth(box.getWidth(), box.getHeight(), getCtx());
         if (box == null) {
             XRLog.render(Level.WARNING, "null box");
             return;//TODO: why?
@@ -418,9 +418,9 @@ public class ContextImpl implements Context {
      */
     //TODO: this is wrong! margins can collapse, for starters!
     public void untranslateInsets(Box box) {
-        Border border = getCurrentStyle().getBorderWidth(box.getWidth(), box.getHeight());
-        Border margin = getCurrentStyle().getMarginWidth(box.getWidth(), box.getHeight());
-        Border padding = getCurrentStyle().getPaddingWidth(box.getWidth(), box.getHeight());
+        Border border = getCurrentStyle().getBorderWidth(box.getWidth(), box.getHeight(), getCtx());
+        Border margin = getCurrentStyle().getMarginWidth(box.getWidth(), box.getHeight(), getCtx());
+        Border padding = getCurrentStyle().getPaddingWidth(box.getWidth(), box.getHeight(), getCtx());
         translate(-(margin.left + border.left + padding.left),
                 -(margin.top + border.top + padding.top));
     }

@@ -154,7 +154,7 @@ public class InlineRendering {
         //Uu.p("painting border: " + inline.border);
         // paint the background
         //int padding_xoff = inline.totalLeftPadding(c.getCurrentStyle());
-        int padding_yoff = inline.totalTopPadding(c.getCurrentStyle());
+        int padding_yoff = inline.totalTopPadding(c.getCurrentStyle(), c);
 
         int ty = line.getBaseline() - inline.y - inline.height - padding_yoff + line.y;
 
@@ -168,7 +168,7 @@ public class InlineRendering {
         int old_width = inline.width;
         int old_height = inline.height;
         inline.width = inline.width - padX - inline.rightPadding;
-        inline.height += inline.totalVerticalPadding(c.getCurrentStyle());
+        inline.height += inline.totalVerticalPadding(c.getCurrentStyle(), c);
         // paint the actual background
         //BoxRendering.paintBackground(c, inline);
         //Border margin = c.getCurrentStyle().getMarginWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
@@ -205,7 +205,7 @@ public class InlineRendering {
      * @param inline PARAM
      */
     public static void paintLeftPadding(Context c, LineBox line, InlineBox inline, int padX, int padWidth) {
-        int padding_yoff = inline.totalTopPadding(c.getCurrentStyle());
+        int padding_yoff = inline.totalTopPadding(c.getCurrentStyle(), c);
 
         int ty = line.getBaseline() - inline.y - inline.height - padding_yoff + line.y;
 
@@ -215,7 +215,7 @@ public class InlineRendering {
         int old_width = inline.width;
         int old_height = inline.height;
         //sets the inline borders to the current style, so border objects will exist
-        inline.height += inline.totalVerticalPadding(c.getCurrentStyle());
+        inline.height += inline.totalVerticalPadding(c.getCurrentStyle(), c);
         inline.width = padWidth;
         // paint the actual background
         //can't use this, too uncontrolled: BoxRendering.paintBackground(c, inline);
@@ -253,7 +253,7 @@ public class InlineRendering {
      * @param inline PARAM
      */
     public static void paintRightPadding(Context c, LineBox line, InlineBox inline, int padX) {
-        int padding_yoff = inline.totalTopPadding(c.getCurrentStyle());
+        int padding_yoff = inline.totalTopPadding(c.getCurrentStyle(), c);
 
         int ty = line.getBaseline() - inline.y - inline.height - padding_yoff + line.y;
 
@@ -263,7 +263,7 @@ public class InlineRendering {
         int old_width = inline.width;
         int old_height = inline.height;
         //sets the inline borders to the current style, so border objects will exist
-        inline.height += inline.totalVerticalPadding(c.getCurrentStyle());
+        inline.height += inline.totalVerticalPadding(c.getCurrentStyle(), c);
         inline.width = inline.totalRightPadding();
         // paint the actual background
         //can't use this, too uncontrolled: BoxRendering.paintBackground(c, inline);
@@ -301,7 +301,7 @@ public class InlineRendering {
      * @param inline PARAM
      */
     public static void paintMargin(Context c, LineBox line, InlineBox inline, int padX, int width, Color background_color) {
-        int padding_yoff = inline.totalTopPadding(c.getCurrentStyle());
+        int padding_yoff = inline.totalTopPadding(c.getCurrentStyle(), c);
 
         int ty = line.getBaseline() - inline.y - inline.height - padding_yoff + line.y;
 
@@ -311,7 +311,7 @@ public class InlineRendering {
         int old_width = inline.width;
         int old_height = inline.height;
         //sets the inline borders to the current style, so border objects will exist
-        inline.height += inline.totalVerticalPadding(c.getCurrentStyle());
+        inline.height += inline.totalVerticalPadding(c.getCurrentStyle(), c);
         inline.width = inline.totalRightPadding();
         // paint the actual background
         //can't use this, too uncontrolled: BoxRendering.paintBackground(c, inline);
@@ -459,7 +459,7 @@ public class InlineRendering {
                 //Now we know that an inline element started here, handle borders and such?
                 Relative.translateRelative(c);
                 //left padding for this inline element
-                int padWidth = ib.totalLeftPadding(c.getCurrentStyle());
+                int padWidth = ib.totalLeftPadding(c.getCurrentStyle(), c);
                 paintMargin(c, line, ib, padX, ib.margin.left, background_color);
                 paintLeftPadding(c, line, ib, padX, padWidth);
                 padX += padWidth;

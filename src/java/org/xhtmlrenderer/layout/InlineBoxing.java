@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.block.Absolute;
@@ -60,11 +61,11 @@ public class InlineBoxing {
         //for formatting purposes
         Rectangle bounds = new Rectangle();
         bounds.width = c.getExtents().width;
-        Border border = c.getCurrentStyle().getBorderWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
+        Border border = c.getCurrentStyle().getBorderWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight(), c.getCtx());
 
-        Border margin = c.getCurrentStyle().getMarginWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
+        Border margin = c.getCurrentStyle().getMarginWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight(), c.getCtx());
 
-        Border padding = c.getCurrentStyle().getPaddingWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
+        Border padding = c.getCurrentStyle().getPaddingWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight(), c.getCtx());
 
         //below should maybe be done somewhere else?
         bounds.width -= margin.left + border.left + padding.left +
@@ -89,7 +90,11 @@ public class InlineBoxing {
 
         // account for text-indent
         CalculatedStyle parentStyle = c.getCurrentStyle();
-        remaining_width = TextIndent.doTextIndent(parentStyle, remaining_width, curr_line);
+        if (parentStyle.hasProperty(CSSName.TEXT_INDENT)) {
+            float indent = parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, remaining_width, c.getCtx());
+            remaining_width = remaining_width - (int) indent;
+            curr_line.x = curr_line.x + (int) indent;
+        }
 
         // more setup
         LineBox prev_line = new LineBox();
@@ -140,7 +145,7 @@ public class InlineBoxing {
                 if (pushedOnFirstLine != null) {
                     pushedOnFirstLine.addLast(style);
                 }
-                pendingLeftPadding += helper.totalLeftPadding(c.getCurrentStyle());
+                pendingLeftPadding += helper.totalLeftPadding(c.getCurrentStyle(), c);
                 pendingRightPadding += helper.totalRightPadding();
                 continue;
             }
@@ -156,7 +161,7 @@ public class InlineBoxing {
                         curr_line.addChild(prev_inline);
                     }
                     //CHECK: not sure this is where the padding really goes, always
-                    int rp = prev_inline.totalRightPadding(c.getCurrentStyle());
+                    int rp = prev_inline.totalRightPadding(c.getCurrentStyle(), c);
                     prev_inline.rightPadding += rp;
                     prev_inline.width += rp;
                     pendingRightPadding -= rp;
@@ -500,7 +505,7 @@ public class InlineBoxing {
                 CalculatedStyle style1 = c.getCurrentStyle();
                 inline.whitespace = WhitespaceStripper.getWhitespace(style1);
                 BoxBuilder.prepBox(c, inline, prev_align);
-                inline.width += inline.totalHorizontalPadding(style1);
+                inline.width += inline.totalHorizontalPadding(style1, c);
                 inline.rightPadding = inline.totalRightPadding();
                 c.popStyle();
                 result = inline;
@@ -556,6 +561,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/05/08 14:36:57  tobega
+ * Refactored away the need for having a context in a CalculatedStyle
+ *
  * Revision 1.19  2005/05/08 13:02:40  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
  *

@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.layout.block;
 
-import java.awt.Point;
-import java.awt.Rectangle;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -28,21 +26,24 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.render.Box;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+
 
 /**
  * Description of the Class
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class Fixed {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public static void positionFixedChild( Context c, Box box ) {
-        if ( LayoutUtil.isFixed( c.getCss().getCascadedStyle( box.element, false ) ) ) {//already restyled by ContentUtil
+    public static void positionFixedChild(Context c, Box box) {
+        if (LayoutUtil.isFixed(c.getCss().getCascadedStyle(box.element, false))) {//already restyled by ContentUtil
             Point origin = c.getOriginOffset();
             box.x = 0;
             box.y = 0;
@@ -54,30 +55,30 @@ public class Fixed {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public static void setupFixed( Context c, Box box ) {
-        if ( c.getCurrentStyle().isIdent( CSSName.POSITION, IdentValue.FIXED ) ) {
+    public static void setupFixed(Context c, Box box) {
+        if (c.getCurrentStyle().isIdent(CSSName.POSITION, IdentValue.FIXED)) {
             box.fixed = true;
-            box.setChildrenExceedBounds( true );
+            box.setChildrenExceedBounds(true);
             Rectangle rect = c.getFixedRectangle();
 
             CalculatedStyle style = c.getCurrentStyle();
-            if ( style.hasProperty( CSSName.TOP ) ) {
-                box.top = (int)style.getFloatPropertyProportionalHeight( CSSName.TOP, (float)( rect.getHeight() ) );
+            if (style.hasProperty(CSSName.TOP)) {
+                box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, (float) (rect.getHeight()), c.getCtx());
                 box.top_set = true;
             }
-            if ( style.hasProperty( CSSName.RIGHT ) ) {
-                box.right = (int)style.getFloatPropertyProportionalWidth( CSSName.RIGHT, (float)( rect.getWidth() ) );
+            if (style.hasProperty(CSSName.RIGHT)) {
+                box.right = (int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, (float) (rect.getWidth()), c.getCtx());
                 box.right_set = true;
             }
-            if ( style.hasProperty( CSSName.BOTTOM ) ) {
-                box.bottom = (int)style.getFloatPropertyProportionalHeight( CSSName.BOTTOM, (float)( rect.getHeight() ) );
+            if (style.hasProperty(CSSName.BOTTOM)) {
+                box.bottom = (int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, (float) (rect.getHeight()), c.getCtx());
                 box.bottom_set = true;
             }
-            if ( style.hasProperty( CSSName.LEFT ) ) {
-                box.left = (int)style.getFloatPropertyProportionalWidth( CSSName.LEFT, (float)( rect.getWidth() ) );
+            if (style.hasProperty(CSSName.LEFT)) {
+                box.left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, (float) (rect.getWidth()), c.getCtx());
                 box.left_set = true;
             }
         }

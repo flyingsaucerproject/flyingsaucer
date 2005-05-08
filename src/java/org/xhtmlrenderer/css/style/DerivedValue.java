@@ -19,21 +19,23 @@
  */
 package org.xhtmlrenderer.css.style;
 
-import java.awt.*;
-import java.util.logging.*;
-import java.util.regex.*;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.util.ConversionUtil;
+import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
+
+import java.awt.Color;
+import java.awt.Point;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -43,7 +45,7 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * all type conversions make sense, and that some won't make sense until
  * relative values are resolved.
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 
 /*
@@ -61,16 +63,22 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 // NOTE: we distinguish simply between two types of values: absolute and proportional
 // absolute are values in pixels, or which can be converted to pixels using a fixed
 public class DerivedValue {
-    /** Constant for CSS2 value of "inherit"  */
+    /**
+     * Constant for CSS2 value of "inherit"
+     */
     private String INHERIT = "inherit";
 
-    /** The DOM CSSValue we are given from the Parse  */
+    /**
+     * The DOM CSSValue we are given from the Parse
+     */
     private CSSPrimitiveValue _domCSSPrimitiveValue;
 
     /** */
     private CalculatedStyle _style;
 
-    /** String array, if there is one to split from value  */
+    /**
+     * String array, if there is one to split from value
+     */
     private String[] _stringAsArray;
 
     /** */
@@ -119,16 +127,26 @@ public class DerivedValue {
 
     /** */
     private short _lengthPrimitiveType;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private boolean _hasAbsCalculated;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Color _color;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private IdentValue _identVal;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private boolean _isTransparent;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private boolean _transparentChecked;
 
     /**
@@ -138,64 +156,72 @@ public class DerivedValue {
      * and <code>group(2)</code> returns the suffix. Suffix is optional in the
      * pattern, so check if <code>group(2)</code> is null before using.
      */
-    private final static Pattern CSS_LENGTH_PATTERN = Pattern.compile( "(-?\\d{1,10}(\\.?\\d{0,10})?)((em)|(ex)|(px)|(%)|(in)|(cm)|(mm)|(pt)|(pc))?" );
+    private final static Pattern CSS_LENGTH_PATTERN = Pattern.compile("(-?\\d{1,10}(\\.?\\d{0,10})?)((em)|(ex)|(px)|(%)|(in)|(cm)|(mm)|(pt)|(pc))?");
 
     /** */
-    private final static Color COLOR_TRANSPARENT = new Color( 0, 0, 0, 0 );
+    private final static Color COLOR_TRANSPARENT = new Color(0, 0, 0, 0);
 
     /** Description of the Field */
-    private final float MM__PER__PX;
-    /** Description of the Field */
+    //private final float MM__PER__PX;
+    /**
+     * Description of the Field
+     */
     private final static int MM__PER__CM = 10;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private final static float CM__PER__IN = 2.54F;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private final static float PT__PER__IN = 1f / 72f;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private final static float PC__PER__PT = 12;
 
     /**
      * @param cssName
      * @param primitive
-     * @param inheritedStyle
+     * @param style     to which this value belongs
      */
-    public DerivedValue( CSSName cssName, CSSPrimitiveValue primitive, CalculatedStyle style ) {
+    public DerivedValue(CSSName cssName, CSSPrimitiveValue primitive, CalculatedStyle style) {
         _cssName = cssName;
         _domCSSPrimitiveValue = primitive;
         String org = _domCSSPrimitiveValue.getCssText();
-        primitive.setCssText( Idents.convertIdent( cssName, org ) );
-        if ( primitive.getCssText() == null ) {
-            throw new XRRuntimeException( "CSSValue for '" + cssName + "' is null after " +
-                    "resolving CSS identifier for value '" + org + "'" );
+        primitive.setCssText(Idents.convertIdent(cssName, org));
+        if (primitive.getCssText() == null) {
+            throw new XRRuntimeException("CSSValue for '" + cssName + "' is null after " +
+                    "resolving CSS identifier for value '" + org + "'");
         }
         _style = style;
         // We must calculate this based on the current DPI
-        MM__PER__PX = ( CM__PER__IN * MM__PER__CM ) / style.getContext().getCtx().getDPI();
+        //tobe: resolve it through RenderingContext MM__PER__PX = ( CM__PER__IN * MM__PER__CM ) / style.getContext().getCtx().getDPI();
 
         try {
-            if ( _cssName == CSSName.BACKGROUND_POSITION ) {
-                pullPointValuesForBGPos( primitive );
+            if (_cssName == CSSName.BACKGROUND_POSITION) {
+                pullPointValuesForBGPos(primitive);
             } else {
-                if ( Idents.looksLikeALength( primitive.getCssText() ) && !( _cssName == CSSName.FONT_WEIGHT ) ) {
+                if (Idents.looksLikeALength(primitive.getCssText()) && !(_cssName == CSSName.FONT_WEIGHT)) {
                     // split out the length (as string), as float, as the primitive type
-                    pullLengthValueParts( primitive );
+                    pullLengthValueParts(primitive);
                 }
             }
-        } catch ( Exception ex ) {
-            if ( _style.getParent() != null ) {
+        } catch (Exception ex) {
+            if (_style.getParent() != null) {
                 _style.getParent().dumpProperties();
             }
-            throw new XRRuntimeException( "For " + cssName + ": '" + org + "', failed to instantiate DerivedValue. " + ex.getMessage() );
+            throw new XRRuntimeException("For " + cssName + ": '" + org + "', failed to instantiate DerivedValue. " + ex.getMessage());
         }
     }
 
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public boolean hasAbsoluteUnit() {
-        return ( _cssName == CSSName.BACKGROUND_POSITION || ValueConstants.isAbsoluteUnit( _domCSSPrimitiveValue ) );
+        return (_cssName == CSSName.BACKGROUND_POSITION || ValueConstants.isAbsoluteUnit(_domCSSPrimitiveValue));
     }
 
     /**
@@ -208,11 +234,11 @@ public class DerivedValue {
      * original which calculates its own length value relative to its new
      * parent.
      *
-     * @return   A clone of this <copy>DerivedValue</copy> , pointing to the
-     *      same SAC {@link CSSValue} as the original.
+     * @return A clone of this <copy>DerivedValue</copy> , pointing to the
+     *         same SAC {@link CSSValue} as the original.
      */
     public DerivedValue copyOf() {
-        DerivedValue nv = new DerivedValue( _cssName, _domCSSPrimitiveValue, _style );
+        DerivedValue nv = new DerivedValue(_cssName, _domCSSPrimitiveValue, _style);
         return nv;
     }
 
@@ -220,7 +246,7 @@ public class DerivedValue {
      * value as a string...same as getStringValue() but kept for parallel with
      * other as <type>... methods
      *
-     * @return   Returns
+     * @return Returns
      */
     public String asString() {
         return getStringValue();
@@ -230,12 +256,12 @@ public class DerivedValue {
     /**
      * Returns the value as assigned, split into a string array on comma.
      *
-     * @return   Returns
+     * @return Returns
      */
     public String[] asStringArray() {
-        if ( _stringAsArray == null ) {
+        if (_stringAsArray == null) {
             String str = getStringValue();
-            _stringAsArray = ( str == null ? new String[0] : str.split( "," ) );
+            _stringAsArray = (str == null ? new String[0] : str.split(","));
         }
         return _stringAsArray;
     }
@@ -246,7 +272,7 @@ public class DerivedValue {
      * not tracked. Any changes to the properties should be made through the
      * DerivedProperty and DerivedValue classes.
      *
-     * @return   Returns
+     * @return Returns
      */
     public CSSPrimitiveValue cssValue() {
         return _domCSSPrimitiveValue;
@@ -256,33 +282,33 @@ public class DerivedValue {
     /**
      * See interface.
      *
-     * @return   See desc.
+     * @return See desc.
      */
     public boolean forcedInherit() {
-        return _domCSSPrimitiveValue.getCssText().indexOf( INHERIT ) >= 0;
+        return _domCSSPrimitiveValue.getCssText().indexOf(INHERIT) >= 0;
     }
 
     /**
      * Returns the value as a Color, if it is a color.
      *
-     * @return   The rGBColorValue value
+     * @return The rGBColorValue value
      */
     public Color asColor() {
         _color = null;
 
-        if ( _color == null ) {
+        if (_color == null) {
             String str = _domCSSPrimitiveValue.getCssText();
             try {
 
-                if ( isTransparent( str ) ) {
+                if (isTransparent(str)) {
                     _color = COLOR_TRANSPARENT;
-                } else if ( _domCSSPrimitiveValue.getPrimitiveType() == CSSPrimitiveValue.CSS_RGBCOLOR ) {
-                    _color = ConversionUtil.rgbToColor( _domCSSPrimitiveValue.getRGBColorValue() );
+                } else if (_domCSSPrimitiveValue.getPrimitiveType() == CSSPrimitiveValue.CSS_RGBCOLOR) {
+                    _color = ConversionUtil.rgbToColor(_domCSSPrimitiveValue.getRGBColorValue());
                 } else {
-                    _color = Color.decode( str );
+                    _color = Color.decode(str);
                 }
-            } catch ( Exception ex ) {
-                throw new XRRuntimeException( "Could not return '" + _cssName + "' in a DerivedValue as a Color (value '" + str + "')." + ex.getMessage() );
+            } catch (Exception ex) {
+                throw new XRRuntimeException("Could not return '" + _cssName + "' in a DerivedValue as a Color (value '" + str + "')." + ex.getMessage());
             }
         }
         return _color;
@@ -291,23 +317,24 @@ public class DerivedValue {
     /**
      * @param parentWidth
      * @param parentHeight
+     * @param ctx
      * @return
      */
-    public Point asPoint( float parentWidth, float parentHeight ) {
+    public Point asPoint(float parentWidth, float parentHeight, RenderingContext ctx) {
         Point pt = null;
         if (_bgPosIsAbsolute) {
             // It's an absolute value, so only calculate it once
-            if ( _asPoint == null ) {
+            if (_asPoint == null) {
                 _asPoint = new Point();
-                float xF = calcFloatProportionalValue(_bgPosXValue, _bgPosXType, parentWidth);
-                float yF = calcFloatProportionalValue(_bgPosYValue, _bgPosYType, parentHeight);
+                float xF = calcFloatProportionalValue(_bgPosXValue, _bgPosXType, parentWidth, ctx);
+                float yF = calcFloatProportionalValue(_bgPosYValue, _bgPosYType, parentHeight, ctx);
                 _asPoint.setLocation(xF, yF);
             }
             pt = _asPoint;
         } else {
             pt = new Point();
-            float xF = calcFloatProportionalValue(_bgPosXValue, _bgPosXType, parentWidth);
-            float yF = calcFloatProportionalValue(_bgPosYValue, _bgPosYType, parentHeight);
+            float xF = calcFloatProportionalValue(_bgPosXValue, _bgPosXType, parentWidth, ctx);
+            float yF = calcFloatProportionalValue(_bgPosYValue, _bgPosYType, parentHeight, ctx);
             pt.setLocation(xF, yF);
         }
         // System.out.println("[" + this.hashCode() + "]   background-position (absolute: " + _bgPosIsAbsolute + ") " + " (" + _domCSSPrimitiveValue.getCssText() + ") x:" + pt.getX() + " y:" + pt.getY());
@@ -317,11 +344,11 @@ public class DerivedValue {
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public IdentValue asIdentValue() {
-        if ( _identVal == null && _lengthAsString == null ) {
-            _identVal = IdentValue.getByIdentString( asString() );
+        if (_identVal == null && _lengthAsString == null) {
+            _identVal = IdentValue.getByIdentString(asString());
         }
         return _identVal;
     }
@@ -330,7 +357,7 @@ public class DerivedValue {
      * @return
      */
     public boolean isIdentifier() {
-        return ( _domCSSPrimitiveValue.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT );
+        return (_domCSSPrimitiveValue.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT);
     }
 
     /**
@@ -338,11 +365,12 @@ public class DerivedValue {
      * the input value. Used for such properties whose parent value cannot be
      * known before layout/render
      *
-     * @param parentWidth  The value that this should be relative to.
-     * @return             the absolute value or computed absolute value
+     * @param parentWidth The value that this should be relative to.
+     * @param ctx
+     * @return the absolute value or computed absolute value
      */
-    public float getFloatProportionalWidth( float parentWidth ) {
-        return calcFloatProportionalValue( _lengthAsFloat, _lengthPrimitiveType, parentWidth );
+    public float getFloatProportionalWidth(float parentWidth, RenderingContext ctx) {
+        return calcFloatProportionalValue(_lengthAsFloat, _lengthPrimitiveType, parentWidth, ctx);
     }
 
     /**
@@ -350,21 +378,22 @@ public class DerivedValue {
      * the input value. Used for such properties whose parent value cannot be
      * known before layout/render
      *
-     * @param parentHeight  The value that this should be relative to.
-     * @return              the absolute value or computed absolute value
+     * @param parentHeight The value that this should be relative to.
+     * @param ctx
+     * @return the absolute value or computed absolute value
      */
-    public float getFloatProportionalHeight( float parentHeight ) {
-        return calcFloatProportionalValue( _lengthAsFloat, _lengthPrimitiveType, parentHeight );
+    public float getFloatProportionalHeight(float parentHeight, RenderingContext ctx) {
+        return calcFloatProportionalValue(_lengthAsFloat, _lengthPrimitiveType, parentHeight, ctx);
     }
 
     /**
      * See interface.
      *
-     * @return   Returns
+     * @return Returns
      */
     public String getStringValue() {
         try {
-            switch ( _domCSSPrimitiveValue.getPrimitiveType() ) {
+            switch (_domCSSPrimitiveValue.getPrimitiveType()) {
                 case CSSPrimitiveValue.CSS_IDENT:
                 case CSSPrimitiveValue.CSS_STRING:
                 case CSSPrimitiveValue.CSS_URI:
@@ -373,21 +402,21 @@ public class DerivedValue {
                 default:
                     return _domCSSPrimitiveValue.getCssText();
             }
-        } catch ( Throwable thr ) {
+        } catch (Throwable thr) {
             // CLEAN
-            XRLog.general( Level.WARNING, "exception: " + thr );
-            XRLog.general( Level.WARNING, "value = " + _domCSSPrimitiveValue );
-            throw ( new Error( thr ) );
+            XRLog.general(Level.WARNING, "exception: " + thr);
+            XRLog.general(Level.WARNING, "value = " + _domCSSPrimitiveValue);
+            throw (new Error(thr));
         }
     }
 
     /**
      * Gets the ident attribute of the DerivedValue object
      *
-     * @param val  PARAM
-     * @return     The ident value
+     * @param val PARAM
+     * @return The ident value
      */
-    public boolean isIdent( IdentValue val ) {
+    public boolean isIdent(IdentValue val) {
         IdentValue compareTo = asIdentValue();
         return compareTo != null && compareTo == val;
     }
@@ -399,20 +428,20 @@ public class DerivedValue {
      *
      * @param primitive
      */
-    private void pullLengthValueParts( CSSPrimitiveValue primitive ) {
-        Matcher m = CSS_LENGTH_PATTERN.matcher( primitive.getCssText() );
-        if ( m.matches() ) {
-            _lengthAsString = m.group( 1 );
-            _lengthAsFloat = new Float( _lengthAsString ).floatValue();
-            _lengthPrimitiveType = ValueConstants.sacPrimitiveTypeForString( m.group( 3 ) );
+    private void pullLengthValueParts(CSSPrimitiveValue primitive) {
+        Matcher m = CSS_LENGTH_PATTERN.matcher(primitive.getCssText());
+        if (m.matches()) {
+            _lengthAsString = m.group(1);
+            _lengthAsFloat = new Float(_lengthAsString).floatValue();
+            _lengthPrimitiveType = ValueConstants.sacPrimitiveTypeForString(m.group(3));
         } else {
-            throw new XRRuntimeException( "Could not extract length for " + _cssName + " from " + primitive.getCssText() +
-                    " using " + CSS_LENGTH_PATTERN );
+            throw new XRRuntimeException("Could not extract length for " + _cssName + " from " + primitive.getCssText() +
+                    " using " + CSS_LENGTH_PATTERN);
         }
 
-        if ( _lengthAsString == null ) {
-            throw new XRRuntimeException( "Could not extract length for " + _cssName + " from " + primitive.getCssText() +
-                    "; is null, using " + CSS_LENGTH_PATTERN );
+        if (_lengthAsString == null) {
+            throw new XRRuntimeException("Could not extract length for " + _cssName + " from " + primitive.getCssText() +
+                    "; is null, using " + CSS_LENGTH_PATTERN);
 
         }
     }
@@ -424,40 +453,40 @@ public class DerivedValue {
      * immediately because it's a small String operation that would be silly to
      * reproduce on each request.
      *
-     * @param primitive  The underlying SAC {@link CSSValue}
+     * @param primitive The underlying SAC {@link CSSValue}
      */
-    private void pullPointValuesForBGPos( CSSPrimitiveValue primitive ) {
+    private void pullPointValuesForBGPos(CSSPrimitiveValue primitive) {
         String cssText = primitive.getCssText();
-        String[] pos = cssText.split( " " );
+        String[] pos = cssText.split(" ");
         try {
-            Matcher m = CSS_LENGTH_PATTERN.matcher( pos[0] );
+            Matcher m = CSS_LENGTH_PATTERN.matcher(pos[0]);
             m.matches();
-            String xAsString = m.group( 1 );
-            _bgPosXValue = new Float( xAsString ).floatValue();
-            _bgPosXType = ValueConstants.sacPrimitiveTypeForString( m.group( 3 ) );
+            String xAsString = m.group(1);
+            _bgPosXValue = new Float(xAsString).floatValue();
+            _bgPosXType = ValueConstants.sacPrimitiveTypeForString(m.group(3));
 
-            m = CSS_LENGTH_PATTERN.matcher( pos[1] );
+            m = CSS_LENGTH_PATTERN.matcher(pos[1]);
             m.matches();
-            String yAsString = m.group( 1 );
-            _bgPosYValue = new Float( yAsString ).floatValue();
-            _bgPosYType = ValueConstants.sacPrimitiveTypeForString( m.group( 3 ) );
+            String yAsString = m.group(1);
+            _bgPosYValue = new Float(yAsString).floatValue();
+            _bgPosYType = ValueConstants.sacPrimitiveTypeForString(m.group(3));
 
-            if ( ValueConstants.isAbsoluteUnit( _bgPosXType ) && ValueConstants.isAbsoluteUnit( _bgPosYType ) ) {
+            if (ValueConstants.isAbsoluteUnit(_bgPosXType) && ValueConstants.isAbsoluteUnit(_bgPosYType)) {
                 _bgPosIsAbsolute = true;
             } else {
                 _bgPosIsAbsolute = false;
             }
-        } catch ( Exception ex ) {
+        } catch (Exception ex) {
             StringBuffer msg = new StringBuffer();
-            msg.append( "background-position: failed to convert '" + cssText + "' into a Point. " );
-            msg.append( "Property value (as text) was split into " + pos.length + " values for positioning. " );
-            if ( pos.length >= 1 ) {
-                msg.append( " background-position x-pos is " + pos[0] );
+            msg.append("background-position: failed to convert '" + cssText + "' into a Point. ");
+            msg.append("Property value (as text) was split into " + pos.length + " values for positioning. ");
+            if (pos.length >= 1) {
+                msg.append(" background-position x-pos is " + pos[0]);
             }
-            if ( pos.length == 2 ) {
-                msg.append( " background-position y-pos is " + pos[1] );
+            if (pos.length == 2) {
+                msg.append(" background-position y-pos is " + pos[1]);
             }
-            throw new XRRuntimeException( msg.toString() );
+            throw new XRRuntimeException(msg.toString());
         }
     }
 
@@ -468,28 +497,29 @@ public class DerivedValue {
      * position (as Point), where the X and Y must be calculated separately; so
      * it is more or less a static function.
      *
-     * @param relVal         The property value, possibly proportional, which
-     *      should be converted.
-     * @param primitiveType  The short type code for the CSSPrimitiveValue we
-     *      are converting.
-     * @param baseValue      The width, in pixels, of the parent container; only
-     *      relevant for proportional values that are width-dependent. For
-     *      safety, always pass in the correct value in context if you have it
-     *      (e.g. don't make assumptions about what values are necessary in the
-     *      calling code.
-     * @return               The value, in pixels, for this property.
+     * @param relVal        The property value, possibly proportional, which
+     *                      should be converted.
+     * @param primitiveType The short type code for the CSSPrimitiveValue we
+     *                      are converting.
+     * @param baseValue     The width, in pixels, of the parent container; only
+     *                      relevant for proportional values that are width-dependent. For
+     *                      safety, always pass in the correct value in context if you have it
+     *                      (e.g. don't make assumptions about what values are necessary in the
+     *                      calling code.
+     * @param ctx
+     * @return The value, in pixels, for this property.
      */
-    private float calcFloatProportionalValue( float relVal, short primitiveType, float baseValue ) {
+    private float calcFloatProportionalValue(float relVal, short primitiveType, float baseValue, RenderingContext ctx) {
         float absVal = Float.MIN_VALUE;
 
         // NOTE: absolute datatypes (px, pt, pc, cm, etc.) are converted once and stored.
         // this could be done on instantiation, but it seems more clear to have all the calcs
         // in one place. For this reason we use the member field boolean hasAbsCalculated to
         // track if the calculation is already done.
-        switch ( primitiveType ) {
+        switch (primitiveType) {
             case CSSPrimitiveValue.CSS_PX:
                 // nothing to do
-                if ( _hasAbsCalculated ) {
+                if (_hasAbsCalculated) {
                     absVal = _absoluteLengthAsFloat;
                 } else {
                     absVal = relVal;
@@ -498,46 +528,46 @@ public class DerivedValue {
                 }
                 break;
             case CSSPrimitiveValue.CSS_IN:
-                if ( _hasAbsCalculated ) {
+                if (_hasAbsCalculated) {
                     absVal = _absoluteLengthAsFloat;
                 } else {
-                    absVal = ( ( ( relVal * CM__PER__IN ) * MM__PER__CM ) / MM__PER__PX );
+                    absVal = (((relVal * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerPx());
                     _absoluteLengthAsFloat = absVal;
                     _hasAbsCalculated = true;
                 }
                 break;
             case CSSPrimitiveValue.CSS_CM:
-                if ( _hasAbsCalculated ) {
+                if (_hasAbsCalculated) {
                     absVal = _absoluteLengthAsFloat;
                 } else {
-                    absVal = ( ( relVal * MM__PER__CM ) / MM__PER__PX );
+                    absVal = ((relVal * MM__PER__CM) / ctx.getMmPerPx());
                     _absoluteLengthAsFloat = absVal;
                     _hasAbsCalculated = true;
                 }
                 break;
             case CSSPrimitiveValue.CSS_MM:
-                if ( _hasAbsCalculated ) {
+                if (_hasAbsCalculated) {
                     absVal = _absoluteLengthAsFloat;
                 } else {
-                    absVal = relVal / MM__PER__PX;
+                    absVal = relVal / ctx.getMmPerPx();
                     _absoluteLengthAsFloat = absVal;
                     _hasAbsCalculated = true;
                 }
                 break;
             case CSSPrimitiveValue.CSS_PT:
-                if ( _hasAbsCalculated ) {
+                if (_hasAbsCalculated) {
                     absVal = _absoluteLengthAsFloat;
                 } else {
-                    absVal = ( ( ( relVal * PT__PER__IN ) * CM__PER__IN ) * MM__PER__CM ) / MM__PER__PX;
+                    absVal = (((relVal * PT__PER__IN) * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerPx();
                     _absoluteLengthAsFloat = absVal;
                     _hasAbsCalculated = true;
                 }
                 break;
             case CSSPrimitiveValue.CSS_PC:
-                if ( _hasAbsCalculated ) {
+                if (_hasAbsCalculated) {
                     absVal = _absoluteLengthAsFloat;
                 } else {
-                    absVal = ( ( ( ( relVal * PC__PER__PT ) * PT__PER__IN ) * CM__PER__IN ) * MM__PER__CM ) / MM__PER__PX;
+                    absVal = ((((relVal * PC__PER__PT) * PT__PER__IN) * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerPx();
                     _absoluteLengthAsFloat = absVal;
                     _hasAbsCalculated = true;
                 }
@@ -547,10 +577,10 @@ public class DerivedValue {
                 // The exception is when �em� occurs in the value of
                 // the �font-size� property itself, in which case it refers
                 // to the font size of the parent element (spec: 4.3.2)
-                if ( _cssName == CSSName.LINE_HEIGHT ) {
+                if (_cssName == CSSName.LINE_HEIGHT) {
                     absVal = relVal * baseValue;
                 } else {
-                    absVal = relVal * deriveFontSize( baseValue );
+                    absVal = relVal * deriveFontSize(baseValue, ctx);
                 }
 
                 break;
@@ -560,64 +590,65 @@ public class DerivedValue {
                 // To convert EMS to pixels, we need the height of the lowercase 'Xx' character in the current
                 // element...
                 // to the font size of the parent element (spec: 4.3.2)
-                if ( _cssName == CSSName.LINE_HEIGHT ) {
+                if (_cssName == CSSName.LINE_HEIGHT) {
                     absVal = relVal * baseValue;
                 } else {
-                    float xHeight = _style.getParent().getFloatPropertyProportionalHeight( CSSName.FONT_SIZE, baseValue );
+                    float xHeight = _style.getParent().getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, baseValue, ctx);
                     absVal = relVal * xHeight;
                 }
 
                 break;
             case CSSPrimitiveValue.CSS_PERCENTAGE:
                 // percentage depends on the property this value belongs to
-                if ( _cssName == CSSName.VERTICAL_ALIGN ) {
-                    relVal = _style.getParent().getFloatPropertyProportionalHeight( CSSName.LINE_HEIGHT, baseValue );
-                } else if ( _cssName == CSSName.FONT_SIZE ) {
+                if (_cssName == CSSName.VERTICAL_ALIGN) {
+                    relVal = _style.getParent().getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, baseValue, ctx);
+                } else if (_cssName == CSSName.FONT_SIZE) {
                     // same as with EM
-                    baseValue = deriveFontSize( baseValue );
+                    baseValue = deriveFontSize(baseValue, ctx);
                 }
-                absVal = ( relVal / 100F ) * baseValue;
+                absVal = (relVal / 100F) * baseValue;
 
                 break;
             default:
                 // nothing to do, we only convert those listed above
-                XRLog.cascade( Level.SEVERE,
+                XRLog.cascade(Level.SEVERE,
                         "Asked to convert " + _cssName + " from relative to absolute, " +
                         " don't recognize the datatype " +
-                        "'" + ValueConstants.stringForSACPrimitiveType( _lengthPrimitiveType ) + "' "
+                        "'" + ValueConstants.stringForSACPrimitiveType(_lengthPrimitiveType) + "' "
                         + _lengthPrimitiveType + "(" + _domCSSPrimitiveValue.getCssText() + ")");
         }
-        assert ( new Float( absVal ).intValue() > 0 );
+        assert (new Float(absVal).intValue() > 0);
 
-        if ( _cssName == CSSName.FONT_SIZE ) {
-            XRLog.cascade( Level.FINEST, _cssName + ", relative= " +
+        if (_cssName == CSSName.FONT_SIZE) {
+            XRLog.cascade(Level.FINEST, _cssName + ", relative= " +
                     relVal + " (" + _domCSSPrimitiveValue.getCssText() + "), absolute= "
-                    + absVal );
+                    + absVal);
         } else {
-            XRLog.cascade( Level.FINEST, _cssName + ", relative= " +
+            XRLog.cascade(Level.FINEST, _cssName + ", relative= " +
                     relVal + " (" + _domCSSPrimitiveValue.getCssText() + "), absolute= "
-                    + absVal + " using base=" + baseValue );
+                    + absVal + " using base=" + baseValue);
         }
 
         // round down
-        double d = Math.floor( (double)absVal );
-        absVal = new Float( d ).floatValue();
+        double d = Math.floor((double) absVal);
+        absVal = new Float(d).floatValue();
         return absVal;
     }
 
     /**
      * See interface.
      *
-     * @param parentHeight  PARAM
-     * @return              Returns
+     * @param parentHeight PARAM
+     * @param ctx
+     * @return Returns
      */
-    private float deriveFontSize( float parentHeight ) {
+    private float deriveFontSize(float parentHeight, RenderingContext ctx) {
         float fontSize = 0F;
-        if ( _style.getParent() != null ) {
+        if (_style.getParent() != null) {
             //TODO: this is probably wrong
-            fontSize = _style.getParent().getFloatPropertyProportionalHeight( CSSName.FONT_SIZE, parentHeight );
+            fontSize = _style.getParent().getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, parentHeight, ctx);
         } else {
-            throw new XRRuntimeException( "ERROR: Trying to derive font size incorrectly in " + GeneralUtil.classNameOnly(this) );
+            throw new XRRuntimeException("ERROR: Trying to derive font size incorrectly in " + GeneralUtil.classNameOnly(this));
         }
         return fontSize;
     }
@@ -625,12 +656,12 @@ public class DerivedValue {
     /**
      * Gets the transparent attribute of the DerivedValue object
      *
-     * @param str  PARAM
-     * @return     The transparent value
+     * @param str PARAM
+     * @return The transparent value
      */
-    private boolean isTransparent( String str ) {
-        if ( !_transparentChecked ) {
-            _isTransparent = "transparent".equals( str );
+    private boolean isTransparent(String str) {
+        if (!_transparentChecked) {
+            _isTransparent = "transparent".equals(str);
             _transparentChecked = true;
         }
 

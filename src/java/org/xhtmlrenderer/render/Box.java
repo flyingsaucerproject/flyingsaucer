@@ -25,6 +25,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
+import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import javax.swing.*;
@@ -288,10 +289,11 @@ public class Box {
      * Description of the Method
      *
      * @param style
+     * @param c
      * @return Returns
      */
-    public int totalHorizontalPadding(CalculatedStyle style) {
-        calcBorders(style);
+    public int totalHorizontalPadding(CalculatedStyle style, Context c) {
+        calcBorders(style, c);
         return totalHorizontalPadding();
     }
 
@@ -315,10 +317,11 @@ public class Box {
      * Description of the Method
      *
      * @param style
+     * @param c
      * @return Returns
      */
-    public int totalVerticalPadding(CalculatedStyle style) {
-        calcBorders(style);
+    public int totalVerticalPadding(CalculatedStyle style, Context c) {
+        calcBorders(style, c);
         return totalVerticalPadding();
     }
 
@@ -342,10 +345,11 @@ public class Box {
      * Description of the Method
      *
      * @param style
+     * @param c
      * @return Returns
      */
-    public int totalTopPadding(CalculatedStyle style) {
-        calcBorders(style);
+    public int totalTopPadding(CalculatedStyle style, Context c) {
+        calcBorders(style, c);
         return totalTopPadding();
     }
 
@@ -368,10 +372,11 @@ public class Box {
      * Description of the Method
      *
      * @param style
+     * @param c
      * @return Returns
      */
-    public int totalLeftPadding(CalculatedStyle style) {
-        calcBorders(style);
+    public int totalLeftPadding(CalculatedStyle style, Context c) {
+        calcBorders(style, c);
         return totalLeftPadding();
     }
 
@@ -394,10 +399,11 @@ public class Box {
      * Description of the Method
      *
      * @param style PARAM
+     * @param c
      * @return Returns
      */
-    public int totalRightPadding(CalculatedStyle style) {
-        calcBorders(style);
+    public int totalRightPadding(CalculatedStyle style, Context c) {
+        calcBorders(style, c);
         return totalRightPadding();
     }
 
@@ -604,13 +610,13 @@ public class Box {
         } else {
             sb.append("box:");
         }
-		
-		sb.append("element:");
-		if(this.element != null) {
-			sb.append(this.element.getNodeName());
-		} else {
-			sb.append("null");
-		}
+
+        sb.append("element:");
+        if (this.element != null) {
+            sb.append(this.element.getNodeName());
+        } else {
+            sb.append("null");
+        }
 
         // dimensions and location
         sb.append("-box(" + x + "," + y + ")-(" + width + "x" + height + ")");
@@ -625,30 +631,30 @@ public class Box {
         if (floated) {
             sb.append("-floated");
         }
-		
-		// no color support yet. wait for later
-		
-		// insets
-		sb.append("insets(");
-		sb.append("mar("+this.margin.top+","+this.margin.left+","+this.margin.bottom+","+this.margin.right+")");
-		sb.append("-bor("+this.border.top+","+this.border.left+","+this.border.bottom+","+this.border.right+")");
-		sb.append("-pad("+this.padding.top+","+this.padding.left+","+this.padding.bottom+","+this.padding.right+")");
-		sb.append(")");
+
+        // no color support yet. wait for later
+
+        // insets
+        sb.append("insets(");
+        sb.append("mar(" + this.margin.top + "," + this.margin.left + "," + this.margin.bottom + "," + this.margin.right + ")");
+        sb.append("-bor(" + this.border.top + "," + this.border.left + "," + this.border.bottom + "," + this.border.right + ")");
+        sb.append("-pad(" + this.padding.top + "," + this.padding.left + "," + this.padding.bottom + "," + this.padding.right + ")");
+        sb.append(")");
 		
 		
         // background images
-        sb.append( "-backimg(" + background_image );
-        sb.append( "-" + repeat );
-        sb.append( "-" + attachment );
-        sb.append( "-" + background_position_vertical );
-        sb.append( "-" + background_position_horizontal + ")" );
-		
-		sb.append("-value:");
-		if(element!=null) {
-			sb.append(element.getNodeValue());
-		} else {
-			sb.append("null");
-		}
+        sb.append("-backimg(" + background_image);
+        sb.append("-" + repeat);
+        sb.append("-" + attachment);
+        sb.append("-" + background_position_vertical);
+        sb.append("-" + background_position_horizontal + ")");
+
+        sb.append("-value:");
+        if (element != null) {
+            sb.append(element.getNodeValue());
+        } else {
+            sb.append("null");
+        }
 
         return sb.toString();
     }
@@ -676,8 +682,9 @@ public class Box {
      * Description of the Method
      *
      * @param style PARAM
+     * @param c
      */
-    private void calcBorders(CalculatedStyle style) {
+    private void calcBorders(CalculatedStyle style, Context c) {
         // HACK: may need to remove this check if sizes can change dynamically on resize (patrick)
         /*if ( haveBorders ) {
             return;
@@ -686,9 +693,9 @@ public class Box {
             throw new XRRuntimeException("cant calc borders with no style");
         }
         // ASK: where do we get the containing height/width here
-        margin = style.getMarginWidth(width, height);
-        padding = style.getPaddingWidth(width, height);
-        border = style.getBorderWidth(width, height);
+        margin = style.getMarginWidth(width, height, c.getCtx());
+        padding = style.getPaddingWidth(width, height, c.getCtx());
+        border = style.getBorderWidth(width, height, c.getCtx());
         haveBorders = true;// this flag is not checked, ask patrick
     }
 }
@@ -697,6 +704,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.51  2005/05/08 14:36:58  tobega
+ * Refactored away the need for having a context in a CalculatedStyle
+ *
  * Revision 1.50  2005/04/22 17:19:19  joshy
  * resovled conflicts in Box
  * Issue number:
