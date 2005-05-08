@@ -25,8 +25,6 @@ import org.xhtmlrenderer.css.sheet.factory.*;
 import org.xhtmlrenderer.util.XRLog;
 
 
-
-
 /**
  * Represents a single property declared in a CSS rule set. A
  * PropertyDeclaration is created from an CSSValue and is immutable. The
@@ -35,19 +33,27 @@ import org.xhtmlrenderer.util.XRLog;
  * group, for the CSS cascade, into a {@link
  * org.xhtmlrenderer.css.newmatch.CascadedStyle}.
  *
- * @author   Torbjörn Gannholm
- * @author   Patrick Wright
+ * @author Torbjörn Gannholm
+ * @author Patrick Wright
  */
 public class PropertyDeclaration {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private String propName;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private CSSName cssName;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private org.w3c.dom.css.CSSPrimitiveValue cssPrimitiveValue;
 
-    /** Whether the property was declared as important! by the user. */
+    /**
+     * Whether the property was declared as important! by the user.
+     */
     private boolean important;
 
     /**
@@ -56,34 +62,54 @@ public class PropertyDeclaration {
      * Stylesheet#AUTHOR}.
      */
     private int origin;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private IdentValue _identVal;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private boolean identIsSet;
 
-    /** ImportanceAndOrigin of stylesheet - how many different */
+    /**
+     * ImportanceAndOrigin of stylesheet - how many different
+     */
     public final static int IMPORTANCE_AND_ORIGIN_COUNT = 6;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private final static PropertyDeclarationFactory[] PROPERTY_FACTORIES;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private final static PropertyDeclarationFactory DEFAULT_PD_FACTORY;
 
-    /** ImportanceAndOrigin of stylesheet - user agent */
+    /**
+     * ImportanceAndOrigin of stylesheet - user agent
+     */
     private final static int USER_AGENT = 1;
 
-    /** ImportanceAndOrigin of stylesheet - user normal */
+    /**
+     * ImportanceAndOrigin of stylesheet - user normal
+     */
     private final static int USER_NORMAL = 2;
 
-    /** ImportanceAndOrigin of stylesheet - author normal */
+    /**
+     * ImportanceAndOrigin of stylesheet - author normal
+     */
     private final static int AUTHOR_NORMAL = 3;
 
-    /** ImportanceAndOrigin of stylesheet - author important */
+    /**
+     * ImportanceAndOrigin of stylesheet - author important
+     */
     private final static int AUTHOR_IMPORTANT = 4;
 
-    /** ImportanceAndOrigin of stylesheet - user important */
+    /**
+     * ImportanceAndOrigin of stylesheet - user important
+     */
     private final static int USER_IMPORTANT = 5;
 
     /**
@@ -91,18 +117,18 @@ public class PropertyDeclaration {
      * CSSPrimitiveValue} instance.
      *
      * @param cssName
-     * @param value    The CSSValue to wrap
-     * @param imp      True if property was declared important! and false if
-     *      not.
-     * @param orig     int constant from {@link Stylesheet} for the origin of
-     *      the property declaration, that is, the origin of the style sheet
-     *      where it was declared. See {@link StylesheetInfo#USER_AGENT}, {@link
-     *      StylesheetInfo#USER}, and {@link StylesheetInfo#AUTHOR}.
+     * @param value   The CSSValue to wrap
+     * @param imp     True if property was declared important! and false if
+     *                not.
+     * @param orig    int constant from {@link Stylesheet} for the origin of
+     *                the property declaration, that is, the origin of the style sheet
+     *                where it was declared. See {@link StylesheetInfo#USER_AGENT}, {@link
+     *                StylesheetInfo#USER}, and {@link StylesheetInfo#AUTHOR}.
      */
-    public PropertyDeclaration( CSSName cssName,
-                                org.w3c.dom.css.CSSPrimitiveValue value,
-                                boolean imp,
-                                int orig ) {
+    public PropertyDeclaration(CSSName cssName,
+                               org.w3c.dom.css.CSSPrimitiveValue value,
+                               boolean imp,
+                               int orig) {
         this.propName = cssName.toString();
         this.cssName = cssName;
         this.cssPrimitiveValue = value;
@@ -113,7 +139,7 @@ public class PropertyDeclaration {
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
         return getPropertyName() + ": " + getValue().toString();
@@ -122,14 +148,18 @@ public class PropertyDeclaration {
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public IdentValue asIdentValue() {
-        if ( !identIsSet ) {
-            _identVal = IdentValue.getByIdentString( cssPrimitiveValue.getCssText() );
+        if (!identIsSet) {
+            _identVal = IdentValue.getByIdentString(cssPrimitiveValue.getCssText());
             identIsSet = true;
         }
         return _identVal;
+    }
+
+    public String getDeclarationStandardText() {
+        return cssName + ": " + cssPrimitiveValue.getCssText() + ";";
     }
 
     /**
@@ -145,18 +175,18 @@ public class PropertyDeclaration {
      * this method is unimportant, but has a lowest value of 0 and increments
      * sequentially by 1 for each increase in origin/importance..
      *
-     * @return   See method javadoc.
+     * @return See method javadoc.
      */
     public int getImportanceAndOrigin() {
-        if ( origin == StylesheetInfo.USER_AGENT ) {
+        if (origin == StylesheetInfo.USER_AGENT) {
             return PropertyDeclaration.USER_AGENT;
-        } else if ( origin == StylesheetInfo.USER ) {
-            if ( important ) {
+        } else if (origin == StylesheetInfo.USER) {
+            if (important) {
                 return PropertyDeclaration.USER_IMPORTANT;
             }
             return PropertyDeclaration.USER_NORMAL;
         } else {
-            if ( important ) {
+            if (important) {
                 return PropertyDeclaration.AUTHOR_IMPORTANT;
             }
             return PropertyDeclaration.AUTHOR_NORMAL;
@@ -166,7 +196,7 @@ public class PropertyDeclaration {
     /**
      * Returns the CSS name of this property, e.g. "font-family".
      *
-     * @return   See desc.
+     * @return See desc.
      */
     public String getPropertyName() {
         return propName;
@@ -175,7 +205,7 @@ public class PropertyDeclaration {
     /**
      * Gets the cSSName attribute of the PropertyDeclaration object
      *
-     * @return   The cSSName value
+     * @return The cSSName value
      */
     public CSSName getCSSName() {
         return cssName;
@@ -187,7 +217,7 @@ public class PropertyDeclaration {
      * returned here will result in indeterminate behavior--consider it
      * immutable.
      *
-     * @return   See desc.
+     * @return See desc.
      */
     public org.w3c.dom.css.CSSPrimitiveValue getValue() {
         return cssPrimitiveValue;
@@ -196,17 +226,17 @@ public class PropertyDeclaration {
     /**
      * Description of the Method
      *
-     * @param cssName  PARAM
-     * @return         Returns
+     * @param cssName PARAM
+     * @return Returns
      */
-    public static PropertyDeclarationFactory newFactory( CSSName cssName ) {
+    public static PropertyDeclarationFactory newFactory(CSSName cssName) {
         PropertyDeclarationFactory pdf = null;
-        if ( cssName == null ) {
+        if (cssName == null) {
             XRLog.cssParse("PropertyDeclarationFactory requested for NULL CSSName; returning default.");
             pdf = DEFAULT_PD_FACTORY;
         } else {
             pdf = PROPERTY_FACTORIES[cssName.getAssignedID()];
-            if ( pdf == null ) {
+            if (pdf == null) {
                 pdf = DEFAULT_PD_FACTORY;
             }
         }
@@ -239,6 +269,9 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/05/08 15:37:27  tobega
+ * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
+ *
  * Revision 1.12  2005/01/29 20:19:21  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

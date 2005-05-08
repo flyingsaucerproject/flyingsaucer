@@ -126,7 +126,7 @@ public class StyleReference {
     public java.util.Map getCascadedPropertiesMap(Element e) {
         CascadedStyle cs = _matcher.getCascadedStyle(e, false);//this is only for debug, I think
         java.util.LinkedHashMap props = new java.util.LinkedHashMap();
-        for (java.util.Iterator i = cs.getMatchedPropertyDeclarations(); i.hasNext();) {
+        for (java.util.Iterator i = cs.getCascadedPropertyDeclarations(); i.hasNext();) {
             PropertyDeclaration pd = (PropertyDeclaration) i.next();
 
             String propName = pd.getPropertyName();
@@ -246,6 +246,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/05/08 15:37:29  tobega
+ * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
+ *
  * Revision 1.27  2005/05/08 14:51:22  tobega
  * Removed the need for the Styler
  *

@@ -213,42 +213,32 @@ public class Matcher {
     CascadedStyle createCascadedStyle(org.w3c.dom.Element e, List matchedSelectors) {
         CascadedStyle cs = null;
         org.xhtmlrenderer.css.sheet.Ruleset elementStyling = getElementStyle(e);
-        String fingerprint = null;
-        if (elementStyling == null) {//try to re-use a CascadedStyle
-            StringBuffer sb = new StringBuffer();
-            for (java.util.Iterator i = getMatchedRulesets(matchedSelectors); i.hasNext();) {
-                sb.append(i.next().hashCode());
-                sb.append(":");
+        java.util.List propList = new java.util.LinkedList();
+        for (java.util.Iterator i = getMatchedRulesets(matchedSelectors); i.hasNext();) {
+            org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
+            for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
+                propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
             }
-            fingerprint = sb.toString();
-            if (_csCache == null) {
-                _csCache = new java.util.HashMap();
-            }
-            cs = (CascadedStyle) _csCache.get(fingerprint);
         }
-
-        if (cs == null) {
-            java.util.List propList = new java.util.LinkedList();
-            for (java.util.Iterator i = getMatchedRulesets(matchedSelectors); i.hasNext();) {
-                org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
-                for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
-                    propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
-                }
+        if (elementStyling != null) {
+            for (java.util.Iterator j = elementStyling.getPropertyDeclarations(); j.hasNext();) {
+                propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
             }
-            if (elementStyling != null) {
-                for (java.util.Iterator j = elementStyling.getPropertyDeclarations(); j.hasNext();) {
-                    propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
-                }
-            }
-            if (propList.size() == 0)
-                cs = CascadedStyle.emptyCascadedStyle;
-            else
-                cs = new CascadedStyle(propList.iterator());
-
-            if (elementStyling == null) {
+        }
+        if (propList.size() == 0)
+            cs = CascadedStyle.emptyCascadedStyle;//already internalized
+        else {
+            cs = new CascadedStyle(propList.iterator());
+            //internalize (worth the trouble to make style-caching work)
+            String fingerprint = cs.getFingerprint();
+            CascadedStyle internal = (CascadedStyle) _csCache.get(fingerprint);
+            if (internal != null) {
+                cs = internal;
+            } else {
                 _csCache.put(fingerprint, cs);
             }
         }
+
         return cs;
     }
 
@@ -567,32 +557,27 @@ public class Matcher {
         java.util.Map pelm = new java.util.HashMap();
         while (si.hasNext()) {
             java.util.Map.Entry me = (java.util.Map.Entry) si.next();
-            String fingerprint = null;
-            //try to re-use a CascadedStyle
-            StringBuffer sb = new StringBuffer();
-            for (java.util.Iterator i = getSelectedRulesets((java.util.List) me.getValue()); i.hasNext();) {
-                sb.append(i.next().hashCode());
-                sb.append(":");
-            }
-            fingerprint = sb.toString();
-            if (_csCache == null) {
-                _csCache = new java.util.HashMap();
-            }
-            CascadedStyle cs = (CascadedStyle) _csCache.get(fingerprint);
+            CascadedStyle cs = null;
 
-            if (cs == null) {
-                java.util.List propList = new java.util.LinkedList();
-                for (java.util.Iterator i = getSelectedRulesets((java.util.List) me.getValue()); i.hasNext();) {
-                    org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
-                    for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
-                        propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
-                    }
+            java.util.List propList = new java.util.LinkedList();
+            for (java.util.Iterator i = getSelectedRulesets((java.util.List) me.getValue()); i.hasNext();) {
+                org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
+                for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
+                    propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
                 }
-                if (propList.size() == 0)
-                    cs = CascadedStyle.emptyCascadedStyle;
-                else
-                    cs = new CascadedStyle(propList.iterator());
-                _csCache.put(fingerprint, cs);
+            }
+            if (propList.size() == 0)
+                cs = CascadedStyle.emptyCascadedStyle;//already internalized
+            else {
+                cs = new CascadedStyle(propList.iterator());
+                //internalize (worth the trouble to make style-caching work)
+                String fingerprint = cs.getFingerprint();
+                CascadedStyle internal = (CascadedStyle) _csCache.get(fingerprint);
+                if (internal != null) {
+                    cs = internal;
+                } else {
+                    _csCache.put(fingerprint, cs);
+                }
             }
 
             pelm.put(me.getKey(), cs);

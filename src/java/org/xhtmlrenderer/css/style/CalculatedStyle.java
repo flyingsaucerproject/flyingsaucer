@@ -480,7 +480,7 @@ public class CalculatedStyle {
             return;
         }//nothing to derive
 
-        Iterator mProps = matched.getMatchedPropertyDeclarations();
+        Iterator mProps = matched.getCascadedPropertyDeclarations();
         int i = 0;
         while (mProps.hasNext()) {
             PropertyDeclaration pd = (PropertyDeclaration) mProps.next();
@@ -524,6 +524,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/05/08 15:37:28  tobega
+ * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
+ *
  * Revision 1.18  2005/05/08 14:51:21  tobega
  * Removed the need for the Styler
  *

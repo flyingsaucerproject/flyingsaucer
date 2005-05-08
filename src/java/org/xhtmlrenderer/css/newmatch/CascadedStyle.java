@@ -40,7 +40,7 @@ import java.util.List;
  * org.w3c.dom.Document} {@link org.w3c.dom.Element}s via their selectors. You
  * can get individual properties by using {@link #propertyByName(CSSName)} or an
  * {@link java.util.Iterator} of properties with {@link
- * #getMatchedPropertyDeclarations()}. Check for individual property assignments
+ * #getCascadedPropertyDeclarations()}. Check for individual property assignments
  * using {@link #hasProperty(CSSName)}. A CascadedStyle is immutable, as
  * properties can not be added or removed from it once instantiated.
  *
@@ -154,7 +154,7 @@ public class CascadedStyle {
      *
      * @return Iterator over a set of properly cascaded PropertyDeclarations.
      */
-    public java.util.Iterator getMatchedPropertyDeclarations() {
+    public java.util.Iterator getCascadedPropertyDeclarations() {
         List list = new ArrayList(_cascadedPropertiesByID.length);
         for (int i = 0; i < _cascadedPropertiesByID.length; i++) {
             PropertyDeclaration propertyDeclaration = _cascadedPropertiesByID[i];
@@ -166,12 +166,26 @@ public class CascadedStyle {
         return list.iterator();
     }
 
+    public String getFingerprint() {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < _cascadedPropertiesByID.length; i++) {
+            PropertyDeclaration propertyDeclaration = _cascadedPropertiesByID[i];
+            if (propertyDeclaration == null) {
+                continue;
+            }
+            sb.append(propertyDeclaration.getDeclarationStandardText());
+        }
+        return sb.toString();
+    }
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/05/08 15:37:26  tobega
+ * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
+ *
  * Revision 1.8  2005/05/08 13:02:36  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
  *
