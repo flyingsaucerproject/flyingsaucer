@@ -31,8 +31,7 @@ import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.Color;
-import java.awt.Point;
+import java.awt.*;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -577,10 +576,10 @@ public class DerivedValue {
                 // The exception is when �em� occurs in the value of
                 // the �font-size� property itself, in which case it refers
                 // to the font size of the parent element (spec: 4.3.2)
-                if (_cssName == CSSName.LINE_HEIGHT) {
-                    absVal = relVal * baseValue;
+                if (_cssName == CSSName.FONT_SIZE) {
+                    absVal = relVal * getInheritedFontSize(ctx);
                 } else {
-                    absVal = relVal * deriveFontSize(baseValue, ctx);
+                    absVal = relVal * _style.getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, 0, ctx);
                 }
 
                 break;
@@ -590,11 +589,11 @@ public class DerivedValue {
                 // To convert EMS to pixels, we need the height of the lowercase 'Xx' character in the current
                 // element...
                 // to the font size of the parent element (spec: 4.3.2)
-                if (_cssName == CSSName.LINE_HEIGHT) {
-                    absVal = relVal * baseValue;
-                } else {
+                if (_cssName == CSSName.FONT_SIZE) {
                     float xHeight = _style.getParent().getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, baseValue, ctx);
                     absVal = relVal * xHeight;
+                } else {
+                    absVal = relVal * _style.getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, 0, ctx);
                 }
 
                 break;
@@ -604,7 +603,7 @@ public class DerivedValue {
                     relVal = _style.getParent().getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, baseValue, ctx);
                 } else if (_cssName == CSSName.FONT_SIZE) {
                     // same as with EM
-                    baseValue = deriveFontSize(baseValue, ctx);
+                    baseValue = getInheritedFontSize(ctx);
                 }
                 absVal = (relVal / 100F) * baseValue;
 
@@ -638,15 +637,14 @@ public class DerivedValue {
     /**
      * See interface.
      *
-     * @param parentHeight PARAM
      * @param ctx
      * @return Returns
      */
-    private float deriveFontSize(float parentHeight, RenderingContext ctx) {
+    private float getInheritedFontSize(RenderingContext ctx) {
         float fontSize = 0F;
         if (_style.getParent() != null) {
-            //TODO: this is probably wrong
-            fontSize = _style.getParent().getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, parentHeight, ctx);
+            //TODO: this is probably wrong. tobe:why is this wrong?
+            fontSize = _style.getParent().getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, 0, ctx);
         } else {
             throw new XRRuntimeException("ERROR: Trying to derive font size incorrectly in " + GeneralUtil.classNameOnly(this));
         }

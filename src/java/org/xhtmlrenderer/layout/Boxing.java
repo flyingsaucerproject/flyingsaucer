@@ -36,8 +36,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.table.TableBoxing;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Color;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.List;
 
 
@@ -169,8 +168,6 @@ public class Boxing {
         Fixed.setupFixed(c, block);
         FloatUtil.setupFloat(c, block, content.getStyle());
 
-        //TODO: rethink: setupForm(c, block);
-
         // remove the outtermost bfc
         if (set_bfc) {
             c.getBlockFormattingContext().doFinalAdjustments();
@@ -270,6 +267,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/05/09 19:35:13  tobega
+ * Fixed a logic error with ems and exs
+ *
  * Revision 1.12  2005/05/08 14:36:57  tobega
  * Refactored away the need for having a context in a CalculatedStyle
  *
