@@ -25,7 +25,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 
-import java.awt.Font;
+import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 
@@ -109,7 +109,7 @@ public class FontUtil {
             return f;
         }
 
-        float size = style.getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, c.getBlockFormattingContext().getHeight(), c.getCtx());
+        float size = style.getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, 0, c.getCtx());
 
         IdentValue fontWeight = style.getIdent(CSSName.FONT_WEIGHT);
         String[] families = style.propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
@@ -155,6 +155,10 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/05/09 18:51:50  tobega
+ * Issue number:  72
+ * Fixed
+ *
  * Revision 1.33  2005/05/08 14:36:57  tobega
  * Refactored away the need for having a context in a CalculatedStyle
  *
