@@ -50,8 +50,9 @@ public class InlineRendering {
      * @param inline PARAM
      * @param lx     PARAM
      * @param ly     PARAM
+     * @param lm
      */
-    public static void paintSelection(Context c, InlineBox inline, int lx, int ly) {
+    public static void paintSelection(Context c, InlineBox inline, int lx, int ly, LineMetrics lm) {
         if (c.inSelection(inline)) {
             int dw = inline.width - 2;
             int xoff = 0;
@@ -65,7 +66,6 @@ public class InlineRendering {
             ((Graphics2D) c.getGraphics()).setPaint(new GradientPaint(0, 0, new Color(235, 235, 255),
                     0, inline.height / 2, new Color(190, 190, 235),
                     true));
-            LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), FontUtil.getFont(c), "Test");
             int top = ly + inline.y - (int) Math.ceil(lm.getAscent());
             int height = (int) Math.ceil(lm.getAscent() + lm.getDescent());
             c.getGraphics().fillRect(lx + inline.x + xoff,
@@ -80,13 +80,12 @@ public class InlineRendering {
      * Description of the Method
      *
      * @param c      PARAM
-     * @param lx     PARAM
-     * @param ly     PARAM
      * @param ix     PARAM
      * @param iy     PARAM
      * @param inline PARAM
+     * @param lm
      */
-    public static void paintText(Context c, int lx, int ly, int ix, int iy, InlineTextBox inline) {
+    public static void paintText(Context c, int ix, int iy, InlineTextBox inline, LineMetrics lm) {
         String text = inline.getSubstring();
         Graphics g = c.getGraphics();
         //adjust font for current settings
@@ -94,8 +93,6 @@ public class InlineRendering {
         c.getGraphics().setFont(FontUtil.getFont(c));
         Color oldcolor = c.getGraphics().getColor();
         c.getGraphics().setColor(c.getCurrentStyle().getColor());
-        Font cur_font = c.getGraphics().getFont();
-        LineMetrics lm = c.getTextRenderer().getLineMetrics(c.getGraphics(), cur_font, text);
 
         //baseline is baseline! iy -= (int) lm.getDescent();
 
@@ -149,8 +146,9 @@ public class InlineRendering {
      * @param c      PARAM
      * @param line   PARAM
      * @param inline PARAM
+     * @param lm
      */
-    public static void paintBackground(Context c, LineBox line, InlineBox inline, int padX) {
+    public static void paintBackground(Context c, LineBox line, InlineBox inline, int padX, LineMetrics lm) {
         //Uu.p("painting border: " + inline.border);
         // paint the background
         //int padding_xoff = inline.totalLeftPadding(c.getCurrentStyle());
@@ -158,7 +156,6 @@ public class InlineRendering {
 
         int ty = line.getBaseline() - inline.y - inline.height - padding_yoff + line.y;
 
-        LineMetrics lm = FontUtil.getLineMetrics(c, inline);
         ty += (int) lm.getDescent();
         // adjust because padding isn't used for position on inlines
         // JMM: This isn't correct!!
@@ -206,6 +203,7 @@ public class InlineRendering {
      */
     public static void paintLeftPadding(Context c, LineBox line, InlineBox inline, int padX, int padWidth) {
         int padding_yoff = inline.totalTopPadding(c.getCurrentStyle(), c);
+        if (inline.padding.left <= 0 && inline.border.left <= 0) return;
 
         int ty = line.getBaseline() - inline.y - inline.height - padding_yoff + line.y;
 
@@ -217,30 +215,31 @@ public class InlineRendering {
         //sets the inline borders to the current style, so border objects will exist
         inline.height += inline.totalVerticalPadding(c.getCurrentStyle(), c);
         inline.width = padWidth;
-        // paint the actual background
-        //can't use this, too uncontrolled: BoxRendering.paintBackground(c, inline);
-        //Border margin = c.getCurrentStyle().getMarginWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
-        Rectangle box = new Rectangle(inline.x + inline.margin.left + inline.border.left,
-                inline.y + inline.margin.top + inline.border.top,
-                inline.width - inline.margin.left - inline.border.left + 1,
-                inline.height - inline.margin.top - inline.border.top - inline.border.bottom - inline.margin.bottom);
 
-        // paint the background
-        Color background_color = BoxRendering.getBackgroundColor(c);
-        if (background_color != null) {
-            // skip transparent background
-            if (!background_color.equals(BackgroundPainter.transparent)) {
-                //TODO. make conf controlled Uu.p("filling a background");
-                c.getGraphics().setColor(background_color);
-                c.getGraphics().fillRect(box.x, box.y, box.width, box.height);
+        if (inline.padding.left > 0) {
+            // paint the background
+            Color background_color = BoxRendering.getBackgroundColor(c);
+            if (background_color != null) {
+                // skip transparent background
+                if (!background_color.equals(BackgroundPainter.transparent)) {
+                    Rectangle box = new Rectangle(inline.x + inline.margin.left + inline.border.left,
+                            inline.y + inline.margin.top + inline.border.top,
+                            inline.width - inline.margin.left - inline.border.left + 1,
+                            inline.height - inline.margin.top - inline.border.top - inline.border.bottom - inline.margin.bottom);
+                    //TODO. make conf controlled Uu.p("filling a background");
+                    c.getGraphics().setColor(background_color);
+                    c.getGraphics().fillRect(box.x, box.y, box.width, box.height);
+                }
             }
         }
 
-        Rectangle bounds = new Rectangle(inline.x + padX + inline.margin.left,
-                inline.y + inline.margin.top,
-                inline.width - inline.margin.left + 1,
-                inline.height - inline.margin.top - inline.margin.bottom);
-        BorderPainter.paint(c, bounds, BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM);
+        if (inline.border.left > 0) {
+            Rectangle bounds = new Rectangle(inline.x + padX + inline.margin.left,
+                    inline.y + inline.margin.top,
+                    inline.width - inline.margin.left + 1,
+                    inline.height - inline.margin.top - inline.margin.bottom);
+            BorderPainter.paint(c, bounds, BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM);
+        }
         inline.width = old_width;
         inline.height = old_height;
         //c.translate(+padding_xoff, -ty);
@@ -254,6 +253,7 @@ public class InlineRendering {
      */
     public static void paintRightPadding(Context c, LineBox line, InlineBox inline, int padX) {
         int padding_yoff = inline.totalTopPadding(c.getCurrentStyle(), c);
+        if (inline.padding.right <= 0 && inline.border.right <= 0) return;
 
         int ty = line.getBaseline() - inline.y - inline.height - padding_yoff + line.y;
 
@@ -265,30 +265,30 @@ public class InlineRendering {
         //sets the inline borders to the current style, so border objects will exist
         inline.height += inline.totalVerticalPadding(c.getCurrentStyle(), c);
         inline.width = inline.totalRightPadding();
-        // paint the actual background
-        //can't use this, too uncontrolled: BoxRendering.paintBackground(c, inline);
-        //Border margin = c.getCurrentStyle().getMarginWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
-        Rectangle box = new Rectangle(inline.x,
-                inline.y + inline.margin.top + inline.border.top,
-                inline.width - inline.margin.right - inline.border.right,
-                inline.height - inline.margin.top - inline.border.top - inline.border.bottom - inline.margin.bottom);
-
-        // paint the background
-        Color background_color = BoxRendering.getBackgroundColor(c);
-        if (background_color != null) {
-            // skip transparent background
-            if (!background_color.equals(BackgroundPainter.transparent)) {
-                //TODO. make conf controlled Uu.p("filling a background");
-                c.getGraphics().setColor(background_color);
-                c.getGraphics().fillRect(box.x, box.y, box.width, box.height);
+        if (inline.padding.right > 0) {
+            // paint the background
+            Color background_color = BoxRendering.getBackgroundColor(c);
+            if (background_color != null) {
+                // skip transparent background
+                if (!background_color.equals(BackgroundPainter.transparent)) {
+                    Rectangle box = new Rectangle(inline.x,
+                            inline.y + inline.margin.top + inline.border.top,
+                            inline.width - inline.margin.right - inline.border.right,
+                            inline.height - inline.margin.top - inline.border.top - inline.border.bottom - inline.margin.bottom);
+                    //TODO. make conf controlled Uu.p("filling a background");
+                    c.getGraphics().setColor(background_color);
+                    c.getGraphics().fillRect(box.x, box.y, box.width, box.height);
+                }
             }
         }
 
-        Rectangle bounds = new Rectangle(inline.x,
-                inline.y + inline.margin.top,
-                inline.width - inline.margin.right,
-                inline.height - inline.margin.top - inline.margin.bottom);
-        BorderPainter.paint(c, bounds, BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM);
+        if (inline.border.right > 0) {
+            Rectangle bounds = new Rectangle(inline.x,
+                    inline.y + inline.margin.top,
+                    inline.width - inline.margin.right,
+                    inline.height - inline.margin.top - inline.margin.bottom);
+            BorderPainter.paint(c, bounds, BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM);
+        }
         inline.width = old_width;
         inline.height = old_height;
         //c.translate(+padding_xoff, -ty);
@@ -301,6 +301,11 @@ public class InlineRendering {
      * @param inline PARAM
      */
     public static void paintMargin(Context c, LineBox line, InlineBox inline, int padX, int width, Color background_color) {
+        if (width <= 0) return;
+        // paint the background
+        if (background_color == null) return;
+        // skip transparent background
+        if (background_color.equals(BackgroundPainter.transparent)) return;
         int padding_yoff = inline.totalTopPadding(c.getCurrentStyle(), c);
 
         int ty = line.getBaseline() - inline.y - inline.height - padding_yoff + line.y;
@@ -321,15 +326,9 @@ public class InlineRendering {
                 width,
                 inline.height - inline.margin.top - inline.border.top - inline.border.bottom - inline.margin.bottom);
 
-        // paint the background
-        if (background_color != null) {
-            // skip transparent background
-            if (!background_color.equals(BackgroundPainter.transparent)) {
-                //TODO. make conf controlled Uu.p("filling a background");
-                c.getGraphics().setColor(background_color);
-                c.getGraphics().fillRect(box.x, box.y, box.width, box.height);
-            }
-        }
+        //TODO. make conf controlled Uu.p("filling a background");
+        c.getGraphics().setColor(background_color);
+        c.getGraphics().fillRect(box.x, box.y, box.width, box.height);
 
         inline.width = old_width;
         inline.height = old_height;
@@ -359,17 +358,13 @@ public class InlineRendering {
                 block = (BlockBox) box;
             }
 
-            int blockLineHeight = FontUtil.lineHeight(c);
-            LineMetrics blockLineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(),
-                    FontUtil.getFont(c), "thequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG");
-
             CascadedStyle firstLineStyle = null;
             for (int i = 0; i < box.getChildCount(); i++) {
                 if (i == 0 && block != null && block.firstLineStyle != null) {
                     firstLineStyle = block.firstLineStyle;
                 }
                 // get the line box
-                paintLine(c, (LineBox) box.getChild(i), blockLineHeight, blockLineMetrics, restyle, firstLineStyle);
+                paintLine(c, (LineBox) box.getChild(i), restyle, firstLineStyle);
                 if (i == 0 && block != null && block.firstLineStyle != null) {
                     firstLineStyle = null;
                 }
@@ -385,13 +380,11 @@ public class InlineRendering {
     /**
      * paint all of the inlines on the specified line
      *
-     * @param c                PARAM
-     * @param line             PARAM
-     * @param blockLineHeight  PARAM
-     * @param blockLineMetrics PARAM
-     * @param restyle          PARAM
+     * @param c       PARAM
+     * @param line    PARAM
+     * @param restyle PARAM
      */
-    static void paintLine(Context c, LineBox line, int blockLineHeight, LineMetrics blockLineMetrics, boolean restyle, CascadedStyle firstLineStyle) {
+    static void paintLine(Context c, LineBox line, boolean restyle, CascadedStyle firstLineStyle) {
         // get Xx and y
         int lx = line.x;
         int ly = line.y + line.getBaseline();
@@ -411,7 +404,7 @@ public class InlineRendering {
             }
 
             InlineBox box = (InlineBox) child;
-            paintInline(c, box, lx, ly, line, blockLineHeight, blockLineMetrics, restyle, pushedStyles);
+            paintInline(c, box, lx, ly, line, restyle, pushedStyles);
         }
 
         if (firstLineStyle != null) {
@@ -436,16 +429,14 @@ public class InlineRendering {
      * horizontally (Xx) relative to the origin of the containing line box
      * though
      *
-     * @param c                PARAM
-     * @param ib               PARAM
-     * @param lx               PARAM
-     * @param ly               PARAM
-     * @param line             PARAM
-     * @param blockLineHeight  PARAM
-     * @param blockLineMetrics PARAM
-     * @param restyle          PARAM
+     * @param c       PARAM
+     * @param ib      PARAM
+     * @param lx      PARAM
+     * @param ly      PARAM
+     * @param line    PARAM
+     * @param restyle PARAM
      */
-    static void paintInline(Context c, InlineBox ib, int lx, int ly, LineBox line, int blockLineHeight, LineMetrics blockLineMetrics, boolean restyle, LinkedList pushedStyles) {
+    static void paintInline(Context c, InlineBox ib, int lx, int ly, LineBox line, boolean restyle, LinkedList pushedStyles) {
         restyle = restyle || ib.restyle;//cascade it down
         ib.restyle = false;//reset
         int padX = 0;
@@ -461,6 +452,7 @@ public class InlineRendering {
                 //left padding for this inline element
                 int padWidth = ib.totalLeftPadding(c.getCurrentStyle(), c);
                 paintMargin(c, line, ib, padX, ib.margin.left, background_color);
+                //paintLeftPadding takes the margin into account
                 paintLeftPadding(c, line, ib, padX, padWidth);
                 padX += padWidth;
             }
@@ -475,13 +467,13 @@ public class InlineRendering {
             c.translate(line.x,
                     line.y +
                     (line.getBaseline() -
-                    VerticalAlign.getBaselineOffset(c, line, ib, blockLineHeight, blockLineMetrics) -
+                    VerticalAlign.getBaselineOffset(c, line, ib) -
                     ib.height));
             BoxRendering.paint(c, ib, true, restyle);
             c.translate(-line.x,
                     -(line.y +
                     (line.getBaseline() -
-                    VerticalAlign.getBaselineOffset(c, line, ib, blockLineHeight, blockLineMetrics) -
+                    VerticalAlign.getBaselineOffset(c, line, ib) -
                     ib.height)));
             debugInlines(c, ib, lx, ly);
             c.popStyle();
@@ -493,7 +485,7 @@ public class InlineRendering {
 
             // calculate the Xx and y relative to the baseline of the line (ly) and the
             // left edge of the line (lx)
-            int iy = ly - VerticalAlign.getBaselineOffset(c, line, inline, blockLineHeight, blockLineMetrics);
+            int iy = ly - VerticalAlign.getBaselineOffset(c, line, inline);
             int ix = lx + inline.x;//TODO: find the right way to work this out
 
             // account for padding
@@ -504,10 +496,11 @@ public class InlineRendering {
             // JMM: new adjustments to move the text to account for horizontal insets
             //int padding_xoff = inline.totalLeftPadding(c.getCurrentStyle());
             c.translate(padX, 0);
-            paintBackground(c, line, inline, padX);
+            LineMetrics lm = FontUtil.getLineMetrics(c, inline);
+            paintBackground(c, line, inline, padX, lm);
 
-            paintSelection(c, inline, lx, ly);
-            paintText(c, lx, ly, ix, iy, inline);
+            paintSelection(c, inline, lx, ly, lm);
+            paintText(c, ix, iy, inline, lm);
             c.translate(-padX, 0);
             debugInlines(c, inline, lx, ly);
         }

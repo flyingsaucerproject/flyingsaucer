@@ -25,6 +25,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.WhitespaceStripper;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.awt.font.LineMetrics;
 import java.util.logging.Level;
 
 
@@ -43,6 +44,8 @@ public class LineBox extends Box {
      * Description of the Field
      */
     public int descent;
+
+    public LineMetrics blockLineMetrics;
 
     /**
      * Constructor for the LineBox object
@@ -109,6 +112,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/05/09 23:47:15  tobega
+ * Cleaned up some getting of LineMetrics and optimized InlineRendering
+ *
  * Revision 1.14  2005/05/08 13:02:41  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
  *

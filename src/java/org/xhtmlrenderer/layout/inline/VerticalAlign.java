@@ -40,14 +40,12 @@ public class VerticalAlign {
     /**
      * returns how much the baseline should be raised (negative means lowered)
      *
-     * @param c                PARAM
-     * @param curr_line        PARAM
-     * @param new_inline       PARAM
-     * @param blockLineHeight  PARAM
-     * @param blockLineMetrics PARAM
+     * @param c          PARAM
+     * @param curr_line  PARAM
+     * @param new_inline PARAM
      * @return The baselineOffset value
      */
-    public static int getBaselineOffset(Context c, LineBox curr_line, InlineBox new_inline, int blockLineHeight, LineMetrics blockLineMetrics) {
+    public static int getBaselineOffset(Context c, LineBox curr_line, InlineBox new_inline) {
         int lineHeight;
         int ascent;
         int descent;
@@ -69,6 +67,7 @@ public class VerticalAlign {
             leading = 0;
             //xheight = lineHeight/2;
         }
+        LineMetrics blockLineMetrics = curr_line.blockLineMetrics;
 
         //Assumption: our baseline is aligned with parent baseline
         IdentValue vertical_align = c.getCurrentStyle().getIdent(CSSName.VERTICAL_ALIGN);

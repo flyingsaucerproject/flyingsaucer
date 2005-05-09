@@ -34,8 +34,7 @@ import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Font;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -84,7 +83,7 @@ public class InlineBoxing {
 
         // prepare remaining width and first linebox
         int remaining_width = bounds.width;
-        LineBox curr_line = newLine(box, bounds, null);
+        LineBox curr_line = newLine(box, bounds, null, blockLineMetrics);
         c.setFirstLine(true);
         LinkedList pushedOnFirstLine = null;
 
@@ -233,7 +232,7 @@ public class InlineBoxing {
                     saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, false, blockLineHeight);
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
-                    curr_line = newLine(box, bounds, prev_line);
+                    curr_line = newLine(box, bounds, prev_line, blockLineMetrics);
                     remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
                     
                     //have to discard it and recalculate, particularly if this was the first line
@@ -291,7 +290,7 @@ public class InlineBoxing {
                     // increase bounds height to account for the new line
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
-                    curr_line = newLine(box, bounds, prev_line);
+                    curr_line = newLine(box, bounds, prev_line, blockLineMetrics);
                     remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
                 }
 
@@ -361,12 +360,13 @@ public class InlineBoxing {
     /**
      * Description of the Method
      *
-     * @param box       PARAM
-     * @param bounds    PARAM
-     * @param prev_line PARAM
+     * @param box              PARAM
+     * @param bounds           PARAM
+     * @param prev_line        PARAM
+     * @param blockLineMetrics
      * @return Returns
      */
-    private static LineBox newLine(Box box, Rectangle bounds, LineBox prev_line) {
+    private static LineBox newLine(Box box, Rectangle bounds, LineBox prev_line, LineMetrics blockLineMetrics) {
         LineBox curr_line = new LineBox();
         if (prev_line != null) {
             curr_line.setParent(prev_line.getParent());
@@ -378,6 +378,7 @@ public class InlineBoxing {
         if (prev_line != null) {
             curr_line.y = prev_line.y + prev_line.height;
         }
+        curr_line.blockLineMetrics = blockLineMetrics;
         return curr_line;
     }
 
@@ -424,7 +425,7 @@ public class InlineBoxing {
             curr_line.height = lineHeight;
         }
 
-        int raised = VerticalAlign.getBaselineOffset(c, curr_line, new_inline, blockLineHeight, blockLineMetrics);
+        int raised = VerticalAlign.getBaselineOffset(c, curr_line, new_inline);
 
         if (ascent + raised > curr_line.ascent) {
             curr_line.ascent = ascent + raised;
@@ -561,6 +562,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/05/09 23:47:14  tobega
+ * Cleaned up some getting of LineMetrics and optimized InlineRendering
+ *
  * Revision 1.20  2005/05/08 14:36:57  tobega
  * Refactored away the need for having a context in a CalculatedStyle
  *
