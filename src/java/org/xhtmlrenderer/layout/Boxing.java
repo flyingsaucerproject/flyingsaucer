@@ -88,15 +88,13 @@ public class Boxing {
         if (pushed != null) {
             c.pushStyle(pushed);
         }
-        // this is to keep track of when we are inside of a form
-        //TODO: rethink: saveForm(c, (Element) block.getNode());
 
         if (c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
             block.setChildrenExceedBounds(true);
         }
+
         // install a block formatting context for the body,
         // ie. if it's null.
-
         // set up the outtermost bfc
         boolean set_bfc = false;
         if (c.getBlockFormattingContext() == null) {
@@ -171,7 +169,7 @@ public class Boxing {
         // remove the outtermost bfc
         if (set_bfc) {
             c.getBlockFormattingContext().doFinalAdjustments();
-            c.popBFC();
+            //no! clear it in BasicPanel instead! c.popBFC();
         }
 
         //and now, back to previous style
@@ -267,6 +265,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/05/09 20:11:29  tobega
+ * Improved the bfc hack for top level document
+ *
  * Revision 1.13  2005/05/09 19:35:13  tobega
  * Fixed a logic error with ems and exs
  *

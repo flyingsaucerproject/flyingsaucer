@@ -234,7 +234,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         
         getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
         //TODO: maybe temporary hack
-        //Context c = getContext();
+        if (c.getBlockFormattingContext() != null) c.popBFC();//we set one for the top level before
         body_box = Boxing.layout(c, new DomToplevelNode(doc));
         if (!c.isStylesAllPopped()) {
             XRLog.layout(Level.SEVERE, "mismatch in style popping and pushing");
@@ -999,6 +999,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2005/05/09 20:11:30  tobega
+ * Improved the bfc hack for top level document
+ *
  * Revision 1.43  2005/05/08 13:02:41  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
  *
