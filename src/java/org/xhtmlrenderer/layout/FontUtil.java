@@ -104,19 +104,13 @@ public class FontUtil {
 
         // CalculatedStyle should take care of all iheritance and default values
         // if a change is made to the basic font (by user action, for example), restyle
+        /*CHECK: do we need this?
         Font f = c.getGraphics().getFont();
         if (quick) {
             return f;
-        }
+        }*/
 
-        float size = style.getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, 0, c.getCtx());
-
-        IdentValue fontWeight = style.getIdent(CSSName.FONT_WEIGHT);
-        String[] families = style.propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
-
-        IdentValue fontStyle = style.getIdent(CSSName.FONT_STYLE);
-        IdentValue variant = style.getIdent(CSSName.FONT_VARIANT);
-        f = c.getFontResolver().resolveFont(c, families, size, fontWeight, fontStyle, variant);
+        Font f = style.getFont(c);
 
         return f;
     }
@@ -155,6 +149,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/05/09 20:35:39  tobega
+ * Caching fonts in CalculatedStyle
+ *
  * Revision 1.34  2005/05/09 18:51:50  tobega
  * Issue number:  72
  * Fixed

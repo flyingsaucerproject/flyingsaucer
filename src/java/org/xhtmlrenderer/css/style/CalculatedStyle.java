@@ -27,11 +27,11 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.extend.RenderingContext;
+import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.Color;
-import java.awt.Point;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -99,6 +99,11 @@ public class CalculatedStyle {
      * The derived Color value for this RuleSet
      */
     private Color _drvColor;
+
+    /**
+     * The derived Font for this style
+     */
+    private Font _font;
 
 
     /**
@@ -518,12 +523,29 @@ public class CalculatedStyle {
         }
         return new DerivedProperty(cssName, computed);
     }
+
+    public Font getFont(Context c) {
+        if (_font == null) {
+            float size = getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, 0, c.getCtx());
+
+            IdentValue fontWeight = getIdent(CSSName.FONT_WEIGHT);
+            String[] families = propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
+
+            IdentValue fontStyle = getIdent(CSSName.FONT_STYLE);
+            IdentValue variant = getIdent(CSSName.FONT_VARIANT);
+            _font = c.getFontResolver().resolveFont(c, families, size, fontWeight, fontStyle, variant);
+        }
+        return _font;
+    }
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/05/09 20:35:38  tobega
+ * Caching fonts in CalculatedStyle
+ *
  * Revision 1.19  2005/05/08 15:37:28  tobega
  * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
  *
