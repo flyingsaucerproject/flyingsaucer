@@ -105,15 +105,15 @@ public class BackgroundPainter {
 
             boolean horiz = false;
             boolean vert = false;
-            if (block.repeat.equals("repeat-Xx")) {
+            if (block.repeat == IdentValue.REPEAT_X) {
                 horiz = true;
                 vert = false;
             }
-            if (block.repeat.equals("repeat-y")) {
+            if (block.repeat == IdentValue.REPEAT_Y) {
                 horiz = false;
                 vert = true;
             }
-            if (block.repeat.equals("repeat")) {
+            if (block.repeat == IdentValue.REPEAT) { 
                 horiz = true;
                 vert = true;
             }
@@ -183,6 +183,13 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/05/11 20:09:22  joshy
+ * fixed the image repeat bug
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.22  2005/05/08 14:36:58  tobega
  * Refactored away the need for having a context in a CalculatedStyle
  *
