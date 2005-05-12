@@ -80,7 +80,7 @@ public class WhitespaceStripper {
         LinkedList stripped = new LinkedList();
         LinkedList pendingStylePushes = new LinkedList();
         boolean collapse = false;
-        //boolean allWhitespace = true;
+        boolean allWhitespace = true;
 
         for (Iterator i = inlineContent.iterator(); i.hasNext();) {
             Object o = i.next();
@@ -101,12 +101,12 @@ public class WhitespaceStripper {
                 CalculatedStyle style = c.getCurrentStyle();
                 boolean collapseNext = stripWhitespace(style, collapse, tc);
                 if (!tc.isRemovableWhitespace()) {
-                    //allWhitespace = false;
-                    stripped.addAll(pendingStylePushes);
-                    pendingStylePushes.clear();
-                    stripped.add(tc);
-                    collapse = collapseNext;
+                    allWhitespace = false;
                 }
+                stripped.addAll(pendingStylePushes);
+                pendingStylePushes.clear();
+                stripped.add(tc);
+                collapse = collapseNext;
                 continue;
             }
             if (o instanceof StylePop) {
@@ -121,7 +121,7 @@ public class WhitespaceStripper {
             }
             //Here we have some other object, just add it with preceding styles
             if (!(o instanceof FloatedBlockContent)) {
-                //allWhitespace = false;
+                allWhitespace = false;
             }
             //there may be relevant StylePushes pending, e.g. if this is content of AnonymousBlock
             if (pendingStylePushes.size() != 0) {
@@ -145,10 +145,15 @@ public class WhitespaceStripper {
 
         // Uu.p("final stripped = " + stripped);
         // Uu.p("all whitespace = " + allWhitespace);
-        /*if (allWhitespace) {
-            stripWhitespaceContent(stripped);
-        }*/
+        if (allWhitespace) {
+            stripTextContent(stripped);
+        }
         return stripped;
+    }
+
+    private static void stripTextContent(LinkedList stripped) {
+        for (Iterator i = stripped.iterator(); i.hasNext();)
+            if (i.next() instanceof TextContent) i.remove();
     }
 
     /**

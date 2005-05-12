@@ -33,6 +33,7 @@ import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 
 /**
@@ -99,32 +100,6 @@ public class InlineRendering {
         //draw the line
         if (text != null && text.length() > 0) {
             c.getTextRenderer().drawString(c.getGraphics(), text, ix, iy);
-        }
-
-        //draw any text decoration
-        int stringWidth = (int) Math.ceil(c.getTextRenderer().
-                getLogicalBounds(c.getGraphics(),
-                        c.getGraphics().getFont(),
-                        text).getWidth());
-
-        // override based on settings
-        IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
-
-        if (decoration == IdentValue.UNDERLINE) {
-            float down = lm.getUnderlineOffset();
-            float thick = lm.getUnderlineThickness();
-            
-            // correct the vertical pos of the underline by 2px, as without that 
-            // the underline sticks right against the text.
-            g.fillRect(ix, iy - (int) down + 2, stringWidth, (int) thick);
-        } else if (decoration == IdentValue.LINE_THROUGH) {
-            float down = lm.getStrikethroughOffset();
-            float thick = lm.getStrikethroughThickness();
-            g.fillRect(ix, iy + (int) down, stringWidth, (int) thick);
-        } else if (decoration == IdentValue.OVERLINE) {
-            float down = lm.getAscent();
-            float thick = lm.getUnderlineThickness();
-            g.fillRect(ix, iy - (int) down, stringWidth, (int) thick);
         }
 
         c.getGraphics().setColor(oldcolor);
@@ -347,6 +322,11 @@ public class InlineRendering {
     static void paintInlineContext(Context c, Box box, boolean restyle) {
         //dummy style to make sure that text nodes don't get extra padding and such
         {
+            LinkedList decorations = new LinkedList();
+            IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
+            if (decoration != IdentValue.NONE) {
+                decorations.addLast(new TextDecoration(decoration, 0, c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
+            }
             c.pushStyle(CascadedStyle.emptyCascadedStyle);
             //BlockBox block = (BlockBox)box;
             // translate into local coords
@@ -364,7 +344,7 @@ public class InlineRendering {
                     firstLineStyle = block.firstLineStyle;
                 }
                 // get the line box
-                paintLine(c, (LineBox) box.getChild(i), restyle, firstLineStyle);
+                paintLine(c, (LineBox) box.getChild(i), restyle, firstLineStyle, decorations);
                 if (i == 0 && block != null && block.firstLineStyle != null) {
                     firstLineStyle = null;
                 }
@@ -380,11 +360,12 @@ public class InlineRendering {
     /**
      * paint all of the inlines on the specified line
      *
-     * @param c       PARAM
-     * @param line    PARAM
-     * @param restyle PARAM
+     * @param c           PARAM
+     * @param line        PARAM
+     * @param restyle     PARAM
+     * @param decorations
      */
-    static void paintLine(Context c, LineBox line, boolean restyle, CascadedStyle firstLineStyle) {
+    static void paintLine(Context c, LineBox line, boolean restyle, CascadedStyle firstLineStyle, LinkedList decorations) {
         // get Xx and y
         int lx = line.x;
         int ly = line.y + line.getBaseline();
@@ -404,17 +385,30 @@ public class InlineRendering {
             }
 
             InlineBox box = (InlineBox) child;
-            paintInline(c, box, lx, ly, line, restyle, pushedStyles);
+            paintInline(c, box, lx, ly, line, restyle, pushedStyles, decorations);
+        }
+
+        //do text decorations
+        ListIterator li = decorations.listIterator(0);
+        while (li.hasNext()) {
+            TextDecoration decoration = (TextDecoration) li.next();
+            decoration.paint(c, line);
+            if (decoration.isEnded()) li.remove();
         }
 
         if (firstLineStyle != null) {
             for (int i = 0; i < pushedStyles.size(); i++) {
                 c.popStyle();
+                decorations.removeLast();//might have changed because of first line style
             }
             c.popStyle();//get rid of firstLineStyle
             //reinstitute the rest
             for (Iterator i = pushedStyles.iterator(); i.hasNext();) {
                 c.pushStyle((CascadedStyle) i.next());
+                IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
+                if (decoration != IdentValue.NONE) {
+                    decorations.addLast(new TextDecoration(decoration, 0, c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
+                }
             }
         }
         if (c.debugDrawLineBoxes()) {
@@ -429,14 +423,15 @@ public class InlineRendering {
      * horizontally (Xx) relative to the origin of the containing line box
      * though
      *
-     * @param c       PARAM
-     * @param ib      PARAM
-     * @param lx      PARAM
-     * @param ly      PARAM
-     * @param line    PARAM
-     * @param restyle PARAM
+     * @param c           PARAM
+     * @param ib          PARAM
+     * @param lx          PARAM
+     * @param ly          PARAM
+     * @param line        PARAM
+     * @param restyle     PARAM
+     * @param decorations
      */
-    static void paintInline(Context c, InlineBox ib, int lx, int ly, LineBox line, boolean restyle, LinkedList pushedStyles) {
+    static void paintInline(Context c, InlineBox ib, int lx, int ly, LineBox line, boolean restyle, LinkedList pushedStyles, LinkedList decorations) {
         restyle = restyle || ib.restyle;//cascade it down
         ib.restyle = false;//reset
         int padX = 0;
@@ -447,7 +442,8 @@ public class InlineRendering {
                 CascadedStyle style = c.getCss().getCascadedStyle(sp.getElement(), restyle);
                 c.pushStyle(style);
                 if (pushedStyles != null) pushedStyles.addLast(style);
-                //Now we know that an inline element started here, handle borders and such?
+
+                //Now we know that an inline element started here, handle borders and such
                 Relative.translateRelative(c);
                 //left padding for this inline element
                 int padWidth = ib.totalLeftPadding(c.getCurrentStyle(), c);
@@ -455,6 +451,11 @@ public class InlineRendering {
                 //paintLeftPadding takes the margin into account
                 paintLeftPadding(c, line, ib, padX, padWidth);
                 padX += padWidth;
+                //text decoration?
+                IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
+                if (decoration != IdentValue.NONE) {
+                    decorations.addLast(new TextDecoration(decoration, ib.x + padWidth, c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
+                }
             }
         }
 
@@ -463,6 +464,14 @@ public class InlineRendering {
             debugInlines(c, ib, lx, ly);
         } // Uu.p("paintInline: " + inline);
         else if (ib instanceof InlineBlockBox) {
+            //no text-decorations on inline-block
+            LinkedList restarted = new LinkedList();
+            for (Iterator i = decorations.iterator(); i.hasNext();) {
+                TextDecoration td = (TextDecoration) i.next();
+                td.setEnd(ib.x);
+                restarted.addLast(td.getRestarted(ib.x + ib.width));
+            }
+            decorations.addAll(restarted);
             c.pushStyle(c.getCss().getCascadedStyle(ib.element, restyle));
             c.translate(line.x,
                     line.y +
@@ -508,17 +517,26 @@ public class InlineRendering {
         padX = ib.width - ib.rightPadding;
 
         if (ib.popstyles != 0) {
+            ListIterator di = decorations.listIterator(decorations.size());
             for (int i = 0; i < ib.popstyles; i++) {
+                //end text decoration?
+                IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
+                if (decoration != IdentValue.NONE) {
+                    TextDecoration td = (TextDecoration) di.previous();
+                    while (td.isEnded()) {//already done this one!
+                        td = (TextDecoration) di.previous();
+                    }
+                    td.setEnd(ib.x + padX);
+                }
                 //right padding for this inline element
                 paintRightPadding(c, line, ib, padX);
                 padX += ib.totalRightPadding() - ib.margin.right;
-                int rightMargin = ib.margin.right;
                 Relative.untranslateRelative(c);
                 c.popStyle();
                 if (pushedStyles != null) pushedStyles.removeLast();
                 Color background_color = BoxRendering.getBackgroundColor(c);
-                paintMargin(c, line, ib, padX, rightMargin, background_color);
-                padX += rightMargin;
+                paintMargin(c, line, ib, padX, ib.margin.right, background_color);
+                padX += ib.margin.right;
             }
         }
     }
