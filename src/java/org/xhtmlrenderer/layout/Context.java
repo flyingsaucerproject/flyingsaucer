@@ -30,9 +30,8 @@ import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
+import java.util.LinkedList;
 
 
 /**
@@ -443,5 +442,6 @@ public interface Context {
      */
     public NamespaceHandler getNamespaceHandler();
 
+    LinkedList getDecorations();
 }
 

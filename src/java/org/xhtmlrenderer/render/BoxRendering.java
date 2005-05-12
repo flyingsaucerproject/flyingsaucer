@@ -21,11 +21,13 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.table.TableBox;
@@ -35,9 +37,7 @@ import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 
 
 /**
@@ -74,14 +74,25 @@ public class BoxRendering {
         // copy the bounds to we don't mess it up
         Rectangle oldBounds = new Rectangle(c.getExtents());
 
-        if (Relative.isRelative(c)) {
-            paintRelative(c, block, restyle);
-        } else if (block.fixed) {
+        if (block.fixed) {
             paintFixed(c, block, restyle);
         } else if (block.absolute) {
             paintAbsoluteBox(c, block, restyle);
         } else {
-            paintNormal(c, block, restyle);
+            //text decoration?
+            IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
+            if (decoration != IdentValue.NONE) {
+                c.getDecorations().addLast(new TextDecoration(decoration, 0, c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
+            }
+            if (Relative.isRelative(c)) {
+                paintRelative(c, block, restyle);
+            } else {
+                paintNormal(c, block, restyle);
+            }
+            //undo text decoration?
+            if (decoration != IdentValue.NONE) {
+                c.getDecorations().removeLast();
+            }
         }
 
         //Uu.p("here it's : " + c.getListCounter());
@@ -326,6 +337,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/05/12 23:42:03  tobega
+ * Text decorations now work when set on block elements too
+ *
  * Revision 1.21  2005/05/08 14:36:58  tobega
  * Refactored away the need for having a context in a CalculatedStyle
  *

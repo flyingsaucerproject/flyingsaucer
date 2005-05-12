@@ -32,14 +32,14 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
+import java.util.LinkedList;
 import java.util.Stack;
 import java.util.logging.Level;
 
 public class ContextImpl implements Context {
     SharedContext sharedContext;
+    private LinkedList decorations = new LinkedList();
 
     //delegated methods
     public String getMedia() {
@@ -176,6 +176,10 @@ public class ContextImpl implements Context {
 
     public NamespaceHandler getNamespaceHandler() {
         return sharedContext.getNamespaceHandler();
+    }
+
+    public LinkedList getDecorations() {
+        return decorations;
     }
 
     //the stuff that needs to have a separate instance for each run.
