@@ -75,7 +75,7 @@ public class BackgroundPainter {
             if (!background_color.equals(transparent)) {
                 //TODO. make conf controlled Uu.p("filling a background");
                 c.getGraphics().setColor(background_color);
-                c.getGraphics().fillRect(box.x, box.y, box.width, box.height);
+                c.getGraphics().fillRect(box.x, box.y, box.width+1, box.height+1);
             }
         }
 
@@ -183,6 +183,13 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/05/12 06:24:15  joshy
+ * more very minor border and background tweaks
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.23  2005/05/11 20:09:22  joshy
  * fixed the image repeat bug
  * Issue number:

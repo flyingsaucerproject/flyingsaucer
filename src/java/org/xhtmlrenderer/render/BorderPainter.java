@@ -371,9 +371,13 @@ public class BorderPainter {
 				return;
 			}
             poly = new Polygon();
-            poly.addPoint(bounds.x + bounds.width - border.right+1, bounds.y + bounds.height - border.bottom+1);
-            poly.addPoint(bounds.x + border.left-1, bounds.y + bounds.height - border.bottom+1);
+			// upper right
+            poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom+1);
+			// upper left
+            poly.addPoint(bounds.x + border.left, bounds.y + bounds.height - border.bottom+1);
+			// lower left
             poly.addPoint(bounds.x, bounds.y + bounds.height);
+			// lower right
             poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height);
             g.fillPolygon(poly);
 			return;
@@ -390,8 +394,8 @@ public class BorderPainter {
 			}
             poly = new Polygon();
             poly.addPoint(bounds.x + bounds.width, bounds.y);
-            poly.addPoint(bounds.x + bounds.width - border.right+1, bounds.y + border.top-1);
-            poly.addPoint(bounds.x + bounds.width - border.right+1, bounds.y + bounds.height - border.bottom+1);
+            poly.addPoint(bounds.x + bounds.width - border.right+1, bounds.y + border.top);
+            poly.addPoint(bounds.x + bounds.width - border.right+1, bounds.y + bounds.height - border.bottom);
             poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height);
             g.fillPolygon(poly);
 			return;
@@ -408,13 +412,21 @@ public class BorderPainter {
 			}
             poly = new Polygon();
             poly.addPoint(bounds.x, bounds.y);
-            poly.addPoint(bounds.x + border.left-1, bounds.y + border.top-1);
-            poly.addPoint(bounds.x + border.left-1, bounds.y + bounds.height - border.bottom+1);
+            poly.addPoint(bounds.x + border.left-1, bounds.y + border.top);
+            poly.addPoint(bounds.x + border.left-1, bounds.y + bounds.height - border.bottom);
             poly.addPoint(bounds.x, bounds.y + bounds.height);
             g.fillPolygon(poly);
 			return;
         }
     }
+	
+	private static void p(Polygon poly) {
+		System.out.println("poly = " + poly);
+		for(int i=0; i<poly.npoints; i++) {
+			System.out.print(" " + poly.xpoints[i] + "," + poly.ypoints[i]);
+		}
+		System.out.println("");
+	}
 
 }
 
@@ -422,6 +434,13 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/05/12 06:24:16  joshy
+ * more very minor border and background tweaks
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.23  2005/05/12 04:55:57  joshy
  * fix for issues 76
  * Issue number:
