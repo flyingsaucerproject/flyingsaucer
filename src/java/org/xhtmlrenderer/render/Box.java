@@ -29,7 +29,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import javax.swing.*;
-import java.awt.Image;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -695,7 +695,7 @@ public class Box {
         // ASK: where do we get the containing height/width here
         margin = style.getMarginWidth(width, height, c.getCtx());
         padding = style.getPaddingWidth(width, height, c.getCtx());
-        border = style.getBorderWidth(width, height, c.getCtx());
+        border = style.getBorderWidth(c.getCtx());
         haveBorders = true;// this flag is not checked, ask patrick
     }
 }
@@ -704,6 +704,11 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.52  2005/05/13 11:49:59  tobega
+ * Started to fix up borders on inlines. Got caught up in refactoring.
+ * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.
+ * Hover is not working completely well now, might get better when I'm done.
+ *
  * Revision 1.51  2005/05/08 14:36:58  tobega
  * Refactored away the need for having a context in a CalculatedStyle
  *

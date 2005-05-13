@@ -237,16 +237,15 @@ public class CalculatedStyle {
      * four-sided border width. Uses the actual value (computed actual value)
      * for this element.
      *
-     * @param parentWidth
-     * @param parentHeight
      * @param ctx
      * @return The borderWidth value
      */
-    public Border getBorderWidth(float parentWidth, float parentHeight, RenderingContext ctx) {
+    public Border getBorderWidth(RenderingContext ctx) {
         if (_drvBorderWidth == null) {
+            //note: percentages donot apply to border
             _drvBorderWidth = deriveBorderInstance(new CSSName[]{CSSName.BORDER_WIDTH_TOP, CSSName.BORDER_WIDTH_BOTTOM, CSSName.BORDER_WIDTH_LEFT, CSSName.BORDER_WIDTH_RIGHT},
-                    parentHeight,
-                    parentWidth, ctx);
+                    0,
+                    0, ctx);
             if (propertyByName(CSSName.BORDER_STYLE_TOP).asIdentValue() == IdentValue.NONE) {
                 _drvBorderWidth.top = 0;
             }
@@ -543,6 +542,11 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/05/13 11:49:57  tobega
+ * Started to fix up borders on inlines. Got caught up in refactoring.
+ * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.
+ * Hover is not working completely well now, might get better when I'm done.
+ *
  * Revision 1.20  2005/05/09 20:35:38  tobega
  * Caching fonts in CalculatedStyle
  *

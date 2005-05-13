@@ -146,7 +146,7 @@ public class InlineRendering {
         //Border margin = c.getCurrentStyle().getMarginWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight());
         Rectangle box = new Rectangle(inline.x,
                 inline.y + inline.margin.top + inline.border.top,
-                inline.width + 1,
+                inline.width,
                 inline.height - inline.margin.top - inline.border.top - inline.border.bottom - inline.margin.bottom);
 
         // paint the background
@@ -164,7 +164,7 @@ public class InlineRendering {
                 inline.y + inline.margin.top,
                 inline.width + 1,
                 inline.height - inline.margin.top - inline.margin.bottom);
-        BorderPainter.paint(c, bounds, BorderPainter.TOP + BorderPainter.BOTTOM);
+        BorderPainter.paint(bounds, BorderPainter.TOP + BorderPainter.BOTTOM, c.getCurrentStyle(), c.getGraphics(), c.getCtx());
         inline.width = old_width;
         inline.height = old_height;
         //c.translate(+padding_xoff, -ty);
@@ -200,7 +200,7 @@ public class InlineRendering {
                     Rectangle box = new Rectangle(inline.x + inline.margin.left + inline.border.left,
                             inline.y + inline.margin.top + inline.border.top,
                             inline.width - inline.margin.left - inline.border.left + 1,
-                            inline.height - inline.margin.top - inline.border.top - inline.border.bottom - inline.margin.bottom);
+                            inline.height - inline.margin.top - inline.border.top - inline.border.bottom - inline.margin.bottom + 1);
                     //TODO. make conf controlled Uu.p("filling a background");
                     c.getGraphics().setColor(background_color);
                     c.getGraphics().fillRect(box.x, box.y, box.width, box.height);
@@ -211,9 +211,9 @@ public class InlineRendering {
         if (inline.border.left > 0) {
             Rectangle bounds = new Rectangle(inline.x + padX + inline.margin.left,
                     inline.y + inline.margin.top,
-                    inline.width - inline.margin.left + 1,
+                    inline.width - inline.margin.left,
                     inline.height - inline.margin.top - inline.margin.bottom);
-            BorderPainter.paint(c, bounds, BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM);
+            BorderPainter.paint(bounds, BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM, c.getCurrentStyle(), c.getGraphics(), c.getCtx());
         }
         inline.width = old_width;
         inline.height = old_height;
@@ -262,7 +262,7 @@ public class InlineRendering {
                     inline.y + inline.margin.top,
                     inline.width - inline.margin.right,
                     inline.height - inline.margin.top - inline.margin.bottom);
-            BorderPainter.paint(c, bounds, BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM);
+            BorderPainter.paint(bounds, BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM, c.getCurrentStyle(), c.getGraphics(), c.getCtx());
         }
         inline.width = old_width;
         inline.height = old_height;

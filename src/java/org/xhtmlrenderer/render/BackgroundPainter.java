@@ -24,10 +24,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 
@@ -58,7 +55,7 @@ public class BackgroundPainter {
 
         int width = block.getWidth();
         int height = block.getHeight();
-        Border border = c.getCurrentStyle().getBorderWidth(width, height, c.getCtx());
+        Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         if (border == null) {
             return;
         }
@@ -75,7 +72,7 @@ public class BackgroundPainter {
             if (!background_color.equals(transparent)) {
                 //TODO. make conf controlled Uu.p("filling a background");
                 c.getGraphics().setColor(background_color);
-                c.getGraphics().fillRect(box.x, box.y, box.width+1, box.height+1);
+                c.getGraphics().fillRect(box.x, box.y, box.width + 1, box.height + 1);
             }
         }
 
@@ -113,7 +110,7 @@ public class BackgroundPainter {
                 horiz = false;
                 vert = true;
             }
-            if (block.repeat == IdentValue.REPEAT) { 
+            if (block.repeat == IdentValue.REPEAT) {
                 horiz = true;
                 vert = true;
             }
@@ -183,6 +180,11 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/05/13 11:49:59  tobega
+ * Started to fix up borders on inlines. Got caught up in refactoring.
+ * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.
+ * Hover is not working completely well now, might get better when I'm done.
+ *
  * Revision 1.24  2005/05/12 06:24:15  joshy
  * more very minor border and background tweaks
  * Issue number:

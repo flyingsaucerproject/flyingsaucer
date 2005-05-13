@@ -151,7 +151,7 @@ public class BoxRendering {
                     block.y + margin.top,
                     block.width - margin.left - margin.right,
                     block.height - margin.top - margin.bottom);
-            BorderPainter.paint(c, bounds, BorderPainter.ALL);
+            BorderPainter.paint(bounds, BorderPainter.ALL, c.getCurrentStyle(), c.getGraphics(), c.getCtx());
         }
     }
 
@@ -337,6 +337,11 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/05/13 11:49:59  tobega
+ * Started to fix up borders on inlines. Got caught up in refactoring.
+ * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.
+ * Hover is not working completely well now, might get better when I'm done.
+ *
  * Revision 1.22  2005/05/12 23:42:03  tobega
  * Text decorations now work when set on block elements too
  *

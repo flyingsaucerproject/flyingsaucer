@@ -24,7 +24,6 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.value.BorderColor;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.extend.RenderingContext;
 
 import java.awt.*;
@@ -73,7 +72,7 @@ public class BorderPainter {
         BorderColor border_color = style.getBorderColor();
         int width = (int) bounds.getWidth();
         int height = (int) bounds.getHeight();
-        Border border = style.getBorderWidth(width, height, ctx);
+        Border border = style.getBorderWidth(ctx);
         IdentValue ident = null;
         if ((sides & TOP) == TOP) {
             ident = style.getIdent(CSSName.BORDER_STYLE_TOP);
@@ -343,93 +342,101 @@ public class BorderPainter {
         Polygon poly;
         // CLEAN: duplicate, except for color, with paintGoodBevel() for BOTTOM (PWW 25-01-05)
         if (side == TOP) {
-			// skip 0 border
-			if(border.top == 0) { return; }
+            // skip 0 border
+            if (border.top == 0) {
+                return;
+            }
 
-			// set the color
+            // set the color
             g.setColor(color.topColor);
-			
-			// draw a 1px border with a line instead of a polygon
-			if(border.top == 1) {
-				g.drawLine(bounds.x, bounds.y, bounds.x + bounds.width -1, bounds.y);
-				return;
-			}
-			// use polygons for borders over 1px wide
+
+            // draw a 1px border with a line instead of a polygon
+            if (border.top == 1) {
+                g.drawLine(bounds.x, bounds.y, bounds.x + bounds.width - 1, bounds.y);
+                return;
+            }
+            // use polygons for borders over 1px wide
             poly = new Polygon();
             poly.addPoint(bounds.x, bounds.y);
             poly.addPoint(bounds.x + bounds.width, bounds.y);
-            poly.addPoint(bounds.x + bounds.width - border.right+1, bounds.y + border.top-1);
-            poly.addPoint(bounds.x + border.left-1, bounds.y + border.top-1);
+            poly.addPoint(bounds.x + bounds.width - border.right + 1, bounds.y + border.top - 1);
+            poly.addPoint(bounds.x + border.left - 1, bounds.y + border.top - 1);
             g.fillPolygon(poly);
-			return;
+            return;
         }
 
         // CLEAN: duplicate, except for color, with paintGoodBevel() for BOTTOM (PWW 25-01-05)
         if (side == BOTTOM) {
-			if(border.bottom == 0) { return; }
+            if (border.bottom == 0) {
+                return;
+            }
             g.setColor(color.bottomColor);
-			if(border.bottom == 1) {
-				g.drawLine(bounds.x, bounds.y + bounds.height -1,
-					bounds.x + bounds.width -1, bounds.y + bounds.height -1);
-				return;
-			}
+            if (border.bottom == 1) {
+                g.drawLine(bounds.x, bounds.y + bounds.height - 1,
+                        bounds.x + bounds.width - 1, bounds.y + bounds.height - 1);
+                return;
+            }
             poly = new Polygon();
-			// upper right
-            poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom+1);
-			// upper left
-            poly.addPoint(bounds.x + border.left, bounds.y + bounds.height - border.bottom+1);
-			// lower left
+            // upper right
+            poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + bounds.height - border.bottom + 1);
+            // upper left
+            poly.addPoint(bounds.x + border.left, bounds.y + bounds.height - border.bottom + 1);
+            // lower left
             poly.addPoint(bounds.x, bounds.y + bounds.height);
-			// lower right
+            // lower right
             poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height);
             g.fillPolygon(poly);
-			return;
+            return;
         }
 
         // CLEAN: duplicate, except for color, with paintGoodBevel() for BOTTOM (PWW 25-01-05)
         if (side == RIGHT) {
-			if(border.right == 0) { return; }
+            if (border.right == 0) {
+                return;
+            }
             g.setColor(color.rightColor);
-			if(border.right == 1) {
-				g.drawLine(bounds.x + bounds.width -1, bounds.y,
-					bounds.x + bounds.width-1, bounds.y + bounds.height -1);
-				return;
-			}
+            if (border.right == 1) {
+                g.drawLine(bounds.x + bounds.width - 1, bounds.y,
+                        bounds.x + bounds.width - 1, bounds.y + bounds.height - 1);
+                return;
+            }
             poly = new Polygon();
             poly.addPoint(bounds.x + bounds.width, bounds.y);
-            poly.addPoint(bounds.x + bounds.width - border.right+1, bounds.y + border.top);
-            poly.addPoint(bounds.x + bounds.width - border.right+1, bounds.y + bounds.height - border.bottom);
+            poly.addPoint(bounds.x + bounds.width - border.right + 1, bounds.y + border.top);
+            poly.addPoint(bounds.x + bounds.width - border.right + 1, bounds.y + bounds.height - border.bottom);
             poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height);
             g.fillPolygon(poly);
-			return;
+            return;
         }
 
         // CLEAN: duplicate, except for color, with paintGoodBevel() for BOTTOM (PWW 25-01-05)
         if (side == LEFT) {
-			if(border.left == 0) { return; }
+            if (border.left == 0) {
+                return;
+            }
             g.setColor(color.leftColor);
-			if(border.left == 1) {
-				g.drawLine(bounds.x, bounds.y, 
-					bounds.x, bounds.y + bounds.height -1);
-				return;
-			}
+            if (border.left == 1) {
+                g.drawLine(bounds.x, bounds.y,
+                        bounds.x, bounds.y + bounds.height - 1);
+                return;
+            }
             poly = new Polygon();
             poly.addPoint(bounds.x, bounds.y);
-            poly.addPoint(bounds.x + border.left-1, bounds.y + border.top);
-            poly.addPoint(bounds.x + border.left-1, bounds.y + bounds.height - border.bottom);
+            poly.addPoint(bounds.x + border.left - 1, bounds.y + border.top);
+            poly.addPoint(bounds.x + border.left - 1, bounds.y + bounds.height - border.bottom);
             poly.addPoint(bounds.x, bounds.y + bounds.height);
             g.fillPolygon(poly);
-			return;
+            return;
         }
     }
-	
-	private static void p(Polygon poly) {
-		System.out.println("poly = " + poly);
-		for(int i=0; i<poly.npoints; i++) {
-			System.out.print(" " + poly.xpoints[i] + "," + poly.ypoints[i]);
-		}
-		System.out.println("");
-	}
+
+    private static void p(Polygon poly) {
+        System.out.println("poly = " + poly);
+        for (int i = 0; i < poly.npoints; i++) {
+            System.out.print(" " + poly.xpoints[i] + "," + poly.ypoints[i]);
+        }
+        System.out.println("");
+    }
 
 }
 
@@ -437,6 +444,11 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/05/13 11:49:59  tobega
+ * Started to fix up borders on inlines. Got caught up in refactoring.
+ * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.
+ * Hover is not working completely well now, might get better when I'm done.
+ *
  * Revision 1.25  2005/05/13 08:46:17  tobega
  * A line is drawn to the right and below the coordinate. Needed to adjust when drawing lines for 1-pixel borders
  *

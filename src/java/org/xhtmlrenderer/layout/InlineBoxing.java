@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -60,15 +59,6 @@ public class InlineBoxing {
         //for formatting purposes
         Rectangle bounds = new Rectangle();
         bounds.width = c.getExtents().width;
-        Border border = c.getCurrentStyle().getBorderWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight(), c.getCtx());
-
-        Border margin = c.getCurrentStyle().getMarginWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight(), c.getCtx());
-
-        Border padding = c.getCurrentStyle().getPaddingWidth(c.getBlockFormattingContext().getWidth(), c.getBlockFormattingContext().getHeight(), c.getCtx());
-
-        //below should maybe be done somewhere else?
-        bounds.width -= margin.left + border.left + padding.left +
-                padding.right + border.right + margin.right;
         validateBounds(bounds);
         bounds.x = 0;
         bounds.y = 0;
@@ -562,6 +552,11 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/05/13 11:49:58  tobega
+ * Started to fix up borders on inlines. Got caught up in refactoring.
+ * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.
+ * Hover is not working completely well now, might get better when I'm done.
+ *
  * Revision 1.21  2005/05/09 23:47:14  tobega
  * Cleaned up some getting of LineMetrics and optimized InlineRendering
  *

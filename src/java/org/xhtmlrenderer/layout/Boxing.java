@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -130,10 +131,16 @@ public class Boxing {
         // do children's layout
         boolean old_sub = c.isSubBlock();
         c.setSubBlock(false);
-        int tx = block.totalLeftPadding(c.getCurrentStyle(), c);
-        int ty = block.totalTopPadding(c.getCurrentStyle(), c);
+        Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
+        //note: percentages here refer to width of containing block
+        Border margin = c.getCurrentStyle().getMarginWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+        Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+        int tx = margin.left + border.left + padding.left;
+        int ty = margin.top + border.top + padding.top;
         c.translate(tx, ty);
+        c.shrinkExtents(tx + margin.right + border.right + padding.right, ty + margin.bottom + border.bottom + padding.bottom);
         layoutChildren(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
+        c.unshrinkExtents();
         c.translate(-tx, -ty);
         c.setSubBlock(old_sub);
 
@@ -154,8 +161,8 @@ public class Boxing {
         }
 
         // calculate the total outer width
-        block.width = block.totalHorizontalPadding(c.getCurrentStyle(), c) + block.width;
-        block.height = block.totalVerticalPadding(c.getCurrentStyle(), c) + block.height;
+        block.width = margin.left + border.left + padding.left + block.width + padding.right + border.right + margin.right;
+        block.height = margin.top + border.top + padding.top + block.height + padding.bottom + border.bottom + margin.bottom;
 
         //restore the extents
         c.setExtents(oe);
@@ -265,6 +272,11 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/05/13 11:49:58  tobega
+ * Started to fix up borders on inlines. Got caught up in refactoring.
+ * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.
+ * Hover is not working completely well now, might get better when I'm done.
+ *
  * Revision 1.14  2005/05/09 20:11:29  tobega
  * Improved the bfc hack for top level document
  *

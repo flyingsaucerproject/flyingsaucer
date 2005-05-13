@@ -147,16 +147,15 @@ public interface Context {
     /**
      * Description of the Method
      *
-     * @param block PARAM
+     * @param dw how much to shrink width
+     * @param dh how much to shrink height
      */
-    void shrinkExtents(Box block);
+    void shrinkExtents(int dw, int dh);
 
     /**
      * Description of the Method
-     *
-     * @param block PARAM
      */
-    void unshrinkExtents(Box block);
+    void unshrinkExtents();
 
     /**
      * Description of the Method
