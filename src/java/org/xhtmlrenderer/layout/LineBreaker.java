@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.BlockBox;
@@ -27,8 +28,7 @@ import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 
 import javax.swing.*;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 
 
 /**
@@ -42,14 +42,15 @@ public class LineBreaker {
     /**
      * Description of the Method
      *
-     * @param c          PARAM
-     * @param content    PARAM
-     * @param avail      PARAM
-     * @param prev_align PARAM
-     * @param curr_line  PARAM
+     * @param c            PARAM
+     * @param content      PARAM
+     * @param avail        PARAM
+     * @param prev_align   PARAM
+     * @param curr_line    PARAM
+     * @param parent_width
      * @return Returns
      */
-    public static InlineBox generateReplacedInlineBox(Context c, Content content, int avail, InlineBox prev_align, LineBox curr_line) {
+    public static InlineBox generateReplacedInlineBox(Context c, Content content, int avail, InlineBox prev_align, LineBox curr_line, int parent_width) {
         InlineBlockBox box = new InlineBlockBox();
         box.element = content.getElement();
         CalculatedStyle style = c.getCurrentStyle();
@@ -64,6 +65,14 @@ public class LineBreaker {
         // do vertical alignment
         //now done later VerticalAlign.setupVerticalAlign(c, style, box);
         c.translate(box.x + curr_line.x, box.y + curr_line.y);
+        Border border = style.getBorderWidth(c.getCtx());
+        //note: percentages here refer to width of containing block
+        Border margin = style.getMarginWidth(parent_width, parent_width, c.getCtx());
+        Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
+        int tx = margin.left + border.left + padding.left;
+        int ty = margin.top + border.top + padding.top;
+        box.tx = tx;
+        box.ty = ty;
         c.translateInsets(box);
         Rectangle bounds = null;
         BlockBox block = null;
@@ -84,8 +93,8 @@ public class LineBreaker {
         box.component = cc;
 
         // set up the extents
-        box.width = bounds.width + box.totalHorizontalPadding(c.getCurrentStyle(), c);
-        box.height = bounds.height + box.totalVerticalPadding(c.getCurrentStyle(), c);
+        box.width = margin.left + border.left + padding.left + bounds.width + padding.right + border.right + margin.right;
+        box.height = margin.top + border.top + padding.top + bounds.height + padding.bottom + border.bottom + margin.bottom;
         box.break_after = false;
 
         // if it won't fit on this line, then put it on the next one
@@ -110,6 +119,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.57  2005/05/13 15:23:54  tobega
+ * Done refactoring box borders, margin and padding. Hover is working again.
+ *
  * Revision 1.56  2005/05/08 14:36:57  tobega
  * Refactored away the need for having a context in a CalculatedStyle
  *

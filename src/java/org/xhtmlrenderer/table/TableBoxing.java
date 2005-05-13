@@ -37,15 +37,16 @@
 package org.xhtmlrenderer.table;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.BlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 
 
 /**
@@ -81,9 +82,10 @@ public class TableBoxing {
         TableBox table_box = (TableBox) createBox(c, content);
 
         c.pushStyle(content.getStyle());
+        CalculatedStyle style = c.getCurrentStyle();
         // set up the border spacing
-        float border_spacing_x = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getWidth(), c.getCtx());
-        float border_spacing_y = c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getHeight(), c.getCtx());
+        float border_spacing_x = style.getFloatPropertyProportionalWidth(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getWidth(), c.getCtx());
+        float border_spacing_y = style.getFloatPropertyProportionalHeight(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getHeight(), c.getCtx());
         table_box.spacing = new Point((int) border_spacing_x, (int) border_spacing_y);
 
         // set up the width
@@ -93,8 +95,13 @@ public class TableBoxing {
         }
         //not used: int orig_fixed_width = fixed_width;
 
+        Border border = style.getBorderWidth(c.getCtx());
+        //note: percentages here refer to width of containing block
+        Border margin = style.getMarginWidth(fixed_width, fixed_width, c.getCtx());
+        Border padding = style.getPaddingWidth(fixed_width, fixed_width, c.getCtx());
+
         //subtract off the margin, border, padding, and spacing
-        fixed_width -= table_box.totalHorizontalPadding(c.getCurrentStyle(), c) + table_box.spacing.x;
+        fixed_width -= margin.left + border.left + padding.left + padding.right + border.right + margin.right + table_box.spacing.x;
                
         // create the table
         // table is just for calculations. it's not a real box
@@ -106,8 +113,8 @@ public class TableBoxing {
         
         //pull out the boxes
         calculateBoxes(fixed_width, table_box, c, table);
-        table_box.width += table_box.totalHorizontalPadding(c.getCurrentStyle(), c);
-        table_box.height += table_box.totalVerticalPadding(c.getCurrentStyle(), c);
+        table_box.width += margin.left + border.left + padding.left + padding.right + border.right + margin.right;
+        table_box.height += margin.top + border.top + padding.top + padding.bottom + border.bottom + margin.bottom;
 
         c.popStyle();
 
@@ -285,6 +292,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.10  2005/05/13 15:23:57  tobega
+   Done refactoring box borders, margin and padding. Hover is working again.
+
    Revision 1.9  2005/05/08 14:36:59  tobega
    Refactored away the need for having a context in a CalculatedStyle
 

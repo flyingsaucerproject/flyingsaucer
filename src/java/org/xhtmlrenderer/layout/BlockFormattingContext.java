@@ -1,11 +1,15 @@
 package org.xhtmlrenderer.layout;
 
-import java.awt.*;
-import java.util.*;
-import java.util.List;
-
+import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BlockFormattingContext {
     private Box master = null;
@@ -14,8 +18,20 @@ public class BlockFormattingContext {
     private List left_floats, right_floats;
     private Map offset_map;
     private List abs_bottom;
+    private Border insets;
+    private Border padding;
 
-    public BlockFormattingContext(Box master) {
+    public BlockFormattingContext(Box master, Context c) {
+        int parent_width = (int) c.getExtents().getWidth();
+        CalculatedStyle style = c.getCurrentStyle();
+        Border border = style.getBorderWidth(c.getCtx());
+        //note: percentages here refer to width of containing block
+        Border margin = style.getMarginWidth(parent_width, parent_width, c.getCtx());
+        padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
+        insets = new Border(margin.top + border.top + padding.top,
+                padding.right + border.right + margin.right,
+                padding.bottom + border.bottom + margin.bottom,
+                margin.left + border.left + padding.left);
         this.master = master;
         master.setBlockFormattingContext(this);
         left_floats = new ArrayList();
@@ -26,6 +42,14 @@ public class BlockFormattingContext {
 
     public Box getMaster() {
         return master;
+    }
+
+    public Border getInsets() {
+        return insets;
+    }
+
+    public Border getPadding() {
+        return padding;
     }
 
     /* ====== positioning stuff ======== */
@@ -84,7 +108,7 @@ public class BlockFormattingContext {
     public Point getRightAddPoint(Box block) {
         return (Point) offset_map.get(block);
     }
-    
+
     public int getLeftFloatDistance(LineBox line) {
         return getFloatDistance(line, left_floats);
     }
@@ -147,7 +171,7 @@ public class BlockFormattingContext {
         }
         return null;
     }
-    
+
     public int getRightFloatDistance(LineBox line) {
         return getFloatDistance(line, right_floats);
     }

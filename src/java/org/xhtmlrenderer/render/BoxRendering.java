@@ -220,8 +220,8 @@ public class BoxRendering {
         BlockFormattingContext bfc = c.getBlockFormattingContext();
         xoff += bfc.getX();
         yoff += bfc.getY();
-        xoff += bfc.getMaster().getPaddingEdge().left;
-        yoff += bfc.getMaster().getPaddingEdge().top;
+        xoff += (bfc.getInsets().left - bfc.getPadding().left);
+        yoff += (bfc.getInsets().top - bfc.getPadding().top);
 
 
         if (block.top_set) {
@@ -337,6 +337,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/05/13 15:23:55  tobega
+ * Done refactoring box borders, margin and padding. Hover is working again.
+ *
  * Revision 1.23  2005/05/13 11:49:59  tobega
  * Started to fix up borders on inlines. Got caught up in refactoring.
  * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.

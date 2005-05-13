@@ -29,7 +29,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 
-import java.awt.Rectangle;
+import java.awt.*;
 
 
 /**
@@ -46,7 +46,7 @@ public class Absolute {
      * @param block PARAM
      */
     public static void preChildrenLayout(Context c, Box block) {
-        BlockFormattingContext bfc = new BlockFormattingContext(block);
+        BlockFormattingContext bfc = new BlockFormattingContext(block, c);
         bfc.setWidth(block.width);
         c.pushBFC(bfc);
     }
@@ -73,7 +73,7 @@ public class Absolute {
         // handle the left and right
         if (child_box.right_set) {
             child_box.x = -bfc.getX() + bfc.getWidth() - child_box.right - child_box.width
-                    - bfc.getMaster().totalRightPadding(c.getCurrentStyle(), c);
+                    - bfc.getInsets().right;
         } else {
             child_box.x = bfc.getX() + child_box.left;
         }

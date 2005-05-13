@@ -31,29 +31,29 @@ import org.xhtmlrenderer.render.Box;
 /**
  * Description of the Class
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class FloatUtil {
 
     /**
      * Description of the Method
      *
-     * @param c      PARAM
-     * @param block  PARAM
+     * @param c     PARAM
+     * @param block PARAM
      */
-    public static void preChildrenLayout( Context c, Box block ) {
-        BlockFormattingContext bfc = new BlockFormattingContext( block );
-        bfc.setWidth( block.width );
-        c.pushBFC( bfc );
+    public static void preChildrenLayout(Context c, Box block) {
+        BlockFormattingContext bfc = new BlockFormattingContext(block, c);
+        bfc.setWidth(block.width);
+        c.pushBFC(bfc);
     }
 
     /**
      * Description of the Method
      *
-     * @param c      PARAM
-     * @param block  PARAM
+     * @param c     PARAM
+     * @param block PARAM
      */
-    public static void postChildrenLayout( Context c, Box block ) {
+    public static void postChildrenLayout(Context c, Box block) {
         c.getBlockFormattingContext().doFinalAdjustments();
         c.popBFC();
     }
@@ -61,29 +61,29 @@ public class FloatUtil {
     /**
      * Description of the Method
      *
-     * @param c      PARAM
-     * @param box    PARAM
-     * @param style  PARAM
+     * @param c     PARAM
+     * @param box   PARAM
+     * @param style PARAM
      */
-    public static void setupFloat( Context c, Box box, CascadedStyle style ) {
-        if ( ContentUtil.isFloated( style ) ) {
+    public static void setupFloat(Context c, Box box, CascadedStyle style) {
+        if (ContentUtil.isFloated(style)) {
             // Uu.p("==== setup float ====");
-            IdentValue floatVal = style.getIdent( CSSName.FLOAT );
-            if ( floatVal == IdentValue.NONE ) {
+            IdentValue floatVal = style.getIdent(CSSName.FLOAT);
+            if (floatVal == IdentValue.NONE) {
                 return;
             }
             box.floated = true;
-            if ( floatVal == IdentValue.LEFT ) {
-                positionBoxLeft( c, box );
-                c.getBlockFormattingContext().pushDownLeft( box );
+            if (floatVal == IdentValue.LEFT) {
+                positionBoxLeft(c, box);
+                c.getBlockFormattingContext().pushDownLeft(box);
                 // Uu.p("final box = " + box);
-                c.getBlockFormattingContext().addLeftFloat( box );
+                c.getBlockFormattingContext().addLeftFloat(box);
             }
-            if ( floatVal == IdentValue.RIGHT ) {
-                positionBoxRight( c, box );
-                c.getBlockFormattingContext().pushDownRight( box );
+            if (floatVal == IdentValue.RIGHT) {
+                positionBoxRight(c, box);
+                c.getBlockFormattingContext().pushDownRight(box);
                 // Uu.p("final box = " + box);
-                c.getBlockFormattingContext().addRightFloat( box );
+                c.getBlockFormattingContext().addRightFloat(box);
             }
             // Uu.p("box = " + box);
             // Uu.p("==== end setup ====");
@@ -93,17 +93,17 @@ public class FloatUtil {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    private static void positionBoxLeft( Context c, Box box ) {
+    private static void positionBoxLeft(Context c, Box box) {
         // Uu.p("positionBoxLeft()");
         // Uu.p("calling the new float routine");
         BlockFormattingContext bfc = c.getBlockFormattingContext();
-        Box floater = bfc.getLeftFloatX( box );
+        Box floater = bfc.getLeftFloatX(box);
         // Uu.p("floater = " + floater);
         // Uu.p("extents = " + c.getExtents());
-        if ( floater == null ) {
+        if (floater == null) {
             // Uu.p("no floater blocked. returning");
             box.x = 0;
             return;
@@ -111,14 +111,14 @@ public class FloatUtil {
 
         box.x = floater.x + floater.width;
 
-        if ( box.x + box.width > c.getExtents().width &&
-                box.width <= c.getExtents().width ) {
+        if (box.x + box.width > c.getExtents().width &&
+                box.width <= c.getExtents().width) {
             // Uu.p("not enough room!!!");
             // move the box to be below the last float and
             // try it again
             box.y = floater.y + floater.height;
             // Uu.p("trying again with box: " + box);
-            positionBoxLeft( c, box );
+            positionBoxLeft(c, box);
             // Uu.p("final box = " + box);
         }
     }
@@ -126,13 +126,13 @@ public class FloatUtil {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    private static void positionBoxRight( Context c, Box box ) {
+    private static void positionBoxRight(Context c, Box box) {
         BlockFormattingContext bfc = c.getBlockFormattingContext();
-        Box floater = bfc.getRightFloatX( box );
-        if ( floater == null ) {
+        Box floater = bfc.getRightFloatX(box);
+        if (floater == null) {
             // Uu.p("floaters are null");
             // Uu.p("extents = " + c.getExtents().width);
             box.x = c.getExtents().width - box.width;
@@ -141,13 +141,13 @@ public class FloatUtil {
 
         box.x = floater.x - box.width;
 
-        if ( box.x < 0 &&
-                box.width <= c.getExtents().width ) {
+        if (box.x < 0 &&
+                box.width <= c.getExtents().width) {
             // Uu.p("not enough room!!!");
             // move the box to be below the last float and
             // try it again
             box.y = floater.y + floater.height;
-            positionBoxRight( c, box );
+            positionBoxRight(c, box);
         }
         // Uu.p("final box = " + box);
     }
@@ -158,6 +158,9 @@ public class FloatUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/05/13 15:23:53  tobega
+ * Done refactoring box borders, margin and padding. Hover is working again.
+ *
  * Revision 1.17  2005/02/03 23:14:53  pdoubleya
  * .
  *

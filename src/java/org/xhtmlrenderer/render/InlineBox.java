@@ -43,6 +43,8 @@ public abstract class InlineBox extends Box {
     //to keep track of right padding to be added by closing inline elements
     public int rightPadding = 0;
 
+    public int leftPadding = 0;
+    
     // if we are an inline block, then this is
     // the reference to the real block inside
 
@@ -124,6 +126,9 @@ public abstract class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2005/05/13 15:23:55  tobega
+ * Done refactoring box borders, margin and padding. Hover is working again.
+ *
  * Revision 1.36  2005/05/08 13:02:40  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
  *

@@ -327,10 +327,10 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             int ty = y;
             tx -= bx.x;
             //is this needed?
-            tx -= bx.totalLeftPadding();
+            tx -= bx.tx;
             ty -= bx.y;
             //is this needed?
-            ty -= bx.totalTopPadding();
+            ty -= bx.ty;
 			
             // test the contents
             Box retbox = null;
@@ -385,9 +385,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             int tx = x;
             int ty = y;
             tx -= bx.x;
-            tx -= bx.totalLeftPadding();
+            tx -= bx.tx;
             ty -= bx.y;
-            ty -= bx.totalTopPadding();
+            ty -= bx.ty;
 
             /*
             if(bx.getBlockFormattingContext() != null) {
@@ -999,6 +999,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2005/05/13 15:23:56  tobega
+ * Done refactoring box borders, margin and padding. Hover is working again.
+ *
  * Revision 1.44  2005/05/09 20:11:30  tobega
  * Improved the bfc hack for top level document
  *

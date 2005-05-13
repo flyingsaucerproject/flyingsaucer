@@ -99,7 +99,8 @@ public class Boxing {
         // set up the outtermost bfc
         boolean set_bfc = false;
         if (c.getBlockFormattingContext() == null) {
-            BlockFormattingContext bfc = new BlockFormattingContext(block);
+            block.setParent(c.getCtx().getRootBox());
+            BlockFormattingContext bfc = new BlockFormattingContext(block, c);
             c.pushBFC(bfc);
             set_bfc = true;
             bfc.setWidth((int) c.getExtents().getWidth());
@@ -137,6 +138,8 @@ public class Boxing {
         Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
         int tx = margin.left + border.left + padding.left;
         int ty = margin.top + border.top + padding.top;
+        block.tx = tx;
+        block.ty = ty;
         c.translate(tx, ty);
         c.shrinkExtents(tx + margin.right + border.right + padding.right, ty + margin.bottom + border.bottom + padding.bottom);
         layoutChildren(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
@@ -272,6 +275,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/05/13 15:23:54  tobega
+ * Done refactoring box borders, margin and padding. Hover is working again.
+ *
  * Revision 1.15  2005/05/13 11:49:58  tobega
  * Started to fix up borders on inlines. Got caught up in refactoring.
  * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.

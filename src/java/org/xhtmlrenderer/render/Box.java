@@ -20,13 +20,9 @@
 package org.xhtmlrenderer.render;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
-import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -195,26 +191,6 @@ public class Box {
     /**
      * Description of the Field
      */
-    private boolean haveBorders;
-
-    /**
-     * Description of the Field
-     */
-    protected Border margin;
-
-    /**
-     * Description of the Field
-     */
-    protected Border padding;
-
-    /**
-     * Description of the Field
-     */
-    protected Border border;
-
-    /**
-     * Description of the Field
-     */
     private Box parent;
 
     // children stuff
@@ -227,6 +203,13 @@ public class Box {
      * Description of the Field
      */
     private boolean children_exceeds;
+
+    /**
+     * Keep track of the start of childrens containing block.
+     * Needed for hover.
+     */
+    public int tx;
+    public int ty;
 
     /**
      * Constructor for the Box object
@@ -242,9 +225,6 @@ public class Box {
      */
     public Box(boolean create_substyles) {
         boxes = new ArrayList();
-        this.margin = Border.EMPTY_BORDER;
-        this.padding = Border.EMPTY_BORDER;
-        this.border = Border.EMPTY_BORDER;
     }
 
     /**
@@ -283,153 +263,6 @@ public class Box {
             }
         }
         return false;
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param style
-     * @param c
-     * @return Returns
-     */
-    public int totalHorizontalPadding(CalculatedStyle style, Context c) {
-        calcBorders(style, c);
-        return totalHorizontalPadding();
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
-    public int totalHorizontalPadding() {
-        int pd = 0;
-        /*if ( haveBorders ) {
-            pd += margin.left + margin.right;
-            pd += padding.left + padding.right;
-            pd += border.left + border.right;
-        }
-        return pd;*/
-        return totalLeftPadding() + totalRightPadding();
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param style
-     * @param c
-     * @return Returns
-     */
-    public int totalVerticalPadding(CalculatedStyle style, Context c) {
-        calcBorders(style, c);
-        return totalVerticalPadding();
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
-    public int totalVerticalPadding() {
-        int pd = 0;
-        if (haveBorders) {
-            pd += margin.top + margin.bottom;
-            pd += padding.top + padding.bottom;
-            pd += border.top + border.bottom;
-        }
-        return pd;
-    }
-
-
-    /**
-     * Description of the Method
-     *
-     * @param style
-     * @param c
-     * @return Returns
-     */
-    public int totalTopPadding(CalculatedStyle style, Context c) {
-        calcBorders(style, c);
-        return totalTopPadding();
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
-    public int totalTopPadding() {
-        int pd = 0;
-        if (haveBorders) {
-            pd += margin.top;
-            pd += padding.top;
-            pd += border.top;
-        }
-        return pd;
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param style
-     * @param c
-     * @return Returns
-     */
-    public int totalLeftPadding(CalculatedStyle style, Context c) {
-        calcBorders(style, c);
-        return totalLeftPadding();
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
-    public int totalLeftPadding() {
-        int pd = 0;
-        if (haveBorders) {
-            pd += margin.left;
-            pd += padding.left;
-            pd += border.left;
-        }
-        return pd;
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param style PARAM
-     * @param c
-     * @return Returns
-     */
-    public int totalRightPadding(CalculatedStyle style, Context c) {
-        calcBorders(style, c);
-        return totalRightPadding();
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @return Returns
-     */
-    public int totalRightPadding() {
-        int pd = 0;
-        if (haveBorders) {
-            pd += margin.right;
-            pd += padding.right;
-            pd += border.right;
-        }
-        return pd;
-    }
-
-
-    public Border getPaddingEdge() {
-        Border border = new Border();
-        border.top = margin.top + border.top;
-        border.bottom = margin.bottom + border.bottom;
-        border.right = margin.right + border.right;
-        border.left = margin.left + border.left;
-        return border;
     }
 
 
@@ -635,11 +468,11 @@ public class Box {
         // no color support yet. wait for later
 
         // insets
-        sb.append("insets(");
+        /*sb.append("insets(");
         sb.append("mar(" + this.margin.top + "," + this.margin.left + "," + this.margin.bottom + "," + this.margin.right + ")");
         sb.append("-bor(" + this.border.top + "," + this.border.left + "," + this.border.bottom + "," + this.border.right + ")");
         sb.append("-pad(" + this.padding.top + "," + this.padding.left + "," + this.padding.bottom + "," + this.padding.right + ")");
-        sb.append(")");
+        sb.append(")"); */
 		
 		
         // background images
@@ -684,26 +517,15 @@ public class Box {
      * @param style PARAM
      * @param c
      */
-    private void calcBorders(CalculatedStyle style, Context c) {
-        // HACK: may need to remove this check if sizes can change dynamically on resize (patrick)
-        /*if ( haveBorders ) {
-            return;
-        }*/
-        if (style == null) {
-            throw new XRRuntimeException("cant calc borders with no style");
-        }
-        // ASK: where do we get the containing height/width here
-        margin = style.getMarginWidth(width, height, c.getCtx());
-        padding = style.getPaddingWidth(width, height, c.getCtx());
-        border = style.getBorderWidth(c.getCtx());
-        haveBorders = true;// this flag is not checked, ask patrick
-    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.53  2005/05/13 15:23:55  tobega
+ * Done refactoring box borders, margin and padding. Hover is working again.
+ *
  * Revision 1.52  2005/05/13 11:49:59  tobega
  * Started to fix up borders on inlines. Got caught up in refactoring.
  * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.

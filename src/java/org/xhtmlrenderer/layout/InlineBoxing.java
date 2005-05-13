@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -118,24 +119,30 @@ public class InlineBoxing {
                 continue;
             }
             if (o instanceof StylePush) {
-                CascadedStyle style;
+                CascadedStyle cascaded;
                 StylePush sp = (StylePush) o;
                 if (sp.getPseudoElement() != null) {
-                    style = c.getCss().getPseudoElementStyle(sp.getElement(), sp.getPseudoElement());
+                    cascaded = c.getCss().getPseudoElementStyle(sp.getElement(), sp.getPseudoElement());
                 } else {
-                    style = c.getCss().getCascadedStyle(sp.getElement(), false);//already restyled by ContentUtil
+                    cascaded = c.getCss().getCascadedStyle(sp.getElement(), false);//already restyled by ContentUtil
                 }
-                c.pushStyle(style);
+                c.pushStyle(cascaded);
                 if (pendingPushStyles == null) {
                     pendingPushStyles = new LinkedList();
                 }
                 pendingPushStyles.addLast((StylePush) o);
                 Relative.translateRelative(c);
                 if (pushedOnFirstLine != null) {
-                    pushedOnFirstLine.addLast(style);
+                    pushedOnFirstLine.addLast(cascaded);
                 }
-                pendingLeftPadding += helper.totalLeftPadding(c.getCurrentStyle(), c);
-                pendingRightPadding += helper.totalRightPadding();
+                CalculatedStyle style = c.getCurrentStyle();
+                int parent_width = bounds.width;
+                Border border = style.getBorderWidth(c.getCtx());
+                //note: percentages here refer to width of containing block
+                Border margin = style.getMarginWidth(parent_width, parent_width, c.getCtx());
+                Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
+                pendingLeftPadding += margin.left + border.left + padding.left;
+                pendingRightPadding += padding.right + border.right + margin.right;
                 continue;
             }
             if (o instanceof StylePop) {
@@ -149,8 +156,14 @@ public class InlineBoxing {
                         ((InlineTextBox) prev_inline).end_index = 0;
                         curr_line.addChild(prev_inline);
                     }
+                    int parent_width = bounds.width;
+                    CalculatedStyle style = c.getCurrentStyle();
+                    Border border = style.getBorderWidth(c.getCtx());
+                    //note: percentages here refer to width of containing block
+                    Border margin = style.getMarginWidth(parent_width, parent_width, c.getCtx());
+                    Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
+                    int rp = padding.right + border.right + margin.right;
                     //CHECK: not sure this is where the padding really goes, always
-                    int rp = prev_inline.totalRightPadding(c.getCurrentStyle(), c);
                     prev_inline.rightPadding += rp;
                     prev_inline.width += rp;
                     pendingRightPadding -= rp;
@@ -245,6 +258,7 @@ public class InlineBoxing {
                 isFirstLetter = false;
                 new_inline.pushstyles = pendingPushStyles;
                 pendingPushStyles = null;
+                new_inline.leftPadding += pendingLeftPadding;
                 new_inline.width += pendingLeftPadding;
                 pendingLeftPadding = 0;
 
@@ -455,7 +469,7 @@ public class InlineBoxing {
         // handle each case
         if (content instanceof InlineBlockContent) {
             //Uu.p("is replaced");
-            result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align, curr_line);
+            result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align, curr_line, max_width);
         } else if (content instanceof FloatedBlockContent) {
             //Uu.p("calcinline: is floated block");
             result = FloatUtil.generateFloatedBlockInlineBox(c, content, avail, curr_line);
@@ -496,8 +510,13 @@ public class InlineBoxing {
                 CalculatedStyle style1 = c.getCurrentStyle();
                 inline.whitespace = WhitespaceStripper.getWhitespace(style1);
                 BoxBuilder.prepBox(c, inline, prev_align);
-                inline.width += inline.totalHorizontalPadding(style1, c);
-                inline.rightPadding = inline.totalRightPadding();
+                Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
+                //note: percentages here refer to width of containing block
+                Border margin = style1.getMarginWidth(max_width, max_width, c.getCtx());
+                Border padding = style1.getPaddingWidth(max_width, max_width, c.getCtx());
+                inline.rightPadding = margin.right + border.right + padding.right;
+                inline.leftPadding = margin.left + border.left + padding.left;
+                inline.width += inline.rightPadding + inline.leftPadding;
                 c.popStyle();
                 result = inline;
 
@@ -552,6 +571,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/05/13 15:23:54  tobega
+ * Done refactoring box borders, margin and padding. Hover is working again.
+ *
  * Revision 1.22  2005/05/13 11:49:58  tobega
  * Started to fix up borders on inlines. Got caught up in refactoring.
  * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.

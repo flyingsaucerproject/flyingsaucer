@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -402,15 +401,12 @@ public class ContextImpl implements Context {
      */
     //TODO: this is wrong! margins can collapse, for starters!
     public void translateInsets(Box box) {
-        Border border = getCurrentStyle().getBorderWidth(getCtx());
-        Border margin = getCurrentStyle().getMarginWidth(box.getWidth(), box.getHeight(), getCtx());
-        Border padding = getCurrentStyle().getPaddingWidth(box.getWidth(), box.getHeight(), getCtx());
         if (box == null) {
             XRLog.render(Level.WARNING, "null box");
             return;//TODO: why?
         }
-        translate(margin.left + border.left + padding.left,
-                margin.top + border.top + padding.top);
+        translate(box.tx,
+                box.ty);
     }
 
     /**
@@ -421,11 +417,8 @@ public class ContextImpl implements Context {
      */
     //TODO: this is wrong! margins can collapse, for starters!
     public void untranslateInsets(Box box) {
-        Border border = getCurrentStyle().getBorderWidth(getCtx());
-        Border margin = getCurrentStyle().getMarginWidth(box.getWidth(), box.getHeight(), getCtx());
-        Border padding = getCurrentStyle().getPaddingWidth(box.getWidth(), box.getHeight(), getCtx());
-        translate(-(margin.left + border.left + padding.left),
-                -(margin.top + border.top + padding.top));
+        translate(-box.tx,
+                -box.ty);
     }
 
     /**

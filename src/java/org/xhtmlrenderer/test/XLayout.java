@@ -21,10 +21,8 @@ package org.xhtmlrenderer.test;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Dimension;
+import java.awt.*;
 
 
 /**
@@ -40,7 +38,7 @@ public class XLayout /*extends CustomBlockLayout*/ {
      * @param c   PARAM
      * @param box PARAM
      */
-    public void paintComponent(Context c, Box box) {
+    /* not used public void paintComponent(Context c, Box box) {
         int w = box.getWidth() - box.totalHorizontalPadding(c.getCurrentStyle(), c);
         int h = box.getHeight() - box.totalVerticalPadding(c.getCurrentStyle(), c);
         Dimension dim = new Dimension(w, h);
@@ -53,7 +51,7 @@ public class XLayout /*extends CustomBlockLayout*/ {
                 box.y + (int) dim.getHeight(),
                 box.x + (int) dim.getWidth(),
                 box.y);
-    }
+    }*/
 
     /**
      * Gets the intrinsicDimensions attribute of the XLayout object
@@ -72,6 +70,9 @@ public class XLayout /*extends CustomBlockLayout*/ {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/05/13 15:23:57  tobega
+ * Done refactoring box borders, margin and padding. Hover is working again.
+ *
  * Revision 1.9  2005/05/08 14:36:59  tobega
  * Refactored away the need for having a context in a CalculatedStyle
  *
