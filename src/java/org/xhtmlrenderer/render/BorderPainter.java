@@ -25,6 +25,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.extend.RenderingContext;
 
 import java.awt.*;
 
@@ -59,39 +60,41 @@ public class BorderPainter {
     /**
      * Description of the Method
      *
-     * @param c      PARAM
      * @param bounds PARAM
      * @param sides  PARAM
+     * @param style
+     * @param g
+     * @param ctx
      */
-    public static void paint(Context c, Rectangle bounds, int sides) {
-        Graphics g = c.getGraphics();
-        CalculatedStyle style = c.getCurrentStyle();
+    public static void paint(Rectangle bounds, int sides, CalculatedStyle style, Graphics g, RenderingContext ctx) {
+        //Graphics g = c.getGraphics();
+        //CalculatedStyle style = c.getCurrentStyle();
 
         BorderColor border_color = style.getBorderColor();
         int width = (int) bounds.getWidth();
         int height = (int) bounds.getHeight();
-        Border border = style.getBorderWidth(width, height, c.getCtx());
+        Border border = style.getBorderWidth(width, height, ctx);
         IdentValue ident = null;
         if ((sides & TOP) == TOP) {
-            ident = c.getCurrentStyle().getIdent(CSSName.BORDER_STYLE_TOP);
+            ident = style.getIdent(CSSName.BORDER_STYLE_TOP);
             if (ident != IdentValue.NONE) {
                 paintBorderSide(border, g, bounds, border_color, TOP, ident);
             }
         }
         if ((sides & LEFT) == LEFT) {
-            ident = c.getCurrentStyle().getIdent(CSSName.BORDER_STYLE_LEFT);
+            ident = style.getIdent(CSSName.BORDER_STYLE_LEFT);
             if (ident != IdentValue.NONE) {
                 paintBorderSide(border, g, bounds, border_color, LEFT, ident);
             }
         }
         if ((sides & BOTTOM) == BOTTOM) {
-            ident = c.getCurrentStyle().getIdent(CSSName.BORDER_STYLE_BOTTOM);
+            ident = style.getIdent(CSSName.BORDER_STYLE_BOTTOM);
             if (ident != IdentValue.NONE) {
                 paintBorderSide(border, g, bounds, border_color, BOTTOM, ident);
             }
         }
         if ((sides & RIGHT) == RIGHT) {
-            ident = c.getCurrentStyle().getIdent(CSSName.BORDER_STYLE_RIGHT);
+            ident = style.getIdent(CSSName.BORDER_STYLE_RIGHT);
             if (ident != IdentValue.NONE) {
                 paintBorderSide(border, g, bounds, border_color, RIGHT, ident);
             }
@@ -348,7 +351,7 @@ public class BorderPainter {
 			
 			// draw a 1px border with a line instead of a polygon
 			if(border.top == 1) {
-				g.drawLine(bounds.x, bounds.y, bounds.x + bounds.width, bounds.y);
+				g.drawLine(bounds.x, bounds.y, bounds.x + bounds.width -1, bounds.y);
 				return;
 			}
 			// use polygons for borders over 1px wide
@@ -366,8 +369,8 @@ public class BorderPainter {
 			if(border.bottom == 0) { return; }
             g.setColor(color.bottomColor);
 			if(border.bottom == 1) {
-				g.drawLine(bounds.x, bounds.y + bounds.height, 
-					bounds.x + bounds.width, bounds.y + bounds.height);
+				g.drawLine(bounds.x, bounds.y + bounds.height -1,
+					bounds.x + bounds.width -1, bounds.y + bounds.height -1);
 				return;
 			}
             poly = new Polygon();
@@ -388,8 +391,8 @@ public class BorderPainter {
 			if(border.right == 0) { return; }
             g.setColor(color.rightColor);
 			if(border.right == 1) {
-				g.drawLine(bounds.x + bounds.width, bounds.y, 
-					bounds.x + bounds.width, bounds.y + bounds.height);
+				g.drawLine(bounds.x + bounds.width -1, bounds.y,
+					bounds.x + bounds.width-1, bounds.y + bounds.height -1);
 				return;
 			}
             poly = new Polygon();
@@ -407,7 +410,7 @@ public class BorderPainter {
             g.setColor(color.leftColor);
 			if(border.left == 1) {
 				g.drawLine(bounds.x, bounds.y, 
-					bounds.x, bounds.y + bounds.height);
+					bounds.x, bounds.y + bounds.height -1);
 				return;
 			}
             poly = new Polygon();
@@ -434,6 +437,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/05/13 08:46:17  tobega
+ * A line is drawn to the right and below the coordinate. Needed to adjust when drawing lines for 1-pixel borders
+ *
  * Revision 1.24  2005/05/12 06:24:16  joshy
  * more very minor border and background tweaks
  * Issue number:
