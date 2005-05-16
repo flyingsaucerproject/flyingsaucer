@@ -66,7 +66,8 @@ public class InlineBoxing {
         bounds.height = 0;
 
         //dummy style to make sure that text nodes don't get extra padding and such
-        c.pushStyle(CascadedStyle.emptyCascadedStyle);
+        //doesn't work here because blocks may be inside inlines, losing inline styling:
+        //c.pushStyle(CascadedStyle.emptyCascadedStyle);
 
         int blockLineHeight = FontUtil.lineHeight(c);
         LineMetrics blockLineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(),
@@ -325,8 +326,8 @@ public class InlineBoxing {
         saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, true, blockLineHeight);
         finishBlock(box, curr_line, bounds);
         // Uu.p("- InlineLayout.layoutContent(): " + box);
-        //pop the dummy style
-        c.popStyle();
+        //pop the dummy style, but no, see above
+        //c.popStyle();
     }
 
     /**
@@ -571,6 +572,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/05/16 13:48:59  tobega
+ * Fixe inline border mismatch and started on styling problem in switching between blocks and inlines
+ *
  * Revision 1.23  2005/05/13 15:23:54  tobega
  * Done refactoring box borders, margin and padding. Hover is working again.
  *

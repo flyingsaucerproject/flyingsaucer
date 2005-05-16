@@ -355,10 +355,7 @@ public class ContentUtil {
 
             if (isAbsoluteOrFixed(style)) {
                 // Uu.p("adding replaced: " + curr);
-                if (textContent != null) {
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
-                    textContent = null;
-                }
+                textContent = saveTextContent(textContent, inlineList, parentElement);
                 inlineList.add(new AbsolutelyPositionedContent((Element) curr, style));
                 c.popStyle();
                 continue;
@@ -367,10 +364,7 @@ public class ContentUtil {
             //have to check for float here already. The element may still be replaced, though
             if (isFloated(style)) {
                 // Uu.p("adding floated block: " + curr);
-                if (textContent != null) {
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
-                    textContent = null;
-                }
+                textContent = saveTextContent(textContent, inlineList, parentElement);
                 inlineList.add(new FloatedBlockContent((Element) curr, style));
                 c.popStyle();
                 continue;
@@ -378,10 +372,7 @@ public class ContentUtil {
 
             if (isInlineBlock(style)) {
                 //treat it like a replaced element
-                if (textContent != null) {
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
-                    textContent = null;
-                }
+                textContent = saveTextContent(textContent, inlineList, parentElement);
                 inlineList.add(new InlineBlockContent(elem, style));
                 c.popStyle();
                 continue;
@@ -389,20 +380,14 @@ public class ContentUtil {
 
             if (isRunIn(style)) {
                 RunInContent runIn = new RunInContent(elem, style);
-                if (textContent != null) {
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
-                    textContent = null;
-                }
+                textContent = saveTextContent(textContent, inlineList, parentElement);
                 inlineList.add(runIn);//resolve it when we can
                 c.popStyle();
                 continue;
             }
 
             if (isTable(style)) {
-                if (textContent != null) {
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
-                    textContent = null;
-                }
+                textContent = saveTextContent(textContent, inlineList, parentElement);
                 TableContent table = new TableContent(elem, style);
                 inlineList.add(table);
                 c.popStyle();
@@ -412,10 +397,7 @@ public class ContentUtil {
             //TODO:list-items, anonymous tables, inline tables, etc.
 
             if (isBlockLevel(style)) {
-                if (textContent != null) {
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
-                    textContent = null;
-                }
+                textContent = saveTextContent(textContent, inlineList, parentElement);
                 BlockContent block = new BlockContent(elem, style);
                 inlineList.add(block);
                 c.popStyle();
@@ -423,10 +405,7 @@ public class ContentUtil {
             }
 
             //if we get here, we have inline content, need to get into it.
-            if (textContent != null) {
-                inlineList.add(new TextContent(parentElement, textContent.toString()));
-                textContent = null;
-            }
+            textContent = saveTextContent(textContent, inlineList, parentElement);
             Content inline = new InlineContent(elem, style);
             List childList = inline.getChildContent(c);
             inlineList.add(new StylePush(null, elem));//this is already pushed to context
@@ -444,20 +423,14 @@ public class ContentUtil {
             c.popStyle();
         }
 
-        if (textContent != null) {
-            inlineList.add(new TextContent(parentElement, textContent.toString()));
-            textContent = null;
-        }
+        textContent = saveTextContent(textContent, inlineList, parentElement);
         if (parentElement != null) {
             //TODO: after may be block!
             CascadedStyle after = c.getCss().getPseudoElementStyle(parentElement, "after");
             if (after != null && after.hasProperty(CSSName.CONTENT)) {
                 String content = ((CSSPrimitiveValue) after.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
                 if (!content.equals("")) {//a worthwhile reduncancy-check
-                    if (textContent != null) {
-                        inlineList.add(new TextContent(parentElement, textContent.toString()));
-                        textContent = null;
-                    }
+                    textContent = saveTextContent(textContent, inlineList, parentElement);
                     inlineList.add(new StylePush("after", parentElement));
                     textContent = new StringBuffer();
                     textContent.append(content.replaceAll("\\\\A", "\n"));
@@ -487,12 +460,23 @@ public class ContentUtil {
 
     }
 
+    private static StringBuffer saveTextContent(StringBuffer textContent, List inlineList, Element parentElement) {
+        if (textContent != null) {
+            inlineList.add(new TextContent(parentElement, textContent.toString()));
+            textContent = null;
+        }
+        return textContent;
+    }
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/05/16 13:48:59  tobega
+ * Fixe inline border mismatch and started on styling problem in switching between blocks and inlines
+ *
  * Revision 1.34  2005/05/08 13:02:38  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
  *

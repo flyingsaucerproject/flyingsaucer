@@ -198,7 +198,7 @@ public class InlineRendering {
      */
     public static void paintLeftPadding(Context c, LineBox line, InlineBox inline, int padX, Border margin, Border border, Border padding) {
         int padding_yoff = margin.top + border.top + padding.top;
-        //if (padding.left <= 0 && border.left <= 0) return;
+        //doesn't work if (padding.left <= 0 && border.left <= 0) return;
 
         int ty = line.getBaseline() - inline.y - inline.height - padding_yoff + line.y;
 
@@ -265,7 +265,7 @@ public class InlineRendering {
      */
     public static void paintRightPadding(Context c, LineBox line, InlineBox inline, int padX, Border margin, Border border, Border padding) {
         int padding_yoff = margin.top + border.top + padding.top;
-        if (padding.right <= 0 && border.right <= 0) return;
+        //doesn't work if (padding.right <= 0 && border.right <= 0) return;
 
         int ty = line.getBaseline() - inline.y - inline.height - padding_yoff + line.y;
 
@@ -382,8 +382,9 @@ public class InlineRendering {
         //dummy style to make sure that text nodes don't get extra padding and such
         {
             LinkedList decorations = c.getDecorations();
-            c.pushStyle(CascadedStyle.emptyCascadedStyle);
-            //BlockBox block = (BlockBox)box;
+            //doesn't work here because blocks may be inside inlines, losing inline styling:
+            // c.pushStyle(CascadedStyle.emptyCascadedStyle);
+
             // translate into local coords
             // account for the origin of the containing box
             c.translate(box.x, box.y);
@@ -407,8 +408,8 @@ public class InlineRendering {
 
             // translate back to parent coords
             c.translate(-box.x, -box.y);
-            //pop dummy style
-            c.popStyle();
+            //pop dummy style, but no, see above
+            //c.popStyle();
         }
     }
 

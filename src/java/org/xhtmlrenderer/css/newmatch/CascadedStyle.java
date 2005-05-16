@@ -66,7 +66,7 @@ public class CascadedStyle {
      * @param iter An Iterator containing PropertyDeclarations in order of
      *             specificity.
      */
-    public CascadedStyle(java.util.Iterator iter) {
+    CascadedStyle(java.util.Iterator iter) {
         this();
 
         //do a bucket-sort on importance and origin
@@ -183,6 +183,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/05/16 13:48:58  tobega
+ * Fixe inline border mismatch and started on styling problem in switching between blocks and inlines
+ *
  * Revision 1.9  2005/05/08 15:37:26  tobega
  * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
  *
