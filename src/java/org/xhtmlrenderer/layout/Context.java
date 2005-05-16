@@ -442,5 +442,7 @@ public interface Context {
     public NamespaceHandler getNamespaceHandler();
 
     LinkedList getDecorations();
+
+    LinkedList getInlineBorders();
 }
 

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 
@@ -33,58 +34,43 @@ import java.awt.font.LineMetrics;
  * To change this template use File | Settings | File Templates.
  */
 public class InlineBorder {
-    private int start;
-    private int end = -1;
     private CalculatedStyle style;
     private LineMetrics lm;
-    private int top;
-    private int height;
+    private Border margin;
+    private Border border;
+    private Border padding;
     private int y;
+    private int height;
 
     /**
-     * @param start
-     * @param y      inline.y
-     * @param top    inline.y+inline.margin.top
-     * @param height inline.height - inline.margin.top - inline.margin.bottom
+     * @param y
+     * @param height
+     * @param margin
+     * @param border
+     * @param padding
      * @param style
      * @param lm
      */
-    InlineBorder(int start, int y, int top, int height, CalculatedStyle style, LineMetrics lm) {
-        this.start = start;
+    InlineBorder(int y, int height, Border margin, Border border, Border padding, CalculatedStyle style, LineMetrics lm) {
         this.y = y;
-        this.top = top;
         this.height = height;
+        this.margin = margin;
+        this.border = border;
+        this.padding = padding;
         this.style = style;
         this.lm = lm;
     }
 
-    void setEnd(int end) {
-        this.end = end;
-    }
-
-    void paint(Context c, LineBox line) {
-        int ty = line.getBaseline() - y - height + line.y;
+    void paint(Context c, LineBox line, int start, int width, int sides) {
+        int ty = line.getBaseline() - y - height - margin.top - border.top - padding.top + line.y;
         ty += (int) lm.getDescent();
         c.translate(0, ty);
-        int left = (isStarted() ? start : 0);
-        int width = (isEnded() ? end : line.width);
-        if (start > 0) {
-            width -= start;
-        }
-        Rectangle bounds = new Rectangle(left,
-                top,
+        Rectangle bounds = new Rectangle(start,
+                y + margin.top,
                 width,
-                height);
-        BorderPainter.paint(bounds, BorderPainter.TOP + BorderPainter.BOTTOM, style, c.getGraphics(), c.getCtx());
+                height + border.top + padding.top + padding.bottom + border.bottom);
+        BorderPainter.paint(bounds, sides, style, c.getGraphics(), c.getCtx());
         c.translate(0, -ty);
-        start = -1;
     }
 
-    public boolean isEnded() {
-        return end >= 0;
-    }
-
-    public boolean isStarted() {
-        return start >= 0;
-    }
 }

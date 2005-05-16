@@ -39,6 +39,7 @@ import java.util.logging.Level;
 public class ContextImpl implements Context {
     SharedContext sharedContext;
     private LinkedList decorations = new LinkedList();
+    private LinkedList inlineBorders = new LinkedList();
 
     //delegated methods
     public String getMedia() {
@@ -179,6 +180,10 @@ public class ContextImpl implements Context {
 
     public LinkedList getDecorations() {
         return decorations;
+    }
+
+    public LinkedList getInlineBorders() {
+        return inlineBorders;
     }
 
     //the stuff that needs to have a separate instance for each run.

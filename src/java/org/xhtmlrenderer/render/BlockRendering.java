@@ -19,81 +19,90 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
+
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.util.LinkedList;
 
 /**
  * Description of the Class
  *
- * @author   Joshua Marinacci
- * @author   Torbjörn Gannholm
+ * @author Joshua Marinacci
+ * @author Torbjörn Gannholm
  */
 public class BlockRendering {
 
     /**
      * Description of the Method
      *
-     * @param c        PARAM
-     * @param box      PARAM
+     * @param c       PARAM
+     * @param box     PARAM
      * @param restyle
      */
-    public static void paintBlockContext( Context c, Box box, boolean restyle ) {
+    public static void paintBlockContext(Context c, Box box, boolean restyle) {
         //if (box.getBlockFormattingContext() != null) c.pushBFC(box.getBlockFormattingContext());
-        c.translate( box.x, box.y );
-        if ( box.getBlockFormattingContext() != null ) {
-            c.pushBFC( box.getBlockFormattingContext() );
+        c.translate(box.x, box.y);
+        if (box.getBlockFormattingContext() != null) {
+            c.pushBFC(box.getBlockFormattingContext());
         }
         //XRLog.render(Level.WARNING, "using default renderer paintChildren for " + box.getClass().getPropertyName());
         //TODO: work out how images and other replaced content really should be handled
-        if ( box.component != null ) {
+        if (box.component != null) {
             //HACK: the positions during layout are still not perfect, reset here - tobe 2005-01-07
             //TODO: fix the translates during layout to handle this directly instead
             Point origin = c.getOriginOffset();
-            box.component.setLocation( (int)origin.getX(), (int)origin.getY() );
+            box.component.setLocation((int) origin.getX(), (int) origin.getY());
             //box.component.paint(c.getGraphics());
         } else {
-            for ( int i = 0; i < box.getChildCount(); i++ ) {
-                Box child = (Box)box.getChild( i );
-                paintChild( c, child, restyle );
+            for (int i = 0; i < box.getChildCount(); i++) {
+                LinkedList inlineBorders = null;
+                Box child = (Box) box.getChild(i);
+                if (!(child instanceof AnonymousBlockBox)) {
+                    //save inline borders and reconstitute them
+                    inlineBorders = (LinkedList) c.getInlineBorders().clone();
+                    c.getInlineBorders().clear();
+                }
+                paintChild(c, child, restyle);
+                if (!(child instanceof AnonymousBlockBox)) {
+                    c.getInlineBorders().addAll(inlineBorders);
+                }
             }
         }
-        if ( box.getBlockFormattingContext() != null ) {
+        if (box.getBlockFormattingContext() != null) {
             c.popBFC();
         }
-        c.translate( -box.x, -box.y );
+        c.translate(-box.x, -box.y);
         //if (box.getBlockFormattingContext() != null) c.popBFC();
     }
 
     /**
      * Description of the Method
      *
-     * @param c        PARAM
-     * @param box      PARAM
-     * @param restyle  PARAM
+     * @param c       PARAM
+     * @param box     PARAM
+     * @param restyle PARAM
      */
-    public static void paintChild( Context c, Box box, boolean restyle ) {
-        if ( box.isChildrenExceedBounds() ) {
-            BoxRendering.paint( c, box, false, restyle );
+    public static void paintChild(Context c, Box box, boolean restyle) {
+        if (box.isChildrenExceedBounds()) {
+            BoxRendering.paint(c, box, false, restyle);
             return;
         }
 
-        if ( Configuration.isTrue( "xr.renderer.viewport-repaint", false ) ) {
-            if ( c.getGraphics().getClip() != null ) {
-                Rectangle2D oldclip = (Rectangle2D)c.getGraphics().getClip();
-                Rectangle2D box_rect = new Rectangle( box.x, box.y, box.width, box.height );
+        if (Configuration.isTrue("xr.renderer.viewport-repaint", false)) {
+            if (c.getGraphics().getClip() != null) {
+                Rectangle2D oldclip = (Rectangle2D) c.getGraphics().getClip();
+                Rectangle2D box_rect = new Rectangle(box.x, box.y, box.width, box.height);
                 //TODO: handle floated content. HACK: descend into anonymous boxes, won't work for deeper nesting
-                if ( oldclip.intersects( box_rect ) || ( box instanceof AnonymousBlockBox ) ) {
-                    BoxRendering.paint( c, box, false, restyle );
+                if (oldclip.intersects(box_rect) || (box instanceof AnonymousBlockBox)) {
+                    BoxRendering.paint(c, box, false, restyle);
                 }
                 return;
             }
         }
 
-        BoxRendering.paint( c, box, false, restyle );
+        BoxRendering.paint(c, box, false, restyle);
     }
 
 }
