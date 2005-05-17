@@ -355,7 +355,7 @@ public class ContentUtil {
 
             if (isAbsoluteOrFixed(style)) {
                 // Uu.p("adding replaced: " + curr);
-                textContent = saveTextContent(textContent, inlineList, parentElement);
+                textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                 inlineList.add(new AbsolutelyPositionedContent((Element) curr, style));
                 c.popStyle();
                 continue;
@@ -364,7 +364,7 @@ public class ContentUtil {
             //have to check for float here already. The element may still be replaced, though
             if (isFloated(style)) {
                 // Uu.p("adding floated block: " + curr);
-                textContent = saveTextContent(textContent, inlineList, parentElement);
+                textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                 inlineList.add(new FloatedBlockContent((Element) curr, style));
                 c.popStyle();
                 continue;
@@ -372,7 +372,7 @@ public class ContentUtil {
 
             if (isInlineBlock(style)) {
                 //treat it like a replaced element
-                textContent = saveTextContent(textContent, inlineList, parentElement);
+                textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                 inlineList.add(new InlineBlockContent(elem, style));
                 c.popStyle();
                 continue;
@@ -380,14 +380,14 @@ public class ContentUtil {
 
             if (isRunIn(style)) {
                 RunInContent runIn = new RunInContent(elem, style);
-                textContent = saveTextContent(textContent, inlineList, parentElement);
+                textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                 inlineList.add(runIn);//resolve it when we can
                 c.popStyle();
                 continue;
             }
 
             if (isTable(style)) {
-                textContent = saveTextContent(textContent, inlineList, parentElement);
+                textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                 TableContent table = new TableContent(elem, style);
                 inlineList.add(table);
                 c.popStyle();
@@ -397,15 +397,15 @@ public class ContentUtil {
             //TODO:list-items, anonymous tables, inline tables, etc.
 
             if (isBlockLevel(style)) {
-                textContent = saveTextContent(textContent, inlineList, parentElement);
+                textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                 BlockContent block = new BlockContent(elem, style);
                 inlineList.add(block);
                 c.popStyle();
                 continue;
             }
 
-            //if we get here, we have inline content, need to get into it.
-            textContent = saveTextContent(textContent, inlineList, parentElement);
+            //if we get here, we have inline element content, need to get into it.
+            textContent = saveTextContent(textContent, inlineList, parentElement, parent);
             Content inline = new InlineContent(elem, style);
             List childList = inline.getChildContent(c);
             inlineList.add(new StylePush(null, elem));//this is already pushed to context
@@ -423,14 +423,14 @@ public class ContentUtil {
             c.popStyle();
         }
 
-        textContent = saveTextContent(textContent, inlineList, parentElement);
+        textContent = saveTextContent(textContent, inlineList, parentElement, parent);
         if (parentElement != null) {
             //TODO: after may be block!
             CascadedStyle after = c.getCss().getPseudoElementStyle(parentElement, "after");
             if (after != null && after.hasProperty(CSSName.CONTENT)) {
                 String content = ((CSSPrimitiveValue) after.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
                 if (!content.equals("")) {//a worthwhile reduncancy-check
-                    textContent = saveTextContent(textContent, inlineList, parentElement);
+                    textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                     inlineList.add(new StylePush("after", parentElement));
                     textContent = new StringBuffer();
                     textContent.append(content.replaceAll("\\\\A", "\n"));
@@ -460,9 +460,12 @@ public class ContentUtil {
 
     }
 
-    private static StringBuffer saveTextContent(StringBuffer textContent, List inlineList, Element parentElement) {
+    private static StringBuffer saveTextContent(StringBuffer textContent, List inlineList, Element parentElement, Content parent) {
         if (textContent != null) {
+            boolean isAnonymousInlineBox = !(parent instanceof InlineContent);
+            if (isAnonymousInlineBox) inlineList.add(new StylePush(null, null));
             inlineList.add(new TextContent(parentElement, textContent.toString()));
+            if (isAnonymousInlineBox) inlineList.add(new StylePop(null, null));
             textContent = null;
         }
         return textContent;
@@ -474,6 +477,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2005/05/17 06:56:23  tobega
+ * Inline backgrounds now work correctly, as does mixing of inlines and blocks for style inheritance
+ *
  * Revision 1.35  2005/05/16 13:48:59  tobega
  * Fixe inline border mismatch and started on styling problem in switching between blocks and inlines
  *

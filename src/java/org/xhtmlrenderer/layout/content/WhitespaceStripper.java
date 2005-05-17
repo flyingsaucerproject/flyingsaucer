@@ -88,7 +88,10 @@ public class WhitespaceStripper {
                 pendingStylePushes.addLast(o);
                 CascadedStyle style;
                 StylePush sp = (StylePush) o;
-                if (sp.getPseudoElement() != null) {
+                if (sp.getElement() == null) {
+                    //anonymous inline box
+                    style = CascadedStyle.emptyCascadedStyle;
+                } else if (sp.getPseudoElement() != null) {
                     style = c.getCss().getPseudoElementStyle(sp.getElement(), sp.getPseudoElement());
                 } else {
                     style = c.getCss().getCascadedStyle(sp.getElement(), false);//already done in ContentUtil
@@ -125,10 +128,12 @@ public class WhitespaceStripper {
             }
             //there may be relevant StylePushes pending, e.g. if this is content of AnonymousBlock
             if (pendingStylePushes.size() != 0) {
-                stripped.addAll(pendingStylePushes);
-                //add a dummy TextContent so that an InlineBox is generated for the styles
                 Element e = ((StylePush) pendingStylePushes.getLast()).getElement();
-                stripped.addLast(new TextContent(e, ""));
+                if (e != null) {//we really have a relevevant style, not just a stripped anonymous inline box
+                    stripped.addAll(pendingStylePushes);
+                    //add a dummy TextContent so that an InlineBox is generated for the styles
+                    stripped.addLast(new TextContent(e, ""));
+                }
             }
             pendingStylePushes.clear();
             stripped.add(o);
@@ -137,10 +142,12 @@ public class WhitespaceStripper {
 
         //there may be relevant StylePushes pending, e.g. if this is content of AnonymousBlock
         if (pendingStylePushes.size() != 0) {
-            stripped.addAll(pendingStylePushes);
-            //add a dummy TextContent so that an InlineBox is generated for the styles
             Element e = ((StylePush) pendingStylePushes.getLast()).getElement();
-            stripped.addLast(new TextContent(e, ""));
+            if (e != null) {//we really have a relevevant style, not just a stripped anonymous inline box
+                stripped.addAll(pendingStylePushes);
+                //add a dummy TextContent so that an InlineBox is generated for the styles
+                stripped.addLast(new TextContent(e, ""));
+            }
         }
 
         // Uu.p("final stripped = " + stripped);

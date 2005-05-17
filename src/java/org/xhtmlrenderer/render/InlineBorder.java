@@ -27,11 +27,7 @@ import java.awt.*;
 import java.awt.font.LineMetrics;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tobe
- * Date: 2005-maj-13
- * Time: 02:17:15
- * To change this template use File | Settings | File Templates.
+ * Keeps track of and paints nested inline backgrounds and borders
  */
 public class InlineBorder {
     private CalculatedStyle style;
@@ -41,6 +37,7 @@ public class InlineBorder {
     private Border padding;
     private int y;
     private int height;
+    private Color background_color;
 
     /**
      * @param y
@@ -50,8 +47,9 @@ public class InlineBorder {
      * @param padding
      * @param style
      * @param lm
+     * @param background_color
      */
-    InlineBorder(int y, int height, Border margin, Border border, Border padding, CalculatedStyle style, LineMetrics lm) {
+    InlineBorder(int y, int height, Border margin, Border border, Border padding, CalculatedStyle style, LineMetrics lm, Color background_color) {
         this.y = y;
         this.height = height;
         this.margin = margin;
@@ -59,9 +57,11 @@ public class InlineBorder {
         this.padding = padding;
         this.style = style;
         this.lm = lm;
+        this.background_color = background_color;
     }
 
     void paint(Context c, LineBox line, int start, int width, int sides) {
+        if (width <= 0) return;
         int ty = line.getBaseline() - y - height - margin.top - border.top - padding.top + line.y;
         ty += (int) lm.getDescent();
         c.translate(0, ty);
@@ -69,6 +69,17 @@ public class InlineBorder {
                 y + margin.top,
                 width,
                 height + border.top + padding.top + padding.bottom + border.bottom);
+        //first the background
+        if (background_color != null) {
+            // skip transparent background
+            if (!background_color.equals(BackgroundPainter.transparent)) {
+                //TODO. make conf controlled Uu.p("filling a background");
+                c.getGraphics().setColor(background_color);
+                c.getGraphics().fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+            }
+        }
+
+        //then the border
         BorderPainter.paint(bounds, sides, style, c.getGraphics(), c.getCtx());
         c.translate(0, -ty);
     }

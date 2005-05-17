@@ -122,7 +122,10 @@ public class InlineBoxing {
             if (o instanceof StylePush) {
                 CascadedStyle cascaded;
                 StylePush sp = (StylePush) o;
-                if (sp.getPseudoElement() != null) {
+                if (sp.getElement() == null) {
+                    //anonymous inline box
+                    cascaded = CascadedStyle.emptyCascadedStyle;
+                } else if (sp.getPseudoElement() != null) {
                     cascaded = c.getCss().getPseudoElementStyle(sp.getElement(), sp.getPseudoElement());
                 } else {
                     cascaded = c.getCss().getCascadedStyle(sp.getElement(), false);//already restyled by ContentUtil
@@ -572,6 +575,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/05/17 06:56:24  tobega
+ * Inline backgrounds now work correctly, as does mixing of inlines and blocks for style inheritance
+ *
  * Revision 1.24  2005/05/16 13:48:59  tobega
  * Fixe inline border mismatch and started on styling problem in switching between blocks and inlines
  *

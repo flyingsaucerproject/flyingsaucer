@@ -62,53 +62,58 @@ public class BoxRendering {
         restyle = restyle || box.restyle;//cascade it down
         box.restyle = false;//reset
 
-        //set the current style
-        CascadedStyle style = null;
-        if (!stylePushed && block.element != null) {
-            style = c.getCss().getCascadedStyle(block.element, restyle);
-        }
-        if (style != null) {
-            c.pushStyle(style);
-        }
-
-        // copy the bounds to we don't mess it up
-        Rectangle oldBounds = new Rectangle(c.getExtents());
-
-        if (block.fixed) {
-            paintFixed(c, block, restyle);
-        } else if (block.absolute) {
-            paintAbsoluteBox(c, block, restyle);
+        if (block instanceof AnonymousBlockBox) {
+            InlineRendering.paintInlineContext(c, block, restyle);
         } else {
-            //text decoration?
-            IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
-            if (decoration != IdentValue.NONE) {
-                c.getDecorations().addLast(new TextDecoration(decoration, 0, c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
+
+            //set the current style
+            CascadedStyle style = null;
+            if (!stylePushed && block.element != null) {
+                style = c.getCss().getCascadedStyle(block.element, restyle);
             }
-            if (Relative.isRelative(c)) {
-                paintRelative(c, block, restyle);
+            if (style != null) {
+                c.pushStyle(style);
+            }
+
+            // copy the bounds to we don't mess it up
+            Rectangle oldBounds = new Rectangle(c.getExtents());
+
+            if (block.fixed) {
+                paintFixed(c, block, restyle);
+            } else if (block.absolute) {
+                paintAbsoluteBox(c, block, restyle);
             } else {
-                paintNormal(c, block, restyle);
+                //text decoration?
+                IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
+                if (decoration != IdentValue.NONE) {
+                    c.getDecorations().addLast(new TextDecoration(decoration, 0, c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
+                }
+                if (Relative.isRelative(c)) {
+                    paintRelative(c, block, restyle);
+                } else {
+                    paintNormal(c, block, restyle);
+                }
+                //undo text decoration?
+                if (decoration != IdentValue.NONE) {
+                    c.getDecorations().removeLast();
+                }
             }
-            //undo text decoration?
-            if (decoration != IdentValue.NONE) {
-                c.getDecorations().removeLast();
+
+            //Uu.p("here it's : " + c.getListCounter());
+            if (ContentUtil.isListItem(style)) {
+                paintListItem(c, box);
             }
-        }
 
-        //Uu.p("here it's : " + c.getListCounter());
-        if (ContentUtil.isListItem(style)) {
-            paintListItem(c, box);
-        }
+            // move the origin down to account for the contents plus the margin, borders, and padding
+            if (!box.absolute) {
+                oldBounds.y = oldBounds.y + block.height;
+                c.setExtents(oldBounds);
+            }
 
-        // move the origin down to account for the contents plus the margin, borders, and padding
-        if (!box.absolute) {
-            oldBounds.y = oldBounds.y + block.height;
-            c.setExtents(oldBounds);
-        }
-
-        //reset style
-        if (style != null) {
-            c.popStyle();
+            //reset style
+            if (style != null) {
+                c.popStyle();
+            }
         }
 
         if (c.debugDrawBoxes() ||
@@ -128,9 +133,7 @@ public class BoxRendering {
     public static void paintNormal(Context c, Box block, boolean restyle) {
         paintBackground(c, block);
 
-        if (!(block instanceof AnonymousBlockBox)) {
-            c.translateInsets(block);
-        }
+        c.translateInsets(block);
         if (block instanceof TableBox) {
             TableRendering.paintTable(c, (TableBox) block, restyle);
         } else if (isInlineLayedOut(block)) {
@@ -138,21 +141,18 @@ public class BoxRendering {
         } else {
             BlockRendering.paintBlockContext(c, block, restyle);
         }
-        if (!(block instanceof AnonymousBlockBox)) {
-            c.untranslateInsets(block);
-        }
+        c.untranslateInsets(block);
 
-        if (!(block instanceof AnonymousBlockBox)) {
-            int width = block.getWidth();
-            int height = block.getHeight();
-            Border margin = c.getCurrentStyle().getMarginWidth(width, height, c.getCtx());
+        int width = block.getWidth();
+        int height = block.getHeight();
+        Border margin = c.getCurrentStyle().getMarginWidth(width, height, c.getCtx());
 
-            Rectangle bounds = new Rectangle(block.x + margin.left,
-                    block.y + margin.top,
-                    block.width - margin.left - margin.right,
-                    block.height - margin.top - margin.bottom);
-            BorderPainter.paint(bounds, BorderPainter.ALL, c.getCurrentStyle(), c.getGraphics(), c.getCtx());
-        }
+        Rectangle bounds = new Rectangle(block.x + margin.left,
+                block.y + margin.top,
+                block.width - margin.left - margin.right,
+                block.height - margin.top - margin.bottom);
+        BorderPainter.paint(bounds, BorderPainter.ALL, c.getCurrentStyle(), c.getGraphics(), c.getCtx());
+
     }
 
     // adjustments for relative painting
@@ -253,7 +253,7 @@ public class BoxRendering {
         Box block = box;
 
         // cache the background color
-        getBackgroundColor(c);
+        //no sense getBackgroundColor(c);
 
         // get the css properties
         CalculatedStyle style = c.getCurrentStyle();
@@ -337,6 +337,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/05/17 06:56:25  tobega
+ * Inline backgrounds now work correctly, as does mixing of inlines and blocks for style inheritance
+ *
  * Revision 1.24  2005/05/13 15:23:55  tobega
  * Done refactoring box borders, margin and padding. Hover is working again.
  *
