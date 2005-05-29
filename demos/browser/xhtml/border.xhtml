@@ -36,10 +36,13 @@
 
             div.test7 { border-style: ridge; border-width: 10px; border-color: red;}
             div.test7a { border-style: groove; border-width: 10px; border-color: red;}
+            div.test7b { border-style: dashed; border-width: 10px; border-color: red;}
 
             div.test8 { border-style: inset; border-width: 10px 20px 30px 40px; border-color: red;}
 
             div.test9 { border-style: ridge; border-width: 10px 20px 30px 40px; border-color: red;}
+
+            div.test9a { border-style: dashed; border-width: 10px 20px 30px 40px; border-color: red;}
 
 
 
@@ -64,6 +67,20 @@
             div.test25 { border: 1px dashed red; }
             div.test26 { border: 1px dotted red; }
 
+            div.p1 {
+                border-width: 1px;
+                border-style: solid;
+                border-color: #000000;
+                border-bottom-color: #ff0000;
+		border-bottom-style: dashed;
+		border-bottom-width: 5px;
+                }
+            div.p2 {
+                border: 1px solid black;
+                border-bottom-color: #ff0000;
+		border-bottom-style: dashed;
+		border-bottom-width: 5px;
+                }
         </style>
 
     </head>
@@ -89,9 +106,13 @@
 
         <div class="test7a">border = groove 10px</div>
 
+        <div class="test7b">border = dashed 10px</div>
+
         <div class="test8">border = inset w/ uneven sides, 10,20,30,40</div>
 
         <div class="test9">border = ridge w/ uneven sides, 10,20,30,40</div>
+
+        <div class="test9a">border = dashed w/ uneven sides, 10,20,30,40</div>
 
         <h3>margins</h3>
 
@@ -126,6 +147,10 @@
         <div style="border-style: dotted solid groove dashed; border-width: 5px; border-color: red; padding: 13px;">border-style: dotted solid groove dashed; border-width: 5px; border-color: red; padding: 13px;</div>
 
         <div style="border-style: solid dotted dashed groove; border-width: 40px 10px 20px 30px; border-color: red; padding: 13px;">border-style: solid dotted dashed groove; border-width: 40px 10px 20px 30px; border-color: red; padding: 13px;</div>
+
+        <h3>overriding bottom color</h3>
+        <div class="p1">bottom border should be red, dashed, 5px</div>
+        <div class="p2">bottom border should be red, dashed, 5px</div>
 
     </body>
 

@@ -260,53 +260,66 @@ public class BorderPainter {
     /**
      * Gets the polygon to be filled for the border
      *
-     * @param bounds      PARAM
-     * @param border      PARAM
-     * @param sides       PARAM
+     * @param bounds       PARAM
+     * @param border       PARAM
+     * @param sides        PARAM
      * @param currentSide
+     * @param isClipRegion
      */
-    private static Polygon getBevelledPolygon(final Rectangle bounds, final Border border, final int sides, int currentSide) {
-        int rightCorner = (((sides & RIGHT) == RIGHT) ? border.right : 0);
-        int leftCorner = (((sides & LEFT) == LEFT) ? border.left : 0);//adjust for bug in polygon filling?
-        int topCorner = (((sides & TOP) == TOP) ? border.top : 0);
-        int bottomCorner = (((sides & BOTTOM) == BOTTOM) ? border.bottom : 0);
+    private static Polygon getBevelledPolygon(final Rectangle bounds, final Border border, final int sides, int currentSide, boolean isClipRegion) {
+        //adjust for bug in polygon filling
+        final int adjust;
+        //adjust inside corners to make sides fit snugly
+        final int snuggle;
+        if (isClipRegion) {
+            adjust = 0;
+            snuggle = 1;
+        } else {
+            adjust = 1;
+            snuggle = 0;
+        }
+
+        int rightCorner = (((sides & RIGHT) == RIGHT) ? border.right : adjust);
+        int leftCorner = (((sides & LEFT) == LEFT) ? border.left - adjust : 0);
+        int topCorner = (((sides & TOP) == TOP) ? border.top - adjust : 0);
+        int bottomCorner = (((sides & BOTTOM) == BOTTOM) ? border.bottom : adjust);
         Polygon poly = null;
         if (currentSide == TOP) {
             if (border.top != 1) {
                 // use polygons for borders over 1px wide
                 poly = new Polygon();
                 poly.addPoint(bounds.x, bounds.y);
-                poly.addPoint(bounds.x + bounds.width, bounds.y);
-                poly.addPoint(bounds.x + bounds.width - rightCorner, bounds.y + border.top);
-                poly.addPoint(bounds.x + leftCorner, bounds.y + border.top);
+                poly.addPoint(bounds.x + bounds.width - adjust, bounds.y);
+                poly.addPoint(bounds.x + bounds.width - rightCorner + snuggle, bounds.y + border.top - adjust);
+                poly.addPoint(bounds.x + leftCorner - snuggle, bounds.y + border.top - adjust);
             }
         } else if (currentSide == BOTTOM) {
             if (border.bottom != 1) {
                 poly = new Polygon();
                 // upper right
-                poly.addPoint(bounds.x + bounds.width - rightCorner, bounds.y + bounds.height - border.bottom);
+                poly.addPoint(bounds.x + bounds.width - rightCorner + snuggle, bounds.y + bounds.height - border.bottom);
                 // upper left
-                poly.addPoint(bounds.x + leftCorner, bounds.y + bounds.height - border.bottom);
+                poly.addPoint(bounds.x + leftCorner - snuggle, bounds.y + bounds.height - border.bottom);
                 // lower left
-                poly.addPoint(bounds.x, bounds.y + bounds.height);
+                poly.addPoint(bounds.x, bounds.y + bounds.height - adjust);
                 // lower right
-                poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height);
+                poly.addPoint(bounds.x + bounds.width - adjust, bounds.y + bounds.height - adjust);
             }
         } else if (currentSide == RIGHT) {
             if (border.right != 1) {
                 poly = new Polygon();
-                poly.addPoint(bounds.x + bounds.width, bounds.y);
+                poly.addPoint(bounds.x + bounds.width - adjust, bounds.y);
                 poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + topCorner);
                 poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + bounds.height - bottomCorner);
-                poly.addPoint(bounds.x + bounds.width, bounds.y + bounds.height);
+                poly.addPoint(bounds.x + bounds.width - adjust, bounds.y + bounds.height - adjust);
             }
         } else if (currentSide == LEFT) {
             if (border.left != 1) {
                 poly = new Polygon();
                 poly.addPoint(bounds.x, bounds.y);
-                poly.addPoint(bounds.x + border.left, bounds.y + topCorner);
-                poly.addPoint(bounds.x + border.left, bounds.y + bounds.height - bottomCorner);
-                poly.addPoint(bounds.x, bounds.y + bounds.height);
+                poly.addPoint(bounds.x + border.left - adjust, bounds.y + topCorner);
+                poly.addPoint(bounds.x + border.left - adjust, bounds.y + bounds.height - bottomCorner);
+                poly.addPoint(bounds.x, bounds.y + bounds.height - adjust);
             }
         }
         return poly;
@@ -325,7 +338,7 @@ public class BorderPainter {
      * @param xOffset     for inline borders, to determine dash_phase of top and bottom
      */
     private static void paintPatternedRect(final Graphics2D g2, final Rectangle bounds, final Border border, final BorderColor color, final float[] pattern, final int sides, final int currentSide, int xOffset) {
-        Polygon clip = getBevelledPolygon(bounds, border, sides, currentSide);
+        Polygon clip = getBevelledPolygon(bounds, border, sides, currentSide, true);
         Shape old_clip = g2.getClip();
         if (clip != null) g2.clip(clip);
         Stroke old_stroke = g2.getStroke();
@@ -393,9 +406,9 @@ public class BorderPainter {
     private static void paintSolid(final Graphics2D g2, final Rectangle bounds, final Border border, final BorderColor color, final int sides, int currentSide) {
         //Bug in polygon painting paints an extra pixel to the right and bottom
         //But clipping works fine!
-        Polygon poly = getBevelledPolygon(bounds, border, sides, currentSide);
-        Shape old_clip = g2.getClip();
-        if (poly != null) g2.clip(poly);
+        Polygon poly = getBevelledPolygon(bounds, border, sides, currentSide, false);
+        //Shape old_clip = g2.getClip();
+        //if (poly != null) g2.clip(poly);
         if (currentSide == TOP) {
             g2.setColor(color.topColor);
 
@@ -431,7 +444,7 @@ public class BorderPainter {
                 g2.fillPolygon(poly);
             }
         }
-        g2.setClip(old_clip);
+        //g2.setClip(old_clip);
     }
 
     /*private static void p(Polygon poly) {
@@ -448,6 +461,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/05/29 23:43:28  tobega
+ * Removed tendency for white diagonal line in corners
+ *
  * Revision 1.29  2005/05/29 20:13:20  tobega
  * Cleaned up duplicate code
  *
