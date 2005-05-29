@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.extend;
 
+import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.newmatch.AttributeResolver;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -27,13 +28,12 @@ import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Font;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.net.URL;
 
 
 /**
- * Description of the Class
+ * Supplies information about the context in which rendering will take place
  *
  * @author jmarinacci
  * @created November 16, 2004
@@ -375,6 +375,14 @@ public class RenderingContext {
             return true;
         }
         return false;
+    }
+
+    public Graphics2D getGraphics() {
+        return ctx.getGraphics();
+    }
+
+    public FontResolver getFontResolver() {
+        return ctx.getFontResolver();
     }
 
     /*

@@ -27,7 +27,7 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.extend.RenderingContext;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -523,18 +523,42 @@ public class CalculatedStyle {
         return new DerivedProperty(cssName, computed);
     }
 
-    public Font getFont(Context c) {
+    public Font getFont(RenderingContext ctx) {
         if (_font == null) {
-            float size = getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, 0, c.getCtx());
+            float size = getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, 0, ctx);
 
             IdentValue fontWeight = getIdent(CSSName.FONT_WEIGHT);
             String[] families = propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
 
             IdentValue fontStyle = getIdent(CSSName.FONT_STYLE);
             IdentValue variant = getIdent(CSSName.FONT_VARIANT);
-            _font = c.getFontResolver().resolveFont(c, families, size, fontWeight, fontStyle, variant);
+            _font = ctx.getFontResolver().resolveFont(ctx, families, size, fontWeight, fontStyle, variant);
         }
         return _font;
+    }
+
+    public float getFontSizeForXHeight(RenderingContext ctx, float xHeight) {
+        IdentValue fontWeight = getIdent(CSSName.FONT_WEIGHT);
+        String[] families = propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
+        IdentValue fontStyle = getIdent(CSSName.FONT_STYLE);
+        IdentValue variant = getIdent(CSSName.FONT_VARIANT);
+
+        Font font = getParent().getFont(ctx);
+        float bestGuess = font.getSize2D();
+        float bestHeight = FontUtil.getXHeight(ctx, font);
+        float nextGuess = bestGuess * xHeight / bestHeight;
+        while (true) {
+            font = ctx.getFontResolver().resolveFont(ctx, families, nextGuess, fontWeight, fontStyle, variant);
+            float nextHeight = FontUtil.getXHeight(ctx, font);
+            //this check is needed in cases where the iteration can hop back and forth between two values
+            if (Math.abs(nextHeight - xHeight) < Math.abs(bestHeight - xHeight)) {
+                bestGuess = nextGuess;
+                bestHeight = nextHeight;
+                nextGuess = bestGuess * xHeight / FontUtil.getXHeight(ctx, font);
+            } else
+                break;
+        }
+        return bestGuess;
     }
 }// end class
 
@@ -542,6 +566,10 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/05/29 16:38:58  tobega
+ * Handling of ex values should now be working well. Handling of em values improved. Is it correct?
+ * Also started defining dividing responsibilities between Context and RenderingContext.
+ *
  * Revision 1.21  2005/05/13 11:49:57  tobega
  * Started to fix up borders on inlines. Got caught up in refactoring.
  * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.

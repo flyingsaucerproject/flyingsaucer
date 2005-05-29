@@ -19,25 +19,32 @@
  */
 package org.xhtmlrenderer.css;
 
+import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.extend.RenderingContext;
+import org.xhtmlrenderer.util.Uu;
+
 import java.awt.*;
 import java.util.HashMap;
-import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.util.Uu;
 
 
 /**
  * Description of the Class
  *
- * @author   Joshua Marinacci
+ * @author Joshua Marinacci
  */
 public class FontResolver {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     HashMap instance_hash;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     HashMap available_fonts_hash;
 
-    /** Constructor for the FontResolverTest object */
+    /**
+     * Constructor for the FontResolverTest object
+     */
     public FontResolver() {
         GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
         String[] available_fonts = gfx.getAvailableFontFamilyNames();
@@ -50,36 +57,36 @@ public class FontResolver {
         // we will only add them once we need to use them
         // put empty strings in instead
         available_fonts_hash = new HashMap();
-        for ( int i = 0; i < available_fonts.length; i++ ) {
-            available_fonts_hash.put( available_fonts[i], new String() );
+        for (int i = 0; i < available_fonts.length; i++) {
+            available_fonts_hash.put(available_fonts[i], new String());
         }
 
         // preload sans, serif, and monospace into the available font hash
-        available_fonts_hash.put( "Serif", new Font( "Serif", Font.PLAIN, 1 ) );
-        available_fonts_hash.put( "SansSerif", new Font( "SansSerif", Font.PLAIN, 1 ) );
+        available_fonts_hash.put("Serif", new Font("Serif", Font.PLAIN, 1));
+        available_fonts_hash.put("SansSerif", new Font("SansSerif", Font.PLAIN, 1));
         //Uu.p("put in sans serif");
-        available_fonts_hash.put( "Monospaced", new Font( "Monospaced", Font.PLAIN, 1 ) );
+        available_fonts_hash.put("Monospaced", new Font("Monospaced", Font.PLAIN, 1));
     }
 
     /**
      * Description of the Method
      *
-     * @param c         PARAM
-     * @param families  PARAM
-     * @param size      PARAM
-     * @param weight    PARAM
-     * @param style     PARAM
-     * @param variant   PARAM
-     * @return          Returns
+     * @param ctx
+     * @param families PARAM
+     * @param size     PARAM
+     * @param weight   PARAM
+     * @param style    PARAM
+     * @param variant  PARAM
+     * @return Returns
      */
-    public Font resolveFont( Context c, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant ) {
+    public Font resolveFont(RenderingContext ctx, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         //Uu.p("familes = ");
         //Uu.p(families);
         // for each font family
-        if ( families != null ) {
-            for ( int i = 0; i < families.length; i++ ) {
-                Font font = resolveFont( c, families[i], size, weight, style, variant );
-                if ( font != null ) {
+        if (families != null) {
+            for (int i = 0; i < families.length; i++) {
+                Font font = resolveFont(ctx, families[i], size, weight, style, variant);
+                if (font != null) {
                     return font;
                 }
             }
@@ -88,13 +95,13 @@ public class FontResolver {
         // if we get here then no font worked, so just return default sans
         //Uu.p("pulling out: -" + available_fonts_hash.get("SansSerif") + "-");
         try {
-            Font fnt = createFont( c, (Font)available_fonts_hash.get( "SansSerif" ), size, weight, style, variant );
-            instance_hash.put( getFontInstanceHashName( "SansSerif", size, weight, style, variant ), fnt );
+            Font fnt = createFont(ctx, (Font) available_fonts_hash.get("SansSerif"), size, weight, style, variant);
+            instance_hash.put(getFontInstanceHashName("SansSerif", size, weight, style, variant), fnt);
             //Uu.p("subbing in base sans : " + fnt);
             return fnt;
-        } catch ( Exception ex ) {
-            Uu.p( "exception: " + ex );
-            return c.getGraphics().getFont();
+        } catch (Exception ex) {
+            Uu.p("exception: " + ex);
+            return ctx.getGraphics().getFont();
         }
 
     }
@@ -102,47 +109,47 @@ public class FontResolver {
     /**
      * Sets the fontMapping attribute of the FontResolver object
      *
-     * @param name  The new fontMapping value
-     * @param font  The new fontMapping value
+     * @param name The new fontMapping value
+     * @param font The new fontMapping value
      */
-    public void setFontMapping( String name, Font font ) {
-        available_fonts_hash.put( name, font.deriveFont( 1f ) );
+    public void setFontMapping(String name, Font font) {
+        available_fonts_hash.put(name, font.deriveFont(1f));
     }
 
     /**
      * Description of the Method
      *
-     * @param c          PARAM
-     * @param root_font  PARAM
-     * @param size       PARAM
-     * @param weight     PARAM
-     * @param style      PARAM
-     * @param variant    PARAM
-     * @return           Returns
+     * @param ctx
+     * @param root_font PARAM
+     * @param size      PARAM
+     * @param weight    PARAM
+     * @param style     PARAM
+     * @param variant   PARAM
+     * @return Returns
      */
-    protected Font createFont( Context c, Font root_font, float size, IdentValue weight, IdentValue style, IdentValue variant ) {
+    protected Font createFont(RenderingContext ctx, Font root_font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         //Uu.p("creating font: " + root_font + " size = " + size +
         //    " weight = " + weight + " style = " + style + " variant = " + variant);
         int font_const = Font.PLAIN;
-        if ( weight != null && 
-            ( weight == IdentValue.BOLD || 
-              weight == IdentValue.FONT_WEIGHT_700 ||
-              weight == IdentValue.FONT_WEIGHT_800 ||
-              weight == IdentValue.FONT_WEIGHT_900 )) {
-                  
+        if (weight != null &&
+                (weight == IdentValue.BOLD ||
+                weight == IdentValue.FONT_WEIGHT_700 ||
+                weight == IdentValue.FONT_WEIGHT_800 ||
+                weight == IdentValue.FONT_WEIGHT_900)) {
+
             font_const = font_const | Font.BOLD;
         }
-        if ( style != null && style == IdentValue.ITALIC ) {
+        if (style != null && style == IdentValue.ITALIC) {
             font_const = font_const | Font.ITALIC;
         }
 
         // scale vs font scale value too
-        size *= c.getRenderingContext().getTextRenderer().getFontScale();
+        size *= ctx.getTextRenderer().getFontScale();
 
-        Font fnt = root_font.deriveFont( font_const, size );
-        if ( variant != null ) {
-            if ( variant == IdentValue.SMALL_CAPS ) {
-                fnt = fnt.deriveFont( (float)( ( (float)fnt.getSize() ) * 0.6 ) );
+        Font fnt = root_font.deriveFont(font_const, size);
+        if (variant != null) {
+            if (variant == IdentValue.SMALL_CAPS) {
+                fnt = fnt.deriveFont((float) (((float) fnt.getSize()) * 0.6));
             }
         }
 
@@ -152,43 +159,43 @@ public class FontResolver {
     /**
      * Description of the Method
      *
-     * @param c        PARAM
-     * @param font     PARAM
-     * @param size     PARAM
-     * @param weight   PARAM
-     * @param style    PARAM
-     * @param variant  PARAM
-     * @return         Returns
+     * @param ctx
+     * @param font    PARAM
+     * @param size    PARAM
+     * @param weight  PARAM
+     * @param style   PARAM
+     * @param variant PARAM
+     * @return Returns
      */
-    protected Font resolveFont( Context c, String font, float size, IdentValue weight, IdentValue style, IdentValue variant ) {
+    protected Font resolveFont(RenderingContext ctx, String font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         //Uu.p("here");
         // strip off the "s if they are there
-        if ( font.startsWith( "\"" ) ) {
-            font = font.substring( 1 );
+        if (font.startsWith("\"")) {
+            font = font.substring(1);
         }
-        if ( font.endsWith( "\"" ) ) {
-            font = font.substring( 0, font.length() - 1 );
+        if (font.endsWith("\"")) {
+            font = font.substring(0, font.length() - 1);
         }
 
         //Uu.p("final font = " + font);
         // normalize the font name
-        if ( font.equals( "serif" ) ) {
+        if (font.equals("serif")) {
             font = "Serif";
         }
-        if ( font.equals( "sans-serif" ) ) {
+        if (font.equals("sans-serif")) {
             font = "SansSerif";
         }
-        if ( font.equals( "monospace" ) ) {
+        if (font.equals("monospace")) {
             font = "Monospaced";
         }
 
         // assemble a font instance hash name
-        String font_instance_name = getFontInstanceHashName( font, size, weight, style, variant );
+        String font_instance_name = getFontInstanceHashName(font, size, weight, style, variant);
         //Uu.p("looking for font: " + font_instance_name);
         // check if the font instance exists in the hash table
-        if ( instance_hash.containsKey( font_instance_name ) ) {
+        if (instance_hash.containsKey(font_instance_name)) {
             // if so then return it
-            return (Font)instance_hash.get( font_instance_name );
+            return (Font) instance_hash.get(font_instance_name);
         }
 
         //Uu.p("font lookup failed for: " + font_instance_name);
@@ -197,23 +204,23 @@ public class FontResolver {
 
         // if not then
         //  does the font exist
-        if ( available_fonts_hash.containsKey( font ) ) {
+        if (available_fonts_hash.containsKey(font)) {
             //Uu.p("found an available font for: " + font);
-            Object value = available_fonts_hash.get( font );
+            Object value = available_fonts_hash.get(font);
             // have we actually allocated the root font object yet?
             Font root_font = null;
-            if ( value instanceof Font ) {
-                root_font = (Font)value;
+            if (value instanceof Font) {
+                root_font = (Font) value;
             } else {
-                root_font = new Font( font, Font.PLAIN, 1 );
-                available_fonts_hash.put( font, root_font );
+                root_font = new Font(font, Font.PLAIN, 1);
+                available_fonts_hash.put(font, root_font);
             }
 
             // now that we have a root font, we need to create the correct version of it
-            Font fnt = createFont( c, root_font, size, weight, style, variant );
+            Font fnt = createFont(ctx, root_font, size, weight, style, variant);
 
             // add the font to the hash so we don't have to do this again
-            instance_hash.put( font_instance_name, fnt );
+            instance_hash.put(font_instance_name, fnt);
             return fnt;
         }
 
@@ -224,14 +231,14 @@ public class FontResolver {
     /**
      * Gets the fontInstanceHashName attribute of the FontResolverTest object
      *
-     * @param name     PARAM
-     * @param size     PARAM
-     * @param weight   PARAM
-     * @param style    PARAM
-     * @param variant  PARAM
-     * @return         The fontInstanceHashName value
+     * @param name    PARAM
+     * @param size    PARAM
+     * @param weight  PARAM
+     * @param style   PARAM
+     * @param variant PARAM
+     * @return The fontInstanceHashName value
      */
-    protected String getFontInstanceHashName( String name, float size, IdentValue weight, IdentValue style, IdentValue variant ) {
+    protected String getFontInstanceHashName(String name, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         return name + "-" + size + "-" + weight + "-" + style + "-" + variant;
     }
 }
@@ -240,6 +247,10 @@ public class FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/05/29 16:38:59  tobega
+ * Handling of ex values should now be working well. Handling of em values improved. Is it correct?
+ * Also started defining dividing responsibilities between Context and RenderingContext.
+ *
  * Revision 1.14  2005/03/24 23:19:11  pdoubleya
  * Cleaned up DPI calculations for font size (Kevin).
  *

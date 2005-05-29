@@ -22,6 +22,7 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 
@@ -110,7 +111,7 @@ public class FontUtil {
             return f;
         }*/
 
-        Font f = style.getFont(c);
+        Font f = style.getFont(c.getCtx());
 
         return f;
     }
@@ -132,6 +133,13 @@ public class FontUtil {
                 getFont(c), sample);
     }
 
+    //strike-through offset should always be half of the height of lowercase x...
+    //and it is defined even for fonts without 'x'!
+    public static float getXHeight(RenderingContext ctx, Font f) {
+        float sto = ctx.getTextRenderer().getLineMetrics(ctx.getGraphics(), f, " ").getStrikethroughOffset();
+        return 2 * Math.abs(sto);
+    }
+
     /**
      * Gets the textBounds attribute of the FontUtil class
      *
@@ -149,6 +157,10 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2005/05/29 16:39:01  tobega
+ * Handling of ex values should now be working well. Handling of em values improved. Is it correct?
+ * Also started defining dividing responsibilities between Context and RenderingContext.
+ *
  * Revision 1.35  2005/05/09 20:35:39  tobega
  * Caching fonts in CalculatedStyle
  *

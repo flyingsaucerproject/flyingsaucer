@@ -35,6 +35,8 @@ import java.util.LinkedList;
 
 
 /**
+ * Repository for information about the current layout context
+ *
  * @author Torbjörn Gannholm
  */
 public interface Context {
