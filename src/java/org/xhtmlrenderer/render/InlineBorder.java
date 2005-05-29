@@ -38,6 +38,11 @@ public class InlineBorder {
     private int y;
     private int height;
     private Color background_color;
+    /**
+     * borders are painted in sections, in horizontal order.
+     * Keep track of how much is painted for horizontal pattern phase
+     */
+    private int xOffset = 0;
 
     /**
      * @param y
@@ -80,8 +85,9 @@ public class InlineBorder {
         }
 
         //then the border
-        BorderPainter.paint(bounds, sides, style, c.getGraphics(), c.getCtx());
+        BorderPainter.paint(bounds, sides, style, c.getGraphics(), c.getCtx(), xOffset);
         c.translate(0, -ty);
+        xOffset += width;
     }
 
 }

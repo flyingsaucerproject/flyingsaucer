@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Test : inline borders</title>
+        <style type="text/css">
+
+   blockquote { color: blue; }
+   span { border-width: 5; border-style: solid; border-color: red;}
+   span { background: black; color: yellow; }
+   .dashed { border-style: dashed; }
+   em { display: block; }
+   cite { color: fuchsia; }
+
+        </style>
+    </head>
+
+    <body>
+
+        <blockquote>
+            <p>
+                <span>
+      Help, help!
+                    <em> I am under a hat! </em>
+                    <cite> —GwieF </cite>
+                </span>
+            </p>
+        </blockquote>
+        <p></p>
+        <blockquote>
+            <p>
+                <span class="dashed">
+      Help, help!
+                    <em> I am under a hat! </em>
+                    <cite> —GwieF </cite>
+                </span>
+            </p>
+        </blockquote>
+        <p></p>
+        <p>Did that work?</p>
+    </body>
+
+</html>
+
+
+

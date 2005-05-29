@@ -151,7 +151,7 @@ public class BoxRendering {
                 block.y + margin.top,
                 block.width - margin.left - margin.right,
                 block.height - margin.top - margin.bottom);
-        BorderPainter.paint(bounds, BorderPainter.ALL, c.getCurrentStyle(), c.getGraphics(), c.getCtx());
+        BorderPainter.paint(bounds, BorderPainter.ALL, c.getCurrentStyle(), c.getGraphics(), c.getCtx(), 0);
 
     }
 
@@ -337,6 +337,10 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/05/29 19:37:58  tobega
+ * Fixed up using different style borders.
+ * Fixed patterned borders to work right.
+ *
  * Revision 1.25  2005/05/17 06:56:25  tobega
  * Inline backgrounds now work correctly, as does mixing of inlines and blocks for style inheritance
  *
