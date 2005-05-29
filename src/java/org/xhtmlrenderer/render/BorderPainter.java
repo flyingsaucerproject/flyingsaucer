@@ -290,16 +290,16 @@ public class BorderPainter {
                 poly = new Polygon();
                 poly.addPoint(bounds.x, bounds.y);
                 poly.addPoint(bounds.x + bounds.width - adjust, bounds.y);
-                poly.addPoint(bounds.x + bounds.width - rightCorner + snuggle, bounds.y + border.top - adjust);
-                poly.addPoint(bounds.x + leftCorner - snuggle, bounds.y + border.top - adjust);
+                poly.addPoint(bounds.x + bounds.width - rightCorner, bounds.y + border.top - adjust);
+                poly.addPoint(bounds.x + leftCorner, bounds.y + border.top - adjust);
             }
         } else if (currentSide == BOTTOM) {
             if (border.bottom != 1) {
                 poly = new Polygon();
                 // upper right
-                poly.addPoint(bounds.x + bounds.width - rightCorner + snuggle, bounds.y + bounds.height - border.bottom);
+                poly.addPoint(bounds.x + bounds.width - rightCorner, bounds.y + bounds.height - border.bottom);
                 // upper left
-                poly.addPoint(bounds.x + leftCorner - snuggle, bounds.y + bounds.height - border.bottom);
+                poly.addPoint(bounds.x + leftCorner, bounds.y + bounds.height - border.bottom);
                 // lower left
                 poly.addPoint(bounds.x, bounds.y + bounds.height - adjust);
                 // lower right
@@ -309,16 +309,16 @@ public class BorderPainter {
             if (border.right != 1) {
                 poly = new Polygon();
                 poly.addPoint(bounds.x + bounds.width - adjust, bounds.y);
-                poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + topCorner);
-                poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + bounds.height - bottomCorner);
+                poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + topCorner - snuggle);
+                poly.addPoint(bounds.x + bounds.width - border.right, bounds.y + bounds.height - bottomCorner + snuggle);
                 poly.addPoint(bounds.x + bounds.width - adjust, bounds.y + bounds.height - adjust);
             }
         } else if (currentSide == LEFT) {
             if (border.left != 1) {
                 poly = new Polygon();
                 poly.addPoint(bounds.x, bounds.y);
-                poly.addPoint(bounds.x + border.left - adjust, bounds.y + topCorner);
-                poly.addPoint(bounds.x + border.left - adjust, bounds.y + bounds.height - bottomCorner);
+                poly.addPoint(bounds.x + border.left - adjust, bounds.y + topCorner - snuggle);
+                poly.addPoint(bounds.x + border.left - adjust, bounds.y + bounds.height - bottomCorner + snuggle);
                 poly.addPoint(bounds.x, bounds.y + bounds.height - adjust);
             }
         }
@@ -461,6 +461,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/05/29 23:49:15  tobega
+ * Did it right, this time, so that inline borders also look nice
+ *
  * Revision 1.30  2005/05/29 23:43:28  tobega
  * Removed tendency for white diagonal line in corners
  *
