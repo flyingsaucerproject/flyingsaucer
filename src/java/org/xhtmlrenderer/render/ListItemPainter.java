@@ -19,11 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.font.LineMetrics;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -32,106 +27,108 @@ import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Uu;
 
+import java.awt.*;
+import java.awt.font.LineMetrics;
+
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class ListItemPainter {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
-     * @param box  PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public static void paint( Context c, Box box ) {
+    public static void paint(Context c, Box box) {
         CalculatedStyle style = c.getCurrentStyle();
-        IdentValue listStyle = style.getIdent( CSSName.LIST_STYLE_TYPE );
+        IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
 
-        if ( listStyle == IdentValue.NONE ) {
+        if (listStyle == IdentValue.NONE) {
             return;
         }
-        if ( listStyle == IdentValue.LOWER_GREEK ) {
+        if (listStyle == IdentValue.LOWER_GREEK) {
             listStyle = IdentValue.DECIMAL;
         }
-        if ( listStyle == IdentValue.DECIMAL_LEADING_ZERO ) {
+        if (listStyle == IdentValue.DECIMAL_LEADING_ZERO) {
             listStyle = IdentValue.DECIMAL;
         }
 
-        String image = style.getStringProperty( CSSName.LIST_STYLE_IMAGE );
+        String image = style.getStringProperty(CSSName.LIST_STYLE_IMAGE);
         Image img = null;
-        if ( !image.equals( "none" ) ) {
+        if (!image.equals("none")) {
             try {
                 //Uu.p("loading: " + image);
-                img = ImageUtil.loadImage( c, image );
-            } catch ( Exception ex ) {
-                Uu.p( ex );
+                img = ImageUtil.loadImage(c, image);
+            } catch (Exception ex) {
+                Uu.p(ex);
             }
             //Uu.p("image = " + img);
-            if ( img != null ) {
-                int rad = 8;
+            if (img != null) {
                 int baseline = box.height;
-                c.getGraphics().drawImage( img, box.x - img.getWidth( null ) - 2, box.y + baseline / 2 - img.getHeight( null ) / 2 + 2, null );
+                c.getGraphics().drawImage(img, box.x - img.getWidth(null) - 2, box.y + baseline / 2 - img.getHeight(null) / 2 + 2, null);
                 return;
             }
         }
 
         // prep the color
-        c.getGraphics().setColor( style.getColor() );
+        c.getGraphics().setColor(style.getColor());
 
         // save the old AntiAliasing setting, then force it on
-        Object aa_key = c.getGraphics().getRenderingHint( RenderingHints.KEY_ANTIALIASING );
-        c.getGraphics().setRenderingHint( RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON );
+        Object aa_key = c.getGraphics().getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+        c.getGraphics().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
         // calculations for bullets
         int rad = 8;// change this to use the glyph height
-        int h = FontUtil.lineHeight( c );
+        int h = FontUtil.lineHeight(c);
         rad = h / 3;
         int x = box.x - rad - rad / 2;
-        int y = box.y + ( h - rad / 2 ) / 2;
-        if ( listStyle == IdentValue.DISC ) {
-            c.getGraphics().fillOval( x, y, rad, rad );
+        int y = box.y + (h - rad / 2) / 2;
+        if (listStyle == IdentValue.DISC) {
+            c.getGraphics().fillOval(x, y, rad, rad);
             return;
         }
-        if ( listStyle == IdentValue.SQUARE ) {
-            c.getGraphics().fillRect( x, y, rad, rad );
+        if (listStyle == IdentValue.SQUARE) {
+            c.getGraphics().fillRect(x, y, rad, rad);
             return;
         }
-        if ( listStyle == IdentValue.CIRCLE ) {
-            c.getGraphics().drawOval( x, y, rad, rad );
+        if (listStyle == IdentValue.CIRCLE) {
+            c.getGraphics().drawOval(x, y, rad, rad);
             return;
         }
 
         // restore the old AntiAliasing setting
-        c.getGraphics().setRenderingHint( RenderingHints.KEY_ANTIALIASING,
-                aa_key );
+        c.getGraphics().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                aa_key);
 
 
         // calculations for text
-        if ( listStyle == IdentValue.DECIMAL ) {
-            drawText( c, box, listStyle );
+        if (listStyle == IdentValue.DECIMAL) {
+            drawText(c, box, listStyle);
             return;
         }
 
-        if ( listStyle == IdentValue.LOWER_LATIN ) {
-            drawText( c, box, listStyle );
+        if (listStyle == IdentValue.LOWER_LATIN) {
+            drawText(c, box, listStyle);
             return;
         }
 
-        if ( listStyle == IdentValue.UPPER_LATIN ) {
-            drawText( c, box, listStyle );
+        if (listStyle == IdentValue.UPPER_LATIN) {
+            drawText(c, box, listStyle);
             return;
         }
 
-        if ( listStyle == IdentValue.LOWER_ROMAN ) {
-            drawText( c, box, listStyle );
+        if (listStyle == IdentValue.LOWER_ROMAN) {
+            drawText(c, box, listStyle);
             return;
         }
 
-        if ( listStyle == IdentValue.UPPER_ROMAN ) {
-            drawText( c, box, listStyle );
+        if (listStyle == IdentValue.UPPER_ROMAN) {
+            drawText(c, box, listStyle);
             return;
         }
     }
@@ -139,32 +136,32 @@ public class ListItemPainter {
     /**
      * Description of the Method
      *
-     * @param val  PARAM
-     * @return     Returns
+     * @param val PARAM
+     * @return Returns
      */
-    protected static String toLatin( int val ) {
-        if ( val > 26 ) {
+    protected static String toLatin(int val) {
+        if (val > 26) {
             int val1 = val % 26;
             int val2 = val / 26;
-            return toLatin( val2 ) + toLatin( val1 );
+            return toLatin(val2) + toLatin(val1);
         }
-        return ( (char)( val + 64 ) ) + "";
+        return ((char) (val + 64)) + "";
     }
 
     /**
      * Description of the Method
      *
-     * @param val  PARAM
-     * @return     Returns
+     * @param val PARAM
+     * @return Returns
      */
-    protected static String toRoman( int val ) {
+    protected static String toRoman(int val) {
         int[] ints = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
         String[] nums = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "Xx", "IX", "V", "IV", "I"};
         StringBuffer sb = new StringBuffer();
-        for ( int i = 0; i < ints.length; i++ ) {
-            int count = (int)( val / ints[i] );
-            for ( int j = 0; j < count; j++ ) {
-                sb.append( nums[i] );
+        for (int i = 0; i < ints.length; i++) {
+            int count = (int) (val / ints[i]);
+            for (int j = 0; j < count; j++) {
+                sb.append(nums[i]);
             }
             val -= ints[i] * count;
         }
@@ -174,41 +171,41 @@ public class ListItemPainter {
     /**
      * Description of the Method
      *
-     * @param c          PARAM
-     * @param box        PARAM
-     * @param listStyle  PARAM
+     * @param c         PARAM
+     * @param box       PARAM
+     * @param listStyle PARAM
      */
-    private static void drawText( Context c, Box box, IdentValue listStyle ) {
+    private static void drawText(Context c, Box box, IdentValue listStyle) {
         String text = "";
-        if ( listStyle == IdentValue.DECIMAL ) {
+        if (listStyle == IdentValue.DECIMAL) {
             text = box.list_count + ".";
         }
-        if ( listStyle == IdentValue.LOWER_LATIN ) {
-            text = toLatin( box.list_count ).toLowerCase() + ".";
+        if (listStyle == IdentValue.LOWER_LATIN) {
+            text = toLatin(box.list_count).toLowerCase() + ".";
         }
 
-        if ( listStyle == IdentValue.UPPER_LATIN ) {
-            text = toLatin( box.list_count ).toUpperCase() + ".";
+        if (listStyle == IdentValue.UPPER_LATIN) {
+            text = toLatin(box.list_count).toUpperCase() + ".";
         }
 
-        if ( listStyle == IdentValue.LOWER_ROMAN ) {
-            text = toRoman( box.list_count ).toLowerCase() + ".";
+        if (listStyle == IdentValue.LOWER_ROMAN) {
+            text = toRoman(box.list_count).toLowerCase() + ".";
         }
 
-        if ( listStyle == IdentValue.UPPER_ROMAN ) {
-            text = toRoman( box.list_count ).toUpperCase() + ".";
+        if (listStyle == IdentValue.UPPER_ROMAN) {
+            text = toRoman(box.list_count).toUpperCase() + ".";
         }
 
         CalculatedStyle style = c.getCurrentStyle();
-        Font font = FontUtil.getFont( c );
-        LineMetrics lm = font.getLineMetrics( text, ( (Graphics2D)c.getGraphics() ).getFontRenderContext() );
-        int w = FontUtil.len( c, text, font );
-        int h = FontUtil.lineHeight( c );
+        Font font = style.getFont(c.getCtx());
+        LineMetrics lm = font.getLineMetrics(text, ((Graphics2D) c.getGraphics()).getFontRenderContext());
+        int w = FontUtil.len(c, text, font);
+        int h = FontUtil.lineHeight(c);
         int x = box.x - w - 2;
         int y = box.y + h;
-        y -= (int)lm.getDescent();
-        c.getGraphics().setFont( font );
-        c.getGraphics().drawString( text, x, y );
+        y -= (int) lm.getDescent();
+        c.getGraphics().setFont(font);
+        c.getGraphics().drawString(text, x, y);
     }
 }
 
@@ -216,6 +213,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/05/30 01:04:00  tobega
+ * Fixed a regression on list-item numbering (basically getting rid of unnecessary style-pushes and style-pops)
+ *
  * Revision 1.16  2005/01/29 20:21:04  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

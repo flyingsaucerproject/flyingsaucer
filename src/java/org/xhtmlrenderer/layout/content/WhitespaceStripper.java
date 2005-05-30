@@ -159,8 +159,28 @@ public class WhitespaceStripper {
     }
 
     private static void stripTextContent(LinkedList stripped) {
-        for (Iterator i = stripped.iterator(); i.hasNext();)
-            if (i.next() instanceof TextContent) i.remove();
+        LinkedList pendingStylePushes = new LinkedList();
+        LinkedList result = new LinkedList();
+        for (Iterator i = stripped.iterator(); i.hasNext();) {
+            Object o = i.next();
+            if (o instanceof TextContent)
+                continue;
+            else if (o instanceof StylePush) {
+                pendingStylePushes.addLast(o);
+            } else if (o instanceof StylePop) {
+                if (pendingStylePushes.size() > 0)
+                    pendingStylePushes.removeLast();
+                else
+                    result.addLast(o);
+            } else {//can this really happen?
+                result.addAll(pendingStylePushes);
+                pendingStylePushes.clear();
+                result.addLast(o);
+            }
+        }
+        stripped.clear();
+        stripped.addAll(result);
+        stripped.addAll(pendingStylePushes);
     }
 
     /**
