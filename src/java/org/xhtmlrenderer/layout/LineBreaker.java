@@ -19,16 +19,11 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.Border;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
-
-import javax.swing.*;
-import java.awt.*;
 
 
 /**
@@ -42,18 +37,18 @@ public class LineBreaker {
     /**
      * Description of the Method
      *
-     * @param c            PARAM
-     * @param content      PARAM
-     * @param avail        PARAM
-     * @param prev_align   PARAM
-     * @param curr_line    PARAM
+     * @param c               PARAM
+     * @param content         PARAM
+     * @param avail           PARAM
+     * @param prev_align      PARAM
+     * @param curr_line       PARAM
      * @param parent_width
+     * @param pendingBlockBox
      * @return Returns
      */
-    public static InlineBox generateReplacedInlineBox(Context c, Content content, int avail, InlineBox prev_align, LineBox curr_line, int parent_width) {
+    public static InlineBox generateReplacedInlineBox(Context c, Content content, int avail, InlineBox prev_align, LineBox curr_line, int parent_width, InlineBlockBox pendingBlockBox) {
         InlineBlockBox box = new InlineBlockBox();
         box.element = content.getElement();
-        CalculatedStyle style = c.getCurrentStyle();
         // use the prev_align to calculate the x
         if (prev_align != null && !prev_align.break_after) {
             box.x = prev_align.x + prev_align.width;
@@ -62,39 +57,20 @@ public class LineBreaker {
         }
 
         box.y = 0;// it's relative to the line
-        // do vertical alignment
-        //now done later VerticalAlign.setupVerticalAlign(c, style, box);
+        //can't do VerticalAlign here, it depends on the layout of the element tree
         c.translate(box.x + curr_line.x, box.y + curr_line.y);
-        Border border = style.getBorderWidth(c.getCtx());
-        //note: percentages here refer to width of containing block
-        Border margin = style.getMarginWidth(parent_width, parent_width, c.getCtx());
-        Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
-        int tx = margin.left + border.left + padding.left;
-        int ty = margin.top + border.top + padding.top;
-        box.tx = tx;
-        box.ty = ty;
-        c.translateInsets(box);
-        Rectangle bounds = null;
-        BlockBox block = null;
-        JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c);
-        if (cc != null) {
-            bounds = cc.getBounds();
-        } else {
+        BlockBox block;
+        if (pendingBlockBox != null)
+            block = pendingBlockBox.sub_block;
+        else
             block = (BlockBox) Boxing.layout(c, content);
-            //Uu.p("got a block box from the sub layout: " + block);
-            bounds = new Rectangle(block.x, block.y, block.width, block.height);
-            //Uu.p("bounds = " + bounds);
-        }
-        //box.replaced = true;
         box.sub_block = block;
-        if (block != null) {
-            block.setParent(box);
-        }
-        box.component = cc;
+        block.setParent(box);
 
         // set up the extents
-        box.width = margin.left + border.left + padding.left + bounds.width + padding.right + border.right + margin.right;
-        box.height = margin.top + border.top + padding.top + bounds.height + padding.bottom + border.bottom + margin.bottom;
+        box.width = block.width;
+        //box.height = margin.top + border.top + padding.top + bounds.height + padding.bottom + border.bottom + margin.bottom;
+        box.height = block.height;
         box.break_after = false;
 
         // if it won't fit on this line, then put it on the next one
@@ -103,11 +79,11 @@ public class LineBreaker {
             box.break_before = true;
             box.x = 0;
         }
-        if (cc != null && !box.break_before) {//It will be discarded if break_before is true!
+        /*if (block.component != null && !box.break_before) {//It will be discarded if break_before is true!
             Point origin = c.getOriginOffset();
-            cc.setLocation((int) origin.getX(), (int) origin.getY());
-            c.getCanvas().add(cc);
-        }
+            block.component.setLocation((int) origin.getX(), (int) origin.getY());
+            //c.getCanvas().add(block.component);
+        }*/
         c.untranslateInsets(box);
         c.translate(-box.x - curr_line.x, -box.y - curr_line.y);
         return box;
@@ -119,6 +95,10 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.58  2005/05/31 01:40:06  tobega
+ * Replaced elements can now be display: block;
+ * display: inline-block; should be working even for non-replaced elements.
+ *
  * Revision 1.57  2005/05/13 15:23:54  tobega
  * Done refactoring box borders, margin and padding. Hover is working again.
  *

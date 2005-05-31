@@ -27,10 +27,7 @@ import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.*;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.render.InlineTextBox;
-import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -190,6 +187,7 @@ public class InlineBoxing {
             // loop until no more text in this node
             InlineBox new_inline = null;
             int start = 0;
+            InlineBlockBox pendingBlockBox = null;
             do {
                 new_inline = null;
                 if (currentContent instanceof AbsolutelyPositionedContent) {
@@ -220,8 +218,8 @@ public class InlineBoxing {
                 if (start == 0) fit += pendingLeftPadding;
                 new_inline = calculateInline(c, currentContent, remaining_width - fit, bounds.width,
                         prev_align_inline, isFirstLetter, box.firstLetterStyle,
-                        curr_line, start);
-                // Uu.p("got back inline: " + new_inline);
+                        curr_line, start, pendingBlockBox);
+                pendingBlockBox = null;
 
                 // if this inline needs to be on a new line
                 if (prev_align_inline != null && new_inline.break_before) {
@@ -243,8 +241,8 @@ public class InlineBoxing {
                     remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
                     
                     //have to discard it and recalculate, particularly if this was the first line
-                    //HACK: is my thinking straight? - tobe
                     prev_align_inline.break_after = true;
+                    if (new_inline instanceof InlineBlockBox) pendingBlockBox = (InlineBlockBox) new_inline;
                     new_inline = null;
                     continue;
                 }
@@ -459,11 +457,12 @@ public class InlineBoxing {
      * @param firstLetterStyle
      * @param curr_line        PARAM
      * @param start            PARAM
+     * @param pendingBlockBox
      * @return Returns
      */
     private static InlineBox calculateInline(Context c, Content content, int avail, int max_width,
                                              InlineBox prev_align, boolean isFirstLetter, CascadedStyle firstLetterStyle,
-                                             LineBox curr_line, int start) {
+                                             LineBox curr_line, int start, InlineBlockBox pendingBlockBox) {
 
         CalculatedStyle style = c.getCurrentStyle();
         // get the current font. required for sizing
@@ -473,7 +472,7 @@ public class InlineBoxing {
         // handle each case
         if (content instanceof InlineBlockContent) {
             //Uu.p("is replaced");
-            result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align, curr_line, max_width);
+            result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align, curr_line, max_width, pendingBlockBox);
         } else if (content instanceof FloatedBlockContent) {
             //Uu.p("calcinline: is floated block");
             result = FloatUtil.generateFloatedBlockInlineBox(c, content, avail, curr_line);
@@ -575,6 +574,10 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/05/31 01:40:06  tobega
+ * Replaced elements can now be display: block;
+ * display: inline-block; should be working even for non-replaced elements.
+ *
  * Revision 1.25  2005/05/17 06:56:24  tobega
  * Inline backgrounds now work correctly, as does mixing of inlines and blocks for style inheritance
  *

@@ -37,6 +37,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.table.TableBoxing;
 import org.xhtmlrenderer.util.Uu;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
@@ -110,6 +111,17 @@ public class Boxing {
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
 
+        //check if replaced
+        JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c);
+        if (cc != null) {
+            Rectangle bounds = cc.getBounds();
+            block.x = bounds.x;
+            block.y = bounds.y;
+            block.width = bounds.width;
+            block.height = bounds.height;
+            block.component = cc;
+        }
+
         // calculate the width and height as much as possible
         adjustWidth(c, block);
         adjustHeight(c, block);
@@ -142,7 +154,13 @@ public class Boxing {
         block.ty = ty;
         c.translate(tx, ty);
         c.shrinkExtents(tx + margin.right + border.right + padding.right, ty + margin.bottom + border.bottom + padding.bottom);
-        layoutChildren(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
+        if (block.component == null)
+            layoutChildren(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
+        else {
+            Point origin = c.getOriginOffset();
+            block.component.setLocation((int) origin.getX(), (int) origin.getY());
+            c.getCanvas().add(block.component);
+        }
         c.unshrinkExtents();
         c.translate(-tx, -ty);
         c.setSubBlock(old_sub);
@@ -275,6 +293,10 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/05/31 01:40:05  tobega
+ * Replaced elements can now be display: block;
+ * display: inline-block; should be working even for non-replaced elements.
+ *
  * Revision 1.16  2005/05/13 15:23:54  tobega
  * Done refactoring box borders, margin and padding. Hover is working again.
  *

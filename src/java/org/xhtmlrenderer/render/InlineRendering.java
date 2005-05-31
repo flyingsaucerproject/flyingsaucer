@@ -388,7 +388,9 @@ public class InlineRendering {
                     (line.getBaseline() -
                     VerticalAlign.getBaselineOffset(c, line, ib) -
                     ib.height));
-            BoxRendering.paint(c, ib, true, restyle);
+            c.translate(ib.x, ib.y);
+            BoxRendering.paint(c, ((InlineBlockBox) ib).sub_block, false, restyle);
+            c.translate(-ib.x, -ib.y);
             c.translate(-line.x,
                     -(line.y +
                     (line.getBaseline() -
