@@ -34,7 +34,6 @@ import org.xhtmlrenderer.table.TableBox;
 import org.xhtmlrenderer.table.TableRendering;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
-import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
@@ -267,7 +266,7 @@ public class BoxRendering {
         int backImageHeight = 0;
         if (back_image != null && !"none".equals(back_image)) {
             try {
-                block.background_image = ImageUtil.loadImage(c, back_image);
+                block.background_image = c.getCtx().getUac().getImage(back_image);
                 block.background_uri = back_image;
                 backImageWidth = block.background_image.getWidth(null);
                 backImageHeight = block.background_image.getHeight(null);
@@ -279,9 +278,10 @@ public class BoxRendering {
 
         // handle image positioning issues
         // need to update this to support vert and horz, not just vert
-        if (style.hasProperty(CSSName.BACKGROUND_POSITION)) {
-            float width = c.getBlockFormattingContext().getWidth();
-            float height = c.getBlockFormattingContext().getHeight();
+        BlockFormattingContext bfc = c.getBlockFormattingContext();
+        if (bfc != null) {//this is not the root block
+            float width = bfc.getWidth();
+            float height = bfc.getHeight();
 
             Point pt = style.getBackgroundPosition(width - backImageWidth, height - backImageHeight, c.getCtx());
             block.background_position_horizontal = (int) pt.getX();
@@ -337,6 +337,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/06/01 21:36:40  tobega
+ * Got image scaling working, and did some refactoring along the way
+ *
  * Revision 1.26  2005/05/29 19:37:58  tobega
  * Fixed up using different style borders.
  * Fixed patterned borders to work right.

@@ -149,7 +149,7 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
         return refs;
     }
 
-    public JComponent getCustomComponent(Element e, Context c) {
+    public JComponent getCustomComponent(Element e, Context c, int setWidth, int setHeight) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
     

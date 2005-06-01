@@ -19,36 +19,42 @@
  */
 package org.xhtmlrenderer.resource;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.net.URL;
 import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xml.sax.InputSource;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.URL;
+
 /**
- *
  * @author Patrick Wright
  */
 public abstract class AbstractResource implements Resource {
     private InputSource inputSource;
     private long createTimeStamp;
     private long elapsedLoadTime;
-    
+
     private AbstractResource() {
         this.createTimeStamp = System.currentTimeMillis();
     }
- 
-    /** Creates a new instance of AbstractResource */
+
+    /**
+     * Creates a new instance of AbstractResource
+     */
     public AbstractResource(InputSource source) {
         this();
         this.inputSource = source;
     }
 
+    /**
+     * @param url
+     * @deprecated We should make sure that all loading of URLs is done from UserAgentCallback
+     */
     public AbstractResource(URL url) {
         this();
         try {
             this.inputSource = new InputSource(new BufferedInputStream(url.openStream()));
-        } catch ( Exception ex ) {
+        } catch (Exception ex) {
             throw new XRRuntimeException("Can't open URL during load of XML resource.", ex);
         }
     }
@@ -69,7 +75,8 @@ public abstract class AbstractResource implements Resource {
         return elapsedLoadTime;
     }
 
-    /*package*/ void setElapsedLoadTime(long elapsedLoadTime) {
+    /*package*/
+    void setElapsedLoadTime(long elapsedLoadTime) {
         this.elapsedLoadTime = elapsedLoadTime;
     }
 }
@@ -78,6 +85,9 @@ public abstract class AbstractResource implements Resource {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/06/01 21:36:40  tobega
+ * Got image scaling working, and did some refactoring along the way
+ *
  * Revision 1.2  2005/02/05 11:33:33  pdoubleya
  * Added load() to XMLResource, and accept overloaded input: InputSource, stream, URL.
  *

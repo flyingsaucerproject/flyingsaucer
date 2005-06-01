@@ -20,18 +20,16 @@
 package org.xhtmlrenderer.demo.aboutbox;
 
 import org.w3c.dom.Document;
+import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URL;
-import javax.xml.parsers.DocumentBuilder;
-import org.xhtmlrenderer.resource.XMLResource;
 
 
 /**
@@ -131,12 +129,12 @@ public class AboutBox extends JDialog implements Runnable {
             ref = new File(url_text).toURL();
         } else {
             doc = XMLResource.load(new URL(url_text)).getDocument();
-            
+
             ref = new File(url_text).toURL();
         }
         Uu.p("ref = " + ref);
         Uu.p("url_text = " + url_text);
-        panel.setDocument(doc, ref);
+        panel.setDocument(doc, ref.toString());
     }
 
     /**
@@ -201,6 +199,9 @@ public class AboutBox extends JDialog implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/06/01 21:36:33  tobega
+ * Got image scaling working, and did some refactoring along the way
+ *
  * Revision 1.6  2005/02/05 17:21:02  pdoubleya
  * Use XMLResource for loading XML.
  *

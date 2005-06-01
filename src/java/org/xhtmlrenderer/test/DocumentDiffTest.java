@@ -23,11 +23,10 @@ import org.w3c.dom.Document;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.simple.Graphics2DRenderer;
 import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.Xx;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.Xx;
 
-import java.awt.Dimension;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -63,13 +62,13 @@ public class DocumentDiffTest {
                 String difffile = testfile.substring(0, testfile.length() - 6) + ".diff";
                 XRLog.log("unittests", Level.WARNING, "test file = " + testfile);
                 //Uu.p( "diff file = " + difffile );
-				try {
-					boolean is_correct = compareTestFile(testfile, difffile, width, height);
-					XRLog.log("unittests", Level.WARNING, "is correct = " + is_correct);
-				} catch (Throwable thr) {
-					XRLog.log("unittests",Level.WARNING,thr.toString());
-					thr.printStackTrace();
-				}
+                try {
+                    boolean is_correct = compareTestFile(testfile, difffile, width, height);
+                    XRLog.log("unittests", Level.WARNING, "is correct = " + is_correct);
+                } catch (Throwable thr) {
+                    XRLog.log("unittests", Level.WARNING, thr.toString());
+                    thr.printStackTrace();
+                }
             }
         }
 
@@ -132,7 +131,7 @@ public class DocumentDiffTest {
             throws Exception {
         Document doc = Xx.loadDocument(xhtml);
         Graphics2DRenderer renderer = new Graphics2DRenderer();
-        renderer.setDocument(doc, new File(xhtml).toURL());
+        renderer.setDocument(doc, new File(xhtml).toURL().toString());
 
         BufferedImage buff = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D g = (Graphics2D) buff.getGraphics();
@@ -140,7 +139,7 @@ public class DocumentDiffTest {
         Dimension dim = new Dimension(width, height);
         renderer.layout(g, dim);
         renderer.render(g);
-        
+
         StringBuffer sb = new StringBuffer();
         getDiff(sb, renderer.getRenderingContext().getRootBox(), "");
         return sb.toString();
@@ -204,22 +203,22 @@ public class DocumentDiffTest {
      */
     public static void main(String[] args)
             throws Exception {
-				
-		XRLog.setLevel("plumbing.general",Level.OFF);
+
+        XRLog.setLevel("plumbing.general", Level.OFF);
         //String testfile = "tests/diff/background/01.xhtml";
         //String difffile = "tests/diff/background/01.diff";
         String file = null;
-        if ( args.length == 0 ) {
-          file = "tests/diff"; 
+        if (args.length == 0) {
+            file = "tests/diff";
         } else {
-          file = args[0]; 
+            file = args[0];
         }
         DocumentDiffTest ddt = new DocumentDiffTest();
-		if(new File(file).isDirectory()) {
-			ddt.runTests(new File(file), width, height);
-		} else {
-			System.out.println(ddt.xhtmlToDiff(file, 1280, 768));
-		}
+        if (new File(file).isDirectory()) {
+            ddt.runTests(new File(file), width, height);
+        } else {
+            System.out.println(ddt.xhtmlToDiff(file, 1280, 768));
+        }
     }
 
 }
@@ -228,6 +227,9 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/06/01 21:36:45  tobega
+ * Got image scaling working, and did some refactoring along the way
+ *
  * Revision 1.14  2005/04/22 17:09:47  joshy
  * minor changes to the document diff.
  * removed system.exit

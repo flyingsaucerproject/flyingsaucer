@@ -208,18 +208,13 @@ public class StyleReference {
         StylesheetInfo[] refs = _nsh.getStylesheetLinks(_doc);
         if (refs != null) {
             for (int i = 0; i < refs.length; i++) {
-                java.net.URL baseUrl = _context.getRenderingContext().getBaseURL();
-                try {
-                    uri = new java.net.URL(baseUrl, refs[i].getUri()).toString();
-                    refs[i].setUri(uri);
-                } catch (java.net.MalformedURLException e) {
-                    XRLog.exception("bad URL for associated stylesheet", e);
-                }
+                uri = _uac.resolveURI(refs[i].getUri());
+                refs[i].setUri(uri);
             }
         }
         infos.addAll(Arrays.asList(refs));
 
-        uri = _context.getRenderingContext().getBaseURL().toString();
+        uri = _uac.getBaseURL();
         info = new StylesheetInfo();
         info.setUri(uri);
         info.setOrigin(StylesheetInfo.AUTHOR);
@@ -247,6 +242,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/06/01 21:36:37  tobega
+ * Got image scaling working, and did some refactoring along the way
+ *
  * Revision 1.29  2005/05/17 06:56:23  tobega
  * Inline backgrounds now work correctly, as does mixing of inlines and blocks for style inheritance
  *

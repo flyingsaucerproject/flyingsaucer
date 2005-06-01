@@ -59,6 +59,10 @@ public class XMLResource extends AbstractResource {
         super(stream);
     }
 
+    /**
+     * @param url
+     * @deprecated We should make sure that all loading of URLs is done from UserAgentCallback
+     */
     private XMLResource(URL url) {
         super(url);
     }
@@ -71,6 +75,10 @@ public class XMLResource extends AbstractResource {
         return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(stream));
     }
 
+    /**
+     * @param url
+     * @deprecated We should make sure that all loading of URLs is done from UserAgentCallback
+     */
     public static XMLResource load(URL url) {
         return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(url));
     }
@@ -283,6 +291,9 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/06/01 21:36:41  tobega
+ * Got image scaling working, and did some refactoring along the way
+ *
  * Revision 1.9  2005/04/20 19:13:18  tobega
  * Fixed vertical align. Middle works and all look pretty much like in firefox
  *

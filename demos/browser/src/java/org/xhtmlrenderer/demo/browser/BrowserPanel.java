@@ -22,23 +22,20 @@ package org.xhtmlrenderer.demo.browser;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.RenderingContext;
+import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
+import org.xml.sax.InputSource;
 
 import javax.swing.*;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.xhtmlrenderer.resource.XMLResource;
-import org.xhtmlrenderer.simple.FSScrollPane;
-import org.xhtmlrenderer.util.XRLog;
-import org.xml.sax.InputSource;
 
 
 /**
@@ -47,7 +44,7 @@ import org.xml.sax.InputSource;
  * @author empty
  */
 public class BrowserPanel extends JPanel implements DocumentListener {
-    
+
     /**
      * Description of the Field
      */
@@ -100,7 +97,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Field
      */
     BrowserPanelListener listener;
-    
+
     /**
      * Description of the Field
      */
@@ -109,7 +106,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Field
      */
     public static Logger logger = Logger.getLogger("app.browser");
-    
+
     /**
      * Constructor for the BrowserPanel object
      *
@@ -117,12 +114,12 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * @param listener PARAM
      */
     public BrowserPanel(BrowserStartup root, BrowserPanelListener listener) {
-      super();  
-      this.root = root;
-      this.listener = listener;
+        super();
+        this.root = root;
+        this.listener = listener;
     }
-    
-    
+
+
     /**
      * Description of the Method
      */
@@ -134,7 +131,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         url = new JTextField();
         view = new XHTMLPanel();
         scroll = new FSScrollPane(view);
-        
+
         RenderingContext rc = view.getRenderingContext();
         try {
             rc.setFontMapping("Fuzz", Font.createFont(Font.TRUETYPE_FONT,
@@ -145,12 +142,12 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         view.setErrorHandler(root.error_handler);
         status = new BrowserStatus();
         status.init();
-        
+
         int text_width = 200;
         view.setPreferredSize(new Dimension(text_width, text_width));
 
     }
-    
+
     /**
      * Description of the Method
      */
@@ -158,13 +155,13 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         GridBagLayout gbl = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
         setLayout(gbl);
-        
+
         c.gridx = 0;
         c.gridy = 0;
         c.weightx = c.weighty = 0.0;
         gbl.setConstraints(backward, c);
         add(backward);
-        
+
         c.gridx++;
         gbl.setConstraints(forward, c);
         add(forward);
@@ -176,13 +173,13 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         c.gridx++;
         gbl.setConstraints(reload, c);
         add(reload);
-        
+
         c.gridx++;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 10.0;
         gbl.setConstraints(url, c);
         add(url);
-        
+
         c.gridx = 0;
         c.gridy++;
         c.fill = GridBagConstraints.BOTH;
@@ -190,16 +187,16 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         c.weightx = c.weighty = 10.0;
         gbl.setConstraints(scroll, c);
         add(scroll);
-        
+
         c.gridx = 0;
         c.gridy++;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weighty = 0.1;
         gbl.setConstraints(status, c);
         add(status);
-        
+
     }
-    
+
     /**
      * Description of the Method
      */
@@ -210,42 +207,42 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         url.setAction(root.actions.load);
         updateButtons();
     }
-    
-    
+
+
     /**
      * Description of the Method
      */
     public void goForward() {
         root.history.goNext();
-        view.setDocument(root.history.getCurrentDocument(), root.history.getCurrentURL());
+        view.setDocument(root.history.getCurrentDocument(), url.toString());
         updateButtons();
     }
-    
+
     /**
      * Description of the Method
      *
      * @throws Exception Throws
      */
     public void goBack()
-    throws Exception {
+            throws Exception {
         root.history.goPrevious();
-        view.setDocument(root.history.getCurrentDocument(), root.history.getCurrentURL());
+        view.setDocument(root.history.getCurrentDocument(), url.toString());
         updateButtons();
     }
-    
+
     /**
      * Description of the Method
      *
      * @throws Exception Throws
      */
     public void reloadPage()
-    throws Exception {
+            throws Exception {
         logger.info("Reloading Page: ");
         if (current_url != null) {
             loadPage(current_url);
         }
     }
-    
+
     /**
      * Description of the Method
      *
@@ -254,28 +251,29 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * @throws Exception Throws
      */
     public void loadPage(Document doc, URL url) throws Exception {
-        view.setDocument(doc, url);
+        view.setDocument(doc, url.toString());
         view.addDocumentListener(this);
         root.history.goNewDocument(doc, url);
         updateButtons();
     }
-    
+
     /**
      * Description of the Method
      *
      * @param url_text PARAM
      * @throws Exception Throws
      */
+    //TODO: make this part of an implementation of UserAgentCallback instead
     public void loadPage(String url_text)
-    throws Exception {
+            throws Exception {
         try {
-            
+
             logger.info("Loading Page: " + url_text);
             current_url = url_text;
-            
+
             Document doc = null;
             URL ref = null;
-            
+
             if (url_text.startsWith("demo:")) {
                 DemoMarker marker = new DemoMarker();
                 String short_url = url_text.substring(5);
@@ -283,7 +281,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                     short_url = "/" + short_url;
                 }
                 doc = XMLResource.load(marker.getClass().getResourceAsStream(short_url)).getDocument();
-                
+
                 ref = marker.getClass().getResource(short_url);
                 Uu.p("doc = " + doc);
                 Uu.p("ref = " + ref);
@@ -299,32 +297,32 @@ public class BrowserPanel extends JPanel implements DocumentListener {
                     doc = XMLResource.load(file.toURL()).getDocument();
                     ref = file.toURL();
                 }
-                
+
             } else {
                 doc = XMLResource.load(new InputSource(url_text)).getDocument();
                 ref = new File(url_text).toURL();
             }
-            
+
             Uu.p("going to load a page: " + doc + " " + ref);
             loadPage(doc, ref);
-            
+
             setStatus("Successfully loaded: " + url_text);
             if (listener != null) {
                 listener.pageLoadSuccess(url_text, view.getDocumentTitle());
             }
-        } catch ( Exception ex ) {
+        } catch (Exception ex) {
             XRLog.general(Level.SEVERE, "Could not load page for display.", ex);
         }
     }
-    
-    
+
+
     /**
      * Description of the Method
      */
     public void documentLoaded() {
     }
-    
-    
+
+
     /**
      * Sets the status attribute of the BrowserPanel object
      *
@@ -333,7 +331,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     public void setStatus(String txt) {
         status.text.setText(txt);
     }
-    
+
     /**
      * Description of the Method
      */
@@ -349,14 +347,17 @@ public class BrowserPanel extends JPanel implements DocumentListener {
             root.actions.forward.setEnabled(false);
         }
     }
-    
-    
+
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/06/01 21:36:34  tobega
+ * Got image scaling working, and did some refactoring along the way
+ *
  * Revision 1.22  2005/03/28 20:02:01  pdoubleya
  * Removed commented code, cleaned menu bar.
  *

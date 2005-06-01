@@ -19,18 +19,19 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
-import java.io.Reader;
-import java.io.StringReader;
-import java.net.URL;
+import com.steadystate.css.parser.CSSOMParser;
 import org.w3c.css.sac.InputSource;
 import org.w3c.dom.css.*;
 import org.w3c.dom.stylesheets.MediaList;
-import com.steadystate.css.parser.CSSOMParser;
-import java.io.BufferedReader;
-import java.io.LineNumberReader;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
+
+import java.io.BufferedReader;
+import java.io.LineNumberReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.net.URL;
 
 
 /**
@@ -38,243 +39,253 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * parser instance for all sheets. Sheets are cached by URI using a LRU test,
  * but timestamp of file is not checked.
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 // ASK: tested for multi-thread access? (PW 12-11-04)
 // TODO: add timestamp check (PW 12-11-04)
 public class StylesheetFactory {
-    
-    /** the UserAgentCallback to resolve uris  */
+
+    /**
+     * the UserAgentCallback to resolve uris
+     */
     private UserAgentCallback _userAgent;
-    
-    /** Description of the Field  */
+
+    /**
+     * Description of the Field
+     */
     private CSSOMParser parser = new CSSOMParser();
-    
-    /** Description of the Field  */
+
+    /**
+     * Description of the Field
+     */
     private int _cacheCapacity = 16;
-    
-    /** an LRU cache  */
+
+    /**
+     * an LRU cache
+     */
     private java.util.LinkedHashMap _cache =
-            new java.util.LinkedHashMap( _cacheCapacity, 0.75f, true ) {
-        protected boolean removeEldestEntry( java.util.Map.Entry eldest ) {
-            return size() > _cacheCapacity;
-        }
-    };
-    
+            new java.util.LinkedHashMap(_cacheCapacity, 0.75f, true) {
+                protected boolean removeEldestEntry(java.util.Map.Entry eldest) {
+                    return size() > _cacheCapacity;
+                }
+            };
+
     /**
      * Creates a new instance of StylesheetFactory
      *
-     * @param userAgent  PARAM
+     * @param userAgent PARAM
      */
-    public StylesheetFactory( UserAgentCallback userAgent ) {
+    public StylesheetFactory(UserAgentCallback userAgent) {
         _userAgent = userAgent;
     }
-    
+
     /**
      * Description of the Method
      *
-     * @param reader  PARAM
+     * @param reader PARAM
      * @param info
-     * @return        Returns
+     * @return Returns
      */
-    public Stylesheet parse( java.io.Reader reader, StylesheetInfo info ) {
-        InputSource is = new InputSource( reader );
+    public Stylesheet parse(java.io.Reader reader, StylesheetInfo info) {
+        InputSource is = new InputSource(reader);
         CSSStyleSheet style = null;
         try {
-            style = parser.parseStyleSheet( is );
-        } catch ( java.io.IOException e ) {
-            throw new XRRuntimeException( "IOException on parsing style seet from a Reader; don't know the URI.", e );
+            style = parser.parseStyleSheet(is);
+        } catch (java.io.IOException e) {
+            throw new XRRuntimeException("IOException on parsing style seet from a Reader; don't know the URI.", e);
         }
-        
-        Stylesheet sheet = new Stylesheet( info.getUri(), info.getOrigin() );
+
+        Stylesheet sheet = new Stylesheet(info.getUri(), info.getOrigin());
         CSSRuleList rl = style.getCssRules();
-        pullRulesets( rl, sheet, info );
-        
+        pullRulesets(rl, sheet, info);
+
         return sheet;
     }
-    
+
     /**
      * Description of the Method
      *
      * @param info
-     * @return      Returns null if uri could not be loaded
+     * @return Returns null if uri could not be loaded
      */
-    public Stylesheet parse( StylesheetInfo info ) {
-        Reader r = _userAgent.getStylesheet( info.getUri() );
-        
+    public Stylesheet parse(StylesheetInfo info) {
+        Reader r = _userAgent.getReader(info.getUri());
+
         Stylesheet sheet = null;
-        
+
         try {
-            if ( r != null ) {
-                sheet = parse( r, info );
+            if (r != null) {
+                sheet = parse(r, info);
             }
-        } catch ( Exception e ) {
+        } catch (Exception e) {
             debugBadStyleSheet(info);
-            if ( e instanceof XRRuntimeException ) {
-                throw (XRRuntimeException)e;
+            if (e instanceof XRRuntimeException) {
+                throw (XRRuntimeException) e;
             } else {
                 throw new XRRuntimeException("Failed on parsing CSS sheet at " + info.getUri(), e);
             }
-            
+
         }
         return sheet;
     }
-    
-    private void debugBadStyleSheet(StylesheetInfo info ){
-        Reader r = _userAgent.getStylesheet(info.getUri());
-        if ( r!= null ) {
+
+    private void debugBadStyleSheet(StylesheetInfo info) {
+        Reader r = _userAgent.getReader(info.getUri());
+        if (r != null) {
             try {
                 LineNumberReader lnr = new LineNumberReader(new BufferedReader(r));
                 StringBuffer sb = new StringBuffer();
                 String line = null;
-                while ( (line = lnr.readLine()) != null ) {
+                while ((line = lnr.readLine()) != null) {
                     sb.append(line + "\n");
                 }
                 XRLog.cssParse(sb.toString());
-            } catch ( Exception ex ) {
+            } catch (Exception ex) {
                 XRLog.cssParse("Failed to read CSS sheet at " + info.getUri() + " for debugging.");
             }
-            
+
         }
     }
-    
+
     /**
      * Description of the Method
      *
-     * @param isis  PARAM
-     * @param main  PARAM
-     * @return      Returns
+     * @param isis PARAM
+     * @param main PARAM
+     * @return Returns
      */
-    public Stylesheet parseInlines( InlineStyleInfo[] isis, StylesheetInfo main ) {
-        Stylesheet sheet = new Stylesheet( main.getUri(), main.getOrigin() );
-        if ( isis != null ) {
-            for ( int i = 0; i < isis.length; i++ ) {
-                Reader reader = new StringReader( isis[i].getStyle() );
+    public Stylesheet parseInlines(InlineStyleInfo[] isis, StylesheetInfo main) {
+        Stylesheet sheet = new Stylesheet(main.getUri(), main.getOrigin());
+        if (isis != null) {
+            for (int i = 0; i < isis.length; i++) {
+                Reader reader = new StringReader(isis[i].getStyle());
                 StylesheetInfo info = isis[i].getInfo();
-                info.setUri( main.getUri() );
-                Stylesheet is = parse( reader, info );
-                info.setStylesheet( is );
-                sheet.addStylesheet( info );
+                info.setUri(main.getUri());
+                Stylesheet is = parse(reader, info);
+                info.setStylesheet(is);
+                sheet.addStylesheet(info);
             }
         }
         return sheet;
     }
-    
+
     /**
      * Description of the Method
      *
-     * @param origin            PARAM
-     * @param styleDeclaration  PARAM
-     * @return                  Returns
+     * @param origin           PARAM
+     * @param styleDeclaration PARAM
+     * @return Returns
      */
-    public Ruleset parseStyleDeclaration( int origin, String styleDeclaration ) {
+    public Ruleset parseStyleDeclaration(int origin, String styleDeclaration) {
         try {
-            java.io.StringReader reader = new java.io.StringReader( "* {" + styleDeclaration + "}" );
-            InputSource is = new InputSource( reader );
-            CSSStyleSheet style = parser.parseStyleSheet( is );
+            java.io.StringReader reader = new java.io.StringReader("* {" + styleDeclaration + "}");
+            InputSource is = new InputSource(reader);
+            CSSStyleSheet style = parser.parseStyleSheet(is);
             reader.close();
-            return new Ruleset( (CSSStyleRule)style.getCssRules().item( 0 ), StylesheetInfo.AUTHOR );
-        } catch ( Exception ex ) {
-            throw new XRRuntimeException( "Cannot parse style declaration from string.", ex );
+            return new Ruleset((CSSStyleRule) style.getCssRules().item(0), StylesheetInfo.AUTHOR);
+        } catch (Exception ex) {
+            throw new XRRuntimeException("Cannot parse style declaration from string.", ex);
         }
     }
-    
+
     /**
      * Adds a stylesheet to the factory cache. Will overwrite older entry for
      * same key.
      *
-     * @param key    Key to use to reference sheet later; must be unique in
-     *      factory.
-     * @param sheet  The sheet to cache.
+     * @param key   Key to use to reference sheet later; must be unique in
+     *              factory.
+     * @param sheet The sheet to cache.
      */
-    public void putStylesheet( Object key, Stylesheet sheet ) {
-        _cache.put( key, sheet );
+    public void putStylesheet(Object key, Stylesheet sheet) {
+        _cache.put(key, sheet);
     }
-    
+
     /**
      * @param key
-     * @return     true if a Stylesheet with this key has been put in the cache.
-     *      Note that the Stylesheet may be null.
+     * @return true if a Stylesheet with this key has been put in the cache.
+     *         Note that the Stylesheet may be null.
      */
-    public boolean containsStylesheet( Object key ) {
-        return _cache.containsKey( key );
+    //TODO: work out how to handle caching properly, with cache invalidation
+    public boolean containsStylesheet(Object key) {
+        return _cache.containsKey(key);
     }
-    
+
     /**
      * Returns a cached sheet by its key; null if no entry for that key.
      *
-     * @param key  The key for this sheet; same as key passed to
-     *      putStylesheet();
-     * @return     The stylesheet
+     * @param key The key for this sheet; same as key passed to
+     *            putStylesheet();
+     * @return The stylesheet
      */
-    public Stylesheet getCachedStylesheet( Object key ) {
-        return (Stylesheet)_cache.get( key );
+    public Stylesheet getCachedStylesheet(Object key) {
+        return (Stylesheet) _cache.get(key);
     }
-    
+
     /**
      * Returns a cached sheet by its key; loads and caches it if not in cache;
      * null if not able to load
      *
-     * @param info  The StylesheetInfo for this sheet
-     * @return      The stylesheet
+     * @param info The StylesheetInfo for this sheet
+     * @return The stylesheet
      */
-    public Stylesheet getStylesheet( StylesheetInfo info ) {
+    //TODO: this looks a bit odd
+    public Stylesheet getStylesheet(StylesheetInfo info) {
         XRLog.load("Requesting stylesheet: " + info.getUri());
-        
-        Stylesheet s = getCachedStylesheet( info.getUri() );
-        if ( s == null && !containsStylesheet( info.getUri() ) ) {
-            s = parse( info );
-            putStylesheet( info.getUri(), s );
+
+        Stylesheet s = getCachedStylesheet(info.getUri());
+        if (s == null && !containsStylesheet(info.getUri())) {
+            s = parse(info);
+            putStylesheet(info.getUri(), s);
         }
         return s;
     }
-    
+
     /**
      * Given the SAC sheet input, extracts all CSSStyleRules and loads Rulesets
      * from them.
      *
-     * @param rl          The DOM-Level-2-Style CSSRuleList instance that holds
-     *      the sheet rules and etc. from which rules are taken.
-     * @param stylesheet  stylesheet to which rules are added
+     * @param rl         The DOM-Level-2-Style CSSRuleList instance that holds
+     *                   the sheet rules and etc. from which rules are taken.
+     * @param stylesheet stylesheet to which rules are added
      * @param sheetInfo
      */
-    private void pullRulesets( CSSRuleList rl, Stylesheet stylesheet, StylesheetInfo sheetInfo ) {
+    private void pullRulesets(CSSRuleList rl, Stylesheet stylesheet, StylesheetInfo sheetInfo) {
         int nr = rl.getLength();
-        for ( int i = 0; i < nr; i++ ) {
-            if ( rl.item( i ).getType() == org.w3c.dom.css.CSSRule.STYLE_RULE ) {
-                stylesheet.addRuleset( new Ruleset( (org.w3c.dom.css.CSSStyleRule)rl.item( i ), stylesheet.getOrigin() ) );
-            } else if ( rl.item( i ).getType() == org.w3c.dom.css.CSSRule.IMPORT_RULE ) {
+        for (int i = 0; i < nr; i++) {
+            if (rl.item(i).getType() == org.w3c.dom.css.CSSRule.STYLE_RULE) {
+                stylesheet.addRuleset(new Ruleset((org.w3c.dom.css.CSSStyleRule) rl.item(i), stylesheet.getOrigin()));
+            } else if (rl.item(i).getType() == org.w3c.dom.css.CSSRule.IMPORT_RULE) {
                 //note: the steadystate parser does not fetch and load imported stylesheets
-                CSSImportRule cssir = (CSSImportRule)rl.item( i );
+                CSSImportRule cssir = (CSSImportRule) rl.item(i);
                 String href = cssir.getHref();
                 MediaList mediaList = cssir.getMedia();
                 String media = mediaList.getMediaText();
-                if ( media.equals( "" ) ) {
+                if (media.equals("")) {
                     media = sheetInfo.getMedia();
                 }
                 String uri = null;
                 try {
-                    uri = new java.net.URL( new URL( stylesheet.getURI() ), href ).toString();
+                    uri = new java.net.URL(new URL(stylesheet.getURI()), href).toString();
                     StylesheetInfo info = new StylesheetInfo();
-                    info.setOrigin( stylesheet.getOrigin() );
-                    info.setUri( uri );
-                    info.setMedia( media );
-                    info.setType( "text/css" );
-                    stylesheet.addStylesheet( info );
-                } catch ( java.net.MalformedURLException e ) {
-                    XRLog.exception( "bad URL for imported stylesheet", e );
+                    info.setOrigin(stylesheet.getOrigin());
+                    info.setUri(uri);
+                    info.setMedia(media);
+                    info.setType("text/css");
+                    stylesheet.addStylesheet(info);
+                } catch (java.net.MalformedURLException e) {
+                    XRLog.exception("bad URL for imported stylesheet", e);
                 }
-            } else if ( rl.item( i ).getType() == org.w3c.dom.css.CSSRule.MEDIA_RULE ) {
+            } else if (rl.item(i).getType() == org.w3c.dom.css.CSSRule.MEDIA_RULE) {
                 //create a "dummy" stylesheet
-                CSSMediaRule cssmr = (CSSMediaRule)rl.item( i );
+                CSSMediaRule cssmr = (CSSMediaRule) rl.item(i);
                 StylesheetInfo info = new StylesheetInfo();
-                info.setMedia( cssmr.getMedia().getMediaText() );
-                info.setOrigin( stylesheet.getOrigin() );
-                info.setType( "text/css" );
-                Stylesheet mr = new Stylesheet( info.getUri(), info.getOrigin() );
-                info.setStylesheet( mr );//there, the "dummy" connection is made
-                pullRulesets( cssmr.getCssRules(), mr, info );
-                stylesheet.addStylesheet( info );
+                info.setMedia(cssmr.getMedia().getMediaText());
+                info.setOrigin(stylesheet.getOrigin());
+                info.setType("text/css");
+                Stylesheet mr = new Stylesheet(info.getUri(), info.getOrigin());
+                info.setStylesheet(mr);//there, the "dummy" connection is made
+                pullRulesets(cssmr.getCssRules(), mr, info);
+                stylesheet.addStylesheet(info);
             }
         }
     }
@@ -284,6 +295,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/06/01 21:36:36  tobega
+ * Got image scaling working, and did some refactoring along the way
+ *
  * Revision 1.15  2005/03/24 23:17:58  pdoubleya
  * Added debug dump on bad CSS input.
  *

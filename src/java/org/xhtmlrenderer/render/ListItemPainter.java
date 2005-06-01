@@ -24,7 +24,6 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
-import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
@@ -62,7 +61,7 @@ public class ListItemPainter {
         if (!image.equals("none")) {
             try {
                 //Uu.p("loading: " + image);
-                img = ImageUtil.loadImage(c, image);
+                img = c.getCtx().getUac().getImage(image);
             } catch (Exception ex) {
                 Uu.p(ex);
             }
@@ -213,6 +212,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/06/01 21:36:40  tobega
+ * Got image scaling working, and did some refactoring along the way
+ *
  * Revision 1.17  2005/05/30 01:04:00  tobega
  * Fixed a regression on list-item numbering (basically getting rid of unnecessary style-pushes and style-pops)
  *

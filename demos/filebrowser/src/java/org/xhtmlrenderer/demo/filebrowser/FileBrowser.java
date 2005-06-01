@@ -8,9 +8,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileSystemView;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,7 +83,7 @@ public class FileBrowser extends JPanel {
             main = main.replaceAll("\\$extension", ext);
             main = main.replaceAll("\\$date", df.format(new Date(file.lastModified())));
             main = main.replaceAll("\\$size", "" + file.length() + " bytes");
-            xhtml.setDocument(new StringBufferInputStream(main), new File(".").toURL());
+            xhtml.setDocument(new StringBufferInputStream(main), new File(".").toURL().toString());
         } catch (Exception ex) {
             p("exception: " + ex);
             Uu.p(ex);

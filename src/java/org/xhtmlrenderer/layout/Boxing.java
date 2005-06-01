@@ -111,16 +111,6 @@ public class Boxing {
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
 
-        //check if replaced
-        JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c);
-        if (cc != null) {
-            Rectangle bounds = cc.getBounds();
-            block.x = bounds.x;
-            block.y = bounds.y;
-            block.width = bounds.width;
-            block.height = bounds.height;
-            block.component = cc;
-        }
 
         CalculatedStyle style = c.getCurrentStyle();
         boolean hasSpecifiedWidth = !style.isIdent(CSSName.WIDTH, IdentValue.AUTO);
@@ -130,39 +120,30 @@ public class Boxing {
         hasSpecifiedHeight = hasSpecifiedHeight && style.propertyByName(CSSName.HEIGHT).computedValue().hasAbsoluteUnit();
 
         // calculate the width and height as much as possible
-        if (!(block instanceof AnonymousBlockBox) && !c.isSubBlock()) {
-            // initalize the width to all the available space
-            if (hasSpecifiedWidth && hasSpecifiedHeight) {
-                float new_width = style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
-                c.getExtents().width = (int) new_width;
-                block.width = (int) new_width;
-                float new_height = style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
-                c.getExtents().height = (int) new_height;
-                block.height = (int) new_height;
+        if (!(block instanceof AnonymousBlockBox)) {
+            int setHeight = -1;//means height is not set by css
+            int setWidth = -1;//means width is not set by css
+            if (hasSpecifiedWidth) {
+                setWidth = (int) style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
+                c.getExtents().width = setWidth;
+                //TODO: CHECK: what does isSubBlock mean?
+                if (!c.isSubBlock()) block.width = setWidth;
+            }
+            if (hasSpecifiedHeight) {
+                setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
+                c.getExtents().height = setHeight;
+                block.height = setHeight;
                 block.auto_height = false;
-                if (cc != null) {
-                    //TODO: how do I get the image to scale?
-                    cc.setSize((int) block.width, (int) block.height);
-                }
-            } else if (hasSpecifiedWidth) {
-                float new_width = style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
-                c.getExtents().width = (int) new_width;
-                block.width = (int) new_width;
-                if (cc != null) {// => has intrinsic dimension
-                    block.height = (int) (block.height * block.width / cc.getBounds().getWidth());
-                    //TODO: how do I get the image to scale?
-                    cc.setSize((int) block.width, (int) block.height);
-                }
-            } else if (hasSpecifiedHeight) {
-                float new_height = style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
-                c.getExtents().height = (int) new_height;
-                block.height = (int) new_height;
-                block.auto_height = false;
-                if (cc != null) {// => has intrinsic dimension
-                    block.width = (int) (block.width * block.height / cc.getBounds().getHeight());
-                    //TODO: how do I get the image to scale?
-                    cc.setSize((int) block.width, (int) block.height);
-                }
+            }
+            //check if replaced
+            JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c, setWidth, setHeight);
+            if (cc != null) {
+                Rectangle bounds = cc.getBounds();
+                block.x = bounds.x;
+                block.y = bounds.y;
+                block.width = bounds.width;
+                block.height = bounds.height;
+                block.component = cc;
             }
         }
         block.x = c.getExtents().x;
@@ -293,6 +274,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/06/01 21:36:39  tobega
+ * Got image scaling working, and did some refactoring along the way
+ *
  * Revision 1.18  2005/06/01 00:47:04  tobega
  * Partly confused hack trying to get width and height working properly for replaced elements.
  *

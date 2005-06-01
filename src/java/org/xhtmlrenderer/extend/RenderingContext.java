@@ -29,14 +29,13 @@ import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.*;
-import java.net.URL;
 
 
 /**
  * Supplies information about the context in which rendering will take place
  *
  * @author jmarinacci
- * @created November 16, 2004
+ *         November 16, 2004
  */
 public class RenderingContext {
 
@@ -68,11 +67,6 @@ public class RenderingContext {
      * should this happen here or lower down?
      */
     protected AttributeResolver attr_res;
-
-    /**
-     * Description of the Field
-     */
-    protected URL base_url;
 
     /*
      * is this really a property of the component that uses
@@ -207,8 +201,8 @@ public class RenderingContext {
      *
      * @param url The new baseURL value
      */
-    public void setBaseURL(URL url) {
-        base_url = url;
+    public void setBaseURL(String url) {
+        uac.setBaseURL(url);
     }
 
 
@@ -307,8 +301,8 @@ public class RenderingContext {
      *
      * @return The baseURL value
      */
-    public URL getBaseURL() {
-        return base_url;
+    public String getBaseURL() {
+        return uac.getBaseURL();
     }
 
 

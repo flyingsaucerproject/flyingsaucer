@@ -43,8 +43,8 @@ import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.print.PrinterGraphics;
-import java.io.File;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -99,11 +99,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * Description of the Field
      */
     protected LayoutThread layout_thread;
-
-    /**
-     * Description of the Field
-     */
-    protected URL url;
 
     /**
      * Description of the Field
@@ -660,11 +655,10 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param url The new document value
      * @param nsh The new document value
      */
-    public void setDocument(Document doc, URL url, NamespaceHandler nsh) {
+    public void setDocument(Document doc, String url, NamespaceHandler nsh) {
         resetScrollPosition();
         this.doc = doc;
-        this.url = url;
-        
+
         //have to do this first
         getRenderingContext().setBaseURL(url);
         getContext().setNamespaceHandler(nsh);
@@ -682,7 +676,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param nsh    The new document value
      * @throws Exception Throws
      */
-    public void setDocument(InputStream stream, URL url, NamespaceHandler nsh)
+    public void setDocument(InputStream stream, String url, NamespaceHandler nsh)
             throws Exception {
         Document dom = XMLResource.load(stream).getDocument();
 
@@ -696,7 +690,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param doc The new document value
      * @param url The new document value
      */
-    public void setDocument(Document doc, URL url) {
+    public void setDocument(Document doc, String url) {
         setDocument(doc, url, new NoNamespaceHandler());
     }
 
@@ -763,7 +757,13 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @return The uRL value
      */
     public URL getURL() {
-        return this.url;
+        URL base = null;
+        try {
+            base = new URL(getRenderingContext().getUac().getBaseURL());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return base;
     }
 
     /**
@@ -887,7 +887,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param url    The new document value
      * @throws Exception Throws
      */
-    protected void setDocument(InputStream stream, URL url)
+    protected void setDocument(InputStream stream, String url)
             throws Exception {
         setDocument(stream, url, new NoNamespaceHandler());
     }
@@ -897,21 +897,11 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * is located relative, e.g using a relative URL.
      *
      * @param filename The new document to load
-     * @throws Exception Throws
      */
-    protected void setDocumentRelative(String filename)
-            throws Exception {
-        if (getContext() != null && (!filename.startsWith("http"))) {
-            URL base = new URL(getRenderingContext().getBaseURL(), filename);
-            XRLog.load("Loading URL " + base);
-            Document dom = XMLResource.load(base).getDocument();
-
-            setDocument(dom, base);
-            return;
-        }
-        Document dom = XMLResource.load(new InputSource(filename)).getDocument();
-
-        setDocument(dom, new File(filename).toURL());
+    protected void setDocumentRelative(String filename) {
+        String url = getRenderingContext().getUac().resolveURI(filename);
+        Document dom = XMLResource.load(new InputSource(getRenderingContext().getUac().getReader(url))).getDocument();
+        setDocument(dom, url);
     }
 
     /**
@@ -999,6 +989,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.46  2005/06/01 21:36:44  tobega
+ * Got image scaling working, and did some refactoring along the way
+ *
  * Revision 1.45  2005/05/13 15:23:56  tobega
  * Done refactoring box borders, margin and padding. Hover is working again.
  *

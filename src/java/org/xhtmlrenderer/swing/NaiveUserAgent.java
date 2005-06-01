@@ -19,107 +19,140 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Image;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.lang.ref.SoftReference;
-import java.util.HashMap;
+import org.xhtmlrenderer.util.XRLog;
 
 import javax.imageio.ImageIO;
-import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.XRRuntimeException;
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.Reader;
+import java.lang.ref.SoftReference;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
 
 
 /**
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallback {
 
-  /** Description of the Field */
-  private HashMap imageCache;
+    /**
+     * Description of the Field
+     */
+    private HashMap imageCache;
+    private String baseURL;
 
-  /** Creates a new instance of NaiveUserAgent */
-  public NaiveUserAgent() { }
-
-  /**
-   * Gets the stylesheet attribute of the NaiveUserAgent object
-   *
-   * @param uri  PARAM
-   * @return     The stylesheet value
-   */
-  public java.io.Reader getStylesheet( String uri ) {
-    java.io.InputStream is = null;
-    Reader reader = null;
-    try {
-      is = ( new java.net.URL( uri ) ).openStream();
-      reader = new BufferedReader( new java.io.InputStreamReader( is ) );
-    } catch ( java.net.MalformedURLException e ) {
-      XRLog.exception( "bad URL given: " + uri, e );
-    } catch ( java.io.IOException e ) {
-      XRLog.exception( "IO problem for " + uri, e );
-    }
-    return reader;
-  }
-
-  /**
-   * Gets the image attribute of the NaiveUserAgent object
-   *
-   * @param uri  PARAM
-   * @return     The image value
-   */
-  public Image getImage( String uri ) {
-    java.io.InputStream is = null;
-    Image img = null;
-    if ( imageCache != null ) {
-      SoftReference ref = (SoftReference)imageCache.get( uri );
-      if ( ref != null ) {
-        img = (Image)ref.get();
-      }
-      if ( img != null ) {
-        return img;
-      }
-    }
-    try {
-      is = ( new java.net.URL( uri ) ).openStream();
-    } catch ( FileNotFoundException ex ) {
-      XRLog.exception( "Can't find image file for URI: '" + uri + "'; skipping." );
-    } catch ( java.net.MalformedURLException e ) {
-      XRLog.exception( "Bad URI given for image file: '" + uri + "'" );
-    } catch ( java.io.IOException e ) {
-      XRLog.exception( "Can't load image file; IO problem for URI '" + uri + "'", e );
+    /**
+     * Creates a new instance of NaiveUserAgent
+     */
+    public NaiveUserAgent() {
     }
 
-    if ( is != null ) {
-      try {
-        img = ImageIO.read( is );
-        if ( imageCache == null ) {
-          imageCache = new HashMap();
+    /**
+     * Gets a Reader for the resource identified
+     *
+     * @param uri PARAM
+     * @return The stylesheet value
+     */
+    public java.io.Reader getReader(String uri) {
+        java.io.InputStream is = null;
+        Reader reader = null;
+        try {
+            is = new URL(resolveURI(uri)).openStream();
+            reader = new BufferedReader(new java.io.InputStreamReader(is));
+        } catch (java.net.MalformedURLException e) {
+            XRLog.exception("bad URL given: " + uri, e);
+        } catch (java.io.IOException e) {
+            XRLog.exception("IO problem for " + uri, e);
         }
-        imageCache.put( uri, new SoftReference( img ) );
-      } catch ( Exception e ) {
-        XRLog.exception( "Can't read image file; unexpected problem for URI '" + uri + "'", e );
-      }
+        return reader;
     }
-    return img;
-  }
 
-  /**
-   * Gets the visited attribute of the NaiveUserAgent object
-   *
-   * @param uri  PARAM
-   * @return     The visited value
-   */
-  public boolean isVisited( String uri ) {
-    return false;
-  }
+    /**
+     * Gets the image attribute of the NaiveUserAgent object
+     *
+     * @param uri PARAM
+     * @return The image value
+     */
+    //TODO: better caching than using SoftReference
+    public Image getImage(String uri) {
+        java.io.InputStream is = null;
+        Image img = null;
+        if (imageCache != null) {
+            SoftReference ref = (SoftReference) imageCache.get(uri);
+            if (ref != null) {
+                img = (Image) ref.get();
+            }
+            if (img != null) {
+                return img;
+            }
+        }
+        try {
+            is = new URL(resolveURI(uri)).openStream();
+        } catch (FileNotFoundException ex) {
+            XRLog.exception("Can't find image file for URI: '" + uri + "'; skipping.");
+        } catch (java.net.MalformedURLException e) {
+            XRLog.exception("Bad URI given for image file: '" + uri + "'");
+        } catch (java.io.IOException e) {
+            XRLog.exception("Can't load image file; IO problem for URI '" + uri + "'", e);
+        }
+
+        if (is != null) {
+            try {
+                img = ImageIO.read(is);
+                if (imageCache == null) {
+                    imageCache = new HashMap();
+                }
+                imageCache.put(uri, new SoftReference(img));
+            } catch (Exception e) {
+                XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
+            }
+        }
+        return img;
+    }
+
+    /**
+     * Gets the visited attribute of the NaiveUserAgent object
+     *
+     * @param uri PARAM
+     * @return The visited value
+     */
+    public boolean isVisited(String uri) {
+        return false;
+    }
+
+    public void setBaseURL(String url) {
+        baseURL = url;
+    }
+
+    public String resolveURI(String uri) {
+        URL result;
+        try {
+            result = new URL(uri);
+        } catch (MalformedURLException e) {
+            try {
+                result = new URL(new URL(baseURL), uri);
+            } catch (MalformedURLException e1) {
+                return null;
+            }
+        }
+        return result.toString();
+
+    }
+
+    public String getBaseURL() {
+        return baseURL;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/06/01 21:36:44  tobega
+ * Got image scaling working, and did some refactoring along the way
+ *
  * Revision 1.7  2005/03/28 14:24:22  pdoubleya
  * Remove stack trace on loading images.
  *
