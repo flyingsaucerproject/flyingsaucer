@@ -9,7 +9,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 
-
     <head>
 
         <title>Test: Images</title>
@@ -41,6 +40,14 @@
             img.i5 { vertical-align: bottom; }
 
             p.huge { font-size: 150pt; }
+	    
+	    img.w { width: 50px; }
+	    
+	    img.h { height: 100px; }
+	    
+	    img.wh { width: 50px; height: 100px; }
+	    
+	    img.auto { width: auto; height: auto; }
 
         </style>
 
@@ -48,9 +55,18 @@
 
     <body>
 
-    
 
-        <p> before <img src="image.png" alt="test image"/>asdf<img src="image.png" alt="test image"/> after </p>        
+        <p> before
+            <img src="image.png" alt="test image"/>asdf
+            <img src="image.png" alt="test image"/> after
+        </p>
+
+        <p> auto-scaled
+            <img class="auto" src="image.png" alt="test image"/>, width-scaled
+            <img class="w" src="image.png" alt="test image"/>, height-scaled
+            <img class="h" src="image.png" alt="test image"/>, both-scaled
+            <img class="wh" src="image.png" alt="test image"/>
+        </p>
 
         <p class="huge">B
 
@@ -64,7 +80,7 @@
 
             <img class="i5" src="image.png" alt="test image"/>
 
-            </p>
+        </p>
 
     </body>
 

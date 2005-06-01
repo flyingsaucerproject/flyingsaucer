@@ -220,7 +220,9 @@ public class DerivedValue {
      * @return Returns
      */
     public boolean hasAbsoluteUnit() {
-        return (_cssName == CSSName.BACKGROUND_POSITION || ValueConstants.isAbsoluteUnit(_domCSSPrimitiveValue));
+        //TODO:check list of names. Also, method may be unnecessary (tobe)
+        return (_cssName == CSSName.BACKGROUND_POSITION ||
+                ValueConstants.isAbsoluteUnit(_domCSSPrimitiveValue));
     }
 
     /**

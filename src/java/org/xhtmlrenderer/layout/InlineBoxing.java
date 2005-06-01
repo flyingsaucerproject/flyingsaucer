@@ -78,11 +78,9 @@ public class InlineBoxing {
 
         // account for text-indent
         CalculatedStyle parentStyle = c.getCurrentStyle();
-        if (parentStyle.hasProperty(CSSName.TEXT_INDENT)) {
-            float indent = parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, remaining_width, c.getCtx());
-            remaining_width = remaining_width - (int) indent;
-            curr_line.x = curr_line.x + (int) indent;
-        }
+        float indent = parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, remaining_width, c.getCtx());
+        remaining_width = remaining_width - (int) indent;
+        curr_line.x = curr_line.x + (int) indent;
 
         // more setup
         LineBox prev_line = new LineBox();
@@ -574,6 +572,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/06/01 00:47:04  tobega
+ * Partly confused hack trying to get width and height working properly for replaced elements.
+ *
  * Revision 1.26  2005/05/31 01:40:06  tobega
  * Replaced elements can now be display: block;
  * display: inline-block; should be working even for non-replaced elements.

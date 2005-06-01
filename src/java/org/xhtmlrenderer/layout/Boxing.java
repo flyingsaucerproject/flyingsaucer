@@ -122,9 +122,49 @@ public class Boxing {
             block.component = cc;
         }
 
+        CalculatedStyle style = c.getCurrentStyle();
+        boolean hasSpecifiedWidth = !style.isIdent(CSSName.WIDTH, IdentValue.AUTO);
+        //TODO: handle relative heights, but only if containing block height is not defined by content height
+        boolean hasSpecifiedHeight = !style.isIdent(CSSName.HEIGHT, IdentValue.AUTO);
+        //HACK: assume containing block height is auto, so percentages become auto
+        hasSpecifiedHeight = hasSpecifiedHeight && style.propertyByName(CSSName.HEIGHT).computedValue().hasAbsoluteUnit();
+
         // calculate the width and height as much as possible
-        adjustWidth(c, block);
-        adjustHeight(c, block);
+        if (!(block instanceof AnonymousBlockBox) && !c.isSubBlock()) {
+            // initalize the width to all the available space
+            if (hasSpecifiedWidth && hasSpecifiedHeight) {
+                float new_width = style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
+                c.getExtents().width = (int) new_width;
+                block.width = (int) new_width;
+                float new_height = style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
+                c.getExtents().height = (int) new_height;
+                block.height = (int) new_height;
+                block.auto_height = false;
+                if (cc != null) {
+                    //TODO: how do I get the image to scale?
+                    cc.setSize((int) block.width, (int) block.height);
+                }
+            } else if (hasSpecifiedWidth) {
+                float new_width = style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
+                c.getExtents().width = (int) new_width;
+                block.width = (int) new_width;
+                if (cc != null) {// => has intrinsic dimension
+                    block.height = (int) (block.height * block.width / cc.getBounds().getWidth());
+                    //TODO: how do I get the image to scale?
+                    cc.setSize((int) block.width, (int) block.height);
+                }
+            } else if (hasSpecifiedHeight) {
+                float new_height = style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
+                c.getExtents().height = (int) new_height;
+                block.height = (int) new_height;
+                block.auto_height = false;
+                if (cc != null) {// => has intrinsic dimension
+                    block.width = (int) (block.width * block.height / cc.getBounds().getHeight());
+                    //TODO: how do I get the image to scale?
+                    cc.setSize((int) block.width, (int) block.height);
+                }
+            }
+        }
         block.x = c.getExtents().x;
         block.y = c.getExtents().y;
 
@@ -245,54 +285,17 @@ public class Boxing {
     }
 
     // calculate the width based on css and available space
-    /**
-     * Description of the Method
-     *
-     * @param c     PARAM
-     * @param block PARAM
-     */
-    private static void adjustWidth(Context c, Box block) {
-        if (block instanceof AnonymousBlockBox) {
-            return;
-        }
-        // initalize the width to all the available space
-        CalculatedStyle style = c.getCurrentStyle();
-        if (style.hasProperty(CSSName.WIDTH)) {
-            // if it is a sub block then don't mess with the width
-            if (c.isSubBlock()) {
-                return;
-            }
-            float new_width = style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
-            c.getExtents().width = (int) new_width;
-            block.width = (int) new_width;
-        }
-    }
 
     // calculate the height based on css and available space
-    /**
-     * Description of the Method
-     *
-     * @param c     PARAM
-     * @param block PARAM
-     */
-    private static void adjustHeight(Context c, Box block) {
-        if (block instanceof AnonymousBlockBox) {
-            return;
-        }
-        CalculatedStyle style = c.getCurrentStyle();
-        if (style.hasProperty(CSSName.HEIGHT)) {
-            float new_height = style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
-            c.getExtents().height = (int) new_height;
-            block.height = (int) new_height;
-            block.auto_height = false;
-        }
-    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/06/01 00:47:04  tobega
+ * Partly confused hack trying to get width and height working properly for replaced elements.
+ *
  * Revision 1.17  2005/05/31 01:40:05  tobega
  * Replaced elements can now be display: block;
  * display: inline-block; should be working even for non-replaced elements.

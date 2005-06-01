@@ -153,6 +153,7 @@ public class CalculatedStyle {
      *
      * @param cssName The CSS property name to look for, e.g. "font-family".
      * @return True if the property is defined.
+     * @deprecated A property always exists in a calculated style, even if only by its css-defined default
      */
     public boolean hasProperty(CSSName cssName) {
         return _derivedPropertiesById[cssName.getAssignedID()] != null;
@@ -505,21 +506,21 @@ public class CalculatedStyle {
         DerivedValue specified = new DerivedValue(cssName, value, this);
         DerivedValue computed = specified;
 
-        if (!specified.hasAbsoluteUnit()) {
-            // inherit the value from parent element if value is set to inherit
-            if (specified.forcedInherit()) {
-                // if we are root, have no parent, use the initial value as
-                // defined by the CSS2 spec
-                if (_parent == null) {
-                    throw new XRRuntimeException("CalculatedStyle: trying to resolve an inherited property, " +
-                            "but have no parent CalculatedStyle (root of document?)--" +
-                            "property '" + cssName + "' may not be defined in CSS.");
-                } else {
-                    // pull from our parent CalculatedStyle
-                    computed = _parent.propertyByName(cssName).computedValue();
-                }
+        //whats the point? (tobe) if (!specified.hasAbsoluteUnit()) {
+        // inherit the value from parent element if value is set to inherit
+        if (specified.forcedInherit()) {
+            // if we are root, have no parent, use the initial value as
+            // defined by the CSS2 spec
+            if (_parent == null) {
+                throw new XRRuntimeException("CalculatedStyle: trying to resolve an inherited property, " +
+                        "but have no parent CalculatedStyle (root of document?)--" +
+                        "property '" + cssName + "' may not be defined in CSS.");
+            } else {
+                // pull from our parent CalculatedStyle
+                computed = _parent.propertyByName(cssName).computedValue();
             }
         }
+        //}
         return new DerivedProperty(cssName, computed);
     }
 
@@ -566,6 +567,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/06/01 00:47:02  tobega
+ * Partly confused hack trying to get width and height working properly for replaced elements.
+ *
  * Revision 1.22  2005/05/29 16:38:58  tobega
  * Handling of ex values should now be working well. Handling of em values improved. Is it correct?
  * Also started defining dividing responsibilities between Context and RenderingContext.
