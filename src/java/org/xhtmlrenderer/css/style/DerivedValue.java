@@ -453,6 +453,8 @@ public class DerivedValue {
      * proportional, this is deferred until the Point is requested. We pull
      * immediately because it's a small String operation that would be silly to
      * reproduce on each request.
+     * <p/>
+     * precondition: the value has been canonicalized to a point. Handled by {@link org.xhtmlrenderer.css.sheet.factory.BackgroundPositionPropertyDeclarationFactory}
      *
      * @param primitive The underlying SAC {@link CSSValue}
      */

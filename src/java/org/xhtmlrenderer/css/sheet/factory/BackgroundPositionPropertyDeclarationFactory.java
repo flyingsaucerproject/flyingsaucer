@@ -75,20 +75,48 @@ public class BackgroundPositionPropertyDeclarationFactory extends AbstractProper
 
         String val = pos.toString().trim();
 
-        // handle for single value--first will be taken as horizontal; as per CSS spec
-        // if there is no " ", then we have a single value
-        if (val.indexOf(" ") == -1) {
-            // check that the single value is a length
-            if (Idents.looksLikeALength(val)) {
-                val += " 50%";
-            }
-        }
+        val = canonicalizeValue(val);
 
         FSCssValue fsCssValue = new FSCssValue(primVals[0], val);
         List declarations = new ArrayList(1);
 
         declarations.add(newPropertyDeclaration(cssName, fsCssValue, origin, important));
         return declarations.iterator();
+    }
+
+    static String canonicalizeValue(String val) {
+        // handle for single value--first will be taken as horizontal; as per CSS spec
+        // if there is no " ", then we have a single value
+        if (val.indexOf(" ") == -1) {
+            // check that the single value is a length
+            if (Idents.looksLikeALength(val)) {
+                val += " 50%";
+            } else {
+                val += " center";
+            }
+        }
+        //canonicalize
+        String[] vals = val.split(" ");
+        if (vals[0].equals("top")
+                || vals[0].equals("bottom")
+                || vals[1].equals("left")
+                || vals[1].equals("right")) {
+            val = vals[0];
+            vals[0] = vals[1];
+            vals[1] = val;
+        }
+        //interpret idents
+        if (vals[0].equals("left"))
+            vals[0] = "0%";
+        else if (vals[0].equals("center"))
+            vals[0] = "50%";
+        else if (vals[0].equals("right")) vals[0] = "100%";
+        if (vals[1].equals("top"))
+            vals[1] = "0%";
+        else if (vals[1].equals("center"))
+            vals[1] = "50%";
+        else if (vals[1].equals("bottom")) vals[1] = "100%";
+        return vals[0] + " " + vals[1];
     }
 
     /**
@@ -108,6 +136,9 @@ public class BackgroundPositionPropertyDeclarationFactory extends AbstractProper
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/06/02 23:38:29  tobega
+ * Now handles background-position idents
+ *
  * Revision 1.5  2005/05/08 13:02:37  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
  *

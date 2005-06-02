@@ -111,14 +111,8 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
         if (bgPos != null) {
             val = bgPos.toString().trim();
 
-            // handle for single value--first will be taken as horizontal; as per CSS spec
-            // if there is no " ", then we have a single value
-            if (val.indexOf(" ") == -1) {
-                // check that the single value is a length
-                if (Idents.looksLikeALength(val)) {
-                    val += " 50%";
-                }
-            }
+            val = BackgroundPositionPropertyDeclarationFactory.canonicalizeValue(val);
+
             bgPosPrimitive.setCssText(val);
             names[0] = CSSName.BACKGROUND_POSITION;
             primitives[0] = new FSCssValue(bgPosPrimitive, val);
@@ -179,6 +173,9 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/06/02 23:38:29  tobega
+ * Now handles background-position idents
+ *
  * Revision 1.6  2005/05/08 13:02:37  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
  *
