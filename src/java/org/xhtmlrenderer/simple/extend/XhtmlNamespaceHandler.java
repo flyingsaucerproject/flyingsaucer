@@ -108,6 +108,18 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
                 style.append(s);
                 style.append(";");
             }
+        } else if (e.getNodeName().equals("img")) {
+            String s;
+            if (!(s = e.getAttribute("width")).equals("")) {
+                style.append("width: ");
+                style.append(s);
+                style.append(";");
+            }
+            if (!(s = e.getAttribute("height")).equals("")) {
+                style.append("height: ");
+                style.append(s);
+                style.append(";");
+            }
         }
         style.append(e.getAttribute("style"));
         return style.toString();
