@@ -180,7 +180,14 @@ public class WhitespaceStripper {
         }
         stripped.clear();
         stripped.addAll(result);
-        stripped.addAll(pendingStylePushes);
+        if (pendingStylePushes.size() != 0) {
+            Element e = ((StylePush) pendingStylePushes.getLast()).getElement();
+            if (e != null) {//we really have a relevevant style, not just a stripped anonymous inline box
+                stripped.addAll(pendingStylePushes);
+                //add a dummy TextContent so that an InlineBox is generated for the styles
+                stripped.addLast(new TextContent(e, ""));
+            }
+        }
     }
 
     /**
