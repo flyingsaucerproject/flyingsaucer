@@ -68,6 +68,8 @@ public class Eeze {
      */
     Action nextDemoAction;
 
+    Action chooseDemoAction;
+
     /**
      * Description of the Field
      */
@@ -164,6 +166,7 @@ public class Eeze {
                     });
 
                     nextDemoAction = new NextDemoAction();
+                    chooseDemoAction = new ChooseDemoAction();
                     growAction = new GrowAction();
                     shrinkAction = new ShrinkAction();
 
@@ -177,6 +180,7 @@ public class Eeze {
                     frame.setJMenuBar(new JMenuBar());
                     JMenu doMenu = new JMenu("Do");
                     doMenu.add(nextDemoAction);
+                    doMenu.add(chooseDemoAction);
                     doMenu.add(growAction);
                     doMenu.add(shrinkAction);
                     doMenu.add(increase_font);
@@ -558,6 +562,44 @@ public class Eeze {
                 Iterator iter = testFiles.iterator();
                 nextPage = (File) iter.next();
             }
+
+            try {
+                switchPage(nextPage);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Description of the Class
+     *
+     * @author Who?
+     */
+    class ChooseDemoAction extends AbstractAction {
+
+        /**
+         * Constructor for the NextDemoAction object
+         */
+        public ChooseDemoAction() {
+            super("Choose Demo Page");
+            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_C));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.ALT_MASK));
+        }
+
+        /**
+         * Invoked when an action occurs.
+         *
+         * @param e PARAM
+         */
+        public void actionPerformed(ActionEvent e) {
+            File nextPage = (File) JOptionPane.showInputDialog(eezeFrame,
+                    "Choose a demo file",
+                    "Choose Demo",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    testFiles.toArray(),
+                    currentDisplayed);
 
             try {
                 switchPage(nextPage);
