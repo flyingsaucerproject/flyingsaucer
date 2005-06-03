@@ -36,7 +36,9 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 
 /**
@@ -87,10 +89,18 @@ public class BoxRendering {
                 if (decoration != IdentValue.NONE) {
                     c.getDecorations().addLast(new TextDecoration(decoration, 0, c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
                 }
+                //special style for first line?
+                if (block.firstLineStyle != null) {
+                    c.addFirstLineStyle(block.firstLineStyle);
+                }
                 if (Relative.isRelative(c)) {
                     paintRelative(c, block, restyle);
                 } else {
                     paintNormal(c, block, restyle);
+                }
+                //pop in case not used
+                if (block.firstLineStyle != null) {
+                    c.popFirstLineStyle();
                 }
                 //undo text decoration?
                 if (decoration != IdentValue.NONE) {
@@ -337,6 +347,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/06/03 19:56:43  tobega
+ * Now uses first-line styles from all block-level ancestors
+ *
  * Revision 1.27  2005/06/01 21:36:40  tobega
  * Got image scaling working, and did some refactoring along the way
  *

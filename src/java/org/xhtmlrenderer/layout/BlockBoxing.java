@@ -62,6 +62,8 @@ public class BlockBoxing {
             Object o = contentIterator.next();
             if (o instanceof FirstLineStyle) {//can actually only be the first object in list
                 block.firstLineStyle = ((FirstLineStyle) o).getStyle();
+                //put it into the Context so it gets used on the first line
+                c.addFirstLineStyle(block.firstLineStyle);
                 continue;
             }
             if (o instanceof FirstLetterStyle) {//can actually only be the first or second object in list
@@ -119,6 +121,11 @@ public class BlockBoxing {
 
         c.setListCounter(old_counter);
 
+        if (block.firstLineStyle != null) {
+            //pop it in case it wasn't used
+            c.popFirstLineStyle();
+        }
+
     }
 
 }
@@ -127,6 +134,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/06/03 19:56:42  tobega
+ * Now uses first-line styles from all block-level ancestors
+ *
  * Revision 1.5  2005/05/13 11:49:57  tobega
  * Started to fix up borders on inlines. Got caught up in refactoring.
  * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.

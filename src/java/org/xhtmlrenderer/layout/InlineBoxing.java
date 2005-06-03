@@ -31,7 +31,8 @@ import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.font.LineMetrics;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -74,7 +75,7 @@ public class InlineBoxing {
         int remaining_width = bounds.width;
         LineBox curr_line = newLine(box, bounds, null, blockLineMetrics);
         c.setFirstLine(true);
-        LinkedList pushedOnFirstLine = null;
+        LinkedList pushedOnFirstLine = new LinkedList();
 
         // account for text-indent
         CalculatedStyle parentStyle = c.getCurrentStyle();
@@ -99,15 +100,13 @@ public class InlineBoxing {
         LinkedList pendingPushStyles = null;
         int pendingLeftPadding = 0;
         int pendingRightPadding = 0;
-        InlineBox helper = new InlineTextBox();
         // loop until no more nodes
         while (contentList.size() > 0) {
             Object o = contentList.get(0);
             contentList.remove(0);
             if (o instanceof FirstLineStyle) {//can actually only be the first object in list
                 box.firstLineStyle = ((FirstLineStyle) o).getStyle();
-                pushedOnFirstLine = new LinkedList();
-                c.pushStyle(box.firstLineStyle);
+                c.addFirstLineStyle(box.firstLineStyle);
                 continue;
             }
             if (o instanceof FirstLetterStyle) {//can actually only be the first or second object in list
@@ -125,15 +124,19 @@ public class InlineBoxing {
                 } else {
                     cascaded = c.getCss().getCascadedStyle(sp.getElement(), false);//already restyled by ContentUtil
                 }
+                //first push first-line styles
+                if (c.hasFirstLineStyles()) {
+                    for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext();) {
+                        c.pushStyle((CascadedStyle) i.next());
+                    }
+                    pushedOnFirstLine.addLast(cascaded);
+                }
                 c.pushStyle(cascaded);
                 if (pendingPushStyles == null) {
                     pendingPushStyles = new LinkedList();
                 }
                 pendingPushStyles.addLast((StylePush) o);
                 Relative.translateRelative(c);
-                if (pushedOnFirstLine != null) {
-                    pushedOnFirstLine.addLast(cascaded);
-                }
                 CalculatedStyle style = c.getCurrentStyle();
                 int parent_width = bounds.width;
                 Border border = style.getBorderWidth(c.getCtx());
@@ -169,7 +172,7 @@ public class InlineBoxing {
                     remaining_width -= rp;
                     prev_inline.popstyles++;
                 }
-                if (pushedOnFirstLine != null) {
+                if (c.hasFirstLineStyles()) {
                     pushedOnFirstLine.removeLast();
                 }
                 Relative.untranslateRelative(c);
@@ -223,16 +226,7 @@ public class InlineBoxing {
                 if (prev_align_inline != null && new_inline.break_before) {
                     // Uu.p("break before");
                     remaining_width = bounds.width;
-                    if (pushedOnFirstLine != null) {
-                        for (int i = 0; i < pushedOnFirstLine.size(); i++) c.popStyle();
-                        c.popStyle();//the firstLineStyle
-                        //reinstate
-                        for (Iterator i = pushedOnFirstLine.iterator(); i.hasNext();) {
-                            c.pushStyle((CascadedStyle) i.next());
-                        }
-                        pushedOnFirstLine = null;
-                    }
-                    saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, false, blockLineHeight);
+                    saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, false, blockLineHeight, pushedOnFirstLine);
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line, blockLineMetrics);
@@ -281,16 +275,7 @@ public class InlineBoxing {
                     // then remaining_width = max_width
                     remaining_width = bounds.width;
                     // save the line
-                    if (pushedOnFirstLine != null) {
-                        for (int i = 0; i < pushedOnFirstLine.size(); i++) c.popStyle();
-                        c.popStyle();//the firstLineStyle
-                        //reinstate
-                        for (Iterator i = pushedOnFirstLine.iterator(); i.hasNext();) {
-                            c.pushStyle((CascadedStyle) i.next());
-                        }
-                        pushedOnFirstLine = null;
-                    }
-                    saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, false, blockLineHeight);
+                    saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, false, blockLineHeight, pushedOnFirstLine);
                     // increase bounds height to account for the new line
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
@@ -313,16 +298,7 @@ public class InlineBoxing {
         }
 
         // save the final line
-        if (pushedOnFirstLine != null) {
-            for (int i = 0; i < pushedOnFirstLine.size(); i++) c.popStyle();
-            c.popStyle();//the firstLineStyle
-            //reinstate
-            for (Iterator i = pushedOnFirstLine.iterator(); i.hasNext();) {
-                c.pushStyle((CascadedStyle) i.next());
-            }
-            pushedOnFirstLine = null;
-        }
-        saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, true, blockLineHeight);
+        saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, true, blockLineHeight, pushedOnFirstLine);
         finishBlock(box, curr_line, bounds);
         // Uu.p("- InlineLayout.layoutContent(): " + box);
         //pop the dummy style, but no, see above
@@ -548,7 +524,18 @@ public class InlineBoxing {
      * @param minHeight
      */
     private static void saveLine(LineBox line_to_save, CalculatedStyle style, LineBox prev_line, int width, int x,
-                                 Context c, Box block, boolean last, int minHeight) {
+                                 Context c, Box block, boolean last, int minHeight, LinkedList pushedOnFirstLine) {
+        if (c.hasFirstLineStyles()) {
+            //first pop element styles pushed on first line
+            for (int i = 0; i < pushedOnFirstLine.size(); i++) c.popStyle();
+            //then pop first-line styles
+            for (int i = 0; i < c.getFirstLineStyles().size(); i++) c.popStyle();
+            //reinstate element styles
+            for (Iterator i = pushedOnFirstLine.iterator(); i.hasNext();) {
+                c.pushStyle((CascadedStyle) i.next());
+            }
+            c.clearFirstLineStyles();
+        }
         c.setFirstLine(false);
         // account for text-align
         TextAlign.adjustTextAlignment(c, style, line_to_save, width, x, last);
@@ -572,6 +559,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/06/03 19:56:42  tobega
+ * Now uses first-line styles from all block-level ancestors
+ *
  * Revision 1.27  2005/06/01 00:47:04  tobega
  * Partly confused hack trying to get width and height working properly for replaced elements.
  *

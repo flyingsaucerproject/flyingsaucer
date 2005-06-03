@@ -31,7 +31,9 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -40,6 +42,7 @@ public class ContextImpl implements Context {
     SharedContext sharedContext;
     private LinkedList decorations = new LinkedList();
     private LinkedList inlineBorders = new LinkedList();
+    private LinkedList firstLineStyles = new LinkedList();
 
     //delegated methods
     public String getMedia() {
@@ -184,6 +187,34 @@ public class ContextImpl implements Context {
 
     public LinkedList getInlineBorders() {
         return inlineBorders;
+    }
+
+    public void addFirstLineStyle(CascadedStyle firstLineStyle) {
+        firstLineStyles.addLast(firstLineStyle);
+    }
+
+    public void popFirstLineStyle() {
+        if (firstLineStyles.size() != 0) {//there was no formatted first line
+            firstLineStyles.removeLast();
+        }
+    }
+
+    public boolean hasFirstLineStyles() {
+        return firstLineStyles.size() != 0;
+    }
+
+    /**
+     * NB, clone list first if you want to keep the contents!
+     */
+    public void clearFirstLineStyles() {
+        firstLineStyles.clear();
+    }
+
+    /**
+     * NB, you are getting a reference! Call clearFirstLineStyles at own risk!
+     */
+    public LinkedList getFirstLineStyles() {
+        return firstLineStyles;
     }
 
     //the stuff that needs to have a separate instance for each run.

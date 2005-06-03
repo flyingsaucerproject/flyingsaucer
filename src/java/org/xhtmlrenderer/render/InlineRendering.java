@@ -222,16 +222,9 @@ public class InlineRendering {
                 block = (BlockBox) box;
             }
 
-            CascadedStyle firstLineStyle = null;
             for (int i = 0; i < box.getChildCount(); i++) {
-                if (i == 0 && block != null && block.firstLineStyle != null) {
-                    firstLineStyle = block.firstLineStyle;
-                }
                 // get the line box
-                paintLine(c, (LineBox) box.getChild(i), restyle, firstLineStyle, decorations);
-                if (i == 0 && block != null && block.firstLineStyle != null) {
-                    firstLineStyle = null;
-                }
+                paintLine(c, (LineBox) box.getChild(i), restyle, decorations);
             }
 
             // translate back to parent coords
@@ -249,7 +242,7 @@ public class InlineRendering {
      * @param restyle     PARAM
      * @param decorations
      */
-    static void paintLine(Context c, LineBox line, boolean restyle, CascadedStyle firstLineStyle, LinkedList decorations) {
+    static void paintLine(Context c, LineBox line, boolean restyle, LinkedList decorations) {
         // get Xx and y
         int lx = line.x;
         int ly = line.y + line.getBaseline();
@@ -272,9 +265,12 @@ public class InlineRendering {
             InlineBox box = (InlineBox) child;
             lastInline = box;
             padX = 0;
-            if (firstLineStyle != null && pushedStyles == null) {
+            if (c.hasFirstLineStyles() && pushedStyles == null) {
                 pushedStyles = new LinkedList();
-                padX = handleInlineElementStart(c, firstLineStyle, line, box, padX, decorations);
+                for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext();) {
+                    CascadedStyle firstLineStyle = (CascadedStyle) i.next();
+                    padX = handleInlineElementStart(c, firstLineStyle, line, box, padX, decorations);
+                }
             }
             padX = paintInline(c, box, lx, ly, line, restyle, pushedStyles, decorations, padX);
         }
@@ -286,7 +282,7 @@ public class InlineRendering {
             decoration.paint(c, line);
         }
 
-        if (firstLineStyle != null && pushedStyles != null) {
+        if (c.hasFirstLineStyles() && pushedStyles != null) {
             for (int i = 0; i < pushedStyles.size(); i++) {
                 IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
                 if (decoration != IdentValue.NONE) {
@@ -296,8 +292,13 @@ public class InlineRendering {
             }
             LinkedList pushedBorders = (LinkedList) c.getInlineBorders().clone();
             c.getInlineBorders().clear();//No other inline borders could be present, except those created on first line
-            c.getInlineBorders().add(pushedBorders.removeFirst());//paint the first-line pseudo-element border
-            padX = handleInlineElementEnd(c, decorations, lastInline, padX, line, null);//get rid of firstLineStyle
+            for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext(); i.next()) {
+                c.getInlineBorders().add(pushedBorders.removeFirst());//paint the first-line pseudo-element border
+            }
+            //should really be reverse order here, but since it isn't used...
+            for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext(); i.next()) {
+                padX = handleInlineElementEnd(c, decorations, lastInline, padX, line, null);//get rid of firstLineStyle
+            }
             //reinstitute the rest
             c.getInlineBorders().addAll(pushedBorders);
             for (Iterator i = pushedStyles.iterator(); i.hasNext();) {
@@ -307,6 +308,7 @@ public class InlineRendering {
                     decorations.addLast(new TextDecoration(decoration, 0, c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
                 }
             }
+            c.clearFirstLineStyles();
         }
         if (c.debugDrawLineBoxes()) {
             GraphicsUtil.drawBox(c.getGraphics(), line, Color.blue);

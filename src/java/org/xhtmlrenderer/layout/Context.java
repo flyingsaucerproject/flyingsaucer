@@ -30,7 +30,9 @@ import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 
 
@@ -446,5 +448,15 @@ public interface Context {
     LinkedList getDecorations();
 
     LinkedList getInlineBorders();
+
+    void addFirstLineStyle(CascadedStyle firstLineStyle);
+
+    void popFirstLineStyle();
+
+    boolean hasFirstLineStyles();
+
+    void clearFirstLineStyles();
+
+    LinkedList getFirstLineStyles();
 }
 
