@@ -24,7 +24,10 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
 
@@ -91,7 +94,7 @@ public class BackgroundPainter {
             int back_width = box.width;
             int back_height = box.height;
             Rectangle2D oldclip = (Rectangle2D) c.getGraphics().getClip();
-            Rectangle new_clip = new Rectangle(left_insets, top_insets, back_width, back_height);
+            Rectangle new_clip = new Rectangle(left_insets, top_insets, back_width - 1, back_height - 1);
             c.getGraphics().setClip(oldclip.createIntersection(new_clip));
 
             xoff += block.background_position_horizontal;
@@ -180,6 +183,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/06/03 23:19:43  tobega
+ * Removed padding on div in default.css to conform to HTML4.0, and fixed clipregion for painting bgimage, all to pass tests/eeze/t0805-c5512-brdr-rw-01-b-g.xhtml
+ *
  * Revision 1.25  2005/05/13 11:49:59  tobega
  * Started to fix up borders on inlines. Got caught up in refactoring.
  * Boxes shouldn't cache borders and stuff unless necessary. Started to remove unnecessary references.
