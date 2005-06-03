@@ -58,8 +58,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
     public java.io.Reader getReader(String uri) {
         java.io.InputStream is = null;
         Reader reader = null;
+        uri = resolveURI(uri);
         try {
-            is = new URL(resolveURI(uri)).openStream();
+            is = new URL(uri).openStream();
             reader = new BufferedReader(new java.io.InputStreamReader(is));
         } catch (java.net.MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
@@ -79,6 +80,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
     public Image getImage(String uri) {
         java.io.InputStream is = null;
         Image img = null;
+        uri = resolveURI(uri);
         if (imageCache != null) {
             SoftReference ref = (SoftReference) imageCache.get(uri);
             if (ref != null) {
@@ -89,7 +91,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
             }
         }
         try {
-            is = new URL(resolveURI(uri)).openStream();
+            is = new URL(uri).openStream();
         } catch (FileNotFoundException ex) {
             XRLog.exception("Can't find image file for URI: '" + uri + "'; skipping.");
         } catch (java.net.MalformedURLException e) {
@@ -150,6 +152,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/06/03 00:29:49  tobega
+ * fixed potential bug
+ *
  * Revision 1.8  2005/06/01 21:36:44  tobega
  * Got image scaling working, and did some refactoring along the way
  *
