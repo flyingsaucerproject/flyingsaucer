@@ -31,7 +31,9 @@ import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Point;
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -188,6 +190,10 @@ public class CalculatedStyle {
                 if (initialValue == null) {
                     throw new XRRuntimeException("Property '" + cssName + "' has no initial values assigned. " +
                             "Check CSSName declarations.");
+                }
+                if (initialValue.startsWith("=")) {
+                    CSSName ref = CSSName.getByPropertyName(initialValue.substring(1));
+                    initialValue = propertyByName(ref).computedValue().asString();
                 }
                 initialValue = Idents.convertIdent(cssName, initialValue);
                 org.xhtmlrenderer.css.impl.DefaultCSSPrimitiveValue cssval =
@@ -567,6 +573,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/06/03 23:06:21  tobega
+ * Now uses value of "color" as initial value for "border-color" and rgb-triples are supported
+ *
  * Revision 1.23  2005/06/01 00:47:02  tobega
  * Partly confused hack trying to get width and height working properly for replaced elements.
  *
