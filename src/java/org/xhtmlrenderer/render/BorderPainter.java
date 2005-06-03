@@ -120,14 +120,15 @@ public class BorderPainter {
      *
      * @param rect   PARAM
      * @param border PARAM
+     * @param sides
      * @return Returns
      */
-    public static Rectangle shrinkRect(final Rectangle rect, final Border border) {
+    public static Rectangle shrinkRect(final Rectangle rect, final Border border, int sides) {
         Rectangle r2 = new Rectangle();
-        r2.x = rect.x + border.left;
-        r2.width = rect.width - border.left - border.right;
-        r2.y = rect.y + border.top;
-        r2.height = rect.height - border.top - border.bottom;
+        r2.x = rect.x + ((sides & LEFT) == 0 ? 0 :border.left);
+        r2.width = rect.width - ((sides & LEFT) == 0 ? 0 :border.left) - ((sides & RIGHT) == 0 ? 0 :border.right);
+        r2.y = rect.y + ((sides & TOP) == 0 ? 0 :border.top);
+        r2.height = rect.height - ((sides & TOP) == 0 ? 0 :border.top) - ((sides & BOTTOM) == 0 ? 0 :border.bottom);
         return r2;
     }
 
@@ -229,8 +230,8 @@ public class BorderPainter {
                 inner.right = 1;
             }
 
-            Rectangle b2 = shrinkRect(bounds, outer);
-            b2 = shrinkRect(b2, center);
+            Rectangle b2 = shrinkRect(bounds, outer, sides);
+            b2 = shrinkRect(b2, center, sides);
             // draw outer border
             paintSolid((Graphics2D) g, bounds, outer, border_color, sides, currentSide);
             // draw inner border
@@ -461,6 +462,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2005/06/03 01:08:58  tobega
+ * Fixed bug in painting double borders
+ *
  * Revision 1.31  2005/05/29 23:49:15  tobega
  * Did it right, this time, so that inline borders also look nice
  *
