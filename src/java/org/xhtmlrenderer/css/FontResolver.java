@@ -23,7 +23,8 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 
 
@@ -94,9 +95,13 @@ public class FontResolver {
 
         // if we get here then no font worked, so just return default sans
         //Uu.p("pulling out: -" + available_fonts_hash.get("SansSerif") + "-");
+        String family = "SansSerif";
+        if (style == IdentValue.ITALIC) {
+            family = "Serif";
+        }
         try {
-            Font fnt = createFont(ctx, (Font) available_fonts_hash.get("SansSerif"), size, weight, style, variant);
-            instance_hash.put(getFontInstanceHashName("SansSerif", size, weight, style, variant), fnt);
+            Font fnt = createFont(ctx, (Font) available_fonts_hash.get(family), size, weight, style, variant);
+            instance_hash.put(getFontInstanceHashName(family, size, weight, style, variant), fnt);
             //Uu.p("subbing in base sans : " + fnt);
             return fnt;
         } catch (Exception ex) {
@@ -139,7 +144,7 @@ public class FontResolver {
 
             font_const = font_const | Font.BOLD;
         }
-        if (style != null && style == IdentValue.ITALIC) {
+        if (style != null && (style == IdentValue.ITALIC || style == IdentValue.OBLIQUE)) {
             font_const = font_const | Font.ITALIC;
         }
 
@@ -188,6 +193,9 @@ public class FontResolver {
         if (font.equals("monospace")) {
             font = "Monospaced";
         }
+
+        if (font.equals("Serif") && style == IdentValue.OBLIQUE) font = "SansSerif";
+        if (font.equals("SansSerif") && style == IdentValue.ITALIC) font = "Serif";
 
         // assemble a font instance hash name
         String font_instance_name = getFontInstanceHashName(font, size, weight, style, variant);
@@ -247,6 +255,9 @@ public class FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/06/03 22:04:10  tobega
+ * Now handles oblique fonts somewhat and does a better job of italic
+ *
  * Revision 1.15  2005/05/29 16:38:59  tobega
  * Handling of ex values should now be working well. Handling of em values improved. Is it correct?
  * Also started defining dividing responsibilities between Context and RenderingContext.
