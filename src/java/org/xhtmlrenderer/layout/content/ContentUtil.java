@@ -250,7 +250,11 @@ public class ContentUtil {
         List block = new LinkedList();
         for (Iterator i = pendingInlines.iterator(); i.hasNext();) {
             Object o = i.next();
-            if (o instanceof BlockContent || o instanceof RunInContent || o instanceof TableContent) {
+            if (o instanceof BlockContent
+                    || o instanceof RunInContent
+                    || o instanceof TableContent
+                    || o instanceof FirstLineStyle
+                    || o instanceof FirstLetterStyle) {
                 inline = WhitespaceStripper.stripInlineContent(c, inline);
                 if (inline.size() != 0) {
                     //Uu.p("resove runin : new anony");
@@ -477,6 +481,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2005/06/04 16:55:43  tobega
+ * Fixed bug concerning first-line style and Anonymous block boxes
+ *
  * Revision 1.36  2005/05/17 06:56:23  tobega
  * Inline backgrounds now work correctly, as does mixing of inlines and blocks for style inheritance
  *
