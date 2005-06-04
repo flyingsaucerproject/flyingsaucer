@@ -111,10 +111,26 @@ public class Eeze {
     private void run(String args[]) {
         buildFrame();
         directory = args[0];
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    html.getRenderingContext().setFontMapping("Ahem",
+                            Font.createFont(Font.TRUETYPE_FONT, new URL("file://" + directory + "/support/AHEM____.TTF").openStream()));
+                } catch (FontFormatException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+        });
         testFiles = buildFileList();
         try {
-            //switchPage( (File)testFiles.get( 0 ) );
-            showHelpPage();
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    //switchPage( (File)testFiles.get( 0 ) );
+                    showHelpPage();
+                }
+            });
         } catch (Exception ex) {
             ex.printStackTrace();
         }
