@@ -63,8 +63,8 @@ public class BackgroundPainter {
             return;
         }
         Border margin = c.getCurrentStyle().getMarginWidth(width, height, c.getCtx());
-        Rectangle box = new Rectangle(block.x + margin.left + border.left,
-                block.y + margin.top + border.top,
+        Rectangle box = new Rectangle(block.x + margin.left + border.left - 1,
+                block.y + margin.top + border.top - 1,
                 block.width - margin.left - margin.right - border.left - border.right,
                 block.height - margin.top - border.top - border.bottom - margin.bottom);
 
@@ -94,7 +94,7 @@ public class BackgroundPainter {
             int back_width = box.width;
             int back_height = box.height;
             Rectangle2D oldclip = (Rectangle2D) c.getGraphics().getClip();
-            Rectangle new_clip = new Rectangle(left_insets, top_insets, back_width - 1, back_height - 1);
+            Rectangle new_clip = new Rectangle(left_insets, top_insets, back_width, back_height);
             c.getGraphics().setClip(oldclip.createIntersection(new_clip));
 
             xoff += block.background_position_horizontal;
@@ -183,6 +183,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/06/04 13:28:34  tobega
+ * better??
+ *
  * Revision 1.26  2005/06/03 23:19:43  tobega
  * Removed padding on div in default.css to conform to HTML4.0, and fixed clipregion for painting bgimage, all to pass tests/eeze/t0805-c5512-brdr-rw-01-b-g.xhtml
  *

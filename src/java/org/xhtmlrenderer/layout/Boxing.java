@@ -38,7 +38,9 @@ import org.xhtmlrenderer.table.TableBoxing;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.List;
 
 
@@ -139,8 +141,8 @@ public class Boxing {
             JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c, setWidth, setHeight);
             if (cc != null) {
                 Rectangle bounds = cc.getBounds();
-                block.x = bounds.x;
-                block.y = bounds.y;
+                //block.x = bounds.x;
+                //block.y = bounds.y;
                 block.width = bounds.width;
                 block.height = bounds.height;
                 block.component = cc;
@@ -274,6 +276,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/06/04 13:28:33  tobega
+ * better??
+ *
  * Revision 1.19  2005/06/01 21:36:39  tobega
  * Got image scaling working, and did some refactoring along the way
  *
