@@ -462,6 +462,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/06/04 14:47:43  tobega
+ * Just for fun: took more control over darkening/brightening colors. Looks nice, though.
+ *
  * Revision 1.32  2005/06/03 01:08:58  tobega
  * Fixed bug in painting double borders
  *
