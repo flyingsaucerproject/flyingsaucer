@@ -125,10 +125,10 @@ public class BorderPainter {
      */
     public static Rectangle shrinkRect(final Rectangle rect, final Border border, int sides) {
         Rectangle r2 = new Rectangle();
-        r2.x = rect.x + ((sides & LEFT) == 0 ? 0 :border.left);
-        r2.width = rect.width - ((sides & LEFT) == 0 ? 0 :border.left) - ((sides & RIGHT) == 0 ? 0 :border.right);
-        r2.y = rect.y + ((sides & TOP) == 0 ? 0 :border.top);
-        r2.height = rect.height - ((sides & TOP) == 0 ? 0 :border.top) - ((sides & BOTTOM) == 0 ? 0 :border.bottom);
+        r2.x = rect.x + ((sides & LEFT) == 0 ? 0 : border.left);
+        r2.width = rect.width - ((sides & LEFT) == 0 ? 0 : border.left) - ((sides & RIGHT) == 0 ? 0 : border.right);
+        r2.y = rect.y + ((sides & TOP) == 0 ? 0 : border.top);
+        r2.height = rect.height - ((sides & TOP) == 0 ? 0 : border.top) - ((sides & BOTTOM) == 0 ? 0 : border.bottom);
         return r2;
     }
 
@@ -153,26 +153,26 @@ public class BorderPainter {
             bd2.left = border.left / 2;
             bd2.right = border.right / 2;
             if (borderSideStyle == IdentValue.RIDGE) {
-                paintGoodBevel(g2, bounds, border, border_color.darker(), border_color.brighter(), sides, currentSide);
-                paintGoodBevel(g2, bounds, bd2, border_color.brighter(), border_color.darker(), sides, currentSide);
+                paintGoodBevel(g2, bounds, border, border_color.darker(borderSideStyle), border_color.brighter(borderSideStyle), sides, currentSide);
+                paintGoodBevel(g2, bounds, bd2, border_color.brighter(borderSideStyle), border_color.darker(borderSideStyle), sides, currentSide);
             } else {
-                paintGoodBevel(g2, bounds, border, border_color.brighter(), border_color.darker(), sides, currentSide);
-                paintGoodBevel(g2, bounds, bd2, border_color.darker(), border_color.brighter(), sides, currentSide);
+                paintGoodBevel(g2, bounds, border, border_color.brighter(borderSideStyle), border_color.darker(borderSideStyle), sides, currentSide);
+                paintGoodBevel(g2, bounds, bd2, border_color.darker(borderSideStyle), border_color.brighter(borderSideStyle), sides, currentSide);
             }
             return;
         }
 
         if (borderSideStyle == IdentValue.OUTSET) {
             paintGoodBevel(g2, bounds, border,
-                    border_color.brighter(),
-                    border_color.darker(), sides, currentSide);
+                    border_color.brighter(borderSideStyle),
+                    border_color.darker(borderSideStyle), sides, currentSide);
             return;
         }
 
         if (borderSideStyle == IdentValue.INSET) {
             paintGoodBevel(g2, bounds, border,
-                    border_color.darker(),
-                    border_color.brighter(), sides, currentSide);
+                    border_color.darker(borderSideStyle),
+                    border_color.brighter(borderSideStyle), sides, currentSide);
             return;
         }
 
@@ -462,6 +462,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/06/04 16:04:12  tobega
+ * just playing with border colors a bit more
+ *
  * Revision 1.33  2005/06/04 14:47:43  tobega
  * Just for fun: took more control over darkening/brightening colors. Looks nice, though.
  *
