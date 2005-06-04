@@ -1,6 +1,6 @@
 /*
- * TableContent.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * TableRowContent.java
+ * Copyright (c) 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -38,7 +38,7 @@ import java.util.NoSuchElementException;
  *
  * @author Torbjörn Gannholm
  */
-public class TableContent implements Content {
+public class TableRowContent implements Content {
     /**
      * Description of the Field
      */
@@ -58,7 +58,7 @@ public class TableContent implements Content {
      * @param e     PARAM
      * @param style PARAM
      */
-    TableContent(Element e, CascadedStyle style) {
+    TableRowContent(Element e, CascadedStyle style) {
         _elem = e;
         _style = style;
         _children = null;
@@ -67,7 +67,7 @@ public class TableContent implements Content {
     /**
      * anonymous table
      */
-    TableContent() {
+    TableRowContent() {
         _elem = null;
         _style = null;
         _children = new LinkedList();
@@ -76,7 +76,7 @@ public class TableContent implements Content {
     /**
      * for anonymous tables, child content is added as it is parsed by ContentUtil
      */
-    void addChild(Element e) {
+    void addChild(Node e) {
         _children.addLast(e);
     }
 
@@ -158,7 +158,7 @@ public class TableContent implements Content {
         }
 
         Iterator childIterator = getChildIterator();
-        TableRowContent anonymousRow = null;
+        TableCellContent anonymousCell = null;
         //each child node can result in only one addition to content
         while (childIterator.hasNext()) {
             Node curr = (Node) childIterator.next();
@@ -167,11 +167,11 @@ public class TableContent implements Content {
             }//must be a comment or pi or something
 
             if (curr.getNodeType() == Node.TEXT_NODE) {
-                if (anonymousRow == null) {
-                    anonymousRow = new TableRowContent();
-                    contentList.add(anonymousRow);
+                if (anonymousCell == null) {
+                    anonymousCell = new TableCellContent();
+                    contentList.add(anonymousCell);
                 }
-                anonymousRow.addChild(curr);
+                anonymousCell.addChild(curr);
                 continue;
             }
 
@@ -181,62 +181,20 @@ public class TableContent implements Content {
             IdentValue display = c.getCurrentStyle().getIdent(CSSName.DISPLAY);
 
             //If this element can't be directly uder a table, stick it in an anonymous row
-            if (display != IdentValue.TABLE_ROW
-                    && display != IdentValue.TABLE_CAPTION
-                    && display != IdentValue.TABLE_COLUMN
-                    && display != IdentValue.TABLE_COLUMN_GROUP
-                    && display != IdentValue.TABLE_FOOTER_GROUP
-                    && display != IdentValue.TABLE_HEADER_GROUP
-                    && display != IdentValue.TABLE_ROW_GROUP) {
-                if (anonymousRow == null) {
-                    anonymousRow = new TableRowContent();
-                    contentList.add(anonymousRow);
+            if (display != IdentValue.TABLE_CELL) {
+                if (anonymousCell == null) {
+                    anonymousCell = new TableCellContent();
+                    contentList.add(anonymousCell);
                 }
-                anonymousRow.addChild(elem);
+                anonymousCell.addChild(elem);
                 c.popStyle();
                 continue;
             }
-            //if we reach here, our anonymous row is done
-            anonymousRow = null;
+            //if we reach here, our anonymous cell is done
+            anonymousCell = null;
 
-            if (display == IdentValue.TABLE_ROW) {
-                contentList.add(new TableRowContent(elem, style));
-                c.popStyle();
-                continue;
-            }
-
-            if (display == IdentValue.TABLE_CAPTION) {
-                contentList.add(new TableCaptionContent(elem, style));
-                c.popStyle();
-                continue;
-            }
-
-            if (display == IdentValue.TABLE_COLUMN) {
-                contentList.add(new TableColumnContent(elem, style));
-                c.popStyle();
-                continue;
-            }
-
-            if (display == IdentValue.TABLE_COLUMN_GROUP) {
-                contentList.add(new TableColumnGroupContent(elem, style));
-                c.popStyle();
-                continue;
-            }
-
-            if (display == IdentValue.TABLE_FOOTER_GROUP) {
-                contentList.add(new TableFooterGroupContent(elem, style));
-                c.popStyle();
-                continue;
-            }
-
-            if (display == IdentValue.TABLE_HEADER_GROUP) {
-                contentList.add(new TableHeaderGroupContent(elem, style));
-                c.popStyle();
-                continue;
-            }
-
-            if (display == IdentValue.TABLE_ROW_GROUP) {
-                contentList.add(new TableRowGroupContent(elem, style));
+            if (display == IdentValue.TABLE_CELL) {
+                contentList.add(new TableCellContent(elem, style));
                 c.popStyle();
                 continue;
             }
@@ -297,4 +255,3 @@ public class TableContent implements Content {
     }
 
 }
-

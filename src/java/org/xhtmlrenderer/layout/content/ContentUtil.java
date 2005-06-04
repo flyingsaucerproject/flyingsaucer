@@ -31,6 +31,7 @@ import org.xhtmlrenderer.layout.Context;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 /**
@@ -159,6 +160,20 @@ public class ContentUtil {
     }
 
     /**
+     * Gets the table attribute of the ContentUtil class
+     *
+     * @param style PARAM
+     * @return The table value
+     */
+    public static boolean isTableDescendant(CascadedStyle style) {
+        IdentValue display = style.getIdent(CSSName.DISPLAY);
+        if (display == null) return false;
+        if (display == IdentValue.TABLE) return false;
+        if (display.toString().startsWith("table")) return true;
+        return false;
+    }
+
+    /**
      * Gets the listItem attribute of the ContentUtil class
      *
      * @param style PARAM
@@ -276,7 +291,8 @@ public class ContentUtil {
     }
 
     /**
-     * Gets the inline content of a sequence of nodes
+     * Gets the inline content of a sequence of nodes.
+     * This routine will not work for restricted scenarios, like content of a table or table-row
      *
      * @param c      The current context. The current style in the context must
      *               correspond to that of the parent Content
@@ -327,14 +343,11 @@ public class ContentUtil {
             }
         }
 
-        Node node = parentElement;
-        if (node == null) {
-            node = ((DomToplevelNode) parent).getNode();
-        }
-        NodeList children = node.getChildNodes();
+        Iterator i = getNodeIterator(parent);
+        TableContent anonymousTable = null;
         //each child node can result in only one addition to content
-        for (int i = 0; i < children.getLength(); i++) {
-            Node curr = children.item(i);
+        while (i.hasNext()) {
+            Node curr = (Node) i.next();
             if (curr.getNodeType() != Node.ELEMENT_NODE && curr.getNodeType() != Node.TEXT_NODE) {
                 continue;
             }//must be a comment or pi or something
@@ -345,12 +358,26 @@ public class ContentUtil {
                     textContent = new StringBuffer();
                 }
                 textContent.append(text);
+                //if we reach here, our anonymous table is done
+                anonymousTable = null;
                 continue;
             }
 
             Element elem = (Element) curr;
             CascadedStyle style = c.getCss().getCascadedStyle(elem, true);//this is the place where restyle is done for layout (boxing)
             c.pushStyle(style);//just remember to pop it before continue
+
+            if (isTableDescendant(style)) {
+                if (anonymousTable == null) {
+                    anonymousTable = new TableContent();
+                    inlineList.add(anonymousTable);
+                }
+                anonymousTable.addChild(elem);
+                c.popStyle();
+                continue;
+            }
+            //if we reach here, our anonymous table is done
+            anonymousTable = null;
 
             if (isHidden(style)) {
                 c.popStyle();
@@ -464,6 +491,38 @@ public class ContentUtil {
 
     }
 
+    private static Iterator getNodeIterator(Content parent) {
+        final Node node;
+        if (parent instanceof TableCellContent) {
+            if (((TableCellContent) parent).getChildIterator() != null) return ((TableCellContent) parent).getChildIterator();
+            node = parent.getElement();
+        } else if (parent instanceof DomToplevelNode) {
+            node = ((DomToplevelNode) parent).getNode();
+        } else {
+            node = parent.getElement();
+        }
+        return new Iterator() {
+            NodeList nl = node.getChildNodes();
+            int i = 0;
+
+            public boolean hasNext() {
+                return i < nl.getLength();
+            }
+
+            public Object next() {
+                if (hasNext()) {
+                    return nl.item(i++);
+                } else {
+                    throw new NoSuchElementException();
+                }
+            }
+
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
     private static StringBuffer saveTextContent(StringBuffer textContent, List inlineList, Element parentElement, Content parent) {
         if (textContent != null) {
             boolean isAnonymousInlineBox = !(parent instanceof InlineContent);
@@ -481,6 +540,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2005/06/04 21:17:19  tobega
+ * Created a content model for tables
+ *
  * Revision 1.37  2005/06/04 16:55:43  tobega
  * Fixed bug concerning first-line style and Anonymous block boxes
  *
