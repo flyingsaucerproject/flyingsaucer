@@ -19,44 +19,54 @@
  */
 package org.xhtmlrenderer.table;
 
+import org.w3c.dom.Element;
+import org.xhtmlrenderer.render.BlockBox;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.render.Box;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
-public class RowBox extends Box {
+public class RowBox extends BlockBox {
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public List cells = new ArrayList();
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public Element elem;
 
     /**
      * Constructor for the RowBox object
      *
-     * @param x       PARAM
-     * @param y       PARAM
-     * @param width   PARAM
-     * @param height  PARAM
+     * @param x      PARAM
+     * @param y      PARAM
+     * @param width  PARAM
+     * @param height PARAM
      */
-    public RowBox( int x, int y, int width, int height ) {
+    public RowBox(int x, int y, int width, int height) {
 
-        super( x, y, width, height );
+        super(x, y, width, height);
 
     }
 
+    public RowBox() {
+    }
 }
 
 /*
  * $Id$
  * $Log$
+ * Revision 1.4  2005/06/05 01:02:35  tobega
+ * Very simple and not completely functional table layout
+ *
  * Revision 1.3  2005/01/29 20:19:24  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

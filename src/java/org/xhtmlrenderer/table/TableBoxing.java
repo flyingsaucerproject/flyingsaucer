@@ -36,17 +36,22 @@
   */
 package org.xhtmlrenderer.table;
 
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.Border;
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.content.BlockContent;
 import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.layout.content.TableCellContent;
+import org.xhtmlrenderer.layout.content.TableContent;
+import org.xhtmlrenderer.layout.content.TableRowContent;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Rectangle;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
 
 
 /**
@@ -60,238 +65,139 @@ public class TableBoxing {
      * Description of the Method
      *
      * @param c       PARAM
-     * @param content
-     * @return Returns
-     */
-    public static Box createBox(Context c, Content content) {
-        TableBox table = new TableBox();
-        table.element = content.getElement();
-        return table;
-    }
-
-
-    /**
-     * Description of the Method
-     *
-     * @param c       PARAM
      * @param content PARAM
      * @return Returns
      */
     public static Box layout(Context c, Content content) {
-        // create the table box
-        TableBox table_box = (TableBox) createBox(c, content);
+        Box outerBox;//the outer box may be block or inline block
+        boolean set_bfc = false;
+        if (content instanceof TableContent) {
+            outerBox = new BlockBox();
 
-        c.pushStyle(content.getStyle());
-        CalculatedStyle style = c.getCurrentStyle();
-        // set up the border spacing
-        float border_spacing_x = style.getFloatPropertyProportionalWidth(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getWidth(), c.getCtx());
-        float border_spacing_y = style.getFloatPropertyProportionalHeight(CSSName.BORDER_SPACING, c.getBlockFormattingContext().getHeight(), c.getCtx());
-        table_box.spacing = new Point((int) border_spacing_x, (int) border_spacing_y);
-
-        // set up the width
-        int fixed_width = c.getExtents().width;
-        if (content.getStyle().hasProperty(CSSName.WIDTH)) {
-            fixed_width = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
+            // install a block formatting context for the body,
+            // ie. if it's null.
+            // set up the outtermost bfc
+            if (c.getBlockFormattingContext() == null) {
+                outerBox.setParent(c.getCtx().getRootBox());
+                BlockFormattingContext bfc = new BlockFormattingContext(outerBox, c);
+                c.pushBFC(bfc);
+                set_bfc = true;
+                bfc.setWidth((int) c.getExtents().getWidth());
+            }
+        } else {
+            XRLog.layout(Level.WARNING, "Unsupported table type " + content.getClass().getName());
+            return null;
         }
-        //not used: int orig_fixed_width = fixed_width;
 
-        Border border = style.getBorderWidth(c.getCtx());
-        //note: percentages here refer to width of containing block
-        Border margin = style.getMarginWidth(fixed_width, fixed_width, c.getCtx());
-        Border padding = style.getPaddingWidth(fixed_width, fixed_width, c.getCtx());
+        // copy the extents
+        Rectangle oe = c.getExtents();
+        c.setExtents(new Rectangle(oe));
+        outerBox.x = c.getExtents().x;
+        outerBox.y = c.getExtents().y;
+        //HACK: for now
+        outerBox.width = c.getExtents().width;
+        outerBox.height = c.getExtents().height;
 
-        //subtract off the margin, border, padding, and spacing
-        fixed_width -= margin.left + border.left + padding.left + padding.right + border.right + margin.right + table_box.spacing.x;
-               
-        // create the table
-        // table is just for calculations. it's not a real box
-        Table table = new Table();
-        table.addTable(c, content.getElement());
+        TableBox tableBox = new TableBox();
+        tableBox.element = content.getElement();
+        //OK, first set up the current style. All depends on this...
+        CascadedStyle pushed = content.getStyle();
+        if (pushed != null) {
+            c.pushStyle(pushed);
+        } else {
+            c.pushStyle(CascadedStyle.emptyCascadedStyle);
+        }
 
-        //calculate the widths
-        table.calculateWidths(fixed_width, c);
-        
-        //pull out the boxes
-        calculateBoxes(fixed_width, table_box, c, table);
-        table_box.width += margin.left + border.left + padding.left + padding.right + border.right + margin.right;
-        table_box.height += margin.top + border.top + padding.top + padding.bottom + border.bottom + margin.bottom;
+        layoutChildren(c, tableBox, content);
 
         c.popStyle();
 
-        return table_box;
+        //restore the extents
+        c.setExtents(oe);
+
+        // remove the outtermost bfc
+        if (set_bfc) {
+            c.getBlockFormattingContext().doFinalAdjustments();
+            //no! clear it in BasicPanel instead! c.popBFC();
+        }
+        return tableBox;//HACK:
     }
 
+    //TODO: do this right. It is totally as simple as possible.
+    private static void layoutChildren(Context c, Box tableBox, Content content) {
+        Iterator contentIterator = content.getChildContent(c).iterator();
+        while (contentIterator.hasNext()) {
+            Object o = contentIterator.next();
+            if (o instanceof TableRowContent) {
+                c.translate(0, tableBox.height);
+                RowBox row = layoutRow(c, (TableRowContent) o);
+                c.translate(0, -tableBox.height);
 
-    /**
-     * Runs through all of the boxes and calculates their sizes
-     *
-     * @param avail_width PARAM
-     * @param box         PARAM
-     * @param c           PARAM
-     * @param table       PARAM
-     */
-    public static void calculateBoxes(int avail_width, TableBox box, Context c, Table table) {
-        //Uu.p("TableLayout2.calculateBoxes(" + avail_width  +
-        //    " , " + box + " , " + c + " , " + table);
-        box.width = avail_width;
-        box.height = 100;
-        box.x = 5;
-        box.y = 5;
-        // create a dummy prev row
-        RowBox prev_row = new RowBox(0, 0, 0, 0);
-        int max_width = 0;
-        // loop throw the rows
-        CellGrid grid = table.getCellGrid();
-        for (int y = 0; y < grid.getHeight(); y++) {
-            // create a new row box for this row
-            RowBox row_box = new RowBox(0, 0, 0, 0);
-            //row_box.node = row.node;
-            box.rows.add(row_box);
-            int row_height = 0;
-            int column_count = 0;
-            // loop through the cells
-            for (int x = 0; x < grid.getWidth(); x++) {
-                //Uu.p("Xx = " + Xx);
-                //Uu.p("grid width = " + grid.getWidth());
-                if (grid.isReal(x, y)) {
-                    //Uu.p("it's real");
-                    //Uu.p("getting real cell: " + Xx + " , " + y);
-                    Cell cell = grid.getCell(x, y);
-                    if (cell == null) {
-                        System.err.println("Hit the null cell error in TableBoxing");
-                        continue;
-                    }
+                tableBox.addChild(row);
+                row.setParent(tableBox);
+                row.element = ((TableRowContent) o).getElement();
+                // set the child_box location
+                row.x = 0;
+                row.y = tableBox.height;
 
-                    // create a new cell box for this cell
-                    CellBox cell_box = new CellBox(0, 0, 10, 10);
-                    cell.cb = cell_box;
-                    cell_box.rb = row_box;
-                    // set the Xx coord based on the current column
-                    cell_box.x = table.calcColumnX(column_count);
-                    // set the width
-                    //Uu.p("column count = " + column_count + " col span = " + cell.col_span);
-                    cell_box.width = table.calcColumnWidth(column_count, cell.col_span);
-                    // do the internal layout
-                    // save the old extents and create new with smaller width
-                    Rectangle oe = c.getExtents();
-                    c.setExtents(new Rectangle(c.getExtents().x, c.getExtents().y,
-                            cell_box.width, 100));
-                    
-                    // do child layout
-                    //Uu.p("cell box = " + cell_box);
-                    //Uu.p("doing child layout on: " + layout + " for " + cell_box.node);
-                    //Uu.p("cell_box properly = " + cell_box);
-                    c.setSubBlock(true);
-                    //TODO: temporary hack. Use ContentUtil for table cells.
-                    Box cell_contents = Boxing.layout(c, new BlockContent((Element) cell.node, c.getCss().getCascadedStyle((Element) cell.node, false)));
-                    c.setSubBlock(false);
-                    cell_box.sub_box = cell_contents;
-                    cell_box.height = cell_box.sub_box.height;
-                    column_count += cell.col_span;
-                    //Uu.p("cellbox = " + cell_box);
-                    //Uu.p("sub box = " + cell_box.sub_box);
-                    // restore old extents
-                    c.setExtents(oe);
-                    // y is relative to the rowbox so it's just 0
-                    cell_box.y = 0;
-                    // add the cell to the row
-                    row_box.cells.add(cell_box);
-                    //Uu.p("cell box width = " + cell_box.width);
-                    // if this is a non row spanning cell then
-                    // adjust the row height to fit this cell
-                    if (cell.row_span == 1) {
-                        if (cell_box.height > row_box.height) {
-                            row_box.height = cell_box.height;
-                        }
-                    }
-                    row_box.width += cell_box.width;
-                } else {
-                    //Uu.p("it's virtual");
-                    Cell cell = grid.getCell(x, y);
-                    // create a virtual cell box for this cell
-                    CellBox cell_box = CellBox.createVirtual(cell.cb);
-                    // skip doing layout
-                    row_box.cells.add(cell_box);
-                    // skip adjusting the row height for now
-                    // set row height based on real cell contents
-                    // set row width based on real cell contents
+                // increase the final layout width if the child was greater
+                if (row.width > tableBox.width) {
+                    tableBox.width = row.width;
                 }
-                //Uu.p("looping");
-            }
 
-            //Uu.p("loop done");
-            // move the row to the right y position
-            row_height = 0;
-            row_box.y = prev_row.y + prev_row.height;
-            prev_row = row_box;
-            // adjust the max width
-
-            if (row_box.width > max_width) {
-                max_width = row_box.width;
-            }
-
-            // adjust the height of each cell in this row to be the height of
-            // the row
-
-            for (int k = 0; k < row_box.cells.size(); k++) {
-                CellBox cb = (CellBox) row_box.cells.get(k);
-                if (cb.isReal()) {
-                    cb.height = row_box.height;
-                    cb.sub_box.height = row_box.height;
-                } else {
-                    // adjusting height based on virtual
-                    //Uu.p("adjusting height based on virtual");
-                    CellBox real = cb.getReal();
-                    //Uu.p("the real cb = " + real);
-                    RowBox orig_row = real.rb;
-                    //Uu.p("orig row = " + orig_row);
-                    RowBox cur_row = row_box;
-                    //Uu.p("cur row = " + cur_row);
-                    real.height = cur_row.y - orig_row.y + cur_row.height;
-                    real.sub_box.height = real.height;
-                    //Uu.p("now real = " + real);
-                }
-                //Uu.p("cell = " + cb);
+                // increase the final layout height by the height of the child
+                tableBox.height += row.height;
+            } else {
+                XRLog.layout(Level.WARNING, "Unsupported inside table: " + o.getClass().getName());
             }
         }
-        box.height = prev_row.y + prev_row.height;
-        box.width = max_width;
-        //return box;
     }
+
+    private static RowBox layoutRow(Context c, TableRowContent tableRowContent) {
+        RowBox row = new RowBox();
+        CascadedStyle pushed = tableRowContent.getStyle();
+        if (pushed != null) {
+            c.pushStyle(pushed);
+        } else {
+            c.pushStyle(CascadedStyle.emptyCascadedStyle);
+        }
+        List cells = tableRowContent.getChildContent(c);
+        int cellWidth = (int) c.getExtents().getWidth() / cells.size();
+        for (Iterator i = cells.iterator(); i.hasNext();) {
+            TableCellContent tcc = (TableCellContent) i.next();
+            CellBox cellBox = new CellBox();
+            c.translate(row.width, 0);
+            cellBox.width = cellWidth;
+            cellBox = (CellBox) Boxing.layout(c, cellBox, tcc);
+            c.translate(-row.width, 0);
+
+            row.addChild(cellBox);
+            cellBox.setParent(row);
+            cellBox.element = tcc.getElement();
+            // set the child_box location
+            cellBox.x = row.width;
+            row.y = 0;
+
+            // increase the final layout width if the child was greater
+            if (cellBox.height > row.height) {
+                row.height = cellBox.height;
+            }
+            row.width += cellWidth;
+        }
+
+        c.popStyle();
+        return row;
+    }
+
 
 }
 
 /*
-   to support row spanning
-   as we go across each row we have to figure out if the current cell
-   is spanned to the one above or not.  first we need a growable grid
-   object to manage the cells.
-   addCell(Xx,y,col_span,row_span)
-   getWidth()
-   getHeight()
-   isReal(Xx,y)
-   //isVirtual(Xx,y)
-   //getColSpan(Xx,y)
-   //getRowSpan(Xx,y)
-   //getRealCell(Xx,y)
-   loop through all cells and add them
-   calc the column widths
-   for each row
-   for each cell
-   if isReal()
-   add to row_box
-   do internal layout
-   set Xx based on column widths
-   set y based on row
-   set w based on contents and column widths
-   set h based on row height
-   if is virtual()
-   update w based on column
-   update h based on row heights between orig row and this row
-  */
-/*
    $Id$
    $Log$
+   Revision 1.11  2005/06/05 01:02:35  tobega
+   Very simple and not completely functional table layout
+
    Revision 1.10  2005/05/13 15:23:57  tobega
    Done refactoring box borders, margin and padding. Hover is working again.
 

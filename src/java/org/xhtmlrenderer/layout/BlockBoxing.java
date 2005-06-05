@@ -57,7 +57,6 @@ public class BlockBoxing {
         // Uu.p("BoxLayout.layoutContent(): " + block);
 
         Iterator contentIterator = contentList.iterator();
-        //TODO: how does a block's firstLineStyle and firstLetterStyle propagate downwards?
         while (contentIterator.hasNext()) {
             Object o = contentIterator.next();
             if (o instanceof FirstLineStyle) {//can actually only be the first object in list
@@ -134,6 +133,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/06/05 01:02:34  tobega
+ * Very simple and not completely functional table layout
+ *
  * Revision 1.6  2005/06/03 19:56:42  tobega
  * Now uses first-line styles from all block-level ancestors
  *

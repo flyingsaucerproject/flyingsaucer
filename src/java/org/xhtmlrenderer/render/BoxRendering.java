@@ -30,8 +30,6 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.ContentUtil;
-import org.xhtmlrenderer.table.TableBox;
-import org.xhtmlrenderer.table.TableRendering;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.Uu;
@@ -143,9 +141,9 @@ public class BoxRendering {
         paintBackground(c, block);
 
         c.translateInsets(block);
-        if (block instanceof TableBox) {
+        /* Q&D for now if (block instanceof TableBox) {
             TableRendering.paintTable(c, (TableBox) block, restyle);
-        } else if (isInlineLayedOut(block)) {
+        } else */ if (isInlineLayedOut(block)) {
             InlineRendering.paintInlineContext(c, block, restyle);
         } else {
             BlockRendering.paintBlockContext(c, block, restyle);
@@ -347,6 +345,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/06/05 01:02:35  tobega
+ * Very simple and not completely functional table layout
+ *
  * Revision 1.28  2005/06/03 19:56:43  tobega
  * Now uses first-line styles from all block-level ancestors
  *
