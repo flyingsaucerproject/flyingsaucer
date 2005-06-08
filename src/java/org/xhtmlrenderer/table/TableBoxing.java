@@ -36,6 +36,7 @@
   */
 package org.xhtmlrenderer.table;
 
+import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
@@ -48,7 +49,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -108,7 +109,22 @@ public class TableBoxing {
             c.pushStyle(CascadedStyle.emptyCascadedStyle);
         }
 
+        Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
+        //note: percentages here refer to width of containing block
+        Border margin = c.getCurrentStyle().getMarginWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+        Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+        int tx = margin.left + border.left + padding.left;
+        int ty = margin.top + border.top + padding.top;
+        tableBox.tx = tx;
+        tableBox.ty = ty;
+        c.translate(tx, ty);
+        c.shrinkExtents(tx + margin.right + border.right + padding.right, ty + margin.bottom + border.bottom + padding.bottom);
         layoutChildren(c, tableBox, content);
+        c.unshrinkExtents();
+        c.translate(-tx, -ty);
+        // calculate the total outer width
+        tableBox.width = margin.left + border.left + padding.left + tableBox.width + padding.right + border.right + margin.right;
+        tableBox.height = margin.top + border.top + padding.top + tableBox.height + padding.bottom + border.bottom + margin.bottom;
 
         c.popStyle();
 
@@ -154,6 +170,9 @@ public class TableBoxing {
     }
 
     private static RowBox layoutRow(Context c, TableRowContent tableRowContent) {
+        // copy the extents
+        Rectangle oe = c.getExtents();
+        c.setExtents(new Rectangle(oe));
         RowBox row = new RowBox();
         CascadedStyle pushed = tableRowContent.getStyle();
         if (pushed != null) {
@@ -161,13 +180,37 @@ public class TableBoxing {
         } else {
             c.pushStyle(CascadedStyle.emptyCascadedStyle);
         }
+
+        Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
+        //note: percentages here refer to width of containing block
+        Border margin = c.getCurrentStyle().getMarginWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+        Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+        int tx = margin.left + border.left + padding.left;
+        int ty = margin.top + border.top + padding.top;
+        row.tx = tx;
+        row.ty = ty;
+        c.translate(tx, ty);
+        c.shrinkExtents(tx + margin.right + border.right + padding.right, ty + margin.bottom + border.bottom + padding.bottom);
         List cells = tableRowContent.getChildContent(c);
-        int cellWidth = (int) c.getExtents().getWidth() / cells.size();
+        layoutCells(cells, c, row);
+        c.unshrinkExtents();
+        c.translate(-tx, -ty);
+        // calculate the total outer width
+        row.width = margin.left + border.left + padding.left + row.width + padding.right + border.right + margin.right;
+        row.height = margin.top + border.top + padding.top + row.height + padding.bottom + border.bottom + margin.bottom;
+
+        c.popStyle();
+
+        //restore the extents
+        c.setExtents(oe);
+        return row;
+    }
+
+    private static void layoutCells(List cells, Context c, RowBox row) {
         for (Iterator i = cells.iterator(); i.hasNext();) {
             TableCellContent tcc = (TableCellContent) i.next();
             CellBox cellBox = new CellBox();
             c.translate(row.width, 0);
-            cellBox.width = cellWidth;
             cellBox = (CellBox) Boxing.layout(c, cellBox, tcc);
             c.translate(-row.width, 0);
 
@@ -182,11 +225,8 @@ public class TableBoxing {
             if (cellBox.height > row.height) {
                 row.height = cellBox.height;
             }
-            row.width += cellWidth;
+            row.width += cellBox.width;
         }
-
-        c.popStyle();
-        return row;
     }
 
 
@@ -195,6 +235,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.12  2005/06/08 18:24:52  tobega
+   Starting to get some kind of shape to tables
+
    Revision 1.11  2005/06/05 01:02:35  tobega
    Very simple and not completely functional table layout
 
