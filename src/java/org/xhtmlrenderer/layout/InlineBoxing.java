@@ -74,7 +74,7 @@ public class InlineBoxing {
         int remaining_width = bounds.width;
         LineBox curr_line = newLine(box, bounds, null, blockLineMetrics);
         c.setFirstLine(true);
-        LinkedList pushedOnFirstLine = new LinkedList();
+        LinkedList pushedOnFirstLine = null;
 
         // account for text-indent
         CalculatedStyle parentStyle = c.getCurrentStyle();
@@ -125,8 +125,11 @@ public class InlineBoxing {
                 }
                 //first push first-line styles
                 if (c.hasFirstLineStyles()) {
-                    for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext();) {
-                        c.pushStyle((CascadedStyle) i.next());
+                    if (pushedOnFirstLine == null) {
+                        pushedOnFirstLine = new LinkedList();
+                        for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext();) {
+                            c.pushStyle((CascadedStyle) i.next());
+                        }
                     }
                     pushedOnFirstLine.addLast(cascaded);
                 }
@@ -181,6 +184,16 @@ public class InlineBoxing {
             Content currentContent = (Content) o;
 
             if (currentContent.getStyle() != null) {
+                //first push first-line styles
+                if (c.hasFirstLineStyles()) {
+                    if (pushedOnFirstLine == null) {
+                        pushedOnFirstLine = new LinkedList();
+                        for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext();) {
+                            c.pushStyle((CascadedStyle) i.next());
+                        }
+                    }
+                    pushedOnFirstLine.addLast(currentContent.getStyle());
+                }
                 c.pushStyle(currentContent.getStyle());
             }
 
@@ -293,6 +306,9 @@ public class InlineBoxing {
 
             if (currentContent.getStyle() != null) {
                 c.popStyle();
+                if (c.hasFirstLineStyles()) {
+                    pushedOnFirstLine.removeLast();
+                }
             }
         }
 
@@ -550,6 +566,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/06/08 23:29:59  tobega
+ * fixed a bug with first-line styles
+ *
  * Revision 1.29  2005/06/08 19:01:56  tobega
  * Table cells get their preferred width
  *
