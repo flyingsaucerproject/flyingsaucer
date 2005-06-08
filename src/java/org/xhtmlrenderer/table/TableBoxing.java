@@ -211,7 +211,9 @@ public class TableBoxing {
             TableCellContent tcc = (TableCellContent) i.next();
             CellBox cellBox = new CellBox();
             c.translate(row.width, 0);
+            c.setShrinkWrap();
             cellBox = (CellBox) Boxing.layout(c, cellBox, tcc);
+            c.unsetShrinkWrap();
             c.translate(-row.width, 0);
 
             row.addChild(cellBox);
@@ -235,6 +237,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.13  2005/06/08 19:01:57  tobega
+   Table cells get their preferred width
+
    Revision 1.12  2005/06/08 18:24:52  tobega
    Starting to get some kind of shape to tables
 

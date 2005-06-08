@@ -31,8 +31,7 @@ import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Font;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -299,25 +298,14 @@ public class InlineBoxing {
 
         // save the final line
         saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, true, blockLineHeight, pushedOnFirstLine);
-        finishBlock(box, curr_line, bounds);
+        bounds.height += curr_line.height;
+        if (!c.shrinkWrap()) box.width = bounds.width;
+        box.height = bounds.height;
+        box.x = 0;
+        box.y = 0;
         // Uu.p("- InlineLayout.layoutContent(): " + box);
         //pop the dummy style, but no, see above
         //c.popStyle();
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param block     PARAM
-     * @param curr_line PARAM
-     * @param bounds    PARAM
-     */
-    public static void finishBlock(Box block, LineBox curr_line, Rectangle bounds) {
-        bounds.height += curr_line.height;
-        block.width = bounds.width;
-        block.height = bounds.height;
-        block.x = 0;
-        block.y = 0;
     }
 
 
@@ -537,8 +525,11 @@ public class InlineBoxing {
             c.clearFirstLineStyles();
         }
         c.setFirstLine(false);
+        if (c.shrinkWrap()) {
+            if (line_to_save.width > block.width) block.width = line_to_save.width;
+        } else
         // account for text-align
-        TextAlign.adjustTextAlignment(c, style, line_to_save, width, x, last);
+            TextAlign.adjustTextAlignment(c, style, line_to_save, width, x, last);
         // set the y
         line_to_save.y = prev_line.y + prev_line.height;
 
@@ -559,6 +550,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/06/08 19:01:56  tobega
+ * Table cells get their preferred width
+ *
  * Revision 1.28  2005/06/03 19:56:42  tobega
  * Now uses first-line styles from all block-level ancestors
  *

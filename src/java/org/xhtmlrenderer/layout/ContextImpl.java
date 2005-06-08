@@ -31,9 +31,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -43,6 +41,7 @@ public class ContextImpl implements Context {
     private LinkedList decorations = new LinkedList();
     private LinkedList inlineBorders = new LinkedList();
     private LinkedList firstLineStyles = new LinkedList();
+    private boolean shrinkWrap = false;
 
     //delegated methods
     public String getMedia() {
@@ -215,6 +214,18 @@ public class ContextImpl implements Context {
      */
     public LinkedList getFirstLineStyles() {
         return firstLineStyles;
+    }
+
+    public boolean shrinkWrap() {
+        return shrinkWrap;
+    }
+
+    public void setShrinkWrap() {
+        shrinkWrap = true;
+    }
+
+    public void unsetShrinkWrap() {
+        shrinkWrap = false;
     }
 
     //the stuff that needs to have a separate instance for each run.
