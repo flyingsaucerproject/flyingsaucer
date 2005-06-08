@@ -19,30 +19,40 @@
  */
 package org.xhtmlrenderer.table;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.render.BlockBox;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class TableBox extends BlockBox {
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public List rows = new ArrayList();
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public Element elem;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public Point spacing;
+    public int[] columns;
 
-    /** Constructor for the TableBox object */
+    /**
+     * Constructor for the TableBox object
+     */
     public TableBox() {
 
         super();
@@ -52,14 +62,14 @@ public class TableBox extends BlockBox {
     /**
      * Constructor for the TableBox object
      *
-     * @param x       PARAM
-     * @param y       PARAM
-     * @param width   PARAM
-     * @param height  PARAM
+     * @param x      PARAM
+     * @param y      PARAM
+     * @param width  PARAM
+     * @param height PARAM
      */
-    public TableBox( int x, int y, int width, int height ) {
+    public TableBox(int x, int y, int width, int height) {
 
-        super( x, y, width, height );
+        super(x, y, width, height);
 
     }
 
@@ -68,6 +78,9 @@ public class TableBox extends BlockBox {
 /*
  * $Id$
  * $Log$
+ * Revision 1.4  2005/06/08 19:48:55  tobega
+ * Rock 'n roll! Report looks quite good!
+ *
  * Revision 1.3  2005/01/29 20:18:42  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

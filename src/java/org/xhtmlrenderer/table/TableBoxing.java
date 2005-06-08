@@ -136,17 +136,37 @@ public class TableBoxing {
             c.getBlockFormattingContext().doFinalAdjustments();
             //no! clear it in BasicPanel instead! c.popBFC();
         }
+        fixWidths(tableBox);
         return tableBox;//HACK:
     }
 
+    private static void fixWidths(TableBox tableBox) {
+        for (Iterator tci = tableBox.getChildIterator(); tci.hasNext();) {
+            Object tc = tci.next();
+            if (tc instanceof RowBox) {
+                RowBox row = (RowBox) tc;
+                int col = 0;
+                int x = 0;
+                for (Iterator cbi = row.getChildIterator(); cbi.hasNext();) {
+                    CellBox cb = (CellBox) cbi.next();
+                    cb.width = tableBox.columns[col];
+                    cb.x = x;
+                    x += cb.width;
+                    col += 1;
+                }
+            } else
+                XRLog.layout(Level.WARNING, "Can't fix widths of " + tc.getClass().getName() + " yet!");
+        }
+    }
+
     //TODO: do this right. It is totally as simple as possible.
-    private static void layoutChildren(Context c, Box tableBox, Content content) {
+    private static void layoutChildren(Context c, TableBox tableBox, Content content) {
         Iterator contentIterator = content.getChildContent(c).iterator();
         while (contentIterator.hasNext()) {
             Object o = contentIterator.next();
             if (o instanceof TableRowContent) {
                 c.translate(0, tableBox.height);
-                RowBox row = layoutRow(c, (TableRowContent) o);
+                RowBox row = layoutRow(c, (TableRowContent) o, tableBox);
                 c.translate(0, -tableBox.height);
 
                 tableBox.addChild(row);
@@ -169,7 +189,7 @@ public class TableBoxing {
         }
     }
 
-    private static RowBox layoutRow(Context c, TableRowContent tableRowContent) {
+    private static RowBox layoutRow(Context c, TableRowContent tableRowContent, TableBox table) {
         // copy the extents
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
@@ -192,7 +212,8 @@ public class TableBoxing {
         c.translate(tx, ty);
         c.shrinkExtents(tx + margin.right + border.right + padding.right, ty + margin.bottom + border.bottom + padding.bottom);
         List cells = tableRowContent.getChildContent(c);
-        layoutCells(cells, c, row);
+        checkColumns(table, cells.size());
+        layoutCells(cells, c, row, table);
         c.unshrinkExtents();
         c.translate(-tx, -ty);
         // calculate the total outer width
@@ -206,7 +227,8 @@ public class TableBoxing {
         return row;
     }
 
-    private static void layoutCells(List cells, Context c, RowBox row) {
+    private static void layoutCells(List cells, Context c, RowBox row, TableBox table) {
+        int col = 0;
         for (Iterator i = cells.iterator(); i.hasNext();) {
             TableCellContent tcc = (TableCellContent) i.next();
             CellBox cellBox = new CellBox();
@@ -227,7 +249,22 @@ public class TableBoxing {
             if (cellBox.height > row.height) {
                 row.height = cellBox.height;
             }
+            if (cellBox.width > table.columns[col]) {
+                table.columns[col] = cellBox.width;
+            }
+            cellBox.width = table.columns[col];
             row.width += cellBox.width;
+            col += 1;
+        }
+    }
+
+    private static void checkColumns(TableBox table, int cols) {
+        if (table.columns == null)
+            table.columns = new int[cols];
+        else if (table.columns.length < cols) {
+            int[] newColumns = new int[cols];
+            for (int i = 0; i < table.columns.length; i++) newColumns[i] = table.columns[i];
+            table.columns = newColumns;
         }
     }
 
@@ -237,6 +274,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.14  2005/06/08 19:48:55  tobega
+   Rock 'n roll! Report looks quite good!
+
    Revision 1.13  2005/06/08 19:01:57  tobega
    Table cells get their preferred width
 
