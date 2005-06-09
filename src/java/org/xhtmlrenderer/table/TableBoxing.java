@@ -37,6 +37,8 @@
 package org.xhtmlrenderer.table;
 
 import org.xhtmlrenderer.css.Border;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
@@ -122,6 +124,15 @@ public class TableBoxing {
         layoutChildren(c, tableBox, content);
         c.unshrinkExtents();
         c.translate(-tx, -ty);
+        //OK, now we basically have the maximum cell widths, is that a smart order?
+        if (c.getCurrentStyle().isIdent(CSSName.WIDTH, IdentValue.AUTO)) {
+            //we're normally fine, unless the maximum width is greater than the extents
+            fixWidths(tableBox);
+        } else {//if the algorithm is fixed, we need to do something else from the start
+            //also fine, if the total calculated is less than the extents and the width
+            tableBox.width = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
+            fixWidths(tableBox);
+        }
         // calculate the total outer width
         tableBox.width = margin.left + border.left + padding.left + tableBox.width + padding.right + border.right + margin.right;
         tableBox.height = margin.top + border.top + padding.top + tableBox.height + padding.bottom + border.bottom + margin.bottom;
@@ -136,11 +147,20 @@ public class TableBoxing {
             c.getBlockFormattingContext().doFinalAdjustments();
             //no! clear it in BasicPanel instead! c.popBFC();
         }
-        fixWidths(tableBox);
         return tableBox;//HACK:
     }
 
+    //increases cell size without re-layout.
     private static void fixWidths(TableBox tableBox) {
+        int sum = 0;
+        for (int i = 0; i < tableBox.columns.length; i++) sum += tableBox.columns[i];
+        if (sum < tableBox.width) {
+            int extra = (tableBox.width - sum) / tableBox.columns.length;
+            for (int i = 0; i < tableBox.columns.length; i++) tableBox.columns[i] += extra;
+        } else {
+            //if sum is greater, we probably screwed up earlier, just do something reasonable
+            tableBox.width = sum;
+        }
         for (Iterator tci = tableBox.getChildIterator(); tci.hasNext();) {
             Object tc = tci.next();
             if (tc instanceof RowBox) {
@@ -274,6 +294,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.15  2005/06/09 21:35:02  tobega
+   Increases cells to fill out a given table width, otherwise just does something reasonable for now
+
    Revision 1.14  2005/06/08 19:48:55  tobega
    Rock 'n roll! Report looks quite good!
 
