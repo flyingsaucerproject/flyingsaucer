@@ -25,6 +25,7 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.LinkListener;
+import org.xhtmlrenderer.swing.HoverListener;
 
 import java.io.File;
 import java.io.InputStream;
@@ -82,6 +83,14 @@ import java.net.URL;
  * ctx.addFont(fnt,"Arial"); // redefine a font
  * ctx.setDomImplementation("com.cooldom.DomImpl");
  * </pre>
+ 
+ <p>XHTMLPanel comes with a pre-installed MouseListener which handles :hover events used for rollovers 
+ ( @see org.xhtmlrenderer.swing.HoverListener ). XHTMLPanel also comes with a pre-installed LinkListener
+ used to follow links.  ( @see org.xhtmlrenderer.swing.LinkListener )
+ If you want to disable these for some reason you can
+ get the list of mouse listeners and remove them all.
+ </p>
+ 
  *
  * @author Joshua Marinacci (joshy@joshy.net)
  * @see <a href="http://xhtmlrenderer.dev.java.net">The Flying Saucer Home Page</a>
@@ -95,6 +104,7 @@ public class XHTMLPanel extends BasicPanel {
      */
     public XHTMLPanel() {
         fontScalingFactor = 1.2F;
+		setupListeners();
     }
 
     /**
@@ -118,8 +128,17 @@ public class XHTMLPanel extends BasicPanel {
      */
     public XHTMLPanel(UserAgentCallback uac) {
         super(uac);
-        addMouseListener(new LinkListener(this));
+		setupListeners();
     }
+	
+	private void setupListeners() {
+		// install a default link listener
+        addMouseListener(new LinkListener(this));
+		// install a default hover listener
+        HoverListener hov = new HoverListener(this);
+        addMouseListener(hov);
+        addMouseMotionListener(hov);
+	}
 
     /**
      * Lays out the current document again, and re-renders.
@@ -283,6 +302,17 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/06/09 22:34:56  joshy
+ * This makes the hover listener be added to the xhtml panel by default.
+ * Also improves the box searching code by testing if the parent of the deepest
+ * box is hoverable in the case where the deepest box is not.
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.16  2005/06/01 21:36:43  tobega
  * Got image scaling working, and did some refactoring along the way
  *

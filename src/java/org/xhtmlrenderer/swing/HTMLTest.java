@@ -67,10 +67,12 @@ public class HTMLTest extends JFrame {
         scroll.setHorizontalScrollBarPolicy(scroll.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setPreferredSize(new Dimension(width, height));
         panel.addMouseListener(new LinkListener(panel));
+		/*
         HoverListener hov = new HoverListener(panel);
         panel.addMouseListener(hov);
         panel.addMouseMotionListener(hov);
-
+		*/
+		
         if (args.length > 0) {
             loadDocument(args[0]);
         }
@@ -467,6 +469,17 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/06/09 22:34:57  joshy
+ * This makes the hover listener be added to the xhtml panel by default.
+ * Also improves the box searching code by testing if the parent of the deepest
+ * box is hoverable in the case where the deepest box is not.
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.28  2005/01/29 20:21:09  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

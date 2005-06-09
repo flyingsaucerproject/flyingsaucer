@@ -2,6 +2,7 @@ package org.xhtmlrenderer.swing;
 
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.event.MouseInputAdapter;
 import java.awt.event.MouseEvent;
@@ -30,11 +31,17 @@ public class HoverListener extends MouseInputAdapter {
     }
 
     private void restyle(Box ib) {
-        // Uu.p("under cursor = " + ib);
+        //Uu.p("under cursor = " + ib);
         boolean needRepaint = false;
+		// return this box or one if it's parents to find the deepest hovered element.
+		// if none then just return null
+		ib = getDeepestHover(ib);
+        //Uu.p("calc'd = " + ib);
+
         if (prev == ib) {
             return;
         }
+
 
         if (ib == null)
             panel.hovered_element = null;
@@ -51,9 +58,9 @@ public class HoverListener extends MouseInputAdapter {
             }
         }
 
-        prev = ib;
         // return if no new hovered block;
         if (ib != null) {
+			//System.out.println("Using: " + ib);
 
             /*
                 if the box is an inline box
@@ -68,6 +75,8 @@ public class HoverListener extends MouseInputAdapter {
             //if (ib.isInlineElement() || !(ib instanceof InlineBox)) {
             boolean restyled = panel.getContext().getCss().isHoverStyled(ib.element);
             //Uu.p("was styled = " + ib);
+			
+			// if the block isn't a hover then go up to the parent.
 
             // if the block has a hover style then restyle it
             if (restyled) {
@@ -77,8 +86,21 @@ public class HoverListener extends MouseInputAdapter {
             }
             //}
         }
+        prev = ib;
         if (needRepaint) panel.repaint();
     }
+	
+	private Box getDeepestHover(Box box) {
+		if(box == null) {
+			return null;
+		}
+		
+		if(panel.getContext().getCss().isHoverStyled(box.element)) {
+			return box;
+		}
+		//System.out.println("going to parent: " + box.getParent());
+		return getDeepestHover(box.getParent());
+	}
 
     private Box findBox(MouseEvent evt) {
         Box box = panel.findElementBox(evt.getX(), evt.getY());

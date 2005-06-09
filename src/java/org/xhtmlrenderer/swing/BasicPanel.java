@@ -37,6 +37,7 @@ import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
 import java.awt.*;
@@ -371,9 +372,13 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         }
 
         //Uu.p("bfc blah = " + box.getBlockFormattingContext());
+		
+		// go down to the next bfc
         if (box.getBlockFormattingContext() != null) {
             bfc = box.getBlockFormattingContext();
         }
+		
+		// loop through the children first
         Iterator it = box.getChildIterator();
         while (it.hasNext()) {
             Box bx = (Box) it.next();
@@ -428,7 +433,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             //Uu.p("tx = " + tx + " ty = " + ty);
             if (bx.contains(x - bx.x, tty - bx.y)) {
                 //TODO: if this is InlineBox, we need to find the first previous sibling with a pushStyle
-                // Uu.p("matches box: " + bx);
+                //Uu.p("matches box: " + bx);
                 return bx;
             }
         }
@@ -989,6 +994,17 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.47  2005/06/09 22:34:57  joshy
+ * This makes the hover listener be added to the xhtml panel by default.
+ * Also improves the box searching code by testing if the parent of the deepest
+ * box is hoverable in the case where the deepest box is not.
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.46  2005/06/01 21:36:44  tobega
  * Got image scaling working, and did some refactoring along the way
  *
