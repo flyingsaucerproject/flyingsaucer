@@ -117,7 +117,6 @@ public class TableContent implements Content {
         LinkedList contentList = new LinkedList();
         FirstLineStyle firstLineStyle = null;
         FirstLetterStyle firstLetterStyle = null;
-        StringBuffer textContent = null;
 
         if (_elem != null) {
             if (ContentUtil.mayHaveFirstLine(_style)) {
@@ -167,11 +166,15 @@ public class TableContent implements Content {
             }//must be a comment or pi or something
 
             if (curr.getNodeType() == Node.TEXT_NODE) {
-                if (anonymousRow == null) {
-                    anonymousRow = new TableRowContent();
-                    contentList.add(anonymousRow);
+                String text = curr.getNodeValue();
+                text = WhitespaceStripper.collapseWhitespace(IdentValue.NORMAL, text, true);
+                if (!text.equals("")) {
+                    if (anonymousRow == null) {
+                        anonymousRow = new TableRowContent();
+                        contentList.add(anonymousRow);
+                    }
+                    anonymousRow.addChild(curr);
                 }
-                anonymousRow.addChild(curr);
                 continue;
             }
 

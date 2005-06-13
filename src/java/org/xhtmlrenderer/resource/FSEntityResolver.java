@@ -20,42 +20,52 @@
  */
 package org.xhtmlrenderer.resource;
 
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
 import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
 
 /**
- * <p>
- *
+ * <p/>
+ * <p/>
  * A SAX EntityResolver for common entity references and DTDs in X/HTML
  * processing. Maps official entity references to local copies to avoid network
  * lookup. The local copies are stored in the source tree under /entities, and
  * the references here are resolved by a system ClassLoader. As long as the
  * entity files are in the classpath (or bundled in the FS jar), they will be
  * picked up.</p> <p>
- *
+ * <p/>
  * The basic form of this class comes from Elliot Rusty Harold, on
  * http://www.cafeconleche.org/books/xmljava/chapters/ch07s02.html</p> <p>
- *
+ * <p/>
  * This class is a Singleton; use {@link #instance} to retrieve it.</p>
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class FSEntityResolver implements EntityResolver {
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Map entities = new HashMap();
-    /** Singleton instance, use {@link #instance()} to retrieve. */
+    /**
+     * Singleton instance, use {@link #instance()} to retrieve.
+     */
     private static FSEntityResolver instance;
 
     // fill the list of URLs
-    /** Constructor for the FSEntityResolver object */
+    /**
+     * Constructor for the FSEntityResolver object
+     */
     private FSEntityResolver() {
         FSCatalog catalog = new FSCatalog();
         
@@ -80,32 +90,39 @@ public class FSEntityResolver implements EntityResolver {
     /**
      * Description of the Method
      *
-     * @param publicID          PARAM
-     * @param systemID          PARAM
-     * @return                  Returns
-     * @exception SAXException  Throws
+     * @param publicID PARAM
+     * @param systemID PARAM
+     * @return Returns
+     * @throws SAXException Throws
      */
-    public InputSource resolveEntity( String publicID,
-                                      String systemID )
-        throws SAXException {
+    public InputSource resolveEntity(String publicID,
+                                     String systemID)
+            throws SAXException {
 
         InputSource local = null;
-        String url = (String)entities.get( publicID );
-        if ( url != null ) {
-            InputStream is = GeneralUtil.openStreamFromClasspath( this, url );
-            
-            if ( is == null ) {
-                XRLog.xmlEntities( Level.WARNING,
+        String url = (String) entities.get(publicID);
+        if (url != null) {
+            URL realUrl = GeneralUtil.getURLFromClasspath(this, url);
+            InputStream is = null;
+            try {
+                is = realUrl.openStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (is == null) {
+                XRLog.xmlEntities(Level.WARNING,
                         "Can't find a local reference for Entity for public ID: " + publicID +
                         " and expected to. The local URL should be: " + url + ". Not finding " +
                         "this probably means a CLASSPATH configuration problem; this resource " +
                         "should be included with the renderer and so not finding it means it is " +
                         "not on the CLASSPATH, and should be. Will let parser use the default in " +
-                        "this case." );
+                        "this case.");
             }
-            local = new InputSource( is );
+            local = new InputSource(is);
+            local.setSystemId(realUrl.toExternalForm());
             XRLog.xmlEntities(Level.FINE, "Entity public: " + publicID + " -> " + url +
-            (local == null ? ", NOT FOUND" : " (local)"));
+                    (local == null ? ", NOT FOUND" : " (local)"));
         } else {
             XRLog.xmlEntities("Entity public: " + publicID + ", no local mapping. Parser will probably pull from network.");
         }
@@ -115,20 +132,20 @@ public class FSEntityResolver implements EntityResolver {
     /**
      * Adds a feature to the Mapping attribute of the FSEntityResolver object
      *
-     * @param publicID  The feature to be added to the Mapping attribute
-     * @param URL       The feature to be added to the Mapping attribute
+     * @param publicID The feature to be added to the Mapping attribute
+     * @param URL      The feature to be added to the Mapping attribute
      */
-    private void addMapping( String publicID, String URL ) {
-        entities.put( publicID, URL );
+    private void addMapping(String publicID, String URL) {
+        entities.put(publicID, URL);
     }
 
     /**
      * Gets an instance of this class.
      *
-     * @return   An instance of .
+     * @return An instance of .
      */
     public static synchronized FSEntityResolver instance() {
-        if ( instance == null ) {
+        if (instance == null) {
             instance = new FSEntityResolver();
         }
         return instance;
@@ -139,6 +156,10 @@ public class FSEntityResolver implements EntityResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/06/13 06:50:15  tobega
+ * Fixed a bug in table content resolution.
+ * Various "tweaks" in other stuff.
+ *
  * Revision 1.4  2005/03/28 14:24:48  pdoubleya
  * Changed to resolve all entities using simple catalog files.
  *

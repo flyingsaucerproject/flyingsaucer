@@ -24,10 +24,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 
@@ -63,8 +60,8 @@ public class BackgroundPainter {
             return;
         }
         Border margin = c.getCurrentStyle().getMarginWidth(width, height, c.getCtx());
-        Rectangle box = new Rectangle(block.x + margin.left + border.left - 1,
-                block.y + margin.top + border.top - 1,
+        Rectangle box = new Rectangle(block.x + margin.left + border.left,
+                block.y + margin.top + border.top,
                 block.width - margin.left - margin.right - border.left - border.right,
                 block.height - margin.top - border.top - border.bottom - margin.bottom);
 
@@ -183,6 +180,10 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/06/13 06:50:15  tobega
+ * Fixed a bug in table content resolution.
+ * Various "tweaks" in other stuff.
+ *
  * Revision 1.27  2005/06/04 13:28:34  tobega
  * better??
  *

@@ -55,6 +55,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
      * @param uri PARAM
      * @return The stylesheet value
      */
+    //TOdO:implement this with nio.
     public java.io.Reader getReader(String uri) {
         java.io.InputStream is = null;
         Reader reader = null;
@@ -152,6 +153,10 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/06/13 06:50:16  tobega
+ * Fixed a bug in table content resolution.
+ * Various "tweaks" in other stuff.
+ *
  * Revision 1.9  2005/06/03 00:29:49  tobega
  * fixed potential bug
  *

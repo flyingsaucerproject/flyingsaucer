@@ -46,6 +46,7 @@ public interface UserAgentCallback {
      * @return A Reader for the stylesheet, or null if it can't be read
      *         or if the stylesheet should be ignored.
      */
+    //TODO: is a reader appropriate? who knows the character encoding? use of nio preferable
     public java.io.Reader getReader(String uri);
 
     /**

@@ -117,7 +117,6 @@ public class TableRowContent implements Content {
         LinkedList contentList = new LinkedList();
         FirstLineStyle firstLineStyle = null;
         FirstLetterStyle firstLetterStyle = null;
-        StringBuffer textContent = null;
 
         if (_elem != null) {
             if (ContentUtil.mayHaveFirstLine(_style)) {
@@ -167,11 +166,15 @@ public class TableRowContent implements Content {
             }//must be a comment or pi or something
 
             if (curr.getNodeType() == Node.TEXT_NODE) {
-                if (anonymousCell == null) {
-                    anonymousCell = new TableCellContent();
-                    contentList.add(anonymousCell);
+                String text = curr.getNodeValue();
+                text = WhitespaceStripper.collapseWhitespace(IdentValue.NORMAL, text, true);
+                if (!text.equals("")) {
+                    if (anonymousCell == null) {
+                        anonymousCell = new TableCellContent();
+                        contentList.add(anonymousCell);
+                    }
+                    anonymousCell.addChild(curr);
                 }
-                anonymousCell.addChild(curr);
                 continue;
             }
 
@@ -180,7 +183,7 @@ public class TableRowContent implements Content {
             c.pushStyle(style);//just remember to pop it before continue
             IdentValue display = c.getCurrentStyle().getIdent(CSSName.DISPLAY);
 
-            //If this element can't be directly uder a table, stick it in an anonymous row
+            //If this element can't be directly under a table-row, stick it in an anonymous cell
             if (display != IdentValue.TABLE_CELL) {
                 if (anonymousCell == null) {
                     anonymousCell = new TableCellContent();

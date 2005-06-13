@@ -1,93 +1,94 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <project name="Flying Saucer Build File" default="help" basedir=".">
-  <description>Checkout, build, test, and package the Flying Saucer project.</description>
+    <description>Checkout, build, test, and package the Flying Saucer project.</description>
 
     <!-- =====================================================
          init and prefab settings
          ===================================================== -->
-  <import file="./etc/build/properties.xml" />
-  <import file="./etc/build/preset-defs.xml" />
-  <import file="./etc/build/clean.xml" />
-  <import file="./etc/build/compile.xml" />
-  <import file="./etc/build/docs.xml" />
-  <import file="./etc/build/jars.xml" />
-  <import file="./etc/build/tests.xml" />
-  <import file="./etc/build/dist.xml" />
-  <import file="./etc/build/upload.xml" />
-  <import file="./etc/build/demo-apps.xml" />
-  <import file="./etc/build/netbeans.xml" />
+    <import file="./etc/build/properties.xml"/>
+    <import file="./etc/build/preset-defs.xml"/>
+    <import file="./etc/build/clean.xml"/>
+    <import file="./etc/build/compile.xml"/>
+    <import file="./etc/build/docs.xml"/>
+    <import file="./etc/build/jars.xml"/>
+    <import file="./etc/build/tests.xml"/>
+    <import file="./etc/build/dist.xml"/>
+    <import file="./etc/build/upload.xml"/>
+    <import file="./etc/build/demo-apps.xml"/>
+    <import file="./etc/build/netbeans.xml"/>
 
-  <target name="help">
-    <echo message=" ant settings: show all Ant properties to be used"/>
-    <echo message=" ant clean: clean up any compilation or distribution files made"/>
-    <echo message=" ant compile: compile the source"/>
-    <echo message=" ant browser: build run the browser"/>
-    <echo message=" ant test: build run the test app"/>
-    <echo message=" ant about: build run the about box demo"/>
-    <echo message="lib directory ${libraries.dir}" />
-  </target>
+    <target name="help">
+        <echo message=" ant settings: show all Ant properties to be used"/>
+        <echo message=" ant clean: clean up any compilation or distribution files made"/>
+        <echo message=" ant compile: compile the source"/>
+        <echo message=" ant browser: build run the browser"/>
+        <echo message=" ant test: build run the test app"/>
+        <echo message=" ant about: build run the about box demo"/>
+        <echo message="lib directory ${libraries.dir}"/>
+    </target>
 
 
     <!-- General initialization, including properties. -->
-  <target name="init" depends="properties">
-    <mkdir dir="${dest.dir}"/>
-    <mkdir dir="${dest.java.dir}"/>
-    <mkdir dir="${dest.resources.css.dir}"/>
-    <mkdir dir="${dest.resources.conf.dir}"/>
-    <mkdir dir="${dest.resources.elements.dir}"/>
-    <mkdir dir="${dest.resources.entities.dir}"/>
-    <mkdir dir="${dest.resources.notations.dir}"/>
-    <mkdir dir="${dest.resources.dtd.dir}"/>
-  </target>
+    <target name="init" depends="properties">
+        <mkdir dir="${dest.dir}"/>
+        <mkdir dir="${dest.java.dir}"/>
+        <mkdir dir="${dest.resources.css.dir}"/>
+        <mkdir dir="${dest.resources.conf.dir}"/>
+        <!--<mkdir dir="${dest.resources.elements.dir}"/>
+        <mkdir dir="${dest.resources.entities.dir}"/>
+        <mkdir dir="${dest.resources.notations.dir}"/>
+        <mkdir dir="${dest.resources.dtd.dir}"/>
+        -->
+    </target>
 
     <!-- =====================================================
          Compile, Jar, and Clean
          ===================================================== -->
     <!-- Deletes all files from destination directory tree. -->
-  <target name="clean" description="Cleans all build files." depends="properties">
-    <delete dir="${dest.dir}"/>
-    <delete>
-      <fileset dir="${basedir}">
-        <include name="**/*~"/>
-      </fileset>
-    </delete>
-  </target>
+    <target name="clean" description="Cleans all build files." depends="properties">
+        <delete dir="${dest.dir}"/>
+        <delete>
+            <fileset dir="${basedir}">
+                <include name="**/*~"/>
+            </fileset>
+        </delete>
+    </target>
 
     <!-- Compiles application and copies resources to destination directory. -->
-  <target name="compile" description="Compile core classes." depends="init,resources.core">
-    <javac-full>
-      <include name="org/xhtmlrenderer/**"/>
-    </javac-full>
-  </target>
+    <target name="compile" description="Compile core classes." depends="init,resources.core">
+        <javac-full>
+            <include name="org/xhtmlrenderer/**"/>
+        </javac-full>
+    </target>
 
     <!-- Builds core, browser and about box jars. -->
-  <target name="jar" description="Builds all jars">
-    <antcall target="jar.core" />
-    <antcall target="jar.browser" />
-    <antcall target="jar.about" />
-    <antcall target="jar.photogallery" />
-    <antcall target="jar.filebrowser" />
-  </target>
+    <target name="jar" description="Builds all jars">
+        <antcall target="jar.core"/>
+        <antcall target="jar.browser"/>
+        <antcall target="jar.about"/>
+        <antcall target="jar.photogallery"/>
+        <antcall target="jar.filebrowser"/>
+    </target>
 
     <!-- =====================================================
          Build the various distributions
          ===================================================== -->
-  <target name="dist" description="Builds all distribution files.">
-    <antcall target="dist.jnlp" />
-    <antcall target="dist.src" />
-    <antcall target="dist.binary" />
-  </target>
+    <target name="dist" description="Builds all distribution files.">
+        <antcall target="dist.jnlp"/>
+        <antcall target="dist.src"/>
+        <antcall target="dist.binary"/>
+    </target>
 
     <!-- Builds a ZIP file of entire project from base directory. -->
-  <target name="zip" description="Builds ZIP file of entire project." depends="jar">
-    <zip basedir="${basedir}" zipfile="../flyingsaucer.zip"/>
-  </target>
+    <target name="zip" description="Builds ZIP file of entire project." depends="jar">
+        <zip basedir="${basedir}" zipfile="../flyingsaucer.zip"/>
+    </target>
 
     
     <!-- =================================================
          Documentation
          ================================================= -->
-  <target name="docs" description="Creates JavaDocs" depends="clean.java2html, clean.javadoc">
+    <target name="docs" description="Creates JavaDocs" depends="clean.java2html, clean.javadoc">
         <!-- <taskdef name="java2html"
             classname="de.java2html.anttasks.Java2HtmlTask"
             classpath="lib/java2html.jar"
@@ -102,139 +103,145 @@
             showFileName="true"
             showTableBorder="true"
             /> -->
-    <antcall target="_javadoc">
-      <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.full.dir}"/>
-      <param name="antcall.javadoc.file" value=""/>
-    </antcall>
-    <antcall target="_javadoc">
-      <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.user.dir}"/>
-      <param name="antcall.javadoc.file" value="src/java/org/xhtmlrenderer/simple/XHTMLPanel.java"/>
-      <reference refid="user-java-files" torefid="org-java-files"/>
-    </antcall>
-    <copy todir="${dest.dir}/docs" file="${dest.javadoc.full.dir}/index.html"/>
-  </target>
+        <antcall target="_javadoc">
+            <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.full.dir}"/>
+            <param name="antcall.javadoc.file" value=""/>
+        </antcall>
+        <antcall target="_javadoc">
+            <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.user.dir}"/>
+            <param name="antcall.javadoc.file" value="src/java/org/xhtmlrenderer/simple/XHTMLPanel.java"/>
+            <reference refid="user-java-files" torefid="org-java-files"/>
+        </antcall>
+        <copy todir="${dest.dir}/docs" file="${dest.javadoc.full.dir}/index.html"/>
+    </target>
 
     <!-- =================================================
          Helpers
          ================================================= -->
     <!-- copies core resources to destination directory. -->
-  <target name="resources.core"
-      description="Copies core resource files (css/dtds) to build directory"
-      depends="init">
+    <target name="resources.core"
+        description="Copies core resource files (css/dtds) to build directory"
+        depends="init">
 
-    <copy todir="${dest.resources.css.dir}" file="${src.resources.css.dir}/default.css"/>
-    <copy todir="${dest.resources.conf.dir}" file="${src.resources.conf.dir}/xhtmlrenderer.conf"/>
-    <copy todir="${dest.resources.elements.dir}">
-      <fileset dir="${src.resources.elements.dir}">
-        <include name="*.mod"/>
-      </fileset>
-    </copy>
-    <copy todir="${dest.resources.entities.dir}">
-      <fileset dir="${src.resources.entities.dir}">
-        <include name="*.ent"/>
-        <include name="*.mod"/>
-      </fileset>
-    </copy>
-    <copy todir="${dest.resources.dtd.dir}">
-      <fileset dir="${src.resources.dtd.dir}">
-        <include name="*.dtd"/>
-      </fileset>
-    </copy>
-    <copy todir="${dest.resources.notations.dir}">
-      <fileset dir="${src.resources.notations.dir}">
-        <include name="*.mod"/>
-      </fileset>
-    </copy>
-  </target>
+        <copy todir="${dest.resources.css.dir}" file="${src.resources.css.dir}/default.css"/>
+        <copy todir="${dest.resources.conf.dir}" file="${src.resources.conf.dir}/xhtmlrenderer.conf"/>
+        <copy todir="${dest.resources.schema.dir}">
+            <fileset dir="${src.resources.schema.dir}">
+                <include name="**"/>
+            </fileset>
+        </copy>
+        <!--<copy todir="${dest.resources.elements.dir}">
+          <fileset dir="${src.resources.elements.dir}">
+            <include name="*.mod"/>
+          </fileset>
+        </copy>
+        <copy todir="${dest.resources.entities.dir}">
+          <fileset dir="${src.resources.entities.dir}">
+            <include name="*.ent"/>
+            <include name="*.mod"/>
+          </fileset>
+        </copy>
+        <copy todir="${dest.resources.dtd.dir}">
+          <fileset dir="${src.resources.dtd.dir}">
+            <include name="*.dtd"/>
+          </fileset>
+        </copy>
+        <copy todir="${dest.resources.notations.dir}">
+          <fileset dir="${src.resources.notations.dir}">
+            <include name="*.mod"/>
+          </fileset>
+        </copy> -->
+    </target>
 
     <!-- Copies the resources needed to run the browser into the build tree -->
-  <target name="resources.browser" depends="compile">
-    <mkdir dir="build/classes/demos"/>
-    <copy todir="build/classes/demos">
-      <fileset dir="demos/browser/xhtml">
-        <include name="*.xhtml"/>
-        <include name="*.css"/>
-        <include name="*.gif"/>
-        <include name="*.png"/>
-        <include name="splash/**"/>
-        <include name="about/**"/>
-        <include name="alice/**"/>
-      </fileset>
-    </copy>
-  </target>
+    <target name="resources.browser" depends="compile">
+        <mkdir dir="build/classes/demos"/>
+        <copy todir="build/classes/demos">
+            <fileset dir="demos/browser/xhtml">
+                <include name="*.xhtml"/>
+                <include name="*.css"/>
+                <include name="*.gif"/>
+                <include name="*.png"/>
+                <include name="splash/**"/>
+                <include name="about/**"/>
+                <include name="alice/**"/>
+            </fileset>
+        </copy>
+    </target>
 
     
     <!-- =======================================
          General
          ======================================= -->
-  <target name="settings" depends="properties">
-    <echo message="******************************************"/>
-    <echo message="App Settings"/>
-    <echo message="******************************************"/>
-    <echo message=""/>
-    <echo message="app.name ${app.name}"/>
-    <echo message=""/>
+    <target name="settings" depends="properties">
+        <echo message="******************************************"/>
+        <echo message="App Settings"/>
+        <echo message="******************************************"/>
+        <echo message=""/>
+        <echo message="app.name ${app.name}"/>
+        <echo message=""/>
 
-    <echo message=""/>
-    <echo message="******************************************"/>
-    <echo message="Directory Settings"/>
-    <echo message="******************************************"/>
-    <echo message=""/>
-    <echo message="basedir ${basedir}"/>
-    <echo message="libraries.dir ${libraries.dir}"/>
-    <echo message="src.dir ${src.dir}"/>
-    <echo message="doc.dir ${doc.dir}"/>
-    <echo message="dest.dir ${dest.dir}"/>
-    <echo message="src.java.dir ${src.java.dir}"/>
-    <echo message="dest.javadoc.full.dir ${dest.javadoc.full.dir}"/>
-    <echo message="dest.javadoc.user.dir ${dest.javadoc.user.dir}"/>
-    <echo message="dest.java2html.dir ${dest.java2html.dir}"/>
-    <echo message="dest.java.dir ${dest.java.dir}"/>
-    <echo message="src.about.java.dir ${src.about.java.dir}"/>
-    <echo message="src.browser.java.dir ${src.browser.java.dir}"/>
-    <echo message="src.resources.css.dir ${src.resources.css.dir}"/>
-    <echo message="dest.resources.css.dir ${dest.resources.css.dir}"/>
-    <echo message="src.resources.conf.dir ${src.resources.conf.dir}"/>
-    <echo message="dest.resources.conf.dir ${dest.resources.conf.dir}"/>
-    <echo message="src.resources.entities.dir ${src.resources.entities.dir}"/>
-    <echo message="dest.resources.entities.dir ${dest.resources.entities.dir}"/>
-    <echo message="src.resources.notations.dir ${src.resources.notations.dir}"/>
-    <echo message="dest.resources.notations.dir ${dest.resources.notations.dir}"/>
-    <echo message="src.resources.elements.dir ${src.resources.elements.dir}"/>
-    <echo message="dest.resources.elements.dir ${dest.resources.elements.dir}"/>
-    <echo message="src.resources.dtd.dir ${src.resources.dtd.dir}"/>
-    <echo message="dest.resources.dtd.dir ${dest.resources.dtd.dir}"/>
-    <echo message="src.packaging.dir ${src.packaging.dir}"/>
-    <echo message="src.demo.xhtml.dir ${src.demo.xhtml.dir}"/>
-    <echo message="src.demo.splash.dir ${src.demo.splash.dir}"/>
-    <echo message="src.about.xhtml.dir ${src.about.xhtml.dir}"/>
-    <echo message=""/>
+        <echo message=""/>
+        <echo message="******************************************"/>
+        <echo message="Directory Settings"/>
+        <echo message="******************************************"/>
+        <echo message=""/>
+        <echo message="basedir ${basedir}"/>
+        <echo message="libraries.dir ${libraries.dir}"/>
+        <echo message="src.dir ${src.dir}"/>
+        <echo message="doc.dir ${doc.dir}"/>
+        <echo message="dest.dir ${dest.dir}"/>
+        <echo message="src.java.dir ${src.java.dir}"/>
+        <echo message="dest.javadoc.full.dir ${dest.javadoc.full.dir}"/>
+        <echo message="dest.javadoc.user.dir ${dest.javadoc.user.dir}"/>
+        <echo message="dest.java2html.dir ${dest.java2html.dir}"/>
+        <echo message="dest.java.dir ${dest.java.dir}"/>
+        <echo message="src.about.java.dir ${src.about.java.dir}"/>
+        <echo message="src.browser.java.dir ${src.browser.java.dir}"/>
+        <echo message="src.resources.css.dir ${src.resources.css.dir}"/>
+        <echo message="dest.resources.css.dir ${dest.resources.css.dir}"/>
+        <echo message="src.resources.conf.dir ${src.resources.conf.dir}"/>
+        <echo message="dest.resources.conf.dir ${dest.resources.conf.dir}"/>
+        <!--<echo message="src.resources.entities.dir ${src.resources.entities.dir}"/>
+        <echo message="dest.resources.entities.dir ${dest.resources.entities.dir}"/>
+        <echo message="src.resources.notations.dir ${src.resources.notations.dir}"/>
+        <echo message="dest.resources.notations.dir ${dest.resources.notations.dir}"/>
+        <echo message="src.resources.elements.dir ${src.resources.elements.dir}"/>
+        <echo message="dest.resources.elements.dir ${dest.resources.elements.dir}"/>
+        <echo message="src.resources.dtd.dir ${src.resources.dtd.dir}"/>
+        <echo message="dest.resources.dtd.dir ${dest.resources.dtd.dir}"/>
+        -->
+        <echo message="src.packaging.dir ${src.packaging.dir}"/>
+        <echo message="src.demo.xhtml.dir ${src.demo.xhtml.dir}"/>
+        <echo message="src.demo.splash.dir ${src.demo.splash.dir}"/>
+        <echo message="src.about.xhtml.dir ${src.about.xhtml.dir}"/>
+        <echo message=""/>
 
-    <echo message=""/>
-    <echo message="******************************************"/>
-    <echo message="Compiler Settings"/>
-    <echo message="******************************************"/>
-    <echo message=""/>
-    <echo message="build.compiler ${build.compiler}"/>
-    <echo message="compiler.debug ${compiler.debug}"/>
-    <echo message="compiler.deprecation ${compiler.deprecation}"/>
-    <echo message="compiler.failonerror ${compiler.failonerror}"/>
-    <echo message="compiler.fork ${compiler.fork}"/>
-    <echo message="compiler.listfiles ${compiler.listfiles}"/>
-    <echo message="compiler.nowarn ${compiler.nowarn}"/>
-    <echo message="compiler.optimize ${compiler.optimize}"/>
-    <echo message="compiler.source ${compiler.source}"/>
-    <echo message="compiler.target ${compiler.target}"/>
-    <echo message="compiler.verbose ${compiler.verbose}"/>
-    <echo message=""/>
+        <echo message=""/>
+        <echo message="******************************************"/>
+        <echo message="Compiler Settings"/>
+        <echo message="******************************************"/>
+        <echo message=""/>
+        <echo message="build.compiler ${build.compiler}"/>
+        <echo message="compiler.debug ${compiler.debug}"/>
+        <echo message="compiler.deprecation ${compiler.deprecation}"/>
+        <echo message="compiler.failonerror ${compiler.failonerror}"/>
+        <echo message="compiler.fork ${compiler.fork}"/>
+        <echo message="compiler.listfiles ${compiler.listfiles}"/>
+        <echo message="compiler.nowarn ${compiler.nowarn}"/>
+        <echo message="compiler.optimize ${compiler.optimize}"/>
+        <echo message="compiler.source ${compiler.source}"/>
+        <echo message="compiler.target ${compiler.target}"/>
+        <echo message="compiler.verbose ${compiler.verbose}"/>
+        <echo message=""/>
 
-    <echo message=""/>
-    <echo message="******************************************"/>
-    <echo message="Java Executable Settings"/>
-    <echo message="******************************************"/>
-    <echo message=""/>
-    <echo message="java-exec.fork.tests ${java-exec.fork.tests}"/>
-    <echo message=""/>
+        <echo message=""/>
+        <echo message="******************************************"/>
+        <echo message="Java Executable Settings"/>
+        <echo message="******************************************"/>
+        <echo message=""/>
+        <echo message="java-exec.fork.tests ${java-exec.fork.tests}"/>
+        <echo message=""/>
 
         <!--
         <echo message=""/>
@@ -243,7 +250,7 @@
         <echo message="******************************************"/>
         <echo message=""/>
         -->
-  </target>
+    </target>
 </project>
 
 <!-- ========== this is the CVS log. Don't delete! ========== -->
@@ -252,6 +259,10 @@
 $Id$
 
 $Log$
+Revision 1.2  2005/06/13 06:50:18  tobega
+Fixed a bug in table content resolution.
+Various "tweaks" in other stuff.
+
 Revision 1.1  2005/03/26 12:04:14  pdoubleya
 Added to CVS.
 

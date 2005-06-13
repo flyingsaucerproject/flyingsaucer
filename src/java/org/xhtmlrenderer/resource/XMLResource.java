@@ -196,6 +196,7 @@ public class XMLResource extends AbstractResource {
                 input = new SAXSource(xmlReader, target.getResourceInputSource());
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 dbf.setNamespaceAware(true);
+                dbf.setValidating(false);//validation is the root of all evil in xml - tobe
                 output = new DOMResult(dbf.newDocumentBuilder().newDocument());
                 xformFactory = TransformerFactory.newInstance();
                 idTransform = xformFactory.newTransformer();
@@ -291,6 +292,10 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/06/13 06:50:16  tobega
+ * Fixed a bug in table content resolution.
+ * Various "tweaks" in other stuff.
+ *
  * Revision 1.10  2005/06/01 21:36:41  tobega
  * Got image scaling working, and did some refactoring along the way
  *

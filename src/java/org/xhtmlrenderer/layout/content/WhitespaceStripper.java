@@ -218,6 +218,26 @@ public class WhitespaceStripper {
         IdentValue whitespace = style.getIdent(CSSName.WHITE_SPACE);
         String text = tc.getText();
 
+        text = collapseWhitespace(whitespace, text, collapseLeading);
+
+
+        boolean collapseNext = (text.endsWith(SPACE) &&
+                (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE));
+
+        tc.setText(text);
+        if (text.trim().equals("")) {
+            if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
+                tc.setRemovableWhitespace(true);
+            } else if (whitespace == IdentValue.PRE) {
+                tc.setRemovableWhitespace(false);//actually unnecessary, is set to this by default
+            } else if (text.indexOf(EOL) < 0) {//and whitespace.equals("pre-line"), the only one left
+                tc.setRemovableWhitespace(true);
+            }
+        }
+        return collapseNext;
+    }
+
+    static String collapseWhitespace(IdentValue whitespace, String text, boolean collapseLeading) {
         // do step 1
         if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE) {
             text = linefeed_space_collapse.matcher(text).replaceAll(EOL);
@@ -246,36 +266,8 @@ public class WhitespaceStripper {
                 text = text.substring(1, text.length());
             }
         }
-
-        boolean collapseNext = (text.endsWith(SPACE) &&
-                (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE));
-
-        tc.setText(text);
-        if (text.trim().equals("")) {
-            if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
-                tc.setRemovableWhitespace(true);
-            } else if (whitespace == IdentValue.PRE) {
-                tc.setRemovableWhitespace(false);//actually unnecessary, is set to this by default
-            } else if (text.indexOf(EOL) < 0) {//and whitespace.equals("pre-line"), the only one left
-                tc.setRemovableWhitespace(true);
-            }
-        }
-        return collapseNext;
+        return text;
     }
 
-
-    /**
-     * Description of the Method
-     *
-     * @param list PARAM
-     */
-    /*private static void stripWhitespaceContent(List list) {
-        for (Iterator i = list.iterator(); i.hasNext();) {
-            if (i.next() instanceof TextContent) {
-                i.remove();
-            }
-        }
-
-    }*/
 }
 
