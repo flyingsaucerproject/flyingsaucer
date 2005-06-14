@@ -15,7 +15,7 @@ Included as lib/ss_css2.jar
 
 Minium Anti-Aliasing
 Direct submission from Julian Scheid julian at sektor37 de
-License: Unknown
+License: Unrestricted use; see LICENSE within minium.jar
 Included as lib/minium.jar
 
 JUnit (for testing)
