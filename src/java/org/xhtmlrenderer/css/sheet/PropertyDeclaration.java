@@ -244,7 +244,8 @@ public class PropertyDeclaration {
     }
 
     static {
-        PROPERTY_FACTORIES = new PropertyDeclarationFactory[CSSName.countCSSNames()];
+        // HACK: size for up to 256 custom properties (PWW 06/16/05)
+        PROPERTY_FACTORIES = new PropertyDeclarationFactory[CSSName.countCSSNames() + 256];
         DEFAULT_PD_FACTORY = DefaultPropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.BACKGROUND_SHORTHAND.getAssignedID()] = BackgroundPropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.BACKGROUND_POSITION.getAssignedID()] = BackgroundPositionPropertyDeclarationFactory.instance();
@@ -269,6 +270,9 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/06/15 17:27:37  pdoubleya
+ * Allow for custom properties (don't break).
+ *
  * Revision 1.13  2005/05/08 15:37:27  tobega
  * Fixed up style caching so it really works (internalize CascadedStyles and let each CalculatedStyle keep track of its derived children)
  *

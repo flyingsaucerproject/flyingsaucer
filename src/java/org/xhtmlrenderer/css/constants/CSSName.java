@@ -21,6 +21,7 @@
 package org.xhtmlrenderer.css.constants;
 
 import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xhtmlrenderer.util.XRLog;
 
 import java.util.*;
 
@@ -560,6 +561,9 @@ public final class CSSName {
      */
     private final static Map INITIAL_VALUE_MAP;
 
+    /** Array of custom properties which user has declared; may include typos, however. */
+    private static Map CSS_UNKNOWN_PROPERTIES = new HashMap();
+
 
     /**
      * Constructor for the CSSName object
@@ -573,7 +577,6 @@ public final class CSSName {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
     /**
@@ -646,7 +649,14 @@ public final class CSSName {
     public static CSSName getByPropertyName(String propName) {
         CSSName cssName = (CSSName) ALL_PROPERTY_NAMES.get(propName);
         if (cssName == null) {
-            throw new XRRuntimeException("Property name " + propName + " has no CSSName instance assigned to it.");
+            XRLog.layout("Property name " + propName + " has no CSSName instance assigned to it.");
+            cssName = (CSSName) CSS_UNKNOWN_PROPERTIES.get(propName);
+            if ( cssName == null ) {
+                XRLog.layout("Adding property " + propName + " as an unknown CSS property.");
+
+                cssName = addProperty(propName);
+                CSS_UNKNOWN_PROPERTIES.put(propName, cssName);
+            }
         }
         return cssName;
     }
@@ -710,6 +720,9 @@ public final class CSSName {
         DEFAULT_INHERITABLE.add(WHITE_SPACE);
         DEFAULT_INHERITABLE.add(WIDOWS);
         DEFAULT_INHERITABLE.add(WORD_SPACING);
+
+        // TODO: add placeholders for custom CSS properties
+
 
         INITIAL_VALUE_MAP = new HashMap();
         INITIAL_VALUE_MAP.put(BACKGROUND_ATTACHMENT, "scroll");
@@ -843,6 +856,9 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/06/15 17:27:37  pdoubleya
+ * Allow for custom properties (don't break).
+ *
  * Revision 1.7  2005/06/03 23:06:21  tobega
  * Now uses value of "color" as initial value for "border-color" and rgb-triples are supported
  *
