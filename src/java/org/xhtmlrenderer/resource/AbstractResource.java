@@ -19,12 +19,10 @@
  */
 package org.xhtmlrenderer.resource;
 
-import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xml.sax.InputSource;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.net.URL;
 
 /**
  * @author Patrick Wright
@@ -44,19 +42,6 @@ public abstract class AbstractResource implements Resource {
     public AbstractResource(InputSource source) {
         this();
         this.inputSource = source;
-    }
-
-    /**
-     * @param url
-     * @deprecated We should make sure that all loading of URLs is done from UserAgentCallback
-     */
-    public AbstractResource(URL url) {
-        this();
-        try {
-            this.inputSource = new InputSource(new BufferedInputStream(url.openStream()));
-        } catch (Exception ex) {
-            throw new XRRuntimeException("Can't open URL during load of XML resource.", ex);
-        }
     }
 
     public AbstractResource(InputStream is) {
@@ -85,6 +70,9 @@ public abstract class AbstractResource implements Resource {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/06/15 10:56:14  tobega
+ * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
+ *
  * Revision 1.3  2005/06/01 21:36:40  tobega
  * Got image scaling working, and did some refactoring along the way
  *

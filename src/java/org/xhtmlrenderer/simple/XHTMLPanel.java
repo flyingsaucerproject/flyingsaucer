@@ -24,10 +24,9 @@ import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.BasicPanel;
-import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.swing.HoverListener;
+import org.xhtmlrenderer.swing.LinkListener;
 
-import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -63,8 +62,7 @@ import java.net.URL;
  * there is always a default stylesheet available, even if no CSS is attached to the
  * XHTML you are loading. For XML, there is no default stylesheet, so you should have
  * one attached to your XML before trying to render it. XHTMLPanel has methods to load
- * documents from a file, by filename ({@link #setDocument(String filename)}),
- * from a URL ({@link #setDocument(URL)}),
+ * documents from a uri ({@link #setDocument(String uri)}),
  * from a Document instance ({@link #setDocument(Document)}) or from an InputStream
  * ({@link org.xhtmlrenderer.swing.BasicPanel#setDocument(java.io.InputStream,String)}).</p>
  * <p/>
@@ -83,14 +81,13 @@ import java.net.URL;
  * ctx.addFont(fnt,"Arial"); // redefine a font
  * ctx.setDomImplementation("com.cooldom.DomImpl");
  * </pre>
- 
- <p>XHTMLPanel comes with a pre-installed MouseListener which handles :hover events used for rollovers 
- ( @see org.xhtmlrenderer.swing.HoverListener ). XHTMLPanel also comes with a pre-installed LinkListener
- used to follow links.  ( @see org.xhtmlrenderer.swing.LinkListener )
- If you want to disable these for some reason you can
- get the list of mouse listeners and remove them all.
- </p>
- 
+ * <p/>
+ * <p>XHTMLPanel comes with a pre-installed MouseListener which handles :hover events used for rollovers
+ * ( @see org.xhtmlrenderer.swing.HoverListener ). XHTMLPanel also comes with a pre-installed LinkListener
+ * used to follow links.  ( @see org.xhtmlrenderer.swing.LinkListener )
+ * If you want to disable these for some reason you can
+ * get the list of mouse listeners and remove them all.
+ * </p>
  *
  * @author Joshua Marinacci (joshy@joshy.net)
  * @see <a href="http://xhtmlrenderer.dev.java.net">The Flying Saucer Home Page</a>
@@ -104,7 +101,7 @@ public class XHTMLPanel extends BasicPanel {
      */
     public XHTMLPanel() {
         fontScalingFactor = 1.2F;
-		setupListeners();
+        setupListeners();
     }
 
     /**
@@ -112,10 +109,8 @@ public class XHTMLPanel extends BasicPanel {
      * {@link URL}.
      *
      * @param url URL to read the Document from.
-     * @throws Exception Throws
      */
-    public XHTMLPanel(URL url)
-            throws Exception {
+    public XHTMLPanel(String url) {
         this();
         setDocument(url);
     }
@@ -128,17 +123,17 @@ public class XHTMLPanel extends BasicPanel {
      */
     public XHTMLPanel(UserAgentCallback uac) {
         super(uac);
-		setupListeners();
+        setupListeners();
     }
-	
-	private void setupListeners() {
-		// install a default link listener
+
+    private void setupListeners() {
+        // install a default link listener
         addMouseListener(new LinkListener(this));
-		// install a default hover listener
+        // install a default hover listener
         HoverListener hov = new HoverListener(this);
         addMouseListener(hov);
         addMouseMotionListener(hov);
-	}
+    }
 
     /**
      * Lays out the current document again, and re-renders.
@@ -156,14 +151,13 @@ public class XHTMLPanel extends BasicPanel {
     }
 
     /**
-     * Loads and renders a Document given a file name.
+     * Loads and renders a Document given a uri.
+     * The uri is resolved by the UserAgentCallback
      *
-     * @param filename The file name & path for the document.
+     * @param uri
      */
-    public void setDocument(String filename)
-            throws Exception {
-        URL url = new File(filename).toURL();
-        setDocument(url);
+    public void setDocument(String uri) {
+        setDocument(loadDocument(uri), uri);
     }
 
     /**
@@ -174,15 +168,6 @@ public class XHTMLPanel extends BasicPanel {
      */
     public void setDocument(Document doc) throws MalformedURLException {
         setDocument(doc, "");
-    }
-
-    /**
-     * Renders a Document given its URL.
-     *
-     * @param url The URL for the Document.
-     */
-    public void setDocument(URL url) throws Exception {
-        setDocument(loadDocument(url), url.toString());
     }
 
     /**
@@ -302,6 +287,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/06/15 10:56:14  tobega
+ * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
+ *
  * Revision 1.17  2005/06/09 22:34:56  joshy
  * This makes the hover listener be added to the xhtml panel by default.
  * Also improves the box searching code by testing if the parent of the deepest

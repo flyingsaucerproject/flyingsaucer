@@ -13,7 +13,7 @@ public class HamletSpeedTest {
         long total = 0;
         for (int i = 0; i < 10; i++) {
             Date start = new Date();
-            BufferedImage img = Graphics2DRenderer.renderToImage(new File("demos/browser/xhtml/hamlet.xhtml").toURL(),
+            BufferedImage img = Graphics2DRenderer.renderToImage(new File("demos/browser/xhtml/hamlet.xhtml").toURL().toExternalForm(),
                     700, 700);
             Date end = new Date();
             long diff = (end.getTime() - start.getTime());

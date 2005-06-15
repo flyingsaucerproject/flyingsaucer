@@ -19,11 +19,6 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 
 
@@ -39,73 +34,53 @@ public class DirectoryLister {
      *
      * @param file PARAM
      * @return Returns
-     * @throws Exception Throws
      */
-    public Document list(File file)
-            throws Exception {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.newDocument();
+    public String list(File file) {
+        StringBuffer sb = new StringBuffer();
 
-        Element html = doc.createElement("html");
-        Element head = doc.createElement("head");
-        html.appendChild(head);
-        Element style = doc.createElement("style");
-        head.appendChild(style);
-        StringBuffer stysb = new StringBuffer();
-        stysb.append("table { background-color: #ddffdd; }");
-        stysb.append(".dir { font-weight: bold; color: #ff9966; }");
-        stysb.append(".file { font-weight: normal; color: #003333; }");
-        style.appendChild(doc.createTextNode(stysb.toString()));
-        Element body = doc.createElement("body");
-        Element p = doc.createElement("p");
-        body.appendChild(p);
-        html.appendChild(body);
-        doc.appendChild(html);
-
-        p.appendChild(doc.createTextNode("the file " + file.toString() + " is"));
-        //Uu.p("listing file: " + file);
+        sb.append("<html>");
+        sb.append("<head>");
+        sb.append("<title>Directory listing of ");
+        sb.append(file.getPath());
+        sb.append("</title>");
+        sb.append("<style>");
+        sb.append("table { background-color: #ddffdd; }");
+        sb.append(".dir { font-weight: bold; color: #ff9966; }");
+        sb.append(".file { font-weight: normal; color: #003333; }");
+        sb.append("</style>");
+        sb.append("</head>");
+        sb.append("<body>");
+        sb.append("<p>the file ");
+        sb.append(file.toString());
+        sb.append(" is</p>");
 
         if (file.isDirectory()) {
-            //Uu.p("is dir");
-            Element table = doc.createElement("table");
+            sb.append("<table>");
             File[] files = file.listFiles();
             for (int i = 0; i < files.length; i++) {
-                //Uu.p("doing: " + files[i]);
-                Element tr = doc.createElement("tr");
+                sb.append("<tr>");
                 if (files[i].isDirectory()) {
-                    tr.appendChild(td(files[i].getName(), "dir", doc));
+                    sb.append("<td class='dir'>" + files[i].getName() + "</td>");
                 } else {
-                    tr.appendChild(td(files[i].getName(), "file", doc));
+                    sb.append("<td class='file'>" + files[i].getName() + "</td>");
                 }
-                table.appendChild(tr);
+                sb.append("</tr>");
             }
-            body.appendChild(table);
+            sb.append("</table>");
         }
 
-        return doc;
+        return sb.toString();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param str PARAM
-     * @param cls PARAM
-     * @param doc PARAM
-     * @return Returns
-     */
-    public Element td(String str, String cls, Document doc) {
-        Element td = doc.createElement("td");
-        td.setAttribute("class", cls);
-        td.appendChild(doc.createTextNode(str));
-        return td;
-    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/06/15 10:56:13  tobega
+ * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
+ *
  * Revision 1.5  2004/12/12 03:33:07  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
  *

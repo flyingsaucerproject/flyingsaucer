@@ -35,7 +35,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
 import java.io.InputStream;
-import java.net.URL;
+import java.io.Reader;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -59,14 +59,6 @@ public class XMLResource extends AbstractResource {
         super(stream);
     }
 
-    /**
-     * @param url
-     * @deprecated We should make sure that all loading of URLs is done from UserAgentCallback
-     */
-    private XMLResource(URL url) {
-        super(url);
-    }
-
     private XMLResource(InputSource source) {
         super(source);
     }
@@ -75,16 +67,12 @@ public class XMLResource extends AbstractResource {
         return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(stream));
     }
 
-    /**
-     * @param url
-     * @deprecated We should make sure that all loading of URLs is done from UserAgentCallback
-     */
-    public static XMLResource load(URL url) {
-        return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(url));
-    }
-
     public static XMLResource load(InputSource source) {
         return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(source));
+    }
+
+    public static XMLResource load(Reader reader) {
+        return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(new InputSource(reader)));
     }
 
     public String getDocumentTitle() {
@@ -292,6 +280,9 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/06/15 10:56:14  tobega
+ * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
+ *
  * Revision 1.11  2005/06/13 06:50:16  tobega
  * Fixed a bug in table content resolution.
  * Various "tweaks" in other stuff.

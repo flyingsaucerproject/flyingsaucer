@@ -19,21 +19,15 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import org.w3c.dom.Document;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.RenderingContext;
-import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
-import org.xml.sax.InputSource;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.net.URI;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -107,6 +101,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      */
     public static Logger logger = Logger.getLogger("app.browser");
 
+    private PanelManager manager;
+
     /**
      * Constructor for the BrowserPanel object
      *
@@ -129,7 +125,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         stop = new JButton();
         reload = new JButton();
         url = new JTextField();
-        view = new XHTMLPanel();
+        manager = new PanelManager();
+        view = new XHTMLPanel(manager);
         scroll = new FSScrollPane(view);
 
         RenderingContext rc = view.getRenderingContext();
@@ -238,23 +235,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     public void reloadPage()
             throws Exception {
         logger.info("Reloading Page: ");
-        if (current_url != null) {
-            loadPage(current_url);
+        if (manager.getBaseURL() != null) {
+            loadPage(manager.getBaseURL());
         }
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param doc PARAM
-     * @param url PARAM
-     * @throws Exception Throws
-     */
-    public void loadPage(Document doc, URL url) throws Exception {
-        view.setDocument(doc, url.toString());
-        view.addDocumentListener(this);
-        root.history.goNewDocument(doc, url);
-        updateButtons();
     }
 
     /**
@@ -269,42 +252,10 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         try {
 
             logger.info("Loading Page: " + url_text);
-            current_url = url_text;
-
-            Document doc = null;
-            URL ref = null;
-
-            if (url_text.startsWith("demo:")) {
-                DemoMarker marker = new DemoMarker();
-                String short_url = url_text.substring(5);
-                if (!short_url.startsWith("/")) {
-                    short_url = "/" + short_url;
-                }
-                doc = XMLResource.load(marker.getClass().getResourceAsStream(short_url)).getDocument();
-
-                ref = marker.getClass().getResource(short_url);
-                Uu.p("doc = " + doc);
-                Uu.p("ref = " + ref);
-            } else if (url_text.startsWith("http")) {
-                doc = XMLResource.load(new URL(url_text)).getDocument();
-                ref = new URL(url_text);
-            } else if (url_text.startsWith("file://")) {
-                File file = new File(new URI(url_text));
-                if (file.isDirectory()) {
-                    doc = new DirectoryLister().list(file);
-                    ref = file.toURL();
-                } else {
-                    doc = XMLResource.load(file.toURL()).getDocument();
-                    ref = file.toURL();
-                }
-
-            } else {
-                doc = XMLResource.load(new InputSource(url_text)).getDocument();
-                ref = new File(url_text).toURL();
-            }
-
-            Uu.p("going to load a page: " + doc + " " + ref);
-            loadPage(doc, ref);
+            view.setDocument(url_text);
+            view.addDocumentListener(this);
+            //root.history.goNewDocument(doc, ref);
+            updateButtons();
 
             setStatus("Successfully loaded: " + url_text);
             if (listener != null) {
@@ -312,6 +263,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
             }
         } catch (Exception ex) {
             XRLog.general(Level.SEVERE, "Could not load page for display.", ex);
+            ex.printStackTrace();
         }
     }
 
@@ -355,6 +307,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/06/15 10:56:13  tobega
+ * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
+ *
  * Revision 1.23  2005/06/01 21:36:34  tobega
  * Got image scaling working, and did some refactoring along the way
  *

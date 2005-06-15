@@ -24,7 +24,6 @@ import org.xhtmlrenderer.extend.RenderingContext;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.net.URL;
 
 
 /**
@@ -36,10 +35,9 @@ import java.net.URL;
  * {@link XHTMLPanel#layout()}, and {@link XHTMLPanel#render()} methods from
  * {@link XHTMLPanel}, as well as easy-to-use static utility methods.
  * For example, to render a document in an image that is 600 pixels wide use the
- * {@link #renderToImage(URL, int)} method like this:</p>
+ * {@link #renderToImage(String, int)} method like this:</p>
  * <pre>
- * URL url = new URL("test.xhtml");
- * BufferedImage img = Graphics2DRenderer.renderToImage( url, width);
+ * BufferedImage img = Graphics2DRenderer.renderToImage( "test.xhtml", width);
  * </pre>
  * <p/>
  * <p/>
@@ -98,10 +96,8 @@ public class Graphics2DRenderer {
      * set the document to be rendered.
      *
      * @param url The new document value
-     * @throws Exception Throws
      */
-    public void setDocument(URL url)
-            throws Exception {
+    public void setDocument(String url) {
         panel.setDocument(url);
     }
 
@@ -157,7 +153,7 @@ public class Graphics2DRenderer {
      * @return Returns
      * @throws Exception Throws
      */
-    public static BufferedImage renderToImage(URL url, int width, int height)
+    public static BufferedImage renderToImage(String url, int width, int height)
             throws Exception {
         Graphics2DRenderer g2r = new Graphics2DRenderer();
         g2r.setDocument(url);
@@ -178,7 +174,7 @@ public class Graphics2DRenderer {
      * @return Returns
      * @throws Exception Throws
      */
-    public static BufferedImage renderToImage(URL url, int width)
+    public static BufferedImage renderToImage(String url, int width)
             throws Exception {
         Graphics2DRenderer g2r = new Graphics2DRenderer();
         g2r.setDocument(url);
@@ -209,6 +205,9 @@ public class Graphics2DRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/06/15 10:56:14  tobega
+ * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
+ *
  * Revision 1.8  2005/06/01 21:36:43  tobega
  * Got image scaling working, and did some refactoring along the way
  *

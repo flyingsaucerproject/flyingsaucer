@@ -67,11 +67,11 @@ public class HTMLTest extends JFrame {
         scroll.setHorizontalScrollBarPolicy(scroll.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setPreferredSize(new Dimension(width, height));
         panel.addMouseListener(new LinkListener(panel));
-		/*
-        HoverListener hov = new HoverListener(panel);
-        panel.addMouseListener(hov);
-        panel.addMouseMotionListener(hov);
-		*/
+        /*
+HoverListener hov = new HoverListener(panel);
+panel.addMouseListener(hov);
+panel.addMouseMotionListener(hov);
+        */
 		
         if (args.length > 0) {
             loadDocument(args[0]);
@@ -187,7 +187,7 @@ public class HTMLTest extends JFrame {
                         url = new File(uri).toURL();
 
                     System.err.println("loading " + url.toString() + "!");
-                    panel.setDocument(url);
+                    panel.setDocument(url.toExternalForm());
 
                     long el = System.currentTimeMillis() - st;
                     XRLog.general("loadDocument(" + url.toString() + ") in " + el + "ms, render may take longer");
@@ -469,6 +469,9 @@ public class HTMLTest extends JFrame {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/06/15 10:56:15  tobega
+ * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
+ *
  * Revision 1.29  2005/06/09 22:34:57  joshy
  * This makes the hover listener be added to the xhtml panel by default.
  * Also improves the box searching code by testing if the parent of the deepest

@@ -37,7 +37,6 @@ import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
-import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,6 +44,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.print.PrinterGraphics;
 import java.io.InputStream;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -372,13 +372,13 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         }
 
         //Uu.p("bfc blah = " + box.getBlockFormattingContext());
-		
-		// go down to the next bfc
+
+        // go down to the next bfc
         if (box.getBlockFormattingContext() != null) {
             bfc = box.getBlockFormattingContext();
         }
-		
-		// loop through the children first
+
+        // loop through the children first
         Iterator it = box.getChildIterator();
         while (it.hasNext()) {
             Box bx = (Box) it.next();
@@ -876,13 +876,12 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     /**
      * Description of the Method
      *
-     * @param url PARAM
+     * @param uri PARAM
      * @return Returns
-     * @throws Exception Throws
      */
-    protected Document loadDocument(final URL url)
-            throws Exception {
-        return XMLResource.load(url).getDocument();
+    protected Document loadDocument(final String uri) {
+        Reader reader = ctx.getUac().getReader(uri);
+        return XMLResource.load(reader).getDocument();
     }
 
     /**
@@ -994,6 +993,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.48  2005/06/15 10:56:15  tobega
+ * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
+ *
  * Revision 1.47  2005/06/09 22:34:57  joshy
  * This makes the hover listener be added to the xhtml panel by default.
  * Also improves the box searching code by testing if the parent of the deepest

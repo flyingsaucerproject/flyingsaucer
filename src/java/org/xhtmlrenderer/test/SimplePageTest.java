@@ -19,12 +19,12 @@ public class SimplePageTest {
         System.out.println("Testing with page " + page);
         for (int i = 0; i < cnt; i++) {
             Date start = new Date();
-            BufferedImage img = Graphics2DRenderer.renderToImage(new File(page).toURL(),
+            BufferedImage img = Graphics2DRenderer.renderToImage(new File(page).toURL().toExternalForm(),
                     700, 700);
             Date end = new Date();
             long diff = (end.getTime() - start.getTime());
             Uu.p("ms = " + diff);
-            if ( i > 4 ) total += diff;
+            if (i > 4) total += diff;
         }
         long avg = total / cnt;
         System.out.println("average : " + avg);
