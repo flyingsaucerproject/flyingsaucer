@@ -85,6 +85,10 @@ public class IdentValue {
     /**
      * Description of the Field
      */
+    public final static IdentValue BOTH = addValue("both");
+    /**
+     * Description of the Field
+     */
     public final static IdentValue BOLDER = addValue("bolder");
     /**
      * Description of the Field
@@ -502,6 +506,9 @@ public class IdentValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/06/15 10:01:36  pdoubleya
+ * Added IV for both, used in clear.
+ *
  * Revision 1.6  2005/04/20 19:13:17  tobega
  * Fixed vertical align. Middle works and all look pretty much like in firefox
  *
