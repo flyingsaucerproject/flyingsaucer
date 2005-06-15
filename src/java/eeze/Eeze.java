@@ -97,6 +97,7 @@ public class Eeze {
         }
     };
     private ReloadPageAction reloadPageAction;
+    private ReloadFileListAction reloadFileList;
 
     /**
      * Constructor for the Eeze object
@@ -193,6 +194,7 @@ public class Eeze {
                     reset_font = new FontSizeAction(FontSizeAction.RESET, KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.CTRL_MASK));
                     decrease_font = new FontSizeAction(FontSizeAction.DECREMENT, KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
                     
+                    reloadFileList = new ReloadFileListAction();
                     showGrid = new ShowGridAction();
                     showHelp = new ShowHelpAction();
                     
@@ -207,6 +209,7 @@ public class Eeze {
                     doMenu.add(reset_font);
                     doMenu.add(decrease_font);
                     doMenu.add(showGrid);
+                    doMenu.add(reloadFileList);
                     doMenu.add(showHelp);
                     doMenu.setVisible(false);
                     frame.getJMenuBar().add(doMenu);
@@ -658,7 +661,21 @@ public class Eeze {
             }
         }
     }
-    
+
+    class ReloadFileListAction extends AbstractAction {
+        public ReloadFileListAction() {
+            super("Reload File List Page");
+            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_F));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.ALT_MASK));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            testFiles = buildFileList();
+            currentDisplayed = (File)testFiles.get(0);
+            reloadPageAction.actionPerformed(null);
+        }
+    }
+
     /**
      * Description of the Class
      *
