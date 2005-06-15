@@ -32,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,6 +43,8 @@ import java.net.URL;
  */
 public class PanelManager implements UserAgentCallback {
     private String baseUrl;
+    private int index = -1;
+    private ArrayList history = new ArrayList();
 
     public InputStream getInputStream(String uri) {
         InputStream is = null;
@@ -92,6 +95,14 @@ public class PanelManager implements UserAgentCallback {
 
     public void setBaseURL(String url) {
         baseUrl = resolveURI(url);
+        //setBaseURL is called by view when document is loaded
+        if (index >= 0) {
+            String historic = (String) history.get(index);
+            if (historic.equals(baseUrl)) return;//moved in history
+        }
+        index++;
+        for (int i = index; i < history.size(); history.remove(i)) ;
+        history.add(index, baseUrl);
     }
 
     public String resolveURI(String uri) {
@@ -121,5 +132,32 @@ public class PanelManager implements UserAgentCallback {
 
     public String getBaseURL() {
         return baseUrl;
+    }
+
+
+    public String getForward() {
+        index++;
+        return (String) history.get(index);
+    }
+
+    public String getBack() {
+        index--;
+        return (String) history.get(index);
+    }
+
+    public boolean hasForward() {
+        if (index + 1 < history.size() && index >= 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean hasBack() {
+        if (index >= 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

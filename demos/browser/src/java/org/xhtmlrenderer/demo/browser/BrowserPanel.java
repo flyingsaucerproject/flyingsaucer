@@ -95,10 +95,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     /**
      * Description of the Field
      */
-    String current_url = null;
-    /**
-     * Description of the Field
-     */
     public static Logger logger = Logger.getLogger("app.browser");
 
     private PanelManager manager;
@@ -210,20 +206,17 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Method
      */
     public void goForward() {
-        root.history.goNext();
-        view.setDocument(root.history.getCurrentDocument(), url.toString());
+        String uri = manager.getForward();
+        view.setDocument(uri);
         updateButtons();
     }
 
     /**
      * Description of the Method
-     *
-     * @throws Exception Throws
      */
-    public void goBack()
-            throws Exception {
-        root.history.goPrevious();
-        view.setDocument(root.history.getCurrentDocument(), url.toString());
+    public void goBack() {
+        String uri = manager.getBack();
+        view.setDocument(uri);
         updateButtons();
     }
 
@@ -244,17 +237,14 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Method
      *
      * @param url_text PARAM
-     * @throws Exception Throws
      */
     //TODO: make this part of an implementation of UserAgentCallback instead
-    public void loadPage(String url_text)
-            throws Exception {
+    public void loadPage(String url_text) {
         try {
 
             logger.info("Loading Page: " + url_text);
             view.setDocument(url_text);
             view.addDocumentListener(this);
-            //root.history.goNewDocument(doc, ref);
             updateButtons();
 
             setStatus("Successfully loaded: " + url_text);
@@ -288,16 +278,18 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Method
      */
     protected void updateButtons() {
-        if (root.history.hasPrevious()) {
+        if (manager.hasBack()) {
             root.actions.backward.setEnabled(true);
         } else {
             root.actions.backward.setEnabled(false);
         }
-        if (root.history.hasNext()) {
+        if (manager.hasForward()) {
             root.actions.forward.setEnabled(true);
         } else {
             root.actions.forward.setEnabled(false);
         }
+
+        url.setText(manager.getBaseURL());
     }
 
 
@@ -307,6 +299,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/06/15 13:35:27  tobega
+ * Fixed history
+ *
  * Revision 1.24  2005/06/15 10:56:13  tobega
  * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
  *

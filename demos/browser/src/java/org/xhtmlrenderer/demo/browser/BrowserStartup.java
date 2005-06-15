@@ -19,12 +19,13 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.event.*;
 import javax.swing.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.logging.Logger;
-import org.xhtmlrenderer.util.GeneralUtil;
 
 /**
  * Description of the Class
@@ -44,10 +45,6 @@ public class BrowserStartup {
      * Description of the Field
      */
     protected JFrame frame;
-    /**
-     * Description of the Field
-     */
-    protected HistoryManager history;
     /**
      * Description of the Field
      */
@@ -71,7 +68,6 @@ public class BrowserStartup {
      */
     public BrowserStartup() {
         logger.info("starting up");
-        history = new HistoryManager();
     }
 
     /**
@@ -93,9 +89,9 @@ public class BrowserStartup {
         menu.createActions();
 
         try {
-            //panel.loadPage("demo:demos/splash/splash.html");
+            panel.loadPage("demo:demos/splash/splash.html");
             //panel.loadPage("demo:demos/paragraph.xhtml");
-            panel.loadPage("demo:demos/layout/multicol/glish/nested-float.xhtml");
+            //panel.loadPage("demo:demos/layout/multicol/glish/nested-float.xhtml");
         } catch (Exception ex) {
             Uu.p(ex);
         }
@@ -109,13 +105,13 @@ public class BrowserStartup {
      */
     public static void main(String[] args)
             throws Exception {
-		if(GeneralUtil.isMacOSX()) {
-			 System.setProperty("apple.laf.useScreenMenuBar", "true");
-			 System.setProperty("com.apple.mrj.application.apple.menu.about.name","FS Browser");
-		}
-		
-		//System.out.println(new URI("images/Stop24.gif"));
-		JFrame frame = new JFrame();
+        if (GeneralUtil.isMacOSX()) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FS Browser");
+        }
+
+        //System.out.println(new URI("images/Stop24.gif"));
+        JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         final BrowserStartup bs = new BrowserStartup();
         bs.frame = frame;
@@ -124,13 +120,12 @@ public class BrowserStartup {
         frame.getContentPane().add(bs.panel);
         frame.pack();
         frame.setSize(600, 700);
-        frame.addComponentListener(
-                      new ComponentAdapter() {
-                        public void componentResized( ComponentEvent e ) {
-                          bs.panel.view.relayout();
-                        }
-                      } );
-        
+        frame.addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                bs.panel.view.relayout();
+            }
+        });
+
         frame.show();
         if (args.length > 0) {
             bs.panel.loadPage(args[0]);
@@ -161,6 +156,9 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/06/15 13:35:27  tobega
+ * Fixed history
+ *
  * Revision 1.11  2005/04/03 21:51:31  joshy
  * fixed code that gets the XMLReader on the mac
  * added isMacOSX() to GeneralUtil
