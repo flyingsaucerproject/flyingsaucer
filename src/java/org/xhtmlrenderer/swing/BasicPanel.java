@@ -36,7 +36,6 @@ import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,7 +43,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.print.PrinterGraphics;
 import java.io.InputStream;
-import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -880,8 +878,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @return Returns
      */
     protected Document loadDocument(final String uri) {
-        Reader reader = ctx.getUac().getReader(uri);
-        return XMLResource.load(reader).getDocument();
+        return XMLResource.load(ctx.getUac().getInputStream(uri)).getDocument();
     }
 
     /**
@@ -904,7 +901,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      */
     protected void setDocumentRelative(String filename) {
         String url = getRenderingContext().getUac().resolveURI(filename);
-        Document dom = XMLResource.load(new InputSource(getRenderingContext().getUac().getReader(url))).getDocument();
+        Document dom = loadDocument(url);
         setDocument(dom, url);
     }
 
@@ -993,6 +990,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.49  2005/06/15 11:53:46  tobega
+ * Changed UserAgentCallback to getInputStream instead of getReader. Fixed up some consequences of previous change.
+ *
  * Revision 1.48  2005/06/15 10:56:15  tobega
  * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
  *

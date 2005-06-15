@@ -32,7 +32,7 @@ public class FileBrowser extends JPanel {
     public void createComponents() throws Exception {
         xhtml = new XHTMLPanel();
         Uu.p("url = " + getClass().getResource("main.xhtml"));
-        xhtml.setDocument(getClass().getResource("main.xhtml"));
+        xhtml.setDocument(getClass().getResource("main.xhtml").toExternalForm());
 
         filelistmodel = new FileListModel();
         filelist = new JList(filelistmodel);

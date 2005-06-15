@@ -186,7 +186,7 @@ public class StyleReference {
      * @return The stylesheets value
      */
     private List getStylesheets() {
-        java.io.Reader reader;
+        java.io.InputStream stream;
         List infos = new LinkedList();
         long st = System.currentTimeMillis();
 
@@ -197,9 +197,9 @@ public class StyleReference {
         info.setMedia("all");
         info.setType("text/css");
         if (!_stylesheetFactory.containsStylesheet(uri)) {
-            reader = _nsh.getDefaultStylesheet();
-            if (reader != null) {
-                Stylesheet sheet = _stylesheetFactory.parse(reader, info);
+            stream = _nsh.getDefaultStylesheet();
+            if (stream != null) {
+                Stylesheet sheet = _stylesheetFactory.parse(stream, info);
                 _stylesheetFactory.putStylesheet(uri, sheet);
             }
         }
@@ -242,6 +242,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/06/15 11:53:45  tobega
+ * Changed UserAgentCallback to getInputStream instead of getReader. Fixed up some consequences of previous change.
+ *
  * Revision 1.30  2005/06/01 21:36:37  tobega
  * Got image scaling working, and did some refactoring along the way
  *

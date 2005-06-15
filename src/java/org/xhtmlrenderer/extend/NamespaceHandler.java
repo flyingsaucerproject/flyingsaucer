@@ -26,6 +26,7 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.layout.Context;
 
 import javax.swing.*;
+import java.io.InputStream;
 
 
 /**
@@ -46,7 +47,7 @@ public interface NamespaceHandler {
     /**
      * @return the default CSS stylesheet for this namespace
      */
-    public java.io.Reader getDefaultStylesheet();
+    public InputStream getDefaultStylesheet();
 
     /**
      * @param doc

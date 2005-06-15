@@ -30,6 +30,7 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.layout.Context;
 
 import javax.swing.*;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -179,7 +180,7 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
 
     }*/
     
-    public java.io.Reader getDefaultStylesheet() {
+    public InputStream getDefaultStylesheet() {
         return null;
     }
 

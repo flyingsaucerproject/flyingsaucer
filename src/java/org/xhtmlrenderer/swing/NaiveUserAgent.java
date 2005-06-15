@@ -23,9 +23,8 @@ import org.xhtmlrenderer.util.XRLog;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -56,19 +55,17 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
      * @return The stylesheet value
      */
     //TOdO:implement this with nio.
-    public java.io.Reader getReader(String uri) {
+    public InputStream getInputStream(String uri) {
         java.io.InputStream is = null;
-        Reader reader = null;
         uri = resolveURI(uri);
         try {
             is = new URL(uri).openStream();
-            reader = new BufferedReader(new java.io.InputStreamReader(is));
         } catch (java.net.MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
         } catch (java.io.IOException e) {
             XRLog.exception("IO problem for " + uri, e);
         }
-        return reader;
+        return is;
     }
 
     /**
@@ -153,6 +150,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/06/15 11:53:47  tobega
+ * Changed UserAgentCallback to getInputStream instead of getReader. Fixed up some consequences of previous change.
+ *
  * Revision 1.10  2005/06/13 06:50:16  tobega
  * Fixed a bug in table content resolution.
  * Various "tweaks" in other stuff.

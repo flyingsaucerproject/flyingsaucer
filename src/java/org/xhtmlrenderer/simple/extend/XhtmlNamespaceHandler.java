@@ -31,6 +31,7 @@ import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -283,13 +284,13 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
      *
      * @return The defaultStylesheet value
      */
-    public java.io.Reader getDefaultStylesheet() {
-        java.io.Reader reader = null;
+    public InputStream getDefaultStylesheet() {
+        InputStream stream = null;
         try {
             //TODO: weakness: if no configuration found, it bombs out. Should we be so reliable on correct config? Maybe a warning will do?
             String defaultStyleSheetLocation = Configuration.valueFor("xr.css.user-agent-default-css");
             if (this.getClass().getResourceAsStream(defaultStyleSheetLocation) != null) {
-                reader = new java.io.InputStreamReader(this.getClass().getResource(defaultStyleSheetLocation).openStream());
+                stream = this.getClass().getResource(defaultStyleSheetLocation).openStream();
             } else {
                 XRLog.exception("Can't load default CSS from " + defaultStyleSheetLocation + "." +
                         "This file must be on your CLASSPATH. Please check before continuing.");
@@ -301,7 +302,7 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
 
         }
 
-        return reader;
+        return stream;
     }
 
     /**

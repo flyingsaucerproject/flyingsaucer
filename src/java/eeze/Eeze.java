@@ -224,7 +224,7 @@ public class Eeze {
         XRLog.load("Loading " + currentDisplayed);
         eezeFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
-            html.setDocument(file.toURL());
+            html.setDocument(file.toURL().toExternalForm());
             currentDisplayed = file;
             changeTitle(file.toURL().toString());
         } catch (Exception ex) {

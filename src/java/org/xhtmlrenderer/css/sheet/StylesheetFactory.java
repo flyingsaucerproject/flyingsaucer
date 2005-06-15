@@ -27,10 +27,7 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.io.BufferedReader;
-import java.io.LineNumberReader;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.net.URL;
 
 
@@ -82,12 +79,13 @@ public class StylesheetFactory {
     /**
      * Description of the Method
      *
-     * @param reader PARAM
+     * @param stream PARAM
      * @param info
      * @return Returns
      */
-    public Stylesheet parse(java.io.Reader reader, StylesheetInfo info) {
-        InputSource is = new InputSource(reader);
+    public Stylesheet parse(InputStream stream, StylesheetInfo info) {
+        Reader r = new InputStreamReader(stream);
+        InputSource is = new InputSource(r);
         CSSStyleSheet style = null;
         try {
             style = parser.parseStyleSheet(is);
@@ -109,13 +107,13 @@ public class StylesheetFactory {
      * @return Returns null if uri could not be loaded
      */
     public Stylesheet parse(StylesheetInfo info) {
-        Reader r = _userAgent.getReader(info.getUri());
+        InputStream is = _userAgent.getInputStream(info.getUri());
 
         Stylesheet sheet = null;
 
         try {
-            if (r != null) {
-                sheet = parse(r, info);
+            if (is != null) {
+                sheet = parse(is, info);
             }
         } catch (Exception e) {
             debugBadStyleSheet(info);
@@ -130,9 +128,10 @@ public class StylesheetFactory {
     }
 
     private void debugBadStyleSheet(StylesheetInfo info) {
-        Reader r = _userAgent.getReader(info.getUri());
-        if (r != null) {
+        InputStream is = _userAgent.getInputStream(info.getUri());
+        if (is != null) {
             try {
+                Reader r = new InputStreamReader(is);
                 LineNumberReader lnr = new LineNumberReader(new BufferedReader(r));
                 StringBuffer sb = new StringBuffer();
                 String line = null;
@@ -158,12 +157,16 @@ public class StylesheetFactory {
         Stylesheet sheet = new Stylesheet(main.getUri(), main.getOrigin());
         if (isis != null) {
             for (int i = 0; i < isis.length; i++) {
-                Reader reader = new StringReader(isis[i].getStyle());
-                StylesheetInfo info = isis[i].getInfo();
-                info.setUri(main.getUri());
-                Stylesheet is = parse(reader, info);
-                info.setStylesheet(is);
-                sheet.addStylesheet(info);
+                try {
+                    InputStream stream = new ByteArrayInputStream(isis[i].getStyle().getBytes("UTF-8"));
+                    StylesheetInfo info = isis[i].getInfo();
+                    info.setUri(main.getUri());
+                    Stylesheet is = parse(stream, info);
+                    info.setStylesheet(is);
+                    sheet.addStylesheet(info);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
             }
         }
         return sheet;
@@ -295,6 +298,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/06/15 11:53:45  tobega
+ * Changed UserAgentCallback to getInputStream instead of getReader. Fixed up some consequences of previous change.
+ *
  * Revision 1.16  2005/06/01 21:36:36  tobega
  * Got image scaling working, and did some refactoring along the way
  *

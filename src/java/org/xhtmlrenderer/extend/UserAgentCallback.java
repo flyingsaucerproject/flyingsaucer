@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.extend;
 
 import java.awt.*;
+import java.io.InputStream;
 
 
 /**
@@ -47,7 +48,7 @@ public interface UserAgentCallback {
      *         or if the stylesheet should be ignored.
      */
     //TODO: is a reader appropriate? who knows the character encoding? use of nio preferable
-    public java.io.Reader getReader(String uri);
+    public InputStream getInputStream(String uri);
 
     /**
      * Returns an {@link java.awt.Image} for a given URI (String), or null if the Image

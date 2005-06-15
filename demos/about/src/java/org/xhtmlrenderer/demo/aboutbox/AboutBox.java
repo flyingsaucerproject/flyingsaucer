@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.demo.aboutbox;
 
 import org.w3c.dom.Document;
-import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Uu;
 
@@ -122,19 +121,15 @@ public class AboutBox extends JDialog implements Runnable {
             Uu.p("short url = " + short_url);
             ref = marker.getClass().getResource(short_url);
             Uu.p("ref = " + ref);
-            doc = XMLResource.load(marker.getClass().getResourceAsStream(short_url)).getDocument();
+            panel.setDocument(ref.toExternalForm());
         } else if (url_text.startsWith("http")) {
-            doc = XMLResource.load(new URL(url_text)).getDocument();
-
-            ref = new File(url_text).toURL();
+            panel.setDocument(url_text);
         } else {
-            doc = XMLResource.load(new URL(url_text)).getDocument();
-
             ref = new File(url_text).toURL();
+            panel.setDocument(ref.toExternalForm());
         }
         Uu.p("ref = " + ref);
         Uu.p("url_text = " + url_text);
-        panel.setDocument(doc, ref.toString());
     }
 
     /**
@@ -199,6 +194,9 @@ public class AboutBox extends JDialog implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/06/15 11:53:44  tobega
+ * Changed UserAgentCallback to getInputStream instead of getReader. Fixed up some consequences of previous change.
+ *
  * Revision 1.7  2005/06/01 21:36:33  tobega
  * Got image scaling working, and did some refactoring along the way
  *
