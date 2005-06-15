@@ -96,7 +96,8 @@ public class Eeze {
                     f.getName().endsWith("xml");
         }
     };
-    
+    private ReloadPageAction reloadPageAction;
+
     /**
      * Constructor for the Eeze object
      */
@@ -183,6 +184,7 @@ public class Eeze {
                     });
                     
                     nextDemoAction = new NextDemoAction();
+                    reloadPageAction = new ReloadPageAction();
                     chooseDemoAction = new ChooseDemoAction();
                     growAction = new GrowAction();
                     shrinkAction = new ShrinkAction();
@@ -196,6 +198,7 @@ public class Eeze {
                     
                     frame.setJMenuBar(new JMenuBar());
                     JMenu doMenu = new JMenu("Do");
+                    doMenu.add(reloadPageAction);
                     doMenu.add(nextDemoAction);
                     doMenu.add(chooseDemoAction);
                     doMenu.add(growAction);
@@ -551,7 +554,7 @@ public class Eeze {
     class NextDemoAction extends AbstractAction {
         
         /**
-         * Constructor for the NextDemoAction object
+         * Constructor for the ReloadPageAction object
          */
         public NextDemoAction() {
             super("Next Demo Page");
@@ -588,7 +591,36 @@ public class Eeze {
             }
         }
     }
-    
+    /**
+     * Description of the Class
+     *
+     * @author Who?
+     */
+    class ReloadPageAction extends AbstractAction {
+
+        /**
+         * Constructor for the ReloadPageAction object
+         */
+        public ReloadPageAction() {
+            super("Reload Page");
+            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_R));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.ALT_MASK));
+        }
+
+        /**
+         * Invoked when an action occurs.
+         *
+         * @param e PARAM
+         */
+        public void actionPerformed(ActionEvent e) {
+            try {
+                switchPage(currentDisplayed);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
     /**
      * Description of the Class
      *
@@ -597,7 +629,7 @@ public class Eeze {
     class ChooseDemoAction extends AbstractAction {
         
         /**
-         * Constructor for the NextDemoAction object
+         * Constructor for the ReloadPageAction object
          */
         public ChooseDemoAction() {
             super("Choose Demo Page");
