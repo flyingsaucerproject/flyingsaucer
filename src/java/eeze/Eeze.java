@@ -117,8 +117,10 @@ public class Eeze {
             public void run() {
                 try {
                     File fontFile = new File(directory + "/support/AHEM____.TTF");
-                    html.getRenderingContext().setFontMapping("Ahem",
+                    if ( fontFile.exists()) {
+                        html.getRenderingContext().setFontMapping("Ahem",
                             Font.createFont(Font.TRUETYPE_FONT, fontFile.toURL().openStream()));
+                    }
                 } catch (FontFormatException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 } catch (IOException e) {
