@@ -1,5 +1,5 @@
 /*
- * PropertyDeclaration.java
+ * NaiveUserAgent.java
  * Copyright (c) 2004, 2005 Torbjörn Gannholm
  *
  * This program is free software; you can redistribute it and/or
@@ -150,6 +150,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/06/15 11:57:18  tobega
+ * Making Browser a better model application with UserAgentCallback
+ *
  * Revision 1.11  2005/06/15 11:53:47  tobega
  * Changed UserAgentCallback to getInputStream instead of getReader. Fixed up some consequences of previous change.
  *
