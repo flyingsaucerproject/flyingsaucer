@@ -86,7 +86,7 @@ public class LayoutThread implements Runnable {
                 Uu.p("body box is null");
             }
         } else {
-            g.drawString("still doing layout", 50, 50);
+            g.drawString(panel.getLayoutInProgressMsg(), 50, 50);
             //Uu.p("still doing layout");
         }
     }

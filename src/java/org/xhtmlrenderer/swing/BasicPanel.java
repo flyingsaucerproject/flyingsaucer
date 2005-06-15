@@ -120,6 +120,11 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     private boolean anti_aliased = true;
 
     /**
+     * Message used while layout is in progress and panel is being redrawn.
+     */
+    private String layoutInProgressMsg = "Layout in progress...";
+
+    /**
      * Constructor for the BasicPanel object
      */
     public BasicPanel() {
@@ -984,12 +989,34 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             enclosingScrollPane.addComponentListener(this);
         }
     }
+
+    /**
+     * Returns the string message drawn on the panel while rendering a page. For most pages, this will be barely visible
+     * as pages render so quickly.
+      * @return See desc.
+     */
+    public String getLayoutInProgressMsg() {
+        return layoutInProgressMsg;
+    }
+
+    /**
+     * Sets the string message drawn on the panel while rendering a page. For most pages, this will be barely visible
+     * as pages render so quickly.
+     *
+      * @param layoutInProgressMsg See desc..
+     */
+    public void setLayoutInProgressMsg(String layoutInProgressMsg) {
+        this.layoutInProgressMsg = layoutInProgressMsg;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.50  2005/06/15 11:59:17  pdoubleya
+ * Added dynamic layout message.
+ *
  * Revision 1.49  2005/06/15 11:53:46  tobega
  * Changed UserAgentCallback to getInputStream instead of getReader. Fixed up some consequences of previous change.
  *
