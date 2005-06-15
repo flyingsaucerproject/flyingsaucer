@@ -25,6 +25,9 @@ import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FirstLetterStyle;
 import org.xhtmlrenderer.layout.content.FirstLineStyle;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 
 import java.util.Iterator;
 import java.util.List;
@@ -89,6 +92,33 @@ public class BlockBoxing {
             // set the child_box location
             child_box.x = 0;
             child_box.y = box.height;
+			//Uu.p("set child box y to: " + child_box);
+			
+			
+			//JMM. new code to handle the 'clear' property
+			// if clear set
+			if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.LEFT)) {
+				Uu.p("is clear left");
+			}
+			/*
+			if(child_box.y > 30) {
+				Uu.p("faked clear left");
+				// get down distance to clear
+				int down = c.getBlockFormattingContext().getLeftDownDistance(child_box);
+				Uu.p("down = " + down);
+				int diff = down-child_box.y;
+				Uu.p("diff = " + diff);
+				Uu.p("child = " + child_box);
+				if(diff > 0) {
+					// move child box down
+					child_box.y = down;
+					// adjust parent box
+					box.height += diff;
+				}
+				
+			}*/
+			
+			
 
             //joshy fix the 'fixed' stuff later
             // if fixed or abs then don't modify the final layout bounds
@@ -133,6 +163,13 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/06/15 16:49:48  joshy
+ * inital clear support
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.7  2005/06/05 01:02:34  tobega
  * Very simple and not completely functional table layout
  *
