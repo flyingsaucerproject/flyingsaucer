@@ -210,6 +210,10 @@ public class Box {
      */
     public int tx;
     public int ty;
+	
+	
+	public boolean clear_left = false;
+	public boolean clear_right = false;
 
     /**
      * Constructor for the Box object
@@ -523,6 +527,13 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.54  2005/06/16 04:31:30  joshy
+ * added clear support to the box
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.53  2005/05/13 15:23:55  tobega
  * Done refactoring box borders, margin and padding. Hover is working again.
  *
