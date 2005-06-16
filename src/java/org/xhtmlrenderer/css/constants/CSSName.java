@@ -839,6 +839,8 @@ public final class CSSName {
         INITIAL_VALUE_MAP.put(TEXT_SHADOW, "none");
         INITIAL_VALUE_MAP.put(TEXT_TRANSFORM, "none");
 
+        INITIAL_VALUE_MAP.put(TOP, "auto");
+
         INITIAL_VALUE_MAP.put(UNICODE_BIDI, "normal");
         INITIAL_VALUE_MAP.put(VERTICAL_ALIGN, "baseline");
 
@@ -856,6 +858,9 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/06/16 11:28:38  pdoubleya
+ * Initial value for TOP
+ *
  * Revision 1.8  2005/06/15 17:27:37  pdoubleya
  * Allow for custom properties (don't break).
  *
