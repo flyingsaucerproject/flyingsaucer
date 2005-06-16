@@ -90,11 +90,11 @@ public class InlineBoxing {
         InlineBox prev_align_inline = null;
 
         // adjust the first line for float tabs
-        // skip adjusting for tabs if this box is cleared
-        if (!box.clear_left) {
-            remaining_width = FloatUtil.adjustForTab(c, prev_line, remaining_width);
-        }
-
+		// skip adjusting for tabs if this box is cleared
+		if(!box.clear_left && !box.clear_right) {
+			remaining_width = FloatUtil.adjustForTab(c, prev_line, remaining_width);
+		}
+		
         CalculatedStyle currentStyle = parentStyle;
         boolean isFirstLetter = true;
 
@@ -244,10 +244,10 @@ public class InlineBoxing {
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line, blockLineMetrics);
-                    // skip adjusting for tabs if this box is cleared
-                    if (!box.clear_left) {
-                        remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
-                    }
+					// skip adjusting for tabs if this box is cleared
+					if(!box.clear_left && !box.clear_right) {
+						remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
+					}
                     
                     //have to discard it and recalculate, particularly if this was the first line
                     prev_align_inline.break_after = true;
@@ -297,9 +297,9 @@ public class InlineBoxing {
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line, blockLineMetrics);
-                    if (!box.clear_left) {
-                        remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
-                    }
+					if(!box.clear_left && !box.clear_right) {
+						remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
+					}
                 }
 
                 // set the inline to use for left alignment
@@ -571,6 +571,13 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/06/16 18:34:10  joshy
+ * support for clear:right
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.32  2005/06/16 07:24:50  tobega
  * Fixed background image bug.
  * Caching images in browser.

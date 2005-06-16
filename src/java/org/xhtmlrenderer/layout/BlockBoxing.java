@@ -96,9 +96,15 @@ public class BlockBoxing {
 			
 			//JMM. new code to handle the 'clear' property
 			// if clear set
-			if(child_box.clear_left) {
-				// get down distance to clear
-				int down = c.getBlockFormattingContext().getLeftDownDistance(child_box);
+			if(child_box.clear_left || child_box.clear_right) {
+				// get the distance we have to move it down
+				int down = 0;
+				if(child_box.clear_left) {
+					down = Math.max(down,c.getBlockFormattingContext().getLeftDownDistance(child_box));
+				}
+				if(child_box.clear_right) {
+					down = Math.max(down,c.getBlockFormattingContext().getRightDownDistance(child_box));
+				}
 				int diff = down-child_box.y;
 				if(diff > 0) {
 					// move child box down
@@ -151,6 +157,13 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/06/16 18:34:09  joshy
+ * support for clear:right
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.9  2005/06/16 04:38:15  joshy
  * finished support for clear
  * Issue number:

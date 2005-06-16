@@ -181,6 +181,15 @@ public class BlockFormattingContext {
 		}
 		return 0;
 	}
+	public int getRightDownDistance(Box box) {
+		for(int i=0; i< right_floats.size(); i++) {
+			Box floater = (Box) right_floats.get(i);
+			if(floater.y + floater.height > box.y) {
+				return floater.y + floater.height;
+			}
+		}
+		return 0;
+	}
     public int getRightFloatDistance(LineBox line) {
         return getFloatDistance(line, right_floats);
     }

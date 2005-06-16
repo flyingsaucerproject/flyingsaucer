@@ -158,11 +158,18 @@ public class Boxing {
             // set up an absolute bfc
             Absolute.preChildrenLayout(c, block);
         }
-
-
-        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.LEFT)) {
-            block.clear_left = true;
-        }
+		
+		
+		if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.LEFT)) {
+			block.clear_left = true;
+		}
+		if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.RIGHT)) {
+			block.clear_right = true;
+		}
+		if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.BOTH)) {
+			block.clear_left = true;
+			block.clear_right = true;
+		}
 
 
         // save height incase fixed height
@@ -270,6 +277,13 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/06/16 18:34:10  joshy
+ * support for clear:right
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.22  2005/06/16 07:24:50  tobega
  * Fixed background image bug.
  * Caching images in browser.
