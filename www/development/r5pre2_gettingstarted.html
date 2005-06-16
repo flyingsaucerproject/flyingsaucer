@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Flying Saucer: R5pre1 -- Getting Started!</title>
+<link href="../base.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<p>DONE SO FAR FOR R5 pre 2</p>
+<ol>
+	<li>Support for reloading documents, picking up style changes (Patrick)</li>
+	<li>Support for clear (Josh)</li>
+	<li>Application cleanups (tobe)</li>
+	<li>Max and min font scaling limits on Panel (Patrick)</li>
+</ol>
+
+
+
+
+<div id="fs">
+<h1>Getting Started with Flying Saucer R5 Release (beta 2)</h1>
+<p>June 29, 2005</p>
+<p>The Flying Saucer team is proud to present the first beta release of version R5 of the Flying Saucer XML/CSS renderer, R5pre1. Download now!</p> 
+<a href="https://xhtmlrenderer.dev.java.net/releases/r5pre1/flying-saucer-binary-R5pre1.zip">flying-saucer-binary-R5pre1.zip</a> - 1.3M; just the binaries, no source<br/>
+
+<p>To access the full source code and related files, connect to our java.net CVS resource--see instructions on <a href="https://xhtmlrenderer.dev.java.net/source/browse/xhtmlrenderer/">https://xhtmlrenderer.dev.java.net/source/browse/xhtmlrenderer/</a>. You'll need a java.net account to use this.</p>
+
+<p>R5 includes a whole range of improvements and changes</p>
+<ul>
+	<li>faster rendering</li>
+	<li>more accurate page layout</li>
+	<li>support more CSS properties</li>
+	<li>support for layout of pure XML using only CSS</li>
+	<li>dynamic styling on mouse hover</li>
+	<li>support for pluggable SAX/XML parsers for source documents</li>
+	<li>new simplified top-level packages to get you up and running</li>
+</ul>
+
+<h2>Where do I Start?</h2>
+<p>With R5, we created a new package structure with a minimum number of easy-to-use classes to get you started: <code>org.xhtmlrenderer.simple</code>. </p>
+
+<p>Drop an <code>XHTMLPanel</code> in your Swing application, call <code>setDocument()</code> and you'll be rendering right away. Want scrolling ans standard keyboard bindings for navigation? Add your <code>XHTMLPanel</code> to an <code>FSScrollPane</code>. Need to create a <code>BufferedImage</code> from your XML and CSS? Use our <code>Graphics2DRenderer</code> in the same package, with one method call--<code>renderToImage()</code>. The new simple package clears the decks and puts you in control of your rendering.</p>
+
+<h2>How to Help Us</h2>
+<p>Please download and try the new code out. There are many improvements since our last release, R4, and our test pages are looking better and better--and rendering faster. A lot of work still to be done, and this is where you can help. Join our mailing lists by going to <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList</a>. The users mailing list is a good place to start if you just want to ask questions and join the discussion. You can also request an observer role by logging in to java.net and going to our home page at <a href="https://xhtmlrenderer.dev.java.net/">https://xhtmlrenderer.dev.java.net/</a>; as an observer, you can add issues to our issue tracker at <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectIssues">https://xhtmlrenderer.dev.java.net/servlets/ProjectIssues</a>. </p>
+
+<p>You can also send us samples--we want to see what neat things you're doing with Flying Saucer. Send us pages!</p>
+
+
+<h2>Installation</h2>
+<p>Download our release. Right now we're bundling this as two JAR files:</p> 
+<code>flying-saucer-binary-R5pre1.zip</code> - just the binaries, no source<br/>
+
+<p>Start with the flying-saucer-binary-R5pre1.zip. Unpack the ZIP into your chosen target directory. Then adjust your CLASSPATH, and add <code>core-renderer-R5pre1.jar</code> and <code>cssparser-0-9-4.jar</code>. That's all!</p>
+
+<h2>Sample Applications</h2>
+<p>If you want to see how the code fits into a whole Swing application, take a look at our simple, but complete, "browser". This is not a complete browser by any means, but shows how you might build a browser with navigation controls and history. To run the browser, add <code>fs-browser.jar</code> to your CLASSPATH, then run <code>org.xhtmlrenderer.demo.browser.BrowserStartup</code>.</p> 
+
+<h2>Renderer Configuration</h2>
+<p>Flying Saucer loads a configuration file from <code>resources/conf/xhtmlrenderer.conf</code>. A default version of this is packaged in the core-renderer JAR file. There are docs in the shipping version. You can modify that version and re-pack it in the JAR, or include a different version earlier in your CLASSPATH. You can also leave the default version alone and override any of the properties by writing a text file with new property assignments (propname = value) and saving it in your user home directory, under <code>.flyingsaucer/local.xhtmlrenderer.conf</code>.</p> 
+
+<p>Properties are loaded statically during the first execution of any of the Flying Saucer classes, and kept in memory until restart.</p>
+
+<h2>CSS Default Stylesheet</h2>
+<p>Flying Saucer ships with default CSS styles for all XHTML elements, following samples provided by the W3C. This default CSS file is packaged in the JAR under <code>/resources/css/default.css</code>. You can write your own and specify its location in the FS configuration file (see above). Be careful when changing this file--it's meant to render pages with no styling with a reasonable look and layout. Don't break anything!</p>
+
+<ul>
+<li><a href="#show_page">The Basics: Showing a Page</a></li>
+<li><a href="#user_agent">Getting control of loading data - <code>UserAgentCallback</code></a></li>
+<li><a href="#handling_documents">Handling different document types - <code>NamespaceHandler</code></a></li>
+</ul>
+
+<h2><a name="show_page"></a>The Basics: Showing a Page</h2>
+<p>If you just want to show a webpage in your application then  start
+  with the <code>XHTMLPanel</code>, in <code>org.xhtmlrenderer.swing</code>. Here is a simple example: </p>
+<pre>import javax.swing.*;
+import org.xhtmlrenderer.simple.XHTMLPanel;
+public class test {
+   public static void main(String[] args) throws Exception {
+       
+      XHTMLPanel panel = new XHTMLPanel();
+      panel.setDocument("test.xhtml");
+   
+      JScrollPane scroll = new JScrollPane(panel);
+   
+      JFrame frame = new JFrame();
+      frame.getContentPane().add(scroll);
+      frame.pack();
+      frame.setSize(400,400);
+      frame.setVisible(true);
+   }   
+}
+</pre>
+<p><br>
+    First create an XHTMLPanel and set it's preferred size. Call <code>setDocument()</code>  to set the path of
+    the xhtml file that should be displayed (relative to the current working directory). Then drop it into a 
+    <code>JScrollPane</code> and add the pane to a <code>JFrame</code>.</p>
+<p>To show a css-styled xml document with no default css, use the <code>org.xhtmlrender.swing.BasicPanel</code> instead</p>
+    
+<div>
+<h2><a name="user_agent"></a>Getting control of loading data - <code>UserAgentCallback</code></h2>
+<p>  Loading of documents, stylesheets and images is under the control of the user agent (i.e. your code).
+</p>
+<p>  To get control of these things you need to implement the <code>org.xhtmlrenderer.extend.UserAgentCallback</code> interface
+and pass it to the constructor of one of the panels or your extension of a panel.
+</p>
+<p>  By default, the panels use <code>org.xhtmlrenderer.swing.NaiveUserAgent</code> which just loads everything.
+If you wish, you may of course extend this class and override the stuff that you care about.
+</p>
+<p>To build a general web-browser, you will need to make an implementation that converts crappy html to good xml.
+Then you should probably make a <code>NamespaceHandler</code> (see below) to turn html styling attributes into css element styles.
+Alternatively, the document could first be converted to good css-styled xhtml.
+</p>
+</div>
+  
+<div>
+<h2><a name="handling_documents"></a>Handling different document types - <code>NamespaceHandler</code></h2>
+<p>  The Flying Saucer xhtmlrenderer in its basic form just renders xml styled with css.
+The stylesheet is obtained from an &lt;?xml-stylesheet?&gt; processing-instruction.
+There is no inherent knowledge of the document type, other than what is known about xml as such.
+</p>
+<p>Knowledge about a document type is provided through the NamespaceHandler interface.
+An implementation of this interface may be provided in the method <code>public void setDocument(Document doc, URL url, NamespaceHandler nsh)</code>
+</p>
+<p>The <code>BasicPanel</code> will by default use the <code>org.xhtmlrenderer.swing.NoNamespaceHandler</code> implementation.
+</p>
+<p>The <code>XHTMLPanel</code> will by default use the <code>org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler</code> implementation.
+</p>
+<p>The provided <code>NamespaceHandler</code> will be able to provide a JComponent to replace any element.
+At the time of this writing the element needs to have a display property set to "inline-block" for this to work.
+Anyway, with the right <code>NamespaceHandler</code> and <code>UserAgentCallback</code>, you could do just about anything,
+like, for example, make a XUL implementation on top of Flying Saucer.
+</p>
+</div>
+</body>
+</html>
