@@ -230,8 +230,8 @@ public class StylesheetFactory {
      * @param key The key for this sheet; same as key passed to
      *            putStylesheet();
      */
-    public void removeCachedStylesheet(Object key) {
-        _cache.remove(key);
+    public Object removeCachedStylesheet(Object key) {
+        return _cache.remove(key);
     }
 
     /**
@@ -308,6 +308,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/06/16 12:59:23  pdoubleya
+ * Cleaned up support for reloading documents.
+ *
  * Revision 1.19  2005/06/16 11:29:12  pdoubleya
  * First cut support for reload page, flushes inline stylesheets.
  *

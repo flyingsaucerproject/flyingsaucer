@@ -91,9 +91,10 @@ public class Eeze {
     private final static FileFilter HTML_FILE_FILTER =
             new FileFilter() {
                 public boolean accept(File f) {
-                    return f.getName().endsWith("html") ||
-                            f.getName().endsWith("htm") ||
-                            f.getName().endsWith("xml");
+                    return f.getName().endsWith(".html") ||
+                            f.getName().endsWith(".htm") ||
+                            f.getName().endsWith(".xhtml") ||
+                            f.getName().endsWith(".xml");
                 }
             };
     private ReloadPageAction reloadPageAction;
@@ -175,6 +176,7 @@ public class Eeze {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     html = new XHTMLPanel();
+                    html.setLayoutInProgressMsg("");
                     frame.getContentPane().add(new FSScrollPane(html));
                     frame.pack();
                     frame.setSize(1024, 768);
@@ -229,13 +231,13 @@ public class Eeze {
      * @param file PARAM
      */
     private void switchPage(File file, boolean reload) {
-        XRLog.load("Loading " + currentDisplayed);
         eezeFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
-            html.setLayoutInProgressMsg("Layout for " + file.toURL().toExternalForm() + " in progress.");
             if ( reload ) {
+                XRLog.load("Reloading " + currentDisplayed);
                 html.reloadDocument(file.toURL().toExternalForm());
             } else {
+                XRLog.load("Loading " + currentDisplayed);
                 html.setDocument(file.toURL().toExternalForm());
             }
             currentDisplayed = file;

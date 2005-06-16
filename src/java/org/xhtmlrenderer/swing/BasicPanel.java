@@ -702,12 +702,28 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         setDocument(doc, url, new NoNamespaceHandler());
     }
 
-    /** CLEAN */
-    public void reloadDocument(Document doc, String url) {
-        StyleReference ref = getRenderingContext().getStyleReference();
-        ref.setDocumentContext(getContext(), getContext().getNamespaceHandler(), doc, this);
-        ref.flushStyleSheets();
-        setDocument(doc, url);
+    /**
+     * Reloads the document using the same base URL and namespace handler. Reloading will pick up changes to styles
+     * within the document.
+     * @param URI A URI for the Document to load, for example, file.toURL().toExternalForm().
+     */
+    public void reloadDocument(String URI) {
+        reloadDocument(loadDocument(URI));
+    }
+
+    /**
+     * Reloads the document using the same base URL and namespace handler. Reloading will pick up changes to styles
+     * within the document.
+     * @param doc The document to reload.
+     */
+    public void reloadDocument(Document doc) {
+        if ( this.doc == null ) {
+            XRLog.render("Reload called on BasicPanel, but there is no document set on the panel yet.");
+            return;
+        };
+        this.doc = doc;
+        getRenderingContext().getStyleReference().flushStyleSheets();
+        setDocument(this.doc, getRenderingContext().getBaseURL(), getContext().getNamespaceHandler());
     }
 
     /**
@@ -1023,6 +1039,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.53  2005/06/16 12:59:24  pdoubleya
+ * Cleaned up support for reloading documents.
+ *
  * Revision 1.52  2005/06/16 11:29:13  pdoubleya
  * First cut support for reload page, flushes inline stylesheets.
  *

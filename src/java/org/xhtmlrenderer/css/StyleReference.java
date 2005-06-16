@@ -35,6 +35,7 @@ import org.xhtmlrenderer.util.XRLog;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 
 /**
@@ -165,6 +166,7 @@ public class StyleReference {
         return _matcher.getCascadedStyle(e, restyle);
     }
 
+    /** Flushes any stylesheet associated with this stylereference (based on the user agent callback) that are in cache. */
     public void flushStyleSheets() {
         String uri = _uac.getBaseURL();
         StylesheetInfo info = new StylesheetInfo();
@@ -173,7 +175,11 @@ public class StyleReference {
         Stylesheet sheet = null;
         if (_stylesheetFactory.containsStylesheet(uri)) {
             _stylesheetFactory.removeCachedStylesheet(uri);
-        } 
+            XRLog.cssParse("Removing stylesheet '"+ uri + "' from cache by request.");
+        } else {
+            XRLog.cssParse("Requested removing stylesheet '"+ uri + "', but it's not in cache.");
+
+        }
     }
 
     /**
@@ -241,6 +247,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/06/16 12:59:23  pdoubleya
+ * Cleaned up support for reloading documents.
+ *
  * Revision 1.33  2005/06/16 11:29:12  pdoubleya
  * First cut support for reload page, flushes inline stylesheets.
  *
