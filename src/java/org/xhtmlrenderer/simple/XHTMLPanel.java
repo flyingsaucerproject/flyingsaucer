@@ -174,6 +174,16 @@ public class XHTMLPanel extends BasicPanel {
     }
 
     /**
+     * Loads and renders a Document given a uri.
+     * The uri is resolved by the UserAgentCallback
+     *
+     * @param uri
+     */
+    public void reloadDocument(String uri) {
+        reloadDocument(loadDocument(uri), uri);
+    }
+
+    /**
      * Renders a Document read from an InputStream using a URL
      * as a base URL for relative paths.
      *
@@ -261,6 +271,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/06/16 11:29:12  pdoubleya
+ * First cut support for reload page, flushes inline stylesheets.
+ *
  * Revision 1.19  2005/06/16 07:24:52  tobega
  * Fixed background image bug.
  * Caching images in browser.

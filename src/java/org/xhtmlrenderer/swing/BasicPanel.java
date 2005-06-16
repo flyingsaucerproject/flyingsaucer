@@ -35,6 +35,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.css.StyleReference;
 import org.xml.sax.ErrorHandler;
 
 import javax.swing.*;
@@ -701,6 +702,14 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         setDocument(doc, url, new NoNamespaceHandler());
     }
 
+    /** CLEAN */
+    public void reloadDocument(Document doc, String url) {
+        StyleReference ref = getRenderingContext().getStyleReference();
+        ref.setDocumentContext(getContext(), getContext().getNamespaceHandler(), doc, this);
+        ref.flushStyleSheets();
+        setDocument(doc, url);
+    }
+
     /**
      * Gets the hover attribute of the BasicPanel object
      *
@@ -1014,6 +1023,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.52  2005/06/16 11:29:13  pdoubleya
+ * First cut support for reload page, flushes inline stylesheets.
+ *
  * Revision 1.51  2005/06/16 07:24:52  tobega
  * Fixed background image bug.
  * Caching images in browser.

@@ -165,6 +165,17 @@ public class StyleReference {
         return _matcher.getCascadedStyle(e, restyle);
     }
 
+    public void flushStyleSheets() {
+        String uri = _uac.getBaseURL();
+        StylesheetInfo info = new StylesheetInfo();
+        info.setUri(uri);
+        info.setOrigin(StylesheetInfo.AUTHOR);
+        Stylesheet sheet = null;
+        if (_stylesheetFactory.containsStylesheet(uri)) {
+            _stylesheetFactory.removeCachedStylesheet(uri);
+        } 
+    }
+
     /**
      * Gets StylesheetInfos for all stylesheets and inline styles associated
      * with the current document. Default (user agent) stylesheet and the inline
@@ -230,6 +241,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/06/16 11:29:12  pdoubleya
+ * First cut support for reload page, flushes inline stylesheets.
+ *
  * Revision 1.32  2005/06/16 07:24:48  tobega
  * Fixed background image bug.
  * Caching images in browser.

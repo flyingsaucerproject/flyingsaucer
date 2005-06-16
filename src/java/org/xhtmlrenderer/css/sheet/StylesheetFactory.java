@@ -225,6 +225,16 @@ public class StylesheetFactory {
     }
 
     /**
+     * Removes a cached sheet by its key.
+     *
+     * @param key The key for this sheet; same as key passed to
+     *            putStylesheet();
+     */
+    public void removeCachedStylesheet(Object key) {
+        _cache.remove(key);
+    }
+
+    /**
      * Returns a cached sheet by its key; loads and caches it if not in cache;
      * null if not able to load
      *
@@ -298,6 +308,9 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/06/16 11:29:12  pdoubleya
+ * First cut support for reload page, flushes inline stylesheets.
+ *
  * Revision 1.18  2005/06/16 07:24:46  tobega
  * Fixed background image bug.
  * Caching images in browser.

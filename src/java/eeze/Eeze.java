@@ -228,12 +228,16 @@ public class Eeze {
      *
      * @param file PARAM
      */
-    private void switchPage(File file) {
+    private void switchPage(File file, boolean reload) {
         XRLog.load("Loading " + currentDisplayed);
         eezeFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
             html.setLayoutInProgressMsg("Layout for " + file.toURL().toExternalForm() + " in progress.");
-            html.setDocument(file.toURL().toExternalForm());
+            if ( reload ) {
+                html.reloadDocument(file.toURL().toExternalForm());
+            } else {
+                html.setDocument(file.toURL().toExternalForm());
+            }
             currentDisplayed = file;
             changeTitle(file.toURL().toString());
         } catch (Exception ex) {
@@ -588,7 +592,7 @@ public class Eeze {
             }
 
             try {
-                switchPage(nextPage);
+                switchPage(nextPage, false);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -618,7 +622,7 @@ public class Eeze {
          */
         public void actionPerformed(ActionEvent e) {
             try {
-                switchPage(currentDisplayed);
+                switchPage(currentDisplayed, true);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -656,7 +660,7 @@ public class Eeze {
                     currentDisplayed);
 
             try {
-                switchPage(nextPage);
+                switchPage(nextPage, false);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
