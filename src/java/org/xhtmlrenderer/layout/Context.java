@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -40,19 +39,6 @@ import java.util.LinkedList;
  * @author Torbjörn Gannholm
  */
 public interface Context {
-    /**
-     * Gets the media attribute of the Context object
-     *
-     * @return The media value
-     */
-    String getMedia();
-
-    /**
-     * Sets the graphics attribute of the Context object
-     *
-     * @param graphics The new graphics value
-     */
-    void setGraphics(Graphics2D graphics);
 
     /**
      * Gets the renderingContext attribute of the Context object
@@ -208,22 +194,6 @@ public interface Context {
     void setExtents(Rectangle rect);
 
     /**
-     * Sets the selectionStart attribute of the Context object
-     *
-     * @param box The new selectionStart value
-     * @param x   The new selectionStart value
-     */
-    void setSelectionStart(Box box, int x);
-
-    /**
-     * Sets the selectionEnd attribute of the Context object
-     *
-     * @param box The new selectionEnd value
-     * @param x   The new selectionEnd value
-     */
-    void setSelectionEnd(Box box, int x);
-
-    /**
      * Sets the listCounter attribute of the Context object
      *
      * @param counter The new listCounter value
@@ -250,13 +220,6 @@ public interface Context {
      * @return The extents value
      */
     Rectangle getExtents();
-
-    /**
-     * Gets the fontResolver attribute of the Context object
-     *
-     * @return The fontResolver value
-     */
-    FontResolver getFontResolver();
 
     /**
      * Description of the Method
@@ -306,41 +269,6 @@ public interface Context {
     StyleReference getCss();
 
     /**
-     * Sets the css attribute of the Context object
-     *
-     * @param css The new css value
-     */
-    void setCss(StyleReference css);
-
-    /**
-     * Sets the debug_draw_boxes attribute of the Context object
-     *
-     * @param debug_draw_boxes The new debug_draw_boxes value
-     */
-    void setDebug_draw_boxes(boolean debug_draw_boxes);
-
-    /**
-     * Sets the debug_draw_line_boxes attribute of the Context object
-     *
-     * @param debug_draw_line_boxes The new debug_draw_line_boxes value
-     */
-    void setDebug_draw_line_boxes(boolean debug_draw_line_boxes);
-
-    /**
-     * Sets the debug_draw_inline_boxes attribute of the Context object
-     *
-     * @param debug_draw_inline_boxes The new debug_draw_inline_boxes value
-     */
-    void setDebug_draw_inline_boxes(boolean debug_draw_inline_boxes);
-
-    /**
-     * Sets the debug_draw_font_metrics attribute of the Context object
-     *
-     * @param debug_draw_font_metrics The new debug_draw_font_metrics value
-     */
-    void setDebug_draw_font_metrics(boolean debug_draw_font_metrics);
-
-    /**
      * Gets the canvas attribute of the Context object
      *
      * @return The canvas value
@@ -348,39 +276,11 @@ public interface Context {
     BasicPanel getCanvas();
 
     /**
-     * Sets the canvas attribute of the Context object
-     *
-     * @param canvas The new canvas value
-     */
-    void setCanvas(BasicPanel canvas);
-
-    /**
-     * Gets the list_counter attribute of the Context object
-     *
-     * @return The list_counter value
-     */
-    int getList_counter();
-
-    /**
-     * Sets the list_counter attribute of the Context object
-     *
-     * @param list_counter The new list_counter value
-     */
-    void setList_counter(int list_counter);
-
-    /**
      * Gets the ctx attribute of the Context object
      *
      * @return The ctx value
      */
     RenderingContext getCtx();
-
-    /**
-     * Sets the ctx attribute of the Context object
-     *
-     * @param ctx The new ctx value
-     */
-    void setCtx(RenderingContext ctx);
 
     /**
      * Gets the blockFormattingContext attribute of the Context object
@@ -409,32 +309,11 @@ public interface Context {
     boolean isSubBlock();
 
     /**
-     * Gets the firstLine attribute of the Context object
-     *
-     * @return The firstLine value
-     */
-    boolean isFirstLine();
-
-    /**
-     * Sets the firstLine attribute of the Context object
-     *
-     * @param first_line The new firstLine value
-     */
-    void setFirstLine(boolean first_line);
-
-    /**
      * Gets the fixedRectangle attribute of the Context object
      *
      * @return The fixedRectangle value
      */
     Rectangle getFixedRectangle();
-
-    /**
-     * Sets the namespaceHandler attribute of the Context object
-     *
-     * @param nh The new namespaceHandler value
-     */
-    public void setNamespaceHandler(NamespaceHandler nh);
 
     /**
      * Gets the namespaceHandler attribute of the Context object

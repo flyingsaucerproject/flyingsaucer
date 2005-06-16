@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -42,15 +41,6 @@ public class ContextImpl implements Context {
     private LinkedList inlineBorders = new LinkedList();
     private LinkedList firstLineStyles = new LinkedList();
     private boolean shrinkWrap = false;
-
-    //delegated methods
-    public String getMedia() {
-        return sharedContext.getMedia();
-    }
-
-    public void setGraphics(Graphics2D graphics) {
-        sharedContext.setGraphics(graphics);
-    }
 
     public RenderingContext getRenderingContext() {
         return sharedContext.getRenderingContext();
@@ -92,20 +82,8 @@ public class ContextImpl implements Context {
         return sharedContext.inSelection(box);
     }
 
-    public void setSelectionStart(Box box, int x) {
-        sharedContext.setSelectionStart(box, x);
-    }
-
-    public void setSelectionEnd(Box box, int x) {
-        sharedContext.setSelectionEnd(box, x);
-    }
-
     public Graphics2D getGraphics() {
         return sharedContext.getGraphics();
-    }
-
-    public FontResolver getFontResolver() {
-        return sharedContext.getFontResolver();
     }
 
     public void flushFonts() {
@@ -132,48 +110,16 @@ public class ContextImpl implements Context {
         return sharedContext.getCss();
     }
 
-    public void setCss(StyleReference css) {
-        sharedContext.setCss(css);
-    }
-
-    public void setDebug_draw_boxes(boolean debug_draw_boxes) {
-        sharedContext.setDebug_draw_boxes(debug_draw_boxes);
-    }
-
-    public void setDebug_draw_line_boxes(boolean debug_draw_line_boxes) {
-        sharedContext.setDebug_draw_line_boxes(debug_draw_line_boxes);
-    }
-
-    public void setDebug_draw_inline_boxes(boolean debug_draw_inline_boxes) {
-        sharedContext.setDebug_draw_inline_boxes(debug_draw_inline_boxes);
-    }
-
-    public void setDebug_draw_font_metrics(boolean debug_draw_font_metrics) {
-        sharedContext.setDebug_draw_font_metrics(debug_draw_font_metrics);
-    }
-
     public BasicPanel getCanvas() {
         return sharedContext.getCanvas();
-    }
-
-    public void setCanvas(BasicPanel canvas) {
-        sharedContext.setCanvas(canvas);
     }
 
     public RenderingContext getCtx() {
         return sharedContext.getCtx();
     }
 
-    public void setCtx(RenderingContext ctx) {
-        sharedContext.setCtx(ctx);
-    }
-
     public Rectangle getFixedRectangle() {
         return sharedContext.getFixedRectangle();
-    }
-
-    public void setNamespaceHandler(NamespaceHandler nh) {
-        sharedContext.setNamespaceHandler(nh);
     }
 
     public NamespaceHandler getNamespaceHandler() {
@@ -245,7 +191,7 @@ public class ContextImpl implements Context {
 
     public void pushStyle(CascadedStyle s) {
         CalculatedStyle parent = (CalculatedStyle) styleStack.peek();
-        CalculatedStyle derived = getCss().getDerivedStyle(parent, s);
+        CalculatedStyle derived = parent.deriveStyle(s);
         styleStack.push(derived);
     }
 
@@ -362,7 +308,7 @@ public class ContextImpl implements Context {
      * @return The listCounter value
      */
     public int getListCounter() {
-        return getList_counter();
+        return list_counter;
     }
 
     /**
@@ -371,15 +317,7 @@ public class ContextImpl implements Context {
      * @param counter The new listCounter value
      */
     public void setListCounter(int counter) {
-        this.setList_counter(counter);
-    }
-
-    public int getList_counter() {
-        return list_counter;
-    }
-
-    public void setList_counter(int list_counter) {
-        this.list_counter = list_counter;
+        list_counter = counter;
     }
 
     /* ================== Extra Utility Funtions ============== */
@@ -408,16 +346,6 @@ public class ContextImpl implements Context {
      */
     public boolean isSubBlock() {
         return sub_block;
-    }
-
-    private boolean first_line = false;
-
-    public boolean isFirstLine() {
-        return first_line;
-    }
-
-    public void setFirstLine(boolean first_line) {
-        this.first_line = first_line;
     }
 
     /**

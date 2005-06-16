@@ -101,10 +101,8 @@ public class BrowserStartup {
      * The main program for the BrowserStartup class
      *
      * @param args The command line arguments
-     * @throws Exception Throws
      */
-    public static void main(String[] args)
-            throws Exception {
+    public static void main(String[] args) {
         if (GeneralUtil.isMacOSX()) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FS Browser");
@@ -156,6 +154,12 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/06/16 07:24:44  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.12  2005/06/15 13:35:27  tobega
  * Fixed history
  *

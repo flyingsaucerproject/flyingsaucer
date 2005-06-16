@@ -39,11 +39,6 @@ import java.awt.geom.Rectangle2D;
 public class FontUtil {
 
     /**
-     * Description of the Field
-     */
-    static boolean quick = false;
-
-    /**
      * Description of the Method
      *
      * @param c    PARAM
@@ -82,19 +77,6 @@ public class FontUtil {
     }
 
     /**
-     * PWW ADDED 14/08/04 Should be used to resolve ex properly
-     *
-     * @param context PARAM
-     * @param style
-     * @return Returns
-     */
-    //TODO: use this method!
-    public static int fontXHeightForElement(Context context, CalculatedStyle style) {
-        return lineHeight(context);
-    }
-
-    //TODO: add method to get font-size for a specific XHeight
-    /**
      * Gets the font attribute of the FontUtil class
      *
      * @param c PARAM
@@ -102,14 +84,6 @@ public class FontUtil {
      */
     public static Font getFont(Context c) {
         CalculatedStyle style = c.getCurrentStyle();
-
-        // CalculatedStyle should take care of all iheritance and default values
-        // if a change is made to the basic font (by user action, for example), restyle
-        /*CHECK: do we need this?
-        Font f = c.getGraphics().getFont();
-        if (quick) {
-            return f;
-        }*/
 
         Font f = style.getFont(c.getCtx());
 
@@ -157,6 +131,12 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2005/06/16 07:24:50  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.36  2005/05/29 16:39:01  tobega
  * Handling of ex values should now be working well. Handling of em values improved. Is it correct?
  * Also started defining dividing responsibilities between Context and RenderingContext.

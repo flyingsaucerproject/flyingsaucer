@@ -616,7 +616,7 @@ public class Matcher {
      * @param mappedSelectors PARAM
      * @return The matchedRulesets value
      */
-    private java.util.Iterator getMatchedRulesets(final List mappedSelectors) {
+    private static java.util.Iterator getMatchedRulesets(final List mappedSelectors) {
         return
                 new java.util.Iterator() {
                     java.util.Iterator selectors = mappedSelectors.iterator();
@@ -645,7 +645,7 @@ public class Matcher {
      * @param selectorList PARAM
      * @return The selectedRulesets value
      */
-    private java.util.Iterator getSelectedRulesets(java.util.List selectorList) {
+    private static java.util.Iterator getSelectedRulesets(java.util.List selectorList) {
         final java.util.List sl = selectorList;
         return
                 new java.util.Iterator() {

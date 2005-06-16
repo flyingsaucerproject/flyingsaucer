@@ -87,16 +87,16 @@ public class Relative {
         int left = 0;
         int topLeft[] = null;
         if (style.isIdent(CSSName.POSITION, IdentValue.RELATIVE)) {
-            if (style.hasProperty(CSSName.RIGHT)) {
+            if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
                 left = -(int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth(), c.getCtx());
             }
-            if (style.hasProperty(CSSName.BOTTOM)) {
+            if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
                 top = -(int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, c.getBlockFormattingContext().getHeight(), c.getCtx());
             }
-            if (style.hasProperty(CSSName.TOP)) {
+            if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
                 top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c.getCtx());
             }
-            if (style.hasProperty(CSSName.LEFT)) {
+            if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
                 left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, c.getBlockFormattingContext().getWidth(), c.getCtx());
             }
             topLeft = new int[]{top, left};

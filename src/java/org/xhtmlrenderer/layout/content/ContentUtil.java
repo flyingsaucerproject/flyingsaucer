@@ -224,33 +224,6 @@ public class ContentUtil {
     }
 
     /**
-     * Gets the blockContent attribute of the ContentUtil class
-     *
-     * @param childContent PARAM
-     * @return The blockContent value
-     */
-    public static boolean isBlockContent(List childContent) {
-        // Uu.p("checking block content: " + childContent);
-        if (childContent.size() == 0) {
-            return false;
-        }
-        Object o = childContent.get(childContent.size() - 1);
-        if (o instanceof TableContent) {
-            return true;
-        }
-        if (o instanceof BlockContent) {
-            return true;
-        }
-        if (o instanceof AnonymousBlockContent) {
-            return true;
-        }
-        if (o instanceof RunInContent) {
-            return true;
-        }//if it has run-ins, it will be block, one way or another
-        return false;
-    }
-
-    /**
      * Description of the Method
      *
      * @param pendingInlines PARAM
@@ -540,6 +513,12 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2005/06/16 07:24:49  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.38  2005/06/04 21:17:19  tobega
  * Created a content model for tables
  *

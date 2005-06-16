@@ -26,13 +26,12 @@ import org.xhtmlrenderer.demo.browser.actions.PrintAction;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.FileDialog;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.logging.Logger;
 import java.net.URL;
+import java.util.logging.Logger;
 
 /**
  * Description of the Class
@@ -83,7 +82,7 @@ public class BrowserActions {
         url = this.getClass().getClassLoader().getResource("images/Stop24.gif");
         stop = new AbstractAction("", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
-              // TODO: stop not coded
+                // TODO: stop not coded
             }
         };
         // TODO: need right API call for ESC
@@ -155,7 +154,7 @@ public class BrowserActions {
 
 
         url = this.getClass().getClassLoader().getResource("images/StepForward24.gif");
-        forward = new AbstractAction("",new ImageIcon(url)) {
+        forward = new AbstractAction("", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 try {
                     root.panel.goForward();
@@ -234,7 +233,7 @@ public class BrowserActions {
      * @param act  The new name value
      * @param name The new name value
      */
-    public void setName(Action act, String name) {
+    public static void setName(Action act, String name) {
         act.putValue(Action.NAME, name);
     }
 
@@ -244,7 +243,7 @@ public class BrowserActions {
      * @param act The new accel value
      * @param key The new accel value
      */
-    public void setAccel(Action act, int key) {
+    public static void setAccel(Action act, int key) {
         act.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(key,
                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -256,7 +255,7 @@ public class BrowserActions {
      * @param act  The new mnemonic value
      * @param mnem The new mnemonic value
      */
-    public void setMnemonic(Action act, Integer mnem) {
+    public static void setMnemonic(Action act, Integer mnem) {
         act.putValue(Action.MNEMONIC_KEY, mnem);
     }
 }
@@ -265,6 +264,12 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/06/16 07:24:43  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.14  2005/03/28 20:03:00  pdoubleya
  * Icon assignments.
  *

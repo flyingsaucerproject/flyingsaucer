@@ -50,10 +50,9 @@ public class FloatUtil {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param block PARAM
+     * @param c PARAM
      */
-    public static void postChildrenLayout(Context c, Box block) {
+    public static void postChildrenLayout(Context c) {
         c.getBlockFormattingContext().doFinalAdjustments();
         c.popBFC();
     }
@@ -158,6 +157,12 @@ public class FloatUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/06/16 07:24:49  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.18  2005/05/13 15:23:53  tobega
  * Done refactoring box borders, margin and padding. Hover is working again.
  *

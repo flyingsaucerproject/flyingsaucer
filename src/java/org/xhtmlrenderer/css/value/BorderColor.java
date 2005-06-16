@@ -22,7 +22,7 @@ package org.xhtmlrenderer.css.value;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 
-import java.awt.Color;
+import java.awt.*;
 
 
 /**
@@ -143,7 +143,7 @@ public class BorderColor {
      * @param dB    change in brightness (result will be clipped to range 0.0-1.0)
      * @return
      */
-    private Color modify(Color color, double dS, double dB) {
+    private static Color modify(Color color, double dS, double dB) {
         float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
         //
         //decreasing brightness and saturation gives a "shadowier", "blacker" look
@@ -175,6 +175,12 @@ public class BorderColor {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/06/16 07:24:47  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.6  2005/06/04 16:04:11  tobega
  * just playing with border colors a bit more
  *

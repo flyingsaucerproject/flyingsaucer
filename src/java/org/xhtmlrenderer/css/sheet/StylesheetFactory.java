@@ -185,7 +185,7 @@ public class StylesheetFactory {
             InputSource is = new InputSource(reader);
             CSSStyleSheet style = parser.parseStyleSheet(is);
             reader.close();
-            return new Ruleset((CSSStyleRule) style.getCssRules().item(0), StylesheetInfo.AUTHOR);
+            return new Ruleset((CSSStyleRule) style.getCssRules().item(0), origin);
         } catch (Exception ex) {
             throw new XRRuntimeException("Cannot parse style declaration from string.", ex);
         }
@@ -298,6 +298,12 @@ public class StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/06/16 07:24:46  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.17  2005/06/15 11:53:45  tobega
  * Changed UserAgentCallback to getInputStream instead of getReader. Fixed up some consequences of previous change.
  *

@@ -26,7 +26,6 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.AttributeResolver;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.*;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
@@ -167,17 +166,6 @@ public class StyleReference {
     }
 
     /**
-     * Gets the derivedStyle attribute of the StyleReference object
-     *
-     * @param parent  PARAM
-     * @param matched PARAM
-     * @return The derivedStyle value
-     */
-    public CalculatedStyle getDerivedStyle(CalculatedStyle parent, CascadedStyle matched) {
-        return parent.deriveStyle(matched);
-    }
-
-    /**
      * Gets StylesheetInfos for all stylesheets and inline styles associated
      * with the current document. Default (user agent) stylesheet and the inline
      * style for the current media are loaded and cached in the
@@ -242,6 +230,12 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2005/06/16 07:24:48  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.31  2005/06/15 11:53:45  tobega
  * Changed UserAgentCallback to getInputStream instead of getReader. Fixed up some consequences of previous change.
  *

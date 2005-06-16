@@ -23,8 +23,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
+import java.awt.*;
 import java.util.HashMap;
 
 
@@ -132,7 +131,7 @@ public class FontResolver {
      * @param variant   PARAM
      * @return Returns
      */
-    protected Font createFont(RenderingContext ctx, Font root_font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
+    protected static Font createFont(RenderingContext ctx, Font root_font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         //Uu.p("creating font: " + root_font + " size = " + size +
         //    " weight = " + weight + " style = " + style + " variant = " + variant);
         int font_const = Font.PLAIN;
@@ -246,7 +245,7 @@ public class FontResolver {
      * @param variant PARAM
      * @return The fontInstanceHashName value
      */
-    protected String getFontInstanceHashName(String name, float size, IdentValue weight, IdentValue style, IdentValue variant) {
+    protected static String getFontInstanceHashName(String name, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         return name + "-" + size + "-" + weight + "-" + style + "-" + variant;
     }
 }
@@ -255,6 +254,12 @@ public class FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/06/16 07:24:48  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.16  2005/06/03 22:04:10  tobega
  * Now handles oblique fonts somewhat and does a better job of italic
  *

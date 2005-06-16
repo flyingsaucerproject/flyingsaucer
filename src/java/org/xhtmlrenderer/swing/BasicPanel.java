@@ -684,8 +684,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param nsh    The new document value
      * @throws Exception Throws
      */
-    public void setDocument(InputStream stream, String url, NamespaceHandler nsh)
-            throws Exception {
+    public void setDocument(InputStream stream, String url, NamespaceHandler nsh) {
         Document dom = XMLResource.load(stream).getDocument();
 
         setDocument(dom, url, nsh);
@@ -993,7 +992,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     /**
      * Returns the string message drawn on the panel while rendering a page. For most pages, this will be barely visible
      * as pages render so quickly.
-      * @return See desc.
+     *
+     * @return See desc.
      */
     public String getLayoutInProgressMsg() {
         return layoutInProgressMsg;
@@ -1003,7 +1003,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * Sets the string message drawn on the panel while rendering a page. For most pages, this will be barely visible
      * as pages render so quickly.
      *
-      * @param layoutInProgressMsg See desc..
+     * @param layoutInProgressMsg See desc..
      */
     public void setLayoutInProgressMsg(String layoutInProgressMsg) {
         this.layoutInProgressMsg = layoutInProgressMsg;
@@ -1014,6 +1014,12 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.51  2005/06/16 07:24:52  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.50  2005/06/15 11:59:17  pdoubleya
  * Added dynamic layout message.
  *

@@ -26,8 +26,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.render.Box;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 
 
 /**
@@ -65,19 +64,19 @@ public class Fixed {
             Rectangle rect = c.getFixedRectangle();
 
             CalculatedStyle style = c.getCurrentStyle();
-            if (style.hasProperty(CSSName.TOP)) {
+            if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
                 box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, (float) (rect.getHeight()), c.getCtx());
                 box.top_set = true;
             }
-            if (style.hasProperty(CSSName.RIGHT)) {
+            if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
                 box.right = (int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, (float) (rect.getWidth()), c.getCtx());
                 box.right_set = true;
             }
-            if (style.hasProperty(CSSName.BOTTOM)) {
+            if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
                 box.bottom = (int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, (float) (rect.getHeight()), c.getCtx());
                 box.bottom_set = true;
             }
-            if (style.hasProperty(CSSName.LEFT)) {
+            if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
                 box.left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, (float) (rect.getWidth()), c.getCtx());
                 box.left_set = true;
             }

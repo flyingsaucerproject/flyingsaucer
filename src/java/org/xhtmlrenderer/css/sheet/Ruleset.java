@@ -19,21 +19,26 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
-import java.util.*;
 import org.xhtmlrenderer.css.constants.CSSName;
-
 import org.xhtmlrenderer.util.XRRuntimeException;
+
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
- * @author   Torbjörn Gannholm
- * @author   Patrick Wright
+ * @author Torbjörn Gannholm
+ * @author Patrick Wright
  */
 public class Ruleset {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private int _origin;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private java.util.List _props;
 
     /**
@@ -42,42 +47,44 @@ public class Ruleset {
      */
     private org.w3c.css.sac.SelectorList sacSelectorList;
 
-    /** Convenience parser for selector text */
+    /**
+     * Convenience parser for selector text
+     */
     private final static com.steadystate.css.parser.CSSOMParser CSOM_PARSER;
 
     /**
      * Creates a new instance of Ruleset
      *
-     * @param rule  PARAM
-     * @param orig  PARAM
+     * @param rule PARAM
+     * @param orig PARAM
      */
-    public Ruleset( org.w3c.dom.css.CSSStyleRule rule, int orig ) {
-        this( orig );
-        pullPropertiesFromDOMRule( rule );
-        pullSelectorsFromDOMRule( rule );
+    public Ruleset(org.w3c.dom.css.CSSStyleRule rule, int orig) {
+        this(orig);
+        pullPropertiesFromDOMRule(rule);
+        pullSelectorsFromDOMRule(rule);
     }
 
     /**
-     * Instantiates a Ruleset for a specific {@link SelectorList}, List of
+     * Instantiates a Ruleset for a specific {@link org.w3c.css.sac.SelectorList}, List of
      * {@link PropertyDeclaration} and origin. Can be used when you have these
-     * outside of a {@link CSSStyleRule}.
+     * outside of a {@link org.w3c.dom.css.CSSStyleRule}.
      *
-     * @param selectorList          PARAM
-     * @param propertyDeclarations  PARAM
-     * @param orig                  PARAM
+     * @param selectorList         PARAM
+     * @param propertyDeclarations PARAM
+     * @param orig                 PARAM
      */
-    public Ruleset( org.w3c.css.sac.SelectorList selectorList, List propertyDeclarations, int orig ) {
-        this( orig );
+    public Ruleset(org.w3c.css.sac.SelectorList selectorList, List propertyDeclarations, int orig) {
+        this(orig);
         this.sacSelectorList = selectorList;
-        this._props.addAll( propertyDeclarations );
+        this._props.addAll(propertyDeclarations);
     }
 
     /**
      * Default constructor
      *
-     * @param orig  PARAM
+     * @param orig PARAM
      */
-    private Ruleset( int orig ) {
+    private Ruleset(int orig) {
         _origin = orig;
         _props = new java.util.LinkedList();
     }
@@ -86,7 +93,7 @@ public class Ruleset {
      * Returns an Iterator of PropertyDeclarations pulled from this
      * CSSStyleRule.
      *
-     * @return   The propertyDeclarations value
+     * @return The propertyDeclarations value
      */
     public java.util.Iterator getPropertyDeclarations() {
         return _props.iterator();
@@ -95,7 +102,7 @@ public class Ruleset {
     /**
      * Returns the SAC SelectorList associated with this CSSStyleRule.
      *
-     * @return   The selectorList value
+     * @return The selectorList value
      */
     public org.w3c.css.sac.SelectorList getSelectorList() {
         return sacSelectorList;
@@ -104,18 +111,16 @@ public class Ruleset {
     /**
      * Extracts the CSS SAC SelectorList from a CSSStyleRule.
      *
-     * @param sacRule  PARAM
+     * @param sacRule PARAM
      */
-    private void pullSelectorsFromDOMRule( org.w3c.dom.css.CSSStyleRule sacRule ) {
+    private void pullSelectorsFromDOMRule(org.w3c.dom.css.CSSStyleRule sacRule) {
         try {
             // note, we parse the selector for this instance, not the one from the CSS Style, which
             // might still be multi-part; selector for TODO is always single (no commas)
             sacSelectorList =
-                    CSOM_PARSER.parseSelectors(
-                    new org.w3c.css.sac.InputSource(
-                    new java.io.StringReader( sacRule.getSelectorText() ) ) );
-        } catch ( java.io.IOException ex ) {
-            throw new XRRuntimeException( "Could not pull SAC Selectors from SAC CSSStyleRule.", ex );
+                    CSOM_PARSER.parseSelectors(new org.w3c.css.sac.InputSource(new java.io.StringReader(sacRule.getSelectorText())));
+        } catch (java.io.IOException ex) {
+            throw new XRRuntimeException("Could not pull SAC Selectors from SAC CSSStyleRule.", ex);
         }
     }
 
@@ -123,9 +128,9 @@ public class Ruleset {
      * Given a CSSStyleRule, pulls all properties into instances of
      * PropertyDeclaration which are stored in our _props List.
      *
-     * @param sacRule  PARAM
+     * @param sacRule PARAM
      */
-    private void pullPropertiesFromDOMRule( org.w3c.dom.css.CSSStyleRule sacRule ) {
+    private void pullPropertiesFromDOMRule(org.w3c.dom.css.CSSStyleRule sacRule) {
         org.w3c.dom.css.CSSStyleDeclaration decl = sacRule.getStyle();
 
         // a style declaration is a block of property assignments
@@ -133,15 +138,15 @@ public class Ruleset {
         //
         // here we create a PropertyDeclaration for each property, expanding
         // shorthand properties along the way.
-        for ( int i = 0; i < decl.getLength(); i++ ) {
-            String propName = decl.item( i );
-            CSSName cssName = CSSName.getByPropertyName( propName );
+        for (int i = 0; i < decl.getLength(); i++) {
+            String propName = decl.item(i);
+            CSSName cssName = CSSName.getByPropertyName(propName);
 
-            Iterator iter = PropertyDeclaration.newFactory( cssName ).buildDeclarations( decl, cssName, _origin );
+            Iterator iter = PropertyDeclaration.newFactory(cssName).buildDeclarations(decl, cssName, _origin);
 
-            while ( iter.hasNext() ) {
+            while (iter.hasNext()) {
                 // the cast is just for doc purposes
-                _props.add( (PropertyDeclaration)iter.next() );
+                _props.add((PropertyDeclaration) iter.next());
             }
         }
     }
@@ -155,6 +160,12 @@ public class Ruleset {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/06/16 07:24:46  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.7  2005/01/29 20:19:21  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

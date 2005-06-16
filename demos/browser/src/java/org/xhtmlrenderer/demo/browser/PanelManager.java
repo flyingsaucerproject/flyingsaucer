@@ -46,6 +46,17 @@ public class PanelManager implements UserAgentCallback {
     private int index = -1;
     private ArrayList history = new ArrayList();
 
+    /**
+     * an LRU cache
+     */
+    private int imageCacheCapacity = 16;
+    private java.util.LinkedHashMap imageCache =
+            new java.util.LinkedHashMap(imageCacheCapacity, 0.75f, true) {
+                protected boolean removeEldestEntry(java.util.Map.Entry eldest) {
+                    return size() > imageCacheCapacity;
+                }
+            };
+
     public InputStream getInputStream(String uri) {
         InputStream is = null;
         uri = resolveURI(uri);
@@ -57,7 +68,7 @@ public class PanelManager implements UserAgentCallback {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
             if (file.isDirectory()) {
-                String dirlist = new DirectoryLister().list(file);
+                String dirlist = DirectoryLister.list(file);
                 try {
                     is = new ByteArrayInputStream(dirlist.getBytes("UTF-8"));
                 } catch (UnsupportedEncodingException e) {
@@ -78,19 +89,25 @@ public class PanelManager implements UserAgentCallback {
 
     public Image getImage(String uri) {
         Image img = null;
-        InputStream is = getInputStream(uri);
-        if (is != null) {
-            try {
-                img = ImageIO.read(is);
-            } catch (Exception e) {
-                XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
+        uri = resolveURI(uri);
+        img = (Image) imageCache.get(uri);
+        if (img == null) {
+            InputStream is = getInputStream(uri);
+            if (is != null) {
+                try {
+                    img = ImageIO.read(is);
+                    imageCache.put(uri, img);
+                } catch (Exception e) {
+                    XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
+                }
             }
         }
         return img;
     }
 
     public boolean isVisited(String uri) {
-        return false;
+        uri = resolveURI(uri);
+        return history.contains(uri);
     }
 
     public void setBaseURL(String url) {
@@ -107,7 +124,7 @@ public class PanelManager implements UserAgentCallback {
 
     public String resolveURI(String uri) {
         URL ref = null;
-
+        if (uri.trim().equals("")) return baseUrl;//jar URLs don't resolve this right
         if (uri.startsWith("demo:")) {
             DemoMarker marker = new DemoMarker();
             String short_url = uri.substring(5);

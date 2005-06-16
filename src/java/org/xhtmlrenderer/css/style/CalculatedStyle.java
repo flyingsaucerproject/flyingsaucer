@@ -31,9 +31,7 @@ import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Point;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -147,18 +145,6 @@ public class CalculatedStyle {
             _childCache.put(matched, cs);
         }
         return cs;
-    }
-
-
-    /**
-     * Returns true if property has been defined in this style.
-     *
-     * @param cssName The CSS property name to look for, e.g. "font-family".
-     * @return True if the property is defined.
-     * @deprecated A property always exists in a calculated style, even if only by its css-defined default
-     */
-    public boolean hasProperty(CSSName cssName) {
-        return _derivedPropertiesById[cssName.getAssignedID()] != null;
     }
 
 
@@ -438,14 +424,6 @@ public class CalculatedStyle {
     }
 
     /**
-     * @param cssName
-     * @return
-     */
-    public boolean isIdentifier(CSSName cssName) {
-        return propertyByName(cssName).computedValue().isIdentifier();
-    }
-
-    /**
      * Instantiates a Border instance for a four-sided property, e.g.
      * border-width, padding, margin.
      *
@@ -573,6 +551,12 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/06/16 07:24:46  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.24  2005/06/03 23:06:21  tobega
  * Now uses value of "color" as initial value for "border-color" and rgb-triples are supported
  *

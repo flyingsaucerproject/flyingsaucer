@@ -28,7 +28,6 @@ import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
 
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 
@@ -144,13 +143,6 @@ public class XHTMLPanel extends BasicPanel {
     }
 
     /**
-     * Repaints the current document using the layout as currently calculated.
-     */
-    public void repaint() {
-        super.repaint();
-    }
-
-    /**
      * Loads and renders a Document given a uri.
      * The uri is resolved by the UserAgentCallback
      *
@@ -166,7 +158,7 @@ public class XHTMLPanel extends BasicPanel {
      *
      * @param doc The document to render.
      */
-    public void setDocument(Document doc) throws MalformedURLException {
+    public void setDocument(Document doc) {
         setDocument(doc, "");
     }
 
@@ -204,24 +196,6 @@ public class XHTMLPanel extends BasicPanel {
      */
     public void setRenderingContext(RenderingContext ctx) {
         super.setRenderingContext(ctx);
-    }
-
-    /**
-     * Returns the {@link RenderingContext} used by this panel.
-     *
-     * @return See desc.
-     */
-    public RenderingContext getRenderingContext() {
-        return super.getRenderingContext();
-    }
-
-    /**
-     * Returns the document title String after the document has been loaded.
-     *
-     * @return The document title.
-     */
-    public String getDocumentTitle() {
-        return super.getDocumentTitle();
     }
 
     /**
@@ -287,6 +261,12 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/06/16 07:24:52  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.18  2005/06/15 10:56:14  tobega
  * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
  *

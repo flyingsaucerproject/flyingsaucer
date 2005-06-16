@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
 import org.xhtmlrenderer.css.style.EmptyStyle;
@@ -28,13 +27,8 @@ import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
-import org.xhtmlrenderer.util.Uu;
 
-import javax.swing.*;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.*;
 
 /**
  * Description of the Class
@@ -145,23 +139,6 @@ public class SharedContext {
      * Description of the Field
      */
     protected boolean in_selection = false;
-
-
-    /*
-     * =========== form access code =============
-     */
-    /**
-     * Description of the Field
-     */
-    protected String form_name = null;
-    /**
-     * Description of the Field
-     */
-    protected Map forms = new HashMap();
-    /**
-     * Description of the Field
-     */
-    protected Map actions = new HashMap();
 
     /**
      * Description of the Field
@@ -399,38 +376,6 @@ public class SharedContext {
         this.ctx = ctx;
     }
 
-    /**
-     * Description of the Class
-     *
-     * @author empty
-     */
-    public class FormComponent {
-        /**
-         * Description of the Field
-         */
-        public JComponent component;
-        /**
-         * Description of the Field
-         */
-        public Element element;
-
-        /**
-         * Description of the Method
-         */
-        public void reset() {
-            Uu.p("resetting");
-            if (component instanceof JTextField) {
-                Uu.p("it's a text field");
-                if (element.hasAttribute("value")) {
-                    Uu.p("setting to : " + element.getAttribute("value"));
-                    ((JTextField) component).setText(element.getAttribute("value"));
-                } else {
-                    ((JTextField) component).setText("");
-                }
-            }
-        }
-    }
-
 
     public Rectangle getFixedRectangle() {
         //Uu.p("this = " + canvas);
@@ -455,6 +400,12 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/06/16 07:24:51  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.11  2005/05/08 14:36:57  tobega
  * Refactored away the need for having a context in a CalculatedStyle
  *

@@ -54,10 +54,9 @@ public class Absolute {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param block PARAM
+     * @param c PARAM
      */
-    public static void postChildrenLayout(Context c, Box block) {
+    public static void postChildrenLayout(Context c) {
         c.getBlockFormattingContext().doFinalAdjustments();
         c.popBFC();
     }
@@ -120,37 +119,22 @@ public class Absolute {
     public static void setupAbsolute(Box box, Context c) {
         CalculatedStyle style = c.getCurrentStyle();
         if (style.isIdent(CSSName.POSITION, IdentValue.ABSOLUTE)) {
-            if (style.hasProperty(CSSName.RIGHT)) {
-                //Uu.p("prop = " + c.css.getProperty(box.getRealElement(),"right",false));
-                if (style.isIdentifier(CSSName.RIGHT)) {
-                    if (style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-                        box.right_set = false;
-                        //Uu.p("right set to auto");
-                    }
-                } else {
-                    box.right = (int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth(), c.getCtx());
-                    box.right_set = true;
-                    //Uu.p("right set to : " + box.right);
-                }
+            if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
+                box.right = (int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth(), c.getCtx());
+                box.right_set = true;
+                //Uu.p("right set to : " + box.right);
             }
-            if (style.hasProperty(CSSName.LEFT)) {
-                if (style.isIdentifier(CSSName.LEFT)) {
-                    if (style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
-                        box.left_set = false;
-                        //Uu.p("left set to auto");
-                    }
-                } else {
-                    box.left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, c.getBlockFormattingContext().getWidth(), c.getCtx());
-                    box.left_set = true;
-                    //Uu.p("left set to : " + box.left);
-                }
+            if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
+                box.left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, c.getBlockFormattingContext().getWidth(), c.getCtx());
+                box.left_set = true;
+                //Uu.p("left set to : " + box.left);
             }
 
-            if (style.hasProperty(CSSName.BOTTOM)) {
+            if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
                 box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, c.getBlockFormattingContext().getHeight(), c.getCtx());
                 box.bottom_set = true;
             }
-            if (style.hasProperty(CSSName.TOP)) {
+            if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
                 box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c.getCtx());
                 box.top_set = true;
             }

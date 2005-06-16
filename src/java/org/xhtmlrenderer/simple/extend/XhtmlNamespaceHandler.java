@@ -134,7 +134,7 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
      */
     public String getLinkUri(org.w3c.dom.Element e) {
         String href = null;
-        if (e.getNodeName().equalsIgnoreCase("a") && !e.getAttribute("href").equals("")) {
+        if (e.getNodeName().equalsIgnoreCase("a") && e.hasAttribute("href")) {
             href = e.getAttribute("href");
         }
         return href;

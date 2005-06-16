@@ -35,7 +35,7 @@ public class DirectoryLister {
      * @param file PARAM
      * @return Returns
      */
-    public String list(File file) {
+    public static String list(File file) {
         StringBuffer sb = new StringBuffer();
 
         sb.append("<html>");
@@ -78,6 +78,12 @@ public class DirectoryLister {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/06/16 07:24:44  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.6  2005/06/15 10:56:13  tobega
  * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
  *

@@ -222,11 +222,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
     /**
      * Description of the Method
-     *
-     * @throws Exception Throws
      */
-    public void reloadPage()
-            throws Exception {
+    public void reloadPage() {
         logger.info("Reloading Page: ");
         if (manager.getBaseURL() != null) {
             loadPage(manager.getBaseURL());
@@ -299,6 +296,12 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/06/16 07:24:43  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.25  2005/06/15 13:35:27  tobega
  * Fixed history
  *

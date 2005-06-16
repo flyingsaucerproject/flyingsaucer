@@ -42,11 +42,10 @@ public class LineBreaker {
      * @param avail           PARAM
      * @param prev_align      PARAM
      * @param curr_line       PARAM
-     * @param parent_width
      * @param pendingBlockBox
      * @return Returns
      */
-    public static InlineBox generateReplacedInlineBox(Context c, Content content, int avail, InlineBox prev_align, LineBox curr_line, int parent_width, InlineBlockBox pendingBlockBox) {
+    public static InlineBox generateReplacedInlineBox(Context c, Content content, int avail, InlineBox prev_align, LineBox curr_line, InlineBlockBox pendingBlockBox) {
         InlineBlockBox box = new InlineBlockBox();
         box.element = content.getElement();
         // use the prev_align to calculate the x
@@ -95,6 +94,12 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.59  2005/06/16 07:24:50  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.58  2005/05/31 01:40:06  tobega
  * Replaced elements can now be display: block;
  * display: inline-block; should be working even for non-replaced elements.

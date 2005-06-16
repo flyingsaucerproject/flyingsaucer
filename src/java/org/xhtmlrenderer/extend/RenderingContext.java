@@ -21,7 +21,6 @@ package org.xhtmlrenderer.extend;
 
 import org.xhtmlrenderer.css.FontResolver;
 import org.xhtmlrenderer.css.StyleReference;
-import org.xhtmlrenderer.css.newmatch.AttributeResolver;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Java2DTextRenderer;
@@ -50,32 +49,9 @@ public class RenderingContext {
     protected SharedContext ctx;
 
     /**
-     * Internal member variable for the css module
-     */
-    protected StyleReference css;
-
-    /**
      * <b>need to make this protected</b>
      */
     protected Box root_box;
-
-    /**
-     * Stores the attribute resolver. Only for use by subclasses. You should
-     * normally call getAttributeResolver() and setAttributeResolver().
-     */
-    /*
-     * should this happen here or lower down?
-     */
-    protected AttributeResolver attr_res;
-
-    /*
-     * is this really a property of the component that uses
-     * this rendering context ??
-     */
-    /**
-     * Description of the Field
-     */
-    protected boolean threaded_layout;
 
     /**
      * Description of the Field
@@ -151,16 +127,6 @@ public class RenderingContext {
 
 
     /**
-     * Sets the attributeResolver attribute of the RenderingContext object
-     *
-     * @param attribute_resolver The new attributeResolver value
-     */
-    public void setAttributeResolver(AttributeResolver attribute_resolver) {
-        this.attr_res = attribute_resolver;
-    }
-
-
-    /**
      * <p/>
      * <p/>
      * Adds or overrides a font mapping, meaning you can associate a particular
@@ -219,16 +185,6 @@ public class RenderingContext {
     public void setDPI(float dpi) {
         this.dpi = dpi;
         this.mm_per_px = (CM__PER__IN * MM__PER__CM) / dpi;
-    }
-
-
-    /**
-     * Sets the threadedLayout attribute of the RenderingContext object
-     *
-     * @param threaded The new threadedLayout value
-     */
-    public void setThreadedLayout(boolean threaded) {
-        threaded_layout = threaded;
     }
 
 

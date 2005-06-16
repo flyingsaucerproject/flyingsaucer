@@ -38,9 +38,7 @@ import org.xhtmlrenderer.table.TableBoxing;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.List;
 
 
@@ -160,11 +158,11 @@ public class Boxing {
             // set up an absolute bfc
             Absolute.preChildrenLayout(c, block);
         }
-		
-		
-		if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.LEFT)) {
-			block.clear_left = true;
-		}
+
+
+        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.LEFT)) {
+            block.clear_left = true;
+        }
 
 
         // save height incase fixed height
@@ -202,12 +200,12 @@ public class Boxing {
 
         if (ContentUtil.isFloated(content.getStyle())) {
             // remove the float bfc
-            FloatUtil.postChildrenLayout(c, block);
+            FloatUtil.postChildrenLayout(c);
         }
 
         if (Absolute.isAbsolute(content.getStyle())) {
             // remove the absolute bfc
-            Absolute.postChildrenLayout(c, block);
+            Absolute.postChildrenLayout(c);
         }
 
         // calculate the total outer width
@@ -263,16 +261,6 @@ public class Boxing {
         return box;
     }
 
-    /**
-     * Gets the backgroundColor attribute of the BoxLayout object
-     *
-     * @param c PARAM
-     * @return The backgroundColor value
-     */
-    public static Color getBackgroundColor(Context c) {
-        return c.getCurrentStyle().getBackgroundColor();
-    }
-
     // calculate the width based on css and available space
 
     // calculate the height based on css and available space
@@ -282,6 +270,12 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/06/16 07:24:50  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.21  2005/06/16 04:38:15  joshy
  * finished support for clear
  * Issue number:

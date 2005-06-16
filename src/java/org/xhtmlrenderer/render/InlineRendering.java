@@ -153,7 +153,7 @@ public class InlineRendering {
                     BorderPainter.TOP + BorderPainter.BOTTOM);
         }
 
-        Color background_color = BoxRendering.getBackgroundColor(c);
+        Color background_color = c.getCurrentStyle().getBackgroundColor();
         InlineBorder ib = new InlineBorder(inline.y, inline.height, margin, border, padding, c.getCurrentStyle(), lm, background_color);
         ib.paint(c, line,
                 inline.x + padX + margin.left,
@@ -165,11 +165,10 @@ public class InlineRendering {
      * @param c       PARAM
      * @param line    PARAM
      * @param inline  PARAM
-     * @param margin
      * @param border
      * @param padding
      */
-    public static void paintRightPadding(Context c, LineBox line, InlineBox inline, int padX, Border margin, Border border, Border padding) {
+    public static void paintRightPadding(Context c, LineBox line, InlineBox inline, int padX, Border border, Border padding) {
         InlineBorder ib = (InlineBorder) c.getInlineBorders().removeLast();
         for (Iterator i = c.getInlineBorders().iterator(); i.hasNext();) {
             ((InlineBorder) i.next()).paint(c,
@@ -441,7 +440,7 @@ public class InlineRendering {
         //note: percentages here refer to width of containing block
         Border margin = style.getMarginWidth(parent_width, parent_width, c.getCtx());
         Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
-        paintRightPadding(c, line, ib, padX, margin, border, padding);
+        paintRightPadding(c, line, ib, padX, border, padding);
         padX += padding.right + border.right;
         Relative.untranslateRelative(c);
         c.popStyle();

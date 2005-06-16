@@ -287,8 +287,7 @@ class ElementPropertiesPanel extends JPanel {
      * @return Returns
      * @throws Exception Throws
      */
-    private TableModel tableModel(Node node)
-            throws Exception {
+    private TableModel tableModel(Node node) {
         if (node.getNodeType() != Node.ELEMENT_NODE) {
             Toolkit.getDefaultToolkit().beep();
             return _defaultTableModel;
@@ -515,8 +514,10 @@ class DOMTreeModel implements TreeModel {
      * Description of the Field
      */
     Document doc;
-    
-    /** Our root for display */
+
+    /**
+     * Our root for display
+     */
     Node root;
 
     /**
@@ -539,12 +540,12 @@ class DOMTreeModel implements TreeModel {
         this.doc = doc;
         setRoot("body");
     }
-    
+
     private void setRoot(String rootNodeName) {
         Node tempRoot = doc.getDocumentElement();
         NodeList nl = tempRoot.getChildNodes();
-        for ( int i=0; i < nl.getLength(); i++ ) {
-            if ( nl.item(i).getNodeName().toLowerCase().equals(rootNodeName)) {
+        for (int i = 0; i < nl.getLength(); i++) {
+            if (nl.item(i).getNodeName().toLowerCase().equals(rootNodeName)) {
                 this.root = nl.item(i);
             }
         }
@@ -775,11 +776,11 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
 
         }
 
-        DefaultTreeCellRenderer tcr = (DefaultTreeCellRenderer)super.getTreeCellRendererComponent( tree, value, selected, expanded, leaf, row, hasFocus );
+        DefaultTreeCellRenderer tcr = (DefaultTreeCellRenderer) super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
         tcr.setOpenIcon(null);
         tcr.setClosedIcon(null);
-        
-        return super.getTreeCellRendererComponent( tree, value, selected, expanded, leaf, row, hasFocus );
+
+        return super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
     }
 }//}}}
 
@@ -787,6 +788,12 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/06/16 07:24:53  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.13  2005/01/29 20:22:17  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

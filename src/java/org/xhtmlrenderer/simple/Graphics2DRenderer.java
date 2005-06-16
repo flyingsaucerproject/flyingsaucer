@@ -151,10 +151,8 @@ public class Graphics2DRenderer {
      * @param width  PARAM
      * @param height PARAM
      * @return Returns
-     * @throws Exception Throws
      */
-    public static BufferedImage renderToImage(String url, int width, int height)
-            throws Exception {
+    public static BufferedImage renderToImage(String url, int width, int height) {
         Graphics2DRenderer g2r = new Graphics2DRenderer();
         g2r.setDocument(url);
         Dimension dim = new Dimension(width, height);
@@ -172,10 +170,8 @@ public class Graphics2DRenderer {
      * @param url   PARAM
      * @param width PARAM
      * @return Returns
-     * @throws Exception Throws
      */
-    public static BufferedImage renderToImage(String url, int width)
-            throws Exception {
+    public static BufferedImage renderToImage(String url, int width) {
         Graphics2DRenderer g2r = new Graphics2DRenderer();
         g2r.setDocument(url);
         Dimension dim = new Dimension(width, 1000);
@@ -205,6 +201,12 @@ public class Graphics2DRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/06/16 07:24:52  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.9  2005/06/15 10:56:14  tobega
  * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
  *

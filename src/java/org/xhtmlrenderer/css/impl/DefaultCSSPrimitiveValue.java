@@ -242,7 +242,7 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
      *
      * @author Patrick Wright
      */
-    class _RGBColor implements RGBColor {
+    static class _RGBColor implements RGBColor {
         /** */
         ColorValue redCV, greenCV, blueCV;
 
@@ -437,6 +437,12 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/06/16 07:24:45  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.5  2005/06/03 23:06:21  tobega
  * Now uses value of "color" as initial value for "border-color" and rgb-triples are supported
  *

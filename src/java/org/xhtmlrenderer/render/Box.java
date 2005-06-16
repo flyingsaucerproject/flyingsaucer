@@ -210,24 +210,15 @@ public class Box {
      */
     public int tx;
     public int ty;
-	
-	
-	public boolean clear_left = false;
-	public boolean clear_right = false;
+
+
+    public boolean clear_left = false;
+    public boolean clear_right = false;
 
     /**
      * Constructor for the Box object
      */
     public Box() {
-        this(true);
-    }
-
-    /**
-     * Constructor for the Box object
-     *
-     * @param create_substyles PARAM
-     */
-    public Box(boolean create_substyles) {
         boxes = new ArrayList();
     }
 
@@ -497,25 +488,6 @@ public class Box {
     }
 
     /**
-     * If this box represents the text of an inline element then returns true.
-     * Thus, the text "<i>some text</i> " if the following example would be an
-     * inline element: <pre>
-     * &lt;p&gt; text &lt;b&gt;some text&lt;/b&gt; text &lt;/p&gt;
-     * </pre> The text "<i>some text</i> " in the next example <b>would not</b>
-     * be an inline element, because it is merely the text child of a block
-     * element <p/>
-     * <p/>
-     * <pre>
-     * &lt;p&gt; some text &lt;/p&gt;
-     * </pre> </p>
-     *
-     * @return The inlineElement value
-     */
-    public boolean isInlineElement() {
-        return false;
-    }
-
-    /**
      * Description of the Method
      *
      * @param style PARAM
@@ -527,6 +499,12 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.55  2005/06/16 07:24:51  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.54  2005/06/16 04:31:30  joshy
  * added clear support to the box
  * Issue number:

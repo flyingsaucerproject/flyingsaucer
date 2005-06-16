@@ -66,11 +66,10 @@ public class BackgroundPainter {
                 block.height - margin.top - border.top - border.bottom - margin.bottom);
 
         // paint the background
-        Color background_color = BoxRendering.getBackgroundColor(c);
+        Color background_color = c.getCurrentStyle().getBackgroundColor();
         if (background_color != null) {
             // skip transparent background
             if (!background_color.equals(transparent)) {
-                //TODO. make conf controlled Uu.p("filling a background");
                 c.getGraphics().setColor(background_color);
                 c.getGraphics().fillRect(box.x, box.y, box.width + 1, box.height + 1);
             }
@@ -81,7 +80,6 @@ public class BackgroundPainter {
 
         if (block.attachment == IdentValue.FIXED) {
             yoff = c.getCanvas().getLocation().y;
-            //TODO. make conf controlled Uu.p("setting the clip rect for fixed background");
             c.getGraphics().setClip(c.getCanvas().getVisibleRect());
         }
 
@@ -115,19 +113,9 @@ public class BackgroundPainter {
                 vert = true;
             }
 
-            //TODO. make conf controlled Uu.p("filling background with an image");
-            // fixed tiled image
-            if (block.attachment != null && block.attachment.equals("fixed")) {
-                tileFill(c.getGraphics(), block.background_image,
-                        new Rectangle(left_insets, top_insets, back_width, back_height),
-                        xoff, -yoff, horiz, vert);
-            } else {
-                // do normal tile image
-                tileFill(c.getGraphics(), block.background_image,
-                        new Rectangle(left_insets, top_insets, back_width, back_height),
-                        xoff, -yoff, horiz, vert);
-            }
-            //TODO. make conf controlled Uu.p("setting the clip rect");
+            tileFill(c.getGraphics(), block.background_image,
+                    new Rectangle(left_insets, top_insets, back_width, back_height),
+                    xoff, -yoff, horiz, vert);
             c.getGraphics().setClip(oldclip);
         }
     }
@@ -180,6 +168,12 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/06/16 07:24:51  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.28  2005/06/13 06:50:15  tobega
  * Fixed a bug in table content resolution.
  * Various "tweaks" in other stuff.

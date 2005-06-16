@@ -19,140 +19,141 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.*;
-import java.awt.event.MouseEvent;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xhtmlrenderer.render.Box;
 
 import javax.swing.event.MouseInputAdapter;
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.util.Uu;
+import java.awt.*;
+import java.awt.event.MouseEvent;
 
 
 /**
  * Description of the Class
  *
- * @author   Who?
+ * @author Who?
  */
 public class LinkListener extends MouseInputAdapter {
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     protected BasicPanel panel;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Box prev;
 
     /**
      * Constructor for the ClickMouseListener object
      *
-     * @param panel  PARAM
+     * @param panel PARAM
      */
-    public LinkListener( BasicPanel panel ) {
+    public LinkListener(BasicPanel panel) {
         this.panel = panel;
     }
 
     /**
      * Description of the Method
      *
-     * @param evt  PARAM
+     * @param evt PARAM
      */
-    public void mouseEntered( MouseEvent evt ) {
-        Box box = panel.findBox( evt.getX(), evt.getY() );
-        setCursor( box );
+    public void mouseEntered(MouseEvent evt) {
+        Box box = panel.findBox(evt.getX(), evt.getY());
+        setCursor(box);
     }
 
     /**
      * Description of the Method
      *
-     * @param evt  PARAM
+     * @param evt PARAM
      */
-    public void mouseExited( MouseEvent evt ) {
-        Box box = panel.findBox( evt.getX(), evt.getY() );
-        setCursor( box );
+    public void mouseExited(MouseEvent evt) {
+        Box box = panel.findBox(evt.getX(), evt.getY());
+        setCursor(box);
     }
 
     /**
      * Description of the Method
      *
-     * @param evt  PARAM
+     * @param evt PARAM
      */
-    public void mousePressed( MouseEvent evt ) { }
+    public void mousePressed(MouseEvent evt) {
+    }
 
     /**
      * Description of the Method
      *
-     * @param evt  PARAM
+     * @param evt PARAM
      */
-    public void mouseReleased( MouseEvent evt ) {
-        Box box = panel.findBox( evt.getX(), evt.getY() );
-        if ( box == null ) {
+    public void mouseReleased(MouseEvent evt) {
+        Box box = panel.findBox(evt.getX(), evt.getY());
+        if (box == null) {
             return;
         }
 
         Element elem = box.element;
-        if ( elem == null ) {
+        if (elem == null) {
             return;
         }
 
-        if ( panel.getContext().getNamespaceHandler().getLinkUri( elem ) != null ) {
-            linkClicked( box, evt );
+        String uri = findLink(elem);
+        if (uri != null) {
+            linkClicked(uri);
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param evt  PARAM
-     */
-    public void mouseMoved( MouseEvent evt ) {
-        Box box = panel.findBox( evt.getX(), evt.getY() );
-        setCursor( box );
+    private String findLink(Element elem) {
+        String uri = null;
+        for (Node n = elem; uri == null && n.getNodeType() == Node.ELEMENT_NODE; n = n.getParentNode()) {
+            uri = panel.getContext().getNamespaceHandler().getLinkUri((Element) n);
+        }
+        return uri;
     }
 
     /**
      * Description of the Method
      *
-     * @param evt  PARAM
+     * @param evt PARAM
      */
-    public void mouseDragged( MouseEvent evt ) {
-        Box box = panel.findBox( evt.getX(), evt.getY() );
-        setCursor( box );
+    public void mouseMoved(MouseEvent evt) {
+        Box box = panel.findBox(evt.getX(), evt.getY());
+        setCursor(box);
     }
 
     /**
      * Description of the Method
      *
-     * @param box  PARAM
-     * @param evt  PARAM
+     * @param evt PARAM
      */
-    public void linkClicked( Box box, MouseEvent evt ) {
+    public void mouseDragged(MouseEvent evt) {
+        Box box = panel.findBox(evt.getX(), evt.getY());
+        setCursor(box);
+    }
+
+    public void linkClicked(String uri) {
         panel.repaint();
-        try {
-            Element elem = box.element;
-            if ( elem.hasAttribute( "href" ) ) {
-                panel.setDocumentRelative( elem.getAttribute( "href" ) );
-            }
-        } catch ( Exception ex ) {
-            Uu.p( ex );
-        }
+        panel.setDocumentRelative(uri);
     }
 
     /**
      * Sets the cursor attribute of the LinkListener object
      *
-     * @param box  The new cursor value
+     * @param box The new cursor value
      */
-    private void setCursor( Box box ) {
-        if ( prev == box || box == null || box.element == null ) {
+    private void setCursor(Box box) {
+        if (prev == box || box == null || box.element == null) {
             return;
         }
 
-        if ( panel.getContext().getNamespaceHandler().getLinkUri( box.element ) != null ) {
-            if ( !panel.getCursor().equals( Cursor.getPredefinedCursor( Cursor.HAND_CURSOR ) ) ) {
-                panel.setCursor( Cursor.getPredefinedCursor( Cursor.HAND_CURSOR ) );
+        if (findLink(box.element) != null) {
+            if (!panel.getCursor().equals(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))) {
+                panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             }
         } else {
-            if ( !panel.getCursor().equals( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) ) ) {
-                panel.setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
+            if (!panel.getCursor().equals(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR))) {
+                panel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         }
 

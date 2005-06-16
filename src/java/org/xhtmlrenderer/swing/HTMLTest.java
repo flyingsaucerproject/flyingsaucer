@@ -55,8 +55,7 @@ public class HTMLTest extends JFrame {
      * @param args PARAM
      * @throws Exception Throws
      */
-    public HTMLTest(String[] args)
-            throws Exception {
+    public HTMLTest(String[] args) {
         super(BASE_TITLE);
         panel = new XHTMLPanel();
         int width = 360;
@@ -469,6 +468,12 @@ panel.addMouseMotionListener(hov);
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/06/16 07:24:53  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.30  2005/06/15 10:56:15  tobega
  * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
  *

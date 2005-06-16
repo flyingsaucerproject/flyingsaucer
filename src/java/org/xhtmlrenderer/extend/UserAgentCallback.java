@@ -39,22 +39,21 @@ import java.io.InputStream;
 public interface UserAgentCallback {
 
     /**
-     * Returns a {@link java.io.Reader} for a CSS stylesheet identified by a
+     * Returns an {@link java.io.InputStream} for a resource identified by a
      * URI (String). Returns  null if UserAgent does not wish to access the
-     * stylesheet or URI.
+     * resource.
      *
-     * @param uri The URI for a CSS stylesheet.
+     * @param uri The URI for the resource (any string that the instance can resolve).
      * @return A Reader for the stylesheet, or null if it can't be read
      *         or if the stylesheet should be ignored.
      */
-    //TODO: is a reader appropriate? who knows the character encoding? use of nio preferable
     public InputStream getInputStream(String uri);
 
     /**
      * Returns an {@link java.awt.Image} for a given URI (String), or null if the Image
      * is not available or should not be rendered.
      *
-     * @param uri The URI for an Image.
+     * @param uri The URI for an Image (any string that the instance can resolve).
      * @return A Reader for the image, or null if it can't or shouldn't be
      *         rendered.
      */
@@ -69,10 +68,27 @@ public interface UserAgentCallback {
      */
     public boolean isVisited(String uri);
 
+    /**
+     * Does not need to be a correct URL, only an identifier that the
+     * implementation can resolve.
+     *
+     * @param url
+     */
     void setBaseURL(String url);
 
-    String resolveURI(String uri);
-
+    /**
+     * @return the base uri, possibly in the implementations private uri-space
+     */
     String getBaseURL();
+
+    /**
+     * Used to find a uri that may be relative to the BaseURL.
+     * The returned value will always only be used via methods in the same
+     * implementation of this interface, therefore may be a private uri-space.
+     *
+     * @param uri an absolute or relative (to baseURL) uri to be resolved.
+     * @return the full uri in uri-spaces known to the current implementation.
+     */
+    String resolveURI(String uri);
 }
 

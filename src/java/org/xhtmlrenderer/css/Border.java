@@ -20,36 +20,46 @@
 package org.xhtmlrenderer.css;
 
 
-
 /**
  * Description of the Class
  *
- * @author   Patrick Wright
+ * @author Patrick Wright
  */
 public class Border {
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int top;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int bottom;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int left;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public int right;
 
-    /** Constructor for the Border object */
-    public Border() { }
+    /**
+     * Constructor for the Border object
+     */
+    public Border() {
+    }
 
     /**
      * Copy constructor for the Border object. Creates a copy of the Border
      * object parameter
      *
-     * @param bd  Object to copy.
+     * @param bd Object to copy.
      */
-    public Border( Border bd ) {
+    public Border(Border bd) {
         this.top = bd.top;
         this.bottom = bd.bottom;
         this.left = bd.left;
@@ -59,12 +69,12 @@ public class Border {
     /**
      * Constructor for the Border object
      *
-     * @param top     PARAM
-     * @param right   PARAM
-     * @param bottom  PARAM
-     * @param left    PARAM
+     * @param top    PARAM
+     * @param right  PARAM
+     * @param bottom PARAM
+     * @param left   PARAM
      */
-    public Border( int top, int right, int bottom, int left ) {
+    public Border(int top, int right, int bottom, int left) {
         this.top = top;
         this.bottom = bottom;
         this.right = right;
@@ -75,20 +85,27 @@ public class Border {
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
 
         return "Border: top = " + top + " right = " + right + " bottom = " + bottom + " left = " + left;
     }
-    
-    public static final Border EMPTY_BORDER = new Border(0,0,0,0);
+
+    //CHECK: this is never used
+    public static final Border EMPTY_BORDER = new Border(0, 0, 0, 0);
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/06/16 07:24:47  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.6  2005/04/19 13:59:29  pdoubleya
  * Added EMPTY_BORDER for defaults.
  *

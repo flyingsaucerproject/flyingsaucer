@@ -25,7 +25,6 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
-import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
@@ -34,9 +33,7 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 
 
 /**
@@ -138,7 +135,16 @@ public class BoxRendering {
      * @param restyle
      */
     public static void paintNormal(Context c, Box block, boolean restyle) {
-        paintBackground(c, block);
+
+        int width = block.getWidth();
+        int height = block.getHeight();
+        Border margin = c.getCurrentStyle().getMarginWidth(width, height, c.getCtx());
+
+        Rectangle bounds = new Rectangle(block.x + margin.left,
+                block.y + margin.top,
+                block.width - margin.left - margin.right,
+                block.height - margin.top - margin.bottom);
+        paintBackground(c, block, bounds);
 
         c.translateInsets(block);
         /* Q&D for now if (block instanceof TableBox) {
@@ -150,14 +156,6 @@ public class BoxRendering {
         }
         c.untranslateInsets(block);
 
-        int width = block.getWidth();
-        int height = block.getHeight();
-        Border margin = c.getCurrentStyle().getMarginWidth(width, height, c.getCtx());
-
-        Rectangle bounds = new Rectangle(block.x + margin.left,
-                block.y + margin.top,
-                block.width - margin.left - margin.right,
-                block.height - margin.top - margin.bottom);
         BorderPainter.paint(bounds, BorderPainter.ALL, c.getCurrentStyle(), c.getGraphics(), c.getCtx(), 0);
 
     }
@@ -256,7 +254,7 @@ public class BoxRendering {
      * @param c   PARAM
      * @param box PARAM
      */
-    public static void paintBackground(Context c, Box box) {
+    public static void paintBackground(Context c, Box box, Rectangle bounds) {
         Box block = box;
 
         // cache the background color
@@ -285,16 +283,10 @@ public class BoxRendering {
         }
 
         // handle image positioning issues
-        // need to update this to support vert and horz, not just vert
-        BlockFormattingContext bfc = c.getBlockFormattingContext();
-        if (bfc != null) {//this is not the root block
-            float width = bfc.getWidth();
-            float height = bfc.getHeight();
 
-            Point pt = style.getBackgroundPosition(width - backImageWidth, height - backImageHeight, c.getCtx());
-            block.background_position_horizontal = (int) pt.getX();
-            block.background_position_vertical = (int) pt.getY();
-        }
+        Point pt = style.getBackgroundPosition(bounds.width - backImageWidth, bounds.height - backImageHeight, c.getCtx());
+        block.background_position_horizontal = (int) pt.getX();
+        block.background_position_vertical = (int) pt.getY();
 
         // actually paint the background
         BackgroundPainter.paint(c, block);
@@ -308,16 +300,6 @@ public class BoxRendering {
      */
     public static void paintListItem(Context c, Box box) {
         ListItemPainter.paint(c, box);
-    }
-
-    /**
-     * Gets the backgroundColor attribute of the BoxRendering class
-     *
-     * @param c PARAM
-     * @return The backgroundColor value
-     */
-    public static Color getBackgroundColor(Context c) {
-        return Boxing.getBackgroundColor(c);
     }
 
     //TODO: check the logic here
@@ -345,6 +327,12 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/06/16 07:24:51  tobega
+ * Fixed background image bug.
+ * Caching images in browser.
+ * Enhanced LinkListener.
+ * Some house-cleaning, playing with Idea's code inspection utility.
+ *
  * Revision 1.29  2005/06/05 01:02:35  tobega
  * Very simple and not completely functional table layout
  *

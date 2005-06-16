@@ -355,13 +355,6 @@ public class DerivedValue {
     }
 
     /**
-     * @return
-     */
-    public boolean isIdentifier() {
-        return (_domCSSPrimitiveValue.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT);
-    }
-
-    /**
      * Computes a relative unit (e.g. percentage) as an absolute value, using
      * the input value. Used for such properties whose parent value cannot be
      * known before layout/render
