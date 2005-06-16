@@ -160,6 +160,12 @@ public class Boxing {
             // set up an absolute bfc
             Absolute.preChildrenLayout(c, block);
         }
+		
+		
+		if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.LEFT)) {
+			block.clear_left = true;
+		}
+
 
         // save height incase fixed height
         int original_height = block.height;
@@ -276,6 +282,13 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/06/16 04:38:15  joshy
+ * finished support for clear
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.20  2005/06/04 13:28:33  tobega
  * better??
  *

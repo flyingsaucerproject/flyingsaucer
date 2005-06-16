@@ -91,8 +91,11 @@ public class InlineBoxing {
         InlineBox prev_align_inline = null;
 
         // adjust the first line for float tabs
-        remaining_width = FloatUtil.adjustForTab(c, prev_line, remaining_width);
-
+		// skip adjusting for tabs if this box is cleared
+		if(!box.clear_left) {
+			remaining_width = FloatUtil.adjustForTab(c, prev_line, remaining_width);
+		}
+		
         CalculatedStyle currentStyle = parentStyle;
         boolean isFirstLetter = true;
 
@@ -242,7 +245,10 @@ public class InlineBoxing {
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line, blockLineMetrics);
-                    remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
+					// skip adjusting for tabs if this box is cleared
+					if(!box.clear_left) {
+						remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
+					}
                     
                     //have to discard it and recalculate, particularly if this was the first line
                     prev_align_inline.break_after = true;
@@ -292,13 +298,14 @@ public class InlineBoxing {
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line, blockLineMetrics);
-                    remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
+					if(!box.clear_left) {
+						remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
+					}
                 }
 
                 // set the inline to use for left alignment
                 if (!isOutsideFlow(currentContent)) {
                     prev_align_inline = new_inline;
-                    // }
                 }
 
                 prev_inline = new_inline;
@@ -550,7 +557,9 @@ public class InlineBoxing {
         line_to_save.y = prev_line.y + prev_line.height;
 
         // new float code
-        line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(line_to_save);
+		if(!block.clear_left) {
+			line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(line_to_save);
+		}
 
         if (line_to_save.height != 0) {//would like to discard it otherwise, but that loses floats
             if (line_to_save.height < minHeight) {
@@ -566,6 +575,13 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/06/16 04:38:15  joshy
+ * finished support for clear
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.30  2005/06/08 23:29:59  tobega
  * fixed a bug with first-line styles
  *

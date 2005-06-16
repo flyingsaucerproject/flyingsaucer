@@ -109,7 +109,7 @@ public class BlockFormattingContext {
         return (Point) offset_map.get(block);
     }
 
-    public int getLeftFloatDistance(LineBox line) {
+    public int getLeftFloatDistance(Box line) {
         return getFloatDistance(line, left_floats);
     }
 
@@ -172,11 +172,20 @@ public class BlockFormattingContext {
         return null;
     }
 
+	public int getLeftDownDistance(Box box) {
+		for(int i=0; i< left_floats.size(); i++) {
+			Box floater = (Box) left_floats.get(i);
+			if(floater.y + floater.height > box.y) {
+				return floater.y + floater.height;
+			}
+		}
+		return 0;
+	}
     public int getRightFloatDistance(LineBox line) {
         return getFloatDistance(line, right_floats);
     }
 
-    private int getFloatDistance(LineBox line, List floatsList) {
+    private int getFloatDistance(Box line, List floatsList) {
         int xoff = 0;
 
         if (floatsList.size() == 0) {
@@ -194,6 +203,7 @@ public class BlockFormattingContext {
         }
         return xoff;
     }
+	
 
     public int getBottomFloatDistance(LineBox line) {
         return 0;
