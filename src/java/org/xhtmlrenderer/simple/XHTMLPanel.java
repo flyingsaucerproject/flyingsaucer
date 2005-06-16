@@ -26,6 +26,7 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
+import org.xhtmlrenderer.util.XRLog;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -94,12 +95,16 @@ import java.net.URL;
  */
 public class XHTMLPanel extends BasicPanel {
     private float fontScalingFactor;
+    private float minFontScale;
+    private float maxFontScale;
 
     /**
      * Instantiates an XHTMLPanel with no {@link Document} loaded by default.
      */
     public XHTMLPanel() {
         fontScalingFactor = 1.2F;
+        minFontScale = 0.50F;
+        maxFontScale = 3.0F;
         setupListeners();
     }
 
@@ -251,9 +256,37 @@ public class XHTMLPanel extends BasicPanel {
      */
     private void scaleFont(float scaleBy) {
         RenderingContext rc = getRenderingContext();
-        rc.getTextRenderer().setFontScale(rc.getTextRenderer().getFontScale() * scaleBy);
+        float fs = rc.getTextRenderer().getFontScale() * scaleBy;
+        if ( fs < minFontScale || fs > maxFontScale ) return;
+        rc.getTextRenderer().setFontScale(fs);
         relayout();
         repaint();
+    }
+
+    /** Returns the maximum font scaling that may be applied, e.g. 3 times assigned font size. */
+    public float getMaxFontScale() {
+        return maxFontScale;
+    }
+
+    /** Returns the minimum font scaling that may be applied, e.g. 0.5 times assigned font size. */
+    public float getMinFontScale() {
+        return minFontScale;
+    }
+
+    /**
+     * Sets the maximum font scaling that may be applied, e.g. 3 times assigned font size. Calling incrementFontSize()
+     * after this scale has been reached doesn't have an effect.
+     */
+    public void setMaxFontScale(float f) {
+        maxFontScale = f;
+    }
+
+    /**
+     *  Sets the minimum font scaling that may be applied, e.g. 3 times assigned font size. Calling decrementFontSize()
+     * after this scale has been reached doesn't have an effect.
+     * */
+    public void setMinFontScale(float f) {
+        minFontScale = f;
     }
 }
 
@@ -261,6 +294,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/06/16 13:11:36  pdoubleya
+ * Added limits on font scaling.
+ *
  * Revision 1.21  2005/06/16 12:59:24  pdoubleya
  * Cleaned up support for reloading documents.
  *
