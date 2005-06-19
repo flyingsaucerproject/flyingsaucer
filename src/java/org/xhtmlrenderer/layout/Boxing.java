@@ -167,8 +167,13 @@ public class Boxing {
 			block.clear_right = true;
 		}
 		if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.BOTH)) {
+			System.out.println("both hit!");
 			block.clear_left = true;
 			block.clear_right = true;
+		}
+		if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.NONE)) {
+			block.clear_left = false;
+			block.clear_right = false;
 		}
 
 
@@ -277,6 +282,16 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/06/19 23:31:32  joshy
+ * stop layout support
+ * clear bug fixes
+ * mouse busy cursor support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.23  2005/06/16 18:34:10  joshy
  * support for clear:right
  * Issue number:

@@ -86,6 +86,8 @@ public class BlockBoxing {
             c.translate(0, box.height);
             child_box = Boxing.layout(c, currentContent);
             c.translate(0, -box.height);
+			
+			
             child_box.list_count = c.getListCounter();
 
             box.addChild(child_box);
@@ -97,15 +99,27 @@ public class BlockBoxing {
 			//JMM. new code to handle the 'clear' property
 			// if clear set
 			if(child_box.clear_left || child_box.clear_right) {
+				Uu.p("doing a clear on: " + child_box);
 				// get the distance we have to move it down
 				int down = 0;
+				Uu.p("down = " + down);
 				if(child_box.clear_left) {
+					Uu.p("left clear");
+					Uu.p("left down = " + c.getBlockFormattingContext().getLeftDownDistance(child_box));
 					down = Math.max(down,c.getBlockFormattingContext().getLeftDownDistance(child_box));
 				}
+				Uu.p("down = " + down);
+				
 				if(child_box.clear_right) {
+					Uu.p("right clear");
+					Uu.p("right down = " + c.getBlockFormattingContext().getRightDownDistance(child_box));
 					down = Math.max(down,c.getBlockFormattingContext().getRightDownDistance(child_box));
 				}
+				
+				Uu.p("down = " + down);
 				int diff = down-child_box.y;
+				Uu.p("child box.y = " + child_box.y);
+				Uu.p("diff = " + diff);
 				if(diff > 0) {
 					// move child box down
 					child_box.y = down;
@@ -139,6 +153,12 @@ public class BlockBoxing {
 
             // increase the final layout height by the height of the child
             box.height += child_box.height;
+
+			if(c.shouldStop()) {
+				//System.out.println("doing a quick stop");
+				break;
+			}
+
         }
         c.addMaxWidth(box.width);
 
@@ -157,6 +177,16 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/06/19 23:31:32  joshy
+ * stop layout support
+ * clear bug fixes
+ * mouse busy cursor support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.10  2005/06/16 18:34:09  joshy
  * support for clear:right
  * Issue number:

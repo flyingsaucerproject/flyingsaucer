@@ -341,5 +341,8 @@ public interface Context {
     void setShrinkWrap();
 
     void unsetShrinkWrap();
+	
+	public void stopRendering();
+	public boolean shouldStop();
 }
 

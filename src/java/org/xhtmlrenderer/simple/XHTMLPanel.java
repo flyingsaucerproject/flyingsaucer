@@ -213,6 +213,7 @@ public class XHTMLPanel extends BasicPanel {
      */
     public void setFontScalingFactor(float scaling) {
         fontScalingFactor = scaling;
+		System.out.println("now set to factor = " + fontScalingFactor);
     }
 
     /**
@@ -224,6 +225,7 @@ public class XHTMLPanel extends BasicPanel {
      * font size with {@link #resetFontSize()}.
      */
     public void incrementFontSize() {
+		System.out.println("font scaling factor = " + fontScalingFactor);
         scaleFont(fontScalingFactor);
     }
 
@@ -232,8 +234,10 @@ public class XHTMLPanel extends BasicPanel {
      * specified in the document's styling instructions.
      */
     public void resetFontSize() {
+		System.out.println("factor = " + fontScalingFactor);
         RenderingContext rc = getRenderingContext();
         rc.getTextRenderer().setFontScale(1.0F);
+		System.out.println("reset to " + rc.getTextRenderer().getFontScale());
         relayout();
         repaint();
     }
@@ -255,6 +259,7 @@ public class XHTMLPanel extends BasicPanel {
      * renderer.
      */
     private void scaleFont(float scaleBy) {
+		System.out.println("scaling to: " + scaleBy);
         RenderingContext rc = getRenderingContext();
         float fs = rc.getTextRenderer().getFontScale() * scaleBy;
         if ( fs < minFontScale || fs > maxFontScale ) return;
@@ -294,6 +299,16 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/06/19 23:31:33  joshy
+ * stop layout support
+ * clear bug fixes
+ * mouse busy cursor support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.22  2005/06/16 13:11:36  pdoubleya
  * Added limits on font scaling.
  *

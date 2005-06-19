@@ -395,6 +395,14 @@ public class ContextImpl implements Context {
         translate(-box.tx,
                 -box.ty);
     }
+	
+	private boolean shouldStop = false;
+	public boolean shouldStop() {
+		return shouldStop;
+	}
+	public void stopRendering() {
+		this.shouldStop = true;
+	}
 
     /**
      * Converts to a String representation of the object.

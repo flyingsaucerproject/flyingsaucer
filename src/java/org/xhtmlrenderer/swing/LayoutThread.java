@@ -11,6 +11,7 @@ public class LayoutThread implements Runnable {
     private Graphics graphics;
     private BasicPanel panel;
     private boolean threaded;
+	private Context context;
 
     public LayoutThread(BasicPanel panel) {
         this.panel = panel;
@@ -38,6 +39,10 @@ public class LayoutThread implements Runnable {
             //Uu.p("layout already in progress. skipping layout");
         }
     }
+	
+	public void stopLayout() {
+		this.context.stopRendering();
+	}
 
     public void run() {
         // Uu.p("layout thread starting");
@@ -70,6 +75,7 @@ public class LayoutThread implements Runnable {
     }
 
     public void startRender(Context c) {
+		this.context = c;
         Graphics g = c.getGraphics();
         g.setColor(Color.black);
         if (this.isLayoutDone()) {

@@ -231,7 +231,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         // set up CSS
         Context c = newContext((Graphics2D) g);
         //getContext().setMaxWidth(0);
-        
+        this.layout_context = c;
         getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
         //TODO: maybe temporary hack
         if (c.getBlockFormattingContext() != null) c.popBFC();//we set one for the top level before
@@ -909,6 +909,12 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     protected Document loadDocument(final String uri) {
         return XMLResource.load(ctx.getUac().getInputStream(uri)).getDocument();
     }
+	
+	private Context layout_context;
+	public void stop() {
+		this.layout_context.stopRendering();
+	}
+	
 
     /**
      * Sets the document attribute of the BasicPanel object
@@ -1039,6 +1045,16 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.54  2005/06/19 23:31:33  joshy
+ * stop layout support
+ * clear bug fixes
+ * mouse busy cursor support
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.53  2005/06/16 12:59:24  pdoubleya
  * Cleaned up support for reloading documents.
  *
