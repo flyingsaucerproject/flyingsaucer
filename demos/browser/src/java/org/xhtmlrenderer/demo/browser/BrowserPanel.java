@@ -240,6 +240,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         try {
 
             logger.info("Loading Page: " + url_text);
+			view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             view.setDocument(url_text);
             view.addDocumentListener(this);
             updateButtons();
@@ -259,6 +260,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Method
      */
     public void documentLoaded() {
+		view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
 
@@ -296,6 +298,13 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/06/19 23:32:46  joshy
+ * cursor stuff
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.26  2005/06/16 07:24:43  tobega
  * Fixed background image bug.
  * Caching images in browser.

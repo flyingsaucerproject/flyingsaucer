@@ -83,6 +83,8 @@ public class BrowserActions {
         stop = new AbstractAction("", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 // TODO: stop not coded
+				System.out.println("stop called");
+				root.panel.view.stop();
             }
         };
         // TODO: need right API call for ESC
@@ -212,15 +214,19 @@ public class BrowserActions {
         };
 
         generate_diff = new GenerateDiffAction(root);
+		
         increase_font = new FontSizeAction(root, FontSizeAction.INCREMENT);
-        increase_font.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
+        increase_font.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, InputEvent.CTRL_MASK));
         increase_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_I));
+		
         reset_font = new FontSizeAction(root, FontSizeAction.RESET);
         reset_font.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.CTRL_MASK));
         reset_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_N));
+		
         decrease_font = new FontSizeAction(root, FontSizeAction.DECREMENT);
-        decrease_font.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
+        decrease_font.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_MASK));
         decrease_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_D));
+		
         setName(increase_font, "Increase");
         setName(reset_font, "Normal");
         setName(decrease_font, "Decrease");
@@ -264,6 +270,13 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/06/19 23:32:46  joshy
+ * cursor stuff
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.15  2005/06/16 07:24:43  tobega
  * Fixed background image bug.
  * Caching images in browser.
