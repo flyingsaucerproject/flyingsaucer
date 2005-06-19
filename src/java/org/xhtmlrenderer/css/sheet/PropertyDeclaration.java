@@ -251,6 +251,7 @@ public class PropertyDeclaration {
         PROPERTY_FACTORIES[CSSName.BACKGROUND_POSITION.getAssignedID()] = BackgroundPositionPropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.BORDER_SHORTHAND.getAssignedID()] = BorderPropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.BORDER_COLOR_SHORTHAND.getAssignedID()] = BorderColorPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_SPACING.getAssignedID()] = BorderSpacingPropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.BORDER_STYLE_SHORTHAND.getAssignedID()] = BorderStylePropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.BORDER_WIDTH_SHORTHAND.getAssignedID()] = BorderWidthPropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.BORDER_TOP_SHORTHAND.getAssignedID()] = BorderSidePropertyDeclarationFactory.instance();
@@ -270,6 +271,10 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/06/19 23:02:38  tobega
+ * Implemented calculation of minimum cell-widths.
+ * Implemented border-spacing.
+ *
  * Revision 1.14  2005/06/15 17:27:37  pdoubleya
  * Allow for custom properties (don't break).
  *

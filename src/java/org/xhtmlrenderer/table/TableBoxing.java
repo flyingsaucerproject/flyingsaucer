@@ -121,17 +121,53 @@ public class TableBoxing {
         tableBox.ty = ty;
         c.translate(tx, ty);
         c.shrinkExtents(tx + margin.right + border.right + padding.right, ty + margin.bottom + border.bottom + padding.bottom);
-        layoutChildren(c, tableBox, content);
+        IdentValue borderStyle = c.getCurrentStyle().getIdent(CSSName.BORDER_COLLAPSE);
+        int borderSpacingHorizontal = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_HORIZONTAL, 0, c.getCtx());
+        int borderSpacingVertical = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_VERTICAL, 0, c.getCtx());
+        layoutChildren(c, tableBox, content, false, borderSpacingHorizontal, borderSpacingVertical);
         c.unshrinkExtents();
         c.translate(-tx, -ty);
         //OK, now we basically have the maximum cell widths, is that a smart order?
+        //TODO: percentages?
         if (c.getCurrentStyle().isIdent(CSSName.WIDTH, IdentValue.AUTO)) {
             //we're normally fine, unless the maximum width is greater than the extents
-            fixWidths(tableBox);
+            fixWidths(tableBox, borderSpacingHorizontal);
         } else {//if the algorithm is fixed, we need to do something else from the start
+            int givenWidth = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
             //also fine, if the total calculated is less than the extents and the width
-            tableBox.width = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
-            fixWidths(tableBox);
+            if (tableBox.width < givenWidth) {
+                tableBox.width = givenWidth;
+                fixWidths(tableBox, borderSpacingHorizontal);
+            } else {
+                c.getExtents().width = 1;
+                c.translate(tx, ty);
+                int[] preferredColumns = tableBox.columns;
+                tableBox.columns = null;
+                tableBox.removeAllChildren();
+                tableBox.width = 0;
+                tableBox.height = 0;
+                layoutChildren(c, tableBox, content, false, borderSpacingHorizontal, borderSpacingVertical);
+                c.translate(-tx, -ty);
+                //here the table is layed out with minimum column widths
+                if (tableBox.width < givenWidth) {
+                    //do it right
+                    tableBox.width = givenWidth;
+                    tableBox.removeAllChildren();
+                    fixWidths(tableBox, borderSpacingHorizontal, preferredColumns);
+                    c.translate(tx, ty);
+                    tableBox.width = 0;
+                    tableBox.height = 0;
+                    layoutChildren(c, tableBox, content, true, borderSpacingHorizontal, borderSpacingVertical);
+                    c.translate(-tx, -ty);
+                }
+            }
+        }
+        //now the width is settled, fix vertical alignment
+        for (Iterator i = tableBox.getChildIterator(); i.hasNext();) {
+            Object o = i.next();
+            if (o instanceof RowBox) {
+                fixVerticalAlign(c, (RowBox) o);
+            }
         }
         // calculate the total outer width
         tableBox.width = margin.left + border.left + padding.left + tableBox.width + padding.right + border.right + margin.right;
@@ -150,10 +186,20 @@ public class TableBoxing {
         return tableBox;//HACK:
     }
 
-    //increases cell size without re-layout.
-    private static void fixWidths(TableBox tableBox) {
-        int sum = 0;
-        for (int i = 0; i < tableBox.columns.length; i++) sum += tableBox.columns[i];
+    private static void fixVerticalAlign(Context c, RowBox rowBox) {
+        //TODO: improve this
+        for (Iterator i = rowBox.getChildIterator(); i.hasNext();) {
+            CellBox cell = (CellBox) i.next();
+            if (cell.height < rowBox.height) cell.height = rowBox.height;
+        }
+    }
+
+    /**
+     * increases cell size without re-layout.
+     */
+    private static void fixWidths(TableBox tableBox, int borderSpacingHorizontal) {
+        int sum = borderSpacingHorizontal;
+        for (int i = 0; i < tableBox.columns.length; i++) sum += tableBox.columns[i] + borderSpacingHorizontal;
         if (sum < tableBox.width) {
             int extra = (tableBox.width - sum) / tableBox.columns.length;
             for (int i = 0; i < tableBox.columns.length; i++) tableBox.columns[i] += extra;
@@ -166,12 +212,12 @@ public class TableBoxing {
             if (tc instanceof RowBox) {
                 RowBox row = (RowBox) tc;
                 int col = 0;
-                int x = 0;
+                int x = borderSpacingHorizontal;
                 for (Iterator cbi = row.getChildIterator(); cbi.hasNext();) {
                     CellBox cb = (CellBox) cbi.next();
                     cb.width = tableBox.columns[col];
                     cb.x = x;
-                    x += cb.width;
+                    x += cb.width + borderSpacingHorizontal;
                     col += 1;
                 }
             } else
@@ -179,14 +225,49 @@ public class TableBoxing {
         }
     }
 
+    /**
+     * distributes extra space where needed. Needs a re-layout
+     */
+    private static void fixWidths(TableBox tableBox, int borderSpacingHorizontal, int[] preferredColumns) {
+        int min = borderSpacingHorizontal;
+        int wantMore = 0;
+        for (int i = 0; i < tableBox.columns.length; i++) {
+            min += tableBox.columns[i] + borderSpacingHorizontal;
+            if (tableBox.columns[i] < preferredColumns[i]) wantMore++;
+        }
+        if (min < tableBox.width) {
+            int extra = (tableBox.width - min) / wantMore;
+            for (int i = 0; i < tableBox.columns.length; i++) {
+                int wanted = preferredColumns[i] - tableBox.columns[i];
+                if (wanted > 0) {
+                    int added = (int) Math.min(extra, wanted);
+                    tableBox.columns[i] += added;
+                    min += added;
+                }
+            }
+            //any left? just give it from the left
+            for (int i = 0; i < tableBox.columns.length; i++) {
+                int wanted = preferredColumns[i] - tableBox.columns[i];
+                if (wanted > 0) {
+                    int added = (int) Math.min(tableBox.width - min, wanted);
+                    tableBox.columns[i] += added;
+                    min += added;
+                }
+            }
+        } else {
+            //can't be less than the minimum possible, shouldn't normally get here
+            tableBox.width = min;
+        }
+    }
+
     //TODO: do this right. It is totally as simple as possible.
-    private static void layoutChildren(Context c, TableBox tableBox, Content content) {
+    private static void layoutChildren(Context c, TableBox tableBox, Content content, boolean fixed, int borderSpacingHorizontal, int borderSpacingVertical) {
         Iterator contentIterator = content.getChildContent(c).iterator();
         while (contentIterator.hasNext()) {
             Object o = contentIterator.next();
             if (o instanceof TableRowContent) {
                 c.translate(0, tableBox.height);
-                RowBox row = layoutRow(c, (TableRowContent) o, tableBox);
+                RowBox row = layoutRow(c, (TableRowContent) o, tableBox, fixed, borderSpacingHorizontal);
                 c.translate(0, -tableBox.height);
 
                 tableBox.addChild(row);
@@ -194,7 +275,7 @@ public class TableBoxing {
                 row.element = ((TableRowContent) o).getElement();
                 // set the child_box location
                 row.x = 0;
-                row.y = tableBox.height;
+                row.y = tableBox.height + borderSpacingVertical;
 
                 // increase the final layout width if the child was greater
                 if (row.width > tableBox.width) {
@@ -202,14 +283,14 @@ public class TableBoxing {
                 }
 
                 // increase the final layout height by the height of the child
-                tableBox.height += row.height;
+                tableBox.height = row.y + row.height;
             } else {
                 XRLog.layout(Level.WARNING, "Unsupported inside table: " + o.getClass().getName());
             }
         }
     }
 
-    private static RowBox layoutRow(Context c, TableRowContent tableRowContent, TableBox table) {
+    private static RowBox layoutRow(Context c, TableRowContent tableRowContent, TableBox table, boolean fixed, int borderSpacingHorizontal) {
         // copy the extents
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
@@ -233,10 +314,11 @@ public class TableBoxing {
         c.shrinkExtents(tx + margin.right + border.right + padding.right, ty + margin.bottom + border.bottom + padding.bottom);
         List cells = tableRowContent.getChildContent(c);
         checkColumns(table, cells.size());
-        layoutCells(cells, c, row, table);
+        layoutCells(cells, c, row, table, fixed, borderSpacingHorizontal);
         c.unshrinkExtents();
         c.translate(-tx, -ty);
         // calculate the total outer width
+        row.width += borderSpacingHorizontal;
         row.width = margin.left + border.left + padding.left + row.width + padding.right + border.right + margin.right;
         row.height = margin.top + border.top + padding.top + row.height + padding.bottom + border.bottom + margin.bottom;
 
@@ -247,13 +329,14 @@ public class TableBoxing {
         return row;
     }
 
-    private static void layoutCells(List cells, Context c, RowBox row, TableBox table) {
+    private static void layoutCells(List cells, Context c, RowBox row, TableBox table, boolean fixed, int borderSpacingHorizontal) {
         int col = 0;
         for (Iterator i = cells.iterator(); i.hasNext();) {
             TableCellContent tcc = (TableCellContent) i.next();
             CellBox cellBox = new CellBox();
             c.translate(row.width, 0);
             c.setShrinkWrap();
+            if (fixed) c.getExtents().width = table.columns[col];
             cellBox = (CellBox) Boxing.layout(c, cellBox, tcc);
             c.unsetShrinkWrap();
             c.translate(-row.width, 0);
@@ -262,18 +345,18 @@ public class TableBoxing {
             cellBox.setParent(row);
             cellBox.element = tcc.getElement();
             // set the child_box location
-            cellBox.x = row.width;
+            cellBox.x = row.width + borderSpacingHorizontal;
             row.y = 0;
 
             // increase the final layout width if the child was greater
             if (cellBox.height > row.height) {
                 row.height = cellBox.height;
             }
-            if (cellBox.width > table.columns[col]) {
+            if (!fixed && cellBox.width > table.columns[col]) {
                 table.columns[col] = cellBox.width;
             }
             cellBox.width = table.columns[col];
-            row.width += cellBox.width;
+            row.width = cellBox.x + cellBox.width;
             col += 1;
         }
     }
@@ -294,6 +377,10 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.16  2005/06/19 23:02:38  tobega
+   Implemented calculation of minimum cell-widths.
+   Implemented border-spacing.
+
    Revision 1.15  2005/06/09 21:35:02  tobega
    Increases cells to fill out a given table width, otherwise just does something reasonable for now
 

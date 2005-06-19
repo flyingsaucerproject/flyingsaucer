@@ -20,7 +20,6 @@
  */
 package org.xhtmlrenderer.css.constants;
 
-import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.util.*;
@@ -91,6 +90,16 @@ public final class CSSName {
      * Unique CSSName instance for CSS2 property.
      */
     public final static CSSName BORDER_SPACING = addProperty("border-spacing");
+
+    /**
+     * Unique CSSName instance for fictitious property.
+     */
+    public final static CSSName FS_BORDER_SPACING_HORIZONTAL = addProperty("-fs-border-spacing-horizontal");
+
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_BORDER_SPACING_VERTICAL = addProperty("-fs-border-spacing-vertical");
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -561,7 +570,9 @@ public final class CSSName {
      */
     private final static Map INITIAL_VALUE_MAP;
 
-    /** Array of custom properties which user has declared; may include typos, however. */
+    /**
+     * Array of custom properties which user has declared; may include typos, however.
+     */
     private static Map CSS_UNKNOWN_PROPERTIES = new HashMap();
 
 
@@ -651,7 +662,7 @@ public final class CSSName {
         if (cssName == null) {
             XRLog.layout("Property name " + propName + " has no CSSName instance assigned to it.");
             cssName = (CSSName) CSS_UNKNOWN_PROPERTIES.get(propName);
-            if ( cssName == null ) {
+            if (cssName == null) {
                 XRLog.layout("Adding property " + propName + " as an unknown CSS property.");
 
                 cssName = addProperty(propName);
@@ -731,7 +742,7 @@ public final class CSSName {
         INITIAL_VALUE_MAP.put(BACKGROUND_POSITION, "0% 0%");
         INITIAL_VALUE_MAP.put(BACKGROUND_REPEAT, "repeat");
 
-        INITIAL_VALUE_MAP.put(BORDER_COLLAPSE, "collapse");
+        INITIAL_VALUE_MAP.put(BORDER_COLLAPSE, "separate");
 
         INITIAL_VALUE_MAP.put(BORDER_COLOR_TOP, "=color");//initial is the style's own color property
         INITIAL_VALUE_MAP.put(BORDER_COLOR_RIGHT, "=color");//initial is the style's own color property
@@ -858,6 +869,10 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/06/19 23:02:37  tobega
+ * Implemented calculation of minimum cell-widths.
+ * Implemented border-spacing.
+ *
  * Revision 1.9  2005/06/16 11:28:38  pdoubleya
  * Initial value for TOP
  *

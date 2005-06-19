@@ -113,6 +113,10 @@ public class IdentValue {
     /**
      * Description of the Field
      */
+    public final static IdentValue COLLAPSE = addValue("collapse");
+    /**
+     * Description of the Field
+     */
     public final static IdentValue COMPACT = addValue("compact");
     /**
      * Description of the Field
@@ -355,6 +359,10 @@ public class IdentValue {
     /**
      * Description of the Field
      */
+    public final static IdentValue SEPARATE = addValue("separate");
+    /**
+     * Description of the Field
+     */
     public final static IdentValue SMALL_CAPS = addValue("small-caps");
     /**
      * Description of the Field
@@ -506,6 +514,10 @@ public class IdentValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/06/19 23:02:38  tobega
+ * Implemented calculation of minimum cell-widths.
+ * Implemented border-spacing.
+ *
  * Revision 1.7  2005/06/15 10:01:36  pdoubleya
  * Added IV for both, used in clear.
  *
