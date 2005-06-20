@@ -129,6 +129,9 @@ public class BrowserActions {
 
         copy = new CopySelectionAction(root);
         copy.setEnabled(true);
+		copy.putValue(Action.ACCELERATOR_KEY, 
+			KeyStroke.getKeyStroke(KeyEvent.VK_C,
+				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         setMnemonic(copy, new Integer(KeyEvent.VK_C));
         setName(copy, "Copy");
 
@@ -216,15 +219,21 @@ public class BrowserActions {
         generate_diff = new GenerateDiffAction(root);
 		
         increase_font = new FontSizeAction(root, FontSizeAction.INCREMENT);
-        increase_font.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, InputEvent.CTRL_MASK));
+        increase_font.putValue(Action.ACCELERATOR_KEY, 
+			KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
+				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         increase_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_I));
 		
         reset_font = new FontSizeAction(root, FontSizeAction.RESET);
-        reset_font.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.CTRL_MASK));
+        reset_font.putValue(Action.ACCELERATOR_KEY, 
+			KeyStroke.getKeyStroke(KeyEvent.VK_0,
+				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         reset_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_N));
 		
         decrease_font = new FontSizeAction(root, FontSizeAction.DECREMENT);
-        decrease_font.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_MASK));
+        decrease_font.putValue(Action.ACCELERATOR_KEY, 
+			KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,
+				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         decrease_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_D));
 		
         setName(increase_font, "Increase");
@@ -270,6 +279,13 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/06/20 17:35:27  joshy
+ * changed some key bindings
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.16  2005/06/19 23:32:46  joshy
  * cursor stuff
  * Issue number:
