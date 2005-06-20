@@ -94,17 +94,17 @@ import java.net.URL;
  * @see RenderingContext
  */
 public class XHTMLPanel extends BasicPanel {
-    private float fontScalingFactor;
-    private float minFontScale;
-    private float maxFontScale;
+    private float fontScalingFactor = 1.2F;
+    private float minFontScale = 0.50F;
+    private float maxFontScale = 3.0F;
 
     /**
      * Instantiates an XHTMLPanel with no {@link Document} loaded by default.
      */
     public XHTMLPanel() {
-        fontScalingFactor = 1.2F;
-        minFontScale = 0.50F;
-        maxFontScale = 3.0F;
+        // jmm: moved to field def. fontScalingFactor = 1.2F;
+        //minFontScale = 0.50F;
+        //maxFontScale = 3.0F;
         setupListeners();
     }
 
@@ -213,7 +213,6 @@ public class XHTMLPanel extends BasicPanel {
      */
     public void setFontScalingFactor(float scaling) {
         fontScalingFactor = scaling;
-		System.out.println("now set to factor = " + fontScalingFactor);
     }
 
     /**
@@ -225,7 +224,6 @@ public class XHTMLPanel extends BasicPanel {
      * font size with {@link #resetFontSize()}.
      */
     public void incrementFontSize() {
-		System.out.println("font scaling factor = " + fontScalingFactor);
         scaleFont(fontScalingFactor);
     }
 
@@ -234,10 +232,8 @@ public class XHTMLPanel extends BasicPanel {
      * specified in the document's styling instructions.
      */
     public void resetFontSize() {
-		System.out.println("factor = " + fontScalingFactor);
         RenderingContext rc = getRenderingContext();
         rc.getTextRenderer().setFontScale(1.0F);
-		System.out.println("reset to " + rc.getTextRenderer().getFontScale());
         relayout();
         repaint();
     }
@@ -259,7 +255,6 @@ public class XHTMLPanel extends BasicPanel {
      * renderer.
      */
     private void scaleFont(float scaleBy) {
-		System.out.println("scaling to: " + scaleBy);
         RenderingContext rc = getRenderingContext();
         float fs = rc.getTextRenderer().getFontScale() * scaleBy;
         if ( fs < minFontScale || fs > maxFontScale ) return;
@@ -299,6 +294,15 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/06/20 17:26:44  joshy
+ * debugging for image issues
+ * font scale stuff
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.23  2005/06/19 23:31:33  joshy
  * stop layout support
  * clear bug fixes

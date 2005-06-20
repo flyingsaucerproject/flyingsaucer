@@ -101,6 +101,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
         if (is != null) {
             try {
                 img = ImageIO.read(is);
+				System.out.println("img started as = " + img);
+				img = img.getScaledInstance(100, 100, Image.SCALE_FAST);
+				System.out.println("img now = " + img);
                 if (imageCache == null) {
                     imageCache = new HashMap();
                 }
@@ -109,6 +112,8 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
                 XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
             }
         }
+		
+		System.out.println("generated image = " + img);
         return img;
     }
 
@@ -150,6 +155,15 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/06/20 17:26:45  joshy
+ * debugging for image issues
+ * font scale stuff
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.12  2005/06/15 11:57:18  tobega
  * Making Browser a better model application with UserAgentCallback
  *
