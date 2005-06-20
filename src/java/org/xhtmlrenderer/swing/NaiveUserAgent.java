@@ -20,9 +20,11 @@
 package org.xhtmlrenderer.swing;
 
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.GraphicsUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.*;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
@@ -76,6 +78,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
      */
     //TODO: better caching than using SoftReference
     public Image getImage(String uri) {
+		System.out.println("in Naive User Agent get image: " + uri);
         java.io.InputStream is = null;
         Image img = null;
         uri = resolveURI(uri);
@@ -101,9 +104,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
         if (is != null) {
             try {
                 img = ImageIO.read(is);
-				System.out.println("img started as = " + img);
-				img = img.getScaledInstance(100, 100, Image.SCALE_FAST);
-				System.out.println("img now = " + img);
+				img = GraphicsUtil.cleanImage(img);
                 if (imageCache == null) {
                     imageCache = new HashMap();
                 }
@@ -113,9 +114,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
             }
         }
 		
-		System.out.println("generated image = " + img);
         return img;
     }
+	
 
     /**
      * Gets the visited attribute of the NaiveUserAgent object
@@ -155,6 +156,13 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/06/20 23:45:56  joshy
+ * hack to fix the mangled background images on osx
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.13  2005/06/20 17:26:45  joshy
  * debugging for image issues
  * font scale stuff

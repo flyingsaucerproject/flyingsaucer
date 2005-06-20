@@ -23,6 +23,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import org.xhtmlrenderer.render.Box;
+import java.awt.image.BufferedImage;
+import java.awt.Image;
 
 /**
  * Description of the Class
@@ -73,12 +75,36 @@ public class GraphicsUtil {
 
     }
 
+	public static Image cleanImage(Image img) {
+		//System.out.println("cleaning up " + img);
+		return img.getScaledInstance(img.getWidth(null),img.getHeight(null),Image.SCALE_FAST);
+		/*
+
+		BufferedImage buf = new BufferedImage(img.getWidth(null), 
+			img.getHeight(null),
+			BufferedImage.TYPE_INT_RGB);
+		Graphics g = buf.getGraphics();
+		g.drawImage(img,0,0,null);
+		g.setColor(Color.green);
+		g.drawLine(0,0,300,300);
+		g.dispose();
+		return buf;
+		*/
+	}
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/06/20 23:45:56  joshy
+ * hack to fix the mangled background images on osx
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.3  2005/01/29 20:21:08  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
