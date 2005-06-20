@@ -21,6 +21,7 @@ package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.GraphicsUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -33,6 +34,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -96,6 +98,7 @@ public class PanelManager implements UserAgentCallback {
             if (is != null) {
                 try {
                     img = ImageIO.read(is);
+					img = GraphicsUtil.cleanImage(img);
                     imageCache.put(uri, img);
                 } catch (Exception e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
