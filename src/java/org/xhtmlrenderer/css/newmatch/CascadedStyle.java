@@ -23,8 +23,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -48,11 +47,10 @@ import java.util.List;
  * @author Patrick Wright
  */
 public class CascadedStyle {
-
     /**
-     * Array of PropertyDeclarations, indexed by {@link CSSName#getAssignedID()}
+     * Map of PropertyDeclarations, keyed by {@link CSSName}
      */
-    private PropertyDeclaration[] _cascadedPropertiesByID;
+    private Map cascadedProperties;
 
     /**
      * Constructs a new CascadedStyle, given an {@link java.util.Iterator} of
@@ -84,7 +82,7 @@ public class CascadedStyle {
         for (int i = 0; i < buckets.length; i++) {
             for (java.util.Iterator it = buckets[i].iterator(); it.hasNext();) {
                 PropertyDeclaration prop = (PropertyDeclaration) it.next();
-                _cascadedPropertiesByID[prop.getCSSName().getAssignedID()] = prop;
+                cascadedProperties.put(prop.getCSSName(), prop);
             }
         }
     }
@@ -96,7 +94,7 @@ public class CascadedStyle {
      * properties.
      */
     private CascadedStyle() {
-        _cascadedPropertiesByID = new PropertyDeclaration[CSSName.countCSSNames()];
+        cascadedProperties = new HashMap();
     }
 
     /**
@@ -112,8 +110,7 @@ public class CascadedStyle {
      * @return True if the property is defined in this set.
      */
     public boolean hasProperty(CSSName cssName) {
-        //return _cascadedPropertiesByName.get( cssName ) != null;
-        return _cascadedPropertiesByID[cssName.getAssignedID()] != null;
+        return cascadedProperties.get( cssName ) != null;
     }
 
 
@@ -128,7 +125,7 @@ public class CascadedStyle {
      *         if not found.
      */
     public PropertyDeclaration propertyByName(CSSName cssName) {
-        PropertyDeclaration prop = _cascadedPropertiesByID[cssName.getAssignedID()];
+        PropertyDeclaration prop = (PropertyDeclaration)cascadedProperties.get(cssName);
 
         return prop;
     }
@@ -155,25 +152,19 @@ public class CascadedStyle {
      * @return Iterator over a set of properly cascaded PropertyDeclarations.
      */
     public java.util.Iterator getCascadedPropertyDeclarations() {
-        List list = new ArrayList(_cascadedPropertiesByID.length);
-        for (int i = 0; i < _cascadedPropertiesByID.length; i++) {
-            PropertyDeclaration propertyDeclaration = _cascadedPropertiesByID[i];
-            if (propertyDeclaration == null) {
-                continue;
-            }
-            list.add(propertyDeclaration);
+        List list = new ArrayList(cascadedProperties.size());
+        Iterator iter = cascadedProperties.values().iterator();
+        while ( iter.hasNext()) {
+            list.add(iter.next());
         }
         return list.iterator();
     }
 
     public String getFingerprint() {
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < _cascadedPropertiesByID.length; i++) {
-            PropertyDeclaration propertyDeclaration = _cascadedPropertiesByID[i];
-            if (propertyDeclaration == null) {
-                continue;
-            }
-            sb.append(propertyDeclaration.getDeclarationStandardText());
+        Iterator iter = cascadedProperties.values().iterator();
+        while (iter.hasNext()) {
+            sb.append(((PropertyDeclaration)iter.next()).getDeclarationStandardText());
         }
         return sb.toString();
     }
@@ -183,6 +174,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/06/21 08:06:47  pdoubleya
+ * Changed to use Map of properties again.
+ *
  * Revision 1.10  2005/05/16 13:48:58  tobega
  * Fixe inline border mismatch and started on styling problem in switching between blocks and inlines
  *
