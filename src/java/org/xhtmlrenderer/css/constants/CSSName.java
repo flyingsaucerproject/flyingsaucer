@@ -46,6 +46,8 @@ public final class CSSName {
      */
     private int assignedID;
 
+    private boolean isPrimitive;
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -586,11 +588,13 @@ public final class CSSName {
      * Constructor for the CSSName object
      *
      * @param propName PARAM
+     * @param isPrimitive
      */
-    private CSSName(String propName) {
+    private CSSName(String propName, boolean isPrimitive) {
         try {
             this.propName = propName;
-            this.assignedID = CSSName.maxAssigned++;
+            this.setAssignedID(CSSName.maxAssigned++);
+            this.isPrimitive = isPrimitive;
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -719,7 +723,7 @@ public final class CSSName {
         if ( ALL_PRIMITIVE_PROPERTY_NAMES == null ) {
             ALL_PRIMITIVE_PROPERTY_NAMES = new TreeMap();
         }
-        CSSName cssName = new CSSName(propName);
+        CSSName cssName = new CSSName(propName, isPrimitive);
         ALL_PROPERTY_NAMES.put(propName, cssName);
         if ( isPrimitive ) {
             ALL_PRIMITIVE_PROPERTY_NAMES.put(propName, cssName);
@@ -893,6 +897,24 @@ public final class CSSName {
         INITIAL_VALUE_MAP.put(WIDTH, "auto");
         INITIAL_VALUE_MAP.put(WORD_SPACING, "normal");
         INITIAL_VALUE_MAP.put(Z_INDEX, "auto");
+
+        Iterator iter = ALL_PRIMITIVE_PROPERTY_NAMES.values().iterator();
+        int cnt = 0;
+        while (iter.hasNext()) {
+            CSSName css = (CSSName)iter.next();
+            css.setAssignedID(cnt++);
+        }
+        iter = ALL_PROPERTY_NAMES.values().iterator();
+        while (iter.hasNext()) {
+            CSSName css = (CSSName)iter.next();
+            if (! css.isPrimitive ) {
+                css.setAssignedID(cnt++);
+            }
+        }
+    }
+
+    private void setAssignedID(int assignedID) {
+        this.assignedID = assignedID;
     }
 }
 
@@ -900,6 +922,9 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/06/21 08:36:00  pdoubleya
+ * Fixed id assignment to scope primitive names to start of list, in static block.
+ *
  * Revision 1.11  2005/06/21 08:23:13  pdoubleya
  * Added specific list and count of primitive, non shorthand properties, and CalculatedStyle now sizes array to this size.
  *
