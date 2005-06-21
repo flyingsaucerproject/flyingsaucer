@@ -76,7 +76,6 @@ public class GraphicsUtil {
     }
 
 	public static Image cleanImage(Image img) {
-		//System.out.println("cleaning up " + img);
 		return img.getScaledInstance(img.getWidth(null),img.getHeight(null),Image.SCALE_FAST);
 		/*
 
@@ -98,6 +97,14 @@ public class GraphicsUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/06/21 17:52:12  joshy
+ * new hover code
+ * removed some debug statements
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.4  2005/06/20 23:45:56  joshy
  * hack to fix the mangled background images on osx
  * Issue number:

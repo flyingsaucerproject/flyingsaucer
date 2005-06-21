@@ -78,7 +78,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
      */
     //TODO: better caching than using SoftReference
     public Image getImage(String uri) {
-		System.out.println("in Naive User Agent get image: " + uri);
+		//System.out.println("in Naive User Agent get image: " + uri);
         java.io.InputStream is = null;
         Image img = null;
         uri = resolveURI(uri);
@@ -156,6 +156,14 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/06/21 17:52:10  joshy
+ * new hover code
+ * removed some debug statements
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.14  2005/06/20 23:45:56  joshy
  * hack to fix the mangled background images on osx
  * Issue number:
