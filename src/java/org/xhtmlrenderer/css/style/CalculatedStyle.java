@@ -111,7 +111,7 @@ public class CalculatedStyle {
      * this for class instantiation externally.
      */
     protected CalculatedStyle() {
-        _derivedPropertiesById = new DerivedProperty[CSSName.countCSSNames()];
+        _derivedPropertiesById = new DerivedProperty[CSSName.countCSSPrimitiveNames()];
     }
 
 
@@ -551,6 +551,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/06/21 08:23:13  pdoubleya
+ * Added specific list and count of primitive, non shorthand properties, and CalculatedStyle now sizes array to this size.
+ *
  * Revision 1.25  2005/06/16 07:24:46  tobega
  * Fixed background image bug.
  * Caching images in browser.

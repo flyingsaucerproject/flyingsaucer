@@ -49,499 +49,499 @@ public final class CSSName {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName COLOR = addProperty("color");
+    public final static CSSName COLOR = addProperty("color", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BACKGROUND_SHORTHAND = addProperty("background");
+    public final static CSSName BACKGROUND_SHORTHAND = addProperty("background", false);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BACKGROUND_COLOR = addProperty("background-color");
+    public final static CSSName BACKGROUND_COLOR = addProperty("background-color", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BACKGROUND_IMAGE = addProperty("background-image");
+    public final static CSSName BACKGROUND_IMAGE = addProperty("background-image", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BACKGROUND_REPEAT = addProperty("background-repeat");
+    public final static CSSName BACKGROUND_REPEAT = addProperty("background-repeat", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BACKGROUND_ATTACHMENT = addProperty("background-attachment");
+    public final static CSSName BACKGROUND_ATTACHMENT = addProperty("background-attachment", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BACKGROUND_POSITION = addProperty("background-position");
+    public final static CSSName BACKGROUND_POSITION = addProperty("background-position", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_COLLAPSE = addProperty("border-collapse");
+    public final static CSSName BORDER_COLLAPSE = addProperty("border-collapse", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_SPACING = addProperty("border-spacing");
+    public final static CSSName BORDER_SPACING = addProperty("border-spacing", true);
 
     /**
      * Unique CSSName instance for fictitious property.
      */
-    public final static CSSName FS_BORDER_SPACING_HORIZONTAL = addProperty("-fs-border-spacing-horizontal");
+    public final static CSSName FS_BORDER_SPACING_HORIZONTAL = addProperty("-fs-border-spacing-horizontal", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FS_BORDER_SPACING_VERTICAL = addProperty("-fs-border-spacing-vertical");
+    public final static CSSName FS_BORDER_SPACING_VERTICAL = addProperty("-fs-border-spacing-vertical", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BOTTOM = addProperty("bottom");
+    public final static CSSName BOTTOM = addProperty("bottom", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName CAPTION_SIDE = addProperty("caption-side");
+    public final static CSSName CAPTION_SIDE = addProperty("caption-side", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName CLEAR = addProperty("clear");
+    public final static CSSName CLEAR = addProperty("clear", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName CLIP = addProperty("clip");
+    public final static CSSName CLIP = addProperty("clip", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName CONTENT = addProperty("content");
+    public final static CSSName CONTENT = addProperty("content", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName COUNTER_INCREMENT = addProperty("counter-increment");
+    public final static CSSName COUNTER_INCREMENT = addProperty("counter-increment", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName COUNTER_RESET = addProperty("counter-reset");
+    public final static CSSName COUNTER_RESET = addProperty("counter-reset", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName CURSOR = addProperty("cursor");
+    public final static CSSName CURSOR = addProperty("cursor", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName DIRECTION = addProperty("direction");
+    public final static CSSName DIRECTION = addProperty("direction", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName DISPLAY = addProperty("display");
+    public final static CSSName DISPLAY = addProperty("display", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName EMPTY_CELLS = addProperty("empty-cells");
+    public final static CSSName EMPTY_CELLS = addProperty("empty-cells", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FLOAT = addProperty("float");
+    public final static CSSName FLOAT = addProperty("float", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FONT_SHORTHAND = addProperty("font");
+    public final static CSSName FONT_SHORTHAND = addProperty("font", false);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FONT_STYLE = addProperty("font-style");
+    public final static CSSName FONT_STYLE = addProperty("font-style", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FONT_VARIANT = addProperty("font-variant");
+    public final static CSSName FONT_VARIANT = addProperty("font-variant", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FONT_WEIGHT = addProperty("font-weight");
+    public final static CSSName FONT_WEIGHT = addProperty("font-weight", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FONT_SIZE = addProperty("font-size");
+    public final static CSSName FONT_SIZE = addProperty("font-size", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LINE_HEIGHT = addProperty("line-height");
+    public final static CSSName LINE_HEIGHT = addProperty("line-height", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FONT_FAMILY = addProperty("font-family");
+    public final static CSSName FONT_FAMILY = addProperty("font-family", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FONT_SIZE_ADJUST = addProperty("font-size-adjust");
+    public final static CSSName FONT_SIZE_ADJUST = addProperty("font-size-adjust", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName FONT_STRETCH = addProperty("font-stretch");
+    public final static CSSName FONT_STRETCH = addProperty("font-stretch", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName HEIGHT = addProperty("height");
+    public final static CSSName HEIGHT = addProperty("height", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LEFT = addProperty("left");
+    public final static CSSName LEFT = addProperty("left", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LETTER_SPACING = addProperty("letter-spacing");
+    public final static CSSName LETTER_SPACING = addProperty("letter-spacing", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LIST_STYLE_SHORTHAND = addProperty("list-style");
+    public final static CSSName LIST_STYLE_SHORTHAND = addProperty("list-style", false);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LIST_STYLE_TYPE = addProperty("list-style-type");
+    public final static CSSName LIST_STYLE_TYPE = addProperty("list-style-type", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LIST_STYLE_POSITION = addProperty("list-style-position");
+    public final static CSSName LIST_STYLE_POSITION = addProperty("list-style-position", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName LIST_STYLE_IMAGE = addProperty("list-style-image");
+    public final static CSSName LIST_STYLE_IMAGE = addProperty("list-style-image", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MARKER_OFFSET = addProperty("marker-offset");
+    public final static CSSName MARKER_OFFSET = addProperty("marker-offset", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MARKS = addProperty("marks");
+    public final static CSSName MARKS = addProperty("marks", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MAX_HEIGHT = addProperty("max-height");
+    public final static CSSName MAX_HEIGHT = addProperty("max-height", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MAX_WIDTH = addProperty("max-width");
+    public final static CSSName MAX_WIDTH = addProperty("max-width", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MIN_HEIGHT = addProperty("min-height");
+    public final static CSSName MIN_HEIGHT = addProperty("min-height", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MIN_WIDTH = addProperty("min-width");
+    public final static CSSName MIN_WIDTH = addProperty("min-width", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName ORPHANS = addProperty("orphans");
+    public final static CSSName ORPHANS = addProperty("orphans", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName OUTLINE_SHORTHAND = addProperty("outline");
+    public final static CSSName OUTLINE_SHORTHAND = addProperty("outline", false);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName OUTLINE_COLOR = addProperty("outline-color");
+    public final static CSSName OUTLINE_COLOR = addProperty("outline-color", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName OUTLINE_STYLE = addProperty("outline-style");
+    public final static CSSName OUTLINE_STYLE = addProperty("outline-style", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName OUTLINE_WIDTH = addProperty("outline-width");
+    public final static CSSName OUTLINE_WIDTH = addProperty("outline-width", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName OVERFLOW = addProperty("overflow");
+    public final static CSSName OVERFLOW = addProperty("overflow", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PAGE = addProperty("page");
+    public final static CSSName PAGE = addProperty("page", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PAGE_BREAK_AFTER = addProperty("page-break-after");
+    public final static CSSName PAGE_BREAK_AFTER = addProperty("page-break-after", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PAGE_BREAK_BEFORE = addProperty("page-break-before");
+    public final static CSSName PAGE_BREAK_BEFORE = addProperty("page-break-before", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PAGE_BREAK_INSIDE = addProperty("page-break-inside");
+    public final static CSSName PAGE_BREAK_INSIDE = addProperty("page-break-inside", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName POSITION = addProperty("position");
+    public final static CSSName POSITION = addProperty("position", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName QUOTES = addProperty("quotes");
+    public final static CSSName QUOTES = addProperty("quotes", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName RIGHT = addProperty("right");
+    public final static CSSName RIGHT = addProperty("right", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName SIZE = addProperty("size");
+    public final static CSSName SIZE = addProperty("size", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName TABLE_LAYOUT = addProperty("table-layout");
+    public final static CSSName TABLE_LAYOUT = addProperty("table-layout", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName TEXT_ALIGN = addProperty("text-align");
+    public final static CSSName TEXT_ALIGN = addProperty("text-align", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName TEXT_DECORATION = addProperty("text-decoration");
+    public final static CSSName TEXT_DECORATION = addProperty("text-decoration", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName TEXT_INDENT = addProperty("text-indent");
+    public final static CSSName TEXT_INDENT = addProperty("text-indent", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName TEXT_SHADOW = addProperty("text-shadow");
+    public final static CSSName TEXT_SHADOW = addProperty("text-shadow", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName TEXT_TRANSFORM = addProperty("text-transform");
+    public final static CSSName TEXT_TRANSFORM = addProperty("text-transform", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName TOP = addProperty("top");
+    public final static CSSName TOP = addProperty("top", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName UNICODE_BIDI = addProperty("unicode-bidi");
+    public final static CSSName UNICODE_BIDI = addProperty("unicode-bidi", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName VERTICAL_ALIGN = addProperty("vertical-align");
+    public final static CSSName VERTICAL_ALIGN = addProperty("vertical-align", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName VISIBILITY = addProperty("visibility");
+    public final static CSSName VISIBILITY = addProperty("visibility", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName WHITE_SPACE = addProperty("white-space");
+    public final static CSSName WHITE_SPACE = addProperty("white-space", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName WIDOWS = addProperty("widows");
+    public final static CSSName WIDOWS = addProperty("widows", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName WIDTH = addProperty("width");
+    public final static CSSName WIDTH = addProperty("width", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName WORD_SPACING = addProperty("word-spacing");
+    public final static CSSName WORD_SPACING = addProperty("word-spacing", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName Z_INDEX = addProperty("z-index");
+    public final static CSSName Z_INDEX = addProperty("z-index", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_SHORTHAND = addProperty("border");
+    public final static CSSName BORDER_SHORTHAND = addProperty("border", false);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_TOP_SHORTHAND = addProperty("border-top");
+    public final static CSSName BORDER_TOP_SHORTHAND = addProperty("border-top", false);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_RIGHT_SHORTHAND = addProperty("border-right");
+    public final static CSSName BORDER_RIGHT_SHORTHAND = addProperty("border-right", false);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_BOTTOM_SHORTHAND = addProperty("border-bottom");
+    public final static CSSName BORDER_BOTTOM_SHORTHAND = addProperty("border-bottom", false);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_LEFT_SHORTHAND = addProperty("border-left");
+    public final static CSSName BORDER_LEFT_SHORTHAND = addProperty("border-left", false);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_COLOR_SHORTHAND = addProperty("border-color");
+    public final static CSSName BORDER_COLOR_SHORTHAND = addProperty("border-color", false);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_COLOR_TOP = addProperty("border-top-color");
+    public final static CSSName BORDER_COLOR_TOP = addProperty("border-top-color", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_COLOR_RIGHT = addProperty("border-right-color");
+    public final static CSSName BORDER_COLOR_RIGHT = addProperty("border-right-color", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_COLOR_BOTTOM = addProperty("border-bottom-color");
+    public final static CSSName BORDER_COLOR_BOTTOM = addProperty("border-bottom-color", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_COLOR_LEFT = addProperty("border-left-color");
+    public final static CSSName BORDER_COLOR_LEFT = addProperty("border-left-color", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_STYLE_SHORTHAND = addProperty("border-style");
+    public final static CSSName BORDER_STYLE_SHORTHAND = addProperty("border-style", false);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_STYLE_TOP = addProperty("border-top-style");
+    public final static CSSName BORDER_STYLE_TOP = addProperty("border-top-style", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_STYLE_RIGHT = addProperty("border-right-style");
+    public final static CSSName BORDER_STYLE_RIGHT = addProperty("border-right-style", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_STYLE_BOTTOM = addProperty("border-bottom-style");
+    public final static CSSName BORDER_STYLE_BOTTOM = addProperty("border-bottom-style", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_STYLE_LEFT = addProperty("border-left-style");
+    public final static CSSName BORDER_STYLE_LEFT = addProperty("border-left-style", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_WIDTH_SHORTHAND = addProperty("border-width");
+    public final static CSSName BORDER_WIDTH_SHORTHAND = addProperty("border-width", false);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_WIDTH_TOP = addProperty("border-top-width");
+    public final static CSSName BORDER_WIDTH_TOP = addProperty("border-top-width", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_WIDTH_RIGHT = addProperty("border-right-width");
+    public final static CSSName BORDER_WIDTH_RIGHT = addProperty("border-right-width", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_WIDTH_BOTTOM = addProperty("border-bottom-width");
+    public final static CSSName BORDER_WIDTH_BOTTOM = addProperty("border-bottom-width", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_WIDTH_LEFT = addProperty("border-left-width");
+    public final static CSSName BORDER_WIDTH_LEFT = addProperty("border-left-width", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MARGIN_SHORTHAND = addProperty("margin");
+    public final static CSSName MARGIN_SHORTHAND = addProperty("margin", false);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MARGIN_TOP = addProperty("margin-top");
+    public final static CSSName MARGIN_TOP = addProperty("margin-top", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MARGIN_RIGHT = addProperty("margin-right");
+    public final static CSSName MARGIN_RIGHT = addProperty("margin-right", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MARGIN_BOTTOM = addProperty("margin-bottom");
+    public final static CSSName MARGIN_BOTTOM = addProperty("margin-bottom", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName MARGIN_LEFT = addProperty("margin-left");
+    public final static CSSName MARGIN_LEFT = addProperty("margin-left", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PADDING_SHORTHAND = addProperty("padding");
+    public final static CSSName PADDING_SHORTHAND = addProperty("padding", false);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PADDING_TOP = addProperty("padding-top");
+    public final static CSSName PADDING_TOP = addProperty("padding-top", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PADDING_RIGHT = addProperty("padding-right");
+    public final static CSSName PADDING_RIGHT = addProperty("padding-right", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PADDING_BOTTOM = addProperty("padding-bottom");
+    public final static CSSName PADDING_BOTTOM = addProperty("padding-bottom", true);
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName PADDING_LEFT = addProperty("padding-left");
+    public final static CSSName PADDING_LEFT = addProperty("padding-left", true);
     /**
      * Description of the Field
      */
@@ -556,9 +556,15 @@ public final class CSSName {
                 }
             };
     /**
-     * Unique CSSName instance for CSS2 property.
+     * Map of all CSS properties
      */
     private static Map ALL_PROPERTY_NAMES;
+
+    /**
+     * Map of all non-shorthand CSS properties
+     */
+    private static Map ALL_PRIMITIVE_PROPERTY_NAMES;
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -611,11 +617,20 @@ public final class CSSName {
     }
 
     /**
-     * Description of the Method
+     * Returns a count of all CSS properties known to this class, shorthand and primitive.
      *
      * @return Returns
      */
     public final static int countCSSNames() {
+        return CSSName.maxAssigned;
+    }
+
+    /**
+     * Returns a count of all CSS primitive (non-shorthand) properties known to this class.
+     *
+     * @return Returns
+     */
+    public final static int countCSSPrimitiveNames() {
         return CSSName.maxAssigned;
     }
 
@@ -626,6 +641,15 @@ public final class CSSName {
      */
     public final static Iterator allCSS2PropertyNames() {
         return ALL_PROPERTY_NAMES.keySet().iterator();
+    }
+
+    /**
+     * Iterator of ALL primitive (non-shorthand) CSS 2 visual property names.
+     *
+     * @return Returns
+     */
+    public final static Iterator allCSS2PrimitivePropertyNames() {
+        return ALL_PRIMITIVE_PROPERTY_NAMES.keySet().iterator();
     }
 
     /**
@@ -665,7 +689,7 @@ public final class CSSName {
             if (cssName == null) {
                 XRLog.layout("Adding property " + propName + " as an unknown CSS property.");
 
-                cssName = addProperty(propName);
+                cssName = addProperty(propName, false);
                 CSS_UNKNOWN_PROPERTIES.put(propName, cssName);
             }
         }
@@ -685,14 +709,21 @@ public final class CSSName {
      * Adds a feature to the Property attribute of the CSSName class
      *
      * @param propName The feature to be added to the Property attribute
+     * @param isPrimitive
      * @return Returns
      */
-    private final static synchronized CSSName addProperty(String propName) {
+    private final static synchronized CSSName addProperty(String propName, boolean isPrimitive) {
         if (ALL_PROPERTY_NAMES == null) {
             ALL_PROPERTY_NAMES = new TreeMap();
         }
+        if ( ALL_PRIMITIVE_PROPERTY_NAMES == null ) {
+            ALL_PRIMITIVE_PROPERTY_NAMES = new TreeMap();
+        }
         CSSName cssName = new CSSName(propName);
         ALL_PROPERTY_NAMES.put(propName, cssName);
+        if ( isPrimitive ) {
+            ALL_PRIMITIVE_PROPERTY_NAMES.put(propName, cssName);
+        }
         return cssName;
     }
 
@@ -869,6 +900,9 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/06/21 08:23:13  pdoubleya
+ * Added specific list and count of primitive, non shorthand properties, and CalculatedStyle now sizes array to this size.
+ *
  * Revision 1.10  2005/06/19 23:02:37  tobega
  * Implemented calculation of minimum cell-widths.
  * Implemented border-spacing.
