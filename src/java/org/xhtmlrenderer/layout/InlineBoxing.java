@@ -19,10 +19,10 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.*;
@@ -31,7 +31,8 @@ import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.font.LineMetrics;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -68,7 +69,7 @@ public class InlineBoxing {
 
         int blockLineHeight = FontUtil.lineHeight(c);
         LineMetrics blockLineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(),
-                FontUtil.getFont(c), "thequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG");
+                c.getCurrentFont(), "thequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG");
 
         // prepare remaining width and first linebox
         int remaining_width = bounds.width;
@@ -90,11 +91,11 @@ public class InlineBoxing {
         InlineBox prev_align_inline = null;
 
         // adjust the first line for float tabs
-		// skip adjusting for tabs if this box is cleared
-		if(!box.clear_left && !box.clear_right) {
-			remaining_width = FloatUtil.adjustForTab(c, prev_line, remaining_width);
-		}
-		
+        // skip adjusting for tabs if this box is cleared
+        if (!box.clear_left && !box.clear_right) {
+            remaining_width = FloatUtil.adjustForTab(c, prev_line, remaining_width);
+        }
+
         CalculatedStyle currentStyle = parentStyle;
         boolean isFirstLetter = true;
 
@@ -244,10 +245,10 @@ public class InlineBoxing {
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line, blockLineMetrics);
-					// skip adjusting for tabs if this box is cleared
-					if(!box.clear_left && !box.clear_right) {
-						remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
-					}
+                    // skip adjusting for tabs if this box is cleared
+                    if (!box.clear_left && !box.clear_right) {
+                        remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
+                    }
                     
                     //have to discard it and recalculate, particularly if this was the first line
                     prev_align_inline.break_after = true;
@@ -297,9 +298,9 @@ public class InlineBoxing {
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line, blockLineMetrics);
-					if(!box.clear_left && !box.clear_right) {
-						remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
-					}
+                    if (!box.clear_left && !box.clear_right) {
+                        remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
+                    }
                 }
 
                 // set the inline to use for left alignment
@@ -448,7 +449,7 @@ public class InlineBoxing {
 
         CalculatedStyle style = c.getCurrentStyle();
         // get the current font. required for sizing
-        Font font = FontUtil.getFont(c);
+        Font font = c.getCurrentFont();
         InlineBox result;
 
         // handle each case
@@ -571,6 +572,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/06/22 23:48:45  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.33  2005/06/16 18:34:10  joshy
  * support for clear:right
  * Issue number:

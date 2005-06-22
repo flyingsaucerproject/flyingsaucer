@@ -36,10 +36,10 @@
   */
 package org.xhtmlrenderer.table;
 
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
@@ -51,7 +51,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -377,6 +377,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.17  2005/06/22 23:48:46  tobega
+   Refactored the css package to allow a clean separation from the core.
+
    Revision 1.16  2005/06/19 23:02:38  tobega
    Implemented calculation of minimum cell-widths.
    Implemented border-spacing.

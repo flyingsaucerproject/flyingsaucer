@@ -20,11 +20,11 @@
 package org.xhtmlrenderer.render;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
@@ -94,7 +94,7 @@ public class InlineRendering {
         Graphics g = c.getGraphics();
         //adjust font for current settings
         Font oldfont = c.getGraphics().getFont();
-        c.getGraphics().setFont(FontUtil.getFont(c));
+        c.getGraphics().setFont(c.getCurrentFont());
         Color oldcolor = c.getGraphics().getColor();
         c.getGraphics().setColor(c.getCurrentStyle().getColor());
 

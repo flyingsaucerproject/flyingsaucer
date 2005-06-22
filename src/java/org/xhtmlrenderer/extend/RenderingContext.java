@@ -19,15 +19,19 @@
  */
 package org.xhtmlrenderer.extend;
 
-import org.xhtmlrenderer.css.FontResolver;
-import org.xhtmlrenderer.css.StyleReference;
+import org.xhtmlrenderer.context.FontResolver;
+import org.xhtmlrenderer.context.StyleReference;
+import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Toolkit;
 
 
 /**
@@ -36,7 +40,7 @@ import java.awt.*;
  * @author jmarinacci
  *         November 16, 2004
  */
-public class RenderingContext {
+public class RenderingContext implements CssContext {
 
     /**
      * Description of the Field
@@ -280,6 +284,10 @@ public class RenderingContext {
         return this.mm_per_px;
     }
 
+    public float getFontSize2D(FontSpecification font) {
+        return getFontResolver().resolveFont(this, font).getSize2D();
+    }
+
 
     /**
      * Gets the textRenderer attribute of the RenderingContext object
@@ -333,6 +341,32 @@ public class RenderingContext {
 
     public FontResolver getFontResolver() {
         return ctx.getFontResolver();
+    }
+
+    public float getFontSizeForXHeight(FontSpecification parent, FontSpecification desired, float xHeight) {
+        float bestGuess = getFontSize2D(parent);
+        float bestHeight = getXHeight(parent);
+        float nextGuess = bestGuess * xHeight / bestHeight;
+        while (true) {
+            desired.size = nextGuess;
+            float nextHeight = getXHeight(desired);
+            //this check is needed in cases where the iteration can hop back and forth between two values
+            if (Math.abs(nextHeight - xHeight) < Math.abs(bestHeight - xHeight)) {
+                bestGuess = nextGuess;
+                bestHeight = nextHeight;
+                nextGuess = bestGuess * xHeight / nextHeight;
+            } else
+                break;
+        }
+        return bestGuess;
+    }
+
+    //strike-through offset should always be half of the height of lowercase x...
+    //and it is defined even for fonts without 'x'!
+    public float getXHeight(FontSpecification fs) {
+        Font f = getFontResolver().resolveFont(this, fs.families, fs.size, fs.fontWeight, fs.fontStyle, fs.variant);
+        float sto = getTextRenderer().getLineMetrics(getGraphics(), f, " ").getStrikethroughOffset();
+        return 2 * Math.abs(sto);
     }
 
     /*
@@ -398,5 +432,8 @@ public class RenderingContext {
      * public void setProperty(String name, String value) { }
      * public Properties getProperties() { }
      */
+    public Font getFont(FontSpecification font) {
+        return getFontResolver().resolveFont(this, font);
+    }
 }
 

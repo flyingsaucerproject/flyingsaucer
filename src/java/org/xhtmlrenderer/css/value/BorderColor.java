@@ -22,11 +22,11 @@ package org.xhtmlrenderer.css.value;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 
-import java.awt.*;
+import java.awt.Color;
 
 
 /**
- * Adapted from org.xhtmlrenderer.css.Border by Josh M.
+ * Adapted from org.xhtmlrenderer.css.value.Border by Josh M.
  *
  * @author Patrick Wright
  */
@@ -175,6 +175,9 @@ public class BorderColor {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/06/22 23:48:42  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.7  2005/06/16 07:24:47  tobega
  * Fixed background image bug.
  * Caching images in browser.

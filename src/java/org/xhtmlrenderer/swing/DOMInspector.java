@@ -24,7 +24,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.css.CSSPrimitiveValue;
-import org.xhtmlrenderer.css.StyleReference;
+import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.layout.SharedContext;
 
@@ -788,6 +788,9 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/06/22 23:48:46  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.14  2005/06/16 07:24:53  tobega
  * Fixed background image bug.
  * Caching images in browser.

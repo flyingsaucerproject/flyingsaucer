@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-package org.xhtmlrenderer.css;
+package org.xhtmlrenderer.context;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -25,7 +25,10 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.newmatch.AttributeResolver;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.css.sheet.*;
+import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
+import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.Stylesheet;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
@@ -35,7 +38,6 @@ import org.xhtmlrenderer.util.XRLog;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 
 
 /**
@@ -61,7 +63,7 @@ public class StyleReference {
     /**
      * Description of the Field
      */
-    private StylesheetFactory _stylesheetFactory;
+    private StylesheetFactoryImpl _stylesheetFactory;
 
     /**
      * Instance of our element-styles matching class. Will be null if new rules
@@ -79,7 +81,7 @@ public class StyleReference {
      */
     public StyleReference(UserAgentCallback userAgent) {
         _uac = userAgent;
-        _stylesheetFactory = new StylesheetFactory(userAgent);
+        _stylesheetFactory = new StylesheetFactoryImpl(userAgent);
     }
 
     /**
@@ -166,7 +168,9 @@ public class StyleReference {
         return _matcher.getCascadedStyle(e, restyle);
     }
 
-    /** Flushes any stylesheet associated with this stylereference (based on the user agent callback) that are in cache. */
+    /**
+     * Flushes any stylesheet associated with this stylereference (based on the user agent callback) that are in cache.
+     */
     public void flushStyleSheets() {
         String uri = _uac.getBaseURL();
         StylesheetInfo info = new StylesheetInfo();
@@ -175,9 +179,9 @@ public class StyleReference {
         Stylesheet sheet = null;
         if (_stylesheetFactory.containsStylesheet(uri)) {
             _stylesheetFactory.removeCachedStylesheet(uri);
-            XRLog.cssParse("Removing stylesheet '"+ uri + "' from cache by request.");
+            XRLog.cssParse("Removing stylesheet '" + uri + "' from cache by request.");
         } else {
-            XRLog.cssParse("Requested removing stylesheet '"+ uri + "', but it's not in cache.");
+            XRLog.cssParse("Requested removing stylesheet '" + uri + "', but it's not in cache.");
 
         }
     }
@@ -247,6 +251,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.1  2005/06/22 23:48:40  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.34  2005/06/16 12:59:23  pdoubleya
  * Cleaned up support for reloading documents.
  *

@@ -19,11 +19,11 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
@@ -33,7 +33,9 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 
 /**
@@ -327,6 +329,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/06/22 23:48:45  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.30  2005/06/16 07:24:51  tobega
  * Fixed background image bug.
  * Caching images in browser.

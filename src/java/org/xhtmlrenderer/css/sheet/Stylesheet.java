@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.css.sheet;
 
 
-
 /**
  * A representation of a CSS style sheet. A Stylesheet has the sheet's rules in
  * {@link Ruleset}, and has an origin--either user agent, user, or author. A
@@ -29,16 +28,22 @@ package org.xhtmlrenderer.css.sheet;
  * source. A Stylesheet is immutable; after instantiation, you can query the
  * origin and the {@link Ruleset}, but not modify either of them.
  *
- * @author   Torbjörn Gannholm
- * @author   Patrick Wright
+ * @author Torbjörn Gannholm
+ * @author Patrick Wright
  */
 public class Stylesheet {
-    /** The info for this stylesheet  */
+    /**
+     * The info for this stylesheet
+     */
     private String _uri;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private int _origin;
 
-    /** Description of the Field  */
+    /**
+     * Description of the Field
+     */
     private java.util.List _rulesets;
 
     /**
@@ -47,7 +52,7 @@ public class Stylesheet {
      * @param uri
      * @param origin
      */
-    public Stylesheet( String uri, int origin ) {
+    public Stylesheet(String uri, int origin) {
         _uri = uri;
         _origin = origin;
         _rulesets = new java.util.LinkedList();
@@ -56,7 +61,7 @@ public class Stylesheet {
     /**
      * Gets the origin attribute of the Stylesheet object
      *
-     * @return   The origin value
+     * @return The origin value
      */
     public int getOrigin() {
         return _origin;
@@ -65,7 +70,7 @@ public class Stylesheet {
     /**
      * Gets the URI of the Stylesheet object
      *
-     * @return   The URI
+     * @return The URI
      */
     public String getURI() {
         return _uri;
@@ -75,7 +80,7 @@ public class Stylesheet {
      * Returns an iterator over the Rulesets and embedded Stylesheets loaded
      * from the source stylesheet.
      *
-     * @return   The rulesets value
+     * @return The rulesets value
      */
     public java.util.Iterator getRulesets() {
         return _rulesets.iterator();
@@ -85,20 +90,20 @@ public class Stylesheet {
      * Set the Rulesets to this stylesheet. Should usually only be called by
      * StylesheetFactory.
      *
-     * @param r  The feature to be added to the Ruleset attribute
+     * @param r The feature to be added to the Ruleset attribute
      */
-    void addRuleset( Ruleset r ) {
-        _rulesets.add( r );
+    public void addRuleset(Ruleset r) {
+        _rulesets.add(r);
     }
 
     /**
      * Set the imported stylesheet Rulesets to this stylesheet. Should usually
      * only be called by StylesheetFactory.
      *
-     * @param s  The feature to be added to the Stylesheet attribute
+     * @param s The feature to be added to the Stylesheet attribute
      */
-    void addStylesheet( StylesheetInfo s ) {
-        _rulesets.add( s );
+    public void addStylesheet(StylesheetInfo s) {
+        _rulesets.add(s);
     }
 }// end class
 
@@ -106,6 +111,9 @@ public class Stylesheet {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/06/22 23:48:40  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.10  2005/01/29 20:19:21  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

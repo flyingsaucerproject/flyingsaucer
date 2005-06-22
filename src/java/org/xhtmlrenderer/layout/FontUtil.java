@@ -22,11 +22,10 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 
-import java.awt.*;
+import java.awt.Font;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 
@@ -58,7 +57,7 @@ public class FontUtil {
      * @return Returns
      */
     public static int len(Context c, InlineTextBox box) {
-        return (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont(c), box.getSubstring()).getWidth());
+        return (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), c.getCurrentFont(), box.getSubstring()).getWidth());
     }
 
     /**
@@ -69,25 +68,11 @@ public class FontUtil {
      */
     public static int lineHeight(Context c) {
         CalculatedStyle style = c.getCurrentStyle();
-        int val = (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), getFont(c), "Test").getHeight());
+        int val = (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), c.getCurrentFont(), "Test").getHeight());
         if (!style.isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL)) {
             val = (int) style.getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, c.getBlockFormattingContext().getHeight(), c.getCtx());
         }
         return val;
-    }
-
-    /**
-     * Gets the font attribute of the FontUtil class
-     *
-     * @param c PARAM
-     * @return The font value
-     */
-    public static Font getFont(Context c) {
-        CalculatedStyle style = c.getCurrentStyle();
-
-        Font f = style.getFont(c.getCtx());
-
-        return f;
     }
 
     //TODO: this is usually not interesting unless it is an InlineTextBox!
@@ -104,14 +89,7 @@ public class FontUtil {
             sample = ((InlineTextBox) box).getSubstring();
         }
         return c.getTextRenderer().getLineMetrics(c.getGraphics(),
-                getFont(c), sample);
-    }
-
-    //strike-through offset should always be half of the height of lowercase x...
-    //and it is defined even for fonts without 'x'!
-    public static float getXHeight(RenderingContext ctx, Font f) {
-        float sto = ctx.getTextRenderer().getLineMetrics(ctx.getGraphics(), f, " ").getStrikethroughOffset();
-        return 2 * Math.abs(sto);
+                c.getCurrentFont(), sample);
     }
 
     /**
@@ -123,7 +101,7 @@ public class FontUtil {
      */
     public static Rectangle2D getTextBounds(Context c, InlineTextBox box) {
         return c.getTextRenderer().getLogicalBounds(c.getGraphics(),
-                getFont(c), box.getSubstring());
+                c.getCurrentFont(), box.getSubstring());
     }
 }
 
@@ -131,6 +109,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2005/06/22 23:48:44  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.37  2005/06/16 07:24:50  tobega
  * Fixed background image bug.
  * Caching images in browser.

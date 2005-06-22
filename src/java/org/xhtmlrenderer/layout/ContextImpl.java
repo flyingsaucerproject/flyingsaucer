@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.StyleReference;
+import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.EmptyStyle;
@@ -30,7 +30,10 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -395,14 +398,20 @@ public class ContextImpl implements Context {
         translate(-box.tx,
                 -box.ty);
     }
-	
-	private boolean shouldStop = false;
-	public boolean shouldStop() {
-		return shouldStop;
-	}
-	public void stopRendering() {
-		this.shouldStop = true;
-	}
+
+    private boolean shouldStop = false;
+
+    public boolean shouldStop() {
+        return shouldStop;
+    }
+
+    public Font getCurrentFont() {
+        return getCtx().getFont(getCurrentStyle().getFont(getCtx()));
+    }
+
+    public void stopRendering() {
+        this.shouldStop = true;
+    }
 
     /**
      * Converts to a String representation of the object.

@@ -19,19 +19,19 @@
  */
 package org.xhtmlrenderer.css.style;
 
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.css.value.BorderColor;
-import org.xhtmlrenderer.extend.RenderingContext;
-import org.xhtmlrenderer.layout.FontUtil;
+import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -47,7 +47,7 @@ import java.util.logging.Level;
  * property values from an instance of this class require a valid {@link
  * org.xhtmlrenderer.layout.Context} be given to it, for some cases of property
  * resolution. Generally, a programmer will not use this class directly, but
- * will retrieve properties using a {@link org.xhtmlrenderer.css.StyleReference}
+ * will retrieve properties using a {@link org.xhtmlrenderer.context.StyleReference}
  * implementation.
  *
  * @author Torbjörn Gannholm
@@ -103,7 +103,7 @@ public class CalculatedStyle {
     /**
      * The derived Font for this style
      */
-    private Font _font;
+    private FontSpecification _font;
 
 
     /**
@@ -233,7 +233,7 @@ public class CalculatedStyle {
      * @param ctx
      * @return The borderWidth value
      */
-    public Border getBorderWidth(RenderingContext ctx) {
+    public Border getBorderWidth(CssContext ctx) {
         if (_drvBorderWidth == null) {
             //note: percentages donot apply to border
             _drvBorderWidth = deriveBorderInstance(new CSSName[]{CSSName.BORDER_WIDTH_TOP, CSSName.BORDER_WIDTH_BOTTOM, CSSName.BORDER_WIDTH_LEFT, CSSName.BORDER_WIDTH_RIGHT},
@@ -266,7 +266,7 @@ public class CalculatedStyle {
      * @param ctx
      * @return The marginWidth value
      */
-    public Border getMarginWidth(float parentWidth, float parentHeight, RenderingContext ctx) {
+    public Border getMarginWidth(float parentWidth, float parentHeight, CssContext ctx) {
         if (_drvMarginWidth == null) {
             _drvMarginWidth = deriveBorderInstance(new CSSName[]{CSSName.MARGIN_TOP, CSSName.MARGIN_BOTTOM, CSSName.MARGIN_LEFT, CSSName.MARGIN_RIGHT},
                     parentHeight,
@@ -286,7 +286,7 @@ public class CalculatedStyle {
      * @param ctx
      * @return The paddingWidth value
      */
-    public Border getPaddingWidth(float parentWidth, float parentHeight, RenderingContext ctx) {
+    public Border getPaddingWidth(float parentWidth, float parentHeight, CssContext ctx) {
         if (_drvPaddingWidth == null) {
             _drvPaddingWidth = deriveBorderInstance(new CSSName[]{CSSName.PADDING_TOP, CSSName.PADDING_BOTTOM, CSSName.PADDING_LEFT, CSSName.PADDING_RIGHT},
                     parentHeight,
@@ -353,7 +353,7 @@ public class CalculatedStyle {
      * @param ctx
      * @return The "background-position" property as a Point
      */
-    public Point getBackgroundPosition(float parentWidth, float parentHeight, RenderingContext ctx) {
+    public Point getBackgroundPosition(float parentWidth, float parentHeight, CssContext ctx) {
         DerivedProperty xrProp = propertyByName(CSSName.BACKGROUND_POSITION);
         DerivedValue dv = (DerivedValue) xrProp.computedValue();
         return dv.asPoint(parentWidth, parentHeight, ctx);
@@ -365,7 +365,7 @@ public class CalculatedStyle {
      * @param ctx
      * @return
      */
-    public float getFloatPropertyProportionalWidth(CSSName cssName, float parentWidth, RenderingContext ctx) {
+    public float getFloatPropertyProportionalWidth(CSSName cssName, float parentWidth, CssContext ctx) {
         DerivedProperty prop = propertyByName(cssName);
         DerivedValue value = prop.computedValue();
         float floatProportionalWidth = value.getFloatProportionalWidth(parentWidth, ctx);
@@ -378,7 +378,7 @@ public class CalculatedStyle {
      * @param ctx
      * @return
      */
-    public float getFloatPropertyProportionalHeight(CSSName cssName, float parentHeight, RenderingContext ctx) {
+    public float getFloatPropertyProportionalHeight(CSSName cssName, float parentHeight, CssContext ctx) {
         DerivedProperty prop = propertyByName(cssName);
         DerivedValue value = prop.computedValue();
         float floatProportionalHeight = value.getFloatProportionalHeight(parentHeight, ctx);
@@ -435,7 +435,7 @@ public class CalculatedStyle {
      * @return A Border instance representing the value for the
      *         4 sides.
      */
-    private Border deriveBorderInstance(CSSName[] whichProperties, float parentHeight, float parentWidth, RenderingContext ctx) {
+    private Border deriveBorderInstance(CSSName[] whichProperties, float parentHeight, float parentWidth, CssContext ctx) {
         Border border = new Border();
         border.top = (int) getFloatPropertyProportionalHeight(whichProperties[0], parentHeight, ctx);
         border.bottom = (int) getFloatPropertyProportionalHeight(whichProperties[1], parentHeight, ctx);
@@ -508,42 +508,32 @@ public class CalculatedStyle {
         return new DerivedProperty(cssName, computed);
     }
 
-    public Font getFont(RenderingContext ctx) {
+    public FontSpecification getFont(CssContext ctx) {
         if (_font == null) {
-            float size = getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, 0, ctx);
+            _font = new FontSpecification();
+            _font.size = getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, 0, ctx);
 
-            IdentValue fontWeight = getIdent(CSSName.FONT_WEIGHT);
-            String[] families = propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
+            _font.fontWeight = getIdent(CSSName.FONT_WEIGHT);
+            _font.families = propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
 
-            IdentValue fontStyle = getIdent(CSSName.FONT_STYLE);
-            IdentValue variant = getIdent(CSSName.FONT_VARIANT);
-            _font = ctx.getFontResolver().resolveFont(ctx, families, size, fontWeight, fontStyle, variant);
+            _font.fontStyle = getIdent(CSSName.FONT_STYLE);
+            _font.variant = getIdent(CSSName.FONT_VARIANT);
         }
         return _font;
     }
 
-    public float getFontSizeForXHeight(RenderingContext ctx, float xHeight) {
-        IdentValue fontWeight = getIdent(CSSName.FONT_WEIGHT);
-        String[] families = propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
-        IdentValue fontStyle = getIdent(CSSName.FONT_STYLE);
-        IdentValue variant = getIdent(CSSName.FONT_VARIANT);
+    //TODO: this stuff is a bit of a mess
+    public float getFontSizeForXHeight(CssContext ctx, float xHeight) {
+        FontSpecification f = new FontSpecification();
+        //can't set size now
 
-        Font font = getParent().getFont(ctx);
-        float bestGuess = font.getSize2D();
-        float bestHeight = FontUtil.getXHeight(ctx, font);
-        float nextGuess = bestGuess * xHeight / bestHeight;
-        while (true) {
-            font = ctx.getFontResolver().resolveFont(ctx, families, nextGuess, fontWeight, fontStyle, variant);
-            float nextHeight = FontUtil.getXHeight(ctx, font);
-            //this check is needed in cases where the iteration can hop back and forth between two values
-            if (Math.abs(nextHeight - xHeight) < Math.abs(bestHeight - xHeight)) {
-                bestGuess = nextGuess;
-                bestHeight = nextHeight;
-                nextGuess = bestGuess * xHeight / FontUtil.getXHeight(ctx, font);
-            } else
-                break;
-        }
-        return bestGuess;
+        f.fontWeight = getIdent(CSSName.FONT_WEIGHT);
+        f.families = propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
+
+        f.fontStyle = getIdent(CSSName.FONT_STYLE);
+        f.variant = getIdent(CSSName.FONT_VARIANT);
+
+        return ctx.getFontSizeForXHeight(getParent().getFont(ctx), f, xHeight);
     }
 }// end class
 
@@ -551,6 +541,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/06/22 23:48:41  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.26  2005/06/21 08:23:13  pdoubleya
  * Added specific list and count of primitive, non shorthand properties, and CalculatedStyle now sizes array to this size.
  *

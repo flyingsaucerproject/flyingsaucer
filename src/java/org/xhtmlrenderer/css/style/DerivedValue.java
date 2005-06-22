@@ -26,12 +26,12 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.util.ConversionUtil;
-import org.xhtmlrenderer.extend.RenderingContext;
-import org.xhtmlrenderer.layout.FontUtil;
+import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -321,7 +321,7 @@ public class DerivedValue {
      * @param ctx
      * @return
      */
-    public Point asPoint(float parentWidth, float parentHeight, RenderingContext ctx) {
+    public Point asPoint(float parentWidth, float parentHeight, CssContext ctx) {
         Point pt = null;
         if (_bgPosIsAbsolute) {
             // It's an absolute value, so only calculate it once
@@ -363,7 +363,7 @@ public class DerivedValue {
      * @param ctx
      * @return the absolute value or computed absolute value
      */
-    public float getFloatProportionalWidth(float parentWidth, RenderingContext ctx) {
+    public float getFloatProportionalWidth(float parentWidth, CssContext ctx) {
         return calcFloatProportionalValue(_lengthAsFloat, _lengthPrimitiveType, parentWidth, ctx);
     }
 
@@ -376,7 +376,7 @@ public class DerivedValue {
      * @param ctx
      * @return the absolute value or computed absolute value
      */
-    public float getFloatProportionalHeight(float parentHeight, RenderingContext ctx) {
+    public float getFloatProportionalHeight(float parentHeight, CssContext ctx) {
         return calcFloatProportionalValue(_lengthAsFloat, _lengthPrimitiveType, parentHeight, ctx);
     }
 
@@ -505,7 +505,7 @@ public class DerivedValue {
      * @param ctx
      * @return The value, in pixels, for this property.
      */
-    private float calcFloatProportionalValue(float relVal, short primitiveType, float baseValue, RenderingContext ctx) {
+    private float calcFloatProportionalValue(float relVal, short primitiveType, float baseValue, CssContext ctx) {
         float absVal = Float.MIN_VALUE;
 
         // NOTE: absolute datatypes (px, pt, pc, cm, etc.) are converted once and stored.
@@ -574,9 +574,9 @@ public class DerivedValue {
                 // the �font-size� property itself, in which case it refers
                 // to the calculated font size of the parent element (spec: 4.3.2)
                 if (_cssName == CSSName.FONT_SIZE) {
-                    absVal = relVal * _style.getParent().getFont(ctx).getSize2D();
+                    absVal = relVal * ctx.getFontSize2D(_style.getParent().getFont(ctx));
                 } else {
-                    absVal = relVal * _style.getFont(ctx).getSize2D();
+                    absVal = relVal * ctx.getFontSize2D(_style.getFont(ctx));
                 }
 
                 break;
@@ -585,13 +585,13 @@ public class DerivedValue {
                 // element...
                 // to the font size of the parent element (spec: 4.3.2)
                 if (_cssName == CSSName.FONT_SIZE) {
-                    Font parentFont = _style.getParent().getFont(ctx);
-                    float xHeight = FontUtil.getXHeight(ctx, parentFont);
+                    FontSpecification parentFont = _style.getParent().getFont(ctx);
+                    float xHeight = ctx.getXHeight(parentFont);
                     xHeight = relVal * xHeight;
                     absVal = _style.getFontSizeForXHeight(ctx, xHeight);
                 } else {
-                    Font font = _style.getFont(ctx);
-                    float xHeight = FontUtil.getXHeight(ctx, font);
+                    FontSpecification font = _style.getFont(ctx);
+                    float xHeight = ctx.getXHeight(font);
                     absVal = relVal * xHeight;
                 }
 
@@ -602,7 +602,8 @@ public class DerivedValue {
                     relVal = _style.getParent().getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, baseValue, ctx);
                 } else if (_cssName == CSSName.FONT_SIZE) {
                     // same as with EM
-                    baseValue = _style.getParent().getFont(ctx).getSize2D();
+                    FontSpecification font = _style.getParent().getFont(ctx);
+                    baseValue = ctx.getFontSize2D(font);
                 }
                 absVal = (relVal / 100F) * baseValue;
 

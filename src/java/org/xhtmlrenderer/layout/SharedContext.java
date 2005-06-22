@@ -19,8 +19,8 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.FontResolver;
-import org.xhtmlrenderer.css.StyleReference;
+import org.xhtmlrenderer.context.FontResolver;
+import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
@@ -28,7 +28,8 @@ import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 /**
  * Description of the Class
@@ -400,6 +401,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/06/22 23:48:45  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.12  2005/06/16 07:24:51  tobega
  * Fixed background image bug.
  * Caching images in browser.

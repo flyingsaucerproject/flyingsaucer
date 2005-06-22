@@ -35,7 +35,6 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.css.StyleReference;
 import org.xml.sax.ErrorHandler;
 
 import javax.swing.*;
@@ -705,6 +704,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     /**
      * Reloads the document using the same base URL and namespace handler. Reloading will pick up changes to styles
      * within the document.
+     *
      * @param URI A URI for the Document to load, for example, file.toURL().toExternalForm().
      */
     public void reloadDocument(String URI) {
@@ -714,13 +714,15 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     /**
      * Reloads the document using the same base URL and namespace handler. Reloading will pick up changes to styles
      * within the document.
+     *
      * @param doc The document to reload.
      */
     public void reloadDocument(Document doc) {
-        if ( this.doc == null ) {
+        if (this.doc == null) {
             XRLog.render("Reload called on BasicPanel, but there is no document set on the panel yet.");
             return;
-        };
+        }
+        ;
         this.doc = doc;
         getRenderingContext().getStyleReference().flushStyleSheets();
         setDocument(this.doc, getRenderingContext().getBaseURL(), getContext().getNamespaceHandler());
@@ -909,12 +911,13 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     protected Document loadDocument(final String uri) {
         return XMLResource.load(ctx.getUac().getInputStream(uri)).getDocument();
     }
-	
-	private Context layout_context;
-	public void stop() {
-		this.layout_context.stopRendering();
-	}
-	
+
+    private Context layout_context;
+
+    public void stop() {
+        this.layout_context.stopRendering();
+    }
+
 
     /**
      * Sets the document attribute of the BasicPanel object
@@ -1045,6 +1048,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.55  2005/06/22 23:48:46  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.54  2005/06/19 23:31:33  joshy
  * stop layout support
  * clear bug fixes

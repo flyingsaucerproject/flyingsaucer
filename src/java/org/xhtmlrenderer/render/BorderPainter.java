@@ -19,10 +19,10 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.extend.RenderingContext;
 
@@ -462,6 +462,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/06/22 23:48:45  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.34  2005/06/04 16:04:12  tobega
  * just playing with border colors a bit more
  *

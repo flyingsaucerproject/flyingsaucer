@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.css;
+package org.xhtmlrenderer.css.value;
 
 
 /**
@@ -100,6 +100,9 @@ public class Border {
  * $Id$
  *
  * $Log$
+ * Revision 1.1  2005/06/22 23:48:42  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.7  2005/06/16 07:24:47  tobega
  * Fixed background image bug.
  * Caching images in browser.

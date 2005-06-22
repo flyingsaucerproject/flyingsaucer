@@ -19,11 +19,11 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Fixed;
 import org.xhtmlrenderer.layout.block.FloatUtil;
@@ -38,7 +38,8 @@ import org.xhtmlrenderer.table.TableBoxing;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.List;
 
 
@@ -158,23 +159,23 @@ public class Boxing {
             // set up an absolute bfc
             Absolute.preChildrenLayout(c, block);
         }
-		
-		
-		if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.LEFT)) {
-			block.clear_left = true;
-		}
-		if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.RIGHT)) {
-			block.clear_right = true;
-		}
-		if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.BOTH)) {
-			System.out.println("both hit!");
-			block.clear_left = true;
-			block.clear_right = true;
-		}
-		if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.NONE)) {
-			block.clear_left = false;
-			block.clear_right = false;
-		}
+
+
+        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.LEFT)) {
+            block.clear_left = true;
+        }
+        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.RIGHT)) {
+            block.clear_right = true;
+        }
+        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.BOTH)) {
+            System.out.println("both hit!");
+            block.clear_left = true;
+            block.clear_right = true;
+        }
+        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.NONE)) {
+            block.clear_left = false;
+            block.clear_right = false;
+        }
 
 
         // save height incase fixed height
@@ -282,6 +283,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/06/22 23:48:44  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.24  2005/06/19 23:31:32  joshy
  * stop layout support
  * clear bug fixes

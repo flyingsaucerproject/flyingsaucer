@@ -1,12 +1,11 @@
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -173,39 +172,40 @@ public class BlockFormattingContext {
         return null;
     }
 
-	public int getLeftDownDistance(Box box) {
-		/*
-		Uu.p("in get left down distance: " + box);
-		for(int i=0; i< left_floats.size(); i++) {
-			Box floater = (Box) left_floats.get(i);
-			Uu.p("looking at floater: " + floater);
-			Uu.p("floater parent = " + floater.getParent());
-			Uu.p("floater parent parent = " + floater.getParent().getParent());
+    public int getLeftDownDistance(Box box) {
+        /*
+        Uu.p("in get left down distance: " + box);
+        for(int i=0; i< left_floats.size(); i++) {
+            Box floater = (Box) left_floats.get(i);
+            Uu.p("looking at floater: " + floater);
+            Uu.p("floater parent = " + floater.getParent());
+            Uu.p("floater parent parent = " + floater.getParent().getParent());
+Point fpt = (Point) offset_map.get(floater);
+            Uu.p("offset = " + fpt);
+            if(floater.y + floater.height - fpt.y > box.y) {
+                return floater.y + floater.height - fpt.y;
+            }
+        }
+        return 0;
+        */
+        return getDownDistance(box, left_floats);
+    }
+
+    public int getRightDownDistance(Box box) {
+        return getDownDistance(box, right_floats);
+    }
+
+    private int getDownDistance(Box box, List list) {
+        for (int i = 0; i < list.size(); i++) {
+            Box floater = (Box) list.get(i);
             Point fpt = (Point) offset_map.get(floater);
-			Uu.p("offset = " + fpt);
-			if(floater.y + floater.height - fpt.y > box.y) {
-				return floater.y + floater.height - fpt.y;
-			}
-		}
-		return 0;
-		*/
-		return getDownDistance(box,left_floats);
-	}
-	public int getRightDownDistance(Box box) {
-		return getDownDistance(box,right_floats);
-	}
-	
-	private int getDownDistance(Box box, List list) {
-		for(int i=0; i< list.size(); i++) {
-			Box floater = (Box) list.get(i);
-            Point fpt = (Point) offset_map.get(floater);
-			if(floater.y + floater.height - fpt.y > box.y) {
-				return floater.y + floater.height - fpt.y;
-			}
-		}
-		return 0;
-	}
-	
+            if (floater.y + floater.height - fpt.y > box.y) {
+                return floater.y + floater.height - fpt.y;
+            }
+        }
+        return 0;
+    }
+
     public int getRightFloatDistance(LineBox line) {
         return getFloatDistance(line, right_floats);
     }
@@ -228,7 +228,7 @@ public class BlockFormattingContext {
         }
         return xoff;
     }
-	
+
 
     public int getBottomFloatDistance(LineBox line) {
         return 0;

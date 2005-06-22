@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.StyleReference;
+import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.EmptyStyle;
@@ -29,7 +29,10 @@ import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 
 
@@ -341,8 +344,11 @@ public interface Context {
     void setShrinkWrap();
 
     void unsetShrinkWrap();
-	
-	public void stopRendering();
-	public boolean shouldStop();
+
+    public void stopRendering();
+
+    public boolean shouldStop();
+
+    Font getCurrentFont();
 }
 

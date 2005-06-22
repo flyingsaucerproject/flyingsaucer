@@ -19,11 +19,12 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.Border;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.Context;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.font.LineMetrics;
 
 /**

@@ -26,7 +26,10 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.font.LineMetrics;
 
 
@@ -195,8 +198,7 @@ public class ListItemPainter {
             text = toRoman(box.list_count).toUpperCase() + ".";
         }
 
-        CalculatedStyle style = c.getCurrentStyle();
-        Font font = style.getFont(c.getCtx());
+        Font font = c.getCurrentFont();
         LineMetrics lm = font.getLineMetrics(text, ((Graphics2D) c.getGraphics()).getFontRenderContext());
         int w = FontUtil.len(c, text, font);
         int h = FontUtil.lineHeight(c);
@@ -212,6 +214,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/06/22 23:48:46  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.18  2005/06/01 21:36:40  tobega
  * Got image scaling working, and did some refactoring along the way
  *

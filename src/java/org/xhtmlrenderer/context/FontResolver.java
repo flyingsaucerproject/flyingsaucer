@@ -17,13 +17,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.css;
+package org.xhtmlrenderer.context;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 
 
@@ -248,12 +250,19 @@ public class FontResolver {
     protected static String getFontInstanceHashName(String name, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         return name + "-" + size + "-" + weight + "-" + style + "-" + variant;
     }
+
+    public Font resolveFont(RenderingContext renderingContext, FontSpecification spec) {
+        return resolveFont(renderingContext, spec.families, spec.size, spec.fontWeight, spec.fontStyle, spec.variant);
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.1  2005/06/22 23:48:40  tobega
+ * Refactored the css package to allow a clean separation from the core.
+ *
  * Revision 1.17  2005/06/16 07:24:48  tobega
  * Fixed background image bug.
  * Caching images in browser.
