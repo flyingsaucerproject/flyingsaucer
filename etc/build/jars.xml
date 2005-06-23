@@ -17,7 +17,7 @@
     </target>
     
     <!-- Compiles browser and main codebase, and builds jar for browser -->
-    <target name="jar.browser" depends="compile.browser" description="build browser jar">
+    <target name="jar.browser" depends="compile.browser, jar.core" description="build browser jar">
         <jar jarfile="${dest.dir}/browser.jar" compress="true"
             manifest="${src.packaging.dir}/manifest"
             duplicate="preserve"
