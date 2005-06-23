@@ -19,8 +19,8 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.xhtmlrenderer.css.extend.AttributeResolver;
+import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -163,27 +163,27 @@ class Selector {
      * Check if the given Element matches this selector. Note: the parser should
      * give all class
      *
-     * @param e      PARAM
-     * @param attRes PARAM
+     * @param e       PARAM
+     * @param attRes  PARAM
+     * @param treeRes
      * @return Returns
      */
-    public boolean matches(org.w3c.dom.Element e, AttributeResolver attRes) {
+    public boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
         if (siblingSelector != null) {
-            Element sib = siblingSelector.getAppropriateSibling(e);
+            Object sib = siblingSelector.getAppropriateSibling(e, treeRes);
             if (sib == null) {
                 return false;
             }
-            if (!siblingSelector.matches(sib, attRes)) {
+            if (!siblingSelector.matches(sib, attRes, treeRes)) {
                 return false;
             }
         }
-        //TODO: resolve question of how CSS should handle namespaces. Unfortunately getLocalName is null if no namespace.
-        if (_name == null || _name.equals(e.getLocalName()) || (e.getLocalName() == null && _name.equals(e.getNodeName()))) {
+        if (_name == null || _name.equals(treeRes.getElementName(e))) {
             if (conditions != null) {
                 // all conditions need to be true
                 for (java.util.Iterator i = conditions.iterator(); i.hasNext();) {
                     Condition c = (Condition) i.next();
-                    if (!c.matches(e, attRes)) {
+                    if (!c.matches(e, attRes, treeRes)) {
                         return false;
                     }
                 }
@@ -197,17 +197,18 @@ class Selector {
      * Check if the given Element matches this selector's dynamic properties.
      * Note: the parser should give all class
      *
-     * @param e      PARAM
-     * @param attRes PARAM
+     * @param e       PARAM
+     * @param attRes  PARAM
+     * @param treeRes
      * @return Returns
      */
-    public boolean matchesDynamic(org.w3c.dom.Element e, AttributeResolver attRes) {
+    public boolean matchesDynamic(Object e, AttributeResolver attRes, TreeResolver treeRes) {
         if (siblingSelector != null) {
-            Element sib = siblingSelector.getAppropriateSibling(e);
+            Object sib = siblingSelector.getAppropriateSibling(e, treeRes);
             if (sib == null) {
                 return false;
             }
-            if (!siblingSelector.matchesDynamic(sib, attRes)) {
+            if (!siblingSelector.matchesDynamic(sib, attRes, treeRes)) {
                 return false;
             }
         }
@@ -523,25 +524,20 @@ class Selector {
     /**
      * Gets the appropriateSibling attribute of the Selector object
      *
-     * @param e PARAM
+     * @param e       PARAM
+     * @param treeRes
      * @return The appropriateSibling value
      */
-    Element getAppropriateSibling(Element e) {
-        Node sibling = null;
+    Object getAppropriateSibling(Object e, TreeResolver treeRes) {
+        Object sibling = null;
         switch (_axis) {
             case IMMEDIATE_SIBLING_AXIS:
-                sibling = e.getPreviousSibling();
-                while (sibling != null && sibling.getNodeType() != Node.ELEMENT_NODE) {
-                    sibling = sibling.getPreviousSibling();
-                }
+                sibling = treeRes.getPreviousSiblingElement(e);
                 break;
             default:
                 XRLog.exception("Bad sibling axis");
         }
-        if (!(sibling instanceof Element)) {
-            return null;
-        }
-        return (Element) sibling;
+        return sibling;
     }
 
     /**

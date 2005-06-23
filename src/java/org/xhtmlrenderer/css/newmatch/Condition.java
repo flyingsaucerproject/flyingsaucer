@@ -19,12 +19,14 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import org.xhtmlrenderer.css.extend.AttributeResolver;
+import org.xhtmlrenderer.css.extend.TreeResolver;
 
 
 /**
  * Part of a Selector
  *
- * @author   tstgm
+ * @author tstgm
  */
 abstract class Condition {
     /**
@@ -32,87 +34,88 @@ abstract class Condition {
      *
      * @param e       PARAM
      * @param attRes  PARAM
-     * @return        Returns
+     * @param treeRes
+     * @return Returns
      */
-    abstract boolean matches( org.w3c.dom.Element e, AttributeResolver attRes );
+    abstract boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes);
 
     /**
      * the CSS condition [attribute]
      *
-     * @param name  PARAM
-     * @return      Returns
+     * @param name PARAM
+     * @return Returns
      */
-    static Condition createAttributeExistsCondition( String name ) {
-        return new AttributeExistsCondition( name );
+    static Condition createAttributeExistsCondition(String name) {
+        return new AttributeExistsCondition(name);
     }
 
     /**
      * the CSS condition [attribute=value]
      *
-     * @param name   PARAM
-     * @param value  PARAM
-     * @return       Returns
+     * @param name  PARAM
+     * @param value PARAM
+     * @return Returns
      */
-    static Condition createAttributeEqualsCondition( String name, String value ) {
-        return new AttributeEqualsCondition( name, value );
+    static Condition createAttributeEqualsCondition(String name, String value) {
+        return new AttributeEqualsCondition(name, value);
     }
 
     /**
      * the CSS condition [attribute~=value]
      *
-     * @param name   PARAM
-     * @param value  PARAM
-     * @return       Returns
+     * @param name  PARAM
+     * @param value PARAM
+     * @return Returns
      */
-    static Condition createAttributeMatchesListCondition( String name, String value ) {
-        return new AttributeMatchesListCondition( name, value );
+    static Condition createAttributeMatchesListCondition(String name, String value) {
+        return new AttributeMatchesListCondition(name, value);
     }
 
     /**
      * the CSS condition [attribute|=value]
      *
-     * @param name   PARAM
-     * @param value  PARAM
-     * @return       Returns
+     * @param name  PARAM
+     * @param value PARAM
+     * @return Returns
      */
-    static Condition createAttributeMatchesFirstPartCondition( String name, String value ) {
-        return new AttributeMatchesFirstPartCondition( name, value );
+    static Condition createAttributeMatchesFirstPartCondition(String name, String value) {
+        return new AttributeMatchesFirstPartCondition(name, value);
     }
 
     /**
      * the CSS condition .class
      *
-     * @param className  PARAM
-     * @return           Returns
+     * @param className PARAM
+     * @return Returns
      */
-    static Condition createClassCondition( String className ) {
-        return new ClassCondition( className );
+    static Condition createClassCondition(String className) {
+        return new ClassCondition(className);
     }
 
     /**
      * the CSS condition #ID
      *
-     * @param id  PARAM
-     * @return    Returns
+     * @param id PARAM
+     * @return Returns
      */
-    static Condition createIDCondition( String id ) {
-        return new IDCondition( id );
+    static Condition createIDCondition(String id) {
+        return new IDCondition(id);
     }
 
     /**
      * the CSS condition lang(Xx)
      *
-     * @param lang  PARAM
-     * @return      Returns
+     * @param lang PARAM
+     * @return Returns
      */
-    static Condition createLangCondition( String lang ) {
-        return new LangCondition( lang );
+    static Condition createLangCondition(String lang) {
+        return new LangCondition(lang);
     }
 
     /**
      * the CSS condition that element has pseudo-class :first-child
      *
-     * @return   Returns
+     * @return Returns
      */
     static Condition createFirstChildCondition() {
         return new FirstChildCondition();
@@ -121,7 +124,7 @@ abstract class Condition {
     /**
      * the CSS condition that element has pseudo-class :link
      *
-     * @return   Returns
+     * @return Returns
      */
     static Condition createLinkCondition() {
         return new LinkCondition();
@@ -130,7 +133,7 @@ abstract class Condition {
     /**
      * for unsupported or invalid CSS
      *
-     * @return   Returns
+     * @return Returns
      */
     static Condition createUnsupportedCondition() {
         return new UnsupportedCondition();
@@ -138,19 +141,20 @@ abstract class Condition {
 
     /**
      * Description of the Class
-     *
      */
     private static class AttributeExistsCondition extends Condition {
 
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         private String _name;
 
         /**
          * Constructor for the AttributeExistsCondition object
          *
-         * @param name  PARAM
+         * @param name PARAM
          */
-        AttributeExistsCondition( String name ) {
+        AttributeExistsCondition(String name) {
             _name = name;
         }
 
@@ -159,13 +163,14 @@ abstract class Condition {
          *
          * @param e       PARAM
          * @param attRes  PARAM
-         * @return        Returns
+         * @param treeRes
+         * @return Returns
          */
-        boolean matches( org.w3c.dom.Element e, AttributeResolver attRes ) {
-            if ( attRes == null ) {
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+            if (attRes == null) {
                 return false;
             }
-            if ( attRes.getAttributeValue( e, _name ) != null ) {
+            if (attRes.getAttributeValue(e, _name) != null) {
                 return true;
             }
             return false;
@@ -175,22 +180,25 @@ abstract class Condition {
 
     /**
      * Description of the Class
-     *
      */
     private static class AttributeEqualsCondition extends Condition {
 
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         private String _name;
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         private String _value;
 
         /**
          * Constructor for the AttributeEqualsCondition object
          *
-         * @param name   PARAM
-         * @param value  PARAM
+         * @param name  PARAM
+         * @param value PARAM
          */
-        AttributeEqualsCondition( String name, String value ) {
+        AttributeEqualsCondition(String name, String value) {
             _name = name;
             _value = value;
         }
@@ -200,17 +208,18 @@ abstract class Condition {
          *
          * @param e       PARAM
          * @param attRes  PARAM
-         * @return        Returns
+         * @param treeRes
+         * @return Returns
          */
-        boolean matches( org.w3c.dom.Element e, AttributeResolver attRes ) {
-            if ( attRes == null ) {
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+            if (attRes == null) {
                 return false;
             }
-            String val = attRes.getAttributeValue( e, _name );
-            if ( val == null ) {
+            String val = attRes.getAttributeValue(e, _name);
+            if (val == null) {
                 return false;
             }
-            if ( val.equals( _value ) ) {
+            if (val.equals(_value)) {
                 return true;
             }
             return false;
@@ -219,22 +228,25 @@ abstract class Condition {
 
     /**
      * Description of the Class
-     *
      */
     private static class AttributeMatchesListCondition extends Condition {
 
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         private String _name;
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         private String _value;
 
         /**
          * Constructor for the AttributeMatchesListCondition object
          *
-         * @param name   PARAM
-         * @param value  PARAM
+         * @param name  PARAM
+         * @param value PARAM
          */
-        AttributeMatchesListCondition( String name, String value ) {
+        AttributeMatchesListCondition(String name, String value) {
             _name = name;
             _value = value;
         }
@@ -244,20 +256,21 @@ abstract class Condition {
          *
          * @param e       PARAM
          * @param attRes  PARAM
-         * @return        Returns
+         * @param treeRes
+         * @return Returns
          */
-        boolean matches( org.w3c.dom.Element e, AttributeResolver attRes ) {
-            if ( attRes == null ) {
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+            if (attRes == null) {
                 return false;
             }
-            String val = attRes.getAttributeValue( e, _name );
-            if ( val == null ) {
+            String val = attRes.getAttributeValue(e, _name);
+            if (val == null) {
                 return false;
             }
-            String[] ca = val.split( " " );
+            String[] ca = val.split(" ");
             boolean matched = false;
-            for ( int j = 0; j < ca.length; j++ ) {
-                if ( _value.equals( ca[j] ) ) {
+            for (int j = 0; j < ca.length; j++) {
+                if (_value.equals(ca[j])) {
                     matched = true;
                 }
             }
@@ -267,22 +280,25 @@ abstract class Condition {
 
     /**
      * Description of the Class
-     *
      */
     private static class AttributeMatchesFirstPartCondition extends Condition {
 
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         private String _name;
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         private String _value;
 
         /**
          * Constructor for the AttributeMatchesFirstPartCondition object
          *
-         * @param name   PARAM
-         * @param value  PARAM
+         * @param name  PARAM
+         * @param value PARAM
          */
-        AttributeMatchesFirstPartCondition( String name, String value ) {
+        AttributeMatchesFirstPartCondition(String name, String value) {
             _name = name;
             _value = value;
         }
@@ -292,18 +308,19 @@ abstract class Condition {
          *
          * @param e       PARAM
          * @param attRes  PARAM
-         * @return        Returns
+         * @param treeRes
+         * @return Returns
          */
-        boolean matches( org.w3c.dom.Element e, AttributeResolver attRes ) {
-            if ( attRes == null ) {
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+            if (attRes == null) {
                 return false;
             }
-            String val = attRes.getAttributeValue( e, _name );
-            if ( val == null ) {
+            String val = attRes.getAttributeValue(e, _name);
+            if (val == null) {
                 return false;
             }
-            String[] ca = val.split( "-" );
-            if ( _value.equals( ca[0] ) ) {
+            String[] ca = val.split("-");
+            if (_value.equals(ca[0])) {
                 return true;
             }
             return false;
@@ -312,19 +329,20 @@ abstract class Condition {
 
     /**
      * Description of the Class
-     *
      */
     private static class ClassCondition extends Condition {
 
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         private String _className;
 
         /**
          * Constructor for the ClassCondition object
          *
-         * @param className  PARAM
+         * @param className PARAM
          */
-        ClassCondition( String className ) {
+        ClassCondition(String className) {
             _className = className;
         }
 
@@ -333,20 +351,21 @@ abstract class Condition {
          *
          * @param e       PARAM
          * @param attRes  PARAM
-         * @return        Returns
+         * @param treeRes
+         * @return Returns
          */
-        boolean matches( org.w3c.dom.Element e, AttributeResolver attRes ) {
-            if ( attRes == null ) {
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+            if (attRes == null) {
                 return false;
             }
-            String c = attRes.getClass( e );
-            if ( c == null ) {
+            String c = attRes.getClass(e);
+            if (c == null) {
                 return false;
             }
-            String[] ca = c.split( " " );
+            String[] ca = c.split(" ");
             boolean matched = false;
-            for ( int j = 0; j < ca.length; j++ ) {
-                if ( _className.equals( ca[j] ) ) {
+            for (int j = 0; j < ca.length; j++) {
+                if (_className.equals(ca[j])) {
                     matched = true;
                 }
             }
@@ -357,19 +376,20 @@ abstract class Condition {
 
     /**
      * Description of the Class
-     *
      */
     private static class IDCondition extends Condition {
 
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         private String _id;
 
         /**
          * Constructor for the IDCondition object
          *
-         * @param id  PARAM
+         * @param id PARAM
          */
-        IDCondition( String id ) {
+        IDCondition(String id) {
             _id = id;
         }
 
@@ -378,13 +398,14 @@ abstract class Condition {
          *
          * @param e       PARAM
          * @param attRes  PARAM
-         * @return        Returns
+         * @param treeRes
+         * @return Returns
          */
-        boolean matches( org.w3c.dom.Element e, AttributeResolver attRes ) {
-            if ( attRes == null ) {
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+            if (attRes == null) {
                 return false;
             }
-            if ( !_id.equals( attRes.getID( e ) ) ) {
+            if (!_id.equals(attRes.getID(e))) {
                 return false;
             }
             return true;
@@ -394,19 +415,20 @@ abstract class Condition {
 
     /**
      * Description of the Class
-     *
      */
     private static class LangCondition extends Condition {
 
-        /** Description of the Field */
+        /**
+         * Description of the Field
+         */
         private String _lang;
 
         /**
          * Constructor for the LangCondition object
          *
-         * @param lang  PARAM
+         * @param lang PARAM
          */
-        LangCondition( String lang ) {
+        LangCondition(String lang) {
             _lang = lang;
         }
 
@@ -415,18 +437,19 @@ abstract class Condition {
          *
          * @param e       PARAM
          * @param attRes  PARAM
-         * @return        Returns
+         * @param treeRes
+         * @return Returns
          */
-        boolean matches( org.w3c.dom.Element e, AttributeResolver attRes ) {
-            if ( attRes == null ) {
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+            if (attRes == null) {
                 return false;
             }
-            String lang = attRes.getLang( e );
-            if ( lang == null ) {
+            String lang = attRes.getLang(e);
+            if (lang == null) {
                 return false;
             }
-            String[] ca = lang.split( "-" );
-            if ( _lang.equals( ca[0] ) ) {
+            String[] ca = lang.split("-");
+            if (_lang.equals(ca[0])) {
                 return true;
             }
             return false;
@@ -436,71 +459,74 @@ abstract class Condition {
 
     /**
      * Description of the Class
-     *
      */
     private static class FirstChildCondition extends Condition {
 
-        /** Constructor for the FirstChildCondition object */
-        FirstChildCondition() { }
+        /**
+         * Constructor for the FirstChildCondition object
+         */
+        FirstChildCondition() {
+        }
 
         /**
          * Description of the Method
          *
          * @param e       PARAM
          * @param attRes  PARAM
-         * @return        Returns
+         * @param treeRes
+         * @return Returns
          */
-        boolean matches( org.w3c.dom.Element e, AttributeResolver attRes ) {
-            org.w3c.dom.Node parent = e.getParentNode();
-            org.w3c.dom.NodeList nl = parent.getChildNodes();
-            int i = 0;
-            while ( i < nl.getLength() && nl.item( i ).getNodeType() != org.w3c.dom.Node.ELEMENT_NODE ) {
-                i++;
-            }
-            return ( nl.item( i ) == e );
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+            return treeRes.isFirstChildElement(e);
         }
 
     }
 
     /**
      * Description of the Class
-     *
      */
     private static class LinkCondition extends Condition {
 
-        /** Constructor for the LinkCondition object */
-        LinkCondition() { }
+        /**
+         * Constructor for the LinkCondition object
+         */
+        LinkCondition() {
+        }
 
         /**
          * Description of the Method
          *
          * @param e       PARAM
          * @param attRes  PARAM
-         * @return        Returns
+         * @param treeRes
+         * @return Returns
          */
-        boolean matches( org.w3c.dom.Element e, AttributeResolver attRes ) {
-            return attRes.isLink( e );
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
+            return attRes.isLink(e);
         }
 
     }
 
     /**
      * represents unsupported (or invalid) css, never matches
-     *
      */
     private static class UnsupportedCondition extends Condition {
 
-        /** Constructor for the UnsupportedCondition object */
-        UnsupportedCondition() { }
+        /**
+         * Constructor for the UnsupportedCondition object
+         */
+        UnsupportedCondition() {
+        }
 
         /**
          * Description of the Method
          *
          * @param e       PARAM
          * @param attRes  PARAM
-         * @return        Returns
+         * @param treeRes
+         * @return Returns
          */
-        boolean matches( org.w3c.dom.Element e, AttributeResolver attRes ) {
+        boolean matches(Object e, AttributeResolver attRes, TreeResolver treeRes) {
             return false;
         }
 

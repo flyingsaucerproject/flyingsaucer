@@ -17,7 +17,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-package org.xhtmlrenderer.css.sheet;
+package org.xhtmlrenderer.css.extend;
+
+import org.xhtmlrenderer.css.sheet.Ruleset;
+import org.xhtmlrenderer.css.sheet.Stylesheet;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
 
 /**
@@ -37,6 +41,9 @@ public interface StylesheetFactory {
  * $Id$
  *
  * $Log$
+ * Revision 1.1  2005/06/23 17:03:42  tobega
+ * css now independent of DOM
+ *
  * Revision 1.21  2005/06/22 23:48:41  tobega
  * Refactored the css package to allow a clean separation from the core.
  *

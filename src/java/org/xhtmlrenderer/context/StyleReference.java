@@ -23,7 +23,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.newmatch.AttributeResolver;
+import org.xhtmlrenderer.css.extend.AttributeResolver;
+import org.xhtmlrenderer.css.extend.lib.DOMTreeResolver;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
@@ -100,7 +101,7 @@ public class StyleReference {
 
         List infos = getStylesheets();
         XRLog.match("media = " + _context.getMedia());
-        _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
+        _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(new DOMTreeResolver(), attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
     }
 
     /**
@@ -251,6 +252,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/06/23 17:03:40  tobega
+ * css now independent of DOM
+ *
  * Revision 1.1  2005/06/22 23:48:40  tobega
  * Refactored the css package to allow a clean separation from the core.
  *

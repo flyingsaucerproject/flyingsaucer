@@ -20,13 +20,15 @@
 package org.xhtmlrenderer.context;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.newmatch.AttributeResolver;
+import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
 
 
 /**
+ * An instance which works together with a w3c DOM tree
+ *
  * @author Torbjörn Gannholm
  */
 public class StandardAttributeResolver implements AttributeResolver {
@@ -63,8 +65,8 @@ public class StandardAttributeResolver implements AttributeResolver {
      * @param attrName PARAM
      * @return The attributeValue value
      */
-    public String getAttributeValue(Element e, String attrName) {
-        return nsh.getAttributeValue(e, attrName);
+    public String getAttributeValue(Object e, String attrName) {
+        return nsh.getAttributeValue((Element) e, attrName);
     }
 
     /**
@@ -73,8 +75,8 @@ public class StandardAttributeResolver implements AttributeResolver {
      * @param e PARAM
      * @return The class value
      */
-    public String getClass(Element e) {
-        return nsh.getClass(e);
+    public String getClass(Object e) {
+        return nsh.getClass((Element) e);
     }
 
     /**
@@ -83,8 +85,8 @@ public class StandardAttributeResolver implements AttributeResolver {
      * @param e PARAM
      * @return The iD value
      */
-    public String getID(Element e) {
-        return nsh.getID(e);
+    public String getID(Object e) {
+        return nsh.getID((Element) e);
     }
 
     /**
@@ -93,8 +95,8 @@ public class StandardAttributeResolver implements AttributeResolver {
      * @param e PARAM
      * @return The elementStyling value
      */
-    public String getElementStyling(Element e) {
-        return nsh.getElementStyling(e);
+    public String getElementStyling(Object e) {
+        return nsh.getElementStyling((Element) e);
     }
 
     /**
@@ -103,8 +105,8 @@ public class StandardAttributeResolver implements AttributeResolver {
      * @param e PARAM
      * @return The lang value
      */
-    public String getLang(Element e) {
-        return nsh.getLang(e);
+    public String getLang(Object e) {
+        return nsh.getLang((Element) e);
     }
 
     /**
@@ -113,8 +115,8 @@ public class StandardAttributeResolver implements AttributeResolver {
      * @param e PARAM
      * @return The link value
      */
-    public boolean isLink(Element e) {
-        return nsh.getLinkUri(e) != null;
+    public boolean isLink(Object e) {
+        return nsh.getLinkUri((Element) e) != null;
     }
 
     /**
@@ -123,8 +125,8 @@ public class StandardAttributeResolver implements AttributeResolver {
      * @param e PARAM
      * @return The visited value
      */
-    public boolean isVisited(Element e) {
-        return uac.isVisited(nsh.getLinkUri(e));
+    public boolean isVisited(Object e) {
+        return uac.isVisited(nsh.getLinkUri((Element) e));
     }
 
     /**
@@ -133,8 +135,8 @@ public class StandardAttributeResolver implements AttributeResolver {
      * @param e PARAM
      * @return The hover value
      */
-    public boolean isHover(Element e) {
-        return ui.isHover(e);
+    public boolean isHover(Object e) {
+        return ui.isHover((Element) e);
     }
 
     /**
@@ -143,8 +145,8 @@ public class StandardAttributeResolver implements AttributeResolver {
      * @param e PARAM
      * @return The active value
      */
-    public boolean isActive(Element e) {
-        return ui.isActive(e);
+    public boolean isActive(Object e) {
+        return ui.isActive((Element) e);
     }
 
     /**
@@ -153,8 +155,8 @@ public class StandardAttributeResolver implements AttributeResolver {
      * @param e PARAM
      * @return The focus value
      */
-    public boolean isFocus(Element e) {
-        return ui.isFocus(e);
+    public boolean isFocus(Object e) {
+        return ui.isFocus((Element) e);
     }
 }
 

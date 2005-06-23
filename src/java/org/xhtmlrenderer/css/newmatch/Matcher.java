@@ -19,8 +19,10 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import org.xhtmlrenderer.css.extend.AttributeResolver;
+import org.xhtmlrenderer.css.extend.StylesheetFactory;
+import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
-import org.xhtmlrenderer.css.sheet.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -43,11 +45,15 @@ public class Matcher {
     /**
      * Description of the Field
      */
-    private org.xhtmlrenderer.css.newmatch.AttributeResolver _attRes;
+    private org.xhtmlrenderer.css.extend.AttributeResolver _attRes;
     /**
      * Description of the Field
      */
-    private org.xhtmlrenderer.css.sheet.StylesheetFactory _styleFactory;
+    private org.xhtmlrenderer.css.extend.TreeResolver _treeRes;
+    /**
+     * Description of the Field
+     */
+    private org.xhtmlrenderer.css.extend.StylesheetFactory _styleFactory;
 
     /**
      * Description of the Field
@@ -84,13 +90,15 @@ public class Matcher {
     /**
      * creates a new matcher for the combination of parameters
      *
+     * @param tr
      * @param ar          PARAM
      * @param factory     PARAM
      * @param stylesheets PARAM
      * @param media       PARAM
      */
-    public Matcher(AttributeResolver ar, StylesheetFactory factory, Iterator stylesheets, String media) {
+    public Matcher(TreeResolver tr, AttributeResolver ar, StylesheetFactory factory, Iterator stylesheets, String media) {
         newMaps();
+        _treeRes = tr;
         _attRes = ar;
         _styleFactory = factory;
         docMapper = createDocumentMapper(stylesheets, media);
@@ -103,7 +111,7 @@ public class Matcher {
      * @param restyle PARAM
      * @return The cascadedStyle value
      */
-    public CascadedStyle getCascadedStyle(org.w3c.dom.Element e, boolean restyle) {
+    public CascadedStyle getCascadedStyle(Object e, boolean restyle) {
         Mapper em;
         if (!restyle) {
             em = getMapper(e);
@@ -120,7 +128,7 @@ public class Matcher {
      * @param pseudoElement PARAM
      * @return The pECascadedStyle value
      */
-    public CascadedStyle getPECascadedStyle(org.w3c.dom.Element e, String pseudoElement) {
+    public CascadedStyle getPECascadedStyle(Object e, String pseudoElement) {
         java.util.Map elm = (java.util.Map) _peMap.get(e);
         if (elm == null) {
             return null;
@@ -134,7 +142,7 @@ public class Matcher {
      * @param e PARAM
      * @return The visitedStyled value
      */
-    public boolean isVisitedStyled(org.w3c.dom.Element e) {
+    public boolean isVisitedStyled(Object e) {
         return _visitElements.contains(e);
     }
 
@@ -144,7 +152,7 @@ public class Matcher {
      * @param e PARAM
      * @return The hoverStyled value
      */
-    public boolean isHoverStyled(org.w3c.dom.Element e) {
+    public boolean isHoverStyled(Object e) {
         return _hoverElements.contains(e);
     }
 
@@ -154,7 +162,7 @@ public class Matcher {
      * @param e PARAM
      * @return The activeStyled value
      */
-    public boolean isActiveStyled(org.w3c.dom.Element e) {
+    public boolean isActiveStyled(Object e) {
         return _activeElements.contains(e);
     }
 
@@ -164,7 +172,7 @@ public class Matcher {
      * @param e PARAM
      * @return The focusStyled value
      */
-    public boolean isFocusStyled(org.w3c.dom.Element e) {
+    public boolean isFocusStyled(Object e) {
         return _focusElements.contains(e);
     }
 
@@ -174,11 +182,11 @@ public class Matcher {
      * @param e PARAM
      * @return Returns
      */
-    protected Mapper matchElement(org.w3c.dom.Element e) {
-        org.w3c.dom.Node parent = e.getParentNode();
+    protected Mapper matchElement(Object e) {
+        Object parent = _treeRes.getParentElement(e);
         Mapper child;
-        if (parent.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-            Mapper m = getMapper((org.w3c.dom.Element) parent);
+        if (parent != null) {
+            Mapper m = getMapper(parent);
             child = m.mapChild(e);
         } else {//has to be document or fragment node
             child = docMapper.mapChild(e);
@@ -210,7 +218,7 @@ public class Matcher {
      * @param matchedSelectors PARAM
      * @return Returns
      */
-    CascadedStyle createCascadedStyle(org.w3c.dom.Element e, List matchedSelectors) {
+    CascadedStyle createCascadedStyle(Object e, List matchedSelectors) {
         CascadedStyle cs = null;
         org.xhtmlrenderer.css.sheet.Ruleset elementStyling = getElementStyle(e);
         java.util.List propList = new java.util.LinkedList();
@@ -248,7 +256,7 @@ public class Matcher {
      * @param e PARAM
      * @param m PARAM
      */
-    private void link(org.w3c.dom.Element e, Mapper m) {
+    private void link(Object e, Mapper m) {
         _map.put(e, new SoftReference(m));
     }
 
@@ -259,7 +267,6 @@ public class Matcher {
         _map = new java.util.HashMap();
         _csCache = new java.util.HashMap();
         _peMap = new java.util.HashMap();
-        //_elStyle = new java.util.HashMap();
         _hoverElements = new java.util.HashSet();
         _activeElements = new java.util.HashSet();
         _focusElements = new java.util.HashSet();
@@ -549,7 +556,7 @@ public class Matcher {
      * @param e               PARAM
      * @param pseudoSelectors PARAM
      */
-    private void resolvePseudoElements(org.w3c.dom.Element e, HashMap pseudoSelectors) {
+    private void resolvePseudoElements(Object e, HashMap pseudoSelectors) {
         java.util.Iterator si = pseudoSelectors.entrySet().iterator();
         if (!si.hasNext()) {
             return;
@@ -591,7 +598,7 @@ public class Matcher {
      * @param e PARAM
      * @return The mapper value
      */
-    private Mapper getMapper(org.w3c.dom.Element e) {
+    private Mapper getMapper(Object e) {
         if (_map == null) {
             _map = new java.util.HashMap();
         }
@@ -604,8 +611,6 @@ public class Matcher {
             return m;
         }
         m = matchElement(e);
-        //ref = (SoftReference) _map.get(e);
-        //if (ref != null) m = (Mapper) ref.get();
         return m;
     }
 
@@ -675,7 +680,7 @@ public class Matcher {
      * @param e PARAM
      * @return The elementStyle value
      */
-    private org.xhtmlrenderer.css.sheet.Ruleset getElementStyle(org.w3c.dom.Element e) {
+    private org.xhtmlrenderer.css.sheet.Ruleset getElementStyle(Object e) {
         if (_attRes == null || _styleFactory == null) {
             return null;
         }
@@ -730,7 +735,7 @@ public class Matcher {
          * @return The selectors that matched, sorted according to specificity
          *         (more correct: preserves the sort order from Matcher creation)
          */
-        Mapper mapChild(org.w3c.dom.Element e) {
+        Mapper mapChild(Object e) {
             Mapper childMapper = new Mapper();
             java.util.HashMap pseudoSelectors = new java.util.HashMap();
             java.util.List mappedSelectors = new java.util.LinkedList();
@@ -742,7 +747,7 @@ public class Matcher {
                 } else if (sel.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
                     throw new RuntimeException();
                 }
-                if (!sel.matches(e, _attRes)) {
+                if (!sel.matches(e, _attRes, _treeRes)) {
                     continue;
                 }
                 //Assumption: if it is a pseudo-element, it does not also have dynamic pseudo-class
@@ -768,7 +773,7 @@ public class Matcher {
                 if (sel.isPseudoClass(Selector.FOCUS_PSEUDOCLASS)) {
                     _focusElements.add(e);
                 }
-                if (!sel.matchesDynamic(e, _attRes)) {
+                if (!sel.matchesDynamic(e, _attRes, _treeRes)) {
                     continue;
                 }
                 Selector chain = sel.getChainedSelector();
