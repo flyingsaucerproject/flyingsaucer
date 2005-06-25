@@ -22,8 +22,14 @@
     <echo message=" ant clean: clean up any compilation or distribution files made"/>
     <echo message=" ant compile: compile the source"/>
     <echo message=" ant browser: build run the browser"/>
-    <echo message=" ant test: build run the test app"/>
+    <echo message=" ant test -Dfile=dir/testfile.html: build run the test app"/>
+	<echo message=" ant jar: build all jars"/>
+	<echo message=" ant dist: build the distributions"/>
+	<echo message=" ant docs: build the javadocs"/>
+	<echo message=" ant settings : list the current environment settings"/>
+	<!--
     <echo message=" ant about: build run the about box demo"/>
+	-->
     <echo message="lib directory ${libraries.dir}" />
   </target>
 
@@ -232,6 +238,14 @@
 $Id$
 
 $Log$
+Revision 1.90  2005/06/25 23:20:49  joshy
+added help
+
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.89  2005/03/29 09:01:48  pdoubleya
 Changed to new build file structure. Added image resources for browser.
 
