@@ -126,7 +126,7 @@ public class StandardAttributeResolver implements AttributeResolver {
      * @return The visited value
      */
     public boolean isVisited(Object e) {
-        return uac.isVisited(nsh.getLinkUri((Element) e));
+        return isLink(e) && uac.isVisited(nsh.getLinkUri((Element) e));
     }
 
     /**

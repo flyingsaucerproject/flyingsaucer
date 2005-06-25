@@ -94,7 +94,6 @@ public class PlainTextXMLReader implements XMLReader {
 
     public void parse(InputSource inputSource) throws IOException, SAXException {
         contentHandler.startDocument();
-        contentHandler.startElement("http://www.w3.org/1999/xhtml", "body", "body", new AttributesImpl());
         contentHandler.startElement("http://www.w3.org/1999/xhtml", "pre", "pre", new AttributesImpl());
 
         String line;
@@ -106,7 +105,6 @@ public class PlainTextXMLReader implements XMLReader {
         } while (line != null);
 
         contentHandler.endElement("http://www.w3.org/1999/xhtml", "pre", "pre");
-        contentHandler.endElement("http://www.w3.org/1999/xhtml", "body", "body");
         contentHandler.endDocument();
     }
 

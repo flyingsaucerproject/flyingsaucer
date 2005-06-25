@@ -145,6 +145,7 @@ public class PanelManager implements UserAgentCallback {
     }
 
     public boolean isVisited(String uri) {
+        if (uri == null) return false;
         uri = resolveURI(uri);
         return history.contains(uri);
     }
@@ -163,6 +164,7 @@ public class PanelManager implements UserAgentCallback {
 
     public String resolveURI(String uri) {
         URL ref = null;
+        if (uri == null) return baseUrl;
         if (uri.trim().equals("")) return baseUrl;//jar URLs don't resolve this right
         if (uri.startsWith("demo:")) {
             DemoMarker marker = new DemoMarker();
@@ -173,7 +175,12 @@ public class PanelManager implements UserAgentCallback {
             ref = marker.getClass().getResource(short_url);
         } else {
             try {
-                URL base = new URL(baseUrl);
+                URL base;
+                if (baseUrl == null || baseUrl.length() == 0) {
+                    base = new File(".").toURL();
+                } else {
+                    base = new URL(baseUrl);
+                }
                 ref = new URL(base, uri);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
