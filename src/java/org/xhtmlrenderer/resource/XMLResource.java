@@ -75,6 +75,10 @@ public class XMLResource extends AbstractResource {
         return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(new InputSource(reader)));
     }
 
+    public static XMLResource load(Source source) {
+        return XML_RESOURCE_BUILDER.createXMLResource(source);
+    }
+
     public String getDocumentTitle() {
         return documentTitle;
     }
@@ -273,6 +277,43 @@ public class XMLResource extends AbstractResource {
                         ". Feature may be properly named, but not recognized by this parser.");
             }
         }
+
+        public XMLResource createXMLResource(Source source) {
+            DOMResult output = null;
+            TransformerFactory xformFactory = null;
+            Transformer idTransform = null;
+            long st = 0L;
+
+            st = System.currentTimeMillis();
+            try {
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                dbf.setNamespaceAware(true);
+                dbf.setValidating(false);//validation is the root of all evil in xml - tobe
+                output = new DOMResult(dbf.newDocumentBuilder().newDocument());
+                xformFactory = TransformerFactory.newInstance();
+                idTransform = xformFactory.newTransformer();
+            } catch (Exception ex) {
+                throw new XRRuntimeException("Failed on configuring SAX to DOM transformer.", ex);
+            }
+
+            try {
+                idTransform.transform(source, output);
+            } catch (Exception ex) {
+                throw new XRRuntimeException("Can't load the XML resource (using TRaX transformer). " + ex.getMessage());
+            }
+
+            long end = System.currentTimeMillis();
+
+            //HACK: should rather use a default constructor
+            XMLResource target = new XMLResource((InputSource) null);
+
+            target.setElapsedLoadTime(end - st);
+
+            XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
+
+            target.setDocument((Document) output.getNode());
+            return target;
+        }
     }
 }
 
@@ -280,6 +321,9 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/06/25 22:16:23  tobega
+ * Browser now handles both plain text files and images
+ *
  * Revision 1.12  2005/06/15 10:56:14  tobega
  * cleaned up a bit of URL mess, centralizing URI-resolution and loading to UserAgentCallback
  *

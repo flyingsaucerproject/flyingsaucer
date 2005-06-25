@@ -25,14 +25,16 @@ import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.XRLog;
+import org.xml.sax.InputSource;
 
 import javax.imageio.ImageIO;
+import javax.xml.transform.sax.SAXSource;
 import java.awt.*;
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.*;
 import java.util.ArrayList;
 
 
@@ -59,38 +61,19 @@ public class PanelManager implements UserAgentCallback {
                 }
             };
 
-    private InputStream getInputStream(String uri) {
+    public CSSResource getCSSResource(String uri) {
         InputStream is = null;
         uri = resolveURI(uri);
-        if (uri.startsWith("file:")) {
-            File file = null;
-            try {
-                file = new File(new URI(uri));
-            } catch (URISyntaxException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-            if (file.isDirectory()) {
-                String dirlist = DirectoryLister.list(file);
-                try {
-                    is = new ByteArrayInputStream(dirlist.getBytes("UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-                return is;
-            }
-        }
         try {
-            is = new URL(uri).openStream();
-        } catch (java.net.MalformedURLException e) {
+            URLConnection uc = new URL(uri).openConnection();
+            uc.connect();
+            is = uc.getInputStream();
+        } catch (MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             XRLog.exception("IO problem for " + uri, e);
         }
-        return is;
-    }
-
-    public CSSResource getCSSResource(String uri) {
-        return new CSSResource(getInputStream(uri));
+        return new CSSResource(is);
     }
 
     public ImageResource getImageResource(String uri) {
@@ -99,7 +82,16 @@ public class PanelManager implements UserAgentCallback {
         ir = (ImageResource) imageCache.get(uri);
         //TODO: check that cached image is still valid
         if (ir == null) {
-            InputStream is = getInputStream(uri);
+            InputStream is = null;
+            try {
+                URLConnection uc = new URL(uri).openConnection();
+                uc.connect();
+                is = uc.getInputStream();
+            } catch (MalformedURLException e1) {
+                XRLog.exception("bad URL given: " + uri, e1);
+            } catch (IOException e11) {
+                XRLog.exception("IO problem for " + uri, e11);
+            }
             if (is != null) {
                 try {
                     Image img = ImageIO.read(is);
@@ -116,7 +108,40 @@ public class PanelManager implements UserAgentCallback {
     }
 
     public XMLResource getXMLResource(String uri) {
-        return XMLResource.load(getInputStream(uri));
+        uri = resolveURI(uri);
+        if (uri.startsWith("file:")) {
+            File file = null;
+            try {
+                file = new File(new URI(uri));
+            } catch (URISyntaxException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            if (file.isDirectory()) {
+                String dirlist = DirectoryLister.list(file);
+                return XMLResource.load(new StringReader(dirlist));
+            }
+        }
+        XMLResource xr = null;
+        try {
+            URLConnection uc = new URL(uri).openConnection();
+            uc.connect();
+            String contentType = uc.getContentType();
+            //Maybe should popup a choice when content/unknown!
+            if (contentType.equals("text/plain") || contentType.equals("content/unknown")) {
+                //sorry, mucking about a bit here - tobe
+                SAXSource source = new SAXSource(new PlainTextXMLReader(uc.getInputStream()), new InputSource());
+                xr = XMLResource.load(source);
+            } else if (contentType.startsWith("image")) {
+                String doc = "<img src='" + uri + "'/>";
+                xr = XMLResource.load(new StringReader(doc));
+            } else
+                xr = XMLResource.load(uc.getInputStream());
+        } catch (MalformedURLException e) {
+            XRLog.exception("bad URL given: " + uri, e);
+        } catch (IOException e) {
+            XRLog.exception("IO problem for " + uri, e);
+        }
+        return xr;
     }
 
     public boolean isVisited(String uri) {
