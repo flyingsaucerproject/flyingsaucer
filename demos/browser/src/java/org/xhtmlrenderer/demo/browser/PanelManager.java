@@ -20,8 +20,8 @@
 package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.GraphicsUtil;
+import org.xhtmlrenderer.util.XRLog;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -62,7 +62,7 @@ public class PanelManager implements UserAgentCallback {
     public InputStream getInputStream(String uri) {
         InputStream is = null;
         uri = resolveURI(uri);
-        if (uri.startsWith("file://")) {
+        if (uri.startsWith("file:")) {
             File file = null;
             try {
                 file = new File(new URI(uri));
@@ -98,7 +98,7 @@ public class PanelManager implements UserAgentCallback {
             if (is != null) {
                 try {
                     img = ImageIO.read(is);
-					img = GraphicsUtil.cleanImage(img);
+                    img = GraphicsUtil.cleanImage(img);
                     imageCache.put(uri, img);
                 } catch (Exception e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);

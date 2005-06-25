@@ -44,30 +44,34 @@ public class DirectoryLister {
         sb.append(file.getPath());
         sb.append("</title>");
         sb.append("<style>");
-        sb.append("table { background-color: #ddffdd; }");
+        sb.append("ul { background-color: #ddffdd; }");
+        sb.append("li { list-style-type: none; }");
+        sb.append("a { text-decoration: none; }");
         sb.append(".dir { font-weight: bold; color: #ff9966; }");
         sb.append(".file { font-weight: normal; color: #003333; }");
         sb.append("</style>");
         sb.append("</head>");
         sb.append("<body>");
-        sb.append("<p>the file ");
+        sb.append("<p>the contents of ");
         sb.append(file.toString());
-        sb.append(" is</p>");
+        sb.append(" are:</p>");
 
         if (file.isDirectory()) {
-            sb.append("<table>");
+            sb.append("<ul>");
             File[] files = file.listFiles();
             for (int i = 0; i < files.length; i++) {
-                sb.append("<tr>");
+                sb.append("<li>");
                 if (files[i].isDirectory()) {
-                    sb.append("<td class='dir'>" + files[i].getName() + "</td>");
+                    sb.append("<a class='dir' href='" + files[i].getAbsolutePath() + "'>" + files[i].getName() + "</a>");
                 } else {
-                    sb.append("<td class='file'>" + files[i].getName() + "</td>");
+                    sb.append("<a class='file' href='" + files[i].getAbsolutePath() + "'>" + files[i].getName() + "</a>");
                 }
-                sb.append("</tr>");
+                sb.append("</li>");
             }
-            sb.append("</table>");
+            sb.append("</ul>");
         }
+
+        sb.append("</body></html>");
 
         return sb.toString();
     }
@@ -78,6 +82,9 @@ public class DirectoryLister {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/06/25 15:33:44  tobega
+ * fixed Directory listings in browser
+ *
  * Revision 1.7  2005/06/16 07:24:44  tobega
  * Fixed background image bug.
  * Caching images in browser.

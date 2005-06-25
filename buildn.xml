@@ -162,9 +162,21 @@
                 <include name="*.css"/>
                 <include name="*.gif"/>
                 <include name="*.png"/>
-                <include name="splash/**"/>
-                <include name="about/**"/>
                 <include name="alice/**"/>
+            </fileset>
+            <fileset dir="demos">
+                <include name="splash/**"/>
+            </fileset>
+        </copy>
+        <copy todir="build/classes/images">
+            <fileset dir="demos/browser/src/icons/images">
+                <include name="*.gif"/>
+                <include name="*.png"/>
+            </fileset>
+        </copy>
+        <copy todir="build/classes/demos/fonts">
+            <fileset dir="demos/browser/xhtml/fonts">
+                <include name="*.ttf"/>
             </fileset>
         </copy>
     </target>
@@ -259,6 +271,9 @@
 $Id$
 
 $Log$
+Revision 1.3  2005/06/25 15:33:44  tobega
+fixed Directory listings in browser
+
 Revision 1.2  2005/06/13 06:50:18  tobega
 Fixed a bug in table content resolution.
 Various "tweaks" in other stuff.
