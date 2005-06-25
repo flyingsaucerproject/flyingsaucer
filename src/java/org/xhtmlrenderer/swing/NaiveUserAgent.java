@@ -65,7 +65,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
      * @return The stylesheet value
      */
     //TOdO:implement this with nio.
-    public InputStream getInputStream(String uri) {
+    private InputStream getInputStream(String uri) {
         java.io.InputStream is = null;
         uri = resolveURI(uri);
         try {
@@ -80,7 +80,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
 
 
     public CSSResource getCSSResource(String uri) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new CSSResource(getInputStream(uri));
     }
 
     public ImageResource getImageResource(String uri) {
@@ -106,7 +106,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
     }
 
     public XMLResource getXMLResource(String uri) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return XMLResource.load(getInputStream(uri));
     }
 
 
@@ -148,6 +148,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/06/25 19:27:47  tobega
+ * UAC now supplies Resources
+ *
  * Revision 1.16  2005/06/25 17:23:35  tobega
  * first refactoring of UAC: ImageResource
  *

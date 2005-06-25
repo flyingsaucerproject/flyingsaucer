@@ -59,7 +59,7 @@ public class PanelManager implements UserAgentCallback {
                 }
             };
 
-    public InputStream getInputStream(String uri) {
+    private InputStream getInputStream(String uri) {
         InputStream is = null;
         uri = resolveURI(uri);
         if (uri.startsWith("file:")) {
@@ -90,7 +90,7 @@ public class PanelManager implements UserAgentCallback {
     }
 
     public CSSResource getCSSResource(String uri) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new CSSResource(getInputStream(uri));
     }
 
     public ImageResource getImageResource(String uri) {
@@ -116,7 +116,7 @@ public class PanelManager implements UserAgentCallback {
     }
 
     public XMLResource getXMLResource(String uri) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return XMLResource.load(getInputStream(uri));
     }
 
     public boolean isVisited(String uri) {

@@ -909,7 +909,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @return Returns
      */
     protected Document loadDocument(final String uri) {
-        return XMLResource.load(ctx.getUac().getInputStream(uri)).getDocument();
+        return ctx.getUac().getXMLResource(uri).getDocument();
     }
 
     private Context layout_context;
@@ -1048,6 +1048,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.56  2005/06/25 19:27:47  tobega
+ * UAC now supplies Resources
+ *
  * Revision 1.55  2005/06/22 23:48:46  tobega
  * Refactored the css package to allow a clean separation from the core.
  *

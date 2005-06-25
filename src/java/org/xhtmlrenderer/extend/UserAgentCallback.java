@@ -23,8 +23,6 @@ import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 
-import java.io.InputStream;
-
 
 /**
  * <p>To be implemented by any user agent using the panel. "User agent" is a
@@ -40,17 +38,6 @@ import java.io.InputStream;
  * @author Torbjörn Gannholm
  */
 public interface UserAgentCallback {
-
-    /**
-     * Returns an {@link java.io.InputStream} for a resource identified by a
-     * URI (String). Returns  null if UserAgent does not wish to access the
-     * resource.
-     *
-     * @param uri The URI for the resource (any string that the instance can resolve).
-     * @return A Reader for the stylesheet, or null if it can't be read
-     *         or if the stylesheet should be ignored.
-     */
-    public InputStream getInputStream(String uri);
 
     public CSSResource getCSSResource(String uri);
 

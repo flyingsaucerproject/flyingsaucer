@@ -29,6 +29,7 @@ import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -85,7 +86,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      * @param info
      * @return Returns
      */
-    public Stylesheet parse(InputStream stream, StylesheetInfo info) {
+    Stylesheet parse(InputStream stream, StylesheetInfo info) {
         Reader r = new InputStreamReader(stream);
         InputSource is = new InputSource(r);
         CSSStyleSheet style = null;
@@ -108,9 +109,9 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      * @param info
      * @return Returns null if uri could not be loaded
      */
-    public Stylesheet parse(StylesheetInfo info) {
-        InputStream is = _userAgent.getInputStream(info.getUri());
-
+    private Stylesheet parse(StylesheetInfo info) {
+        CSSResource cr = _userAgent.getCSSResource(info.getUri());
+        InputStream is = cr.getResourceInputSource().getByteStream();
         Stylesheet sheet = null;
 
         try {
@@ -130,7 +131,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     }
 
     private void debugBadStyleSheet(StylesheetInfo info) {
-        InputStream is = _userAgent.getInputStream(info.getUri());
+        InputStream is = _userAgent.getCSSResource(info.getUri()).getResourceInputSource().getByteStream();
         if (is != null) {
             try {
                 Reader r = new InputStreamReader(is);

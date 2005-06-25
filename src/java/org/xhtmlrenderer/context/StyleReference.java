@@ -196,7 +196,6 @@ public class StyleReference {
      * @return The stylesheets value
      */
     private List getStylesheets() {
-        java.io.InputStream stream;
         List infos = new LinkedList();
         long st = System.currentTimeMillis();
 
@@ -207,7 +206,7 @@ public class StyleReference {
         info.setMedia("all");
         info.setType("text/css");
         if (!_stylesheetFactory.containsStylesheet(uri)) {
-            stream = _nsh.getDefaultStylesheet();
+            java.io.InputStream stream = _nsh.getDefaultStylesheet();
             if (stream != null) {
                 Stylesheet sheet = _stylesheetFactory.parse(stream, info);
                 _stylesheetFactory.putStylesheet(uri, sheet);
@@ -252,6 +251,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/06/25 19:27:46  tobega
+ * UAC now supplies Resources
+ *
  * Revision 1.2  2005/06/23 17:03:40  tobega
  * css now independent of DOM
  *
