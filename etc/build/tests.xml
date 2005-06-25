@@ -167,7 +167,34 @@
 		</java>
 	</target>
 
-    <!-- Builds and jars the browser demo, and runs it -->
+    <!-- Builds the core jar and runs diff tests -->
+	<target name="diff-test-file" depends="jar.core">
+		<java classname="org.xhtmlrenderer.test.DocumentDiffTest"
+				fork="${java-exec.fork.tests}">
+			<classpath refid="libraries-and-dest.all"/>
+			<sysproperty key="show-config" value="${show-config}"/>
+			<syspropertyset>
+				<propertyref prefix="xr."/>
+			</syspropertyset>
+			<arg value="${file}"/>
+		</java>
+	</target>
+
+	    <!-- Builds the core jar and runs diff tests -->
+	<target name="gen-diff-file" depends="jar.core">
+		<java classname="org.xhtmlrenderer.test.DocumentDiffGenerate"
+				fork="${java-exec.fork.tests}">
+			<classpath refid="libraries-and-dest.all"/>
+			<sysproperty key="show-config" value="${show-config}"/>
+			<syspropertyset>
+				<propertyref prefix="xr."/>
+			</syspropertyset>
+			<arg value="${file}"/>
+			<arg value="${diff}"/>
+		</java>
+	</target>
+
+			<!-- Builds and jars the browser demo, and runs it -->
 	<target name="test.simple-page" depends="compile, jar">
 		<java
 				classname="org.xhtmlrenderer.test.SimplePageTest"
