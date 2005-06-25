@@ -33,9 +33,7 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 
 
 /**
@@ -274,7 +272,7 @@ public class BoxRendering {
         int backImageHeight = 0;
         if (back_image != null && !"none".equals(back_image)) {
             try {
-                block.background_image = c.getCtx().getUac().getImage(back_image);
+                block.background_image = c.getCtx().getUac().getImageResource(back_image).getImage();
                 block.background_uri = back_image;
                 backImageWidth = block.background_image.getWidth(null);
                 backImageHeight = block.background_image.getHeight(null);
@@ -329,6 +327,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2005/06/25 17:23:33  tobega
+ * first refactoring of UAC: ImageResource
+ *
  * Revision 1.31  2005/06/22 23:48:45  tobega
  * Refactored the css package to allow a clean separation from the core.
  *

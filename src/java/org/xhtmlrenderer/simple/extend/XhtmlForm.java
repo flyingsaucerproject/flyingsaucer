@@ -100,8 +100,8 @@ class XhtmlForm {
                 JButton jb = new JButton();
                 Image im = null;
                 if (e.hasAttribute("src")) {
-					System.out.println("pulling from here: " + e.getAttribute("src"));
-                    im = c.getCtx().getUac().getImage(e.getAttribute("src"));
+                    System.out.println("pulling from here: " + e.getAttribute("src"));
+                    im = c.getCtx().getUac().getImageResource(e.getAttribute("src")).getImage();
                 }
                 if (im == null) {
                     jb = new JButton("Image unreachable. " + e.getAttribute("alt"));

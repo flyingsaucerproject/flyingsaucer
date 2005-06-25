@@ -20,15 +20,15 @@
 package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.resource.CSSResource;
+import org.xhtmlrenderer.resource.ImageResource;
+import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -89,23 +89,34 @@ public class PanelManager implements UserAgentCallback {
         return is;
     }
 
-    public Image getImage(String uri) {
-        Image img = null;
+    public CSSResource getCSSResource(String uri) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public ImageResource getImageResource(String uri) {
+        ImageResource ir = null;
         uri = resolveURI(uri);
-        img = (Image) imageCache.get(uri);
-        if (img == null) {
+        ir = (ImageResource) imageCache.get(uri);
+        //TODO: check that cached image is still valid
+        if (ir == null) {
             InputStream is = getInputStream(uri);
             if (is != null) {
                 try {
-                    img = ImageIO.read(is);
+                    Image img = ImageIO.read(is);
                     img = GraphicsUtil.cleanImage(img);
-                    imageCache.put(uri, img);
-                } catch (Exception e) {
+                    ir = new ImageResource(img);
+                    imageCache.put(uri, ir);
+                } catch (IOException e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
                 }
             }
         }
-        return img;
+        if (ir == null) ir = new ImageResource(null);
+        return ir;
+    }
+
+    public XMLResource getXMLResource(String uri) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public boolean isVisited(String uri) {

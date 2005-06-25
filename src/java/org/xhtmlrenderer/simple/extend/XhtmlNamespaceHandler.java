@@ -326,11 +326,11 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
             }
             JButton jb = null;
             Image im = null;
-            im = c.getCtx().getUac().getImage(e.getAttribute("src"));
+            im = c.getCtx().getUac().getImageResource(e.getAttribute("src")).getImage();
             if (im == null) {
                 jb = new JButton("Image unreachable. " + e.getAttribute("alt"));
             } else {
-				Image i2 = im.getScaledInstance(setWidth, setHeight, Image.SCALE_FAST);
+                Image i2 = im.getScaledInstance(setWidth, setHeight, Image.SCALE_FAST);
                 ImageIcon ii = new ImageIcon(i2, e.getAttribute("alt"));
                 jb = new JButton(ii);
             }

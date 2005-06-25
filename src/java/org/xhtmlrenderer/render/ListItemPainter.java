@@ -24,12 +24,8 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
-import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.font.LineMetrics;
 
 
@@ -62,13 +58,7 @@ public class ListItemPainter {
         String image = style.getStringProperty(CSSName.LIST_STYLE_IMAGE);
         Image img = null;
         if (!image.equals("none")) {
-            try {
-                //Uu.p("loading: " + image);
-                img = c.getCtx().getUac().getImage(image);
-            } catch (Exception ex) {
-                Uu.p(ex);
-            }
-            //Uu.p("image = " + img);
+            img = c.getCtx().getUac().getImageResource(image).getImage();
             if (img != null) {
                 int baseline = box.height;
                 c.getGraphics().drawImage(img, box.x - img.getWidth(null) - 2, box.y + baseline / 2 - img.getHeight(null) / 2 + 2, null);
@@ -214,6 +204,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/06/25 17:23:34  tobega
+ * first refactoring of UAC: ImageResource
+ *
  * Revision 1.19  2005/06/22 23:48:46  tobega
  * Refactored the css package to allow a clean separation from the core.
  *

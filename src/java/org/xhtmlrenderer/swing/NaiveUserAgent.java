@@ -19,18 +19,18 @@
  */
 package org.xhtmlrenderer.swing;
 
-import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.resource.CSSResource;
+import org.xhtmlrenderer.resource.ImageResource;
+import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.GraphicsUtil;
+import org.xhtmlrenderer.util.XRLog;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.*;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 
 
 /**
@@ -38,10 +38,18 @@ import java.util.HashMap;
  */
 public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallback {
 
+
     /**
-     * Description of the Field
+     * an LRU cache
      */
-    private HashMap imageCache;
+    private int imageCacheCapacity = 16;
+    private java.util.LinkedHashMap imageCache =
+            new java.util.LinkedHashMap(imageCacheCapacity, 0.75f, true) {
+                protected boolean removeEldestEntry(java.util.Map.Entry eldest) {
+                    return size() > imageCacheCapacity;
+                }
+            };
+
     private String baseURL;
 
     /**
@@ -70,53 +78,37 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
         return is;
     }
 
-    /**
-     * Gets the image attribute of the NaiveUserAgent object
-     *
-     * @param uri PARAM
-     * @return The image value
-     */
-    //TODO: better caching than using SoftReference
-    public Image getImage(String uri) {
-		//System.out.println("in Naive User Agent get image: " + uri);
-        java.io.InputStream is = null;
-        Image img = null;
-        uri = resolveURI(uri);
-        if (imageCache != null) {
-            SoftReference ref = (SoftReference) imageCache.get(uri);
-            if (ref != null) {
-                img = (Image) ref.get();
-            }
-            if (img != null) {
-                return img;
-            }
-        }
-        try {
-            is = new URL(uri).openStream();
-        } catch (FileNotFoundException ex) {
-            XRLog.exception("Can't find image file for URI: '" + uri + "'; skipping.");
-        } catch (java.net.MalformedURLException e) {
-            XRLog.exception("Bad URI given for image file: '" + uri + "'");
-        } catch (java.io.IOException e) {
-            XRLog.exception("Can't load image file; IO problem for URI '" + uri + "'", e);
-        }
 
-        if (is != null) {
-            try {
-                img = ImageIO.read(is);
-				img = GraphicsUtil.cleanImage(img);
-                if (imageCache == null) {
-                    imageCache = new HashMap();
+    public CSSResource getCSSResource(String uri) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public ImageResource getImageResource(String uri) {
+        ImageResource ir = null;
+        uri = resolveURI(uri);
+        ir = (ImageResource) imageCache.get(uri);
+        //TODO: check that cached image is still valid
+        if (ir == null) {
+            InputStream is = getInputStream(uri);
+            if (is != null) {
+                try {
+                    Image img = ImageIO.read(is);
+                    img = GraphicsUtil.cleanImage(img);
+                    ir = new ImageResource(img);
+                    imageCache.put(uri, ir);
+                } catch (IOException e) {
+                    XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
                 }
-                imageCache.put(uri, new SoftReference(img));
-            } catch (Exception e) {
-                XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
             }
         }
-		
-        return img;
+        if (ir == null) ir = new ImageResource(null);
+        return ir;
     }
-	
+
+    public XMLResource getXMLResource(String uri) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 
     /**
      * Gets the visited attribute of the NaiveUserAgent object
@@ -156,6 +148,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/06/25 17:23:35  tobega
+ * first refactoring of UAC: ImageResource
+ *
  * Revision 1.15  2005/06/21 17:52:10  joshy
  * new hover code
  * removed some debug statements

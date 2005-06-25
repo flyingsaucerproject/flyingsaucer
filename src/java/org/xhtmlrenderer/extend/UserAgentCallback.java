@@ -19,7 +19,10 @@
  */
 package org.xhtmlrenderer.extend;
 
-import java.awt.*;
+import org.xhtmlrenderer.resource.CSSResource;
+import org.xhtmlrenderer.resource.ImageResource;
+import org.xhtmlrenderer.resource.XMLResource;
+
 import java.io.InputStream;
 
 
@@ -49,15 +52,11 @@ public interface UserAgentCallback {
      */
     public InputStream getInputStream(String uri);
 
-    /**
-     * Returns an {@link java.awt.Image} for a given URI (String), or null if the Image
-     * is not available or should not be rendered.
-     *
-     * @param uri The URI for an Image (any string that the instance can resolve).
-     * @return A Reader for the image, or null if it can't or shouldn't be
-     *         rendered.
-     */
-    public Image getImage(String uri);
+    public CSSResource getCSSResource(String uri);
+
+    public ImageResource getImageResource(String uri);
+
+    public XMLResource getXMLResource(String uri);
 
     /**
      * UserAgent should consider if it should answer truthfully or not for

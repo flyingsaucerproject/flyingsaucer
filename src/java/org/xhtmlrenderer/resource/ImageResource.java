@@ -21,23 +21,39 @@ package org.xhtmlrenderer.resource;
 
 import org.xml.sax.InputSource;
 
+import java.awt.*;
+
 /**
- *
  * @author Administrator
  */
 public class ImageResource extends AbstractResource {
-    
-    /** Creates a new instance of ImageResource */
-    public ImageResource(InputSource source) {
+    private Image _img;
+
+    /**
+     * Creates a new instance of ImageResource
+     */
+    /*public ImageResource(InputSource source) {
         super(source);
+    }*/
+
+    //HACK: at least for now, till we know what we want to do here
+    public ImageResource(Image img) {
+        super((InputSource) null);
+        _img = img;
     }
-    
+
+    public Image getImage() {
+        return _img;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/06/25 17:23:34  tobega
+ * first refactoring of UAC: ImageResource
+ *
  * Revision 1.1  2005/02/03 20:39:35  pdoubleya
  * Added to CVS.
  *
