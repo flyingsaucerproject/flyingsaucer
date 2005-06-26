@@ -287,12 +287,11 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
     public InputStream getDefaultStylesheet() {
         InputStream stream = null;
         try {
-            //TODO: weakness: if no configuration found, it bombs out. Should we be so reliable on correct config? Maybe a warning will do?
-            String defaultStyleSheetLocation = Configuration.valueFor("xr.css.user-agent-default-css");
-            if (this.getClass().getResourceAsStream(defaultStyleSheetLocation) != null) {
-                stream = this.getClass().getResource(defaultStyleSheetLocation).openStream();
+            String defaultStyleSheet = Configuration.valueFor("xr.css.user-agent-default-css") + "XhtmlNamespaceHandler.css";
+            if (this.getClass().getResourceAsStream(defaultStyleSheet) != null) {
+                stream = this.getClass().getResource(defaultStyleSheet).openStream();
             } else {
-                XRLog.exception("Can't load default CSS from " + defaultStyleSheetLocation + "." +
+                XRLog.exception("Can't load default CSS from " + defaultStyleSheet + "." +
                         "This file must be on your CLASSPATH. Please check before continuing.");
             }
 

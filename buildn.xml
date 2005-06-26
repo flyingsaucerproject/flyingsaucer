@@ -123,7 +123,11 @@
         description="Copies core resource files (css/dtds) to build directory"
         depends="init">
 
-        <copy todir="${dest.resources.css.dir}" file="${src.resources.css.dir}/default.css"/>
+        <copy todir="${dest.resources.css.dir}">
+            <fileset dir="${src.resources.css.dir}">
+                <include name="*.css"/>
+            </fileset>
+        </copy>
         <copy todir="${dest.resources.conf.dir}" file="${src.resources.conf.dir}/xhtmlrenderer.conf"/>
         <copy todir="${dest.resources.schema.dir}">
             <fileset dir="${src.resources.schema.dir}">
@@ -271,6 +275,9 @@
 $Id$
 
 $Log$
+Revision 1.4  2005/06/26 15:48:11  tobega
+Converted to almost standard html4 default css, which shook out a bug: position should not inherit
+
 Revision 1.3  2005/06/25 15:33:44  tobega
 fixed Directory listings in browser
 

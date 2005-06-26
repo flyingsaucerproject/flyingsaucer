@@ -587,7 +587,7 @@ public final class CSSName {
     /**
      * Constructor for the CSSName object
      *
-     * @param propName PARAM
+     * @param propName    PARAM
      * @param isPrimitive
      */
     private CSSName(String propName, boolean isPrimitive) {
@@ -712,7 +712,7 @@ public final class CSSName {
     /**
      * Adds a feature to the Property attribute of the CSSName class
      *
-     * @param propName The feature to be added to the Property attribute
+     * @param propName    The feature to be added to the Property attribute
      * @param isPrimitive
      * @return Returns
      */
@@ -720,12 +720,12 @@ public final class CSSName {
         if (ALL_PROPERTY_NAMES == null) {
             ALL_PROPERTY_NAMES = new TreeMap();
         }
-        if ( ALL_PRIMITIVE_PROPERTY_NAMES == null ) {
+        if (ALL_PRIMITIVE_PROPERTY_NAMES == null) {
             ALL_PRIMITIVE_PROPERTY_NAMES = new TreeMap();
         }
         CSSName cssName = new CSSName(propName, isPrimitive);
         ALL_PROPERTY_NAMES.put(propName, cssName);
-        if ( isPrimitive ) {
+        if (isPrimitive) {
             ALL_PRIMITIVE_PROPERTY_NAMES.put(propName, cssName);
         }
         return cssName;
@@ -757,7 +757,6 @@ public final class CSSName {
         DEFAULT_INHERITABLE.add(ORPHANS);
         DEFAULT_INHERITABLE.add(PAGE);
         DEFAULT_INHERITABLE.add(PAGE_BREAK_INSIDE);
-        DEFAULT_INHERITABLE.add(POSITION);
         DEFAULT_INHERITABLE.add(QUOTES);
         DEFAULT_INHERITABLE.add(PAGE_BREAK_INSIDE);
         DEFAULT_INHERITABLE.add(TEXT_ALIGN);
@@ -901,13 +900,13 @@ public final class CSSName {
         Iterator iter = ALL_PRIMITIVE_PROPERTY_NAMES.values().iterator();
         int cnt = 0;
         while (iter.hasNext()) {
-            CSSName css = (CSSName)iter.next();
+            CSSName css = (CSSName) iter.next();
             css.setAssignedID(cnt++);
         }
         iter = ALL_PROPERTY_NAMES.values().iterator();
         while (iter.hasNext()) {
-            CSSName css = (CSSName)iter.next();
-            if (! css.isPrimitive ) {
+            CSSName css = (CSSName) iter.next();
+            if (!css.isPrimitive) {
                 css.setAssignedID(cnt++);
             }
         }
@@ -922,6 +921,9 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/06/26 15:48:11  tobega
+ * Converted to almost standard html4 default css, which shook out a bug: position should not inherit
+ *
  * Revision 1.12  2005/06/21 08:36:00  pdoubleya
  * Fixed id assignment to scope primitive names to start of list, in static block.
  *

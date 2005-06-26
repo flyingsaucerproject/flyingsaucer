@@ -109,7 +109,7 @@ public class PanelManager implements UserAgentCallback {
 
     public XMLResource getXMLResource(String uri) {
         uri = resolveURI(uri);
-        if (uri.startsWith("file:")) {
+        if (uri != null && uri.startsWith("file:")) {
             File file = null;
             try {
                 file = new File(new URI(uri));
@@ -141,6 +141,10 @@ public class PanelManager implements UserAgentCallback {
         } catch (IOException e) {
             XRLog.exception("IO problem for " + uri, e);
         }
+        if (xr == null) {
+            String notFound = "<h1>Document not found</h1>";
+            xr = XMLResource.load(new StringReader(notFound));
+        }
         return xr;
     }
 
@@ -152,6 +156,7 @@ public class PanelManager implements UserAgentCallback {
 
     public void setBaseURL(String url) {
         baseUrl = resolveURI(url);
+        if (baseUrl == null) baseUrl = "error:FileNotFound";
         //setBaseURL is called by view when document is loaded
         if (index >= 0) {
             String historic = (String) history.get(index);

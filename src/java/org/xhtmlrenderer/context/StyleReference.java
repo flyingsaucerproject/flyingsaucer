@@ -210,9 +210,10 @@ public class StyleReference {
             if (stream != null) {
                 Stylesheet sheet = _stylesheetFactory.parse(stream, info);
                 _stylesheetFactory.putStylesheet(uri, sheet);
+                infos.add(info);
             }
-        }
-        infos.add(info);
+        } else
+            infos.add(info);
 
         StylesheetInfo[] refs = _nsh.getStylesheetLinks(_doc);
         if (refs != null) {
@@ -251,6 +252,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/06/26 15:48:10  tobega
+ * Converted to almost standard html4 default css, which shook out a bug: position should not inherit
+ *
  * Revision 1.3  2005/06/25 19:27:46  tobega
  * UAC now supplies Resources
  *
