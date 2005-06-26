@@ -19,81 +19,95 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
+import org.sektor37.minium.TextRendererFactory;
+import org.sektor37.minium.TextRenderingHints;
+
+import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 import java.util.Map;
-import org.sektor37.minium.TextRendererFactory;
-import org.sektor37.minium.TextRenderingHints;
 
 
 /**
  * Description of the Class
  *
- * @author   Joshua Marinacci
- * @author   Torbjörn Gannholm
+ * @author Joshua Marinacci
+ * @author Torbjörn Gannholm
  */
 public class MiniumTextRenderer implements org.xhtmlrenderer.extend.TextRenderer {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public org.sektor37.minium.TextRenderer renderer;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected float scale = 1.0f;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     protected int level = HIGH;
 
-    /** Constructor for the MiniumTextRenderer object */
+    /**
+     * Constructor for the MiniumTextRenderer object
+     */
     public MiniumTextRenderer() {
         TextRendererFactory text_renderer_factory = TextRendererFactory.newOversamplingInstance();
         renderer = text_renderer_factory.newTextRenderer();
 
-        String text_renderer_quality = System.getProperty( "org.xhtmlrenderer.minium.quality" );
-        if ( null == text_renderer_quality ) {
+        String text_renderer_quality = null;
+        try {
+            System.getProperty("org.xhtmlrenderer.minium.quality");
+        } catch (SecurityException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+        if (null == text_renderer_quality) {
             text_renderer_quality = "lowest";
         }
 
         Map defaultHints;
-        if ( "low".equals( text_renderer_quality ) ) {
+        if ("low".equals(text_renderer_quality)) {
             defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_LOW;
-        } else if ( "medium".equals( text_renderer_quality ) ) {
+        } else if ("medium".equals(text_renderer_quality)) {
             defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_MEDIUM;
-        } else if ( "high".equals( text_renderer_quality ) ) {
+        } else if ("high".equals(text_renderer_quality)) {
             defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGH;
-        } else if ( "highest".equals( text_renderer_quality ) ) {
+        } else if ("highest".equals(text_renderer_quality)) {
             defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGHEST;
         } else {
             defaultHints = TextRenderingHints.DEFAULT_HINTS_FASTEST;
         }
-        renderer.setTextRenderingHints( defaultHints );
+        renderer.setTextRenderingHints(defaultHints);
     }
 
     /**
      * Description of the Method
      *
-     * @param graphics  PARAM
-     * @param string    PARAM
-     * @param x         PARAM
-     * @param y         PARAM
+     * @param graphics PARAM
+     * @param string   PARAM
+     * @param x        PARAM
+     * @param y        PARAM
      */
-    public void drawString( Graphics2D graphics, String string, float x, float y ) {
-        renderer.drawString( graphics, string, x, y );
+    public void drawString(Graphics2D graphics, String string, float x, float y) {
+        renderer.drawString(graphics, string, x, y);
     }
 
     /**
      * Description of the Method
      *
-     * @param graphics  PARAM
+     * @param graphics PARAM
      */
-    public void setupGraphics( Graphics2D graphics ) { }
+    public void setupGraphics(Graphics2D graphics) {
+    }
 
     /**
      * Sets the fontScale attribute of the MiniumTextRenderer object
      *
-     * @param scale  The new fontScale value
+     * @param scale The new fontScale value
      */
-    public void setFontScale( float scale ) {
+    public void setFontScale(float scale) {
         this.scale = scale;
     }
 
@@ -105,63 +119,63 @@ public class MiniumTextRenderer implements org.xhtmlrenderer.extend.TextRenderer
     /**
      * Sets the smoothingThreshold attribute of the MiniumTextRenderer object
      *
-     * @param fontsize  The new smoothingThreshold value
+     * @param fontsize The new smoothingThreshold value
      */
-    public void setSmoothingThreshold( float fontsize ) {
-        renderer.setTextRenderingHint( TextRenderingHints.KEY_OVERSAMPLING_MIN_FONTSIZE, new Integer( (int)fontsize ) );
+    public void setSmoothingThreshold(float fontsize) {
+        renderer.setTextRenderingHint(TextRenderingHints.KEY_OVERSAMPLING_MIN_FONTSIZE, new Integer((int) fontsize));
     }
 
     /**
      * Sets the smoothingLevel attribute of the MiniumTextRenderer object
      *
-     * @param level  The new smoothingLevel value
+     * @param level The new smoothingLevel value
      */
-    public void setSmoothingLevel( int level ) {
+    public void setSmoothingLevel(int level) {
         this.level = level;
         Map defaultHints = TextRenderingHints.DEFAULT_HINTS_FASTEST;
-        if ( level == NONE ) {
+        if (level == NONE) {
             defaultHints = TextRenderingHints.DEFAULT_HINTS_FASTEST;
         }
-        if ( level == LOW ) {
+        if (level == LOW) {
             defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_LOW;
         }
-        if ( level == MEDIUM ) {
+        if (level == MEDIUM) {
             defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_MEDIUM;
         }
-        if ( level == HIGH ) {
+        if (level == HIGH) {
             defaultHints = TextRenderingHints.DEFAULT_HINTS_QUALITY_HIGHEST;
         }
-        renderer.setTextRenderingHints( defaultHints );
+        renderer.setTextRenderingHints(defaultHints);
     }
 
     /**
      * Gets the lineMetrics attribute of the MiniumTextRenderer object
      *
-     * @param graphics  PARAM
-     * @param font      PARAM
-     * @param string    PARAM
-     * @return          The lineMetrics value
+     * @param graphics PARAM
+     * @param font     PARAM
+     * @param string   PARAM
+     * @return The lineMetrics value
      */
-    public LineMetrics getLineMetrics( Graphics2D graphics, Font font, String string ) {
-        return renderer.getLineMetrics( graphics, font, string );
+    public LineMetrics getLineMetrics(Graphics2D graphics, Font font, String string) {
+        return renderer.getLineMetrics(graphics, font, string);
     }
 
     /**
      * Gets the logicalBounds attribute of the MiniumTextRenderer object
      *
-     * @param graphics  PARAM
-     * @param font      PARAM
-     * @param string    PARAM
-     * @return          The logicalBounds value
+     * @param graphics PARAM
+     * @param font     PARAM
+     * @param string   PARAM
+     * @return The logicalBounds value
      */
-    public Rectangle2D getLogicalBounds( Graphics2D graphics, Font font, String string ) {
-        return renderer.getLogicalBounds( graphics, font, string );
+    public Rectangle2D getLogicalBounds(Graphics2D graphics, Font font, String string) {
+        return renderer.getLogicalBounds(graphics, font, string);
     }
 
     /**
      * Gets the fontScale attribute of the MiniumTextRenderer object
      *
-     * @return   The fontScale value
+     * @return The fontScale value
      */
     public float getFontScale() {
         return this.scale;
@@ -170,7 +184,7 @@ public class MiniumTextRenderer implements org.xhtmlrenderer.extend.TextRenderer
     /**
      * Gets the smoothingLevel attribute of the MiniumTextRenderer object
      *
-     * @return   The smoothingLevel value
+     * @return The smoothingLevel value
      */
     public int getSmoothingLevel() {
         return level;

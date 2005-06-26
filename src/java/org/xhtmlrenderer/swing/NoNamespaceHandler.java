@@ -153,33 +153,7 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
     public JComponent getCustomComponent(Element e, Context c, int setWidth, int setHeight) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
-    
-    /* Not a good idea. NO good way of witing a selector. Use UserAgent defaults and css defaults
-    public java.io.Reader getDefaultStylesheet() {
-        java.io.Reader reader = null;
-        try {
 
-            //Object marker = new org.xhtmlrenderer.DefaultCSSMarker();
-            
-            //if(marker.getClass().getResourceAsStream("default.css") != null) {
-            if(this.getClass().getResourceAsStream("nonamespace.css") != null) {
-
-            //reader = new java.io.InputStreamReader(marker.getClass().getResource("default.css").openStream());
-            reader = new java.io.InputStreamReader(this.getClass().getResource("nonamespace.css").openStream());
-            } else {
-                System.err.println("Could not find css for "+this.getClass().getPropertyName());
-            }
-
-        } catch (Exception ex) {
-
-            ex.printStackTrace();
-
-        }
-        
-        return reader;
-
-    }*/
-    
     public InputStream getDefaultStylesheet() {
         return null;
     }

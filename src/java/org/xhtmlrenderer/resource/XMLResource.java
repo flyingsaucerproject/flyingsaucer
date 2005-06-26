@@ -139,12 +139,14 @@ public class XMLResource extends AbstractResource {
         if (xmlReader == null) {
             try {
                 // JDK default
-                // HACK: if 
+                // HACK: if
+                /*CHECK: does this code do anything?
                 if (System.getProperty("org.xml.sax.driver") == null) {
                     String newDefault = "org.apache.crimson.parser.XMLReaderImpl";
                     XRLog.load(Level.WARNING,
                             "No value for system property 'org.xml.sax.driver'.");
                 }
+                */
                 xmlReader = XMLReaderFactory.createXMLReader();
                 xmlReaderClass = "{JDK default}";
             } catch (Exception ex) {
@@ -164,7 +166,7 @@ public class XMLResource extends AbstractResource {
         if (xmlReader == null) {
             throw new XRRuntimeException("Could not instantiate any SAX 2 parser, including JDK default. " +
                     "The name of the class to use should have been read from the org.xml.sax.driver System " +
-                    "property, which is set to: " + System.getProperty("org.xml.sax.driver"));
+                    "property, which is set to: "/*CHECK: is this meaningful? + System.getProperty("org.xml.sax.driver")*/);
         }
         XRLog.load("SAX XMLReader in use (parser): " + xmlReader.getClass().getName());
         return xmlReader;
@@ -321,6 +323,9 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/06/26 01:02:21  tobega
+ * Now checking for SecurityException on System.getProperty
+ *
  * Revision 1.13  2005/06/25 22:16:23  tobega
  * Browser now handles both plain text files and images
  *

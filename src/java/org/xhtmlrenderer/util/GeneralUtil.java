@@ -204,8 +204,12 @@ public class GeneralUtil {
     }
 
     public static boolean isMacOSX() {
-        if (System.getProperty("os.name").toLowerCase().startsWith("mac os x")) {
-            return true;
+        try {
+            if (System.getProperty("os.name").toLowerCase().startsWith("mac os x")) {
+                return true;
+            }
+        } catch (SecurityException e) {
+            System.err.println(e.getLocalizedMessage());
         }
         return false;
     }
@@ -215,6 +219,9 @@ public class GeneralUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/06/26 01:02:22  tobega
+ * Now checking for SecurityException on System.getProperty
+ *
  * Revision 1.10  2005/06/13 06:50:17  tobega
  * Fixed a bug in table content resolution.
  * Various "tweaks" in other stuff.
