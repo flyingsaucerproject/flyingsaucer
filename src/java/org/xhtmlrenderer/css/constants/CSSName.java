@@ -91,7 +91,7 @@ public final class CSSName {
     /**
      * Unique CSSName instance for CSS2 property.
      */
-    public final static CSSName BORDER_SPACING = addProperty("border-spacing", true);
+    public final static CSSName BORDER_SPACING = addProperty("border-spacing", false);
 
     /**
      * Unique CSSName instance for fictitious property.
@@ -207,6 +207,16 @@ public final class CSSName {
      * Unique CSSName instance for CSS2 property.
      */
     public final static CSSName FONT_STRETCH = addProperty("font-stretch", true);
+
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_COLSPAN = addProperty("-fs-table-cell-colspan", true);
+
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_ROWSPAN = addProperty("-fs-table-cell-rowspan", true);
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -828,6 +838,9 @@ public final class CSSName {
         INITIAL_VALUE_MAP.put(FONT_VARIANT, "normal");
         INITIAL_VALUE_MAP.put(FONT_WEIGHT, "normal");
 
+        INITIAL_VALUE_MAP.put(FS_COLSPAN, "1");
+        INITIAL_VALUE_MAP.put(FS_ROWSPAN, "1");
+
         INITIAL_VALUE_MAP.put(HEIGHT, "auto");
 
         INITIAL_VALUE_MAP.put(LEFT, "auto");
@@ -921,6 +934,9 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/06/27 00:05:44  tobega
+ * Added support for fs-specific colspan and rowspan css properties. Created a modified version of cssparser
+ *
  * Revision 1.13  2005/06/26 15:48:11  tobega
  * Converted to almost standard html4 default css, which shook out a bug: position should not inherit
  *
