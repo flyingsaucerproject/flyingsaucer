@@ -244,6 +244,12 @@ public class XMLResource extends AbstractResource {
          * Sets all standard features for SAX parser, using values from Configuration.
          */
         private void setParserFeatures(XMLReader xmlReader) {
+            try {        // perf: validation off
+                xmlReader.setFeature("http://xml.org/sax/features/validation", false);
+                // perf: namespaces
+                xmlReader.setFeature("http://xml.org/sax/features/namespaces", true);
+            } catch (SAXException s) {
+            }
             if (Configuration.isFalse("xr.load.configure-features", false)) {
                 XRLog.load(Level.FINE, "SAX Parser: by request, not changing any parser features.");
                 return;
@@ -323,6 +329,9 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/07/02 09:40:24  tobega
+ * More robust parsing
+ *
  * Revision 1.14  2005/06/26 01:02:21  tobega
  * Now checking for SecurityException on System.getProperty
  *

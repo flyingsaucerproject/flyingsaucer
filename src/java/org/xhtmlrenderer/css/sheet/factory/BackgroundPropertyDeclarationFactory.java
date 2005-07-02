@@ -82,6 +82,7 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
             // sniff this one value out. using an array to return
             // multiple pieces of info; see parseSingle() method
             Object[] ret = parseSingle(val, primitive, bgPos);
+            if (ret[0] == null) continue;
             names[0] = (CSSName) ret[0];
             primitives[0] = new FSCssValue((CSSPrimitiveValue) ret[1]);
 
@@ -173,6 +174,9 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/07/02 09:40:23  tobega
+ * More robust parsing
+ *
  * Revision 1.7  2005/06/02 23:38:29  tobega
  * Now handles background-position idents
  *
