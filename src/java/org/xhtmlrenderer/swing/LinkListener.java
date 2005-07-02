@@ -22,6 +22,7 @@ package org.xhtmlrenderer.swing;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
@@ -133,8 +134,8 @@ public class LinkListener extends MouseInputAdapter {
     }
 
     public void linkClicked(String uri) {
-        panel.repaint();
         panel.setDocumentRelative(uri);
+        panel.repaint();
     }
 
     /**

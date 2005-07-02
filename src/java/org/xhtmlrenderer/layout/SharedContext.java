@@ -30,6 +30,8 @@ import org.xhtmlrenderer.swing.BasicPanel;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Description of the Class
@@ -395,12 +397,35 @@ public class SharedContext {
         return namespaceHandler;
     }
 
+	private Map id_map;
+	public void addIDBox(String id, Box box) {
+		if(id_map == null) {
+			id_map = new HashMap();
+		}
+		id_map.put(id,box);
+	}
+
+	public Box getIDBox(String id) {
+		return (Box)id_map.get(id);
+	}
+	
+	
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/07/02 07:26:59  joshy
+ * better support for jumping to anchor tags
+ * also some testing for the resize issue
+ * need to investigate making the history remember document position.
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.13  2005/06/22 23:48:45  tobega
  * Refactored the css package to allow a clean separation from the core.
  *

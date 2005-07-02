@@ -35,6 +35,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.Uu;
 import org.xml.sax.ErrorHandler;
 
 import javax.swing.*;
@@ -580,6 +581,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param e PARAM
      */
     public void componentResized(ComponentEvent e) {
+		Uu.p("resized!");
         calcLayout();
     }
 
@@ -601,6 +603,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
 
     /**
      * Sets the layout attribute of the BasicPanel object
+	 * Overrides the method to do nothing, since you shouldn't have a
+	 * LayoutManager on an FS panel.
      *
      * @param l The new layout value
      */
@@ -652,6 +656,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      */
     public void setSize(Dimension d) {
         XRLog.layout(Level.FINEST, "set size called");
+		Uu.p("set size called!");
         super.setSize(d);
         //this.calcLayout();//this causes a second layout to be done!
     }
@@ -857,6 +862,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      */
     protected void calcLayout() {
         // set body box to null to trigger new layout
+		Uu.p("calc layout  null was called");
         body_box = null;
     }
 
@@ -868,6 +874,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param g PARAM
      */
     protected void calcLayout(Graphics g) {
+		Uu.p("calc layout with graphics called");
         layout_thread.startLayout(g);
     }
 
@@ -939,9 +946,38 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      */
     protected void setDocumentRelative(String filename) {
         String url = getRenderingContext().getUac().resolveURI(filename);
+		if(isAnchorInCurrentDocument(filename)) {
+			String id = getAnchorID(filename);
+			Box bxx = getContext().getIDBox(id);
+			if(bxx != null) {
+				Point pt = BoxFinder.findCoordsByBox(bxx);
+				scrollTo(pt);
+				return;
+			}
+		}
         Document dom = loadDocument(url);
         setDocument(dom, url);
     }
+	
+	private boolean isAnchorInCurrentDocument(String str) {
+		if(str.startsWith("#")) {
+			return true;
+		}
+		return false;
+	}
+	
+	private String getAnchorID(String url) {
+		return url.substring(1,url.length());
+	}
+	
+	/** Scroll the panel to make the specified point be on screen. Typically
+	this will scroll the screen down to the y component of the point.
+	*/
+	public void scrollTo(Point pt) {
+		if(this.enclosingScrollPane != null) {
+			this.enclosingScrollPane.getVerticalScrollBar().setValue(pt.y);
+		}
+	}
 
     /**
      * Description of the Method
@@ -1048,6 +1084,16 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.57  2005/07/02 07:26:59  joshy
+ * better support for jumping to anchor tags
+ * also some testing for the resize issue
+ * need to investigate making the history remember document position.
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.56  2005/06/25 19:27:47  tobega
  * UAC now supplies Resources
  *

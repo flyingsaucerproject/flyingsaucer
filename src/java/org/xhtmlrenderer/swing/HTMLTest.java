@@ -65,7 +65,9 @@ public class HTMLTest extends JFrame {
         scroll.setVerticalScrollBarPolicy(scroll.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(scroll.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setPreferredSize(new Dimension(width, height));
-        panel.addMouseListener(new LinkListener(panel));
+		LinkListener ll = new LinkListener(panel);
+        panel.addMouseListener(ll);
+        panel.addMouseMotionListener(ll);
         /*
 HoverListener hov = new HoverListener(panel);
 panel.addMouseListener(hov);
@@ -468,6 +470,16 @@ panel.addMouseMotionListener(hov);
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2005/07/02 07:27:00  joshy
+ * better support for jumping to anchor tags
+ * also some testing for the resize issue
+ * need to investigate making the history remember document position.
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.31  2005/06/16 07:24:53  tobega
  * Fixed background image bug.
  * Caching images in browser.

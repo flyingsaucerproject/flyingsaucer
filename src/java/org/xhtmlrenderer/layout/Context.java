@@ -350,5 +350,8 @@ public interface Context {
     public boolean shouldStop();
 
     Font getCurrentFont();
+	
+	public void addIDBox(String id, Box box);
+	public Box getIDBox(String id);
 }
 

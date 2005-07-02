@@ -74,6 +74,12 @@ public class Boxing {
             block = new BlockBox();
         }
         block.element = content.getElement();
+		if(block.element != null) {
+			if(block.element.hasAttribute("id")) {
+				//System.out.println("found an ID: " + block.element.getAttribute("id"));
+				c.addIDBox(block.element.getAttribute("id"),block);
+			}
+		}
         return layout(c, block, content);
     }
 
@@ -168,7 +174,6 @@ public class Boxing {
             block.clear_right = true;
         }
         if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.BOTH)) {
-            System.out.println("both hit!");
             block.clear_left = true;
             block.clear_right = true;
         }
@@ -283,6 +288,16 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/07/02 07:26:59  joshy
+ * better support for jumping to anchor tags
+ * also some testing for the resize issue
+ * need to investigate making the history remember document position.
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.25  2005/06/22 23:48:44  tobega
  * Refactored the css package to allow a clean separation from the core.
  *

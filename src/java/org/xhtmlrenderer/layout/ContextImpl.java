@@ -37,6 +37,8 @@ import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.Stack;
 import java.util.logging.Level;
+import java.util.Map;
+import java.util.HashMap;
 
 public class ContextImpl implements Context {
     SharedContext sharedContext;
@@ -424,4 +426,16 @@ public class ContextImpl implements Context {
                 + " offset = " + xoff + "," + yoff
                 ;
     }
+	
+	
+	
+	/* code to keep track of all of the id'd boxes */
+	public void addIDBox(String id, Box box) {
+		this.sharedContext.addIDBox(id,box);
+	}
+
+	public Box getIDBox(String id) {
+		return this.sharedContext.getIDBox(id);
+	}
+	
 }
