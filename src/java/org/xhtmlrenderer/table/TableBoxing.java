@@ -39,6 +39,7 @@ package org.xhtmlrenderer.table;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
@@ -49,9 +50,11 @@ import org.xhtmlrenderer.layout.content.TableContent;
 import org.xhtmlrenderer.layout.content.TableRowContent;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -215,10 +218,12 @@ public class TableBoxing {
                 int x = borderSpacingHorizontal;
                 for (Iterator cbi = row.getChildIterator(); cbi.hasNext();) {
                     CellBox cb = (CellBox) cbi.next();
-                    cb.width = tableBox.columns[col];
+                    cb.width = 0;
+                    for (int i = 0; i < cb.colspan; i++) cb.width += tableBox.columns[col + i];
+                    cb.width += borderSpacingHorizontal * (cb.colspan - 1);
                     cb.x = x;
                     x += cb.width + borderSpacingHorizontal;
-                    col += 1;
+                    col += cb.colspan;
                 }
             } else
                 XRLog.layout(Level.WARNING, "Can't fix widths of " + tc.getClass().getName() + " yet!");
@@ -336,8 +341,7 @@ public class TableBoxing {
             CellBox cellBox = new CellBox();
             c.translate(row.width, 0);
             c.setShrinkWrap();
-            if (fixed) c.getExtents().width = table.columns[col];
-            cellBox = (CellBox) Boxing.layout(c, cellBox, tcc);
+            cellBox = (CellBox) layoutCell(c, cellBox, tcc, fixed, table, col);
             c.unsetShrinkWrap();
             c.translate(-row.width, 0);
 
@@ -352,12 +356,17 @@ public class TableBoxing {
             if (cellBox.height > row.height) {
                 row.height = cellBox.height;
             }
-            if (!fixed && cellBox.width > table.columns[col]) {
-                table.columns[col] = cellBox.width;
+            checkColumns(table, col + cellBox.colspan);
+            int width = 0;
+            for (int j = 0; j < cellBox.colspan; j++) width += table.columns[col + j];
+            if (!fixed && cellBox.width > width) {
+                int extra = (cellBox.width - width) / cellBox.colspan;
+                for (int j = 0; j < cellBox.colspan; j++) table.columns[col + j] += extra;
             }
-            cellBox.width = table.columns[col];
+            cellBox.width = 0;
+            for (int j = 0; j < cellBox.colspan; j++) cellBox.width += table.columns[col + j];
             row.width = cellBox.x + cellBox.width;
-            col += 1;
+            col += cellBox.colspan;
         }
     }
 
@@ -371,12 +380,187 @@ public class TableBoxing {
         }
     }
 
+    /**
+     * Description of the Method
+     *
+     * @param c       PARAM
+     * @param block   PARAM
+     * @param content PARAM
+     * @return Returns
+     */
+    public static CellBox layoutCell(Context c, CellBox block, Content content, boolean fixed, TableBox table, int col) {
+        //OK, first set up the current style. All depends on this...
+        CascadedStyle pushed = content.getStyle();
+        if (pushed != null) {
+            c.pushStyle(pushed);
+        }
+
+        if (c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
+            block.setChildrenExceedBounds(true);
+        }
+
+        // install a block formatting context for the body,
+        // ie. if it's null.
+        // set up the outtermost bfc
+        boolean set_bfc = false;
+        if (c.getBlockFormattingContext() == null) {
+            block.setParent(c.getCtx().getRootBox());
+            BlockFormattingContext bfc = new BlockFormattingContext(block, c);
+            c.pushBFC(bfc);
+            set_bfc = true;
+            bfc.setWidth((int) c.getExtents().getWidth());
+        }
+
+        // copy the extents
+        Rectangle oe = c.getExtents();
+        c.setExtents(new Rectangle(oe));
+
+        block.colspan = (int) c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.FS_COLSPAN, 0, c.getCtx());
+        if (fixed) {
+            int width = 0;
+            for (int i = 0; i < block.colspan; i++) width += table.columns[col + i];
+            c.getExtents().width = width;
+        }
+
+        CalculatedStyle style = c.getCurrentStyle();
+        boolean hasSpecifiedWidth = !style.isIdent(CSSName.WIDTH, IdentValue.AUTO);
+        //TODO: handle relative heights, but only if containing block height is not defined by content height
+        boolean hasSpecifiedHeight = !style.isIdent(CSSName.HEIGHT, IdentValue.AUTO);
+        //HACK: assume containing block height is auto, so percentages become auto
+        hasSpecifiedHeight = hasSpecifiedHeight && style.propertyByName(CSSName.HEIGHT).computedValue().hasAbsoluteUnit();
+
+        // calculate the width and height as much as possible
+        int setHeight = -1;//means height is not set by css
+        int setWidth = -1;//means width is not set by css
+        if (hasSpecifiedWidth) {
+            setWidth = (int) style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
+            c.getExtents().width = setWidth;
+            //TODO: CHECK: what does isSubBlock mean?
+            if (!c.isSubBlock()) block.width = setWidth;
+        }
+        if (hasSpecifiedHeight) {
+            setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
+            c.getExtents().height = setHeight;
+            block.height = setHeight;
+            block.auto_height = false;
+        }
+        //check if replaced
+        JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c, setWidth, setHeight);
+        if (cc != null) {
+            Rectangle bounds = cc.getBounds();
+            //block.x = bounds.x;
+            //block.y = bounds.y;
+            block.width = bounds.width;
+            block.height = bounds.height;
+            block.component = cc;
+        }
+        block.x = c.getExtents().x;
+        block.y = c.getExtents().y;
+
+        /*if (ContentUtil.isFloated(content.getStyle())) {
+            // set up a float bfc
+            FloatUtil.preChildrenLayout(c, block);
+        }
+
+        if (Absolute.isAbsolute(content.getStyle())) {
+            // set up an absolute bfc
+            Absolute.preChildrenLayout(c, block);
+        }
+
+
+        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.LEFT)) {
+            block.clear_left = true;
+        }
+        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.RIGHT)) {
+            block.clear_right = true;
+        }
+        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.BOTH)) {
+            block.clear_left = true;
+            block.clear_right = true;
+        }
+        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.NONE)) {
+            block.clear_left = false;
+            block.clear_right = false;
+        }*/
+
+
+        // save height incase fixed height
+        int original_height = block.height;
+
+        // do children's layout
+        boolean old_sub = c.isSubBlock();
+        c.setSubBlock(false);
+        Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
+        Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+        int tx = border.left + padding.left;
+        int ty = border.top + padding.top;
+        block.tx = tx;
+        block.ty = ty;
+        c.translate(tx, ty);
+        c.shrinkExtents(tx + border.right + padding.right, ty + border.bottom + padding.bottom);
+        if (block.component == null)
+            Boxing.layoutChildren(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
+        else {
+            Point origin = c.getOriginOffset();
+            block.component.setLocation((int) origin.getX(), (int) origin.getY());
+            c.getCanvas().add(block.component);
+        }
+        c.unshrinkExtents();
+        c.translate(-tx, -ty);
+        c.setSubBlock(old_sub);
+
+        // restore height incase fixed height
+        if (block.auto_height == false) {
+            Uu.p("restoring original height");
+            block.height = original_height;
+        }
+
+        /*if (ContentUtil.isFloated(content.getStyle())) {
+            // remove the float bfc
+            FloatUtil.postChildrenLayout(c);
+        }
+
+        if (Absolute.isAbsolute(content.getStyle())) {
+            // remove the absolute bfc
+            Absolute.postChildrenLayout(c);
+        }*/
+
+        // calculate the total outer width
+        block.width = border.left + padding.left + block.width + padding.right + border.right;
+        block.height = border.top + padding.top + block.height + padding.bottom + border.bottom;
+
+        //restore the extents
+        c.setExtents(oe);
+
+        // account for special positioning
+        // need to add bfc/unbfc code for absolutes
+        //Absolute.setupAbsolute(block, c);
+        //Fixed.setupFixed(c, block);
+        //FloatUtil.setupFloat(c, block, content.getStyle());
+
+        // remove the outtermost bfc
+        if (set_bfc) {
+            c.getBlockFormattingContext().doFinalAdjustments();
+            //no! clear it in BasicPanel instead! c.popBFC();
+        }
+
+        //and now, back to previous style
+        if (pushed != null) {
+            c.popStyle();
+        }
+
+        // Uu.p("BoxLayout: finished with block: " + block);
+        return block;
+    }
 
 }
 
 /*
    $Id$
    $Log$
+   Revision 1.18  2005/07/02 12:25:44  tobega
+   colspan is working!
+
    Revision 1.17  2005/06/22 23:48:46  tobega
    Refactored the css package to allow a clean separation from the core.
 

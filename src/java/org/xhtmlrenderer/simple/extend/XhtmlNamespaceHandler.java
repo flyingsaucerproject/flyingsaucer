@@ -97,7 +97,7 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
      */
     public String getElementStyling(org.w3c.dom.Element e) {
         StringBuffer style = new StringBuffer();
-        if (e.getNodeName().equals("td")) {
+        if (e.getNodeName().equals("td") || e.getNodeName().equals("th")) {
             String s;
             if (!(s = e.getAttribute("colspan")).equals("")) {
                 style.append("-fs-table-cell-colspan: ");

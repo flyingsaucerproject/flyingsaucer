@@ -50,6 +50,7 @@ public class CellBox extends BlockBox {
      * Description of the Field
      */
     private CellBox real_box = null;
+    public int colspan;
 
     /**
      * Constructor for the CellBox object
@@ -118,6 +119,9 @@ public class CellBox extends BlockBox {
 /*
  * $Id$
  * $Log$
+ * Revision 1.7  2005/07/02 12:25:44  tobega
+ * colspan is working!
+ *
  * Revision 1.6  2005/06/05 01:02:35  tobega
  * Very simple and not completely functional table layout
  *
