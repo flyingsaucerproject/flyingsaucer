@@ -125,7 +125,11 @@
       description="Copies core resource files (css/dtds) to build directory"
       depends="init">
 
-    <copy todir="${dest.resources.css.dir}" file="${src.resources.css.dir}/default.css"/>
+    <copy todir="${dest.resources.css.dir}">
+		<fileset dir="${src.resources.css.dir}">
+			<include name="*.css"/>
+		</fileset>
+	</copy>
     <copy todir="${dest.resources.conf.dir}" file="${src.resources.conf.dir}/xhtmlrenderer.conf"/>
     <copy todir="${dest.resources.schema.dir}">
       <fileset dir="${src.resources.schema.dir}">
@@ -238,6 +242,13 @@
 $Id$
 
 $Log$
+Revision 1.91  2005/07/04 02:23:36  joshy
+made build script copy over the new default css file
+Issue number:
+Obtained from:
+Submitted by:
+Reviewed by:
+
 Revision 1.90  2005/06/25 23:20:49  joshy
 added help
 
