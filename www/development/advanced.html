@@ -16,6 +16,7 @@
 <li><a href="#user_agent">Getting control of loading data - <code>UserAgentCallback</code></a></li>
 <li><a href="#handling_documents">Handling different document types - <code>NamespaceHandler</code></a></li>
 <li><a href="#docevents">Receiving Document Events</a></li>
+<li><a href="#scrolling">Using the FSScrollPane</a></li>
 </ul>
 
 
@@ -63,6 +64,11 @@ like, for example, make a XUL implementation on top of Flying Saucer.
     only has one method: <code>documentLoaded()</code><br>
 </p>
 
+<h2><a name="scrolling"></a>Using the FSScrollPane</h2>
+
+<p>Since an XHTMLPanel is a JComponent you can put it inside of a JScrollPane to implement scrolling. It behaves just as a JTable or JList would.  However, Flying Saucer provides the FSScrollPane to implement more intelligent scrolling such as moving down a line when you press the down arrow key and moving down by
+a whole page when you hit the page down key.  For more information see the javadocs for FSScrollPane.
+</p>
 
 </div>
 </body>
