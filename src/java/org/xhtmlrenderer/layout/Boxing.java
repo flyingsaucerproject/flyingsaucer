@@ -74,12 +74,11 @@ public class Boxing {
             block = new BlockBox();
         }
         block.element = content.getElement();
-        if (block.element != null) {
-            if (block.element.hasAttribute("id")) {
-                //System.out.println("found an ID: " + block.element.getAttribute("id"));
-                c.addIDBox(block.element.getAttribute("id"), block);
-            }
-        }
+		if(block.element != null) {
+			if(block.element.hasAttribute("id")) {
+				c.addIDBox(block.element.getAttribute("id"),block);
+			}
+		}
         return layout(c, block, content);
     }
 
@@ -289,6 +288,13 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/07/04 01:58:30  joshy
+ * removed debuggintg
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.27  2005/07/04 00:12:12  tobega
  * text-align now works for table-cells too (is done in render, not in layout)
  *
