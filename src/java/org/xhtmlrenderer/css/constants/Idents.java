@@ -368,7 +368,7 @@ public final class Idents {
         COLOR_MAP.put("teal", "#008080");
         COLOR_MAP.put("navy", "#000080");
         COLOR_MAP.put("purple", "#800080");
-        COLOR_MAP.put("orange", "#FFA500");
+        //COLOR_MAP.put("orange", "#FFA500");
         COLOR_MAP.put("transparent", "transparent");
 
         FONT_SIZES = new HashMap();
@@ -493,6 +493,9 @@ public final class Idents {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/07/04 00:12:11  tobega
+ * text-align now works for table-cells too (is done in render, not in layout)
+ *
  * Revision 1.7  2005/06/04 12:45:14  tobega
  * Added support for rgb-triples. Added fallback to default for non-css color idents.
  * Fixed some stuff with eeze.

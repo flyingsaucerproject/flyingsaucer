@@ -54,7 +54,8 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -526,6 +527,7 @@ public class TableBoxing {
         }*/
 
         // calculate the total outer width
+        block.contentWidth = block.width;
         block.width = border.left + padding.left + block.width + padding.right + border.right;
         block.height = border.top + padding.top + block.height + padding.bottom + border.bottom;
 
@@ -558,6 +560,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.19  2005/07/04 00:12:13  tobega
+   text-align now works for table-cells too (is done in render, not in layout)
+
    Revision 1.18  2005/07/02 12:25:44  tobega
    colspan is working!
 

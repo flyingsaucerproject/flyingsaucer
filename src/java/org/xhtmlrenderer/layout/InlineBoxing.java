@@ -26,7 +26,10 @@ import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.*;
-import org.xhtmlrenderer.layout.inline.*;
+import org.xhtmlrenderer.layout.inline.BoxBuilder;
+import org.xhtmlrenderer.layout.inline.Breaker;
+import org.xhtmlrenderer.layout.inline.FloatUtil;
+import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
@@ -547,9 +550,8 @@ public class InlineBoxing {
         }
         if (c.shrinkWrap()) {
             if (line_to_save.width > block.width) block.width = line_to_save.width;
-        } else
-        // account for text-align
-            TextAlign.adjustTextAlignment(c, style, line_to_save, width, x, last);
+        }
+        //text-align now handled in render
         // set the y
         line_to_save.y = prev_line.y + prev_line.height;
 
@@ -572,6 +574,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/07/04 00:12:12  tobega
+ * text-align now works for table-cells too (is done in render, not in layout)
+ *
  * Revision 1.34  2005/06/22 23:48:45  tobega
  * Refactored the css package to allow a clean separation from the core.
  *

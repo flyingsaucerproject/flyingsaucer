@@ -25,7 +25,7 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -214,6 +214,7 @@ public class Box {
 
     public boolean clear_left = false;
     public boolean clear_right = false;
+    public int contentWidth;
 
     /**
      * Constructor for the Box object
@@ -499,6 +500,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.56  2005/07/04 00:12:12  tobega
+ * text-align now works for table-cells too (is done in render, not in layout)
+ *
  * Revision 1.55  2005/06/16 07:24:51  tobega
  * Fixed background image bug.
  * Caching images in browser.

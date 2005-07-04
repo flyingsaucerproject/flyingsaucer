@@ -29,6 +29,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.StylePush;
+import org.xhtmlrenderer.layout.inline.TextAlignJustify;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.util.GraphicsUtil;
 
@@ -243,7 +244,7 @@ public class InlineRendering {
      */
     static void paintLine(Context c, LineBox line, boolean restyle, LinkedList decorations) {
         // get Xx and y
-        int lx = line.x;
+        int lx = line.x + getTextAlign(c, line);
         int ly = line.y + line.getBaseline();
 
         LinkedList pushedStyles = null;
@@ -314,6 +315,24 @@ public class InlineRendering {
         }
     }
 
+    //HACK: this is just a quick hack
+    //TODO: paint lines taking bidi into consideration
+    private static int getTextAlign(Context c, LineBox line) {
+        if (c.getCurrentStyle().isIdent(CSSName.TEXT_ALIGN, IdentValue.LEFT)) return 0;
+        int leftover = line.getParent().contentWidth - line.width;
+        if (c.getCurrentStyle().isIdent(CSSName.TEXT_ALIGN, IdentValue.RIGHT)) {
+            return leftover;
+        }
+        if (c.getCurrentStyle().isIdent(CSSName.TEXT_ALIGN, IdentValue.CENTER)) {
+            return leftover / 2;
+        }
+        //HACK: justified text, should probably be done better
+        if (c.getCurrentStyle().isIdent(CSSName.TEXT_ALIGN, IdentValue.JUSTIFY)) {
+            if (leftover > 1) TextAlignJustify.justifyLine(c, line, line.getParent().contentWidth);
+        }
+        return 0;
+    }
+
 
     /**
      * Inlines are drawn vertically relative to the baseline of the containing
@@ -369,7 +388,8 @@ public class InlineRendering {
             }
             decorations.clear();
             c.pushStyle(c.getCss().getCascadedStyle(ib.element, restyle));
-            c.translate(line.x,
+            int textAlign = getTextAlign(c, line);
+            c.translate(line.x + textAlign,
                     line.y +
                     (line.getBaseline() -
                     VerticalAlign.getBaselineOffset(c, line, ib) -
@@ -377,7 +397,7 @@ public class InlineRendering {
             c.translate(ib.x, ib.y);
             BoxRendering.paint(c, ((InlineBlockBox) ib).sub_block, false, restyle);
             c.translate(-ib.x, -ib.y);
-            c.translate(-line.x,
+            c.translate(-line.x - textAlign,
                     -(line.y +
                     (line.getBaseline() -
                     VerticalAlign.getBaselineOffset(c, line, ib) -

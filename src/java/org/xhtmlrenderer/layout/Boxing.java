@@ -74,12 +74,12 @@ public class Boxing {
             block = new BlockBox();
         }
         block.element = content.getElement();
-		if(block.element != null) {
-			if(block.element.hasAttribute("id")) {
-				//System.out.println("found an ID: " + block.element.getAttribute("id"));
-				c.addIDBox(block.element.getAttribute("id"),block);
-			}
-		}
+        if (block.element != null) {
+            if (block.element.hasAttribute("id")) {
+                //System.out.println("found an ID: " + block.element.getAttribute("id"));
+                c.addIDBox(block.element.getAttribute("id"), block);
+            }
+        }
         return layout(c, block, content);
     }
 
@@ -227,6 +227,7 @@ public class Boxing {
         }
 
         // calculate the total outer width
+        block.contentWidth = block.width;
         block.width = margin.left + border.left + padding.left + block.width + padding.right + border.right + margin.right;
         block.height = margin.top + border.top + padding.top + block.height + padding.bottom + border.bottom + margin.bottom;
 
@@ -288,6 +289,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/07/04 00:12:12  tobega
+ * text-align now works for table-cells too (is done in render, not in layout)
+ *
  * Revision 1.26  2005/07/02 07:26:59  joshy
  * better support for jumping to anchor tags
  * also some testing for the resize issue
