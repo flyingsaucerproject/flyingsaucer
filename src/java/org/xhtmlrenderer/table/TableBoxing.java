@@ -219,9 +219,10 @@ public class TableBoxing {
                 int x = borderSpacingHorizontal;
                 for (Iterator cbi = row.getChildIterator(); cbi.hasNext();) {
                     CellBox cb = (CellBox) cbi.next();
-                    cb.width = 0;
-                    for (int i = 0; i < cb.colspan; i++) cb.width += tableBox.columns[col + i];
-                    cb.width += borderSpacingHorizontal * (cb.colspan - 1);
+                    cb.contentWidth = 0;
+                    for (int i = 0; i < cb.colspan; i++) cb.contentWidth += tableBox.columns[col + i];
+                    cb.contentWidth += borderSpacingHorizontal * (cb.colspan - 1);
+                    cb.width = cb.contentWidth;
                     cb.x = x;
                     x += cb.width + borderSpacingHorizontal;
                     col += cb.colspan;
@@ -364,8 +365,10 @@ public class TableBoxing {
                 int extra = (cellBox.width - width) / cellBox.colspan;
                 for (int j = 0; j < cellBox.colspan; j++) table.columns[col + j] += extra;
             }
-            cellBox.width = 0;
-            for (int j = 0; j < cellBox.colspan; j++) cellBox.width += table.columns[col + j];
+            cellBox.contentWidth = 0;
+            for (int j = 0; j < cellBox.colspan; j++) cellBox.contentWidth += table.columns[col + j];
+            cellBox.contentWidth += (cellBox.colspan - 1) * borderSpacingHorizontal;
+            cellBox.width = cellBox.contentWidth;
             row.width = cellBox.x + cellBox.width;
             col += cellBox.colspan;
         }
@@ -560,6 +563,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.20  2005/07/05 06:10:30  tobega
+   text-align now works for table-cells (fixed an omission)
+
    Revision 1.19  2005/07/04 00:12:13  tobega
    text-align now works for table-cells too (is done in render, not in layout)
 
