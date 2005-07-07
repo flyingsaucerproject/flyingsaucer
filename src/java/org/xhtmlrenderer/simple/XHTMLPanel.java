@@ -26,7 +26,6 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
-import org.xhtmlrenderer.util.XRLog;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -109,17 +108,6 @@ public class XHTMLPanel extends BasicPanel {
     }
 
     /**
-     * Instantiates a panel, rendering a {@link Document} read from the specified
-     * {@link URL}.
-     *
-     * @param url URL to read the Document from.
-     */
-    public XHTMLPanel(String url) {
-        this();
-        setDocument(url);
-    }
-
-    /**
      * Instantiates a panel with a custom {@link org.xhtmlrenderer.extend.UserAgentCallback}
      * implementation.
      *
@@ -134,9 +122,9 @@ public class XHTMLPanel extends BasicPanel {
         // install a default link listener
         addMouseListener(new LinkListener(this));
         // install a default hover listener
-        HoverListener hov = new HoverListener(this);
-        addMouseListener(hov);
-        addMouseMotionListener(hov);
+        HoverListener hoverListener = new HoverListener(this);
+        addMouseListener(hoverListener);
+        addMouseMotionListener(hoverListener);
     }
 
     /**
@@ -257,18 +245,22 @@ public class XHTMLPanel extends BasicPanel {
     private void scaleFont(float scaleBy) {
         RenderingContext rc = getRenderingContext();
         float fs = rc.getTextRenderer().getFontScale() * scaleBy;
-        if ( fs < minFontScale || fs > maxFontScale ) return;
+        if (fs < minFontScale || fs > maxFontScale) return;
         rc.getTextRenderer().setFontScale(fs);
         relayout();
         repaint();
     }
 
-    /** Returns the maximum font scaling that may be applied, e.g. 3 times assigned font size. */
+    /**
+     * Returns the maximum font scaling that may be applied, e.g. 3 times assigned font size.
+     */
     public float getMaxFontScale() {
         return maxFontScale;
     }
 
-    /** Returns the minimum font scaling that may be applied, e.g. 0.5 times assigned font size. */
+    /**
+     * Returns the minimum font scaling that may be applied, e.g. 0.5 times assigned font size.
+     */
     public float getMinFontScale() {
         return minFontScale;
     }
@@ -282,9 +274,9 @@ public class XHTMLPanel extends BasicPanel {
     }
 
     /**
-     *  Sets the minimum font scaling that may be applied, e.g. 3 times assigned font size. Calling decrementFontSize()
+     * Sets the minimum font scaling that may be applied, e.g. 3 times assigned font size. Calling decrementFontSize()
      * after this scale has been reached doesn't have an effect.
-     * */
+     */
     public void setMinFontScale(float f) {
         minFontScale = f;
     }
@@ -294,6 +286,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/07/07 22:13:51  tobega
+ * cleanup
+ *
  * Revision 1.24  2005/06/20 17:26:44  joshy
  * debugging for image issues
  * font scale stuff
