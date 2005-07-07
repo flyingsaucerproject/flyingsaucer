@@ -28,9 +28,10 @@ import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
-import java.awt.*;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,7 +42,7 @@ import java.util.Map;
  *
  * @author Torbjörn Gannholm
  */
-class XhtmlForm {
+public class XhtmlForm {
     /**
      * Description of the Field
      */
@@ -55,13 +56,15 @@ class XhtmlForm {
      */
     protected Element formElement;
 
+    private Map buttonGroups;
+
     /**
      * Constructor for the XhtmlForm object
      *
      * @param c PARAM
      * @param e PARAM
      */
-    XhtmlForm(Context c, Element e) {
+    public XhtmlForm(Context c, Element e) {
         uac = c.getRenderingContext().getUac();
         formElement = e;
     }
@@ -73,7 +76,7 @@ class XhtmlForm {
      * @param e The feature to be added to the Component attribute
      * @return Returns
      */
-    JComponent addComponent(Context c, Element e) {
+    public JComponent addComponent(Context c, Element e) {
         JComponent cc = (JComponent) components.get(e);
         if (cc != null) {
             return cc;
@@ -150,6 +153,16 @@ class XhtmlForm {
                         e.getAttribute("checked").equals("checked")) {
                     radio.setSelected(true);
                 }
+                if (buttonGroups == null) {
+                    buttonGroups = new HashMap();
+                }
+                String name = e.getAttribute("name");
+                ButtonGroup group = (ButtonGroup) buttonGroups.get(name);
+                if (group == null) {
+                    group = new ButtonGroup();
+                    buttonGroups.put(name, group);
+                }
+                group.add(radio);
                 cc = radio;
             } else if (type.equals("text")) {
                 JTextField text = new JTextField();
@@ -255,7 +268,7 @@ class XhtmlForm {
      *
      * @param source PARAM
      */
-    void submit(JComponent source) {
+    public void submit(JComponent source) {
         StringBuffer data = new StringBuffer();
         Iterator fields = components.entrySet().iterator();
         while (fields.hasNext()) {

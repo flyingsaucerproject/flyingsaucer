@@ -616,7 +616,7 @@ public class DerivedValue {
                         "'" + ValueConstants.stringForSACPrimitiveType(_lengthPrimitiveType) + "' "
                         + _lengthPrimitiveType + "(" + _domCSSPrimitiveValue.getCssText() + ")");
         }
-        assert (new Float(absVal).intValue() > 0);
+        //assert (new Float(absVal).intValue() >= 0);
 
         if (_cssName == CSSName.FONT_SIZE) {
             XRLog.cascade(Level.FINEST, _cssName + ", relative= " +

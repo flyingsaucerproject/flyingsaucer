@@ -707,6 +707,24 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     }
 
     /**
+     * Sets the document attribute of the BasicPanel object
+     *
+     * @param url The new document value
+     */
+    public void setDocument(String url) {
+        setDocument(loadDocument(url), url, new NoNamespaceHandler());
+    }
+
+    /**
+     * Sets the document attribute of the BasicPanel object
+     *
+     * @param url The new document value
+     */
+    public void setDocument(String url, NamespaceHandler nsh) {
+        setDocument(loadDocument(url), url, nsh);
+    }
+
+    /**
      * Reloads the document using the same base URL and namespace handler. Reloading will pick up changes to styles
      * within the document.
      *
@@ -1084,6 +1102,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.58  2005/07/07 21:56:45  tobega
+ * Added patches from Changshin Lee
+ *
  * Revision 1.57  2005/07/02 07:26:59  joshy
  * better support for jumping to anchor tags
  * also some testing for the resize issue
