@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="http://code.joshy.org/projects/xhtmlrenderer/" href="fs.jnlp">
+<jnlp codebase="http://joshy.org/flyingsaucer/downloads/" href="fs.jnlp">
     <information>
         <title>XHTML Browser Demo</title>
         <vendor>Flying Saucer</vendor>
@@ -17,11 +17,12 @@
         <j2se version="1.4+"/>
         <jar href="browser.jar"/>
         <jar href="core-renderer.jar"/>
-        <jar href="ss_css2.jar"/>
-        <jar href="xalan.jar"/>
+        <jar href="cssparser-0-9-4-fs.jar"/>
     </resources>
     <application-desc main-class="org.xhtmlrenderer.demo.browser.BrowserStartup"/>
+	<!--
     <security>
         <all-permissions/>
     </security>
+	-->
 </jnlp>

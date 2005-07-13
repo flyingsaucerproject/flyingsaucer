@@ -38,6 +38,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.*;
 
+import org.xhtmlrenderer.util.XRLog;
+
 /**
  * Description of the Class
  *
@@ -85,7 +87,6 @@ public class BrowserMenuBar extends JMenuBar {
     /**
      * Description of the Field
      */
-    public static Logger logger = Logger.getLogger("app.browser");
     private Map allDemos;
 
     /**
@@ -95,7 +96,6 @@ public class BrowserMenuBar extends JMenuBar {
      */
     public BrowserMenuBar(BrowserStartup root) {
         this.root = root;
-        logger.setLevel(Level.OFF);
     }
 
     /**
@@ -284,17 +284,14 @@ public class BrowserMenuBar extends JMenuBar {
         SelectionMouseListener ma = new SelectionMouseListener();
         root.panel.view.addMouseListener(ma);
         root.panel.view.addMouseMotionListener(ma);
-        logger.info("added mouse selection listener: " + ma);
 
         HoverListener hl = new HoverListener(root.panel.view);
         root.panel.view.addMouseListener(hl);
         root.panel.view.addMouseMotionListener(hl);
-        logger.info("added hover listener:" + hl);
 
         LinkListener ll = new LinkListener(root.panel.view);
         root.panel.view.addMouseListener(ll);
         root.panel.view.addMouseMotionListener(ll);
-        logger.info("added link listener: " + ll);
     }
 
     /**
@@ -615,6 +612,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/07/13 22:49:14  joshy
+ * updates to get the jnlp to work without being signed
+ *
  * Revision 1.30  2005/03/28 20:03:14  pdoubleya
  * Icon/menu bar assignments.
  *

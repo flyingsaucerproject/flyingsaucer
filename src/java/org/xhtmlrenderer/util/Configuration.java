@@ -102,7 +102,12 @@ public class Configuration {
 
         try {
             // read logging level from System properties
-            String val = System.getProperty("show-config");
+            String val = null;
+            try {
+                val = System.getProperty("show-config");
+            } catch (Exception ex) {
+                System.out.println("error getting show-config property");
+            }
             logLevel = Level.INFO;
             if (val != null) {
                 if ("ALL".equals(val)) {
@@ -177,9 +182,10 @@ public class Configuration {
      * @param msg PARAM
      */
     private void info(String msg) {
+        System.out.println("log level = " + logLevel);/*
         if (logLevel.intValue() <= Level.INFO.intValue()) {
             println(Level.INFO, msg);
-        }
+        }*/
     }
 
     /**
@@ -631,6 +637,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/07/13 22:49:15  joshy
+ * updates to get the jnlp to work without being signed
+ *
  * Revision 1.10  2005/06/26 01:02:22  tobega
  * Now checking for SecurityException on System.getProperty
  *

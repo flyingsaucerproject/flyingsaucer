@@ -55,10 +55,12 @@
 				<include name="aboutbox.jnlp"/>
 			</fileset>
 		</copy>
+		<!--
 		<signjar jar="${dest.dir}/core-renderer.jar" alias="joshy" storepass="password" keystore="teststore"/>
 		<signjar jar="${dest.dir}/browser.jar" alias="joshy" storepass="password" keystore="teststore"/>
 		<signjar jar="${dest.dir}/ss_css2.jar" alias="joshy" storepass="password" keystore="teststore"/>
 		<signjar jar="${dest.dir}/xalan.jar" alias="joshy" storepass="password" keystore="teststore"/>
 		<signjar jar="${dest.dir}/about.jar" alias="joshy" storepass="password" keystore="teststore"/>
+		-->
 	</target>
 </project>

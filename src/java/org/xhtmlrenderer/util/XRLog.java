@@ -502,7 +502,7 @@ public class XRLog {
 
                 Configuration.setConfigLogger(Logger.getLogger(CONFIG));
             } catch (SecurityException e) {
-                throw new XRRuntimeException("Could not initialize logs. " + e.getLocalizedMessage());
+                //throw new XRRuntimeException("Could not initialize logs. " + e.getLocalizedMessage());
             } catch (FileNotFoundException e) {
                 throw new XRRuntimeException("Could not initialize logs. " + e.getLocalizedMessage());
             } catch (IOException e) {
@@ -535,6 +535,9 @@ public class XRLog {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/07/13 22:49:15  joshy
+ * updates to get the jnlp to work without being signed
+ *
  * Revision 1.11  2005/06/26 01:21:35  tobega
  * Fixed possible infinite loop in init()
  *
