@@ -90,7 +90,7 @@ public class LineBox extends Box {
      */
     public String toString() {
 
-        return "Line: (" + x + "," + y + ")Xx(" + width + "," + height + ")" + "  baseline = " + getBaseline();
+        return "Line: (" + x + "," + y + ")x(" + width + "," + height + ")" + "  baseline = " + getBaseline();
     }
 
     /**
@@ -112,6 +112,13 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/07/14 22:25:17  joshy
+ * major updates to float code. should fix *most* issues.
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.15  2005/05/09 23:47:15  tobega
  * Cleaned up some getting of LineMetrics and optimized InlineRendering
  *

@@ -95,7 +95,7 @@ public abstract class InlineBox extends Box {
     public String toString() {
 
         return "InlineBox " +
-                "bnds = " + x + "," + y + " - " + width + "Xx" + height +
+                "bnds = " + x + "," + y + " - " + width + "x" + height +
                 " start = " + this.start_index + " end = " + this.end_index;
     }
 
@@ -126,6 +126,13 @@ public abstract class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2005/07/14 22:25:16  joshy
+ * major updates to float code. should fix *most* issues.
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.37  2005/05/13 15:23:55  tobega
  * Done refactoring box borders, margin and padding. Hover is working again.
  *

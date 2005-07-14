@@ -4,8 +4,10 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.Map;
 
 public class BlockFormattingContext {
     private Box master = null;
-    private int x, y = 0;
+    protected int x, y = 0;
     private int width;
     private List left_floats, right_floats;
     private Map offset_map;
@@ -61,6 +63,10 @@ public class BlockFormattingContext {
     public int getY() {
         return master.y + y;
     }
+	
+	public Point getOffset(Box box) {
+		return (Point) offset_map.get(box);
+	}
 
     public Point getOffset() {
         //return new Point(x, y);
@@ -92,15 +98,20 @@ public class BlockFormattingContext {
 
 
     /* ====== float stuff ========= */
+	
+	private FloatManager _float_manager = new FloatManager();
+	public FloatManager getFloatManager() {
+		return this._float_manager;
+	}
 
     public void addLeftFloat(Box block) {
-        // Uu.p("adding a left float: " + block);
-        //Uu.dump_stack();
+        //Uu.p("adding a left float: " + block);
         left_floats.add(block);
         offset_map.put(block, getOffset());
     }
 
     public void addRightFloat(Box block) {
+		//Uu.p("adding a right float: " + block);
         right_floats.add(block);
         offset_map.put(block, getOffset());
     }
@@ -112,24 +123,34 @@ public class BlockFormattingContext {
     public int getLeftFloatDistance(Box line) {
         return getFloatDistance(line, left_floats);
     }
+	
+	private int getFloatDistance(Box line, List float_list) {
+		return this._float_manager.getFloatDistance(line,float_list, this);
+	}
 
     public Box getLeftFloatX(Box box) {
+		//Uu.p("in old bfc.getLeftFloatX( " + box + " ) ");
         // count backwards through the floats
         int x = 0;
         for (int i = left_floats.size() - 1; i >= 0; i--) {
             Box floater = (Box) left_floats.get(i);
-            // Uu.p("box = " + box);
-            // Uu.p("testing against float = " + floater);
+            //Uu.p("box = " + box);
+           // Uu.p("testing against float = " + floater);
             x = floater.x + floater.width;
             if (floater.y + floater.height > box.y) {
-                // Uu.p("float["+i+"] blocks the box vertically");
+               // Uu.p("float["+i+"] blocks the box vertically");
                 return floater;
             } else {
-                // Uu.p("float["+i+"] doesn't block. moving to next");
+               // Uu.p("float["+i+"] doesn't block. moving to next");
             }
         }
+		//Uu.p("returning null");
         return null;
     }
+	
+	public Box newGetLeftFloatX(Box box) {
+		return FloatManager.newGetLeftFloatX(box,left_floats,this);
+	}
 
     public Box pushDownLeft(Box box) {
         return pushDownLeftRight(box, left_floats);
@@ -151,10 +172,12 @@ public class BlockFormattingContext {
     }
 
     public Box pushDownRight(Box box) {
+		//Uu.p("push Down Right : " + box);
         return pushDownLeftRight(box, right_floats);
     }
 
     public Box getRightFloatX(Box box) {
+		//Uu.p("get right float x : " + box);
         // count backwards through the floats
         int x = 0;
         for (int i = right_floats.size() - 1; i >= 0; i--) {
@@ -173,21 +196,6 @@ public class BlockFormattingContext {
     }
 
     public int getLeftDownDistance(Box box) {
-        /*
-        Uu.p("in get left down distance: " + box);
-        for(int i=0; i< left_floats.size(); i++) {
-            Box floater = (Box) left_floats.get(i);
-            Uu.p("looking at floater: " + floater);
-            Uu.p("floater parent = " + floater.getParent());
-            Uu.p("floater parent parent = " + floater.getParent().getParent());
-Point fpt = (Point) offset_map.get(floater);
-            Uu.p("offset = " + fpt);
-            if(floater.y + floater.height - fpt.y > box.y) {
-                return floater.y + floater.height - fpt.y;
-            }
-        }
-        return 0;
-        */
         return getDownDistance(box, left_floats);
     }
 
@@ -207,32 +215,15 @@ Point fpt = (Point) offset_map.get(floater);
     }
 
     public int getRightFloatDistance(LineBox line) {
+		///Uu.p("get right float distance: " + line);
         return getFloatDistance(line, right_floats);
     }
-
-    private int getFloatDistance(Box line, List floatsList) {
-        int xoff = 0;
-
-        if (floatsList.size() == 0) {
-            return 0;
-        }
-
-        for (int i = 0; i < floatsList.size(); i++) {
-            Box floater = (Box) floatsList.get(i);
-            Point fpt = (Point) offset_map.get(floater);
-            Point lpt = new Point(this.x, this.y);
-            lpt.y -= line.y;
-            if (lpt.y > fpt.y - floater.height) {
-                xoff = Math.max(xoff, floater.width);
-            }
-        }
-        return xoff;
-    }
-
-
+	
     public int getBottomFloatDistance(LineBox line) {
         return 0;
     }
+	
+	/* -- end flaot stuff --- */
 
 
     public void addAbsoluteBottomBox(Box box) {

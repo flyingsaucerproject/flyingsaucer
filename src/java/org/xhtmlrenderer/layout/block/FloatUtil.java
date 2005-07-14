@@ -26,6 +26,7 @@ import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.util.Uu;
 
 
 /**
@@ -66,26 +67,28 @@ public class FloatUtil {
      */
     public static void setupFloat(Context c, Box box, CascadedStyle style) {
         if (ContentUtil.isFloated(style)) {
-            // Uu.p("==== setup float ====");
-            IdentValue floatVal = style.getIdent(CSSName.FLOAT);
+            //Uu.p("==== setup float ====");
+            //Uu.dump_stack();
+			IdentValue floatVal = style.getIdent(CSSName.FLOAT);
             if (floatVal == IdentValue.NONE) {
                 return;
             }
             box.floated = true;
             if (floatVal == IdentValue.LEFT) {
+				//Uu.p("doing left");
                 positionBoxLeft(c, box);
                 c.getBlockFormattingContext().pushDownLeft(box);
-                // Uu.p("final box = " + box);
+                //Uu.p("final box = " + box);
                 c.getBlockFormattingContext().addLeftFloat(box);
             }
             if (floatVal == IdentValue.RIGHT) {
                 positionBoxRight(c, box);
                 c.getBlockFormattingContext().pushDownRight(box);
-                // Uu.p("final box = " + box);
+                 //Uu.p("final box = " + box);
                 c.getBlockFormattingContext().addRightFloat(box);
             }
-            // Uu.p("box = " + box);
-            // Uu.p("==== end setup ====");
+             //Uu.p("box = " + box);
+             //Uu.p("==== end setup ====");
         }
     }
 
@@ -96,30 +99,33 @@ public class FloatUtil {
      * @param box PARAM
      */
     private static void positionBoxLeft(Context c, Box box) {
-        // Uu.p("positionBoxLeft()");
-        // Uu.p("calling the new float routine");
+        //Uu.p("positionBoxLeft()");
+		//Uu.dump_stack();
+        //Uu.p("calling the new float routine");
+		//Uu.p("starting box = " + box);
         BlockFormattingContext bfc = c.getBlockFormattingContext();
-        Box floater = bfc.getLeftFloatX(box);
-        // Uu.p("floater = " + floater);
-        // Uu.p("extents = " + c.getExtents());
+        Box floater = bfc.newGetLeftFloatX(box);
+        //Uu.p("floater = " + floater);
+        //Uu.p("extents = " + c.getExtents());
         if (floater == null) {
-            // Uu.p("no floater blocked. returning");
+            //Uu.p("no floater blocked. returning");
             box.x = 0;
             return;
         }
 
         box.x = floater.x + floater.width;
 
-        if (box.x + box.width > c.getExtents().width &&
-                box.width <= c.getExtents().width) {
-            // Uu.p("not enough room!!!");
+        if (box.x + box.width > c.getExtents().width && 
+		    box.width <= c.getExtents().width) {
+            //Uu.p("not enough room!!!");
             // move the box to be below the last float and
             // try it again
             box.y = floater.y + floater.height;
-            // Uu.p("trying again with box: " + box);
+            //Uu.p("trying again with box: " + box);
             positionBoxLeft(c, box);
-            // Uu.p("final box = " + box);
+            //Uu.p("final box 1 = " + box);
         }
+		//Uu.p("final box 2 = " + box + " " + box.hashCode());
     }
 
     /**
@@ -157,6 +163,13 @@ public class FloatUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/07/14 22:25:15  joshy
+ * major updates to float code. should fix *most* issues.
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.19  2005/06/16 07:24:49  tobega
  * Fixed background image bug.
  * Caching images in browser.

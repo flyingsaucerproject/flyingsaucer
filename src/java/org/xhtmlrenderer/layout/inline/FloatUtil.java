@@ -31,6 +31,7 @@ import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xhtmlrenderer.util.Uu;
 
 
 /**
@@ -48,10 +49,15 @@ public class FloatUtil {
      * @return                 Returns
      */
     public static int adjustForTab( Context c, LineBox prev_line, int remaining_width ) {
+		if(prev_line.width == 0) {
+			prev_line.width = remaining_width;
+		} else {
+			Uu.p("warning. possible error. line already has width: " + prev_line);
+		}
         BlockFormattingContext bfc = c.getBlockFormattingContext();
         remaining_width -= bfc.getLeftFloatDistance( prev_line );
         remaining_width -= bfc.getRightFloatDistance( prev_line );
-        // Uu.p("adjusting the line by: " + remaining_width);
+        //Uu.p("adjusting the line by: " + remaining_width);
         return remaining_width;
     }
 
@@ -67,7 +73,7 @@ public class FloatUtil {
      * @return           Returns
      */
     public static InlineBox generateFloatedBlockInlineBox( Context c, Content content, int avail, LineBox curr_line ) {
-        // Uu.p("generate floated block inline box: avail = " + avail);
+        //Uu.p("generate floated block inline box: avail = " + avail);
         //Uu.p("generate floated block inline box");
         Rectangle oe = c.getExtents();// copy the extents for safety
         c.setExtents( new Rectangle( oe ) );
@@ -76,7 +82,7 @@ public class FloatUtil {
         InlineBlockBox inline_block = new InlineBlockBox();
         inline_block.element = content.getElement();
         Boxing.layout( c, inline_block, content );
-
+        
         //HACK: tobe 2004-12-22 - guessing here
         // calculate the float property
         if ( c.getCurrentStyle().isIdent( CSSName.FLOAT, IdentValue.NONE ) ) {
@@ -87,7 +93,7 @@ public class FloatUtil {
 
         IdentValue ident = c.getCurrentStyle().getIdent( CSSName.FLOAT );
         if ( ident == IdentValue.LEFT ) {
-            inline_block.x = 0;
+            //inline_block.x = 0;
         }
 
         if ( ident == IdentValue.RIGHT ) {
@@ -97,7 +103,7 @@ public class FloatUtil {
 
         inline_block.y = curr_line.y;
 
-        //Uu.p("got a block box from the sub layout: " + block);
+        //Uu.p("got a box now = : " + inline_block);
         Rectangle bounds = new Rectangle( inline_block.x, inline_block.y,
                 inline_block.width, inline_block.height );
         c.setExtents( oe );
