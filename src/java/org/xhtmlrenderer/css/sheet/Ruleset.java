@@ -51,6 +51,17 @@ public class Ruleset {
      * Convenience parser for selector text
      */
     private final static com.steadystate.css.parser.CSSOMParser CSOM_PARSER;
+    static {
+        try {
+            Object obj = Class.forName("com.steadystate.css.parser.SACParser").newInstance();
+            org.w3c.css.sac.Parser psr = (org.w3c.css.sac.Parser)obj;
+            CSOM_PARSER = new com.steadystate.css.parser.CSSOMParser(psr);
+        } catch (Exception ex) {
+            throw new XRRuntimeException("Bad!  Couldn't load the CSS parser. Everything after this will fail.");
+        }
+        //CSOM_PARSER = new com.steadystate.css.parser.CSSOMParser();
+    }
+
 
     /**
      * Creates a new instance of Ruleset
@@ -151,15 +162,15 @@ public class Ruleset {
         }
     }
 
-    static {
-        CSOM_PARSER = new com.steadystate.css.parser.CSSOMParser();
-    }
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/07/14 17:43:39  joshy
+ * fixes for parser access exceptions when running in a sandbox (webstart basically)
+ *
  * Revision 1.8  2005/06/16 07:24:46  tobega
  * Fixed background image bug.
  * Caching images in browser.

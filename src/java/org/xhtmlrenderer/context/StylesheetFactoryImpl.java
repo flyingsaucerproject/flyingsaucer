@@ -31,6 +31,7 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.io.*;
@@ -53,7 +54,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     /**
      * Description of the Field
      */
-    private CSSOMParser parser = new CSSOMParser();
+    private CSSOMParser parser;// = new CSSOMParser(); // moved to the constructor
 
     /**
      * Description of the Field
@@ -77,6 +78,13 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      */
     public StylesheetFactoryImpl(UserAgentCallback userAgent) {
         _userAgent = userAgent;
+        try {
+            Object obj = Class.forName("com.steadystate.css.parser.SACParser").newInstance();
+            org.w3c.css.sac.Parser psr = (org.w3c.css.sac.Parser)obj;
+            parser = new CSSOMParser(psr);
+        } catch (Exception ex) {
+            XRLog.exception("Bad!  Couldn't load the CSS parser. Everything after this will fail.");
+        }
     }
 
     /**
