@@ -7,25 +7,31 @@
             div { 
                 border: 1px solid black;
                 float: left;
-                width: 50px;
                 height: 50px;
             }
+			.d1 { width: 44px; }
+			.d2 { width: 55px; }
+
             big { font-size: 40pt; }
         </style>
     </head>
     
-    <body>
-	<h3>The floats should stack horizontally</h3>
-    <p>
-        <div>float 0</div>
-        <div>float 1</div>
+    <body><!--
+	<h3>The floats should stack horizontally, the second one should be one line lower.</h3>
+    --><p>
+        <div class="d1">float 0</div>
+		a b c d e f g h i j k 
+        <div class="d2">float 1</div>
 		<!--
+		a b c d e f g h i j k 
+		a b c d e f g h i j k l
+		a b c d e f g h i j k l
+		a b c d e f g h i j k l
         <div>float 2</div>
         <div>float 3</div>
         <div>float 5</div>
         <div>float 6</div>
         <div>float 7</div>
-		-->
 		
 		a b c d e f g h i j k l
 		a b c d e f g h i j k l
@@ -41,6 +47,7 @@
  		a b c d e f g h i j k l
  		a b c d e f g h i j k l
  		a b c d e f g h i j k l
+		-->
         </p>
     </body>
 
