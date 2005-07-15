@@ -57,6 +57,7 @@ public class HTMLTest extends JFrame {
      */
     public HTMLTest(String[] args) {
         super(BASE_TITLE);
+        //Toolkit.getDefaultToolkit().setDynamicLayout(true);
         panel = new XHTMLPanel();
         int width = 360;
         int height = 500;
@@ -470,6 +471,9 @@ panel.addMouseMotionListener(hov);
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/07/15 23:39:49  joshy
+ * updates to try to fix the resize issue
+ *
  * Revision 1.32  2005/07/02 07:27:00  joshy
  * better support for jumping to anchor tags
  * also some testing for the resize issue

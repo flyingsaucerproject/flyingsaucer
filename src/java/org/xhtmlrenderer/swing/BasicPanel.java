@@ -207,7 +207,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         
         // if this is the first time painting this document, then calc layout
         if (body_box == null) {
-            calcLayout(g);
+            calcLayout(g,this.getSize());
         }
 
         Context c = newContext((Graphics2D) g);
@@ -235,6 +235,18 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
         //TODO: maybe temporary hack
         if (c.getBlockFormattingContext() != null) c.popBFC();//we set one for the top level before
+        /*
+        Uu.p("---");
+        Uu.p("doing the layout");
+        Uu.p("this size = " + this.getSize());
+        Uu.p("intrinsic size = " + intrinsic_size);
+        if(this.intrinsic_size != null) {
+            if(this.intrinsic_size.equals(this.getSize())) {
+                Uu.p("they are the same size!");
+            }
+        }
+        Uu.p("---");
+        */
         body_box = Boxing.layout(c, new DomToplevelNode(doc));
         if (!c.isStylesAllPopped()) {
             XRLog.layout(Level.SEVERE, "mismatch in style popping and pushing");
@@ -256,6 +268,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         XRLog.layout(Level.FINEST, "after layout: " + body_box);
 
         intrinsic_size = new Dimension(getContext().getMaxWidth(), body_box.height);
+        //Uu.p("intrinsic size = " + intrinsic_size);
         if (enclosingScrollPane != null) {
             XRLog.layout(Level.FINEST, "enclosing scroll pane = " + this.enclosingScrollPane);
             int view_height = this.enclosingScrollPane.getViewport().getHeight();
@@ -581,7 +594,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param e PARAM
      */
     public void componentResized(ComponentEvent e) {
-        Uu.p("resized!");
+        //Uu.p("resized!");
         calcLayout();
     }
 
@@ -656,7 +669,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      */
     public void setSize(Dimension d) {
         XRLog.layout(Level.FINEST, "set size called");
-        Uu.p("set size called!");
+        //Uu.p("set size called! " + d);
         super.setSize(d);
         //this.calcLayout();//this causes a second layout to be done!
     }
@@ -879,9 +892,14 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      */
     protected void calcLayout() {
         // set body box to null to trigger new layout
-        Uu.p("calc layout  null was called");
+        //Uu.p("calc layout  null was called");
         body_box = null;
     }
+    /*
+    protected void calcLayout(Dimension d) {
+        calcLayout();
+    }
+    */
 
 
     /**
@@ -890,9 +908,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      *
      * @param g PARAM
      */
-    protected void calcLayout(Graphics g) {
-        Uu.p("calc layout with graphics called");
-        layout_thread.startLayout(g);
+    protected void calcLayout(Graphics g, Dimension d) {
+        //Uu.p("calc layout with graphics called: " + d);
+        layout_thread.startLayout(g,d);
     }
 
     /**
@@ -909,7 +927,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             g.fillRect(0, 0, getWidth(), getHeight());
         }
         // start painting the box tree
-        BoxRendering.paint(c, body_box, false, false);//no restyle demanded on top level
+        if(body_box != null) {
+            BoxRendering.paint(c, body_box, false, false);//no restyle demanded on top level
+        }
         if (!c.isStylesAllPopped()) {
             XRLog.render(Level.SEVERE, "mismatch in style popping and pushing");
         }
@@ -1102,6 +1122,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.60  2005/07/15 23:39:49  joshy
+ * updates to try to fix the resize issue
+ *
  * Revision 1.59  2005/07/07 22:13:52  tobega
  * cleanup
  *
