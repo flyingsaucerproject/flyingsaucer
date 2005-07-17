@@ -51,7 +51,7 @@ public class FloatManager {
 		Point lpt = new Point(bfc.x, bfc.y);
 		//Uu.p("trans by: " + lpt);
 		// convert to abs coords
-		lr.translate(lpt.x,lpt.y);
+		lr.translate(-lpt.x,-lpt.y);
 		//Uu.p("line rect = " + lr);
 		// josh: note. this code doesn't handle floats on the same line!
 		// loop through all of the floats
@@ -67,18 +67,10 @@ public class FloatManager {
 			// get the origin of this BFC
 			//Uu.p("fpt = " + fpt + " lpt = " + lpt);
 			// convert to abs coords
-			fr.translate(fpt.x,fpt.y);
+			fr.translate(-fpt.x,-fpt.y);
 			//Uu.p("float rect: " + fr);
-			// subtract the y off the line we want to shift (josh: why?)
-            //lpt.y -= line.y;
 			// if the line is lower than bottom of the floater
 			// josh: is this calc right? shouldn't floater.y be in there somewhere?
-			/*
-            if (lpt.y > fpt.y - floater.height) {
-				// then set xoff to max of last xoff and the floater's width
-                xoff = Math.max(xoff, floater.width);
-            }
-			*/
 			if(lr.intersects(fr)) {
 				//Uu.p("it intersects!");
 				lr.translate(fr.width,0);
