@@ -120,6 +120,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      */
     private boolean anti_aliased = true;
 
+    private boolean explicitlyOpaque;
+	
     /**
      * Message used while layout is in progress and panel is being redrawn.
      */
@@ -258,9 +260,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         // so that the entire viewport will be repainted. this is slower
         // but that's the hit you get from using fixed layout
         if (body_box.isChildrenExceedBounds()) {
-            setOpaque(false);
+            super.setOpaque(false);
         } else {
-            setOpaque(true);
+            super.setOpaque(true);
         }
 
         getRenderingContext().setRootBox(body_box);
@@ -835,6 +837,54 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         return base;
     }
 
+  /**
+    * Returns whether the background of this <code>BasicPanel</code> will
+    * be painted when it is rendered.
+    *
+    * @return <code>true</code> if the background of this
+    * <code>BasicPanel</code> will be painted, <code>false</code> if it
+    * will not.
+    */
+    public boolean isOpaque() {
+       checkOpacityMethodClient();
+       return explicitlyOpaque;
+    }
+    /**
+     * Specifies whether the background of this <code>BasicPanel</code> will
+     * be painted when it is rendered.
+     *
+     * @param opaque <code>true</code> if the background of this
+     * <code>BasicPanel</code> should be painted, <code>false</code> if it
+     * should not.
+     */
+    public void setOpaque(boolean opaque) {
+        checkOpacityMethodClient();
+        explicitlyOpaque = opaque;
+    }
+
+    /**
+     * Checks that the calling method of the method that calls this method is not in this class
+     * and throws a RuntimeException if it was. This is used to ensure that parts of this class that
+     * use the opacity to indicate something other than whether the background is painted do not
+     * interfere with the user's intentions regarding the background painting.
+     *
+     * @throws IllegalStateException if the method that called this method was itself called by a
+     * method in this same class.
+     */
+    private void checkOpacityMethodClient() {
+        StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+        if (stackTrace.length > 2)
+        {
+            String callingClassName = stackTrace[2].getClassName();
+            if (BasicPanel.class.getName().equals(callingClassName))
+                throw new IllegalStateException(
+                    "BasicPanel should not use its own opacity methods. Use " +
+                    "super.isOpaque()/setOpaque() instead.");
+        }
+    }
+
+	
+	
     /**
      * Gets the rootBox attribute of the BasicPanel object
      *
@@ -911,6 +961,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     protected void calcLayout(Graphics g, Dimension d) {
         //Uu.p("calc layout with graphics called: " + d);
         layout_thread.startLayout(g,d);
+		explicitlyOpaque = super.isOpaque();
     }
 
     /**
@@ -922,7 +973,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         // paint the normal swing background first
         // but only if we aren't printing.
         Graphics g = c.getGraphics();
-        if (!(g instanceof PrinterGraphics)) {
+        if (!(g instanceof PrinterGraphics) && explicitlyOpaque) {
             g.setColor(getBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
         }
@@ -1122,6 +1173,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.61  2005/07/18 21:21:20  joshy
+ * fix for #82
+ *
  * Revision 1.60  2005/07/15 23:39:49  joshy
  * updates to try to fix the resize issue
  *
