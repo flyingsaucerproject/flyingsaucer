@@ -481,6 +481,14 @@ public class InlineBoxing {
 
             InlineTextBox inline = new InlineTextBox();
             inline.element = textContent.getElement();
+			
+			if(inline.element != null) {
+				if(inline.element.hasAttribute("id")) {
+					c.addIDBox(inline.element.getAttribute("id"),inline);
+				}
+			}
+
+			
             inline.pseudoElement = textContent.getPseudoElement();
 
             //Here we must set MasterText, it might have been restyled
@@ -574,6 +582,13 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2005/07/18 17:53:31  joshy
+ * fixed anchor jumping
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.35  2005/07/04 00:12:12  tobega
  * text-align now works for table-cells too (is done in render, not in layout)
  *

@@ -27,6 +27,7 @@ import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
+import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -406,6 +407,9 @@ public class SharedContext {
 	}
 
 	public Box getIDBox(String id) {
+		if(id_map == null) {
+			id_map = new HashMap();
+		}
 		return (Box)id_map.get(id);
 	}
 	
@@ -416,6 +420,13 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/07/18 17:53:32  joshy
+ * fixed anchor jumping
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.14  2005/07/02 07:26:59  joshy
  * better support for jumping to anchor tags
  * also some testing for the resize issue
