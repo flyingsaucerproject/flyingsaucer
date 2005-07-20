@@ -112,6 +112,7 @@ public class LinkListener extends MouseInputAdapter {
         for (Node n = elem; uri == null && n.getNodeType() == Node.ELEMENT_NODE; n = n.getParentNode()) {
             uri = panel.getContext().getNamespaceHandler().getLinkUri((Element) n);
         }
+        //Uu.p("found a link: " + uri);
         return uri;
     }
 
@@ -136,6 +137,7 @@ public class LinkListener extends MouseInputAdapter {
     }
 
     public void linkClicked(String uri) {
+        //Uu.p("clicked on: " + uri);
         panel.setDocumentRelative(uri);
         panel.repaint();
     }
