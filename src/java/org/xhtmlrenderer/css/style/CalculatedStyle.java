@@ -218,8 +218,12 @@ public class CalculatedStyle {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < _derivedPropertiesById.length; i++) {
             DerivedProperty derivedProperty = _derivedPropertiesById[i];
-            String s = derivedProperty.propertyName();
-            sb.append(s).append(" | ");
+            if(derivedProperty != null) {
+                sb.append(derivedProperty.propertyName());
+            } else {
+                sb.append("null");
+            }
+            sb.append("|");
         }
         return sb.toString();
     }
@@ -541,6 +545,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/07/20 22:47:33  joshy
+ * fix for 94, percentage for top absolute position
+ *
  * Revision 1.27  2005/06/22 23:48:41  tobega
  * Refactored the css package to allow a clean separation from the core.
  *

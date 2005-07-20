@@ -28,6 +28,7 @@ import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
 
@@ -68,6 +69,7 @@ public class Absolute {
      * @param child_box PARAM
      */
     public static void positionAbsoluteChild(Context c, Box child_box) {
+        Uu.p("positioning an absolute child: " + child_box);
         BlockFormattingContext bfc = c.getBlockFormattingContext();
         // handle the left and right
         if (child_box.right_set) {
@@ -96,13 +98,13 @@ public class Absolute {
      * @return Returns
      */
     public static Box generateAbsoluteBox(Context c, Content content) {
-        // Uu.p("generate absolute block inline box: avail = " + avail);
+        //Uu.p("generate absolute block inline box: avail = " + content);
         Rectangle oe = c.getExtents();// copy the extents for safety
         c.setExtents(new Rectangle(oe));
 
         Box box = Boxing.layout(c, content);
 
-        //Uu.p("got a block box from the sub layout: " + block);
+        //Uu.p("got a block box from the sub layout: " + box);
         c.setExtents(oe);
         box.setChildrenExceedBounds(true);
 
@@ -118,8 +120,10 @@ public class Absolute {
      * @param c   PARAM
      */
     public static void setupAbsolute(Box box, Context c) {
+        //Uu.p("setting up an abs for box: " +box);
         CalculatedStyle style = c.getCurrentStyle();
         if (style.isIdent(CSSName.POSITION, IdentValue.ABSOLUTE)) {
+            //Uu.p("is absolute pos");
             if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
                 box.right = (int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth(), c.getCtx());
                 box.right_set = true;
@@ -138,9 +142,10 @@ public class Absolute {
             if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
                 box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c.getCtx());
                 box.top_set = true;
+                //Uu.p("set top to: " + box.top + " " + box.top_set);
             }
             box.absolute = true;
-
+            
             // if right and left are set calculate width
             if (box.right_set && box.left_set) {
                 box.width = box.width - box.right - box.left;

@@ -242,10 +242,21 @@ public class BoxRendering {
         xoff += (bfc.getInsets().left - bfc.getPadding().left);
         yoff += (bfc.getInsets().top - bfc.getPadding().top);
 		//Uu.p("xoff = " + xoff + " yoff = " + yoff);
-
-
+        
+        
+        // since block.top can only be calculated at render time (in case of % widths)
+        // then we should either get rid of block.top, or find a way to do this at
+        // layout time.
         if (block.top_set) {
-            yoff += block.top;
+            //Uu.p("doing abs top");
+            //Uu.p("bfc = " + bfc + " " + bfc.getHeight());
+            CalculatedStyle style = c.getCurrentStyle();
+            //Uu.p("style = " + style);
+            int tp = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c.getCtx());
+            //Uu.p(" top = " + tp);
+            yoff += tp;
+            //yoff += block.top;
+            //Uu.p("yoff = " + yoff);
         }
         if (block.right_set) {
             xoff += -rect.x + rect.width - block.width - block.right;
@@ -344,6 +355,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/07/20 22:47:33  joshy
+ * fix for 94, percentage for top absolute position
+ *
  * Revision 1.33  2005/07/20 18:11:41  joshy
  * bug fixes to absolute pos layout and box finding within abs layout
  *
