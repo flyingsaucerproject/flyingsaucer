@@ -90,7 +90,7 @@ public class BlockFormattingContext {
     // relative to the current block, so we do a reverse translate
     // of the graphics
     public void translate(int x, int y) {
-        //Uu.p("trans : " + Xx + " " + y);
+        //Uu.p("trans : " + x + " " + y);
         this.x -= x;
         this.y -= y;
     }
