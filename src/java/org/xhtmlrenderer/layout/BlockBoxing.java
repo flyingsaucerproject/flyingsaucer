@@ -135,6 +135,7 @@ public class BlockBoxing {
                 // put fixed positioning in later
                 Fixed.positionFixedChild(c, child_box);
             }
+			
 
             if (child_box.absolute) {
                 Absolute.positionAbsoluteChild(c, child_box);
@@ -177,6 +178,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/07/20 18:11:41  joshy
+ * bug fixes to absolute pos layout and box finding within abs layout
+ *
  * Revision 1.11  2005/06/19 23:31:32  joshy
  * stop layout support
  * clear bug fixes

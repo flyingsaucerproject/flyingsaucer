@@ -216,31 +216,48 @@ public class BoxRendering {
     //HACK: more or less copied paintFixed - tobe
     //TODO: paint fixed & absolute are duplicates code blocks--need to decide how they differ, or leave as common method (PWW 25-01-05)
     //Fixed to use the BFC to calculate the absolute position
+	
+	
+	/*
+	  this code paints an absolute block
+	  according to the current understanding, the positioning is done at render time instead of at
+	  layout time because some things (like the bottom of the containing block) may not be known
+	  at layout time.
+	  */
     public static void paintAbsoluteBox(Context c, Box block, boolean restyle) {
         Rectangle rect = c.getExtents();
         //why this?
 		
         int xoff = 0;
         int yoff = 0;
+		//Uu.p("xoff = " + xoff + " yoff = " + yoff);
         BlockFormattingContext bfc = c.getBlockFormattingContext();
-        xoff += bfc.getX();
+		//Uu.p("bfc = " + bfc + " x,y = " + bfc.getX() + "," + bfc.getY());
+		//Uu.p("bfc = " + bfc.hashCode());
+		//Uu.p(" insets = " + bfc.getInsets());
+		//Uu.p(" padding = " + bfc.getPadding());
+		xoff += bfc.getX();
         yoff += bfc.getY();
+		//Uu.p("xoff = " + xoff + " yoff = " + yoff);
         xoff += (bfc.getInsets().left - bfc.getPadding().left);
         yoff += (bfc.getInsets().top - bfc.getPadding().top);
+		//Uu.p("xoff = " + xoff + " yoff = " + yoff);
 
 
         if (block.top_set) {
             yoff += block.top;
         }
         if (block.right_set) {
-            xoff = -rect.x + rect.width - block.width - block.right;
+            xoff += -rect.x + rect.width - block.width - block.right;
         }
+		//Uu.p("xoff = " + xoff + " yoff = " + yoff);
         if (block.left_set) {
-            xoff = block.left;
+            xoff += block.left;
         }
         if (block.bottom_set) {
             yoff = -rect.y + rect.height - block.height - block.bottom;
         }
+		//Uu.p("xoff = " + xoff + " yoff = " + yoff);
 
         c.translate(xoff, yoff);
         paintNormal(c, block, restyle);
@@ -327,6 +344,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/07/20 18:11:41  joshy
+ * bug fixes to absolute pos layout and box finding within abs layout
+ *
  * Revision 1.32  2005/06/25 17:23:33  tobega
  * first refactoring of UAC: ImageResource
  *

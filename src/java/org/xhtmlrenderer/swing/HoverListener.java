@@ -36,7 +36,9 @@ public class HoverListener extends MouseInputAdapter {
     }
     public Box findBox(MouseEvent evt) {
         //Box box = panel.findElementBox(evt.getX(), evt.getY());
-		Box box = BoxFinder.findElementBox(panel.getRootBox(),evt.getX(),evt.getY(),null);
+		//Uu.p("-----");
+		Box box = BoxFinder.findElementBox2(panel.getRootBox(),evt.getX(),evt.getY(),null);
+		//Uu.p("-----");
         if (box == null) return null;
         if (box instanceof LineBox) return null;
         return box;
