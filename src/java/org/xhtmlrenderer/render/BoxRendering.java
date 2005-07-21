@@ -247,16 +247,17 @@ public class BoxRendering {
         // since block.top can only be calculated at render time (in case of % widths)
         // then we should either get rid of block.top, or find a way to do this at
         // layout time.
-        if (block.top_set) {
-            //Uu.p("doing abs top");
-            //Uu.p("bfc = " + bfc + " " + bfc.getHeight());
-            CalculatedStyle style = c.getCurrentStyle();
-            //Uu.p("style = " + style);
-            int tp = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c.getCtx());
-            //Uu.p(" top = " + tp);
-            yoff += tp;
-            //yoff += block.top;
+        CalculatedStyle style = c.getCurrentStyle();
+        //Uu.p("style = " + style);
+        if (style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
+            //Uu.p("top is auto");
+            //Uu.p("box = " + block);
             //Uu.p("yoff = " + yoff);
+            yoff = 0;
+        }
+        if (block.top_set) {
+            int tp = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c.getCtx());
+            yoff += tp;
         }
         if (block.right_set) {
             xoff += -rect.x + rect.width - block.width - block.right;
@@ -355,6 +356,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/07/21 01:10:34  joshy
+ * fix for top abs pos bug and added new demo pages
+ *
  * Revision 1.34  2005/07/20 22:47:33  joshy
  * fix for 94, percentage for top absolute position
  *

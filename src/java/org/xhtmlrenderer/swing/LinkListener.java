@@ -91,7 +91,7 @@ public class LinkListener extends MouseInputAdapter {
     public void mouseReleased(MouseEvent evt) {
         //Box box = panel.findBox(evt.getX(), evt.getY());
 		Box box = BoxFinder.findElementBox2(panel.getRootBox(),evt.getX(),evt.getY(),null);
-		Uu.p("in link listener: box finder returned: " + box);
+		//Uu.p("in link listener: box finder returned: " + box);
         if (box == null) {
             return;
         }
