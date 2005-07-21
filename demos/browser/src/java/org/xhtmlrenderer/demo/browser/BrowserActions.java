@@ -31,6 +31,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.net.URL;
+import java.io.File;
 import java.util.logging.Logger;
 
 /**
@@ -97,8 +98,10 @@ public class BrowserActions {
                         try {
                             FileDialog fd = new FileDialog(root.frame, "Open a local file", FileDialog.LOAD);
                             fd.show();
-                            String file = fd.getDirectory() + fd.getFile();
-                            root.panel.loadPage(file);
+                            if(fd.getFile() != null) {
+                                String url = new File(fd.getDirectory(),fd.getFile()).toURI().toURL().toString();
+                                root.panel.loadPage(url);
+                            }
                         } catch (Exception ex) {
                             logger.info("error:" + ex);
                         }
@@ -279,6 +282,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/07/21 22:07:43  joshy
+ * fixed open action problem in the browser (escaping issue)
+ *
  * Revision 1.17  2005/06/20 17:35:27  joshy
  * changed some key bindings
  * Issue number:
