@@ -117,7 +117,7 @@ public class BrowserStartup {
         frame.setJMenuBar(bs.menu);
         frame.getContentPane().add(bs.panel);
         frame.pack();
-        frame.setSize(600, 700);
+        frame.setSize(700, 600);
         frame.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 bs.panel.view.relayout();
@@ -154,6 +154,9 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/07/21 22:56:07  joshy
+ * tweaked the splash screen
+ *
  * Revision 1.13  2005/06/16 07:24:44  tobega
  * Fixed background image bug.
  * Caching images in browser.

@@ -9,18 +9,55 @@
     <head>
         <title>Flying Saucer</title>
         <style type="text/css">
-
-body { background: #4784FF; }
+body { background: #4784FF; border: 0px solid red; margin: 0px;}
 
 /* styles for rounded boxes */
 div { border: 0px solid red; padding: 0px; margin: 0px;}
 
+/*
 .section { background: url(images/body-r.png) no-repeat bottom right; padding: 0px; }
-.top { background: url(images/head-r.png) no-repeat top right; }
-.content { background: url(images/body-l.png) no-repeat bottom left; }
-.top div { background: url(images/head-l.png) no-repeat top left; } 
-.content { padding-bottom: 2em; }
+*/
+.section {
+	background-image: url(images/body-r.png);
+	background-repeat: no-repeat;
+	background-position: bottom right;
+	padding: 0px;
+	}
 
+/*
+.top { background: url(images/head-r.png) no-repeat top right; }
+*/
+.top {
+	background-image: url(images/head-r.png);
+	background-repeat: no-repeat;
+	background-position: top right;
+	}
+	
+	
+/*
+.content { background: url(images/body-l.png) no-repeat bottom left; }
+*/
+.content {
+	background-image: url(images/body-l.png);
+	background-repeat: no-repeat;
+	background-position: bottom left;
+	}
+.top div { background: url(images/head-l.png) no-repeat top left; } 
+
+/*
+.content {
+	background-image: url(images/head-r.png);
+	background-repeat: no-repeat;
+	background-position: top right;
+	}
+.top div {
+	background-image: url(images/head-r.png);
+	background-repeat: no-repeat;
+	background-position: top right;
+	}
+*/
+
+.content { padding-bottom: 2em; }
 
 #splash, .section {
 	border: 0px solid black;
@@ -63,7 +100,7 @@ div { border: 0px solid red; padding: 0px; margin: 0px;}
 	}
 
 .section p, .section h3 { padding: 0px 30px 15px 50px; }    
-.section ul { margin: 0px 30px 15px 50px; }
+.section ul { margin: 0px 30px 15px 80px; }
 .section li { }
     
 .section h3 {
@@ -129,7 +166,8 @@ div { border: 0px solid red; padding: 0px; margin: 0px;}
                 <h3>What does it support?</h3>
                 <p>We don't have complete CSS2 support but we've got a lot: tables, backgrounds,
                 borders, forms, fonts, colors, and text alignment. Try some
-                samples from the <b> Demos </b> menu above.</p>
+                samples from the <b> Demos </b> menu above or by clicking on
+				<a href="../new/formattedtext.xhtml">this link</a></p>
                         
                 <h3>Where can I find out more?</h3>
                 <p>Check us out online at http://xhtmlrender.dev.java.net/
