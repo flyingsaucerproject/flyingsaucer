@@ -249,6 +249,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         }
         Uu.p("---");
         */
+		// do the actual layout
         body_box = Boxing.layout(c, new DomToplevelNode(doc));
         if (!c.isStylesAllPopped()) {
             XRLog.layout(Level.SEVERE, "mismatch in style popping and pushing");
@@ -274,11 +275,12 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         if (enclosingScrollPane != null) {
             XRLog.layout(Level.FINEST, "enclosing scroll pane = " + this.enclosingScrollPane);
             int view_height = this.enclosingScrollPane.getViewport().getHeight();
-            
             // resize the outter most box incase it is too small for the viewport
             if (intrinsic_size.getHeight() < view_height) {
                 if (body_box != null) {
                     body_box.height = view_height;
+					bodyExpandHack(body_box,view_height);
+					intrinsic_size.height = view_height;
                 }
             }
         }
@@ -290,6 +292,23 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
 
         this.fireDocumentLoaded();
     }
+	
+	private static void bodyExpandHack(Box root, int view_height) {
+		for(int i=0; i<root.getChildCount(); i++) {
+			// set the html box to the max
+			Box html = root.getChild(i);
+			if(html.element != null && html.element.getNodeName().equals("html")) {
+				html.height = view_height;
+				// set the body box to the max
+				for(int j=0; j<html.getChildCount(); j++) {
+					Box body = html.getChild(j);
+					if(body.element != null && body.element.getNodeName().equals("body")) {
+						body.height = view_height;
+					}
+				}
+			}
+		}
+	}
     
     /*
      * ========= The box finding routines. Should probably move out to another
@@ -1173,6 +1192,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.62  2005/07/21 16:10:42  joshy
+ * added hack to expand the body. fix for bug 96
+ *
  * Revision 1.61  2005/07/18 21:21:20  joshy
  * fix for #82
  *
