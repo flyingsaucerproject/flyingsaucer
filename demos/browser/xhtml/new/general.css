@@ -1,29 +1,31 @@
-	.left-link { width: 150px; 
+
+	.left-link { 
+		width: 150px; 
 		margin: 10px;
 		border: 1px dotted blue;
 		padding: 5px;
-		/*
+		
 		position: absolute;
 		top: 0px;
 		left: 0px; 
-		*/
+		
 	}
+	
 	.right-link { width: 150px; 
 		margin: 10px;
 		border: 1px dotted blue;
 		padding: 5px;
-		/*
+		
 		position: absolute;
 		top: 0px;
 		right: 0px; 
-		*/
+		
 		text-align: right; 
 	}
-
-	
 	
 	
 	h3 { margin-top: 50px; }
+	
 	body {
 		background: white;
 		padding: 20px;
@@ -32,6 +34,7 @@
 		margin-top: 50px;
 		
 		}
+		
 	html {
 		background: #efefff; 
 	}
