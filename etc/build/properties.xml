@@ -119,6 +119,7 @@
     <include name="splash/**"/>
     <include name="about/**"/>
     <include name="alice/**"/>
+    <include name="new/**"/>
     <include name="game/**"/>
     <include name="fonts/**"/>
     <include name="layout/**/*.xhtml"/>

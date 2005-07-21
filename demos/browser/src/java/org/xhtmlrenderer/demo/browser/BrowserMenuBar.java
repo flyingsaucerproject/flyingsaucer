@@ -189,6 +189,9 @@ public class BrowserMenuBar extends JMenuBar {
             String s = (String) iter.next();
             demos.add(new LoadAction(s, (String) allDemos.get(s)));
         }
+        
+        demos.add(new JSeparator());
+        demos.add(new LoadAction("New: start","demo:demos/new/formattedtext.xhtml"));
 
         add(demos);
 
@@ -612,6 +615,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2005/07/21 21:51:07  joshy
+ * added new demos to browser
+ *
  * Revision 1.31  2005/07/13 22:49:14  joshy
  * updates to get the jnlp to work without being signed
  *
