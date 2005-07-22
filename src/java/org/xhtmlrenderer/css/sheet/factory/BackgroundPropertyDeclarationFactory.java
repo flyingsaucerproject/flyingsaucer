@@ -82,9 +82,6 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
             // sniff this one value out. using an array to return
             // multiple pieces of info; see parseSingle() method
             Object[] ret = parseSingle(val, primitive, bgPos);
-            if (ret[0] == null) continue;
-            names[0] = (CSSName) ret[0];
-            primitives[0] = new FSCssValue((CSSPrimitiveValue) ret[1]);
 
             // handle background-position. the issue here is that
             // the position will have either one or two assignments
@@ -106,6 +103,9 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
                 }
                 continue;
             }
+            if (ret[0] == null) continue;
+            names[0] = (CSSName) ret[0];
+            primitives[0] = new FSCssValue((CSSPrimitiveValue) ret[1]);
             addProperties(declarations, primitives, names, origin, important);
 
         }
@@ -174,6 +174,9 @@ public class BackgroundPropertyDeclarationFactory extends AbstractPropertyDeclar
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/07/22 23:48:29  tobega
+ * fixed background shorthand factory bug (hope no new ones introduced)
+ *
  * Revision 1.8  2005/07/02 09:40:23  tobega
  * More robust parsing
  *
