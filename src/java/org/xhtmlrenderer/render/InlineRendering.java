@@ -32,6 +32,7 @@ import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.inline.TextAlignJustify;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.util.GraphicsUtil;
+import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
 import java.awt.font.LineMetrics;
@@ -209,6 +210,8 @@ public class InlineRendering {
     static void paintInlineContext(Context c, Box box, boolean restyle) {
         //dummy style to make sure that text nodes don't get extra padding and such
         {
+            
+            //Uu.p("painting box: " + box);
             LinkedList decorations = c.getDecorations();
             //doesn't work here because blocks may be inside inlines, losing inline styling:
             // c.pushStyle(CascadedStyle.emptyCascadedStyle);
@@ -243,8 +246,12 @@ public class InlineRendering {
      * @param decorations
      */
     static void paintLine(Context c, LineBox line, boolean restyle, LinkedList decorations) {
+        //Uu.p("painting line: " + line);
         // get Xx and y
         int lx = line.x + getTextAlign(c, line);
+        //Uu.p("getting the text align for line: " + line);
+        //Uu.p("getTextAlign = " + getTextAlign(c,line));
+        //Uu.p("lx = " + lx);
         int ly = line.y + line.getBaseline();
 
         LinkedList pushedStyles = null;
@@ -266,6 +273,7 @@ public class InlineRendering {
             lastInline = box;
             padX = 0;
             if (c.hasFirstLineStyles() && pushedStyles == null) {
+                //Uu.p("doing first line styles");
                 pushedStyles = new LinkedList();
                 for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext();) {
                     CascadedStyle firstLineStyle = (CascadedStyle) i.next();
@@ -279,6 +287,7 @@ public class InlineRendering {
         ListIterator li = decorations.listIterator(0);
         while (li.hasNext()) {
             TextDecoration decoration = (TextDecoration) li.next();
+            //Uu.p("painting a decoration");
             decoration.paint(c, line);
         }
 
@@ -311,7 +320,9 @@ public class InlineRendering {
             c.clearFirstLineStyles();
         }
         if (c.debugDrawLineBoxes()) {
+            c.getGraphics().translate(lx,ly-line.getBaseline());
             GraphicsUtil.drawBox(c.getGraphics(), line, Color.blue);
+            c.getGraphics().translate(-lx,-ly-+line.getBaseline());
         }
     }
 
@@ -321,6 +332,7 @@ public class InlineRendering {
         if (c.getCurrentStyle().isIdent(CSSName.TEXT_ALIGN, IdentValue.LEFT)) return 0;
         int leftover = line.getParent().contentWidth - line.width;
         if (c.getCurrentStyle().isIdent(CSSName.TEXT_ALIGN, IdentValue.RIGHT)) {
+            //Uu.p("leftover = " + leftover);
             return leftover;
         }
         if (c.getCurrentStyle().isIdent(CSSName.TEXT_ALIGN, IdentValue.CENTER)) {
@@ -350,6 +362,7 @@ public class InlineRendering {
      * @param padX
      */
     static int paintInline(Context c, InlineBox ib, int lx, int ly, LineBox line, boolean restyle, LinkedList pushedStyles, LinkedList decorations, int padX) {
+        //Uu.p("paint inline: " + ib);
         restyle = restyle || ib.restyle;//cascade it down
         ib.restyle = false;//reset
         if (ib.pushstyles != null) {
@@ -382,6 +395,7 @@ public class InlineRendering {
             for (Iterator i = decorations.iterator(); i.hasNext();) {
                 TextDecoration td = (TextDecoration) i.next();
                 td.setEnd(ib.x);
+                //Uu.p("painting decoration");
                 td.paint(c, line);
                 i.remove();
                 restarted.addLast(td.getRestarted(ib.x + ib.width));
@@ -389,6 +403,8 @@ public class InlineRendering {
             decorations.clear();
             c.pushStyle(c.getCss().getCascadedStyle(ib.element, restyle));
             int textAlign = getTextAlign(c, line);
+            //Uu.p("line.x = " + line.x + " text align = " + textAlign);
+            //Uu.p("ib.x .y = " + ib.x + " " + ib.y);
             c.translate(line.x + textAlign,
                     line.y +
                     (line.getBaseline() -
@@ -409,6 +425,9 @@ public class InlineRendering {
 
             InlineTextBox inline = (InlineTextBox) ib;
 
+            //Uu.p("inline = " + inline);
+            //Uu.p("line.x = " + line.x + " lx = " + lx);
+            //Uu.p("ib.x .y = " + ib.x + " " + ib.y);
             c.updateSelection(inline);
 
             // calculate the Xx and y relative to the baseline of the line (ly) and the

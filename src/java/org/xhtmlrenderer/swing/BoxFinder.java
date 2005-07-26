@@ -90,6 +90,11 @@ public class BoxFinder {
 		dx += box.x;
 		dy += box.y;
 		//Uu.p(dx+","+dy);
+        
+        //Uu.p("box = " + box);
+        if(box instanceof LineBox) {
+            //Uu.p("line box: " + box);
+        }
 		
 		// adjust for own insets (margin + border + padding)
 		dx += box.tx;

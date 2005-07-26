@@ -21,6 +21,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -86,6 +87,7 @@ public class BlockRendering {
      */
     public static void paintChild(Context c, Box box, boolean restyle) {
         if (box.isChildrenExceedBounds()) {
+            //Uu.p("box children exceed: " + box);
             BoxRendering.paint(c, box, false, restyle);
             return;
         }
@@ -94,6 +96,8 @@ public class BlockRendering {
             if (c.getGraphics().getClip() != null) {
                 Rectangle2D oldclip = (Rectangle2D) c.getGraphics().getClip();
                 Rectangle2D box_rect = new Rectangle(box.x, box.y, box.width, box.height);
+                //Uu.p("old clip = " + oldclip);
+                //Uu.p("box rect = " + box_rect);
                 //TODO: handle floated content. HACK: descend into anonymous boxes, won't work for deeper nesting
                 if (oldclip.intersects(box_rect) || (box instanceof AnonymousBlockBox)) {
                     BoxRendering.paint(c, box, false, restyle);
