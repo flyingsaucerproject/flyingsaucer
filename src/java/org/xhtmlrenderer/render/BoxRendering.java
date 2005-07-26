@@ -183,23 +183,29 @@ public class BoxRendering {
      * @param restyle
      */
     public static void paintFixed(Context c, Box block, boolean restyle) {
-        Rectangle rect = c.getExtents();
-        //why this?
-        int xoff = -rect.x;
-        int yoff = -rect.y;
-
+        //Uu.p("painting fixed");
+        Rectangle rect = c.getFixedRectangle();
+        int by = c.getBlockFormattingContext().getY();
+        int bx = c.getBlockFormattingContext().getX();
+        
+        // the offset is equal to the bfc origin minus the fixed rect origin
+        int xoff = bx -rect.x;
+        int yoff = by -rect.y;
+        
+        // adjust for the top, right, left, and bottom settings
         if (block.top_set) {
             yoff += block.top;
         }
         if (block.right_set) {
-            xoff = -rect.x + rect.width - block.width - block.right;
+            xoff += rect.width - block.width - block.right;
         }
         if (block.left_set) {
-            xoff = block.left;
+            xoff += block.left;
         }
         if (block.bottom_set) {
-            yoff = -rect.y + rect.height - block.height - block.bottom;
+            yoff += rect.height - block.height - block.bottom;
         }
+        
         c.translate(xoff, yoff);
         paintNormal(c, block, restyle);
         c.translate(-xoff, -yoff);
@@ -356,6 +362,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2005/07/26 22:05:02  joshy
+ * fixed the fixed positioning rendering
+ *
  * Revision 1.35  2005/07/21 01:10:34  joshy
  * fix for top abs pos bug and added new demo pages
  *
