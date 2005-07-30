@@ -23,8 +23,8 @@
     -moz-background-clip: initial;
     -moz-background-origin: initial;
     -moz-background-inline-policy: initial;
-    margin-right: 20px;
-    margin-left: 40px;
+    margin-right: 4px;
+    margin-left: 20px;
     font-family: Verdana,Arial,Helvetica,sans-serif;
     }
 
@@ -34,6 +34,8 @@
     float: right;
 	border: 0px solid blue;
 	font-size: 90%;
+	margin: 0px;
+	margin-left: 5px;
     }
 	
 
