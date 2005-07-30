@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Flying Saucer Feature List</title>
+  <link href="base.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<div id="fs">
+
+
+<ul id="menu">
+<li><b>Download</b>
+<ul>
+<li><a href="http://joshy.org/flyingsaucer/downloads/flyingsaucer.src.zip">R5 beta</a></li>
+<li><a href="demos.html">demo apps</a></li>
+</ul>
+</li>
+<li><b>Documentation</b>
+<ul>
+<li><a href="gettingstarted.html"><b>Getting Started</b></a></li>
+<li><a href="featurelist.html">Feature List</a></li>
+<li><a href="faq.html">The FAQ</a></li>
+<li><a href="advanced.html">Developer Guide</a></li>
+<li><a href="http://joshy.org/flyingsaucer/doc/user/api/">Simple JavaDocs (R5)</a></li>
+<li><a href="http://joshy.org/flyingsaucer/doc/full/api/">Full JavaDocs (R5)</a></li>
+<li><a href="../references.html">References</a></li>
+</ul>
+</li>
+<li><b>Contribute</b>
+<ul>
+<li><a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">dev mailing list</a></li>
+<li><a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">user mailing list</a></li>
+<li><a href="http://wiki.java.net/bin/view/Javadesktop/XHTMLRenderer">The
+Wiki</a></li>
+</ul>
+</li>
+<li id="newsfeed"><b><a href="http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS" border="0">News Feed<img src="https://java-net.dev.java.net/branding/images/xml.gif" border="0"></a></b>
+</li>
+</ul>
+
+
+<h1>Flying Saucer Supported Features</h1>
+
+
+<p>Flying Saucer supports the bulk of the strict XHTML and CSS 2.1 standards. We are working
+towards complete (and correct) feature support of these standards, but not everything
+works yet.  Most of it is there, though.</p>
+
+<h3>General XHTML / CSS features</h3>
+<ul>
+	<li>General formatted text: basically everything: paragraphs and spans, bold, italic, font sizes, text alignment, horizontal alignment,
+	different fonts</li>
+	<li>The full box model: border, padding, margin, colors, background images, styled borders</li>
+	<li>Full positioning support: static, relative, absolute, and fixed, and floats. <i>There are still some
+	issues dealing with multiple stacked floats. This code is being rewritten.</i></li>
+	<li>Tables: Table support is currently being rewritten so check on the mailing list to see what works.</li>
+	<li>Forms: Every standard form control is represented. There are still some bugs with alignment.</li>
+	<li>Images: both as inline images with the &lt;img&gt; tag and with background images.
+	<li>:hover styles for rollover effects</li>
+	<li>Lists: lists with proper positioning and
+	<li>CSS selectors. All CSS selectors in the spec should be supported, even the sibling/child ones</li>
+</ul>
+
+<h3>Special Features</h3>
+<ul>
+	<li>Speed. We are fast enough to render all of Hamlet in under 4 seconds on a 1.5 GHZ Pentium. We are working
+	to improve speed and memory usage all the time.</li>
+	<li>Embedded fonts. You can embed a truetype font in your application (in the jar file), and use it in pages
+	rendered in your application.</li>
+	<li>Printing. You can print anything you can see on screen. You can even use special print stylesheets. <b><i>pagination
+	is not currently supported!</i></b></li>
+	
+</ul>
+
+</div>
+</body>
+</html>

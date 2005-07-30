@@ -1,116 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+  
 
-<html>
-    <head>
-        <title>Flying Saucer: a 100% Java XHTML + CSS renderer</title>
-        <link href="base.css" rel="stylesheet" type="text/css">
-            <style type="text/css">
-<!--
-#fs #menu a:hover {
-	color: #FFFFFF;
-}
---></style>
-        </head>
 
+  <title>Flying Saucer: a 100% Java XHTML + CSS renderer</title>
+  <link href="base.css" rel="stylesheet" type="text/css">
+
+
+  <style type="text/css">
+  #logo { float: left;
+    }
+
+  .clearit { clear: both;
+    }
+
+
+  </style>
+  <style>
+  h2 { width: 500px;
+    }
+
+  ul#m2 { border: 1px solid black;
+    float: right;
+    }
+
+  block { border: 0px solid black;
+    display: block;
+    padding-left: 4em;
+    }
+
+
+  </style></head>
 <body>
-
-<style type="text/css">
-#fs #menu a:hover {
-	color: #00ff00;
-}
-#logo {
-    float: left;
-    }
-.clearit {
-    clear: both;
-    }
-</style>
 <div id="fs">
 
-<h1>
-    <img id="logo" src="images/new_saucer.png"/>
+<ul id="menu">
+<li><b>Download</b>
+<ul>
+<li><a href="http://joshy.org/flyingsaucer/downloads/flyingsaucer.src.zip">R5 beta</a></li>
+<li><a href="demos.html">demo apps</a></li>
+</ul>
+</li>
+<li><b>Documentation</b>
+<ul>
+<li><a href="gettingstarted.html"><b>Getting Started</b></a></li>
+<li><a href="featurelist.html">Feature List</a></li>
+<li><a href="faq.html">The FAQ</a></li>
+<li><a href="advanced.html">Developer Guide</a></li>
+<li><a href="http://joshy.org/flyingsaucer/doc/user/api/">Simple JavaDocs (R5)</a></li>
+<li><a href="http://joshy.org/flyingsaucer/doc/full/api/">Full JavaDocs (R5)</a></li>
+<li><a href="../references.html">References</a></li>
+</ul>
+</li>
+<li><b>Contribute</b>
+<ul>
+<li><a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">dev mailing list</a></li>
+<li><a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">user mailing list</a></li>
+<li><a href="http://wiki.java.net/bin/view/Javadesktop/XHTMLRenderer">The
+Wiki</a></li>
+</ul>
+</li>
+<li id="newsfeed"><b><a href="http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS" border="0">News Feed<img src="https://java-net.dev.java.net/branding/images/xml.gif" border="0"></a></b>
+</li>
+</ul>
 
-Flying Saucer: The 100% Java XHTML Renderer
-<span class="clearit">&nbsp;</span>
+<h1> <img id="logo" src="images/new_saucer.png">Flying
+Saucer: The 100% Java XHTML Renderer
 </h1>
 
-<p class="clearit">&nbsp;</p>
 
-<ul id="menu">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="http://wiki.java.net/bin/view/Javadesktop/XHTMLRenderer">The Wiki</a></li>
-<!--
-<li><a href="roadmap.html">Roadmap</a></li>
--->
-    <li><a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">Mailing List</a></li>
-    <li><a href="faq.html">FAQ</a></li>
-    <li><a href="gettingstarted.html">Getting Started</a></li>
-    <li><a href="references.html">References</a></li>
-</ul>
-<ul>
-    <li><a href="development/index.html">Info on CVS version</a></li>
-</ul>
+<h2 class="">News</h2>
 
-
-<h2 class="clearit">News</h2>
-<p class="clearit"><b>June 15, 2005</b>:&nbsp;The Flying Saucer Team is proud to present <b>pre-release 1 of Beta Release
-5</b> (R5pre1) of our 100% Java library for rendering XHTML + CSS2.1 including
-tables, forms, the box model, lists, selectors, images, and text
-formatting.</p>
-    
-<p>This release brings many exciting updates--head over to <a href="development/r5pre1_gettingstarted.html">the R5 pre 1 release page</a> and get it now!</p>
-    
-<p class="clearit">The Flying Saucer Team is proud to present <b>Beta Release
-4</b> (R4) of our 100% Java library for rendering XHTML + CSS2.1 including
-tables, forms, the box model, lists, selectors, images, and text
-formatting.</p>
-    
-<p>This release brings updates to the infrastructure with:</p>
-    
-<ul>
-    <li>a new package heirarchy</li>
-    <li>a new unified CSS module</li>
-    <li>automated unit tests to validate our rendering compliance</li>
-    <li>new configuration and logging subsystem</li>
-    <li>lots more code cleanup and documentation</li>
-    <li>separate browser and about box sub projects</li>
-</ul>
-
-<p>This release paves the way for the new features and speed increases
-coming in R5. Thanks for all of your support and please send us your <a
-href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">feedback.</a></p>
-
-<h2>Current Stable Release</h2>
-
-<p><b>Beta Release 4</b>:</p>
-
-<ul>
-    <li><a href="http://code.joshy.org/projects/xhtmlrenderer/fs.jnlp">Browser App</a> webstart link</li>
-    <li><a href="http://code.joshy.org/projects/xhtmlrenderer/aboutbox.jnlp">About Box </a> webstart link</li>
-    <li><a href="http://code.joshy.org/projects/xhtmlrenderer/flyingsaucer.zip">binary</a> distribution</li>
-    <li><a href="http://code.joshy.org/projects/xhtmlrenderer/flyingsaucer.src.zip">source</a> distribution</li>
-    <li><a href="http://code.joshy.org/projects/xhtmlrenderer/docs/user/api/index.html">JavaDocs</a> for users</li>
-    <li><a href="http://code.joshy.org/projects/xhtmlrenderer/docs/full/api/index.html">JavaDocs</a> for developers</li>
-    <li><a href="http://code.joshy.org/projects/xhtmlrenderer/docs/full/code/">Code Listings</a> for developers</li>   
-</ul>
-
-<h2>We need help!</h2>
-
-<p> <b>If you want to contribute</b> or just see what's going on then
-please join the <a
-href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">
-<b>dev</b> mailing list</a>! We need developers, beta testers, doc writers,
-evangelists, and users. Even if you are just curious please join in.</p>
-
-<p>Keep up with new releases: 
-
-<a href="http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS"
-border="0"
-><img src="https://java-net.dev.java.net/branding/images/xml.gif"
-border="0"
-></a>
+<p><b>July 30, 2005</b>: We've just updated our homepage and reorganized the documentation.
+This is in preparation for the R5 release coming soon. Let us know what you think of the new
+look.
 </p>
 
-</div>
-</body>
+<hr class="news"/>
 
-</html>
+<p class=""><b>June 22, 2005</b>:&nbsp;The Flying Saucer Team is proud to
+present <b>Release 5</b> of our 100% Java library for rendering XHTML + CSS2.1
+including tables, forms, formatted text, images, and the complete box model.
+(see <a href="featurelist.html">complete list</a>)</p>
+
+
+<block>
+The Java Web Start <a href="http://joshy.org/flyingsaucer/downloads/fs.jnlp">Browser
+Demo</a><br>
+The new <a href="gettingstarted.html">Getting
+Started</a> Guide
+</block>
+
+
+<p>This release introduces a better implementation of the CSS box model and
+greatly improved parsing and rendering speed. </p>
+
+<p>This release paves the way for the new features and speed increases coming in
+R5. Thanks for all of your support and please send us your <a
+href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">feedback.</a></p>
+<p></p>
+
+
+<h2>We need help!</h2>
+<p> <b>If
+you want to contribute</b> or just
+see what's going on then
+please join the <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">
+<b>dev</b>
+mailing list</a>! We need
+developers, beta testers, doc writers,
+evangelists, and users. Even if you are just curious please join in.</p>
+<p>Keep up with new releases: <a href="http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS" border="0"><img src="https://java-net.dev.java.net/branding/images/xml.gif" border="0"></a>
+</p>
+</div>
+
+</body></html>

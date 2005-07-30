@@ -1,54 +1,16 @@
-<h2>All changes ever (except for the first ones)</h2>
-
-
-<h3>v 0.03   xxxxx</h3>
-<ul>
-    <li>Added new AboutBox program
-        <ul>
-            <li>It's a prefab dialog box which autoscrolls a webpage. The
-            perfect way to crate an attractive About Box quickly.</li>
-        </ul>
-    </li>
-    
-    <li>Browser Application
-        <ul>
-            <li>refactored into more, smaller classes</li>
-            <li>Added selection support</li>
-            <li>Added link following</li>
-        </ul>
-    </li>
-    
-    <li>New CSS matcher for 3x speedup</li>
-    <li>first CSS speed test. uses full text of Hamlet</li>
-    
-    <li>
-        <ul>List Item stuff
-            <li>fixed bug in list item bullet placement</li>
-            <li>factored out need for ListLayout class (done w/ box 
-                layout and default css now)</li>
-            <li>added decimal list item support</li>
-        </ul>
-    </li>
-</ul>
-
-<h3>v 0.02   July 14th, 2004</h3>
+<h2>Changes from latest release</h2>
 
 <ul>
-
-<li>New font selection code</li>
-<li>pulled font selection into a new interface</li>
-<li>created new browser demo application</li>
-<li>added a history manager to the browser</li>
-<li>fixed a bug where rendering would hang if an image couldn't be loaded</li>
-<li>partially implemented loading default.css from a jar</li>
-<li>implemented loading demos from a jar</li>
-<li>added a java webstart file and ant task</li>
-<li>added jar signing to make the java webstart work</li>
-<li>added a src and binary distribution to the build flie</li>
-<li>added package for forms</li>
-<li>added support for the form element</li>
-<li>added preliminary support for the button and text input tags</li>
-<li>initial use of java.util.logging.</li>
-
+    <li>New simple XHTMLPanel
+    </li>
+    
+    <li>Interfaces in <code>org.xhtmlrenderer.extend</code> for extending functionality
+        <ul>
+            <li><code>UserAgentCallback</code> with default implementation <code>org.xhtmlrenderer.swing.NaiveUserAgent</code>
+            </li>
+            <li><code>NamespaceHandler</code> for handling different document types</li>
+        </ul>
+    </li>
+    
+    <li>Simplified internal working and reduced memory footprint</li>
 </ul>
-

@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Developer's Guide to Flying Saucer</title>
+  <link href="base.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+<div id="fs">
+
+
+<ul id="menu">
+<li><b>Download</b>
+<ul>
+<li><a href="http://joshy.org/flyingsaucer/downloads/flyingsaucer.src.zip">R5 beta</a></li>
+<li><a href="demos.html">demo apps</a></li>
+</ul>
+</li>
+<li><b>Documentation</b>
+<ul>
+<li><a href="gettingstarted.html"><b>Getting Started</b></a></li>
+<li><a href="featurelist.html">Feature List</a></li>
+<li><a href="faq.html">The FAQ</a></li>
+<li><a href="advanced.html">Developer Guide</a></li>
+<li><a href="http://joshy.org/flyingsaucer/doc/user/api/">Simple JavaDocs (R5)</a></li>
+<li><a href="http://joshy.org/flyingsaucer/doc/full/api/">Full JavaDocs (R5)</a></li>
+<li><a href="../references.html">References</a></li>
+</ul>
+</li>
+<li><b>Contribute</b>
+<ul>
+<li><a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">dev mailing list</a></li>
+<li><a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">user mailing list</a></li>
+<li><a href="http://wiki.java.net/bin/view/Javadesktop/XHTMLRenderer">The
+Wiki</a></li>
+</ul>
+</li>
+<li id="newsfeed"><b><a href="http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS" border="0">News Feed<img src="https://java-net.dev.java.net/branding/images/xml.gif" border="0"></a></b>
+</li>
+</ul>
+
+<h1>Developer's Guide to Flying Saucer</h1>
+
+<div>
+<h2><a name="user_agent"></a>Getting control of loading data - <code>UserAgentCallback</code></h2>
+<p>  Loading of documents, stylesheets and images is under the control of the user agent (i.e. your code).
+</p>
+<p>  To get control of these things you need to implement the <code>org.xhtmlrenderer.extend.UserAgentCallback</code> interface
+and pass it to the constructor of one of the panels or your extension of a panel.
+</p>
+<p>  By default, the panels use <code>org.xhtmlrenderer.swing.NaiveUserAgent</code> which just loads everything.
+If you wish, you may of course extend this class and override the stuff that you care about.
+</p>
+<p>To build a general web-browser, you will need to make an implementation that converts crappy html to good xml.
+Then you should probably make a <code>NamespaceHandler</code> (see below) to turn html styling attributes into css element styles.
+Alternatively, the document could first be converted to good css-styled xhtml.
+</p>
+</div>
+  
+<div>
+<h2><a name="handling_documents"></a>Handling different document types - <code>NamespaceHandler</code></h2>
+<p>  The Flying Saucer xhtmlrenderer in its basic form just renders xml styled with css.
+The stylesheet is obtained from an &lt;?xml-stylesheet?&gt; processing-instruction.
+There is no inherent knowledge of the document type, other than what is known about xml as such.
+</p>
+<p>Knowledge about a document type is provided through the NamespaceHandler interface.
+An implementation of this interface may be provided in the method <code>public void setDocument(Document doc, URL url, NamespaceHandler nsh)</code>
+</p>
+<p>The <code>BasicPanel</code> will by default use the <code>org.xhtmlrenderer.swing.NoNamespaceHandler</code> implementation.
+</p>
+<p>The <code>XHTMLPanel</code> will by default use the <code>org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler</code> implementation.
+</p>
+<p>The provided <code>NamespaceHandler</code> will be able to provide a JComponent to replace any element.
+At the time of this writing the element needs to have a display property set to "inline-block" for this to work.
+Anyway, with the right <code>NamespaceHandler</code> and <code>UserAgentCallback</code>, you could do just about anything,
+like, for example, make a XUL implementation on top of Flying Saucer.
+</p>
+</div>
+
+
+<h2><a name="docevents"></a>Receiving Document Events<br>
+</h2>
+<p>if you want to know when the document is loaded you'll need to implement the
+    <code>org.xhtmlrenderer.event.DocumentListener </code>interface, which currently
+    only has one method: <code>documentLoaded()</code><br>
+</p>
+
+<h2><a name="scrolling"></a>Using the FSScrollPane</h2>
+
+<p>Since an XHTMLPanel is a JComponent you can put it inside of a JScrollPane to implement scrolling. It behaves just as a JTable or JList would.  However, Flying Saucer provides the FSScrollPane to implement more intelligent scrolling such as moving down a line when you press the down arrow key and moving down by
+a whole page when you hit the page down key.  For more information see the javadocs for FSScrollPane.
+</p>
+
+</div>
+</body>
+</html>
