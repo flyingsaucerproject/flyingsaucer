@@ -1,26 +1,39 @@
 
 	.left-link { 
-		width: 150px; 
+		width: 10em; 
 		margin: 10px;
-		border: 1px dotted blue;
 		padding: 5px;
-		
 		position: absolute;
 		top: 0px;
 		left: 0px; 
 		
 	}
 	
-	.right-link { width: 150px; 
+	.right-link {
+		width: 10em; 
 		margin: 10px;
-		border: 1px dotted blue;
 		padding: 5px;
 		
 		position: absolute;
 		top: 0px;
 		right: 0px; 
-		
-		text-align: right; 
+		text-align: left; 
+	}
+	
+	.left-link, .right-link {
+		background-color: white;
+		border: 1px dotted blue;
+		font-weight: normal;
+		font-size: 10pt;
+		text-indent: 0px;
+	}
+	.left-link a, .right-link a {
+		font-family: sans-serif;
+		text-decoration: none;
+		font-weight: normal;
+	}
+	.left-link a:hover, .right-link a:hover {
+		text-decoration: underline;
 	}
 	
 	

@@ -1,10 +1,41 @@
 <project name="build.upload">
     <target name="upload.dist" description="Upload distributions" depends="properties">
-        <scp todir="${docs.upload.username}:${docs.upload.password}@${docs.upload.hostname}:${dist.upload.path}">
+ 		<!-- create the pack task -->
+		<taskdef name="pack200"
+			classname="com.sun.tools.apache.ant.pack200.Pack200Task"
+			/>
+		<!-- Create our unpacker task -->
+		<taskdef name="unpack200"
+			classname="com.sun.tools.apache.ant.pack200.Unpack200Task"
+			classpath="${dist}/Pack200Task.jar"/>
+			
+		<pack200 src="${dest.dir}/core-renderer.jar"
+			destfile="${dest.dir}/core-renderer.jar.pack"/>
+		<move file="${dest.dir}/core-renderer.jar.pack" 
+			tofile="${dest.dir}/core-renderer.jar.pack.gz"/>
+		<pack200 src="${dest.dir}/browser.jar"
+			destfile="${dest.dir}/browser.jar.pack"/>
+		<move file="${dest.dir}/browser.jar.pack" 
+			tofile="${dest.dir}/browser.jar.pack.gz"/>
+		<pack200 src="${dest.dir}/cssparser-0-9-4-fs.jar"
+			destfile="${dest.dir}/cssparser-0-9-4-fs.jar.pack"/>
+		<move file="${dest.dir}/cssparser-0-9-4-fs.jar.pack" 
+			tofile="${dest.dir}/cssparser-0-9-4-fs.jar.pack.gz"/>
+		<pack200 src="${dest.dir}/minium.jar"
+			destfile="${dest.dir}/minium.jar.pack"/>
+		<move file="${dest.dir}/minium.jar.pack"
+			tofile="${dest.dir}/minium.jar.pack.gz"/>
+		<pack200 src="${dest.dir}/about.jar"
+			destfile="${dest.dir}/about.jar.pack"/>
+		<move file="${dest.dir}/about.jar.pack"
+			tofile="${dest.dir}/about.jar.pack.gz"/>
+
+       <scp todir="${docs.upload.username}:${docs.upload.password}@${docs.upload.hostname}:${dist.upload.path}">
             <fileset dir="${dest.dir}">
                 <include name="*.zip"/>
                 <include name="*.jnlp"/>
                 <include name="*.jar"/>
+                <include name="*.jar.pack.gz"/>
             </fileset>
         </scp>
     </target>

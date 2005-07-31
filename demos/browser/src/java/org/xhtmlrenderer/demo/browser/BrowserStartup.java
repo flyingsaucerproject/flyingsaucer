@@ -26,6 +26,7 @@ import javax.swing.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Description of the Class
@@ -104,8 +105,12 @@ public class BrowserStartup {
      */
     public static void main(String[] args) {
         if (GeneralUtil.isMacOSX()) {
+            try {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FS Browser");
+            } catch (Exception ex) {
+                logger.log(Level.SEVERE,"error initalizing the mac properties",ex);
+            }
         }
 
         //System.out.println(new URI("images/Stop24.gif"));
@@ -154,6 +159,9 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/07/31 01:12:29  joshy
+ * updated browser demos, about box demos, and added pack200 to the distro
+ *
  * Revision 1.14  2005/07/21 22:56:07  joshy
  * tweaked the splash screen
  *

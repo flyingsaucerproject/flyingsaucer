@@ -164,6 +164,18 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add(new JSeparator());
         allDemos = new LinkedHashMap();
 
+        allDemos.put("Splash Screen", "demo:demos/splash/splash.html");
+        allDemos.put("Formatted Text", "demo:demos/new/formattedtext.xhtml");
+        allDemos.put("Box Model and Backgrounds", "demo:demos/new/box.xhtml");
+        allDemos.put("CSS 2 Border Support", "demo:demos/new/borders.xhtml");
+        allDemos.put("Positioned Content", "demo:demos/new/position.xhtml");
+        allDemos.put("Alice In Wonderland", "demo:demos/new/alice/alice.xhtml");
+        allDemos.put("Weblog", "demo:demos/new/blog.xhtml");
+        allDemos.put("Video Game", "demo:demos/game/index.xhtml");
+        allDemos.put("Hamlet (the whole thing)", "demo:demos/new/hamlet.xhtml");
+        allDemos.put("Unsupported Features", "demo:demos/new/unsupported.xhtml");
+
+        /*
         allDemos.put("Nested Float", "demo:demos/layout/multicol/glish/nested-float.xhtml");
 
         allDemos.put("Paragraph", "demo:demos/paragraph.xhtml");
@@ -184,14 +196,12 @@ public class BrowserMenuBar extends JMenuBar {
         allDemos.put("Financial Report", "demo:demos/report.xhtml");
         allDemos.put("Alice", "demo:demos/alice/alice.xhtml");
         allDemos.put("Hamlet (the whole thing)", "demo:demos/hamlet.xhtml");
-
+        */
         for (Iterator iter = allDemos.keySet().iterator(); iter.hasNext();) {
             String s = (String) iter.next();
             demos.add(new LoadAction(s, (String) allDemos.get(s)));
         }
         
-        demos.add(new JSeparator());
-        demos.add(new LoadAction("New: start","demo:demos/new/formattedtext.xhtml"));
 
         add(demos);
 
@@ -615,6 +625,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/07/31 01:12:29  joshy
+ * updated browser demos, about box demos, and added pack200 to the distro
+ *
  * Revision 1.32  2005/07/21 21:51:07  joshy
  * added new demos to browser
  *

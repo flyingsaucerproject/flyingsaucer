@@ -14,7 +14,9 @@
                 <include name="resources/**"/>
             </fileset>
         </jar>
-    </target>
+		
+		
+	</target>
     
     <!-- Compiles browser and main codebase, and builds jar for browser -->
     <target name="jar.browser" depends="compile.browser, jar.core" description="build browser jar">
