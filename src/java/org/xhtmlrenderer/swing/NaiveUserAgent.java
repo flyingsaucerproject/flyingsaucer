@@ -24,6 +24,7 @@ import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.Uu;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -85,7 +86,10 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
 
     public ImageResource getImageResource(String uri) {
         ImageResource ir = null;
+		System.out.println("here");
+		Uu.p("getImageResource() called on: " + uri);
         uri = resolveURI(uri);
+		Uu.p("resolved URI to: " + uri);
         ir = (ImageResource) imageCache.get(uri);
         //TODO: check that cached image is still valid
         if (ir == null) {
@@ -148,6 +152,13 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/07/31 18:06:14  joshy
+ * debugging
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.17  2005/06/25 19:27:47  tobega
  * UAC now supplies Resources
  *
