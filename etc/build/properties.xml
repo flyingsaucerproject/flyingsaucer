@@ -107,8 +107,10 @@
   </patternset>
 
   <patternset id="user-java-files">
+  <!--
     <includesfile name="src/java/org/xhtmlrenderer/simple/XHTMLPanel.java"/>
-    <include name="src/java/org/xhtmlrenderer/simple/*.java"/>
+	-->
+    <include name="org/xhtmlrenderer/simple/**"/>
   </patternset>
 
   <patternset id="xhtml-files">

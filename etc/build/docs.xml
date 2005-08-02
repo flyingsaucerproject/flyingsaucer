@@ -5,6 +5,7 @@
     for properties antcall.dest.javadoc.dir and antcall.javadoc.file 
     -->
     <target name="_javadoc" description="internal use; use 'docs' instead. builds javadoc for all XR packages" depends="properties">
+		<echo message="src jav adir = ${src.java.dir}"/>
         <javadoc
             access="public"
             author="true"

@@ -109,9 +109,12 @@
       <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.full.dir}"/>
       <param name="antcall.javadoc.file" value=""/>
     </antcall>
+	<echo message="writing to ${dest.javadoc.user.dir} "/>
     <antcall target="_javadoc">
       <param name="antcall.dest.javadoc.dir" value="${dest.javadoc.user.dir}"/>
-      <param name="antcall.javadoc.file" value="src/java/org/xhtmlrenderer/simple/XHTMLPanel.java"/>
+	  
+      <param name="antcall.javadoc.file" value=""/><!--src/java/org/xhtmlrenderer/simple/XHTMLPanel.java"/>
+	  -->
       <reference refid="user-java-files" torefid="org-java-files"/>
     </antcall>
     <copy todir="${dest.dir}/docs" file="${dest.javadoc.full.dir}/index.html"/>
@@ -242,6 +245,9 @@
 $Id$
 
 $Log$
+Revision 1.92  2005/08/02 01:43:37  joshy
+fixed doc generation for simple docs
+
 Revision 1.91  2005/07/04 02:23:36  joshy
 made build script copy over the new default css file
 Issue number:
