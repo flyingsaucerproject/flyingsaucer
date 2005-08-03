@@ -51,6 +51,7 @@ public class CellBox extends BlockBox {
      */
     private CellBox real_box = null;
     public int colspan;
+    public int rowspan;
 
     /**
      * Constructor for the CellBox object
@@ -119,6 +120,9 @@ public class CellBox extends BlockBox {
 /*
  * $Id$
  * $Log$
+ * Revision 1.8  2005/08/03 21:44:00  tobega
+ * Now support rowspan
+ *
  * Revision 1.7  2005/07/02 12:25:44  tobega
  * colspan is working!
  *

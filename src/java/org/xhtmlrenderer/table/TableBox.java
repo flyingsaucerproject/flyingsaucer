@@ -49,6 +49,9 @@ public class TableBox extends BlockBox {
      */
     public Point spacing;
     public int[] columns;
+    public int[] columnRows;
+    public int[] columnHeight;
+    public CellBox[] columnCell;
 
     /**
      * Constructor for the TableBox object
@@ -78,6 +81,9 @@ public class TableBox extends BlockBox {
 /*
  * $Id$
  * $Log$
+ * Revision 1.5  2005/08/03 21:44:00  tobega
+ * Now support rowspan
+ *
  * Revision 1.4  2005/06/08 19:48:55  tobega
  * Rock 'n roll! Report looks quite good!
  *

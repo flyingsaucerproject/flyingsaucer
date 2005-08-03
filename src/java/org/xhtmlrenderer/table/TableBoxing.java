@@ -54,8 +54,7 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -274,7 +273,7 @@ public class TableBoxing {
             Object o = contentIterator.next();
             if (o instanceof TableRowContent) {
                 c.translate(0, tableBox.height);
-                RowBox row = layoutRow(c, (TableRowContent) o, tableBox, fixed, borderSpacingHorizontal);
+                RowBox row = layoutRow(c, (TableRowContent) o, tableBox, fixed, borderSpacingHorizontal, borderSpacingVertical);
                 c.translate(0, -tableBox.height);
 
                 tableBox.addChild(row);
@@ -297,7 +296,7 @@ public class TableBoxing {
         }
     }
 
-    private static RowBox layoutRow(Context c, TableRowContent tableRowContent, TableBox table, boolean fixed, int borderSpacingHorizontal) {
+    private static RowBox layoutRow(Context c, TableRowContent tableRowContent, TableBox table, boolean fixed, int borderSpacingHorizontal, int borderSpacingVertical) {
         // copy the extents
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
@@ -321,7 +320,7 @@ public class TableBoxing {
         c.shrinkExtents(tx + margin.right + border.right + padding.right, ty + margin.bottom + border.bottom + padding.bottom);
         List cells = tableRowContent.getChildContent(c);
         checkColumns(table, cells.size());
-        layoutCells(cells, c, row, table, fixed, borderSpacingHorizontal);
+        layoutCells(cells, c, row, table, fixed, borderSpacingHorizontal, borderSpacingVertical);
         c.unshrinkExtents();
         c.translate(-tx, -ty);
         // calculate the total outer width
@@ -336,9 +335,14 @@ public class TableBoxing {
         return row;
     }
 
-    private static void layoutCells(List cells, Context c, RowBox row, TableBox table, boolean fixed, int borderSpacingHorizontal) {
+    private static void layoutCells(List cells, Context c, RowBox row, TableBox table, boolean fixed, int borderSpacingHorizontal, int borderSpacingVertical) {
         int col = 0;
         for (Iterator i = cells.iterator(); i.hasNext();) {
+            checkColumns(table, col + 1);
+            if (table.columnRows[col] != 0) {
+                col = col + 1;
+                continue;
+            }
             TableCellContent tcc = (TableCellContent) i.next();
             CellBox cellBox = new CellBox();
             c.translate(row.width, 0);
@@ -354,11 +358,13 @@ public class TableBoxing {
             cellBox.x = row.width + borderSpacingHorizontal;
             row.y = 0;
 
-            // increase the final layout width if the child was greater
-            if (cellBox.height > row.height) {
-                row.height = cellBox.height;
-            }
             checkColumns(table, col + cellBox.colspan);
+            for (int j = 0; j < cellBox.colspan; j++) {
+                table.columnRows[col + j] = cellBox.rowspan;
+                table.columnHeight[col + j] = cellBox.height;
+                table.columnCell[col + j] = null;
+            }
+            table.columnCell[col] = cellBox;
             int width = 0;
             for (int j = 0; j < cellBox.colspan; j++) width += table.columns[col + j];
             if (!fixed && cellBox.width > width) {
@@ -371,6 +377,24 @@ public class TableBoxing {
             cellBox.width = cellBox.contentWidth;
             row.width = cellBox.x + cellBox.width;
             col += cellBox.colspan;
+            //this will be fixed again later!
+            cellBox.height = 0;
+        }
+        for (int j = 0; j < table.columns.length; j++) {
+            // increase the final layout height if the child was greater
+            int height = table.columnHeight[j] / table.columnRows[j];
+            if (height > row.height) {
+                row.height = height;
+            }
+            table.columnHeight[j] -= height;
+            table.columnRows[j]--;
+        }
+        for (int j = 0; j < table.columns.length; j++) {
+            if (table.columnCell[j] == null) continue;
+            table.columnCell[j].height += row.height;
+            if (table.columnRows[j] != 0) {
+                table.columnCell[j].height += borderSpacingVertical;
+            }
         }
     }
 
@@ -381,6 +405,27 @@ public class TableBoxing {
             int[] newColumns = new int[cols];
             for (int i = 0; i < table.columns.length; i++) newColumns[i] = table.columns[i];
             table.columns = newColumns;
+        }
+        if (table.columnRows == null)
+            table.columnRows = new int[cols];
+        else if (table.columnRows.length < cols) {
+            int[] newColumnRows = new int[cols];
+            for (int i = 0; i < table.columnRows.length; i++) newColumnRows[i] = table.columnRows[i];
+            table.columnRows = newColumnRows;
+        }
+        if (table.columnHeight == null)
+            table.columnHeight = new int[cols];
+        else if (table.columnHeight.length < cols) {
+            int[] newColumnHeight = new int[cols];
+            for (int i = 0; i < table.columnHeight.length; i++) newColumnHeight[i] = table.columnHeight[i];
+            table.columnHeight = newColumnHeight;
+        }
+        if (table.columnCell == null)
+            table.columnCell = new CellBox[cols];
+        else if (table.columnCell.length < cols) {
+            CellBox[] newColumnCell = new CellBox[cols];
+            for (int i = 0; i < table.columnCell.length; i++) newColumnCell[i] = table.columnCell[i];
+            table.columnCell = newColumnCell;
         }
     }
 
@@ -420,6 +465,7 @@ public class TableBoxing {
         c.setExtents(new Rectangle(oe));
 
         block.colspan = (int) c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.FS_COLSPAN, 0, c.getCtx());
+        block.rowspan = (int) c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.FS_ROWSPAN, 0, c.getCtx());
         if (fixed) {
             int width = 0;
             for (int i = 0; i < block.colspan; i++) width += table.columns[col + i];
@@ -563,6 +609,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.21  2005/08/03 21:44:00  tobega
+   Now support rowspan
+
    Revision 1.20  2005/07/05 06:10:30  tobega
    text-align now works for table-cells (fixed an omission)
 
