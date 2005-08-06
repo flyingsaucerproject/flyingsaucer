@@ -46,6 +46,7 @@ public class LineBox extends Box {
     public int descent;
 
     public LineMetrics blockLineMetrics;
+    public boolean textAligned = false;
 
     /**
      * Constructor for the LineBox object
@@ -112,6 +113,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/08/06 22:12:24  tobega
+ * Fixed issue 110
+ *
  * Revision 1.16  2005/07/14 22:25:17  joshy
  * major updates to float code. should fix *most* issues.
  * Issue number:

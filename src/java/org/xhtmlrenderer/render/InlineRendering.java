@@ -32,7 +32,6 @@ import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.inline.TextAlignJustify;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.util.GraphicsUtil;
-import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
 import java.awt.font.LineMetrics;
@@ -210,7 +209,7 @@ public class InlineRendering {
     static void paintInlineContext(Context c, Box box, boolean restyle) {
         //dummy style to make sure that text nodes don't get extra padding and such
         {
-            
+
             //Uu.p("painting box: " + box);
             LinkedList decorations = c.getDecorations();
             //doesn't work here because blocks may be inside inlines, losing inline styling:
@@ -248,7 +247,11 @@ public class InlineRendering {
     static void paintLine(Context c, LineBox line, boolean restyle, LinkedList decorations) {
         //Uu.p("painting line: " + line);
         // get Xx and y
-        int lx = line.x + getTextAlign(c, line);
+        if (!line.textAligned) {
+            line.x += getTextAlign(c, line);
+            line.textAligned = true;
+        }
+        int lx = line.x;
         //Uu.p("getting the text align for line: " + line);
         //Uu.p("getTextAlign = " + getTextAlign(c,line));
         //Uu.p("lx = " + lx);
@@ -320,9 +323,9 @@ public class InlineRendering {
             c.clearFirstLineStyles();
         }
         if (c.debugDrawLineBoxes()) {
-            c.getGraphics().translate(lx,ly-line.getBaseline());
+            c.getGraphics().translate(lx, ly - line.getBaseline());
             GraphicsUtil.drawBox(c.getGraphics(), line, Color.blue);
-            c.getGraphics().translate(-lx,-ly-+line.getBaseline());
+            c.getGraphics().translate(-lx, -ly - +line.getBaseline());
         }
     }
 
@@ -402,10 +405,10 @@ public class InlineRendering {
             }
             decorations.clear();
             c.pushStyle(c.getCss().getCascadedStyle(ib.element, restyle));
-            int textAlign = getTextAlign(c, line);
+            //int textAlign = getTextAlign(c, line);
             //Uu.p("line.x = " + line.x + " text align = " + textAlign);
             //Uu.p("ib.x .y = " + ib.x + " " + ib.y);
-            c.translate(line.x + textAlign,
+            c.translate(line.x,
                     line.y +
                     (line.getBaseline() -
                     VerticalAlign.getBaselineOffset(c, line, ib) -
@@ -413,7 +416,7 @@ public class InlineRendering {
             c.translate(ib.x, ib.y);
             BoxRendering.paint(c, ((InlineBlockBox) ib).sub_block, false, restyle);
             c.translate(-ib.x, -ib.y);
-            c.translate(-line.x - textAlign,
+            c.translate(-line.x,
                     -(line.y +
                     (line.getBaseline() -
                     VerticalAlign.getBaselineOffset(c, line, ib) -
