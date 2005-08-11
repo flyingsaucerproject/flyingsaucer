@@ -32,6 +32,7 @@
 		<zip basedir="${basedir}" zipfile="${dest.dir}/${app.name}.src.zip">
 			<include name="build.xml"/>
 			<include name="lib/**"/>
+			<include name="etc/build/**"/>
 			<include name="src/**"/>
 			<include name="demos/**"/>
 			<zipfileset dir="${src.packaging.dir}" includes="readme.txt" fullpath="readme.txt"/>

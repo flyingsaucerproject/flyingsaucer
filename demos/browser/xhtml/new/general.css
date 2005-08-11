@@ -36,6 +36,10 @@
 		text-decoration: underline;
 	}
 	
+	.left-link:hover, .right-link:hover {
+		background-color: blue;
+	}
+	
 	
 	h3 { margin-top: 50px; }
 	
