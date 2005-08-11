@@ -24,7 +24,6 @@ import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.Uu;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -86,10 +85,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
 
     public ImageResource getImageResource(String uri) {
         ImageResource ir = null;
-		System.out.println("here");
-		Uu.p("getImageResource() called on: " + uri);
         uri = resolveURI(uri);
-		Uu.p("resolved URI to: " + uri);
         ir = (ImageResource) imageCache.get(uri);
         //TODO: check that cached image is still valid
         if (ir == null) {
@@ -152,8 +148,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
- * Revision 1.18  2005/07/31 18:06:14  joshy
- * debugging
+ * Revision 1.19  2005/08/11 01:35:37  joshy
+ * removed debugging
+ * updated stylesheet to use right aligns
  * Issue number:
  * Obtained from:
  * Submitted by:

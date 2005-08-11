@@ -79,9 +79,7 @@ public class PanelManager implements UserAgentCallback {
 
     public ImageResource getImageResource(String uri) {
         ImageResource ir = null;
-		Uu.p("getImageResource() called on: " + uri);
         uri = resolveURI(uri);
-		Uu.p("resolved URI to: " + uri);
         ir = (ImageResource) imageCache.get(uri);
         //TODO: check that cached image is still valid
         if (ir == null) {
