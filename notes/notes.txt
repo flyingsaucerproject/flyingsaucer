@@ -2,6 +2,15 @@ notes
 
 =====================
 
+remaining issues for R5
+check for any debugging output that's not part of the log
+add forms and table to the demo pages
+remove extra html files from the browser demo
+check three col layout
+
+
+=====================
+
 
 
 distributed people work:
