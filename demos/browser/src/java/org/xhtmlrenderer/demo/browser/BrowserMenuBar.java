@@ -171,6 +171,8 @@ public class BrowserMenuBar extends JMenuBar {
         allDemos.put("Positioned Content", "demo:demos/new/position.xhtml");
         allDemos.put("Alice In Wonderland", "demo:demos/new/alice/alice.xhtml");
         allDemos.put("Weblog", "demo:demos/new/blog.xhtml");
+        allDemos.put("Report Table", "demo:demos/new/report.xhtml");
+        allDemos.put("Forms", "demo:demos/new/forms.xhtml");
         allDemos.put("Video Game", "demo:demos/game/index.xhtml");
         allDemos.put("Hamlet (the whole thing)", "demo:demos/new/hamlet.xhtml");
         allDemos.put("Unsupported Features", "demo:demos/new/unsupported.xhtml");
@@ -625,6 +627,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/08/16 22:46:27  joshy
+ * added new demos, streamlined downloads
+ *
  * Revision 1.33  2005/07/31 01:12:29  joshy
  * updated browser demos, about box demos, and added pack200 to the distro
  *
