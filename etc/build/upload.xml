@@ -8,7 +8,6 @@
 		<taskdef name="unpack200"
 			classname="com.sun.tools.apache.ant.pack200.Unpack200Task"
 			classpath="${dist}/Pack200Task.jar"/>
-			
 		<pack200 src="${dest.dir}/core-renderer.jar"
 			destfile="${dest.dir}/core-renderer.jar.pack"/>
 		<gzip src="${dest.dir}/core-renderer.jar.pack" 
@@ -29,7 +28,6 @@
 			destfile="${dest.dir}/about.jar.pack"/>
 		<gzip src="${dest.dir}/about.jar.pack"
 			destfile="${dest.dir}/about.jar.pack.gz"/>
-
        <scp todir="${docs.upload.username}:${docs.upload.password}@${docs.upload.hostname}:${dist.upload.path}">
             <fileset dir="${dest.dir}">
                 <include name="*.zip"/>
