@@ -115,9 +115,7 @@
 
   <patternset id="xhtml-files">
     <include name="**/*.css"/>
-    <!--
     <include name="*.xhtml"/>
-    -->
     <include name="*.gif"/>
     <include name="*.jpg"/>
     <include name="*.png"/>
@@ -128,7 +126,9 @@
     <include name="game/**"/>
     <include name="fonts/**"/>
     <include name="layout/**/*.xhtml"/>
+    <!--
     <exclude name="*.xhtml"/>
+    -->
   </patternset>
       
     <!-- zip file reference for all XHTML in the demos directory, and supporting files -->

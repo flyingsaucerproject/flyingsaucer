@@ -179,6 +179,7 @@ public class PanelManager implements UserAgentCallback {
                 short_url = "/" + short_url;
             }
             ref = marker.getClass().getResource(short_url);
+            Uu.p("ref = " + ref);
         } else {
             try {
                 URL base;
