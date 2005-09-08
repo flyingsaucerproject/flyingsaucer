@@ -109,7 +109,12 @@ public class BrowserStartup {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FS Browser");
             } catch (Exception ex) {
+                try {
                 logger.log(Level.SEVERE,"error initalizing the mac properties",ex);
+                } catch (Exception ex2) {
+                    //System.out.println("error writing to the log file!" + ex2);
+                    //ex2.printStackTrace();
+                }
             }
         }
 
@@ -159,6 +164,9 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/09/08 03:37:57  joshy
+ * final R5 release
+ *
  * Revision 1.15  2005/07/31 01:12:29  joshy
  * updated browser demos, about box demos, and added pack200 to the distro
  *
