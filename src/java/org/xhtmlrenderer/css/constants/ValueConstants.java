@@ -98,7 +98,8 @@ public final class ValueConstants {
         } else if ("pc".equals(type)) {
             return CSSPrimitiveValue.CSS_PC;
         } else if (type == null) {
-            return CSSPrimitiveValue.CSS_PT;
+            //this is only valid if length is 0
+            return CSSPrimitiveValue.CSS_PX;
         } else {
             throw new XRRuntimeException("Unknown type on CSS value: " + type);
         }
@@ -309,6 +310,9 @@ public final class ValueConstants {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/09/11 20:43:15  tobega
+ * Fixed table-css interaction bug, colspan now works again
+ *
  * Revision 1.7  2005/06/01 00:47:01  tobega
  * Partly confused hack trying to get width and height working properly for replaced elements.
  *

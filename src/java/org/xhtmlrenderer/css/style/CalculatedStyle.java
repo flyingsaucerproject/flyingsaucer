@@ -218,7 +218,7 @@ public class CalculatedStyle {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < _derivedPropertiesById.length; i++) {
             DerivedProperty derivedProperty = _derivedPropertiesById[i];
-            if(derivedProperty != null) {
+            if (derivedProperty != null) {
                 sb.append(derivedProperty.propertyName());
             } else {
                 sb.append("null");
@@ -539,12 +539,19 @@ public class CalculatedStyle {
 
         return ctx.getFontSizeForXHeight(getParent().getFont(ctx), f, xHeight);
     }
+
+    public float getNumberProperty(CSSName cssName) {
+        return propertyByName(cssName).computedValue().asFloat();
+    }
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/09/11 20:43:15  tobega
+ * Fixed table-css interaction bug, colspan now works again
+ *
  * Revision 1.28  2005/07/20 22:47:33  joshy
  * fix for 94, percentage for top absolute position
  *

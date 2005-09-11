@@ -648,5 +648,9 @@ public class DerivedValue {
 
         return _isTransparent;
     }
+
+    public float asFloat() {
+        return _lengthAsFloat;
+    }
 }// end class
 

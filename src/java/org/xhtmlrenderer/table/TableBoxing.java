@@ -54,7 +54,8 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -464,8 +465,8 @@ public class TableBoxing {
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
 
-        block.colspan = (int) c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.FS_COLSPAN, 0, c.getCtx());
-        block.rowspan = (int) c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.FS_ROWSPAN, 0, c.getCtx());
+        block.colspan = (int) c.getCurrentStyle().getNumberProperty(CSSName.FS_COLSPAN);
+        block.rowspan = (int) c.getCurrentStyle().getNumberProperty(CSSName.FS_ROWSPAN);
         if (fixed) {
             int width = 0;
             for (int i = 0; i < block.colspan; i++) width += table.columns[col + i];
@@ -609,6 +610,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.22  2005/09/11 20:43:16  tobega
+   Fixed table-css interaction bug, colspan now works again
+
    Revision 1.21  2005/08/03 21:44:00  tobega
    Now support rowspan
 
