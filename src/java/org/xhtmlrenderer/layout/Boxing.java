@@ -38,8 +38,7 @@ import org.xhtmlrenderer.table.TableBoxing;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.List;
 
 
@@ -74,11 +73,12 @@ public class Boxing {
             block = new BlockBox();
         }
         block.element = content.getElement();
-		if(block.element != null) {
-			if(block.element.hasAttribute("id")) {
-				c.addIDBox(block.element.getAttribute("id"),block);
-			}
-		}
+        if (block.element != null) {
+            String id = c.getNamespaceHandler().getID(block.element);
+            if (id != null && !id.equals("")) {
+                c.addIDBox(id, block);
+            }
+        }
         return layout(c, block, content);
     }
 
@@ -288,6 +288,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/09/20 11:28:12  tobega
+ * Knowledge of how to extract IDs belongs in the NamespaceHandler
+ *
  * Revision 1.28  2005/07/04 01:58:30  joshy
  * removed debuggintg
  * Issue number:

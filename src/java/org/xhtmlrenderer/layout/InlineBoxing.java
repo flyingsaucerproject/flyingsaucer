@@ -34,8 +34,7 @@ import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Font;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -481,14 +480,15 @@ public class InlineBoxing {
 
             InlineTextBox inline = new InlineTextBox();
             inline.element = textContent.getElement();
-			
-			if(inline.element != null) {
-				if(inline.element.hasAttribute("id")) {
-					c.addIDBox(inline.element.getAttribute("id"),inline);
-				}
-			}
 
-			
+            if (inline.element != null) {
+                String id = c.getNamespaceHandler().getID(inline.element);
+                if (id != null && !id.equals("")) {
+                    c.addIDBox(id, inline);
+                }
+            }
+
+
             inline.pseudoElement = textContent.getPseudoElement();
 
             //Here we must set MasterText, it might have been restyled
@@ -582,6 +582,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2005/09/20 11:28:13  tobega
+ * Knowledge of how to extract IDs belongs in the NamespaceHandler
+ *
  * Revision 1.36  2005/07/18 17:53:31  joshy
  * fixed anchor jumping
  * Issue number:
