@@ -35,7 +35,7 @@ import java.util.List;
  * Time: 22:52:27
  * To change this template use File | Settings | File Templates.
  */
-public class TableCellContent implements Content {
+public class TableCellContent extends AbstractCachingContent implements Content {
     /**
      * Description of the Field
      */
@@ -104,13 +104,7 @@ public class TableCellContent implements Content {
         return _style;
     }
 
-    /**
-     * Gets the childContent attribute of the TableContent object
-     *
-     * @param c PARAM
-     * @return The childContent value
-     */
-    public List getChildContent(Context c) {
+    protected List makeChildContent(Context c) {
         return ContentUtil.getChildContentList(c, this);
     }
 

@@ -26,19 +26,15 @@ import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.Stack;
 import java.util.logging.Level;
-import java.util.Map;
-import java.util.HashMap;
 
 public class ContextImpl implements Context {
     SharedContext sharedContext;
@@ -46,6 +42,8 @@ public class ContextImpl implements Context {
     private LinkedList inlineBorders = new LinkedList();
     private LinkedList firstLineStyles = new LinkedList();
     private boolean shrinkWrap = false;
+
+    private boolean interactive = true;
 
     public RenderingContext getRenderingContext() {
         return sharedContext.getRenderingContext();
@@ -188,6 +186,8 @@ public class ContextImpl implements Context {
 
     //Style-handling stuff
     private Stack styleStack;
+
+    private Stack parentContentStack = new Stack();
 
     public void initializeStyles(EmptyStyle c) {
         styleStack = new Stack();
@@ -426,16 +426,34 @@ public class ContextImpl implements Context {
                 + " offset = " + xoff + "," + yoff
                 ;
     }
-	
-	
-	
-	/* code to keep track of all of the id'd boxes */
-	public void addIDBox(String id, Box box) {
-		this.sharedContext.addIDBox(id,box);
-	}
 
-	public Box getIDBox(String id) {
-		return this.sharedContext.getIDBox(id);
-	}
-	
+
+    /* code to keep track of all of the id'd boxes */
+    public void addIDBox(String id, Box box) {
+        this.sharedContext.addIDBox(id, box);
+    }
+
+    public Box getIDBox(String id) {
+        return this.sharedContext.getIDBox(id);
+    }
+
+    public boolean isInteractive() {
+        return interactive;
+    }
+
+    public void setInteractive(boolean interactive) {
+        this.interactive = interactive;
+    }
+
+    public Content getParentContent() {
+        return (Content) (parentContentStack.size() == 0 ? null : parentContentStack.peek());
+    }
+
+    public void pushParentContent(Content content) {
+        parentContentStack.push(content);
+    }
+
+    public void popParentContent() {
+        parentContentStack.pop();
+    }
 }

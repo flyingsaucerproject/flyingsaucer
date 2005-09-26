@@ -63,6 +63,7 @@ public class Graphics2DRenderer {
     public Graphics2DRenderer() {
         panel = new XHTMLPanel();
         panel.setThreadedLayout(false);
+        panel.setInteractive(false);
     }
 
     // ASK maybe we could change the graphics2d to be a font rendering context?
@@ -143,6 +144,10 @@ public class Graphics2DRenderer {
         return panel.getRenderingContext();
     }
 
+    public XHTMLPanel getPanel() {
+        return panel;
+    }
+
     /**
      * a static utility method to automatically create an image the right size,
      * then layout and render the document
@@ -201,6 +206,9 @@ public class Graphics2DRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/09/26 22:40:21  tobega
+ * Applied patch from Peter Brant concerning margin collapsing
+ *
  * Revision 1.10  2005/06/16 07:24:52  tobega
  * Fixed background image bug.
  * Caching images in browser.

@@ -19,31 +19,36 @@
  */
 package org.xhtmlrenderer.layout.content;
 
-import java.util.List;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
+
+import java.util.List;
 
 
 /**
  * Represents content that is to be positioned out of the normal rendering
  * context
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
-public class AbsolutelyPositionedContent implements Content {
-    /** Description of the Field */
+public class AbsolutelyPositionedContent extends AbstractCachingContent implements Content {
+    /**
+     * Description of the Field
+     */
     private Element _elem;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private CascadedStyle _style;
 
     /**
      * Constructor for the AbsolutelyPositionedContent object
      *
-     * @param e      PARAM
-     * @param style  PARAM
+     * @param e     PARAM
+     * @param style PARAM
      */
-    AbsolutelyPositionedContent( Element e, CascadedStyle style ) {
+    AbsolutelyPositionedContent(Element e, CascadedStyle style) {
         _elem = e;
         _style = style;
     }
@@ -51,7 +56,7 @@ public class AbsolutelyPositionedContent implements Content {
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
         return "AbsolutelyPositioned: " + _elem.getNodeName();
@@ -60,7 +65,7 @@ public class AbsolutelyPositionedContent implements Content {
     /**
      * Gets the element attribute of the AbsolutelyPositionedContent object
      *
-     * @return   The element value
+     * @return The element value
      */
     public Element getElement() {
         return _elem;
@@ -69,21 +74,14 @@ public class AbsolutelyPositionedContent implements Content {
     /**
      * Gets the style attribute of the AbsolutelyPositionedContent object
      *
-     * @return   The style value
+     * @return The style value
      */
     public CascadedStyle getStyle() {
         return _style;
     }
 
-    /**
-     * Gets the childContent attribute of the AbsolutelyPositionedContent object
-     *
-     * @param c  PARAM
-     * @return   The childContent value
-     */
-    public List getChildContent( Context c ) {
-        return ContentUtil.getChildContentList( c, this );
+    protected List makeChildContent(Context c) {
+        return ContentUtil.getChildContentList(c, this);
     }
-
 }
 

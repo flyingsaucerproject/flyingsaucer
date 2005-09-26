@@ -22,10 +22,12 @@ package org.xhtmlrenderer.render;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
+import org.xhtmlrenderer.layout.Context;
 
 import javax.swing.*;
-import java.awt.Image;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -215,6 +217,12 @@ public class Box {
     public boolean clear_left = false;
     public boolean clear_right = false;
     public int contentWidth;
+
+    private float _marginTopOverride;
+    private boolean _marginTopOverrideSet = false;
+
+    private float _marginBottomOverride;
+    private boolean _marginBottomOverrideSet = false;
 
     /**
      * Constructor for the Box object
@@ -488,18 +496,49 @@ public class Box {
         return sb.toString();
     }
 
+    public float getMarginTopOverride() {
+        return _marginTopOverride;
+    }
+
+    public void setMarginTopOverride(float marginTopOverride) {
+        _marginTopOverride = marginTopOverride;
+        _marginTopOverrideSet = true;
+    }
+
+
+    public float getMarginBottomOverride() {
+        return _marginBottomOverride;
+    }
+
+    public void setMarginBottomOverride(float marginBottomOverride) {
+        _marginBottomOverride = marginBottomOverride;
+        _marginBottomOverrideSet = true;
+    }
+
     /**
-     * Description of the Method
-     *
-     * @param style PARAM
-     * @param c
+     * NOTE: Depends on <code>c.getCurrentStyle()</code> returning the style
+     * for this box.
      */
+    public Border getMarginWidth(Context c, float parentWidth) {
+        Border result = c.getCurrentStyle().getMarginWidth(parentWidth, parentWidth, c.getCtx());
+        if (_marginTopOverrideSet) {
+            result.top = (int) _marginTopOverride;
+        }
+        if (_marginBottomOverrideSet) {
+            result.bottom = (int) _marginBottomOverride;
+        }
+        return result;
+    }
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.57  2005/09/26 22:40:21  tobega
+ * Applied patch from Peter Brant concerning margin collapsing
+ *
  * Revision 1.56  2005/07/04 00:12:12  tobega
  * text-align now works for table-cells too (is done in render, not in layout)
  *

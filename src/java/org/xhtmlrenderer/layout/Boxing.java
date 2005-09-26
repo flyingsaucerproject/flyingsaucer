@@ -55,7 +55,6 @@ public class Boxing {
     private Boxing() {
     }
 
-
     /**
      * Description of the Method
      *
@@ -165,7 +164,6 @@ public class Boxing {
             Absolute.preChildrenLayout(c, block);
         }
 
-
         if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.LEFT)) {
             block.clear_left = true;
         }
@@ -180,18 +178,24 @@ public class Boxing {
             block.clear_left = false;
             block.clear_right = false;
         }
-
-
+        
         // save height incase fixed height
         int original_height = block.height;
+
+        if (block.component == null) {
+            block.height = 0;
+        }
+
+        VerticalMarginCollapser.collapseVerticalMargins(c, block, content, (float) oe.getWidth());
 
         // do children's layout
         boolean old_sub = c.isSubBlock();
         c.setSubBlock(false);
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
-        Border margin = c.getCurrentStyle().getMarginWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+        Border margin = block.getMarginWidth(c, (float) oe.getWidth());
         Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+
         int tx = margin.left + border.left + padding.left;
         int ty = margin.top + border.top + padding.top;
         block.tx = tx;
@@ -199,11 +203,13 @@ public class Boxing {
         c.translate(tx, ty);
         c.shrinkExtents(tx + margin.right + border.right + padding.right, ty + margin.bottom + border.bottom + padding.bottom);
         if (block.component == null)
-            layoutChildren(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
+            layoutChildren(c, block, content);//when this is really an anonymous, InlineLayout.layoutChildren is called
         else {
             Point origin = c.getOriginOffset();
             block.component.setLocation((int) origin.getX(), (int) origin.getY());
-            c.getCanvas().add(block.component);
+            if (c.isInteractive()) {
+                c.getCanvas().add(block.component);
+            }
         }
         c.unshrinkExtents();
         c.translate(-tx, -ty);
@@ -254,7 +260,6 @@ public class Boxing {
         return block;
     }
 
-
     /**
      * Description of the Method
      *
@@ -263,7 +268,9 @@ public class Boxing {
      * @param contentList
      * @return Returns
      */
-    public static Box layoutChildren(Context c, Box box, List contentList) {
+    public static Box layoutChildren(Context c, Box box, Content content) {
+        List contentList = content.getChildContent(c);
+
         if (contentList == null) {
             return box;
         }
@@ -271,11 +278,13 @@ public class Boxing {
             return box;
         }//we can do this if there is no content, right?
 
+        c.pushParentContent(content);
         if (ContentUtil.hasBlockContent(contentList)) {//this should be block layed out
             BlockBoxing.layoutContent(c, box, contentList, box);
         } else {
             InlineBoxing.layoutContent(c, box, contentList);
         }
+        c.popParentContent();
         return box;
     }
 
@@ -288,6 +297,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/09/26 22:40:19  tobega
+ * Applied patch from Peter Brant concerning margin collapsing
+ *
  * Revision 1.29  2005/09/20 11:28:12  tobega
  * Knowledge of how to extract IDs belongs in the NamespaceHandler
  *

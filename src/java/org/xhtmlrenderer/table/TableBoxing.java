@@ -44,6 +44,7 @@ import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.VerticalMarginCollapser;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.TableCellContent;
 import org.xhtmlrenderer.layout.content.TableContent;
@@ -54,8 +55,7 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -80,7 +80,7 @@ public class TableBoxing {
         boolean set_bfc = false;
         if (content instanceof TableContent) {
             outerBox = new BlockBox();
-
+            
             // install a block formatting context for the body,
             // ie. if it's null.
             // set up the outtermost bfc
@@ -115,9 +115,19 @@ public class TableBoxing {
             c.pushStyle(CascadedStyle.emptyCascadedStyle);
         }
 
+        VerticalMarginCollapser.collapseVerticalMargins(c, tableBox, content, (float) oe.getWidth());
+
+        TableContent tableContent = (TableContent) content;
+        if (tableContent.isTopMarginCollapsed()) {
+            tableBox.setMarginTopOverride(0f);
+        }
+        if (tableContent.isBottomMarginCollapsed()) {
+            tableBox.setMarginBottomOverride(0f);
+        }
+
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
-        Border margin = c.getCurrentStyle().getMarginWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+        Border margin = tableBox.getMarginWidth(c, (float) oe.getWidth());
         Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
         int tx = margin.left + border.left + padding.left;
         int ty = margin.top + border.top + padding.top;
@@ -550,11 +560,13 @@ public class TableBoxing {
         c.translate(tx, ty);
         c.shrinkExtents(tx + border.right + padding.right, ty + border.bottom + padding.bottom);
         if (block.component == null)
-            Boxing.layoutChildren(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
+            Boxing.layoutChildren(c, block, content);//when this is really an anonymous, InlineLayout.layoutChildren is called
         else {
             Point origin = c.getOriginOffset();
             block.component.setLocation((int) origin.getX(), (int) origin.getY());
-            c.getCanvas().add(block.component);
+            if (c.isInteractive()) {
+                c.getCanvas().add(block.component);
+            }
         }
         c.unshrinkExtents();
         c.translate(-tx, -ty);
@@ -610,6 +622,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.23  2005/09/26 22:40:23  tobega
+   Applied patch from Peter Brant concerning margin collapsing
+
    Revision 1.22  2005/09/11 20:43:16  tobega
    Fixed table-css interaction bug, colspan now works again
 

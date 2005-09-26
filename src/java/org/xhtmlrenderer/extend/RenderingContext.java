@@ -29,9 +29,7 @@ import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Toolkit;
+import java.awt.*;
 
 
 /**
@@ -87,6 +85,8 @@ public class RenderingContext implements CssContext {
      */
     private float mm_per_px;
 
+    private final static float DEFAULT_DPI = 72;
+
     /**
      * Constructor for the RenderingContext object
      *
@@ -100,7 +100,11 @@ public class RenderingContext implements CssContext {
         getContext().setCss(new StyleReference(uac));
         XRLog.render("Using CSS implementation from: " + getContext().getCss().getClass().getName());
         setTextRenderer(new Java2DTextRenderer());
-        setDPI(Toolkit.getDefaultToolkit().getScreenResolution());
+        try {
+            setDPI(Toolkit.getDefaultToolkit().getScreenResolution());
+        } catch (HeadlessException e) {
+            setDPI(DEFAULT_DPI);
+        }
     }
 
     /**

@@ -19,17 +19,18 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class BlockBox extends Box {
 
-    /** Constructor for the BlockBox object  */
+
+    /**
+     * Constructor for the BlockBox object
+     */
     public BlockBox() {
         super();
     }
@@ -37,13 +38,13 @@ public class BlockBox extends Box {
     /**
      * Constructor for the BlockBox object
      *
-     * @param x  PARAM
-     * @param y  PARAM
-     * @param w  PARAM
-     * @param h  PARAM
+     * @param x PARAM
+     * @param y PARAM
+     * @param w PARAM
+     * @param h PARAM
      */
-    public BlockBox( int x, int y, int w, int h ) {
-        super( x, y, w, h );
+    public BlockBox(int x, int y, int w, int h) {
+        super(x, y, w, h);
     }
 
     //A block box may have special styles for the first line and first letter
@@ -52,28 +53,30 @@ public class BlockBox extends Box {
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append( "BlockBox:" );
-        sb.append( super.toString() );
+        sb.append("BlockBox:");
+        sb.append(super.toString());
 
-        if ( this.fixed ) {
-            sb.append( " position: fixed" );
+        if (this.fixed) {
+            sb.append(" position: fixed");
         }
-        if ( this.right_set ) {
-            sb.append( " right = " + this.right );
+        if (this.right_set) {
+            sb.append(" right = " + this.right);
         }
         return sb.toString();
     }
-
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/09/26 22:40:20  tobega
+ * Applied patch from Peter Brant concerning margin collapsing
+ *
  * Revision 1.7  2005/01/29 20:24:23  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

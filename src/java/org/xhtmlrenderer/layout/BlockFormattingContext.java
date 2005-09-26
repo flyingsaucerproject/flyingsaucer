@@ -4,10 +4,8 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +26,7 @@ public class BlockFormattingContext {
         CalculatedStyle style = c.getCurrentStyle();
         Border border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
-        Border margin = style.getMarginWidth(parent_width, parent_width, c.getCtx());
+        Border margin = master.getMarginWidth(c, parent_width);
         padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
         insets = new Border(margin.top + border.top + padding.top,
                 padding.right + border.right + margin.right,
@@ -63,10 +61,10 @@ public class BlockFormattingContext {
     public int getY() {
         return master.y + y;
     }
-	
-	public Point getOffset(Box box) {
-		return (Point) offset_map.get(box);
-	}
+
+    public Point getOffset(Box box) {
+        return (Point) offset_map.get(box);
+    }
 
     public Point getOffset() {
         //return new Point(x, y);
@@ -98,11 +96,12 @@ public class BlockFormattingContext {
 
 
     /* ====== float stuff ========= */
-	
-	private FloatManager _float_manager = new FloatManager();
-	public FloatManager getFloatManager() {
-		return this._float_manager;
-	}
+
+    private FloatManager _float_manager = new FloatManager();
+
+    public FloatManager getFloatManager() {
+        return this._float_manager;
+    }
 
     public void addLeftFloat(Box block) {
         //Uu.p("adding a left float: " + block);
@@ -111,7 +110,7 @@ public class BlockFormattingContext {
     }
 
     public void addRightFloat(Box block) {
-		//Uu.p("adding a right float: " + block);
+        //Uu.p("adding a right float: " + block);
         right_floats.add(block);
         offset_map.put(block, getOffset());
     }
@@ -123,34 +122,34 @@ public class BlockFormattingContext {
     public int getLeftFloatDistance(Box line) {
         return getFloatDistance(line, left_floats);
     }
-	
-	private int getFloatDistance(Box line, List float_list) {
-		return this._float_manager.getFloatDistance(line,float_list, this);
-	}
+
+    private int getFloatDistance(Box line, List float_list) {
+        return this._float_manager.getFloatDistance(line, float_list, this);
+    }
 
     public Box getLeftFloatX(Box box) {
-		//Uu.p("in old bfc.getLeftFloatX( " + box + " ) ");
+        //Uu.p("in old bfc.getLeftFloatX( " + box + " ) ");
         // count backwards through the floats
         int x = 0;
         for (int i = left_floats.size() - 1; i >= 0; i--) {
             Box floater = (Box) left_floats.get(i);
             //Uu.p("box = " + box);
-           // Uu.p("testing against float = " + floater);
+            // Uu.p("testing against float = " + floater);
             x = floater.x + floater.width;
             if (floater.y + floater.height > box.y) {
-               // Uu.p("float["+i+"] blocks the box vertically");
+                // Uu.p("float["+i+"] blocks the box vertically");
                 return floater;
             } else {
-               // Uu.p("float["+i+"] doesn't block. moving to next");
+                // Uu.p("float["+i+"] doesn't block. moving to next");
             }
         }
-		//Uu.p("returning null");
+        //Uu.p("returning null");
         return null;
     }
-	
-	public Box newGetLeftFloatX(Box box) {
-		return FloatManager.newGetLeftFloatX(box,left_floats,this);
-	}
+
+    public Box newGetLeftFloatX(Box box) {
+        return FloatManager.newGetLeftFloatX(box, left_floats, this);
+    }
 
     public Box pushDownLeft(Box box) {
         return pushDownLeftRight(box, left_floats);
@@ -172,12 +171,12 @@ public class BlockFormattingContext {
     }
 
     public Box pushDownRight(Box box) {
-		//Uu.p("push Down Right : " + box);
+        //Uu.p("push Down Right : " + box);
         return pushDownLeftRight(box, right_floats);
     }
 
     public Box getRightFloatX(Box box) {
-		//Uu.p("get right float x : " + box);
+        //Uu.p("get right float x : " + box);
         // count backwards through the floats
         int x = 0;
         for (int i = right_floats.size() - 1; i >= 0; i--) {
@@ -215,15 +214,15 @@ public class BlockFormattingContext {
     }
 
     public int getRightFloatDistance(LineBox line) {
-		///Uu.p("get right float distance: " + line);
+        ///Uu.p("get right float distance: " + line);
         return getFloatDistance(line, right_floats);
     }
-	
+
     public int getBottomFloatDistance(LineBox line) {
         return 0;
     }
-	
-	/* -- end flaot stuff --- */
+
+    /* -- end flaot stuff --- */
 
 
     public void addAbsoluteBottomBox(Box box) {

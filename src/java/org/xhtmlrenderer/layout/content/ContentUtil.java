@@ -507,12 +507,19 @@ public class ContentUtil {
         return textContent;
     }
 
+    public static boolean isNotInFlow(Object target) {
+        return target instanceof AbsolutelyPositionedContent || target instanceof FloatedBlockContent;
+    }
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2005/09/26 22:40:18  tobega
+ * Applied patch from Peter Brant concerning margin collapsing
+ *
  * Revision 1.39  2005/06/16 07:24:49  tobega
  * Fixed background image bug.
  * Caching images in browser.

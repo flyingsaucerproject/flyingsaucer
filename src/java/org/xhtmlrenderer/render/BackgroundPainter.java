@@ -24,11 +24,7 @@ import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
+import java.awt.*;
 
 
 /**
@@ -62,7 +58,7 @@ public class BackgroundPainter {
         if (border == null) {
             return;
         }
-        Border margin = c.getCurrentStyle().getMarginWidth(width, height, c.getCtx());
+        Border margin = block.getMarginWidth(c, width);
         Rectangle box = new Rectangle(block.x + margin.left + border.left,
                 block.y + margin.top + border.top,
                 block.width - margin.left - margin.right - border.left - border.right,
@@ -91,9 +87,10 @@ public class BackgroundPainter {
             int top_insets = box.y;
             int back_width = box.width;
             int back_height = box.height;
-            Rectangle2D oldclip = (Rectangle2D) c.getGraphics().getClip();
+            Shape oldclip = (Shape) c.getGraphics().getClip();
+
             Rectangle new_clip = new Rectangle(left_insets, top_insets, back_width, back_height);
-            c.getGraphics().setClip(oldclip.createIntersection(new_clip));
+            c.getGraphics().clip(new_clip);
 
             xoff += block.background_position_horizontal;
             yoff -= block.background_position_vertical;
@@ -171,6 +168,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/09/26 22:40:20  tobega
+ * Applied patch from Peter Brant concerning margin collapsing
+ *
  * Revision 1.30  2005/06/22 23:48:45  tobega
  * Refactored the css package to allow a clean separation from the core.
  *

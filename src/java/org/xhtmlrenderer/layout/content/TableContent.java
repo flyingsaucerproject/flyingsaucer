@@ -38,7 +38,7 @@ import java.util.NoSuchElementException;
  *
  * @author Torbjörn Gannholm
  */
-public class TableContent implements Content {
+public class TableContent extends AbstractCollapsableContent implements CollapsableContent {
     /**
      * Description of the Field
      */
@@ -51,6 +51,9 @@ public class TableContent implements Content {
      * Description of the Field
      */
     final private LinkedList _children;
+
+    private boolean _topMarginCollapsed;
+    private boolean _bottomMarginCollapsed;
 
     /**
      * Constructor for the TableContent object
@@ -113,7 +116,7 @@ public class TableContent implements Content {
      * @param c PARAM
      * @return The childContent value
      */
-    public List getChildContent(Context c) {
+    protected List makeChildContent(Context c) {
         LinkedList contentList = new LinkedList();
         FirstLineStyle firstLineStyle = null;
         FirstLetterStyle firstLetterStyle = null;
@@ -297,6 +300,26 @@ public class TableContent implements Content {
                 throw new UnsupportedOperationException();
             }
         };
+    }
+
+    public boolean isTopMarginCollapsed() {
+        return _topMarginCollapsed;
+    }
+
+    public void setTopMarginCollapsed(boolean topMarginCollapsed) {
+        _topMarginCollapsed = topMarginCollapsed;
+    }
+
+    public boolean mayCollapseInto() {
+        return false;
+    }
+
+    public boolean isBottomMarginCollapsed() {
+        return _bottomMarginCollapsed;
+    }
+
+    public void setBottomMarginCollapsed(boolean bottomMarginCollapsed) {
+        _bottomMarginCollapsed = bottomMarginCollapsed;
     }
 
 }

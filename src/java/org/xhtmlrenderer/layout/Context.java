@@ -26,13 +26,11 @@ import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.swing.BasicPanel;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.LinkedList;
 
 
@@ -350,8 +348,26 @@ public interface Context {
     public boolean shouldStop();
 
     Font getCurrentFont();
-	
-	public void addIDBox(String id, Box box);
-	public Box getIDBox(String id);
+
+    public void addIDBox(String id, Box box);
+
+    public Box getIDBox(String id);
+
+    /**
+     * Flag to indicate whether the current document is being rendered to
+     * the screen or to some other device.
+     */
+    public boolean isInteractive();
+
+    /**
+     * @see #isInteractive()
+     */
+    public void setInteractive(boolean b);
+
+    public Content getParentContent();
+
+    public void pushParentContent(Content content);
+
+    public void popParentContent();
 }
 

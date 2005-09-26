@@ -452,6 +452,10 @@ public class IdentValue {
      * Description of the Field
      */
     public final static IdentValue UPPER_ROMAN = addValue("upper-roman");
+    /**
+     * Description of the Field
+     */
+    public final static IdentValue VISIBLE = addValue("visible");
 
     /**
      * Description of the Field
@@ -514,6 +518,9 @@ public class IdentValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/09/26 22:40:16  tobega
+ * Applied patch from Peter Brant concerning margin collapsing
+ *
  * Revision 1.8  2005/06/19 23:02:38  tobega
  * Implemented calculation of minimum cell-widths.
  * Implemented border-spacing.

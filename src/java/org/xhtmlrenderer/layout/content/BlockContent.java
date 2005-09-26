@@ -19,31 +19,36 @@
  */
 package org.xhtmlrenderer.layout.content;
 
-import java.util.List;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.Context;
+
+import java.util.List;
 
 
 /**
  * Represents the content of a "block"-display element
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
-public class BlockContent implements Content {
-    /** Description of the Field */
+public class BlockContent extends AbstractCollapsableContent implements CollapsableContent {
+    /**
+     * Description of the Field
+     */
     private Element _elem;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private CascadedStyle _style;
-
+    
     //TODO: make constructor package local
     /**
      * Constructor for the BlockContent object
      *
-     * @param e      PARAM
-     * @param style  PARAM
+     * @param e     PARAM
+     * @param style PARAM
      */
-    public BlockContent( Element e, CascadedStyle style ) {
+    public BlockContent(Element e, CascadedStyle style) {
         _elem = e;
         _style = style;
     }
@@ -51,7 +56,7 @@ public class BlockContent implements Content {
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
         return "Block: " + _elem.getNodeName();
@@ -60,7 +65,7 @@ public class BlockContent implements Content {
     /**
      * Gets the element attribute of the BlockContent object
      *
-     * @return   The element value
+     * @return The element value
      */
     public Element getElement() {
         return _elem;
@@ -69,21 +74,19 @@ public class BlockContent implements Content {
     /**
      * Gets the style attribute of the BlockContent object
      *
-     * @return   The style value
+     * @return The style value
      */
     public CascadedStyle getStyle() {
         return _style;
     }
 
-    /**
-     * Gets the childContent attribute of the BlockContent object
-     *
-     * @param c  PARAM
-     * @return   The childContent value
-     */
-    public List getChildContent( Context c ) {
-        return ContentUtil.getChildContentList( c, this );
+    protected List makeChildContent(Context c) {
+        return ContentUtil.getChildContentList(c, this);
     }
 
+    public boolean mayCollapseInto() {
+        // not the whole story since overflow property must be checked too
+        return true;
+    }
 }
 
