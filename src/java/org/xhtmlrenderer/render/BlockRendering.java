@@ -55,7 +55,9 @@ public class BlockRendering {
             //TODO: fix the translates during layout to handle this directly instead
             Point origin = c.getOriginOffset();
             box.component.setLocation((int) origin.getX(), (int) origin.getY());
-            //box.component.paint(c.getGraphics());
+            if (! c.isInteractive()) {
+                box.component.paint(c.getGraphics());
+            }
         } else {
             for (int i = 0; i < box.getChildCount(); i++) {
                 LinkedList inlineBorders = null;
@@ -94,7 +96,7 @@ public class BlockRendering {
 
         if (Configuration.isTrue("xr.renderer.viewport-repaint", false)) {
             if (c.getGraphics().getClip() != null) {
-                Rectangle2D oldclip = (Rectangle2D) c.getGraphics().getClip();
+                Shape oldclip = (Shape) c.getGraphics().getClip();
                 Rectangle2D box_rect = new Rectangle(box.x, box.y, box.width, box.height);
                 //Uu.p("old clip = " + oldclip);
                 //Uu.p("box rect = " + box_rect);
