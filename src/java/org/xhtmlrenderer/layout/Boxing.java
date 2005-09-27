@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -116,6 +116,12 @@ public class Boxing {
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
 
+        VerticalMarginCollapser.collapseVerticalMargins(c, block, content, (float) oe.getWidth());
+
+        Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
+        //note: percentages here refer to width of containing block
+        Border margin = block.getMarginWidth(c, (float) oe.getWidth());
+        Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
 
         CalculatedStyle style = c.getCurrentStyle();
         boolean hasSpecifiedWidth = !style.isIdent(CSSName.WIDTH, IdentValue.AUTO);
@@ -130,14 +136,16 @@ public class Boxing {
             int setWidth = -1;//means width is not set by css
             if (hasSpecifiedWidth) {
                 setWidth = (int) style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
-                c.getExtents().width = setWidth;
+                c.getExtents().width =
+                        margin.left + border.left + padding.left + setWidth + padding.right + border.right + margin.right;
                 //TODO: CHECK: what does isSubBlock mean?
                 if (!c.isSubBlock()) block.width = setWidth;
             }
             if (hasSpecifiedHeight) {
                 setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
                 c.getExtents().height = setHeight;
-                block.height = setHeight;
+                block.height =
+                        margin.top + border.top + padding.top + setHeight + padding.bottom + border.bottom + margin.bottom;
                 block.auto_height = false;
             }
             //check if replaced
@@ -186,15 +194,9 @@ public class Boxing {
             block.height = 0;
         }
 
-        VerticalMarginCollapser.collapseVerticalMargins(c, block, content, (float) oe.getWidth());
-
         // do children's layout
         boolean old_sub = c.isSubBlock();
         c.setSubBlock(false);
-        Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
-        //note: percentages here refer to width of containing block
-        Border margin = block.getMarginWidth(c, (float) oe.getWidth());
-        Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
 
         int tx = margin.left + border.left + padding.left;
         int ty = margin.top + border.top + padding.top;
@@ -263,9 +265,8 @@ public class Boxing {
     /**
      * Description of the Method
      *
-     * @param c           PARAM
-     * @param box         PARAM
-     * @param contentList
+     * @param c   PARAM
+     * @param box PARAM
      * @return Returns
      */
     public static Box layoutChildren(Context c, Box box, Content content) {
@@ -297,6 +298,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/09/27 06:03:00  tobega
+ * Patch from Peter Brant for specified width
+ *
  * Revision 1.30  2005/09/26 22:40:19  tobega
  * Applied patch from Peter Brant concerning margin collapsing
  *
@@ -778,4 +782,5 @@ public class Boxing {
  *
  *
  */
+
 
