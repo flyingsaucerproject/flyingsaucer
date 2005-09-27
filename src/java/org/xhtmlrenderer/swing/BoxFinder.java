@@ -4,9 +4,11 @@ import org.xhtmlrenderer.render.*;
 import java.util.Iterator;
 import org.xhtmlrenderer.layout.*;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
 import java.awt.event.*;
-import org.w3c.dom.*;
 import java.awt.Point;
+import java.util.logging.Level;
+import org.w3c.dom.*;
 
 public class BoxFinder {
 	/*
@@ -37,8 +39,9 @@ public class BoxFinder {
 	public static Element findElementByBox(Box box) {
 		return null;
 	}
-	public static Box findBoxByCoords(int x, int y) {
-		return null;
+	public static Box findBoxByCoords(BasicPanel panel, int x, int y) {
+		Box box = BoxFinder.findElementBox2(panel.getRootBox(),x,y,null);
+        return box;
 	}
 	public static Element findElementByCoords(int x, int y) {
 		return null;
@@ -313,6 +316,55 @@ public class BoxFinder {
         adjs[0] = tx;
         adjs[1] = ty;
         return adjs;
+    }
+    
+    
+    /* I'm not exactly sure how this method works. Can it be replaced by the
+    findBoxByCoords() method?
+    */
+    public static int findBoxX(BasicPanel panel, int x, int y) {
+        return findBoxX(panel.body_box, x, y);
+    }
+    public static int findBoxX(Box box, int x, int y) {
+        XRLog.layout(Level.FINEST, "findBox(" + box + " at (" + x + "," + y + ")");
+        Iterator it = box.getChildIterator();
+
+        while (it.hasNext()) {
+            Box bx = (Box) it.next();
+            int tx = x;
+            int ty = y;
+            tx -= bx.x;
+            //is this needed? tx -= bx.totalLeftPadding(c.getCurrentStyle());
+            ty -= bx.y;
+            //is this needed? ty -= bx.totalTopPadding(c.getCurrentStyle());
+            
+            // test the contents
+            int retbox = findBoxX(bx, tx, ty);
+            if (retbox != -1) {
+                return retbox;
+            }
+
+            int tty = y;
+            if (bx instanceof InlineBox) {
+                InlineBox ibx = (InlineBox) bx;
+                LineBox lbx = (LineBox) box;
+                XRLog.layout(Level.FINEST, "inline = " + ibx);
+                XRLog.layout(Level.FINEST, "inline y = " + ibx.y);
+                XRLog.layout(Level.FINEST, "inline height = " + ibx.height);
+                XRLog.layout(Level.FINEST, "line = " + lbx);
+                int off = lbx.getBaseline() + ibx.y - ibx.height;//not really correct
+                XRLog.layout(Level.FINEST, "off = " + off);
+                tty -= off;
+            }
+            
+            // test the box itself
+            XRLog.layout(Level.FINEST, "bx test = " + bx + " " + x + "," + y);
+            if (bx.contains(x - bx.x, tty - bx.y)) {
+                return x - bx.x;
+            }
+        }
+
+        return -1;
     }
 
 }

@@ -28,7 +28,7 @@ import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.swing.BasicPanel;
+import org.xhtmlrenderer.swing.RootPanel;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -274,7 +274,7 @@ public interface Context {
      *
      * @return The canvas value
      */
-    BasicPanel getCanvas();
+    RootPanel getCanvas();
 
     /**
      * Gets the ctx attribute of the Context object

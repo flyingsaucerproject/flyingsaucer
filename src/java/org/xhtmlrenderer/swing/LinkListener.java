@@ -61,7 +61,7 @@ public class LinkListener extends MouseInputAdapter {
      * @param evt PARAM
      */
     public void mouseEntered(MouseEvent evt) {
-        Box box = panel.findBox(evt.getX(), evt.getY());
+        Box box = BoxFinder.findBoxByCoords(panel,evt.getX(), evt.getY());
         setCursor(box);
     }
 
@@ -71,7 +71,7 @@ public class LinkListener extends MouseInputAdapter {
      * @param evt PARAM
      */
     public void mouseExited(MouseEvent evt) {
-        Box box = panel.findBox(evt.getX(), evt.getY());
+        Box box = BoxFinder.findBoxByCoords(panel,evt.getX(), evt.getY());
         setCursor(box);
     }
 
@@ -133,7 +133,7 @@ public class LinkListener extends MouseInputAdapter {
      * @param evt PARAM
      */
     public void mouseDragged(MouseEvent evt) {
-        Box box = panel.findBox(evt.getX(), evt.getY());
+        Box box = BoxFinder.findBoxByCoords(panel,evt.getX(), evt.getY());
         setCursor(box);
     }
 

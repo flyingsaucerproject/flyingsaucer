@@ -26,7 +26,7 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.swing.BasicPanel;
+import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Graphics2D;
@@ -123,7 +123,7 @@ public class SharedContext {
     /**
      * Description of the Field
      */
-    protected BasicPanel canvas;
+    protected RootPanel canvas;
 
     /*
      * selection management code
@@ -363,11 +363,11 @@ public class SharedContext {
         this.css = css;
     }
 
-    public BasicPanel getCanvas() {
+    public RootPanel getCanvas() {
         return canvas;
     }
 
-    public void setCanvas(BasicPanel canvas) {
+    public void setCanvas(RootPanel canvas) {
         this.canvas = canvas;
     }
 
@@ -420,6 +420,13 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/09/27 23:48:39  joshy
+ * first merge of basicpanel reworking and incremental layout. more to come.
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.15  2005/07/18 17:53:32  joshy
  * fixed anchor jumping
  * Issue number:

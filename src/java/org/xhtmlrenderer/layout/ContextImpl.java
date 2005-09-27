@@ -28,7 +28,7 @@ import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.swing.BasicPanel;
+import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.*;
@@ -113,7 +113,7 @@ public class ContextImpl implements Context {
         return sharedContext.getCss();
     }
 
-    public BasicPanel getCanvas() {
+    public RootPanel getCanvas() {
         return sharedContext.getCanvas();
     }
 

@@ -28,12 +28,15 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
+import org.xhtmlrenderer.layout.BlockBoxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.resource.XMLResource;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.ErrorHandler;
 
@@ -58,31 +61,32 @@ import java.util.logging.Level;
  *
  * @author Joshua Marinacci
  */
-public abstract class BasicPanel extends JPanel implements ComponentListener, UserInterface {
+public abstract class BasicPanel extends RootPanel {
     /**
      * Description of the Field
      */
-    public Element hovered_element = null;
+     
+    //public Element hovered_element = null;
 
     /**
      * Description of the Field
      */
-    public Element active_element = null;
+    //public Element active_element = null;
 
     /**
      * Description of the Field
      */
-    public Element focus_element = null;
+    //public Element focus_element = null;
 
     /**
      * Description of the Field
      */
-    protected Document doc = null;
+    //protected Document doc = null;
 
     /**
      * Description of the Field
      */
-    protected Box body_box = null;
+    //protected Box body_box = null;
 
     /**
      * Description of the Field
@@ -92,22 +96,22 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     /**
      * Description of the Field
      */
-    protected RenderingContext ctx;
+    //protected RenderingContext ctx;
 
     /**
      * Description of the Field
      */
-    protected LayoutThread layout_thread;
+    //protected LayoutThread layout_thread;
 
     /**
      * Description of the Field
      */
-    private Map documentListeners;
+    //private Map documentListeners;
 
     /**
      * Description of the Field
      */
-    private JScrollPane enclosingScrollPane;
+    //private JScrollPane enclosingScrollPane;
 
     /**
      * Description of the Field
@@ -161,17 +165,19 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     /**
      * Description of the Method
      */
+     /*
     public void resetScrollPosition() {
         if (this.enclosingScrollPane != null) {
             this.enclosingScrollPane.getVerticalScrollBar().setValue(0);
         }
-    }
+    }*/
 
 
     /**
      * Overrides the default implementation to test for and configure any {@link
      * JScrollPane} parent.
      */
+     /*
     public void addNotify() {
         super.addNotify();
         Container p = getParent();
@@ -182,15 +188,18 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             }
         }
     }
+    */
 
     /**
      * Overrides the default implementation unconfigure any {@link JScrollPane}
      * parent.
      */
+     /*
     public void removeNotify() {
         super.removeNotify();
         setEnclosingScrollPane(null);
     }
+    */
 
 
     /**
@@ -198,6 +207,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      *
      * @param g PARAM
      */
+     /*
     public void paintComponent(Graphics g) {
         if (anti_aliased) {
             // TODO:
@@ -215,6 +225,27 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
 
         Context c = newContext((Graphics2D) g);
         layout_thread.startRender(c);
+    }*/
+    public void paintComponent(Graphics g) {
+        if (anti_aliased) {
+            // TODO:
+            // ( (Graphics2D)g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+        }
+
+        if (doc == null) {
+            return;
+        }
+        
+        //Uu.p("paint component () called");
+        // if this is the first time painting this document, then calc layout
+        if(bh == null || bh.box == null) {
+            Uu.p("dispatching an initial resize event");
+			queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED,this.getSize()));
+            Uu.p("skipping the actual painting");
+        } else {
+            Context c = newContext((Graphics2D) g);
+			executeRenderThread(c);
+        }
     }
 
     /**
@@ -223,6 +254,9 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param g PARAM
      */
     public void startLayout(Graphics g) {
+		Uu.p("shouldn't be calling this method");
+		doActualLayout(g);
+        /*
         this.removeAll();
         if (g == null) {
             return;
@@ -238,18 +272,6 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
         //TODO: maybe temporary hack
         if (c.getBlockFormattingContext() != null) c.popBFC();//we set one for the top level before
-        /*
-        Uu.p("---");
-        Uu.p("doing the layout");
-        Uu.p("this size = " + this.getSize());
-        Uu.p("intrinsic size = " + intrinsic_size);
-        if(this.intrinsic_size != null) {
-            if(this.intrinsic_size.equals(this.getSize())) {
-                Uu.p("they are the same size!");
-            }
-        }
-        Uu.p("---");
-        */
         // do the actual layout
         body_box = Boxing.layout(c, new DomToplevelNode(doc));
         if (!c.isStylesAllPopped()) {
@@ -292,6 +314,45 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         }
 
         this.fireDocumentLoaded();
+        */
+    }
+
+    public void calcLayout() {
+		Uu.p("calcLayout() called!  doing nothing");
+        //Uu.dump_stack();
+	}
+
+    protected void executeRenderThread(Context c) {
+        //Uu.p("do render called");
+		//Uu.p("last render event = " + last_event);
+		
+        // paint the normal swing background first
+        // but only if we aren't printing.
+        Graphics g = c.getGraphics();
+        if (!(g instanceof PrinterGraphics) && explicitlyOpaque) {
+            g.setColor(getBackground());
+            g.fillRect(0, 0, getWidth(), getHeight());
+        }
+		
+        // start painting the box tree
+        if(bh != null && bh.box != null) {
+            //Uu.p("not null. doing real painting");
+			long start = System.currentTimeMillis();
+            BoxRendering.paint(c, bh.box, false, false);//no restyle demanded on top level
+			long after = System.currentTimeMillis();
+			if (Configuration.isTrue("xr.incremental.repaint.print-timing", false)) {
+				Uu.p("repaint took ms: " + (after-start));
+			}
+        } else {
+            Uu.p("still null. failing :(");
+        }
+		
+        if (!c.isStylesAllPopped()) {
+            XRLog.render(Level.SEVERE, "mismatch in style popping and pushing");
+        }
+		
+		last_event = null;
+		
     }
 
     private static void bodyExpandHack(Box root, int view_height) {
@@ -322,9 +383,11 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param y PARAM
      * @return Returns
      */
+     /*
     public Box findBox(int x, int y) {
         return findBox(this.body_box, x, y);
     }
+    */
 
     /**
      * Description of the Method
@@ -333,14 +396,17 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param y PARAM
      * @return Returns
      */
+     /*
     public Box findElementBox(int x, int y) {
         return findElementBox(this.body_box, x, y);
     }
+    */
 
-
+    /*
     public Box findBox(Box box, int x, int y) {
         return findBox(box, x, y, null);
     }
+    */
 
     /**
      * Description of the Method
@@ -350,6 +416,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param y   PARAM
      * @return Returns
      */
+     /*
     public Box findBox(Box box, int x, int y, BlockFormattingContext bfc) {
 
         if (box == null) {
@@ -390,6 +457,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
 
         return null;
     }
+    */
 
     /**
      * Description of the Method
@@ -399,10 +467,12 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param y   PARAM
      * @return Returns
      */
+     /*
     public Box findElementBox(Box box, int x, int y) {
         return findElementBox(box, x, y, null);
     }
-
+    */
+/*
     public Box findElementBox(Box box, int x, int y,
                               BlockFormattingContext bfc) {//TODO: why is this used? A better way? should be in a render util?
         
@@ -427,7 +497,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             tx -= bx.tx;
             ty -= bx.y;
             ty -= bx.ty;
-
+*/
             /*
             if(bx.getBlockFormattingContext() != null) {
                 Uu.p("current bfc = " + bfc);
@@ -436,7 +506,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             }
 
             */
-            //Uu.p("bfc = " + box.getBlockFormattingContext());
+/*            //Uu.p("bfc = " + box.getBlockFormattingContext());
             if (bx.absolute) {
                 int[] adj = adjustForAbsolute(bx, tx, ty, bfc);
                 tx = adj[0];
@@ -479,6 +549,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
 
         return null;
     }
+    */
 
     private int[] adjustForAbsolute(Box bx, int tx, int ty, BlockFormattingContext bfc) {
         //Uu.p("testing: " + bx);
@@ -539,9 +610,11 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param y PARAM
      * @return Returns
      */
+     /*
     public int findBoxX(int x, int y) {
         return findBoxX(this.body_box, x, y);
     }
+    */
 
 
     /**
@@ -552,6 +625,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param y   PARAM
      * @return Returns
      */
+     /*
     public int findBoxX(Box box, int x, int y) {
         XRLog.layout(Level.FINEST, "findBox(" + box + " at (" + x + "," + y + ")");
         Iterator it = box.getChildIterator();
@@ -593,40 +667,49 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
 
         return -1;
     }
+    */
 
     /**
      * Description of the Method
      *
      * @param e PARAM
      */
+     /*
     public void componentHidden(ComponentEvent e) {
     }
+    */
 
     /**
      * Description of the Method
      *
      * @param e PARAM
      */
+     /*
     public void componentMoved(ComponentEvent e) {
     }
+    */
 
     /**
      * Description of the Method
      *
      * @param e PARAM
      */
+     /*
     public void componentResized(ComponentEvent e) {
-        //Uu.p("resized!");
+        Uu.p("resized!");
         calcLayout();
     }
+    */
 
     /**
      * Description of the Method
      *
      * @param e PARAM
      */
+     /*
     public void componentShown(ComponentEvent e) {
     }
+    */
 
 
     /**
@@ -651,9 +734,12 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      *
      * @param threaded The new threadedLayout value
      */
+     
     public void setThreadedLayout(boolean threaded) {
-        layout_thread.setThreadedLayout(threaded);
+        Uu.p("WARNING: setThreadedLayout() called. This isn't supported right now");
+        //layout_thread.setThreadedLayout(threaded);
     }
+    
 
     /**
      * Sets the renderingContext attribute of the BasicPanel object
@@ -694,6 +780,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         //Uu.p("set size called! " + d);
         super.setSize(d);
         //this.calcLayout();//this causes a second layout to be done!
+		RenderQueue.getInstance().dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED,d));
     }
 
     /**
@@ -712,7 +799,8 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         getContext().setNamespaceHandler(nsh);
         getRenderingContext().getStyleReference().setDocumentContext(getContext(), getContext().getNamespaceHandler(), doc, this);
 
-        calcLayout();
+        RenderQueue.getInstance().dispatchLayoutEvent(new ReflowEvent(ReflowEvent.DOCUMENT_SET));
+        //calcLayout();
         repaint();
     }
 
@@ -958,11 +1046,13 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * Recalculate the layout of the panel. Normally developers should never
      * need to call this. Call repaint or validate instead.
      */
+     /*
     protected void calcLayout() {
         // set body box to null to trigger new layout
         //Uu.p("calc layout  null was called");
         body_box = null;
     }
+    */
     /*
     protected void calcLayout(Dimension d) {
         calcLayout();
@@ -976,11 +1066,13 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      *
      * @param g PARAM
      */
+     /*
     protected void calcLayout(Graphics g, Dimension d) {
         //Uu.p("calc layout with graphics called: " + d);
         layout_thread.startLayout(g, d);
         explicitlyOpaque = super.isOpaque();
     }
+    */
 
     /**
      * Description of the Method
@@ -1089,12 +1181,14 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
     /**
      * Description of the Method
      */
+     /*
     private void init() {
         layout_thread = new LayoutThread(this);
         documentListeners = new HashMap();
         setBackground(Color.white);
         super.setLayout(null);
     }
+    */
 
 
     /**
@@ -1103,6 +1197,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param g PARAM
      * @return Returns
      */
+     /*
     private Context newContext(Graphics2D g) {
         XRLog.layout(Level.FINEST, "new context begin");
 
@@ -1124,6 +1219,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
         result.setInteractive(isInteractive());
         return result;
     }
+    */
 
     /**
      * Description of the Method
@@ -1155,6 +1251,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
      * @param scrollPane the enclosing {@link JScrollPane} or <tt>null</tt> if
      *                   the panel is no longer enclosed in a {@link JScrollPane}.
      */
+     /*
     private void setEnclosingScrollPane(JScrollPane scrollPane) {
         // if a scrollpane is already installed we remove it.
         if (enclosingScrollPane != null) {
@@ -1167,6 +1264,7 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
             enclosingScrollPane.addComponentListener(this);
         }
     }
+    */
 
     /**
      * Returns the string message drawn on the panel while rendering a page. For most pages, this will be barely visible
@@ -1201,6 +1299,13 @@ public abstract class BasicPanel extends JPanel implements ComponentListener, Us
  * $Id$
  *
  * $Log$
+ * Revision 1.64  2005/09/27 23:48:40  joshy
+ * first merge of basicpanel reworking and incremental layout. more to come.
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.63  2005/09/26 22:40:22  tobega
  * Applied patch from Peter Brant concerning margin collapsing
  *

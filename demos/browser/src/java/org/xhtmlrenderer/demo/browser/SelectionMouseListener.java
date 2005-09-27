@@ -4,6 +4,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 import org.xhtmlrenderer.swing.BasicPanel;
+import org.xhtmlrenderer.swing.BoxFinder;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -54,13 +55,13 @@ public class SelectionMouseListener implements MouseListener, MouseMotionListene
         if (e.getComponent() instanceof BasicPanel) {
             panel = (BasicPanel) e.getComponent();
             panel.getContext().clearSelection();
-            Box box = panel.findBox(e.getX(), e.getY());
+            Box box = BoxFinder.findBoxByCoords(panel,e.getX(), e.getY());
             if (box == null) {
                 return;
             }
             // if box is text node then start selection
             if (box instanceof InlineBox) {
-                int x = panel.findBoxX(e.getX(), e.getY());
+                int x = BoxFinder.findBoxX(panel,e.getX(), e.getY());
                 panel.getContext().setSelectionStart(box, x);
                 panel.getContext().setSelectionEnd(box, x + 1);
                 panel.repaint();
@@ -87,13 +88,13 @@ public class SelectionMouseListener implements MouseListener, MouseMotionListene
     public void mouseDragged(MouseEvent e) {
         if (e.getComponent() instanceof BasicPanel) {
             panel = (BasicPanel) e.getComponent();
-            Box box = panel.findBox(e.getX(), e.getY());
+            Box box = BoxFinder.findBoxByCoords(panel,e.getX(),e.getY());
             if (box == null) {
                 return;
             }
             // if box is text node then start selection
             if ((box instanceof InlineTextBox)) {
-                int x = panel.findBoxX(e.getX(), e.getY());
+                int x = BoxFinder.findBoxX(panel,e.getX(), e.getY());
                 panel.getContext().setSelectionEnd(box, x);
                 panel.repaint();
             }

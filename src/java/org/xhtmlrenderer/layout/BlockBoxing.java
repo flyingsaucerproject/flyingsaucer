@@ -53,12 +53,12 @@ public class BlockBoxing {
      * @param contentList PARAM
      * @param block       PARAM
      */
+     
+    public static int count = 0;
     public static void layoutContent(Context c, Box box, List contentList, Box block) {
         // prepare for the list items
         int old_counter = c.getListCounter();
         c.setListCounter(0);
-        // Uu.p("BoxLayout.layoutContent(): " + block);
-
         Iterator contentIterator = contentList.iterator();
         while (contentIterator.hasNext()) {
             Object o = contentIterator.next();
@@ -178,6 +178,13 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/09/27 23:48:39  joshy
+ * first merge of basicpanel reworking and incremental layout. more to come.
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.12  2005/07/20 18:11:41  joshy
  * bug fixes to absolute pos layout and box finding within abs layout
  *

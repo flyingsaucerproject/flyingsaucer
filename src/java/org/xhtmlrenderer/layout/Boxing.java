@@ -55,6 +55,7 @@ public class Boxing {
     private Boxing() {
     }
 
+    
     /**
      * Description of the Method
      *
@@ -71,6 +72,26 @@ public class Boxing {
         } else {
             block = new BlockBox();
         }
+        block.element = content.getElement();
+        if (block.element != null) {
+            String id = c.getNamespaceHandler().getID(block.element);
+            if (id != null && !id.equals("")) {
+                c.addIDBox(id, block);
+            }
+        }
+        return layout(c, block, content);
+    }
+    // NOTE: this mainly duplicates the previous method. They should be combined
+    public static Box layout(Context c, Content content, BoxHolder bh) {
+        Box block = null;
+        if (content instanceof AnonymousBlockContent) {
+            return AnonymousBoxing.layout(c, content);
+        } else if (content instanceof TableContent) {
+            return TableBoxing.layout(c, content);
+        } else {
+            block = new BlockBox();
+        }
+        bh.box = block;
         block.element = content.getElement();
         if (block.element != null) {
             String id = c.getNamespaceHandler().getID(block.element);
@@ -298,6 +319,13 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2005/09/27 23:48:39  joshy
+ * first merge of basicpanel reworking and incremental layout. more to come.
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.31  2005/09/27 06:03:00  tobega
  * Patch from Peter Brant for specified width
  *
