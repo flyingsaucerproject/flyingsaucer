@@ -91,7 +91,7 @@ public class LayoutThread implements Runnable {
                         //Uu.p("the old intrinsic size matches. skiping the extra repaint");
                         return;
                 }
-                panel.calcLayout();
+                //panel.calcLayout();
                 panel.repaint();
                 //Uu.p("called repaint");
             }
@@ -106,7 +106,7 @@ public class LayoutThread implements Runnable {
     public void run() {
         // Uu.p("layout thread starting");
         // Uu.p("graphics = " + graphics);
-        panel.startLayout(graphics);
+        //panel.startLayout(graphics);
         this.completeLayout();
     }
 

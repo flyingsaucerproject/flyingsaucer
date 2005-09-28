@@ -199,10 +199,12 @@ public abstract class BasicPanel extends RootPanel {
      *
      * @param g PARAM
      */
+     
+     /*
     public void startLayout(Graphics g) {
 		Uu.p("shouldn't be calling this method");
 		doActualLayout(g);
-        /*
+        
         this.removeAll();
         if (g == null) {
             return;
@@ -260,8 +262,9 @@ public abstract class BasicPanel extends RootPanel {
         }
 
         this.fireDocumentLoaded();
-        */
+        
     }
+    */
 
     public void calcLayout() {
 		Uu.p("calcLayout() called!  doing nothing");
@@ -1054,6 +1057,13 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.66  2005/09/28 00:25:16  joshy
+ * a bit more cleanup
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.65  2005/09/28 00:03:29  joshy
  * removed cruft from BasicPanel
  * turned of incremental layout and lazy images by default

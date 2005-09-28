@@ -76,7 +76,7 @@ public class Graphics2DRenderer {
     public void layout(Graphics2D g2, Dimension dim) {
         this.dim = dim;
         panel.setSize(dim);
-        panel.startLayout(g2);
+        panel.doActualLayout(g2);
     }
 
 
@@ -206,6 +206,13 @@ public class Graphics2DRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/09/28 00:25:16  joshy
+ * a bit more cleanup
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.11  2005/09/26 22:40:21  tobega
  * Applied patch from Peter Brant concerning margin collapsing
  *
