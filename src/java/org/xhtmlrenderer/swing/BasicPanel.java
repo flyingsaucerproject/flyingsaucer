@@ -110,11 +110,35 @@ public abstract class BasicPanel extends RootPanel {
 
     private boolean explicitlyOpaque;
 
+    
+    
     /**
      * Message used while layout is in progress and panel is being redrawn.
      */
     private String layoutInProgressMsg = "Layout in progress...";
+    
+    /**
+     * Returns the string message drawn on the panel while rendering a page. For most pages, this will be barely visible
+     * as pages render so quickly.
+     *
+     * @return See desc.
+     */
+    public String getLayoutInProgressMsg() {
+        return layoutInProgressMsg;
+    }
 
+    /**
+     * Sets the string message drawn on the panel while rendering a page. For most pages, this will be barely visible
+     * as pages render so quickly.
+     *
+     * @param layoutInProgressMsg See desc..
+     */
+    public void setLayoutInProgressMsg(String layoutInProgressMsg) {
+        this.layoutInProgressMsg = layoutInProgressMsg;
+    }
+
+    
+    
     private boolean interactive = true;
 
     /**
@@ -153,25 +177,6 @@ public abstract class BasicPanel extends RootPanel {
      *
      * @param g PARAM
      */
-     /*
-    public void paintComponent(Graphics g) {
-        if (anti_aliased) {
-            // TODO:
-            // ( (Graphics2D)g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        }
-
-        if (doc == null) {
-            return;
-        }
-        
-        // if this is the first time painting this document, then calc layout
-        if (body_box == null) {
-            calcLayout(g, this.getSize());
-        }
-
-        Context c = newContext((Graphics2D) g);
-        layout_thread.startRender(c);
-    }*/
     public void paintComponent(Graphics g) {
         if (anti_aliased) {
             // TODO:
@@ -582,6 +587,29 @@ public abstract class BasicPanel extends RootPanel {
     }
 
     /**
+     * Description of the Method
+     *
+     * @param box PARAM
+     * @param tab PARAM
+     */
+    private void printTree(Box box, String tab) {
+        XRLog.layout(Level.FINEST, tab + "Box = " + box);
+        Iterator it = box.getChildIterator();
+        while (it.hasNext()) {
+            Box bx = (Box) it.next();
+            printTree(bx, tab + " ");
+        }
+
+        if (box instanceof InlineBlockBox) {
+            InlineBlockBox ib = (InlineBlockBox) box;
+            if (ib.sub_block != null) {
+                printTree(ib.sub_block, tab + " ");
+            }
+        }
+    }
+
+
+    /**
      * Sets the layout attribute of the BasicPanel object
      * Overrides the method to do nothing, since you shouldn't have a
      * LayoutManager on an FS panel.
@@ -643,6 +671,14 @@ public abstract class BasicPanel extends RootPanel {
 		RenderQueue.getInstance().dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED,d));
     }
 
+    
+    
+    
+    
+    /* =========== set document utility methods =============== */
+    
+    
+    
     /**
      * Sets the document attribute of the BasicPanel object
      *
@@ -686,6 +722,40 @@ public abstract class BasicPanel extends RootPanel {
     }
 
     /**
+     * Sets the document attribute of the BasicPanel object
+     *
+     * @param stream The new document value
+     * @param url    The new document value
+     * @throws Exception Throws
+     */
+    protected void setDocument(InputStream stream, String url)
+            throws Exception {
+        setDocument(stream, url, new NoNamespaceHandler());
+    }
+
+    /**
+     * Sets the new current document, where the new document
+     * is located relative, e.g using a relative URL.
+     *
+     * @param filename The new document to load
+     */
+    protected void setDocumentRelative(String filename) {
+        String url = getRenderingContext().getUac().resolveURI(filename);
+        if (isAnchorInCurrentDocument(filename)) {
+            String id = getAnchorID(filename);
+            Box bxx = getContext().getIDBox(id);
+            if (bxx != null) {
+                Point pt = BoxFinder.findCoordsByBox(bxx);
+                scrollTo(pt);
+                return;
+            }
+        }
+        Document dom = loadDocument(url);
+        setDocument(dom, url);
+    }
+
+
+    /**
      * Reloads the document using the same base URL and namespace handler. Reloading will pick up changes to styles
      * within the document.
      *
@@ -711,6 +781,63 @@ public abstract class BasicPanel extends RootPanel {
         getRenderingContext().getStyleReference().flushStyleSheets();
         setDocument(this.doc, getRenderingContext().getBaseURL(), getContext().getNamespaceHandler());
     }
+    
+    
+    /**
+     * Gets the uRL attribute of the BasicPanel object
+     *
+     * @return The uRL value
+     */
+    public URL getURL() {
+        URL base = null;
+        try {
+            base = new URL(getRenderingContext().getUac().getBaseURL());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return base;
+    }
+    
+    /**
+     * Gets the document attribute of the BasicPanel object
+     *
+     * @return The document value
+     */
+    public Document getDocument() {
+        return doc;
+    }
+
+    /**
+     * Gets the documentTitle attribute of the BasicPanel object
+     *
+     * @return The documentTitle value
+     */
+    public String getDocumentTitle() {
+        return getContext().getNamespaceHandler().getDocumentTitle(doc);
+    }
+    
+    
+    /**
+     * Description of the Method
+     *
+     * @param uri PARAM
+     * @return Returns
+     */
+    protected Document loadDocument(final String uri) {
+        return ctx.getUac().getXMLResource(uri).getDocument();
+    }
+
+
+
+
+
+
+    
+    
+    
+    /* ====== hover and active utility methods ========= */
+    
+    
 
     /**
      * Gets the hover attribute of the BasicPanel object
@@ -769,20 +896,6 @@ public abstract class BasicPanel extends RootPanel {
         return intrinsic_size;
     }
 
-    /**
-     * Gets the uRL attribute of the BasicPanel object
-     *
-     * @return The uRL value
-     */
-    public URL getURL() {
-        URL base = null;
-        try {
-            base = new URL(getRenderingContext().getUac().getBaseURL());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return base;
-    }
 
     /**
      * Returns whether the background of this <code>BasicPanel</code> will
@@ -848,23 +961,6 @@ public abstract class BasicPanel extends RootPanel {
         return getRenderingContext().getContext();
     }
 
-    /**
-     * Gets the document attribute of the BasicPanel object
-     *
-     * @return The document value
-     */
-    public Document getDocument() {
-        return doc;
-    }
-
-    /**
-     * Gets the documentTitle attribute of the BasicPanel object
-     *
-     * @return The documentTitle value
-     */
-    public String getDocumentTitle() {
-        return getContext().getNamespaceHandler().getDocumentTitle(doc);
-    }
 
     /**
      * Gets the fixedRectangle attribute of the BasicPanel object
@@ -930,55 +1026,12 @@ public abstract class BasicPanel extends RootPanel {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param uri PARAM
-     * @return Returns
-     */
-    protected Document loadDocument(final String uri) {
-        return ctx.getUac().getXMLResource(uri).getDocument();
-    }
-
     private Context layout_context;
 
     public void stop() {
         this.layout_context.stopRendering();
     }
 
-
-    /**
-     * Sets the document attribute of the BasicPanel object
-     *
-     * @param stream The new document value
-     * @param url    The new document value
-     * @throws Exception Throws
-     */
-    protected void setDocument(InputStream stream, String url)
-            throws Exception {
-        setDocument(stream, url, new NoNamespaceHandler());
-    }
-
-    /**
-     * Sets the new current document, where the new document
-     * is located relative, e.g using a relative URL.
-     *
-     * @param filename The new document to load
-     */
-    protected void setDocumentRelative(String filename) {
-        String url = getRenderingContext().getUac().resolveURI(filename);
-        if (isAnchorInCurrentDocument(filename)) {
-            String id = getAnchorID(filename);
-            Box bxx = getContext().getIDBox(id);
-            if (bxx != null) {
-                Point pt = BoxFinder.findCoordsByBox(bxx);
-                scrollTo(pt);
-                return;
-            }
-        }
-        Document dom = loadDocument(url);
-        setDocument(dom, url);
-    }
 
     private boolean isAnchorInCurrentDocument(String str) {
         if (str.startsWith("#")) {
@@ -1001,48 +1054,7 @@ public abstract class BasicPanel extends RootPanel {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param box PARAM
-     * @param tab PARAM
-     */
-    private void printTree(Box box, String tab) {
-        XRLog.layout(Level.FINEST, tab + "Box = " + box);
-        Iterator it = box.getChildIterator();
-        while (it.hasNext()) {
-            Box bx = (Box) it.next();
-            printTree(bx, tab + " ");
-        }
 
-        if (box instanceof InlineBlockBox) {
-            InlineBlockBox ib = (InlineBlockBox) box;
-            if (ib.sub_block != null) {
-                printTree(ib.sub_block, tab + " ");
-            }
-        }
-    }
-
-
-    /**
-     * Returns the string message drawn on the panel while rendering a page. For most pages, this will be barely visible
-     * as pages render so quickly.
-     *
-     * @return See desc.
-     */
-    public String getLayoutInProgressMsg() {
-        return layoutInProgressMsg;
-    }
-
-    /**
-     * Sets the string message drawn on the panel while rendering a page. For most pages, this will be barely visible
-     * as pages render so quickly.
-     *
-     * @param layoutInProgressMsg See desc..
-     */
-    public void setLayoutInProgressMsg(String layoutInProgressMsg) {
-        this.layoutInProgressMsg = layoutInProgressMsg;
-    }
 
     public boolean isInteractive() {
         return interactive;
@@ -1057,6 +1069,13 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.67  2005/09/28 00:33:31  joshy
+ * more minor cleanups
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.66  2005/09/28 00:25:16  joshy
  * a bit more cleanup
  * Issue number:
