@@ -1,37 +1,30 @@
 package org.xhtmlrenderer.swing;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Rectangle;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.*;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.logging.Level;
-import javax.swing.*;
-import org.w3c.dom.*;
-
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.content.DomToplevelNode;
-import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.UserInterface;
-import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.layout.*;
+import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.layout.Boxing;
-import org.xhtmlrenderer.layout.BlockBoxing;
-import org.xhtmlrenderer.layout.BoxHolder;
-import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.render.ReflowEvent;
+import org.xhtmlrenderer.render.RenderQueue;
+import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
 
-public class RootPanel extends JPanel implements ComponentListener, UserInterface  {
+
+public class RootPanel extends JPanel implements ComponentListener, UserInterface {
 
 
     /**
@@ -39,8 +32,8 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      */
     protected Dimension intrinsic_size;
 
-	/* can we figure out how to get rid of this?
-	*/
+    /* can we figure out how to get rid of this?
+    */
     protected BoxHolder bh;
 
     /**
@@ -49,8 +42,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     protected Map documentListeners;
 
 
-	
-	/**
+    /**
      * Gets the context attribute of the BasicPanel object
      *
      * @return The context value
@@ -75,7 +67,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
     protected Context layout_context;
 
-	
+
     /**
      * Description of the Field
      */
@@ -106,7 +98,8 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     /**
      * Description of the Field
      */
-	protected JScrollPane enclosingScrollPane;
+    protected JScrollPane enclosingScrollPane;
+
     /**
      * Description of the Method
      */
@@ -176,45 +169,47 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         super.removeNotify();
         setEnclosingScrollPane(null);
     }
-	
-	
+
+
     /**
      * Description of the Field
      */
     protected Document doc = null;
 
-	/**
-	 * The queue to hand painting and layout events
-	 */
-	RenderQueue queue;
+    /**
+     * The queue to hand painting and layout events
+     */
+    RenderQueue queue;
 
     /**
      * Description of the Method
      */
     protected void init() {
-		
-		queue = RenderQueue.getInstance();
+
+        queue = RenderQueue.getInstance();
         documentListeners = new HashMap();
         setBackground(Color.white);
         super.setLayout(null);
-		
-		new Thread(new LayoutLoop(this)).start();
+
+        new Thread(new LayoutLoop(this)).start();
         new Thread(new RenderLoop(this)).start();
-     }
+    }
 
-	int rendered_width = 0;
-	protected int getRenderWidth() {
-		return rendered_width;
-	}
-	protected void setRenderWidth(int renderWidth) {
-		this.rendered_width = renderWidth;
-	}
+    int rendered_width = 0;
+
+    protected int getRenderWidth() {
+        return rendered_width;
+    }
+
+    protected void setRenderWidth(int renderWidth) {
+        this.rendered_width = renderWidth;
+    }
 
 
-	boolean layoutInProgress = false;
+    boolean layoutInProgress = false;
 
-	
-	public ReflowEvent last_event = null;
+
+    public ReflowEvent last_event = null;
 
     protected Context newContext(Graphics2D g) {
         XRLog.layout(Level.FINEST, "new context begin");
@@ -223,28 +218,28 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         getContext().setGraphics(g);
 
         Rectangle extents;
-		
+
         if (enclosingScrollPane != null) {
             Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
             extents = new Rectangle(0, 0, bnds.width, bnds.height);
-			//Uu.p("bnds = " + bnds);
+            //Uu.p("bnds = " + bnds);
         } else {
             extents = new Rectangle(getWidth(), getHeight());//200, 200 ) );
-			
+
         }
 
-		
-		//Uu.p("newContext() = extents = " + extents);
+
+        //Uu.p("newContext() = extents = " + extents);
         getContext().setMaxWidth(0);
-		//getContext().setMaxHeight(0);
+        //getContext().setMaxHeight(0);
         XRLog.layout(Level.FINEST, "new context end");
-		//Uu.p("new context with extents: " + extents);
-		setRenderWidth((int)extents.getWidth());
+        //Uu.p("new context with extents: " + extents);
+        setRenderWidth((int) extents.getWidth());
         return getContext().newContextInstance(extents);
     }
 
-	public void doActualLayout(Graphics g) {
-		//Uu.p("doActualLayout called");
+    public void doActualLayout(Graphics g) {
+        //Uu.p("doActualLayout called");
         this.removeAll();
         if (g == null) {
             return;
@@ -252,29 +247,29 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         if (doc == null) {
             return;
         }
-        
-        // set up CSS
+
+// set up CSS
         Context c = newContext((Graphics2D) g);
-        //getContext().setMaxWidth(0);
+//getContext().setMaxWidth(0);
         this.layout_context = c;
         getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
-        //TODO: maybe temporary hack
+//TODO: maybe temporary hack
         if (c.getBlockFormattingContext() != null) c.popBFC();//we set one for the top level before
-		// do the actual layout
+        // do the actual layout
         BlockBoxing.count = 0;
         bh = new org.xhtmlrenderer.layout.BoxHolder();
-        //Uu.p("doing actual layout here");
-        body_box = Boxing.layout(c, new DomToplevelNode(doc),bh);
-        //Uu.p("body box = " + body_box);
-		if (!c.isStylesAllPopped()) {
+//Uu.p("doing actual layout here");
+        body_box = Boxing.layout(c, new DomToplevelNode(doc), bh);
+//Uu.p("body box = " + body_box);
+        if (!c.isStylesAllPopped()) {
             XRLog.layout(Level.SEVERE, "mismatch in style popping and pushing");
         }
 
         XRLog.layout(Level.FINEST, "is a fixed child: " + body_box.isChildrenExceedBounds());
-        
-        // if there is a fixed child then we need to set opaque to false
-        // so that the entire viewport will be repainted. this is slower
-        // but that's the hit you get from using fixed layout
+
+// if there is a fixed child then we need to set opaque to false
+// so that the entire viewport will be repainted. this is slower
+// but that's the hit you get from using fixed layout
         if (body_box.isChildrenExceedBounds()) {
             super.setOpaque(false);
         } else {
@@ -286,52 +281,51 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         XRLog.layout(Level.FINEST, "after layout: " + body_box);
 
         intrinsic_size = new Dimension(getContext().getMaxWidth(), body_box.height);
-        //Uu.p("intrinsic size = " + intrinsic_size);
-		
-		/*
-        if (enclosingScrollPane != null) {
-            XRLog.layout(Level.FINEST, "enclosing scroll pane = " + this.enclosingScrollPane);
-            int view_height = this.enclosingScrollPane.getViewport().getHeight();
-            // resize the outter most box incase it is too small for the viewport
-            if (intrinsic_size.getHeight() < view_height) {
-                if (body_box != null) {
-                    body_box.height = view_height;
-					//bodyExpandHack(body_box,view_height);
-					intrinsic_size.height = view_height;
-                }
-            }
-        }
-		*/
+//Uu.p("intrinsic size = " + intrinsic_size);
 
-		
+        /*
+if (enclosingScrollPane != null) {
+XRLog.layout(Level.FINEST, "enclosing scroll pane = " + this.enclosingScrollPane);
+int view_height = this.enclosingScrollPane.getViewport().getHeight();
+// resize the outter most box incase it is too small for the viewport
+if (intrinsic_size.getHeight() < view_height) {
+if (body_box != null) {
+body_box.height = view_height;
+                    //bodyExpandHack(body_box,view_height);
+                    intrinsic_size.height = view_height;
+}
+}
+}
+        */
+
+
         if (intrinsic_size.width != this.getWidth()) {
-			//Uu.p("intrisic and this widths don't match: " + this.getSize() + " "  + intrinsic_size);
-			this.setPreferredSize(new Dimension(intrinsic_size.width,this.getHeight()));
-            //this.setPreferredSize(intrinsic_size);
+            //Uu.p("intrisic and this widths don't match: " + this.getSize() + " "  + intrinsic_size);
+            this.setPreferredSize(new Dimension(intrinsic_size.width, this.getHeight()));
+//this.setPreferredSize(intrinsic_size);
             this.revalidate();
         }
-		// if doc is shorter than viewport
-		// then stretch canvas to fill viewport exactly
-		if (intrinsic_size.height < enclosingScrollPane.getViewport().getHeight()) {
-			//Uu.p("int height is less than viewport height");
-			if (enclosingScrollPane.getViewport().getHeight() != this.getHeight()) {
-				this.setPreferredSize(new Dimension(getWidth(),enclosingScrollPane.getViewport().getHeight()));
-				this.revalidate();
-			}
-		} else {  // if doc is taller than viewport
-			if(this.getHeight() != intrinsic_size.height) {
-				this.setPreferredSize(new Dimension(getWidth(),intrinsic_size.height));
-				this.revalidate();
-			}
-			
-		}
-		
-		
+        // if doc is shorter than viewport
+        // then stretch canvas to fill viewport exactly
+        if (intrinsic_size.height < enclosingScrollPane.getViewport().getHeight()) {
+            //Uu.p("int height is less than viewport height");
+            if (enclosingScrollPane.getViewport().getHeight() != this.getHeight()) {
+                this.setPreferredSize(new Dimension(getWidth(), enclosingScrollPane.getViewport().getHeight()));
+                this.revalidate();
+            }
+        } else {  // if doc is taller than viewport
+            if (this.getHeight() != intrinsic_size.height) {
+                this.setPreferredSize(new Dimension(getWidth(), intrinsic_size.height));
+                this.revalidate();
+            }
 
-		queue.dispatchRepaintEvent(new ReflowEvent(ReflowEvent.LAYOUT_COMPLETE));
+        }
+
+
+        queue.dispatchRepaintEvent(new ReflowEvent(ReflowEvent.LAYOUT_COMPLETE));
         this.fireDocumentLoaded();
     }
-	
+
     /**
      * Description of the Method
      */
@@ -343,10 +337,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
     }
 
-	
-	/*
-	* ========= UserInterface implementation ===============
-	*/
+
+    /*
+    * ========= UserInterface implementation ===============
+    */
 
     /**
      * Description of the Field
@@ -390,7 +384,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         return false;
     }
 
-	/**
+    /**
      * Gets the focus attribute of the BasicPanel object
      *
      * @param e PARAM
@@ -403,7 +397,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         return false;
     }
 
-	
+
     /**
      * Description of the Method
      *
@@ -428,8 +422,9 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     public void componentResized(ComponentEvent e) {
         Uu.p("componentResized() " + this.getSize());
         Uu.p("viewport = " + enclosingScrollPane.getViewport().getSize());
-		RenderQueue.getInstance().dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED,
-			enclosingScrollPane.getViewport().getSize()));
+        if (doc != null)
+            RenderQueue.getInstance().dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED,
+                    enclosingScrollPane.getViewport().getSize()));
     }
 
     /**
