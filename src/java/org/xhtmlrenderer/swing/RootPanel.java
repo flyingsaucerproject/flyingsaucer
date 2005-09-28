@@ -15,6 +15,7 @@ import javax.swing.*;
 import org.w3c.dom.*;
 
 import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -79,6 +80,27 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      * Description of the Field
      */
     protected Box body_box = null;
+
+    /**
+     * Sets the document attribute of the BasicPanel object
+     *
+     * @param doc The new document value
+     * @param url The new document value
+     * @param nsh The new document value
+     */
+    public void setDocument(Document doc, String url, NamespaceHandler nsh) {
+        resetScrollPosition();
+        this.doc = doc;
+
+        //have to do this first
+        getRenderingContext().setBaseURL(url);
+        getContext().setNamespaceHandler(nsh);
+        getRenderingContext().getStyleReference().setDocumentContext(getContext(), getContext().getNamespaceHandler(), doc, this);
+
+        RenderQueue.getInstance().dispatchLayoutEvent(new ReflowEvent(ReflowEvent.DOCUMENT_SET));
+        //calcLayout();
+        repaint();
+    }
 
 
     /**

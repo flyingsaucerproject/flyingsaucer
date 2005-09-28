@@ -81,16 +81,6 @@ public abstract class BasicPanel extends RootPanel {
     /**
      * Description of the Field
      */
-    //protected Document doc = null;
-
-    /**
-     * Description of the Field
-     */
-    //protected Box body_box = null;
-
-    /**
-     * Description of the Field
-     */
     protected ErrorHandler error_handler;
 
     /**
@@ -107,11 +97,6 @@ public abstract class BasicPanel extends RootPanel {
      * Description of the Field
      */
     //private Map documentListeners;
-
-    /**
-     * Description of the Field
-     */
-    //private JScrollPane enclosingScrollPane;
 
     /**
      * Description of the Field
@@ -161,45 +146,6 @@ public abstract class BasicPanel extends RootPanel {
         this.documentListeners.put(listener, listener);
     }
 
-
-    /**
-     * Description of the Method
-     */
-     /*
-    public void resetScrollPosition() {
-        if (this.enclosingScrollPane != null) {
-            this.enclosingScrollPane.getVerticalScrollBar().setValue(0);
-        }
-    }*/
-
-
-    /**
-     * Overrides the default implementation to test for and configure any {@link
-     * JScrollPane} parent.
-     */
-     /*
-    public void addNotify() {
-        super.addNotify();
-        Container p = getParent();
-        if (p instanceof JViewport) {
-            Container vp = p.getParent();
-            if (vp instanceof JScrollPane) {
-                setEnclosingScrollPane((JScrollPane) vp);
-            }
-        }
-    }
-    */
-
-    /**
-     * Overrides the default implementation unconfigure any {@link JScrollPane}
-     * parent.
-     */
-     /*
-    public void removeNotify() {
-        super.removeNotify();
-        setEnclosingScrollPane(null);
-    }
-    */
 
 
     /**
@@ -372,42 +318,6 @@ public abstract class BasicPanel extends RootPanel {
         }
     }
     
-    /*
-     * ========= The box finding routines. Should probably move out to another
-     * class
-     */
-    /**
-     * Description of the Method
-     *
-     * @param x PARAM
-     * @param y PARAM
-     * @return Returns
-     */
-     /*
-    public Box findBox(int x, int y) {
-        return findBox(this.body_box, x, y);
-    }
-    */
-
-    /**
-     * Description of the Method
-     *
-     * @param x PARAM
-     * @param y PARAM
-     * @return Returns
-     */
-     /*
-    public Box findElementBox(int x, int y) {
-        return findElementBox(this.body_box, x, y);
-    }
-    */
-
-    /*
-    public Box findBox(Box box, int x, int y) {
-        return findBox(box, x, y, null);
-    }
-    */
-
     /**
      * Description of the Method
      *
@@ -603,18 +513,6 @@ public abstract class BasicPanel extends RootPanel {
         return adjs;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param x PARAM
-     * @param y PARAM
-     * @return Returns
-     */
-     /*
-    public int findBoxX(int x, int y) {
-        return findBoxX(this.body_box, x, y);
-    }
-    */
 
 
     /**
@@ -669,47 +567,8 @@ public abstract class BasicPanel extends RootPanel {
     }
     */
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
-     /*
-    public void componentHidden(ComponentEvent e) {
-    }
-    */
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
-     /*
-    public void componentMoved(ComponentEvent e) {
-    }
-    */
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
-     /*
-    public void componentResized(ComponentEvent e) {
-        Uu.p("resized!");
-        calcLayout();
-    }
-    */
-
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
-     /*
-    public void componentShown(ComponentEvent e) {
-    }
-    */
 
 
     /**
@@ -777,31 +636,8 @@ public abstract class BasicPanel extends RootPanel {
      */
     public void setSize(Dimension d) {
         XRLog.layout(Level.FINEST, "set size called");
-        //Uu.p("set size called! " + d);
         super.setSize(d);
-        //this.calcLayout();//this causes a second layout to be done!
 		RenderQueue.getInstance().dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED,d));
-    }
-
-    /**
-     * Sets the document attribute of the BasicPanel object
-     *
-     * @param doc The new document value
-     * @param url The new document value
-     * @param nsh The new document value
-     */
-    public void setDocument(Document doc, String url, NamespaceHandler nsh) {
-        resetScrollPosition();
-        this.doc = doc;
-
-        //have to do this first
-        getRenderingContext().setBaseURL(url);
-        getContext().setNamespaceHandler(nsh);
-        getRenderingContext().getStyleReference().setDocumentContext(getContext(), getContext().getNamespaceHandler(), doc, this);
-
-        RenderQueue.getInstance().dispatchLayoutEvent(new ReflowEvent(ReflowEvent.DOCUMENT_SET));
-        //calcLayout();
-        repaint();
     }
 
     /**
@@ -1043,24 +879,6 @@ public abstract class BasicPanel extends RootPanel {
 
 
     /**
-     * Recalculate the layout of the panel. Normally developers should never
-     * need to call this. Call repaint or validate instead.
-     */
-     /*
-    protected void calcLayout() {
-        // set body box to null to trigger new layout
-        //Uu.p("calc layout  null was called");
-        body_box = null;
-    }
-    */
-    /*
-    protected void calcLayout(Dimension d) {
-        calcLayout();
-    }
-    */
-
-
-    /**
      * Recalculate the layout of the panel. Only called by paintComponent(). Use
      * calcLayout() instead.
      *
@@ -1079,6 +897,7 @@ public abstract class BasicPanel extends RootPanel {
      *
      * @param c
      */
+     /*
     protected void doRender(Context c) {
         // paint the normal swing background first
         // but only if we aren't printing.
@@ -1095,6 +914,7 @@ public abstract class BasicPanel extends RootPanel {
             XRLog.render(Level.SEVERE, "mismatch in style popping and pushing");
         }
     }
+    */
 
     /**
      * Description of the Method
@@ -1180,49 +1000,6 @@ public abstract class BasicPanel extends RootPanel {
 
     /**
      * Description of the Method
-     */
-     /*
-    private void init() {
-        layout_thread = new LayoutThread(this);
-        documentListeners = new HashMap();
-        setBackground(Color.white);
-        super.setLayout(null);
-    }
-    */
-
-
-    /**
-     * Description of the Method
-     *
-     * @param g PARAM
-     * @return Returns
-     */
-     /*
-    private Context newContext(Graphics2D g) {
-        XRLog.layout(Level.FINEST, "new context begin");
-
-        getContext().setCanvas(this);
-        getContext().setGraphics(g);
-
-        Rectangle extents;
-        if (enclosingScrollPane != null) {
-            Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
-            extents = new Rectangle(0, 0, bnds.width, bnds.height);
-            // Uu.p("bnds = " + bnds);
-        } else {
-            extents = new Rectangle(getWidth(), getHeight());//200, 200 ) );
-        }
-
-        getContext().setMaxWidth(0);
-        XRLog.layout(Level.FINEST, "new context end");
-        Context result = getContext().newContextInstance(extents);
-        result.setInteractive(isInteractive());
-        return result;
-    }
-    */
-
-    /**
-     * Description of the Method
      *
      * @param box PARAM
      * @param tab PARAM
@@ -1243,28 +1020,6 @@ public abstract class BasicPanel extends RootPanel {
         }
     }
 
-    /**
-     * The method is invoked by {@link #addNotify} and {@link #removeNotify} to
-     * ensure that any enclosing {@link JScrollPane} works correctly with this
-     * panel. This method can be safely invoked with a <tt>null</tt> scrollPane.
-     *
-     * @param scrollPane the enclosing {@link JScrollPane} or <tt>null</tt> if
-     *                   the panel is no longer enclosed in a {@link JScrollPane}.
-     */
-     /*
-    private void setEnclosingScrollPane(JScrollPane scrollPane) {
-        // if a scrollpane is already installed we remove it.
-        if (enclosingScrollPane != null) {
-            enclosingScrollPane.removeComponentListener(this);
-        }
-
-        enclosingScrollPane = scrollPane;
-
-        if (enclosingScrollPane != null) {
-            enclosingScrollPane.addComponentListener(this);
-        }
-    }
-    */
 
     /**
      * Returns the string message drawn on the panel while rendering a page. For most pages, this will be barely visible
@@ -1299,6 +1054,14 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.65  2005/09/28 00:03:29  joshy
+ * removed cruft from BasicPanel
+ * turned of incremental layout and lazy images by default
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.64  2005/09/27 23:48:40  joshy
  * first merge of basicpanel reworking and incremental layout. more to come.
  * Issue number:

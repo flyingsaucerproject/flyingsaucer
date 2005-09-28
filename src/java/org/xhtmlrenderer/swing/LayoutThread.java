@@ -141,7 +141,7 @@ public class LayoutThread implements Runnable {
         if (this.isLayoutDone()) {
             if (panel.body_box != null) {
                 try {
-                    panel.doRender(c);
+                    //panel.doRender(c);
                 } catch (Throwable thr) {
                     Uu.p("current thread = " + Thread.currentThread());
                     Uu.p(thr);
