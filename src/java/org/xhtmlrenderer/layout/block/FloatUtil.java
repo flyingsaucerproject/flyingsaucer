@@ -26,7 +26,8 @@ import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.util.Uu;
+
+import java.awt.*;
 
 
 /**
@@ -69,26 +70,27 @@ public class FloatUtil {
         if (ContentUtil.isFloated(style)) {
             //Uu.p("==== setup float ====");
             //Uu.dump_stack();
-			IdentValue floatVal = style.getIdent(CSSName.FLOAT);
+            IdentValue floatVal = style.getIdent(CSSName.FLOAT);
             if (floatVal == IdentValue.NONE) {
                 return;
             }
             box.floated = true;
+            Point offset = c.getBlockFormattingContext().getOffset();
+            box.y = -offset.y;
             if (floatVal == IdentValue.LEFT) {
-				//Uu.p("doing left");
+                //Uu.p("doing left");
                 positionBoxLeft(c, box);
                 c.getBlockFormattingContext().pushDownLeft(box);
                 //Uu.p("final box = " + box);
                 c.getBlockFormattingContext().addLeftFloat(box);
-            }
-            if (floatVal == IdentValue.RIGHT) {
+            } else if (floatVal == IdentValue.RIGHT) {
                 positionBoxRight(c, box);
                 c.getBlockFormattingContext().pushDownRight(box);
-                 //Uu.p("final box = " + box);
+                //Uu.p("final box = " + box);
                 c.getBlockFormattingContext().addRightFloat(box);
             }
-             //Uu.p("box = " + box);
-             //Uu.p("==== end setup ====");
+            //Uu.p("box = " + box);
+            //Uu.p("==== end setup ====");
         }
     }
 
@@ -100,9 +102,9 @@ public class FloatUtil {
      */
     private static void positionBoxLeft(Context c, Box box) {
         //Uu.p("positionBoxLeft()");
-		//Uu.dump_stack();
+        //Uu.dump_stack();
         //Uu.p("calling the new float routine");
-		//Uu.p("starting box = " + box);
+        //Uu.p("starting box = " + box);
         BlockFormattingContext bfc = c.getBlockFormattingContext();
         Box floater = bfc.newGetLeftFloatX(box);
         //Uu.p("floater = " + floater);
@@ -115,17 +117,18 @@ public class FloatUtil {
 
         box.x = floater.x + floater.width;
 
-        if (box.x + box.width > c.getExtents().width && 
-		    box.width <= c.getExtents().width) {
+        if (box.clear_left || (box.x + box.width > c.getExtents().width &&
+                box.width <= c.getExtents().width)) {
             //Uu.p("not enough room!!!");
             // move the box to be below the last float and
             // try it again
-            box.y = floater.y + floater.height;
+            Point floaterOffset = c.getBlockFormattingContext().getOffset(floater);
+            box.y = floater.y - floaterOffset.y + floater.height;
             //Uu.p("trying again with box: " + box);
             positionBoxLeft(c, box);
             //Uu.p("final box 1 = " + box);
         }
-		//Uu.p("final box 2 = " + box + " " + box.hashCode());
+        //Uu.p("final box 2 = " + box + " " + box.hashCode());
     }
 
     /**
@@ -146,12 +149,13 @@ public class FloatUtil {
 
         box.x = floater.x - box.width;
 
-        if (box.x < 0 &&
-                box.width <= c.getExtents().width) {
+        if (box.clear_right || (box.x < 0 &&
+                box.width <= c.getExtents().width)) {
             // Uu.p("not enough room!!!");
             // move the box to be below the last float and
             // try it again
-            box.y = floater.y + floater.height;
+            Point floaterOffset = c.getBlockFormattingContext().getOffset(floater);
+            box.y = floater.y - floaterOffset.y + floater.height;
             positionBoxRight(c, box);
         }
         // Uu.p("final box = " + box);
@@ -163,6 +167,9 @@ public class FloatUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/09/28 05:19:08  tobega
+ * Patch from Peter Brant fixing floats and some other minor things
+ *
  * Revision 1.20  2005/07/14 22:25:15  joshy
  * major updates to float code. should fix *most* issues.
  * Issue number:

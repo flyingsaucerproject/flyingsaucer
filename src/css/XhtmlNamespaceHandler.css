@@ -104,3 +104,7 @@ p {
 a {
     color: #ff0000;
 }
+
+h5, h6, b, strong { 
+  font-weight: bold; 
+}

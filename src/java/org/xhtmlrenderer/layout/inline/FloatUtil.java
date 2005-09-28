@@ -105,7 +105,8 @@ public class FloatUtil {
         }
         //HACK: tobe 2004-12-22 end
 
-        inline_block.y = curr_line.y;
+        Point offset = c.getBlockFormattingContext().getOffset(inline_block);
+        inline_block.y += offset.y;
 
         //Uu.p("got a box now = : " + inline_block);
         Rectangle bounds = new Rectangle(inline_block.x, inline_block.y,
