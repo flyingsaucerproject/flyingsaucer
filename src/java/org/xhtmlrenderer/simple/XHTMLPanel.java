@@ -26,6 +26,7 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
+import org.xhtmlrenderer.util.Uu;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -131,8 +132,9 @@ public class XHTMLPanel extends BasicPanel {
      * Lays out the current document again, and re-renders.
      */
     public void relayout() {
-        super.calcLayout();
+        //super.calcLayout();
         ctx.getContext().flushFonts();
+        Uu.p("WARNING: the relayout() method may not work!");
     }
 
     /**
@@ -286,6 +288,13 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/09/28 20:13:25  joshy
+ * re-enabled body height hack
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.25  2005/07/07 22:13:51  tobega
  * cleanup
  *

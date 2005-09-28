@@ -257,10 +257,6 @@ public abstract class BasicPanel extends RootPanel {
    }
    */
 
-    public void calcLayout() {
-        Uu.p("calcLayout() called!  doing nothing");
-        //Uu.dump_stack();
-    }
 
     protected void executeRenderThread(Context c) {
         //Uu.p("do render called");
@@ -295,22 +291,6 @@ public abstract class BasicPanel extends RootPanel {
 
     }
 
-    private static void bodyExpandHack(Box root, int view_height) {
-        for (int i = 0; i < root.getChildCount(); i++) {
-            // set the html box to the max
-            Box html = root.getChild(i);
-            if (html.element != null && html.element.getNodeName().equals("html")) {
-                html.height = view_height;
-                // set the body box to the max
-                for (int j = 0; j < html.getChildCount(); j++) {
-                    Box body = html.getChild(j);
-                    if (body.element != null && body.element.getNodeName().equals("body")) {
-                        body.height = view_height;
-                    }
-                }
-            }
-        }
-    }
     
     /**
      * Description of the Method
@@ -1055,6 +1035,13 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.69  2005/09/28 20:13:26  joshy
+ * re-enabled body height hack
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.68  2005/09/28 05:17:09  tobega
  * don't layout on resize if doc is null
  *

@@ -281,51 +281,61 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         XRLog.layout(Level.FINEST, "after layout: " + body_box);
 
         intrinsic_size = new Dimension(getContext().getMaxWidth(), body_box.height);
-//Uu.p("intrinsic size = " + intrinsic_size);
-
-        /*
-if (enclosingScrollPane != null) {
-XRLog.layout(Level.FINEST, "enclosing scroll pane = " + this.enclosingScrollPane);
-int view_height = this.enclosingScrollPane.getViewport().getHeight();
-// resize the outter most box incase it is too small for the viewport
-if (intrinsic_size.getHeight() < view_height) {
-if (body_box != null) {
-body_box.height = view_height;
-                    //bodyExpandHack(body_box,view_height);
-                    intrinsic_size.height = view_height;
-}
-}
-}
-        */
-
-
+        //Uu.p("intrinsic size = " + intrinsic_size);
         if (intrinsic_size.width != this.getWidth()) {
             //Uu.p("intrisic and this widths don't match: " + this.getSize() + " "  + intrinsic_size);
             this.setPreferredSize(new Dimension(intrinsic_size.width, this.getHeight()));
-//this.setPreferredSize(intrinsic_size);
+            //this.setPreferredSize(intrinsic_size);
             this.revalidate();
         }
-        // if doc is shorter than viewport
-        // then stretch canvas to fill viewport exactly
-        if (intrinsic_size.height < enclosingScrollPane.getViewport().getHeight()) {
-            //Uu.p("int height is less than viewport height");
-            if (enclosingScrollPane.getViewport().getHeight() != this.getHeight()) {
-                this.setPreferredSize(new Dimension(getWidth(), enclosingScrollPane.getViewport().getHeight()));
-                this.revalidate();
-            }
-        } else {  // if doc is taller than viewport
-            if (this.getHeight() != intrinsic_size.height) {
-                this.setPreferredSize(new Dimension(getWidth(), intrinsic_size.height));
-                this.revalidate();
-            }
 
-        }
-
+		// if doc is shorter than viewport
+		// then stretch canvas to fill viewport exactly
+        // then adjust the body element accordingly
+		if (intrinsic_size.height < enclosingScrollPane.getViewport().getHeight()) {
+			//Uu.p("int height is less than viewport height");
+			if (enclosingScrollPane.getViewport().getHeight() != this.getHeight()) {
+				this.setPreferredSize(new Dimension(getWidth(),enclosingScrollPane.getViewport().getHeight()));
+				this.revalidate();
+			}
+            //Uu.p("need to do the body hack");
+            if(body_box != null) {
+                body_box.height = enclosingScrollPane.getViewport().getHeight();
+                bodyExpandHack(body_box, body_box.height);
+                intrinsic_size.height = body_box.height;
+            }
+		} else {  // if doc is taller than viewport
+			if(this.getHeight() != intrinsic_size.height) {
+				this.setPreferredSize(new Dimension(getWidth(),intrinsic_size.height));
+				this.revalidate();
+			}
+			
+		}
+		
+		
 
         queue.dispatchRepaintEvent(new ReflowEvent(ReflowEvent.LAYOUT_COMPLETE));
         this.fireDocumentLoaded();
     }
+	
+    private static void bodyExpandHack(Box root, int view_height) {
+        for (int i = 0; i < root.getChildCount(); i++) {
+            // set the html box to the max
+            Box html = root.getChild(i);
+            if (html.element != null && html.element.getNodeName().equals("html")) {
+                html.height = view_height;
+                // set the body box to the max
+                for (int j = 0; j < html.getChildCount(); j++) {
+                    Box body = html.getChild(j);
+                    if (body.element != null && body.element.getNodeName().equals("body")) {
+                        body.height = view_height;
+                    }
+                }
+            }
+        }
+    }
 
+    
     /**
      * Description of the Method
      */
