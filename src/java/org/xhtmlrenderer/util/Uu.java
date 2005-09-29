@@ -97,12 +97,8 @@ public class Uu extends Util {
      *
      * @param msec PARAM
      */
-    public static void sleep(int msec) {
-        try {
-            Thread.currentThread().sleep(msec);
-        } catch (InterruptedException ex) {
-            p(ex);
-        }
+    public static void sleep(int msec) throws InterruptedException {
+        Thread.sleep(msec);
     }
 
     /**
@@ -142,6 +138,21 @@ public class Uu extends Util {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/09/29 06:15:07  tobega
+ * Patch from Peter Brant:
+ * List of changes:
+ *  - Fix extents height calculation
+ *  - Small refactoring to Boxing to combine a method
+ *  - Make render and layout threads interruptible and add
+ * RootPanel.shutdown() method to shut them down in an orderly manner
+ *  - Fix NPE in Graphics2DRenderer.  It looks like
+ * BasicPanel.intrinsic_size will always be null anyway?
+ *  - Fix NPE in RootPanel when enclosingScrollPane is null.
+ *  - Both RenderLoop.collapseRepaintEvents and
+ * LayoutLoop.collapseLayoutEvents will go into an infinite loop if the
+ * next event isn't collapsible.  I added a common implementation to
+ * RenderQueue which doesn't have this problem.
+ *
  * Revision 1.2  2005/01/29 20:18:38  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

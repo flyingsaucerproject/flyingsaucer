@@ -73,6 +73,9 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      */
     protected Box body_box = null;
 
+    private Thread layoutThread;
+    private Thread renderThread;
+
     /**
      * Sets the document attribute of the BasicPanel object
      *
@@ -191,8 +194,23 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         setBackground(Color.white);
         super.setLayout(null);
 
-        new Thread(new LayoutLoop(this)).start();
-        new Thread(new RenderLoop(this)).start();
+        layoutThread = new Thread(new LayoutLoop(this), "FlyingSaucer-Layout");
+        renderThread = new Thread(new RenderLoop(this), "FlyingSaucer-Render");
+
+        layoutThread.start();
+        renderThread.start();
+    }
+
+    public synchronized void shutdown() {
+        try {
+            layoutThread.interrupt();
+            layoutThread.join();
+
+            renderThread.interrupt();
+            renderThread.join();
+        } catch (InterruptedException e) {
+            // ignore
+        }
     }
 
     int rendered_width = 0;
@@ -289,35 +307,36 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             this.revalidate();
         }
 
-		// if doc is shorter than viewport
-		// then stretch canvas to fill viewport exactly
+        // if doc is shorter than viewport
+        // then stretch canvas to fill viewport exactly
         // then adjust the body element accordingly
-		if (intrinsic_size.height < enclosingScrollPane.getViewport().getHeight()) {
-			//Uu.p("int height is less than viewport height");
-			if (enclosingScrollPane.getViewport().getHeight() != this.getHeight()) {
-				this.setPreferredSize(new Dimension(getWidth(),enclosingScrollPane.getViewport().getHeight()));
-				this.revalidate();
-			}
-            //Uu.p("need to do the body hack");
-            if(body_box != null) {
-                body_box.height = enclosingScrollPane.getViewport().getHeight();
-                bodyExpandHack(body_box, body_box.height);
-                intrinsic_size.height = body_box.height;
+        if (enclosingScrollPane != null) {
+            if (intrinsic_size.height < enclosingScrollPane.getViewport().getHeight()) {
+                //Uu.p("int height is less than viewport height");
+                if (enclosingScrollPane.getViewport().getHeight() != this.getHeight()) {
+                    this.setPreferredSize(new Dimension(getWidth(), enclosingScrollPane.getViewport().getHeight()));
+                    this.revalidate();
+                }
+//Uu.p("need to do the body hack");
+                if (body_box != null) {
+                    body_box.height = enclosingScrollPane.getViewport().getHeight();
+                    bodyExpandHack(body_box, body_box.height);
+                    intrinsic_size.height = body_box.height;
+                }
+            } else {  // if doc is taller than viewport
+                if (this.getHeight() != intrinsic_size.height) {
+                    this.setPreferredSize(new Dimension(getWidth(), intrinsic_size.height));
+                    this.revalidate();
+                }
+
             }
-		} else {  // if doc is taller than viewport
-			if(this.getHeight() != intrinsic_size.height) {
-				this.setPreferredSize(new Dimension(getWidth(),intrinsic_size.height));
-				this.revalidate();
-			}
-			
-		}
-		
-		
+        }
+
 
         queue.dispatchRepaintEvent(new ReflowEvent(ReflowEvent.LAYOUT_COMPLETE));
         this.fireDocumentLoaded();
     }
-	
+
     private static void bodyExpandHack(Box root, int view_height) {
         for (int i = 0; i < root.getChildCount(); i++) {
             // set the html box to the max
@@ -335,7 +354,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
     }
 
-    
+
     /**
      * Description of the Method
      */

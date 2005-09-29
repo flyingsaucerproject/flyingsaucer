@@ -130,9 +130,13 @@ public class Graphics2DRenderer {
      * @return The minimumSize value
      */
     public Rectangle getMinimumSize() {
-        return new Rectangle(0, 0,
-                (int) panel.getIntrinsicSize().getWidth(),
-                (int) panel.getIntrinsicSize().getHeight());
+        if (panel.getIntrinsicSize() != null) {
+            return new Rectangle(0, 0,
+                    (int) panel.getIntrinsicSize().getWidth(),
+                    (int) panel.getIntrinsicSize().getHeight());
+        } else {
+            return new Rectangle(0, 0, panel.getWidth(), panel.getHeight());
+        }
     }
 
     /**
@@ -206,6 +210,21 @@ public class Graphics2DRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/09/29 06:15:06  tobega
+ * Patch from Peter Brant:
+ * List of changes:
+ *  - Fix extents height calculation
+ *  - Small refactoring to Boxing to combine a method
+ *  - Make render and layout threads interruptible and add
+ * RootPanel.shutdown() method to shut them down in an orderly manner
+ *  - Fix NPE in Graphics2DRenderer.  It looks like
+ * BasicPanel.intrinsic_size will always be null anyway?
+ *  - Fix NPE in RootPanel when enclosingScrollPane is null.
+ *  - Both RenderLoop.collapseRepaintEvents and
+ * LayoutLoop.collapseLayoutEvents will go into an infinite loop if the
+ * next event isn't collapsible.  I added a common implementation to
+ * RenderQueue which doesn't have this problem.
+ *
  * Revision 1.12  2005/09/28 00:25:16  joshy
  * a bit more cleanup
  * Issue number:

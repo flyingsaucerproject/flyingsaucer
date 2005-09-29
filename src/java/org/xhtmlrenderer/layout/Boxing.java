@@ -55,7 +55,6 @@ public class Boxing {
     private Boxing() {
     }
 
-    
     /**
      * Description of the Method
      *
@@ -64,24 +63,9 @@ public class Boxing {
      * @return Returns
      */
     public static Box layout(Context c, Content content) {
-        Box block = null;
-        if (content instanceof AnonymousBlockContent) {
-            return AnonymousBoxing.layout(c, content);
-        } else if (content instanceof TableContent) {
-            return TableBoxing.layout(c, content);
-        } else {
-            block = new BlockBox();
-        }
-        block.element = content.getElement();
-        if (block.element != null) {
-            String id = c.getNamespaceHandler().getID(block.element);
-            if (id != null && !id.equals("")) {
-                c.addIDBox(id, block);
-            }
-        }
-        return layout(c, block, content);
+        return layout(c, content, null);
     }
-    // NOTE: this mainly duplicates the previous method. They should be combined
+
     public static Box layout(Context c, Content content, BoxHolder bh) {
         Box block = null;
         if (content instanceof AnonymousBlockContent) {
@@ -91,7 +75,9 @@ public class Boxing {
         } else {
             block = new BlockBox();
         }
-        bh.box = block;
+        if (bh != null) {
+            bh.box = block;
+        }
         block.element = content.getElement();
         if (block.element != null) {
             String id = c.getNamespaceHandler().getID(block.element);
@@ -164,9 +150,10 @@ public class Boxing {
             }
             if (hasSpecifiedHeight) {
                 setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
-                c.getExtents().height = setHeight;
-                block.height =
-                        margin.top + border.top + padding.top + setHeight + padding.bottom + border.bottom + margin.bottom;
+                c.getExtents().height = margin.top + border.top + padding.top +
+                        setHeight + padding.bottom + border.bottom + margin.bottom;
+                block.height = setHeight;
+
                 block.auto_height = false;
             }
             //check if replaced
@@ -319,6 +306,21 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/09/29 06:15:05  tobega
+ * Patch from Peter Brant:
+ * List of changes:
+ *  - Fix extents height calculation
+ *  - Small refactoring to Boxing to combine a method
+ *  - Make render and layout threads interruptible and add
+ * RootPanel.shutdown() method to shut them down in an orderly manner
+ *  - Fix NPE in Graphics2DRenderer.  It looks like
+ * BasicPanel.intrinsic_size will always be null anyway?
+ *  - Fix NPE in RootPanel when enclosingScrollPane is null.
+ *  - Both RenderLoop.collapseRepaintEvents and
+ * LayoutLoop.collapseLayoutEvents will go into an infinite loop if the
+ * next event isn't collapsible.  I added a common implementation to
+ * RenderQueue which doesn't have this problem.
+ *
  * Revision 1.32  2005/09/27 23:48:39  joshy
  * first merge of basicpanel reworking and incremental layout. more to come.
  * Issue number:
