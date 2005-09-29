@@ -72,6 +72,22 @@ public class Box {
     public int width;
 
     /**
+     * Gets the width attribute of the Box object
+     *
+     * @return The width value
+     */
+	public void setWidth(int width) {
+		this.width = width;
+	}
+	
+	public int inner_width;
+	public void setInnerWidth(int width) {
+		this.inner_width = width;
+	}
+	public int getInnerWidth() {
+		return this.inner_width;
+	}
+    /**
      * Box height.
      */
     public int height;
@@ -440,6 +456,7 @@ public class Box {
     public String getTestString() {
         StringBuffer sb = new StringBuffer();
         // type
+        sb.append(" " + this.hashCode()+" ");
         if (this instanceof LineBox) {
             sb.append("line:");
         } else if (this instanceof InlineBox) {
@@ -495,6 +512,30 @@ public class Box {
 
         return sb.toString();
     }
+    
+
+    public static final int NOTHING = 0;
+    public static final int FLUX = 1;
+    public static final int CHILDREN_FLUX = 2;
+    public static final int DONE = 3;
+    private int state = NOTHING;
+
+    public synchronized int getState() {
+        return this.state;
+    }
+    public synchronized void setState(int state) {
+        this.state = state;
+    }
+    
+    public static String stateToString(int state) {
+        switch(state) {
+            case NOTHING: return "NOTHING";
+            case FLUX: return "FLUX";
+            case CHILDREN_FLUX: return "CHILDREN_FLUX";
+            case DONE: return "DONE";
+            default: return "unknown";
+        }
+    }
 
     public float getMarginTopOverride() {
         return _marginTopOverride;
@@ -536,6 +577,14 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.58  2005/09/29 21:34:04  joshy
+ * minor updates to a lot of files. pulling in more incremental rendering code.
+ * fixed another resize bug
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.57  2005/09/26 22:40:21  tobega
  * Applied patch from Peter Brant concerning margin collapsing
  *

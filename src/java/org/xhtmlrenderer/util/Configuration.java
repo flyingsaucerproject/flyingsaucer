@@ -362,6 +362,16 @@ public class Configuration {
         return val;
     }
 
+	public static boolean hasValue(String key) {
+        Configuration conf = instance();
+        String val = conf.properties.getProperty(key);
+		if(val == null) { 
+			return false; 
+		} else {
+			return true;
+		}
+	}
+
     /**
      * Returns the value for key in the Configuration as a byte, or the default
      * provided value if not found or if the value is not a valid byte. A
@@ -637,6 +647,14 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/09/29 21:34:06  joshy
+ * minor updates to a lot of files. pulling in more incremental rendering code.
+ * fixed another resize bug
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.11  2005/07/13 22:49:15  joshy
  * updates to get the jnlp to work without being signed
  *

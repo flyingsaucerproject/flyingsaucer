@@ -90,7 +90,9 @@ public abstract class BasicPanel extends RootPanel {
     /**
      * Description of the Field
      */
+     /* DEAD: joshy
     private Dimension intrinsic_size;
+*/
 
     /**
      * Description of the Field
@@ -280,7 +282,7 @@ public abstract class BasicPanel extends RootPanel {
                 Uu.p("repaint took ms: " + (after - start));
             }
         } else {
-            Uu.p("still null. failing :(");
+            //Uu.p("still null. failing :(");
         }
 
         if (!c.isStylesAllPopped()) {
@@ -435,6 +437,7 @@ public abstract class BasicPanel extends RootPanel {
     }
     */
 
+    /*
     private int[] adjustForAbsolute(Box bx, int tx, int ty, BlockFormattingContext bfc) {
         //Uu.p("testing: " + bx);
         //Uu.p("is abs");
@@ -465,20 +468,7 @@ public abstract class BasicPanel extends RootPanel {
                 ty -= off;
             }
             //Uu.p("final y = " + ty);
-            /*
-            if (bx.right_set) {
-                adj_x = -bfc.getX() + bfc.getWidth() - bx.width - bx.right;
-            }
-            //Uu.p("adj x = " + adj_x);
-            tx = adj_x;
-            */
-            /*
-            Uu.p("ty = " + ty);
-            if (bx.top_set) {
-                ty += bx.top;
-            }
-            Uu.p("final y = " + ty);
-            */
+      
         }
 
         int[] adjs = new int[2];
@@ -486,6 +476,7 @@ public abstract class BasicPanel extends RootPanel {
         adjs[1] = ty;
         return adjs;
     }
+    */
 
 
 
@@ -854,15 +845,6 @@ public abstract class BasicPanel extends RootPanel {
         return ctx;
     }
 
-    /**
-     * Gets the intrinsicSize attribute of the BasicPanel object
-     *
-     * @return The intrinsicSize value
-     */
-    public Dimension getIntrinsicSize() {
-        return intrinsic_size;
-    }
-
 
     /**
      * Returns whether the background of this <code>BasicPanel</code> will
@@ -1035,6 +1017,14 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.70  2005/09/29 21:34:05  joshy
+ * minor updates to a lot of files. pulling in more incremental rendering code.
+ * fixed another resize bug
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.69  2005/09/28 20:13:26  joshy
  * re-enabled body height hack
  * Issue number:

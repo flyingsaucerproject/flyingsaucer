@@ -197,7 +197,7 @@ public class BoxRendering {
             yoff += block.top;
         }
         if (block.right_set) {
-            xoff += rect.width - block.width - block.right;
+            xoff += rect.width - block.getWidth() - block.right;
         }
         if (block.left_set) {
             xoff += block.left;
@@ -266,7 +266,7 @@ public class BoxRendering {
             yoff += tp;
         }
         if (block.right_set) {
-            xoff += -rect.x + rect.width - block.width - block.right;
+            xoff += -rect.x + rect.width - block.getWidth() - block.right;
         }
         //Uu.p("xoff = " + xoff + " yoff = " + yoff);
         if (block.left_set) {
@@ -362,6 +362,14 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2005/09/29 21:34:04  joshy
+ * minor updates to a lot of files. pulling in more incremental rendering code.
+ * fixed another resize bug
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.37  2005/09/26 22:40:21  tobega
  * Applied patch from Peter Brant concerning margin collapsing
  *

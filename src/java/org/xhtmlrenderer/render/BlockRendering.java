@@ -101,8 +101,16 @@ public class BlockRendering {
                 //Uu.p("old clip = " + oldclip);
                 //Uu.p("box rect = " + box_rect);
                 //TODO: handle floated content. HACK: descend into anonymous boxes, won't work for deeper nesting
-                if (oldclip.intersects(box_rect) || (box instanceof AnonymousBlockBox)) {
+                //Uu.p("test box in state: " + box.stateToString(box.getState()));
+                if(box.getState() == 2) {
+                    //Uu.p("calling paint for partial");
                     BoxRendering.paint(c, box, false, restyle);
+                } else {
+                    if (oldclip.intersects(box_rect) || (box instanceof AnonymousBlockBox)) {
+                        BoxRendering.paint(c, box, false, restyle);
+                    } else {
+                        //Uu.p("no intersection. skipping");
+                    }
                 }
                 return;
             }

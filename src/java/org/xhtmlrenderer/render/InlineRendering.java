@@ -32,6 +32,7 @@ import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.inline.TextAlignJustify;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.util.GraphicsUtil;
+import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
 import java.awt.font.LineMetrics;

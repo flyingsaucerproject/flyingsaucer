@@ -174,7 +174,7 @@ public class InlineBoxing {
                     int rp = padding.right + border.right + margin.right;
                     //CHECK: not sure this is where the padding really goes, always
                     prev_inline.rightPadding += rp;
-                    prev_inline.width += rp;
+                    prev_inline.setWidth( prev_inline.getWidth() + rp);
                     pendingRightPadding -= rp;
                     remaining_width -= rp;
                     prev_inline.popstyles++;
@@ -582,6 +582,14 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2005/09/29 21:34:03  joshy
+ * minor updates to a lot of files. pulling in more incremental rendering code.
+ * fixed another resize bug
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.37  2005/09/20 11:28:13  tobega
  * Knowledge of how to extract IDs belongs in the NamespaceHandler
  *

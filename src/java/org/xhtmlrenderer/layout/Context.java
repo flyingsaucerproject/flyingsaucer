@@ -133,6 +133,12 @@ public interface Context {
      */
     void addMaxWidth(int max_width);
 
+	public int getMaxWidth();
+	
+	void addMaxHeight(int max_height);
+    
+	public int getMaxHeight();
+
     /**
      * Description of the Method
      *

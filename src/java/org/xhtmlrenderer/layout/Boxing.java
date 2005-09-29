@@ -88,6 +88,28 @@ public class Boxing {
         return layout(c, block, content);
     }
 
+    public static Box preLayout(Context c, Content content) {
+        Box block = null;
+        if (content instanceof AnonymousBlockContent) {
+            return AnonymousBoxing.layout(c, content);
+        } else if (content instanceof TableContent) {
+            return TableBoxing.layout(c, content);
+        } else {
+            block = new BlockBox();
+        }
+        block.element = content.getElement();
+		if(block.element != null) {
+			if(block.element.hasAttribute("id")) {
+				c.addIDBox(block.element.getAttribute("id"),block);
+			}
+		}
+        return block;
+    }
+    
+    public static Box realLayout(Context c, Box block, Content content) {
+        return layout(c, block, content);
+    }
+
     /**
      * Description of the Method
      *
@@ -146,7 +168,7 @@ public class Boxing {
                 c.getExtents().width =
                         margin.left + border.left + padding.left + setWidth + padding.right + border.right + margin.right;
                 //TODO: CHECK: what does isSubBlock mean?
-                if (!c.isSubBlock()) block.width = setWidth;
+                if (!c.isSubBlock()) block.setWidth( setWidth );
             }
             if (hasSpecifiedHeight) {
                 setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
@@ -162,7 +184,7 @@ public class Boxing {
                 Rectangle bounds = cc.getBounds();
                 //block.x = bounds.x;
                 //block.y = bounds.y;
-                block.width = bounds.width;
+                block.setWidth( bounds.width);
                 block.height = bounds.height;
                 block.component = cc;
             }
@@ -242,7 +264,7 @@ public class Boxing {
         }
 
         // calculate the total outer width
-        block.contentWidth = block.width;
+        block.contentWidth = block.getWidth();
         block.width = margin.left + border.left + padding.left + block.width + padding.right + border.right + margin.right;
         block.height = margin.top + border.top + padding.top + block.height + padding.bottom + border.bottom + margin.bottom;
 
@@ -279,6 +301,7 @@ public class Boxing {
      */
     public static Box layoutChildren(Context c, Box box, Content content) {
         List contentList = content.getChildContent(c);
+        box.setState(box.CHILDREN_FLUX);
 
         if (contentList == null) {
             return box;
@@ -294,6 +317,7 @@ public class Boxing {
             InlineBoxing.layoutContent(c, box, contentList);
         }
         c.popParentContent();
+        box.setState(box.DONE);
         return box;
     }
 
@@ -306,6 +330,14 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/09/29 21:34:02  joshy
+ * minor updates to a lot of files. pulling in more incremental rendering code.
+ * fixed another resize bug
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.33  2005/09/29 06:15:05  tobega
  * Patch from Peter Brant:
  * List of changes:

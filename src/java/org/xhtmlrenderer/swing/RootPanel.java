@@ -31,6 +31,15 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      * Description of the Field
      */
     protected Dimension intrinsic_size;
+    /**
+     * Gets the intrinsicSize attribute of the BasicPanel object
+     *
+     * @return The intrinsicSize value
+     */
+    public Dimension getIntrinsicSize() {
+        return intrinsic_size;
+    }
+
 
     /* can we figure out how to get rid of this?
     */

@@ -148,6 +148,7 @@ public class SharedContext {
      * Description of the Field
      */
     protected int max_width;
+    protected int max_height;
 
     protected RenderingContext ctx;
 
@@ -216,6 +217,12 @@ public class SharedContext {
             this.max_width = max_width;
         }
     }
+    public void addMaxHeight(int max_height) {
+        if (max_height > this.max_height) {
+			//Uu.p("upping max height to : " + max_height);
+            this.max_height = max_height;
+        }
+    }
 
 
     /**
@@ -278,6 +285,9 @@ public class SharedContext {
      */
     public int getMaxWidth() {
         return this.max_width;
+    }
+    public int getMaxHeight() {
+        return this.max_height;
     }
 
 
@@ -420,6 +430,14 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/09/29 21:34:03  joshy
+ * minor updates to a lot of files. pulling in more incremental rendering code.
+ * fixed another resize bug
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.16  2005/09/27 23:48:39  joshy
  * first merge of basicpanel reworking and incremental layout. more to come.
  * Issue number:

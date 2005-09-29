@@ -73,6 +73,18 @@ public class ContextImpl implements Context {
         sharedContext.addMaxWidth(max_width);
     }
 
+	public int getMaxWidth() {
+		return sharedContext.getMaxWidth();
+	}
+
+    public void addMaxHeight(int max_height) {
+        sharedContext.addMaxHeight(max_height);
+    }
+	
+	public int getMaxHeight() {
+		return sharedContext.getMaxHeight();
+	}
+
     public void clearSelection() {
         sharedContext.clearSelection();
     }

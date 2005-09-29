@@ -25,10 +25,10 @@ public class RenderLoop implements Runnable {
             // wait for a repaint event
             ReflowEvent evt = root.queue.waitForNextRepaintEvent();
             if (evt == null) {
-// we're being shutdown
+                // we're being shutdown
                 return;
             }
-            //Uu.p("got a repaint event: " + evt);
+            Uu.p("got a repaint event: " + evt);
             evt = root.queue.collapseRepaintEvents(evt);
             if (evt.getType() == evt.LAYOUT_COMPLETE) {
                 root.repaint();
