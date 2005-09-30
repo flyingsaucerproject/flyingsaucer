@@ -221,6 +221,7 @@ public class Box {
      * Description of the Field
      */
     private boolean children_exceeds;
+    private boolean fixed_descendant;
 
     /**
      * Keep track of the start of childrens containing block.
@@ -312,6 +313,9 @@ public class Box {
         if (child.isChildrenExceedBounds()) {
             setChildrenExceedBounds(true);
         }
+        if (child.isFixedDescendant()) {
+            setFixedDescendant(true);
+        }
     }
 
     /**
@@ -346,6 +350,12 @@ public class Box {
      */
     public void setChildrenExceedBounds(boolean children_exceeds) {
         this.children_exceeds = children_exceeds;
+    }
+    public void setFixedDescendant(boolean fixed_descendant) {
+        this.fixed_descendant = fixed_descendant;
+        if(this.getParent() != null && fixed_descendant) {
+            this.getParent().setFixedDescendant(true);
+        }
     }
 
     /**
@@ -419,6 +429,10 @@ public class Box {
      */
     public boolean isChildrenExceedBounds() {
         return children_exceeds;
+    }
+    
+    public boolean isFixedDescendant() {
+        return fixed_descendant;
     }
 
 
@@ -577,6 +591,15 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.59  2005/09/30 04:58:05  joshy
+ * fixed garbage when showing a document with a fixed positioned block
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.58  2005/09/29 21:34:04  joshy
  * minor updates to a lot of files. pulling in more incremental rendering code.
  * fixed another resize bug

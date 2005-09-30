@@ -90,18 +90,27 @@ public class BlockRendering {
     public static void paintChild(Context c, Box box, boolean restyle) {
         if (box.isChildrenExceedBounds()) {
             //Uu.p("box children exceed: " + box);
-            BoxRendering.paint(c, box, false, restyle);
-            return;
+            //BoxRendering.paint(c, box, false, restyle);
+            //return;
         }
 
         if (Configuration.isTrue("xr.renderer.viewport-repaint", false)) {
             if (c.getGraphics().getClip() != null) {
                 Shape oldclip = (Shape) c.getGraphics().getClip();
-                Rectangle2D box_rect = new Rectangle(box.x, box.y, box.width, box.height);
-                //Uu.p("old clip = " + oldclip);
-                //Uu.p("box rect = " + box_rect);
+                
+                Rectangle box_rect = new Rectangle(box.x, box.y, box.width, box.height);
+                Rectangle old_clip = c.getGraphics().getClipBounds();
+                // Uu.p("old clip = " + old_clip);
+                // Uu.p("box rect = " + box_rect);
+                box_rect = box_rect.union(old_clip);
+                // Uu.p("union = " + box_rect);
+                // c.getGraphics().setClip(box_rect);
                 //TODO: handle floated content. HACK: descend into anonymous boxes, won't work for deeper nesting
-                //Uu.p("test box in state: " + box.stateToString(box.getState()));
+                // Uu.p("test box in state: " + box.stateToString(box.getState()));
+                
+                // partially built boxes should be painted fully
+                // boxes which intersect the cliprect should be painted fully
+                // we should skip the rest
                 if(box.getState() == 2) {
                     //Uu.p("calling paint for partial");
                     BoxRendering.paint(c, box, false, restyle);
@@ -112,6 +121,7 @@ public class BlockRendering {
                         //Uu.p("no intersection. skipping");
                     }
                 }
+                c.getGraphics().setClip(old_clip);
                 return;
             }
         }

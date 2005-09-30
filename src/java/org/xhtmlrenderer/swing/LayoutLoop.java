@@ -73,7 +73,9 @@ public class LayoutLoop implements Runnable {
         // if layout is already in progress
         if (root.layoutInProgress) {
             // Uu.p("layout already in progress. stopping  for" + evt);
-            root.layout_context.stopRendering();
+            if(root.layout_context != null) {
+                root.layout_context.stopRendering();
+            }
             while (root.layoutInProgress) {
                 // NOTE: joshy: is this sleep necessary?
                 Uu.sleep(100);

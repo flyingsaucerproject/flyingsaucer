@@ -140,8 +140,11 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         if (enclosingScrollPane != null) {
             Uu.p("added root panel as a component listener to the scroll pane");
             enclosingScrollPane.addComponentListener(this);
+            default_scroll_mode = enclosingScrollPane.getViewport().getScrollMode();
         }
     }
+    
+    private int default_scroll_mode = -1;
 
     /**
      * Gets the fixedRectangle attribute of the BasicPanel object
@@ -326,7 +329,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                     this.setPreferredSize(new Dimension(getWidth(), enclosingScrollPane.getViewport().getHeight()));
                     this.revalidate();
                 }
-//Uu.p("need to do the body hack");
+                //Uu.p("need to do the body hack");
                 if (body_box != null) {
                     body_box.height = enclosingScrollPane.getViewport().getHeight();
                     bodyExpandHack(body_box, body_box.height);
@@ -338,6 +341,16 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                     this.revalidate();
                 }
 
+            }
+            
+            
+            // turn on simple scrolling mode if there's any fixed elements
+            if(body_box.isFixedDescendant()) {
+                // Uu.p("is fixed");
+                enclosingScrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+            } else {
+                // Uu.p("is not fixed");
+                enclosingScrollPane.getViewport().setScrollMode(default_scroll_mode);                
             }
         }
 

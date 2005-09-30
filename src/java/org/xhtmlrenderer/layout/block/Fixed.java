@@ -48,6 +48,7 @@ public class Fixed {
             box.y = 0;
             box.x -= origin.x;
             box.y -= origin.y;
+            box.setFixedDescendant(true);
         }
     }
 
@@ -60,6 +61,7 @@ public class Fixed {
     public static void setupFixed(Context c, Box box) {
         if (c.getCurrentStyle().isIdent(CSSName.POSITION, IdentValue.FIXED)) {
             box.fixed = true;
+            box.setFixedDescendant(true);
             box.setChildrenExceedBounds(true);
             Rectangle rect = c.getFixedRectangle();
 

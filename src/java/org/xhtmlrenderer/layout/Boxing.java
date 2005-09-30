@@ -127,6 +127,7 @@ public class Boxing {
 
         if (c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
             block.setChildrenExceedBounds(true);
+            block.setFixedDescendant(true);
         }
 
         // install a block formatting context for the body,
@@ -330,6 +331,15 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/09/30 04:58:04  joshy
+ * fixed garbage when showing a document with a fixed positioned block
+ *
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
  * Revision 1.34  2005/09/29 21:34:02  joshy
  * minor updates to a lot of files. pulling in more incremental rendering code.
  * fixed another resize bug
