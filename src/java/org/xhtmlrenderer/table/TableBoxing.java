@@ -68,6 +68,18 @@ import java.util.logging.Level;
  */
 public class TableBoxing {
 
+
+    public static Box createBox(Context c, Content content) {
+        Box outerBox;//the outer box may be block or inline block
+        if (content instanceof TableContent) {
+            outerBox = new BlockBox();
+        } else {
+            XRLog.layout(Level.WARNING, "Unsupported table type " + content.getClass().getName());
+            return null;
+        }
+        return outerBox;
+    }
+
     /**
      * Description of the Method
      *
@@ -75,12 +87,9 @@ public class TableBoxing {
      * @param content PARAM
      * @return Returns
      */
-    public static Box layout(Context c, Content content) {
-        Box outerBox;//the outer box may be block or inline block
+    public static Box layout(Context c, Box outerBox, Content content) {
         boolean set_bfc = false;
         if (content instanceof TableContent) {
-            outerBox = new BlockBox();
-            
             // install a block formatting context for the body,
             // ie. if it's null.
             // set up the outtermost bfc
@@ -99,13 +108,14 @@ public class TableBoxing {
         // copy the extents
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
-        outerBox.x = c.getExtents().x;
-        outerBox.y = c.getExtents().y;
+        //outerBox.x = c.getExtents().x;
+        //outerBox.y = c.getExtents().y;
         //HACK: for now
         outerBox.width = c.getExtents().width;
         outerBox.height = c.getExtents().height;
 
         TableBox tableBox = new TableBox();
+        outerBox.addChild(tableBox);
         tableBox.element = content.getElement();
         //OK, first set up the current style. All depends on this...
         CascadedStyle pushed = content.getStyle();
@@ -195,9 +205,15 @@ public class TableBoxing {
         // remove the outtermost bfc
         if (set_bfc) {
             c.getBlockFormattingContext().doFinalAdjustments();
-            //no! clear it in BasicPanel instead! c.popBFC();
+            c.popBFC();
         }
-        return tableBox;//HACK:
+        outerBox.height = 0;
+        for (Iterator i = outerBox.getChildIterator(); i.hasNext();) {
+            Box child = (Box) i.next();
+            outerBox.height += child.height;
+            if (child.width > outerBox.width) outerBox.width = child.width;
+        }
+        return outerBox;
     }
 
     private static void fixVerticalAlign(Context c, RowBox rowBox) {
@@ -367,7 +383,7 @@ public class TableBoxing {
             cellBox.element = tcc.getElement();
             // set the child_box location
             cellBox.x = row.width + borderSpacingHorizontal;
-            row.y = 0;
+            //row.y = 0;
 
             checkColumns(table, col + cellBox.colspan);
             for (int j = 0; j < cellBox.colspan; j++) {
@@ -515,8 +531,8 @@ public class TableBoxing {
             block.height = bounds.height;
             block.component = cc;
         }
-        block.x = c.getExtents().x;
-        block.y = c.getExtents().y;
+        //block.x = c.getExtents().x;
+        //block.y = c.getExtents().y;
 
         /*if (ContentUtil.isFloated(content.getStyle())) {
             // set up a float bfc
@@ -605,7 +621,7 @@ public class TableBoxing {
         // remove the outtermost bfc
         if (set_bfc) {
             c.getBlockFormattingContext().doFinalAdjustments();
-            //no! clear it in BasicPanel instead! c.popBFC();
+            c.popBFC();
         }
 
         //and now, back to previous style
@@ -616,12 +632,14 @@ public class TableBoxing {
         // Uu.p("BoxLayout: finished with block: " + block);
         return block;
     }
-
 }
 
 /*
    $Id$
    $Log$
+   Revision 1.24  2005/10/02 21:30:03  tobega
+   Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+
    Revision 1.23  2005/09/26 22:40:23  tobega
    Applied patch from Peter Brant concerning margin collapsing
 

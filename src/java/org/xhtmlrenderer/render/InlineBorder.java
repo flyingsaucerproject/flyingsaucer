@@ -23,8 +23,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.Context;
 
-import java.awt.Color;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.font.LineMetrics;
 
 /**
@@ -71,6 +70,7 @@ public class InlineBorder {
         int ty = line.getBaseline() - y - height - margin.top - border.top - padding.top + line.y;
         ty += (int) lm.getDescent();
         c.translate(0, ty);
+        c.getGraphics().translate(0, ty);
         Rectangle bounds = new Rectangle(start,
                 y + margin.top,
                 width,
@@ -87,6 +87,7 @@ public class InlineBorder {
 
         //then the border
         BorderPainter.paint(bounds, sides, style, c.getGraphics(), c.getCtx(), xOffset);
+        c.getGraphics().translate(0, -ty);
         c.translate(0, -ty);
         xOffset += width;
     }

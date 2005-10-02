@@ -23,8 +23,8 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.value.Border;
-import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.PersistentBFC;
 
 import javax.swing.*;
 import java.awt.*;
@@ -76,17 +76,20 @@ public class Box {
      *
      * @return The width value
      */
-	public void setWidth(int width) {
-		this.width = width;
-	}
-	
-	public int inner_width;
-	public void setInnerWidth(int width) {
-		this.inner_width = width;
-	}
-	public int getInnerWidth() {
-		return this.inner_width;
-	}
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int inner_width;
+
+    public void setInnerWidth(int width) {
+        this.inner_width = width;
+    }
+
+    public int getInnerWidth() {
+        return this.inner_width;
+    }
+
     /**
      * Box height.
      */
@@ -190,6 +193,7 @@ public class Box {
      * Description of the Field
      */
     public boolean auto_height = true;
+    public boolean auto_width = true;
 
     /**
      * Description of the Field
@@ -204,7 +208,7 @@ public class Box {
     /**
      * Description of the Field
      */
-    protected BlockFormattingContext blockFormattingContext = null;
+    protected PersistentBFC persistentBFC = null;
 
     /**
      * Description of the Field
@@ -286,6 +290,10 @@ public class Box {
         return false;
     }
 
+    public void adjustWidthForChild(int childWidth) {
+        //do nothing, generally
+    }
+
 
     /**
      * Converts to a String representation of the object.
@@ -326,12 +334,12 @@ public class Box {
     }
 
     /**
-     * Sets the blockFormattingContext attribute of the Box object
+     * Sets the persistentBFC attribute of the Box object
      *
-     * @param blockFormattingContext The new blockFormattingContext value
+     * @param persistentBFC The new persistentBFC value
      */
-    public void setBlockFormattingContext(BlockFormattingContext blockFormattingContext) {
-        this.blockFormattingContext = blockFormattingContext;
+    public void setPersistentBFC(PersistentBFC persistentBFC) {
+        this.persistentBFC = persistentBFC;
     }
 
     /**
@@ -351,20 +359,21 @@ public class Box {
     public void setChildrenExceedBounds(boolean children_exceeds) {
         this.children_exceeds = children_exceeds;
     }
+
     public void setFixedDescendant(boolean fixed_descendant) {
         this.fixed_descendant = fixed_descendant;
-        if(this.getParent() != null && fixed_descendant) {
+        if (this.getParent() != null && fixed_descendant) {
             this.getParent().setFixedDescendant(true);
         }
     }
 
     /**
-     * Gets the blockFormattingContext attribute of the Box object
+     * Gets the persistentBFC attribute of the Box object
      *
-     * @return The blockFormattingContext value
+     * @return The persistentBFC value
      */
-    public BlockFormattingContext getBlockFormattingContext() {
-        return blockFormattingContext;
+    public PersistentBFC getPersistentBFC() {
+        return persistentBFC;
     }
 
     /**
@@ -430,7 +439,7 @@ public class Box {
     public boolean isChildrenExceedBounds() {
         return children_exceeds;
     }
-    
+
     public boolean isFixedDescendant() {
         return fixed_descendant;
     }
@@ -470,7 +479,7 @@ public class Box {
     public String getTestString() {
         StringBuffer sb = new StringBuffer();
         // type
-        sb.append(" " + this.hashCode()+" ");
+        sb.append(" " + this.hashCode() + " ");
         if (this instanceof LineBox) {
             sb.append("line:");
         } else if (this instanceof InlineBox) {
@@ -526,7 +535,7 @@ public class Box {
 
         return sb.toString();
     }
-    
+
 
     public static final int NOTHING = 0;
     public static final int FLUX = 1;
@@ -537,17 +546,23 @@ public class Box {
     public synchronized int getState() {
         return this.state;
     }
+
     public synchronized void setState(int state) {
         this.state = state;
     }
-    
+
     public static String stateToString(int state) {
-        switch(state) {
-            case NOTHING: return "NOTHING";
-            case FLUX: return "FLUX";
-            case CHILDREN_FLUX: return "CHILDREN_FLUX";
-            case DONE: return "DONE";
-            default: return "unknown";
+        switch (state) {
+            case NOTHING:
+                return "NOTHING";
+            case FLUX:
+                return "FLUX";
+            case CHILDREN_FLUX:
+                return "CHILDREN_FLUX";
+            case DONE:
+                return "DONE";
+            default:
+                return "unknown";
         }
     }
 
@@ -591,6 +606,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.60  2005/10/02 21:30:00  tobega
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ *
  * Revision 1.59  2005/09/30 04:58:05  joshy
  * fixed garbage when showing a document with a fixed positioned block
  *

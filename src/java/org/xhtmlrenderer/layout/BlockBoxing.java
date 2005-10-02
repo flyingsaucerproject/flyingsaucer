@@ -25,14 +25,12 @@ import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FirstLetterStyle;
 import org.xhtmlrenderer.layout.content.FirstLineStyle;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.render.ReflowEvent;
-import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 
@@ -57,13 +55,11 @@ public class BlockBoxing {
      * @param contentList PARAM
      * @param block       PARAM
      */
-     
-    public static int count = 0;
+
     public static void layoutContent(Context c, Box box, List contentList, Box block) {
         // prepare for the list items
         int old_counter = c.getListCounter();
         c.setListCounter(0);
-        BlockBoxing.count++;
         Iterator contentIterator = contentList.iterator();
         while (contentIterator.hasNext()) {
             Object o = contentIterator.next();
@@ -90,74 +86,51 @@ public class BlockBoxing {
             //c.placement_point = new Point(0, box.height);
             c.translate(0, box.height);
             //child_box = Boxing.layout(c, currentContent);
-            child_box = Boxing.preLayout(c,currentContent);
+            child_box = Boxing.preLayout(c, currentContent);
             //Uu.p("did pre layout on : " + child_box);
             //Uu.p("adding the child: " + child_box);
-            child_box.y = box.height;
- //           c.translate(0, -box.height);
-            box.addChild(child_box);
-
-			//Uu.p("alerting that there is a box available");
-			BlockBoxing.count++;
-			int bc = Configuration.valueAsInt("xr.incremental.repaint.blockcount",1);
-			if(BlockBoxing.count%bc == 0) {
-				Dimension max_size = new Dimension(c.getMaxWidth(),c.getMaxHeight());
-                if(Configuration.isTrue("xr.incremental.enabled",false)) {
-                    RenderQueue.getInstance().dispatchRepaintEvent(new ReflowEvent(ReflowEvent.MORE_BOXES_AVAILABLE,box,max_size));
-                }
-			}
-
-            int delay = Configuration.valueAsInt("xr.incremental.debug.layoutdelay",0);
-            if(delay > 0) {
-                //Uu.p("sleeping for: " + delay);
-                try {
-				Uu.sleep(delay);
-                } catch (Exception ex) { 
-                Uu.p("sleep was interrupted in BlockBoxing.layoutContent()!");
-                }
-			}
-
-            Boxing.realLayout(c,child_box,currentContent);
-            c.translate(0, -box.height);
-
-            
             child_box.list_count = c.getListCounter();
             // set the child_box location
             child_box.x = 0;
             child_box.y = box.height;
-			//Uu.p("set child box y to: " + child_box);
-			
-			//JMM. new code to handle the 'clear' property
-			// if clear set
-			if(child_box.clear_left || child_box.clear_right) {
-                //Uu.p("doing a clear on: " + child_box);
-				// get the distance we have to move it down
-				int down = 0;
-				//Uu.p("down = " + down);
-				if(child_box.clear_left) {
-					//Uu.p("left clear");
-					//Uu.p("left down = " + c.getBlockFormattingContext().getLeftDownDistance(child_box));
-					down = Math.max(down,c.getBlockFormattingContext().getLeftDownDistance(child_box));
-				}
-				//Uu.p("down = " + down);
-				
-				if(child_box.clear_right) {
-					//Uu.p("right clear");
-					//Uu.p("right down = " + c.getBlockFormattingContext().getRightDownDistance(child_box));
-					down = Math.max(down,c.getBlockFormattingContext().getRightDownDistance(child_box));
-				}
-				
-				//Uu.p("down = " + down);
-				int diff = down-child_box.y;
-				//Uu.p("child box.y = " + child_box.y);
-				//Uu.p("diff = " + diff);
-				if(diff > 0) {
-					// move child box down
-					child_box.y = down;
-					// adjust parent box
-					box.height += diff;
-				}
-			}
+            //Uu.p("set child box y to: " + child_box);
+            box.addChild(child_box);
+
+            Boxing.realLayout(c, child_box, currentContent);
+
+            c.translate(0, -box.height);
+
+            //JMM. new code to handle the 'clear' property
+            // if clear set
+            if (child_box.clear_left || child_box.clear_right) {
+//Uu.p("doing a clear on: " + child_box);
+                // get the distance we have to move it down
+                int down = 0;
+                //Uu.p("down = " + down);
+                if (child_box.clear_left) {
+                    //Uu.p("left clear");
+                    //Uu.p("left down = " + c.getPersistentBFC().getLeftDownDistance(child_box));
+                    down = Math.max(down, c.getBlockFormattingContext().getLeftDownDistance(child_box));
+                }
+                //Uu.p("down = " + down);
+
+                if (child_box.clear_right) {
+                    //Uu.p("right clear");
+                    //Uu.p("right down = " + c.getPersistentBFC().getRightDownDistance(child_box));
+                    down = Math.max(down, c.getBlockFormattingContext().getRightDownDistance(child_box));
+                }
+
+                //Uu.p("down = " + down);
+                int diff = down - child_box.y;
+                //Uu.p("child box.y = " + child_box.y);
+                //Uu.p("diff = " + diff);
+                if (diff > 0) {
+                    // move child box down
+                    child_box.y = down;
+                    // adjust parent box
+                    box.height += diff;
+                }
+            }
 
             //joshy fix the 'fixed' stuff later
             // if fixed or abs then don't modify the final layout bounds
@@ -166,7 +139,7 @@ public class BlockBoxing {
                 // put fixed positioning in later
                 Fixed.positionFixedChild(c, child_box);
             }
-			
+
 
             if (child_box.absolute) {
                 Absolute.positionAbsoluteChild(c, child_box);
@@ -179,18 +152,32 @@ public class BlockBoxing {
             }
 
             // increase the final layout width if the child was greater
-			c.addMaxWidth(box.getWidth());
-            if (child_box.getWidth() > box.getWidth()) {
-                box.setWidth( child_box.getWidth() );
-            }
+            c.addMaxWidth(box.getWidth());
+            box.adjustWidthForChild(child_box.getWidth());
 
             // increase the final layout height by the height of the child
             box.height += child_box.height;
-			c.addMaxHeight(box.height);
-			if(c.shouldStop()) {
-				System.out.println("doing a quick stop");
-				break;
-			}
+            c.addMaxHeight(box.height + box.y + (int) c.getOriginOffset().getY());
+            if (c.shouldStop()) {
+                System.out.println("doing a quick stop");
+                break;
+            }
+
+            //Uu.p("alerting that there is a box available");
+            Dimension max_size = new Dimension(c.getMaxWidth(), c.getMaxHeight());
+            if (Configuration.isTrue("xr.incremental.enabled", false)) {
+                RenderQueue.getInstance().dispatchRepaintEvent(new ReflowEvent(ReflowEvent.MORE_BOXES_AVAILABLE, box, max_size));
+            }
+
+            int delay = Configuration.valueAsInt("xr.incremental.debug.layoutdelay", 0);
+            if (delay > 0) {
+                //Uu.p("sleeping for: " + delay);
+                try {
+                    Uu.sleep(delay);
+                } catch (Exception ex) {
+                    Uu.p("sleep was interrupted in BlockBoxing.layoutContent()!");
+                }
+            }
 
         }
         c.addMaxWidth(box.getWidth());
@@ -210,6 +197,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/10/02 21:29:58  tobega
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ *
  * Revision 1.14  2005/09/29 21:34:02  joshy
  * minor updates to a lot of files. pulling in more incremental rendering code.
  * fixed another resize bug

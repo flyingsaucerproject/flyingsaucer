@@ -83,7 +83,7 @@ public class LineBreaker {
             block.component.setLocation((int) origin.getX(), (int) origin.getY());
             //c.getCanvas().add(block.component);
         }*/
-        c.untranslateInsets(box);
+        //What was this for? unmatched too! c.untranslateInsets(box);
         c.translate(-box.x - curr_line.x, -box.y - curr_line.y);
         return box;
     }
@@ -94,6 +94,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.60  2005/10/02 21:29:59  tobega
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ *
  * Revision 1.59  2005/06/16 07:24:50  tobega
  * Fixed background image bug.
  * Caching images in browser.

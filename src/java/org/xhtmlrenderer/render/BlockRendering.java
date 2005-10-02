@@ -19,12 +19,11 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 
 /**
@@ -43,10 +42,11 @@ public class BlockRendering {
      * @param restyle
      */
     public static void paintBlockContext(Context c, Box box, boolean restyle) {
-        //if (box.getBlockFormattingContext() != null) c.pushBFC(box.getBlockFormattingContext());
+        //if (box.getPersistentBFC() != null) c.pushBFC(box.getPersistentBFC());
         c.translate(box.x, box.y);
-        if (box.getBlockFormattingContext() != null) {
-            c.pushBFC(box.getBlockFormattingContext());
+        c.getGraphics().translate(box.x, box.y);
+        if (box.getPersistentBFC() != null) {
+            c.pushBFC(new BlockFormattingContext(box.getPersistentBFC()));
         }
         //XRLog.render(Level.WARNING, "using default renderer paintChildren for " + box.getClass().getPropertyName());
         //TODO: work out how images and other replaced content really should be handled
@@ -55,7 +55,7 @@ public class BlockRendering {
             //TODO: fix the translates during layout to handle this directly instead
             Point origin = c.getOriginOffset();
             box.component.setLocation((int) origin.getX(), (int) origin.getY());
-            if (! c.isInteractive()) {
+            if (!c.isInteractive()) {
                 box.component.paint(c.getGraphics());
             }
         } else {
@@ -73,11 +73,12 @@ public class BlockRendering {
                 }
             }
         }
-        if (box.getBlockFormattingContext() != null) {
+        if (box.getPersistentBFC() != null) {
             c.popBFC();
         }
         c.translate(-box.x, -box.y);
-        //if (box.getBlockFormattingContext() != null) c.popBFC();
+        c.getGraphics().translate(-box.x, -box.y);
+        //if (box.getPersistentBFC() != null) c.popBFC();
     }
 
     /**
@@ -97,7 +98,7 @@ public class BlockRendering {
         if (Configuration.isTrue("xr.renderer.viewport-repaint", false)) {
             if (c.getGraphics().getClip() != null) {
                 Shape oldclip = (Shape) c.getGraphics().getClip();
-                
+
                 Rectangle box_rect = new Rectangle(box.x, box.y, box.width, box.height);
                 Rectangle old_clip = c.getGraphics().getClipBounds();
                 // Uu.p("old clip = " + old_clip);
@@ -111,7 +112,7 @@ public class BlockRendering {
                 // partially built boxes should be painted fully
                 // boxes which intersect the cliprect should be painted fully
                 // we should skip the rest
-                if(box.getState() == 2) {
+                if (box.getState() == 2) {
                     //Uu.p("calling paint for partial");
                     BoxRendering.paint(c, box, false, restyle);
                 } else {

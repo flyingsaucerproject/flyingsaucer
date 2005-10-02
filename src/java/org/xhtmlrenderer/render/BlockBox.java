@@ -49,6 +49,16 @@ public class BlockBox extends Box {
 
     //A block box may have special styles for the first line and first letter
 
+    public void adjustWidthForChild(int childWidth) {
+        if (auto_width && childWidth > contentWidth) {
+            width += childWidth - contentWidth;
+            contentWidth = childWidth;
+        }
+        if (getParent() != null) {
+            getParent().adjustWidthForChild(width);
+        }
+    }
+
 
     /**
      * Converts to a String representation of the object.
@@ -74,6 +84,9 @@ public class BlockBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/10/02 21:29:59  tobega
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ *
  * Revision 1.8  2005/09/26 22:40:20  tobega
  * Applied patch from Peter Brant concerning margin collapsing
  *

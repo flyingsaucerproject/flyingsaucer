@@ -21,7 +21,7 @@ public class LayoutLoop implements Runnable {
 
     //  this loop will wait for events, collapse them, then determine
     // if a full re-layout is required
-    public void startLayoutLoop() throws InterruptedException {
+    private void startLayoutLoop() throws InterruptedException {
         while (true) {
             //Uu.p("waiting for a layout event");
             ReflowEvent evt = root.queue.waitForNextLayoutEvent();
@@ -42,13 +42,13 @@ public class LayoutLoop implements Runnable {
             // Uu.p("rendered width = " + root.getRenderWidth());
             
             if (evt.getDimension() != null) {
-                
+
                 // if the renderwidth != to the actual panel width, then re-layout
                 if (root.getRenderWidth() != root.getWidth()) {
                     // Uu.p("render width != panel width. resizing");
                     doRelayout(evt);
                 } else {
-                
+
                     continue;
                     /*
                     if (root.getRenderWidth() == evt.getDimension().getWidth()) {
@@ -68,28 +68,28 @@ public class LayoutLoop implements Runnable {
 
         }
     }
-    
-    private void doRelayout(ReflowEvent evt) throws InterruptedException{
+
+    private void doRelayout(ReflowEvent evt) throws InterruptedException {
         // if layout is already in progress
-        if (root.layoutInProgress) {
-            // Uu.p("layout already in progress. stopping  for" + evt);
-            if(root.layout_context != null) {
-                root.layout_context.stopRendering();
-            }
-            while (root.layoutInProgress) {
-                // NOTE: joshy: is this sleep necessary?
-                Uu.sleep(100);
-            }
-            // Uu.p("layout stopped now");
+        //if (root.layoutInProgress) {
+        // Uu.p("layout already in progress. stopping  for" + evt);
+        if (root.layout_context != null) {
+            root.layout_context.stopRendering();
         }
+        /*while (root.layoutInProgress) {
+            // NOTE: joshy: is this sleep necessary?
+            Uu.sleep(100);
+        }*/
+        // Uu.p("layout stopped now");
+        //}
     
         // spawn a new thread to start up the layout
         new Thread(new Runnable() {
             public void run() {
                 // Uu.p("starting up another thread for layout");
-                root.layoutInProgress = true;
+                //root.layoutInProgress = true;
                 root.doActualLayout(root.getGraphics());
-                root.layoutInProgress = false;
+                //root.layoutInProgress = false;
                 // Uu.p("layout thread finished");
             }
         }).start();

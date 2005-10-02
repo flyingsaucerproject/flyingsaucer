@@ -64,7 +64,7 @@ public class BoxRendering {
 
             //set the current style
             CascadedStyle style = null;
-            if (!stylePushed && block.element != null) {
+            if (!stylePushed) {//if elem == null, this is an anonymous box,so push empty style. && block.element != null) {
                 style = c.getCss().getCascadedStyle(block.element, restyle);
             }
             if (style != null) {
@@ -138,15 +138,20 @@ public class BoxRendering {
 
         int width = block.getWidth();
         int height = block.getHeight();
+        if (block.getState() != Box.DONE) {
+            height += c.getCanvas().getHeight();
+        }
         Border margin = block.getMarginWidth(c, width);
 
         Rectangle bounds = new Rectangle(block.x + margin.left,
                 block.y + margin.top,
-                block.width - margin.left - margin.right,
-                block.height - margin.top - margin.bottom);
+                width - margin.left - margin.right,
+                height - margin.top - margin.bottom);
         paintBackground(c, block, bounds);
 
-        c.translateInsets(block);
+        //c.translateInsets(block);
+        c.translate(block.tx, block.ty);
+        c.getGraphics().translate(block.tx, block.ty);
         /* Q&D for now if (block instanceof TableBox) {
             TableRendering.paintTable(c, (TableBox) block, restyle);
         } else */ if (isInlineLayedOut(block)) {
@@ -154,7 +159,9 @@ public class BoxRendering {
         } else {
             BlockRendering.paintBlockContext(c, block, restyle);
         }
-        c.untranslateInsets(block);
+        c.getGraphics().translate(-block.tx, -block.ty);
+        c.translate(-block.tx, -block.ty);
+        //c.untranslateInsets(block);
 
         BorderPainter.paint(bounds, BorderPainter.ALL, c.getCurrentStyle(), c.getGraphics(), c.getCtx(), 0);
 
@@ -207,7 +214,9 @@ public class BoxRendering {
         }
 
         c.translate(xoff, yoff);
+        c.getGraphics().translate(xoff, yoff);
         paintNormal(c, block, restyle);
+        c.getGraphics().translate(-xoff, -yoff);
         c.translate(-xoff, -yoff);
 
     }
@@ -255,15 +264,16 @@ public class BoxRendering {
         // layout time.
         CalculatedStyle style = c.getCurrentStyle();
         //Uu.p("style = " + style);
-        if (style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
+        /*if (style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
             //Uu.p("top is auto");
             //Uu.p("box = " + block);
             //Uu.p("yoff = " + yoff);
             yoff = 0;
-        }
+        }*/
         if (block.top_set) {
-            int tp = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c.getCtx());
-            yoff += tp;
+            yoff += (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c.getCtx());
+        } else {
+            yoff = 0;
         }
         if (block.right_set) {
             xoff += -rect.x + rect.width - block.getWidth() - block.right;
@@ -278,7 +288,9 @@ public class BoxRendering {
         //Uu.p("xoff = " + xoff + " yoff = " + yoff);
 
         c.translate(xoff, yoff);
+        c.getGraphics().translate(xoff, yoff);
         paintNormal(c, block, restyle);
+        c.getGraphics().translate(-xoff, -yoff);
         c.translate(-xoff, -yoff);
     }
 
@@ -362,6 +374,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2005/10/02 21:30:00  tobega
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ *
  * Revision 1.38  2005/09/29 21:34:04  joshy
  * minor updates to a lot of files. pulling in more incremental rendering code.
  * fixed another resize bug

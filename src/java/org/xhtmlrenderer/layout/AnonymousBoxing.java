@@ -19,71 +19,81 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.*;
-import java.util.List;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.Uu;
 
+import java.awt.*;
+import java.util.List;
+
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class AnonymousBoxing {
 
-    /** Constructor for the AnonymousBoxLayout object  */
-    private AnonymousBoxing() { }
+    /**
+     * Constructor for the AnonymousBoxLayout object
+     */
+    private AnonymousBoxing() {
+    }
 
 
     /**
      * Description of the Method
      *
-     * @param c        PARAM
-     * @param content  PARAM
-     * @return         Returns
+     * @param c       PARAM
+     * @param content PARAM
+     * @return Returns
      */
-    public static Box layout( Context c, Content content ) {
-        Box block = new AnonymousBlockBox( content );
+    public static Box layout(Context c, Box block, Content content) {
         // copy the extents
         Rectangle oe = c.getExtents();
-        c.setExtents( new Rectangle( oe ) );
+        c.setExtents(new Rectangle(oe));
 
-        block.x = c.getExtents().x;
-        block.y = c.getExtents().y;
+        //block.x = c.getExtents().x;
+        //block.y = c.getExtents().y;
 
         // save height incase fixed height
         int original_height = block.height;
 
         // do children's layout
         boolean old_sub = c.isSubBlock();
-        c.setSubBlock( false );
-        List contentList = content.getChildContent( c );
-        if ( contentList != null && contentList.size() != 0 ) {
-            InlineBoxing.layoutContent( c, block, content.getChildContent( c ) );//when this is really an anonymous, InlineLayout.layoutChildren is called
+        c.setSubBlock(false);
+        List contentList = content.getChildContent(c);
+        if (contentList != null && contentList.size() != 0) {
+            InlineBoxing.layoutContent(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
         }
-        c.setSubBlock( old_sub );
+        c.setSubBlock(old_sub);
 
         // restore height incase fixed height
-        if ( block.auto_height == false ) {
-            Uu.p( "restoring original height" );
+        if (block.auto_height == false) {
+            Uu.p("restoring original height");
             block.height = original_height;
         }
 
         //restore the extents
-        c.setExtents( oe );
+        c.setExtents(oe);
 
         return block;
     }
 
+    public static Box createBox(Context c, Content content) {
+        Box block = new AnonymousBlockBox(content);
+        return block;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2005/10/02 21:29:58  tobega
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ *
  * Revision 1.2  2005/01/29 20:24:27  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

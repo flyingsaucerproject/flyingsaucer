@@ -31,6 +31,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      * Description of the Field
      */
     protected Dimension intrinsic_size;
+
     /**
      * Gets the intrinsicSize attribute of the BasicPanel object
      *
@@ -74,7 +75,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         return ctx;
     }
 
-    protected Context layout_context;
+    protected volatile Context layout_context;
 
 
     /**
@@ -143,7 +144,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             default_scroll_mode = enclosingScrollPane.getViewport().getScrollMode();
         }
     }
-    
+
     private int default_scroll_mode = -1;
 
     /**
@@ -295,6 +296,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             XRLog.layout(Level.SEVERE, "mismatch in style popping and pushing");
         }
 
+        if (c.shouldStop()) {//interrupted layout
+            return;
+        }
+
         XRLog.layout(Level.FINEST, "is a fixed child: " + body_box.isChildrenExceedBounds());
 
 // if there is a fixed child then we need to set opaque to false
@@ -345,12 +350,12 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             
             
             // turn on simple scrolling mode if there's any fixed elements
-            if(body_box.isFixedDescendant()) {
+            if (body_box.isFixedDescendant()) {
                 // Uu.p("is fixed");
                 enclosingScrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
             } else {
                 // Uu.p("is not fixed");
-                enclosingScrollPane.getViewport().setScrollMode(default_scroll_mode);                
+                enclosingScrollPane.getViewport().setScrollMode(default_scroll_mode);
             }
         }
 

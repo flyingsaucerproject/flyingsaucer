@@ -73,17 +73,17 @@ public class ContextImpl implements Context {
         sharedContext.addMaxWidth(max_width);
     }
 
-	public int getMaxWidth() {
-		return sharedContext.getMaxWidth();
-	}
+    public int getMaxWidth() {
+        return sharedContext.getMaxWidth();
+    }
 
     public void addMaxHeight(int max_height) {
         sharedContext.addMaxHeight(max_height);
     }
-	
-	public int getMaxHeight() {
-		return sharedContext.getMaxHeight();
-	}
+
+    public int getMaxHeight() {
+        return sharedContext.getMaxHeight();
+    }
 
     public void clearSelection() {
         sharedContext.clearSelection();
@@ -373,8 +373,8 @@ public class ContextImpl implements Context {
      */
     public void translate(int x, int y) {
         //Uu.p("trans: " + x + "," + y);
-        getGraphics().translate(x, y);//TODO: is this healthy and thread-safe enough?
-        if (bfc != null) {
+        //getGraphics().translate(x, y);//not thread-safe
+        if (bfc != null) { //is now thread-safe
             bfc.translate(x, y);
         }
         xoff += x;
@@ -383,34 +383,6 @@ public class ContextImpl implements Context {
 
     public Point getOriginOffset() {
         return new Point(xoff, yoff);
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param box PARAM
-     * @deprecated
-     */
-    //TODO: this is wrong! margins can collapse, for starters!
-    public void translateInsets(Box box) {
-        if (box == null) {
-            XRLog.render(Level.WARNING, "null box");
-            return;//TODO: why?
-        }
-        translate(box.tx,
-                box.ty);
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param box PARAM
-     * @deprecated
-     */
-    //TODO: this is wrong! margins can collapse, for starters!
-    public void untranslateInsets(Box box) {
-        translate(-box.tx,
-                -box.ty);
     }
 
     private boolean shouldStop = false;

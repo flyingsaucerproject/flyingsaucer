@@ -32,7 +32,6 @@ import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.inline.TextAlignJustify;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.util.GraphicsUtil;
-import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
 import java.awt.font.LineMetrics;
@@ -219,6 +218,7 @@ public class InlineRendering {
             // translate into local coords
             // account for the origin of the containing box
             c.translate(box.x, box.y);
+            c.getGraphics().translate(box.x, box.y);
             // for each line box
             BlockBox block = null;
             if (box instanceof BlockBox) {//Why isn't it always a BlockBox? Because of e.g. Floats!
@@ -231,6 +231,7 @@ public class InlineRendering {
             }
 
             // translate back to parent coords
+            c.getGraphics().translate(-box.x, -box.y);
             c.translate(-box.x, -box.y);
             //pop dummy style, but no, see above
             //c.popStyle();
@@ -414,9 +415,21 @@ public class InlineRendering {
                     (line.getBaseline() -
                     VerticalAlign.getBaselineOffset(c, line, ib) -
                     ib.height));
+            c.getGraphics().translate(line.x,
+                    line.y +
+                    (line.getBaseline() -
+                    VerticalAlign.getBaselineOffset(c, line, ib) -
+                    ib.height));
             c.translate(ib.x, ib.y);
+            c.getGraphics().translate(ib.x, ib.y);
             BoxRendering.paint(c, ((InlineBlockBox) ib).sub_block, false, restyle);
+            c.getGraphics().translate(-ib.x, -ib.y);
             c.translate(-ib.x, -ib.y);
+            c.getGraphics().translate(-line.x,
+                    -(line.y +
+                    (line.getBaseline() -
+                    VerticalAlign.getBaselineOffset(c, line, ib) -
+                    ib.height)));
             c.translate(-line.x,
                     -(line.y +
                     (line.getBaseline() -
@@ -447,11 +460,13 @@ public class InlineRendering {
             // JMM: new adjustments to move the text to account for horizontal insets
             //int padding_xoff = inline.totalLeftPadding(c.getCurrentStyle());
             c.translate(padX, 0);
+            c.getGraphics().translate(padX, 0);
             LineMetrics lm = FontUtil.getLineMetrics(c, inline);
             paintBackground(c, line, inline);
 
             paintSelection(c, inline, lx, ly, lm);
             paintText(c, ix, iy, inline, lm);
+            c.getGraphics().translate(-padX, 0);
             c.translate(-padX, 0);
             debugInlines(c, inline, lx, ly);
         }
@@ -574,7 +589,9 @@ public class InlineRendering {
         int xoff = 0;
         int yoff = 0;//line.y + ( line.baseline - inline.height );// + inline.y;
         c.translate(xoff, yoff);
+        c.getGraphics().translate(xoff, yoff);
         BoxRendering.paint(c, inline, false, restyle);
+        c.getGraphics().translate(-xoff, -yoff);
         c.translate(-xoff, -yoff);
         c.setExtents(oe);
     }

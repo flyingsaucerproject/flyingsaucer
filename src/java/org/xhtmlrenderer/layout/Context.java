@@ -133,11 +133,11 @@ public interface Context {
      */
     void addMaxWidth(int max_width);
 
-	public int getMaxWidth();
-	
-	void addMaxHeight(int max_height);
-    
-	public int getMaxHeight();
+    public int getMaxWidth();
+
+    void addMaxHeight(int max_height);
+
+    public int getMaxHeight();
 
     /**
      * Description of the Method
@@ -151,20 +151,6 @@ public interface Context {
      * Description of the Method
      */
     void unshrinkExtents();
-
-    /**
-     * Description of the Method
-     *
-     * @param box PARAM
-     */
-    void translateInsets(Box box);
-
-    /**
-     * Description of the Method
-     *
-     * @param box PARAM
-     */
-    void untranslateInsets(Box box);
 
     /**
      * Converts to a String representation of the object.
@@ -290,9 +276,9 @@ public interface Context {
     RenderingContext getCtx();
 
     /**
-     * Gets the blockFormattingContext attribute of the Context object
+     * Gets the persistentBFC attribute of the Context object
      *
-     * @return The blockFormattingContext value
+     * @return The persistentBFC value
      */
     BlockFormattingContext getBlockFormattingContext();
 

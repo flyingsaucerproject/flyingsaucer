@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -67,47 +68,41 @@ public class Boxing {
     }
 
     public static Box layout(Context c, Content content, BoxHolder bh) {
-        Box block = null;
-        if (content instanceof AnonymousBlockContent) {
-            return AnonymousBoxing.layout(c, content);
-        } else if (content instanceof TableContent) {
-            return TableBoxing.layout(c, content);
-        } else {
-            block = new BlockBox();
-        }
+        Box block = preLayout(c, content);
         if (bh != null) {
             bh.box = block;
         }
-        block.element = content.getElement();
-        if (block.element != null) {
-            String id = c.getNamespaceHandler().getID(block.element);
-            if (id != null && !id.equals("")) {
-                c.addIDBox(id, block);
-            }
-        }
-        return layout(c, block, content);
+        return realLayout(c, block, content);
     }
 
     public static Box preLayout(Context c, Content content) {
         Box block = null;
         if (content instanceof AnonymousBlockContent) {
-            return AnonymousBoxing.layout(c, content);
+            return AnonymousBoxing.createBox(c, content);
         } else if (content instanceof TableContent) {
-            return TableBoxing.layout(c, content);
+            //tables have an anonymous outer box that nevertheless represents the table
+            block = TableBoxing.createBox(c, content);
         } else {
             block = new BlockBox();
+            block.element = content.getElement();
         }
-        block.element = content.getElement();
-		if(block.element != null) {
-			if(block.element.hasAttribute("id")) {
-				c.addIDBox(block.element.getAttribute("id"),block);
-			}
-		}
+        Element element = content.getElement();
+        if (element != null) {
+            String id = c.getNamespaceHandler().getID(element);
+            if (id != null && !id.equals("")) {
+                c.addIDBox(id, block);
+            }
+        }
         return block;
     }
-    
+
     public static Box realLayout(Context c, Box block, Content content) {
-        return layout(c, block, content);
+        if (content instanceof AnonymousBlockContent) {
+            return AnonymousBoxing.layout(c, block, content);
+        } else if (content instanceof TableContent) {
+            return TableBoxing.layout(c, block, content);
+        } else
+            return layout(c, block, content);
     }
 
     /**
@@ -169,7 +164,9 @@ public class Boxing {
                 c.getExtents().width =
                         margin.left + border.left + padding.left + setWidth + padding.right + border.right + margin.right;
                 //TODO: CHECK: what does isSubBlock mean?
-                if (!c.isSubBlock()) block.setWidth( setWidth );
+                if (!c.isSubBlock()) block.setWidth(setWidth);
+
+                block.auto_width = false;
             }
             if (hasSpecifiedHeight) {
                 setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
@@ -185,13 +182,13 @@ public class Boxing {
                 Rectangle bounds = cc.getBounds();
                 //block.x = bounds.x;
                 //block.y = bounds.y;
-                block.setWidth( bounds.width);
+                block.setWidth(bounds.width);
                 block.height = bounds.height;
                 block.component = cc;
             }
         }
-        block.x = c.getExtents().x;
-        block.y = c.getExtents().y;
+        //block.x = c.getExtents().x;
+        //block.y = c.getExtents().y;
 
         if (ContentUtil.isFloated(content.getStyle())) {
             // set up a float bfc
@@ -281,7 +278,7 @@ public class Boxing {
         // remove the outtermost bfc
         if (set_bfc) {
             c.getBlockFormattingContext().doFinalAdjustments();
-            //no! clear it in BasicPanel instead! c.popBFC();
+            c.popBFC();
         }
 
         //and now, back to previous style
@@ -331,6 +328,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2005/10/02 21:29:58  tobega
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ *
  * Revision 1.35  2005/09/30 04:58:04  joshy
  * fixed garbage when showing a document with a fixed positioned block
  *

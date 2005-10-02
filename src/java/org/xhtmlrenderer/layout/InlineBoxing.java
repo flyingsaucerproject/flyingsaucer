@@ -174,7 +174,7 @@ public class InlineBoxing {
                     int rp = padding.right + border.right + margin.right;
                     //CHECK: not sure this is where the padding really goes, always
                     prev_inline.rightPadding += rp;
-                    prev_inline.setWidth( prev_inline.getWidth() + rp);
+                    prev_inline.setWidth(prev_inline.getWidth() + rp);
                     pendingRightPadding -= rp;
                     remaining_width -= rp;
                     prev_inline.popstyles++;
@@ -326,8 +326,8 @@ public class InlineBoxing {
         bounds.height += curr_line.height;
         if (!c.shrinkWrap()) box.width = bounds.width;
         box.height = bounds.height;
-        box.x = 0;
-        box.y = 0;
+        //box.x = 0;
+        //box.y = 0;
         // Uu.p("- InlineLayout.layoutContent(): " + box);
         //pop the dummy style, but no, see above
         //c.popStyle();
@@ -582,6 +582,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2005/10/02 21:29:58  tobega
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ *
  * Revision 1.38  2005/09/29 21:34:03  joshy
  * minor updates to a lot of files. pulling in more incremental rendering code.
  * fixed another resize bug

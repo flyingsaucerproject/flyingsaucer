@@ -24,10 +24,11 @@ import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.BoxRendering;
+import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
@@ -90,8 +91,8 @@ public abstract class BasicPanel extends RootPanel {
     /**
      * Description of the Field
      */
-     /* DEAD: joshy
-    private Dimension intrinsic_size;
+    /* DEAD: joshy
+   private Dimension intrinsic_size;
 */
 
     /**
@@ -178,8 +179,8 @@ public abstract class BasicPanel extends RootPanel {
         //Uu.p("paint component () called");
         // if this is the first time painting this document, then calc layout
         if (bh == null || bh.box == null) {
-            Uu.p("dispatching an initial resize event");
-            queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, this.getSize()));
+            //Uu.p("dispatching an initial resize event");
+            //queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, this.getSize()));
             Uu.p("skipping the actual painting");
         } else {
             Context c = newContext((Graphics2D) g);
@@ -212,7 +213,7 @@ public abstract class BasicPanel extends RootPanel {
        this.layout_context = c;
        getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
        //TODO: maybe temporary hack
-       if (c.getBlockFormattingContext() != null) c.popBFC();//we set one for the top level before
+       if (c.getPersistentBFC() != null) c.popBFC();//we set one for the top level before
        // do the actual layout
        body_box = Boxing.layout(c, new DomToplevelNode(doc));
        if (!c.isStylesAllPopped()) {
@@ -366,11 +367,11 @@ public abstract class BasicPanel extends RootPanel {
             return null;
         }
 
-        //Uu.p("bfc blah = " + box.getBlockFormattingContext());
+        //Uu.p("bfc blah = " + box.getPersistentBFC());
 
         // go down to the next bfc
-        if (box.getBlockFormattingContext() != null) {
-            bfc = box.getBlockFormattingContext();
+        if (box.getPersistentBFC() != null) {
+            bfc = box.getPersistentBFC();
         }
 
         // loop through the children first
@@ -385,14 +386,14 @@ public abstract class BasicPanel extends RootPanel {
             ty -= bx.ty;
 */
     /*
-    if(bx.getBlockFormattingContext() != null) {
+    if(bx.getPersistentBFC() != null) {
         Uu.p("current bfc = " + bfc);
-        bfc = bx.getBlockFormattingContext();
+        bfc = bx.getPersistentBFC();
         Uu.p("setting bfc" + bfc);
     }
 
     */
-/*            //Uu.p("bfc = " + box.getBlockFormattingContext());
+/*            //Uu.p("bfc = " + box.getPersistentBFC());
             if (bx.absolute) {
                 int[] adj = adjustForAbsolute(bx, tx, ty, bfc);
                 tx = adj[0];
@@ -442,7 +443,7 @@ public abstract class BasicPanel extends RootPanel {
         //Uu.p("testing: " + bx);
         //Uu.p("is abs");
         //Uu.p("bfc = " + bfc);
-        BlockFormattingContext obfc = bx.getBlockFormattingContext();
+        BlockFormattingContext obfc = bx.getPersistentBFC();
         //Uu.p("own bfc = " + obfc);
         if (bfc != null) {
             //int adj_x = tx += bfc.getX();
@@ -625,14 +626,21 @@ public abstract class BasicPanel extends RootPanel {
     public void setSize(Dimension d) {
         XRLog.layout(Level.FINEST, "set size called");
         super.setSize(d);
-        if (doc != null)
+        /* do we need this?
+        if (doc != null && body_box != null) {
+            if(body_box.width != d.width)
             RenderQueue.getInstance().dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, d));
+            //don't need the below, surely
+            //else if(body_box.height != d.height)
+            //    RenderQueue.getInstance().dispatchRepaintEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, d));
+    } */
     }
 
-    
-    
-    
-    
+
+
+
+
+
     /* =========== set document utility methods =============== */
     
     
@@ -1017,6 +1025,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.71  2005/10/02 21:30:00  tobega
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ *
  * Revision 1.70  2005/09/29 21:34:05  joshy
  * minor updates to a lot of files. pulling in more incremental rendering code.
  * fixed another resize bug

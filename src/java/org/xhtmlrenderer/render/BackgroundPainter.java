@@ -54,6 +54,9 @@ public class BackgroundPainter {
 
         int width = block.getWidth();
         int height = block.getHeight();
+        if (block.getState() != Box.DONE) {
+            height += c.getCanvas().getHeight();
+        }
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         if (border == null) {
             return;
@@ -61,8 +64,8 @@ public class BackgroundPainter {
         Border margin = block.getMarginWidth(c, width);
         Rectangle box = new Rectangle(block.x + margin.left + border.left,
                 block.y + margin.top + border.top,
-                block.width - margin.left - margin.right - border.left - border.right,
-                block.height - margin.top - border.top - border.bottom - margin.bottom);
+                width - margin.left - margin.right - border.left - border.right,
+                height - margin.top - border.top - border.bottom - margin.bottom);
 
         // paint the background
         Color background_color = c.getCurrentStyle().getBackgroundColor();
@@ -168,6 +171,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2005/10/02 21:29:59  tobega
+ * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
+ *
  * Revision 1.31  2005/09/26 22:40:20  tobega
  * Applied patch from Peter Brant concerning margin collapsing
  *
