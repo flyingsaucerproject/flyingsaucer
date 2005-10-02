@@ -165,17 +165,19 @@ public class BlockBoxing {
 
             //Uu.p("alerting that there is a box available");
             Dimension max_size = new Dimension(c.getMaxWidth(), c.getMaxHeight());
-            if (Configuration.isTrue("xr.incremental.enabled", false)) {
-                RenderQueue.getInstance().dispatchRepaintEvent(new ReflowEvent(ReflowEvent.MORE_BOXES_AVAILABLE, box, max_size));
-            }
+            if (c.isInteractive()) {
+                if (Configuration.isTrue("xr.incremental.enabled", false)) {
+                    RenderQueue.getInstance().dispatchRepaintEvent(new ReflowEvent(ReflowEvent.MORE_BOXES_AVAILABLE, box, max_size));
+                }
 
-            int delay = Configuration.valueAsInt("xr.incremental.debug.layoutdelay", 0);
-            if (delay > 0) {
-                //Uu.p("sleeping for: " + delay);
-                try {
-                    Uu.sleep(delay);
-                } catch (Exception ex) {
-                    Uu.p("sleep was interrupted in BlockBoxing.layoutContent()!");
+                int delay = Configuration.valueAsInt("xr.incremental.debug.layoutdelay", 0);
+                if (delay > 0) {
+                    //Uu.p("sleeping for: " + delay);
+                    try {
+                        Uu.sleep(delay);
+                    } catch (Exception ex) {
+                        Uu.p("sleep was interrupted in BlockBoxing.layoutContent()!");
+                    }
                 }
             }
 
@@ -197,6 +199,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/10/02 21:42:53  tobega
+ * Only do incremental rendering if we are in an interactive context
+ *
  * Revision 1.15  2005/10/02 21:29:58  tobega
  * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
  *
