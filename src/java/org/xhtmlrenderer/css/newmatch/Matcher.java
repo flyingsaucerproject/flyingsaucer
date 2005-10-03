@@ -26,11 +26,7 @@ import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.lang.ref.SoftReference;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -58,15 +54,15 @@ public class Matcher {
     /**
      * Description of the Field
      */
-    private java.util.HashMap _map;
+    private java.util.Map _map;
     /**
      * Description of the Field
      */
-    private java.util.HashMap _peMap;
+    private java.util.Map _peMap;
     /**
      * Description of the Field
      */
-    private java.util.HashMap _csCache;
+    private java.util.Map _csCache;
     //private java.util.HashMap _elStyle;
 
     //handle dynamic
@@ -112,13 +108,15 @@ public class Matcher {
      * @return The cascadedStyle value
      */
     public CascadedStyle getCascadedStyle(Object e, boolean restyle) {
-        Mapper em;
-        if (!restyle) {
-            em = getMapper(e);
-        } else {
-            em = matchElement(e);
+        synchronized (e) {
+            Mapper em;
+            if (!restyle) {
+                em = getMapper(e);
+            } else {
+                em = matchElement(e);
+            }
+            return em.style;
         }
-        return em.style;
     }
 
     /**
@@ -183,15 +181,17 @@ public class Matcher {
      * @return Returns
      */
     protected Mapper matchElement(Object e) {
-        Object parent = _treeRes.getParentElement(e);
-        Mapper child;
-        if (parent != null) {
-            Mapper m = getMapper(parent);
-            child = m.mapChild(e);
-        } else {//has to be document or fragment node
-            child = docMapper.mapChild(e);
+        synchronized (e) {
+            Object parent = _treeRes.getParentElement(e);
+            Mapper child;
+            if (parent != null) {
+                Mapper m = getMapper(parent);
+                child = m.mapChild(e);
+            } else {//has to be document or fragment node
+                child = docMapper.mapChild(e);
+            }
+            return child;
         }
-        return child;
     }
 
     /**
@@ -219,35 +219,37 @@ public class Matcher {
      * @return Returns
      */
     CascadedStyle createCascadedStyle(Object e, List matchedSelectors) {
-        CascadedStyle cs = null;
-        org.xhtmlrenderer.css.sheet.Ruleset elementStyling = getElementStyle(e);
-        java.util.List propList = new java.util.LinkedList();
-        for (java.util.Iterator i = getMatchedRulesets(matchedSelectors); i.hasNext();) {
-            org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
-            for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
-                propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
+        synchronized (e) {
+            CascadedStyle cs = null;
+            org.xhtmlrenderer.css.sheet.Ruleset elementStyling = getElementStyle(e);
+            java.util.List propList = new java.util.LinkedList();
+            for (java.util.Iterator i = getMatchedRulesets(matchedSelectors); i.hasNext();) {
+                org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
+                for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
+                    propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
+                }
             }
-        }
-        if (elementStyling != null) {
-            for (java.util.Iterator j = elementStyling.getPropertyDeclarations(); j.hasNext();) {
-                propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
+            if (elementStyling != null) {
+                for (java.util.Iterator j = elementStyling.getPropertyDeclarations(); j.hasNext();) {
+                    propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
+                }
             }
-        }
-        if (propList.size() == 0)
-            cs = CascadedStyle.emptyCascadedStyle;//already internalized
-        else {
-            cs = new CascadedStyle(propList.iterator());
-            //internalize (worth the trouble to make style-caching work)
-            String fingerprint = cs.getFingerprint();
-            CascadedStyle internal = (CascadedStyle) _csCache.get(fingerprint);
-            if (internal != null) {
-                cs = internal;
-            } else {
-                _csCache.put(fingerprint, cs);
+            if (propList.size() == 0)
+                cs = CascadedStyle.emptyCascadedStyle;//already internalized
+            else {
+                cs = new CascadedStyle(propList.iterator());
+                //internalize (worth the trouble to make style-caching work)
+                String fingerprint = cs.getFingerprint();
+                CascadedStyle internal = (CascadedStyle) _csCache.get(fingerprint);
+                if (internal != null) {
+                    cs = internal;
+                } else {
+                    _csCache.put(fingerprint, cs);
+                }
             }
-        }
 
-        return cs;
+            return cs;
+        }
     }
 
     /**
@@ -257,20 +259,26 @@ public class Matcher {
      * @param m PARAM
      */
     private void link(Object e, Mapper m) {
-        _map.put(e, new SoftReference(m));
+        _map.put(e, m);
     }
 
     /**
      * Description of the Method
      */
     private void newMaps() {
-        _map = new java.util.HashMap();
-        _csCache = new java.util.HashMap();
-        _peMap = new java.util.HashMap();
-        _hoverElements = new java.util.HashSet();
-        _activeElements = new java.util.HashSet();
-        _focusElements = new java.util.HashSet();
-        _visitElements = new java.util.HashSet();
+        _map = Collections.synchronizedMap(new java.util.LinkedHashMap(100, 0.75f, true) {
+            private static final int MAX_ENTRIES = 100;
+
+            protected boolean removeEldestEntry(Map.Entry eldest) {
+                return size() > MAX_ENTRIES;
+            }
+        });
+        _csCache = Collections.synchronizedMap(new java.util.HashMap());
+        _peMap = Collections.synchronizedMap(new java.util.HashMap());
+        _hoverElements = Collections.synchronizedSet(new java.util.HashSet());
+        _activeElements = Collections.synchronizedSet(new java.util.HashSet());
+        _focusElements = Collections.synchronizedSet(new java.util.HashSet());
+        _visitElements = Collections.synchronizedSet(new java.util.HashSet());
     }
 
     /**
@@ -599,14 +607,7 @@ public class Matcher {
      * @return The mapper value
      */
     private Mapper getMapper(Object e) {
-        if (_map == null) {
-            _map = new java.util.HashMap();
-        }
-        Mapper m = null;
-        SoftReference ref = (SoftReference) _map.get(e);
-        if (ref != null) {
-            m = (Mapper) ref.get();
-        }
+        Mapper m = (Mapper) _map.get(e);
         if (m != null) {
             return m;
         }
@@ -681,19 +682,21 @@ public class Matcher {
      * @return The elementStyle value
      */
     private org.xhtmlrenderer.css.sheet.Ruleset getElementStyle(Object e) {
-        if (_attRes == null || _styleFactory == null) {
-            return null;
+        synchronized (e) {
+            if (_attRes == null || _styleFactory == null) {
+                return null;
+            }
+            org.xhtmlrenderer.css.sheet.Ruleset rs;// = (org.xhtmlrenderer.css.sheet.Ruleset) _elStyle.get(e);
+            //if (rs == null) {
+            String style = _attRes.getElementStyling(e);
+            if (style == null || style.equals("")) {
+                return null;
+            }
+            rs = _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
+            //_elStyle.put(e, rs);
+            //}
+            return rs;
         }
-        org.xhtmlrenderer.css.sheet.Ruleset rs;// = (org.xhtmlrenderer.css.sheet.Ruleset) _elStyle.get(e);
-        //if (rs == null) {
-        String style = _attRes.getElementStyling(e);
-        if (style == null || style.equals("")) {
-            return null;
-        }
-        rs = _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
-        //_elStyle.put(e, rs);
-        //}
-        return rs;
     }
 
     /**

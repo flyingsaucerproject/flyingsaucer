@@ -30,9 +30,9 @@ import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.Color;
-import java.awt.Point;
+import java.awt.*;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 
 
@@ -63,7 +63,13 @@ public class CalculatedStyle {
     /**
      * Cache child styles of this style that have the same cascaded properties
      */
-    private java.util.HashMap _childCache = new java.util.HashMap();
+    private java.util.HashMap _childCache = new java.util.LinkedHashMap(5, 0.75f, true) {
+        private static final int MAX_ENTRIES = 10;
+
+        protected boolean removeEldestEntry(Map.Entry eldest) {
+            return size() > MAX_ENTRIES;
+        }
+    };
 
     /**
      * Array of DerivedProperties, keyed by the {@link CSSName#getAssignedID()).
@@ -137,7 +143,7 @@ public class CalculatedStyle {
      * @param matched the CascadedStyle to apply
      * @return The derived child style
      */
-    public CalculatedStyle deriveStyle(CascadedStyle matched) {
+    public synchronized CalculatedStyle deriveStyle(CascadedStyle matched) {
         CalculatedStyle cs = (CalculatedStyle) _childCache.get(matched);
 
         if (cs == null) {
@@ -549,6 +555,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/10/03 23:44:43  tobega
+ * thread-safer css code and improved style caching
+ *
  * Revision 1.29  2005/09/11 20:43:15  tobega
  * Fixed table-css interaction bug, colspan now works again
  *

@@ -31,7 +31,6 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.io.*;
@@ -54,11 +53,6 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     /**
      * Description of the Field
      */
-    private CSSOMParser parser;// = new CSSOMParser(); // moved to the constructor
-
-    /**
-     * Description of the Field
-     */
     private int _cacheCapacity = 16;
 
     /**
@@ -70,6 +64,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
                     return size() > _cacheCapacity;
                 }
             };
+    private CSSOMParser parser;
 
     /**
      * Creates a new instance of StylesheetFactory
@@ -80,7 +75,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
         _userAgent = userAgent;
         try {
             Object obj = Class.forName("com.steadystate.css.parser.SACParser").newInstance();
-            org.w3c.css.sac.Parser psr = (org.w3c.css.sac.Parser)obj;
+            org.w3c.css.sac.Parser psr = (org.w3c.css.sac.Parser) obj;
             parser = new CSSOMParser(psr);
         } catch (Exception ex) {
             XRLog.exception("Bad!  Couldn't load the CSS parser. Everything after this will fail.");
@@ -94,7 +89,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      * @param info
      * @return Returns
      */
-    Stylesheet parse(InputStream stream, StylesheetInfo info) {
+    synchronized Stylesheet parse(InputStream stream, StylesheetInfo info) {
         Reader r = new InputStreamReader(stream);
         InputSource is = new InputSource(r);
         CSSStyleSheet style = null;
@@ -190,7 +185,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      * @param styleDeclaration PARAM
      * @return Returns
      */
-    public Ruleset parseStyleDeclaration(int origin, String styleDeclaration) {
+    public synchronized Ruleset parseStyleDeclaration(int origin, String styleDeclaration) {
         try {
             java.io.StringReader reader = new java.io.StringReader("* {" + styleDeclaration + "}");
             InputSource is = new InputSource(reader);
@@ -198,7 +193,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
             reader.close();
             return new Ruleset((CSSStyleRule) style.getCssRules().item(0), origin);
         } catch (Exception ex) {
-            throw new XRRuntimeException("Cannot parse style declaration from string.", ex);
+            throw new XRRuntimeException("Cannot parse style declaration from string." + ex.getMessage(), ex);
         }
     }
 
@@ -210,7 +205,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      *              factory.
      * @param sheet The sheet to cache.
      */
-    public void putStylesheet(Object key, Stylesheet sheet) {
+    public synchronized void putStylesheet(Object key, Stylesheet sheet) {
         _cache.put(key, sheet);
     }
 
@@ -220,7 +215,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      *         Note that the Stylesheet may be null.
      */
     //TODO: work out how to handle caching properly, with cache invalidation
-    public boolean containsStylesheet(Object key) {
+    public synchronized boolean containsStylesheet(Object key) {
         return _cache.containsKey(key);
     }
 
@@ -231,7 +226,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      *            putStylesheet();
      * @return The stylesheet
      */
-    public Stylesheet getCachedStylesheet(Object key) {
+    public synchronized Stylesheet getCachedStylesheet(Object key) {
         return (Stylesheet) _cache.get(key);
     }
 
@@ -241,7 +236,7 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      * @param key The key for this sheet; same as key passed to
      *            putStylesheet();
      */
-    public Object removeCachedStylesheet(Object key) {
+    public synchronized Object removeCachedStylesheet(Object key) {
         return _cache.remove(key);
     }
 
