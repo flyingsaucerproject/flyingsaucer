@@ -213,6 +213,8 @@ public class TableBoxing {
             outerBox.height += child.height;
             if (child.width > outerBox.width) outerBox.width = child.width;
         }
+        tableBox.setState(Box.DONE);
+        outerBox.setState(Box.DONE);
         return outerBox;
     }
 
@@ -359,6 +361,7 @@ public class TableBoxing {
 
         //restore the extents
         c.setExtents(oe);
+        row.setState(Box.DONE);
         return row;
     }
 
@@ -475,17 +478,10 @@ public class TableBoxing {
             block.setChildrenExceedBounds(true);
         }
 
-        // install a block formatting context for the body,
-        // ie. if it's null.
-        // set up the outtermost bfc
-        boolean set_bfc = false;
-        if (c.getBlockFormattingContext() == null) {
-            block.setParent(c.getCtx().getRootBox());
-            BlockFormattingContext bfc = new BlockFormattingContext(block, c);
-            c.pushBFC(bfc);
-            set_bfc = true;
-            bfc.setWidth((int) c.getExtents().getWidth());
-        }
+        // a cell defines a new bfc
+        BlockFormattingContext bfc = new BlockFormattingContext(block, c);
+        c.pushBFC(bfc);
+        bfc.setWidth((int) c.getExtents().getWidth());
 
         // copy the extents
         Rectangle oe = c.getExtents();
@@ -618,11 +614,9 @@ public class TableBoxing {
         //Fixed.setupFixed(c, block);
         //FloatUtil.setupFloat(c, block, content.getStyle());
 
-        // remove the outtermost bfc
-        if (set_bfc) {
-            c.getBlockFormattingContext().doFinalAdjustments();
-            c.popBFC();
-        }
+        // remove the bfc
+        c.getBlockFormattingContext().doFinalAdjustments();
+        c.popBFC();
 
         //and now, back to previous style
         if (pushed != null) {
@@ -630,6 +624,7 @@ public class TableBoxing {
         }
 
         // Uu.p("BoxLayout: finished with block: " + block);
+        block.setState(Box.DONE);
         return block;
     }
 }
@@ -637,6 +632,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.25  2005/10/03 21:36:56  tobega
+   fixed some details
+
    Revision 1.24  2005/10/02 21:30:03  tobega
    Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
 

@@ -6,7 +6,10 @@ import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.UserInterface;
-import org.xhtmlrenderer.layout.*;
+import org.xhtmlrenderer.layout.BoxHolder;
+import org.xhtmlrenderer.layout.Boxing;
+import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.ReflowEvent;
@@ -287,7 +290,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 //TODO: maybe temporary hack
         if (c.getBlockFormattingContext() != null) c.popBFC();//we set one for the top level before
         // do the actual layout
-        BlockBoxing.count = 0;
         bh = new org.xhtmlrenderer.layout.BoxHolder();
 //Uu.p("doing actual layout here");
         body_box = Boxing.layout(c, new DomToplevelNode(doc), bh);
