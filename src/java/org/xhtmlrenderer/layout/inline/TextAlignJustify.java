@@ -44,7 +44,7 @@ public class TextAlignJustify {
      * @param width PARAM
      */
     public static void justifyLine(Context c, LineBox line, int width) {
-        if (line.width > width) {
+        if (line.contentWidth > width) {
             return;
         }
 
@@ -56,14 +56,14 @@ public class TextAlignJustify {
         // clear out all inlines
         line.removeAllChildren();
         // add in all of the new inlines
-        line.width = 0;
+        line.contentWidth = 0;
         for (int i = 0; i < temp_list.size(); i++) {
             InlineBox box = (InlineBox) temp_list.get(i);
-            line.width += box.width;
+            line.contentWidth += box.getWidth();
             line.addChild(box);
         }
 
-        int extra = width - line.width;
+        int extra = width - line.contentWidth;
         int spaces = (line.getChildCount() - 1);
         float spacer = extra / (float) spaces;
         // now realign them
@@ -71,7 +71,7 @@ public class TextAlignJustify {
         for (int i = 0; i < line.getChildCount(); i++) {
             InlineBox box = (InlineBox) line.getChild(i);
             box.x = total_lengths + (int) (spacer * (float) i);
-            total_lengths += box.width;
+            total_lengths += box.getWidth();
         }
     }
 
@@ -112,7 +112,7 @@ public class TextAlignJustify {
             InlineTextBox copy = (InlineTextBox) box.copy();
             copy.setSubstring(currentWordPosition, currentWordPosition + words[i].length());//was: (words[i]);
             currentWordPosition = currentWordPosition + words[i].length() + 1;//skip the space too
-            copy.width = FontUtil.len(c, copy);
+            copy.contentWidth = FontUtil.len(c, copy);
             temp_list.add(copy);
             if (i == 0) {
                 copy.pushstyles = box.pushstyles;

@@ -19,77 +19,74 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Rectangle;
 import org.xhtmlrenderer.render.Box;
-import java.awt.image.BufferedImage;
-import java.awt.Image;
+
+import java.awt.*;
 
 /**
  * Description of the Class
  *
- * @author   empty
+ * @author empty
  */
 public class GraphicsUtil {
 
     /**
      * Description of the Method
      *
-     * @param g      PARAM
-     * @param box    PARAM
-     * @param color  PARAM
+     * @param g     PARAM
+     * @param box   PARAM
+     * @param color PARAM
      */
-    public static void drawBox( Graphics g, Box box, Color color ) {
+    public static void drawBox(Graphics g, Box box, Color color) {
 
         Color oc = g.getColor();
 
-        g.setColor( color );
+        g.setColor(color);
 
         //g.drawLine(-5,-5,5,5);
 
         //g.drawLine(-5,5,5,-5);
 
-        g.drawRect( box.x, box.y, box.width, box.height );
+        g.drawRect(box.x, box.y, box.getWidth(), box.height);
 
-        g.setColor( oc );
+        g.setColor(oc);
 
     }
 
     /**
      * Description of the Method
      *
-     * @param g      PARAM
-     * @param box    PARAM
-     * @param color  PARAM
+     * @param g     PARAM
+     * @param box   PARAM
+     * @param color PARAM
      */
-    public static void draw( Graphics g, Rectangle box, Color color ) {
+    public static void draw(Graphics g, Rectangle box, Color color) {
 
         Color oc = g.getColor();
 
-        g.setColor( color );
+        g.setColor(color);
 
-        g.drawRect( box.x, box.y, box.width, box.height );
+        g.drawRect(box.x, box.y, box.width, box.height);
 
-        g.setColor( oc );
+        g.setColor(oc);
 
     }
 
-	public static Image cleanImage(Image img) {
-		return img.getScaledInstance(img.getWidth(null),img.getHeight(null),Image.SCALE_FAST);
-		/*
+    public static Image cleanImage(Image img) {
+        return img.getScaledInstance(img.getWidth(null), img.getHeight(null), Image.SCALE_FAST);
+        /*
 
-		BufferedImage buf = new BufferedImage(img.getWidth(null), 
-			img.getHeight(null),
-			BufferedImage.TYPE_INT_RGB);
-		Graphics g = buf.getGraphics();
-		g.drawImage(img,0,0,null);
-		g.setColor(Color.green);
-		g.drawLine(0,0,300,300);
-		g.dispose();
-		return buf;
-		*/
-	}
+        BufferedImage buf = new BufferedImage(img.getWidth(null),
+            img.getHeight(null),
+            BufferedImage.TYPE_INT_RGB);
+        Graphics g = buf.getGraphics();
+        g.drawImage(img,0,0,null);
+        g.setColor(Color.green);
+        g.drawLine(0,0,300,300);
+        g.dispose();
+        return buf;
+        */
+    }
 
 }
 
@@ -97,6 +94,9 @@ public class GraphicsUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/10/06 03:20:25  tobega
+ * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
+ *
  * Revision 1.5  2005/06/21 17:52:12  joshy
  * new hover code
  * removed some debug statements

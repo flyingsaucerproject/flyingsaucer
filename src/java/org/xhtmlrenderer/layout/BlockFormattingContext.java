@@ -7,6 +7,8 @@ import org.xhtmlrenderer.render.LineBox;
 import java.awt.*;
 import java.util.List;
 
+//TODO: refactor so that BFC utilizes master's contentWidth, etc.
+
 public class BlockFormattingContext {
     protected int x, y = 0;
     private final PersistentBFC persistentBFC;
@@ -141,7 +143,7 @@ public class BlockFormattingContext {
             Box floater = (Box) floatList.get(i);
             // Uu.p("testing against: " + floater);
             if (floater.y >= box.y && (box.x >= floater.x &&
-                    box.x < floater.x + floater.width)) {
+                    box.x < floater.x + floater.getWidth())) {
                 // Uu.p("pushing down " + box);
                 box.y = floater.y + floater.height;
             }

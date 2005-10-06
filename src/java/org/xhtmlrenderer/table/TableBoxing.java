@@ -70,7 +70,7 @@ public class TableBoxing {
 
 
     public static Box createBox(Context c, Content content) {
-        Box outerBox;//the outer box may be block or inline block
+        BlockBox outerBox;//the outer box may be block or inline block
         if (content instanceof TableContent) {
             outerBox = new BlockBox();
         } else {
@@ -87,7 +87,7 @@ public class TableBoxing {
      * @param content PARAM
      * @return Returns
      */
-    public static Box layout(Context c, Box outerBox, Content content) {
+    public static Box layout(Context c, BlockBox outerBox, Content content) {
         boolean set_bfc = false;
         if (content instanceof TableContent) {
             // install a block formatting context for the body,
@@ -111,7 +111,7 @@ public class TableBoxing {
         //outerBox.x = c.getExtents().x;
         //outerBox.y = c.getExtents().y;
         //HACK: for now
-        outerBox.width = c.getExtents().width;
+        outerBox.contentWidth = c.getExtents().width;
         outerBox.height = c.getExtents().height;
 
         TableBox tableBox = new TableBox();
@@ -159,8 +159,8 @@ public class TableBoxing {
         } else {//if the algorithm is fixed, we need to do something else from the start
             int givenWidth = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
             //also fine, if the total calculated is less than the extents and the width
-            if (tableBox.width < givenWidth) {
-                tableBox.width = givenWidth;
+            if (tableBox.contentWidth < givenWidth) {
+                tableBox.contentWidth = givenWidth;
                 fixWidths(tableBox, borderSpacingHorizontal);
             } else {
                 c.getExtents().width = 1;
@@ -168,18 +168,18 @@ public class TableBoxing {
                 int[] preferredColumns = tableBox.columns;
                 tableBox.columns = null;
                 tableBox.removeAllChildren();
-                tableBox.width = 0;
+                tableBox.contentWidth = 0;
                 tableBox.height = 0;
                 layoutChildren(c, tableBox, content, false, borderSpacingHorizontal, borderSpacingVertical);
                 c.translate(-tx, -ty);
                 //here the table is layed out with minimum column widths
-                if (tableBox.width < givenWidth) {
+                if (tableBox.contentWidth < givenWidth) {
                     //do it right
-                    tableBox.width = givenWidth;
+                    tableBox.contentWidth = givenWidth;
                     tableBox.removeAllChildren();
                     fixWidths(tableBox, borderSpacingHorizontal, preferredColumns);
                     c.translate(tx, ty);
-                    tableBox.width = 0;
+                    tableBox.contentWidth = 0;
                     tableBox.height = 0;
                     layoutChildren(c, tableBox, content, true, borderSpacingHorizontal, borderSpacingVertical);
                     c.translate(-tx, -ty);
@@ -193,8 +193,12 @@ public class TableBoxing {
                 fixVerticalAlign(c, (RowBox) o);
             }
         }
-        // calculate the total outer width
-        tableBox.width = margin.left + border.left + padding.left + tableBox.width + padding.right + border.right + margin.right;
+
+        //TODO: margins go on the outer box
+        tableBox.leftPadding = border.left + padding.left;
+        tableBox.leftPadding += margin.left;
+        tableBox.rightPadding = border.right + margin.right;
+        tableBox.rightPadding += margin.right;
         tableBox.height = margin.top + border.top + padding.top + tableBox.height + padding.bottom + border.bottom + margin.bottom;
 
         c.popStyle();
@@ -211,7 +215,7 @@ public class TableBoxing {
         for (Iterator i = outerBox.getChildIterator(); i.hasNext();) {
             Box child = (Box) i.next();
             outerBox.height += child.height;
-            if (child.width > outerBox.width) outerBox.width = child.width;
+            outerBox.adjustWidthForChild(child.getWidth());
         }
         tableBox.setState(Box.DONE);
         outerBox.setState(Box.DONE);
@@ -232,12 +236,12 @@ public class TableBoxing {
     private static void fixWidths(TableBox tableBox, int borderSpacingHorizontal) {
         int sum = borderSpacingHorizontal;
         for (int i = 0; i < tableBox.columns.length; i++) sum += tableBox.columns[i] + borderSpacingHorizontal;
-        if (sum < tableBox.width) {
-            int extra = (tableBox.width - sum) / tableBox.columns.length;
+        if (sum < tableBox.contentWidth) {
+            int extra = (tableBox.contentWidth - sum) / tableBox.columns.length;
             for (int i = 0; i < tableBox.columns.length; i++) tableBox.columns[i] += extra;
         } else {
             //if sum is greater, we probably screwed up earlier, just do something reasonable
-            tableBox.width = sum;
+            tableBox.contentWidth = sum;
         }
         for (Iterator tci = tableBox.getChildIterator(); tci.hasNext();) {
             Object tc = tci.next();
@@ -250,9 +254,8 @@ public class TableBoxing {
                     cb.contentWidth = 0;
                     for (int i = 0; i < cb.colspan; i++) cb.contentWidth += tableBox.columns[col + i];
                     cb.contentWidth += borderSpacingHorizontal * (cb.colspan - 1);
-                    cb.width = cb.contentWidth;
                     cb.x = x;
-                    x += cb.width + borderSpacingHorizontal;
+                    x += cb.getWidth() + borderSpacingHorizontal;
                     col += cb.colspan;
                 }
             } else
@@ -270,8 +273,8 @@ public class TableBoxing {
             min += tableBox.columns[i] + borderSpacingHorizontal;
             if (tableBox.columns[i] < preferredColumns[i]) wantMore++;
         }
-        if (min < tableBox.width) {
-            int extra = (tableBox.width - min) / wantMore;
+        if (min < tableBox.contentWidth) {
+            int extra = (tableBox.contentWidth - min) / wantMore;
             for (int i = 0; i < tableBox.columns.length; i++) {
                 int wanted = preferredColumns[i] - tableBox.columns[i];
                 if (wanted > 0) {
@@ -284,21 +287,21 @@ public class TableBoxing {
             for (int i = 0; i < tableBox.columns.length; i++) {
                 int wanted = preferredColumns[i] - tableBox.columns[i];
                 if (wanted > 0) {
-                    int added = (int) Math.min(tableBox.width - min, wanted);
+                    int added = (int) Math.min(tableBox.contentWidth - min, wanted);
                     tableBox.columns[i] += added;
                     min += added;
                 }
             }
         } else {
             //can't be less than the minimum possible, shouldn't normally get here
-            tableBox.width = min;
+            tableBox.contentWidth = min;
         }
     }
 
     //TODO: do this right. It is totally as simple as possible.
     private static void layoutChildren(Context c, TableBox tableBox, Content content, boolean fixed, int borderSpacingHorizontal, int borderSpacingVertical) {
         Iterator contentIterator = content.getChildContent(c).iterator();
-        while (contentIterator.hasNext()) {
+        while (contentIterator.hasNext() && !c.shouldStop()) {
             Object o = contentIterator.next();
             if (o instanceof TableRowContent) {
                 c.translate(0, tableBox.height);
@@ -313,9 +316,7 @@ public class TableBoxing {
                 row.y = tableBox.height + borderSpacingVertical;
 
                 // increase the final layout width if the child was greater
-                if (row.width > tableBox.width) {
-                    tableBox.width = row.width;
-                }
+                tableBox.adjustWidthForChild(row.getWidth());
 
                 // increase the final layout height by the height of the child
                 tableBox.height = row.y + row.height;
@@ -338,24 +339,24 @@ public class TableBoxing {
         }
 
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
-        //note: percentages here refer to width of containing block
-        Border margin = c.getCurrentStyle().getMarginWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
-        Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
-        int tx = margin.left + border.left + padding.left;
-        int ty = margin.top + border.top + padding.top;
+        //rows have no margin or padding
+        row.leftPadding = border.left;
+        row.rightPadding = border.right;
+        //TODO: check how borders should interact with cell borders
+        int tx = border.left;
+        int ty = border.top;
         row.tx = tx;
         row.ty = ty;
         c.translate(tx, ty);
-        c.shrinkExtents(tx + margin.right + border.right + padding.right, ty + margin.bottom + border.bottom + padding.bottom);
+        c.shrinkExtents(tx + border.right, ty + border.bottom);
         List cells = tableRowContent.getChildContent(c);
         checkColumns(table, cells.size());
         layoutCells(cells, c, row, table, fixed, borderSpacingHorizontal, borderSpacingVertical);
         c.unshrinkExtents();
         c.translate(-tx, -ty);
         // calculate the total outer width
-        row.width += borderSpacingHorizontal;
-        row.width = margin.left + border.left + padding.left + row.width + padding.right + border.right + margin.right;
-        row.height = margin.top + border.top + padding.top + row.height + padding.bottom + border.bottom + margin.bottom;
+        row.contentWidth += borderSpacingHorizontal;
+        row.height = border.top + row.height + border.bottom;
 
         c.popStyle();
 
@@ -367,7 +368,7 @@ public class TableBoxing {
 
     private static void layoutCells(List cells, Context c, RowBox row, TableBox table, boolean fixed, int borderSpacingHorizontal, int borderSpacingVertical) {
         int col = 0;
-        for (Iterator i = cells.iterator(); i.hasNext();) {
+        for (Iterator i = cells.iterator(); i.hasNext() && !c.shouldStop();) {
             checkColumns(table, col + 1);
             if (table.columnRows[col] != 0) {
                 col = col + 1;
@@ -375,17 +376,17 @@ public class TableBoxing {
             }
             TableCellContent tcc = (TableCellContent) i.next();
             CellBox cellBox = new CellBox();
-            c.translate(row.width, 0);
+            c.translate(row.contentWidth, 0);
             c.setShrinkWrap();
             cellBox = (CellBox) layoutCell(c, cellBox, tcc, fixed, table, col);
             c.unsetShrinkWrap();
-            c.translate(-row.width, 0);
+            c.translate(-row.contentWidth, 0);
 
             row.addChild(cellBox);
             cellBox.setParent(row);
             cellBox.element = tcc.getElement();
             // set the child_box location
-            cellBox.x = row.width + borderSpacingHorizontal;
+            cellBox.x = row.contentWidth + borderSpacingHorizontal;
             //row.y = 0;
 
             checkColumns(table, col + cellBox.colspan);
@@ -397,15 +398,14 @@ public class TableBoxing {
             table.columnCell[col] = cellBox;
             int width = 0;
             for (int j = 0; j < cellBox.colspan; j++) width += table.columns[col + j];
-            if (!fixed && cellBox.width > width) {
-                int extra = (cellBox.width - width) / cellBox.colspan;
+            if (!fixed && cellBox.getWidth() > width) {
+                int extra = (cellBox.getWidth() - width) / cellBox.colspan;
                 for (int j = 0; j < cellBox.colspan; j++) table.columns[col + j] += extra;
             }
             cellBox.contentWidth = 0;
             for (int j = 0; j < cellBox.colspan; j++) cellBox.contentWidth += table.columns[col + j];
             cellBox.contentWidth += (cellBox.colspan - 1) * borderSpacingHorizontal;
-            cellBox.width = cellBox.contentWidth;
-            row.width = cellBox.x + cellBox.width;
+            row.contentWidth = cellBox.x + cellBox.getWidth();
             col += cellBox.colspan;
             //this will be fixed again later!
             cellBox.height = 0;
@@ -463,11 +463,11 @@ public class TableBoxing {
      * Description of the Method
      *
      * @param c       PARAM
-     * @param block   PARAM
+     * @param cell    PARAM
      * @param content PARAM
      * @return Returns
      */
-    public static CellBox layoutCell(Context c, CellBox block, Content content, boolean fixed, TableBox table, int col) {
+    private static CellBox layoutCell(Context c, CellBox cell, Content content, boolean fixed, TableBox table, int col) {
         //OK, first set up the current style. All depends on this...
         CascadedStyle pushed = content.getStyle();
         if (pushed != null) {
@@ -475,11 +475,11 @@ public class TableBoxing {
         }
 
         if (c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
-            block.setChildrenExceedBounds(true);
+            cell.setChildrenExceedBounds(true);
         }
 
         // a cell defines a new bfc
-        BlockFormattingContext bfc = new BlockFormattingContext(block, c);
+        BlockFormattingContext bfc = new BlockFormattingContext(cell, c);
         c.pushBFC(bfc);
         bfc.setWidth((int) c.getExtents().getWidth());
 
@@ -487,19 +487,19 @@ public class TableBoxing {
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
 
-        block.colspan = (int) c.getCurrentStyle().getNumberProperty(CSSName.FS_COLSPAN);
-        block.rowspan = (int) c.getCurrentStyle().getNumberProperty(CSSName.FS_ROWSPAN);
+        cell.colspan = (int) c.getCurrentStyle().getNumberProperty(CSSName.FS_COLSPAN);
+        cell.rowspan = (int) c.getCurrentStyle().getNumberProperty(CSSName.FS_ROWSPAN);
         if (fixed) {
             int width = 0;
-            for (int i = 0; i < block.colspan; i++) width += table.columns[col + i];
+            for (int i = 0; i < cell.colspan; i++) width += table.columns[col + i];
             c.getExtents().width = width;
         }
 
         CalculatedStyle style = c.getCurrentStyle();
         boolean hasSpecifiedWidth = !style.isIdent(CSSName.WIDTH, IdentValue.AUTO);
-        //TODO: handle relative heights, but only if containing block height is not defined by content height
+        //TODO: handle relative heights, but only if containing cell height is not defined by content height
         boolean hasSpecifiedHeight = !style.isIdent(CSSName.HEIGHT, IdentValue.AUTO);
-        //HACK: assume containing block height is auto, so percentages become auto
+        //HACK: assume containing cell height is auto, so percentages become auto
         hasSpecifiedHeight = hasSpecifiedHeight && style.propertyByName(CSSName.HEIGHT).computedValue().hasAbsoluteUnit();
 
         // calculate the width and height as much as possible
@@ -508,76 +508,47 @@ public class TableBoxing {
         if (hasSpecifiedWidth) {
             setWidth = (int) style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
             c.getExtents().width = setWidth;
-            //TODO: CHECK: what does isSubBlock mean?
-            if (!c.isSubBlock()) block.width = setWidth;
         }
         if (hasSpecifiedHeight) {
             setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
             c.getExtents().height = setHeight;
-            block.height = setHeight;
-            block.auto_height = false;
+            cell.height = setHeight;
+            cell.auto_height = false;
         }
         //check if replaced
         JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c, setWidth, setHeight);
         if (cc != null) {
             Rectangle bounds = cc.getBounds();
-            //block.x = bounds.x;
-            //block.y = bounds.y;
-            block.width = bounds.width;
-            block.height = bounds.height;
-            block.component = cc;
+            //cell.x = bounds.x;
+            //cell.y = bounds.y;
+            cell.contentWidth = bounds.width;
+            cell.height = bounds.height;
+            cell.component = cc;
         }
-        //block.x = c.getExtents().x;
-        //block.y = c.getExtents().y;
-
-        /*if (ContentUtil.isFloated(content.getStyle())) {
-            // set up a float bfc
-            FloatUtil.preChildrenLayout(c, block);
-        }
-
-        if (Absolute.isAbsolute(content.getStyle())) {
-            // set up an absolute bfc
-            Absolute.preChildrenLayout(c, block);
-        }
-
-
-        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.LEFT)) {
-            block.clear_left = true;
-        }
-        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.RIGHT)) {
-            block.clear_right = true;
-        }
-        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.BOTH)) {
-            block.clear_left = true;
-            block.clear_right = true;
-        }
-        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.NONE)) {
-            block.clear_left = false;
-            block.clear_right = false;
-        }*/
-
 
         // save height incase fixed height
-        int original_height = block.height;
+        int original_height = cell.height;
 
         // do children's layout
         boolean old_sub = c.isSubBlock();
         c.setSubBlock(false);
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+        cell.leftPadding = border.left + padding.left;
+        cell.rightPadding = padding.right + border.right;
         int tx = border.left + padding.left;
         int ty = border.top + padding.top;
-        block.tx = tx;
-        block.ty = ty;
+        cell.tx = tx;
+        cell.ty = ty;
         c.translate(tx, ty);
         c.shrinkExtents(tx + border.right + padding.right, ty + border.bottom + padding.bottom);
-        if (block.component == null)
-            Boxing.layoutChildren(c, block, content);//when this is really an anonymous, InlineLayout.layoutChildren is called
+        if (cell.component == null)
+            Boxing.layoutChildren(c, cell, content);//when this is really an anonymous, InlineLayout.layoutChildren is called
         else {
             Point origin = c.getOriginOffset();
-            block.component.setLocation((int) origin.getX(), (int) origin.getY());
+            cell.component.setLocation((int) origin.getX(), (int) origin.getY());
             if (c.isInteractive()) {
-                c.getCanvas().add(block.component);
+                c.getCanvas().add(cell.component);
             }
         }
         c.unshrinkExtents();
@@ -585,34 +556,15 @@ public class TableBoxing {
         c.setSubBlock(old_sub);
 
         // restore height incase fixed height
-        if (block.auto_height == false) {
+        if (cell.auto_height == false) {
             Uu.p("restoring original height");
-            block.height = original_height;
+            cell.height = original_height;
         }
 
-        /*if (ContentUtil.isFloated(content.getStyle())) {
-            // remove the float bfc
-            FloatUtil.postChildrenLayout(c);
-        }
-
-        if (Absolute.isAbsolute(content.getStyle())) {
-            // remove the absolute bfc
-            Absolute.postChildrenLayout(c);
-        }*/
-
-        // calculate the total outer width
-        block.contentWidth = block.width;
-        block.width = border.left + padding.left + block.width + padding.right + border.right;
-        block.height = border.top + padding.top + block.height + padding.bottom + border.bottom;
+        cell.height = border.top + padding.top + cell.height + padding.bottom + border.bottom;
 
         //restore the extents
         c.setExtents(oe);
-
-        // account for special positioning
-        // need to add bfc/unbfc code for absolutes
-        //Absolute.setupAbsolute(block, c);
-        //Fixed.setupFixed(c, block);
-        //FloatUtil.setupFloat(c, block, content.getStyle());
 
         // remove the bfc
         c.getBlockFormattingContext().doFinalAdjustments();
@@ -623,15 +575,18 @@ public class TableBoxing {
             c.popStyle();
         }
 
-        // Uu.p("BoxLayout: finished with block: " + block);
-        block.setState(Box.DONE);
-        return block;
+        // Uu.p("BoxLayout: finished with cell: " + cell);
+        cell.setState(Box.DONE);
+        return cell;
     }
 }
 
 /*
    $Id$
    $Log$
+   Revision 1.26  2005/10/06 03:20:25  tobega
+   Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
+
    Revision 1.25  2005/10/03 21:36:56  tobega
    fixed some details
 

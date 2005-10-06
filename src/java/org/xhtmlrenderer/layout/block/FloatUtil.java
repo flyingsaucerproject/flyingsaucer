@@ -45,7 +45,7 @@ public class FloatUtil {
      */
     public static void preChildrenLayout(Context c, Box block) {
         BlockFormattingContext bfc = new BlockFormattingContext(block, c);
-        bfc.setWidth(block.width);
+        bfc.setWidth(block.getWidth());
         c.pushBFC(bfc);
     }
 
@@ -115,10 +115,10 @@ public class FloatUtil {
             return;
         }
 
-        box.x = floater.x + floater.width;
+        box.x = floater.x + floater.getWidth();
 
-        if (box.clear_left || (box.x + box.width > c.getExtents().width &&
-                box.width <= c.getExtents().width)) {
+        if (box.clear_left || (box.x + box.getWidth() > c.getExtents().width &&
+                box.getWidth() <= c.getExtents().width)) {
             //Uu.p("not enough room!!!");
             // move the box to be below the last float and
             // try it again
@@ -143,14 +143,14 @@ public class FloatUtil {
         if (floater == null) {
             // Uu.p("floaters are null");
             // Uu.p("extents = " + c.getExtents().width);
-            box.x = c.getExtents().width - box.width;
+            box.x = c.getExtents().width - box.getWidth();
             return;
         }
 
-        box.x = floater.x - box.width;
+        box.x = floater.x - box.getWidth();
 
         if (box.clear_right || (box.x < 0 &&
-                box.width <= c.getExtents().width)) {
+                box.getWidth() <= c.getExtents().width)) {
             // Uu.p("not enough room!!!");
             // move the box to be below the last float and
             // try it again
@@ -167,6 +167,9 @@ public class FloatUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/10/06 03:20:19  tobega
+ * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
+ *
  * Revision 1.21  2005/09/28 05:19:08  tobega
  * Patch from Peter Brant fixing floats and some other minor things
  *

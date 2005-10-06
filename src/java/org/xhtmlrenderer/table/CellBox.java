@@ -21,7 +21,6 @@ package org.xhtmlrenderer.table;
 
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.util.Uu;
 
 
 /**
@@ -53,20 +52,6 @@ public class CellBox extends BlockBox {
     public int colspan;
     public int rowspan;
 
-    /**
-     * Constructor for the CellBox object
-     *
-     * @param x      PARAM
-     * @param y      PARAM
-     * @param width  PARAM
-     * @param height PARAM
-     */
-    public CellBox(int x, int y, int width, int height) {
-
-        super(x, y, width, height);
-
-    }
-
     public CellBox() {
     }
 
@@ -91,35 +76,14 @@ public class CellBox extends BlockBox {
         return real_box;
     }
 
-
-    /**
-     * Description of the Method
-     *
-     * @param real PARAM
-     * @return Returns
-     */
-    public static CellBox createVirtual(CellBox real) {
-
-        if (real == null) {
-
-            Uu.p("WARNING: real is null!!!");
-
-        }
-
-        CellBox cb = new CellBox(0, 0, 0, 0);
-
-        cb.virtual = true;
-
-        cb.real_box = real;
-
-        return cb;
-    }
-
 }
 
 /*
  * $Id$
  * $Log$
+ * Revision 1.9  2005/10/06 03:20:24  tobega
+ * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
+ *
  * Revision 1.8  2005/08/03 21:44:00  tobega
  * Now support rowspan
  *

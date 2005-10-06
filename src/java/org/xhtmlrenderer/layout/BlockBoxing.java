@@ -152,8 +152,8 @@ public class BlockBoxing {
             }
 
             // increase the final layout width if the child was greater
-            c.addMaxWidth(box.getWidth());
             box.adjustWidthForChild(child_box.getWidth());
+            c.addMaxWidth(box.getWidth());
 
             // increase the final layout height by the height of the child
             box.height += child_box.height;
@@ -199,6 +199,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/10/06 03:20:20  tobega
+ * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
+ *
  * Revision 1.16  2005/10/02 21:42:53  tobega
  * Only do incremental rendering if we are in an interactive context
  *

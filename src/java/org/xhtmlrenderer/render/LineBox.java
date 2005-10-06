@@ -73,7 +73,7 @@ public class LineBox extends Box {
                 }
             }
             if (child.getSubstring().equals("")) {
-                child.width = 0;
+                child.contentWidth = 0;
                 child.height = 0;
             }
         }
@@ -91,7 +91,7 @@ public class LineBox extends Box {
      */
     public String toString() {
 
-        return "Line: (" + x + "," + y + ")x(" + width + "," + height + ")" + "  baseline = " + getBaseline();
+        return "Line: (" + x + "," + y + ")x(" + getWidth() + "," + height + ")" + "  baseline = " + getBaseline();
     }
 
     /**
@@ -113,6 +113,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/10/06 03:20:23  tobega
+ * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
+ *
  * Revision 1.17  2005/08/06 22:12:24  tobega
  * Fixed issue 110
  *

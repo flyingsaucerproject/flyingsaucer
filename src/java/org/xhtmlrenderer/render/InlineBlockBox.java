@@ -20,18 +20,21 @@
 package org.xhtmlrenderer.render;
 
 
-
 /**
  * Description of the Class
  *
- * @author   Joshua Marinacci
+ * @author Joshua Marinacci
  */
 public class InlineBlockBox extends InlineBox {
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public BlockBox sub_block = null;
 
-    /** Constructor for the InlineBlockBox object */
+    /**
+     * Constructor for the InlineBlockBox object
+     */
     public InlineBlockBox() {
         super();
     }
@@ -39,14 +42,16 @@ public class InlineBlockBox extends InlineBox {
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public InlineBox copy() {
         InlineBlockBox newBox = new InlineBlockBox();
         InlineBlockBox box = this;
         newBox.x = box.x;
         newBox.y = box.y;
-        newBox.width = box.width;
+        newBox.contentWidth = box.contentWidth;
+        newBox.leftPadding = box.leftPadding;
+        newBox.rightPadding = box.rightPadding;
         newBox.height = box.height;
         newBox.element = box.element;
         newBox.sub_block = box.sub_block;
@@ -56,19 +61,19 @@ public class InlineBlockBox extends InlineBox {
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append( "InlineBlockBox:" );
-        sb.append( super.toString() );
+        sb.append("InlineBlockBox:");
+        sb.append(super.toString());
         return sb.toString();
     }
 
     /**
      * Gets the endOfParentContent attribute of the InlineBlockBox object
      *
-     * @return   The endOfParentContent value
+     * @return The endOfParentContent value
      */
     public boolean isEndOfParentContent() {
         return true;

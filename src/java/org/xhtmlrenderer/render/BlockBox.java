@@ -35,27 +35,12 @@ public class BlockBox extends Box {
         super();
     }
 
-    /**
-     * Constructor for the BlockBox object
-     *
-     * @param x PARAM
-     * @param y PARAM
-     * @param w PARAM
-     * @param h PARAM
-     */
-    public BlockBox(int x, int y, int w, int h) {
-        super(x, y, w, h);
-    }
-
-    //A block box may have special styles for the first line and first letter
-
     public void adjustWidthForChild(int childWidth) {
         if (auto_width && childWidth > contentWidth) {
-            width += childWidth - contentWidth;
             contentWidth = childWidth;
         }
         if (getParent() != null) {
-            getParent().adjustWidthForChild(width);
+            getParent().adjustWidthForChild(getWidth());
         }
     }
 
@@ -84,6 +69,9 @@ public class BlockBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/10/06 03:20:22  tobega
+ * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
+ *
  * Revision 1.9  2005/10/02 21:29:59  tobega
  * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
  *

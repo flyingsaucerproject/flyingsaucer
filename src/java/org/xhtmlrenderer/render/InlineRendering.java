@@ -59,7 +59,7 @@ public class InlineRendering {
      */
     public static void paintSelection(Context c, InlineBox inline, int lx, int ly, LineMetrics lm) {
         if (c.inSelection(inline)) {
-            int dw = inline.width - 2;
+            int dw = inline.getWidth() - 2;
             int xoff = 0;
             if (c.getSelectionEnd() == inline) {
                 dw = c.getSelectionEndX();
@@ -109,12 +109,12 @@ public class InlineRendering {
         c.getGraphics().setColor(oldcolor);
         if (c.debugDrawFontMetrics()) {
             g.setColor(Color.red);
-            g.drawLine(ix, iy, ix + inline.width, iy);
+            g.drawLine(ix, iy, ix + inline.getWidth(), iy);
             iy += (int) Math.ceil(lm.getDescent());
-            g.drawLine(ix, iy, ix + inline.width, iy);
+            g.drawLine(ix, iy, ix + inline.getWidth(), iy);
             iy -= (int) Math.ceil(lm.getDescent());
             iy -= (int) Math.ceil(lm.getAscent());
-            g.drawLine(ix, iy, ix + inline.width, iy);
+            g.drawLine(ix, iy, ix + inline.getWidth(), iy);
         }
 
         // restore the old font
@@ -131,7 +131,7 @@ public class InlineRendering {
             ((InlineBorder) i.next()).paint(c,
                     line,
                     inline.x,
-                    inline.width - inline.leftPadding - inline.rightPadding,
+                    inline.contentWidth,
                     BorderPainter.TOP + BorderPainter.BOTTOM);
         }
     }
@@ -335,7 +335,7 @@ public class InlineRendering {
     //TODO: paint lines taking bidi into consideration
     private static int getTextAlign(Context c, LineBox line) {
         if (c.getCurrentStyle().isIdent(CSSName.TEXT_ALIGN, IdentValue.LEFT)) return 0;
-        int leftover = line.getParent().contentWidth - line.width;
+        int leftover = line.getParent().contentWidth - line.contentWidth;
         if (c.getCurrentStyle().isIdent(CSSName.TEXT_ALIGN, IdentValue.RIGHT)) {
             //Uu.p("leftover = " + leftover);
             return leftover;
@@ -403,7 +403,7 @@ public class InlineRendering {
                 //Uu.p("painting decoration");
                 td.paint(c, line);
                 i.remove();
-                restarted.addLast(td.getRestarted(ib.x + ib.width));
+                restarted.addLast(td.getRestarted(ib.x + ib.getWidth()));
             }
             decorations.clear();
             c.pushStyle(c.getCss().getCascadedStyle(ib.element, restyle));
@@ -471,7 +471,7 @@ public class InlineRendering {
             debugInlines(c, inline, lx, ly);
         }
 
-        padX = ib.width - ib.rightPadding;
+        padX = ib.getWidth() - ib.rightPadding;
 
         if (ib.popstyles != 0) {
             for (int i = 0; i < ib.popstyles; i++) {
@@ -493,7 +493,7 @@ public class InlineRendering {
         }
         //right padding for this inline element
         CalculatedStyle style = c.getCurrentStyle();
-        int parent_width = line.getParent().width;
+        int parent_width = line.getParent().getWidth();
         Border border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
         Border margin = style.getMarginWidth(parent_width, parent_width, c.getCtx());
@@ -515,7 +515,7 @@ public class InlineRendering {
 
     private static int handleInlineElementStart(Context c, CascadedStyle cascaded, LineBox line, InlineBox ib, int padX, LinkedList decorations) {
         CalculatedStyle style = c.getCurrentStyle();
-        int parent_width = line.getParent().width;
+        int parent_width = line.getParent().getWidth();
         //Border border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
         Border margin = style.getMarginWidth(parent_width, parent_width, c.getCtx());
@@ -553,7 +553,7 @@ public class InlineRendering {
     static void debugInlines(Context c, InlineBox inline, int lx, int ly) {
         if (c.debugDrawInlineBoxes()) {
             GraphicsUtil.draw(c.getGraphics(), new Rectangle(lx + inline.x + 1, ly + inline.y + 1 - inline.height,
-                    inline.width - 2, inline.height - 2), Color.green);
+                    inline.getWidth() - 2, inline.height - 2), Color.green);
         }
     }
 

@@ -50,7 +50,7 @@ public class LineBreaker {
         box.element = content.getElement();
         // use the prev_align to calculate the x
         if (prev_align != null && !prev_align.break_after) {
-            box.x = prev_align.x + prev_align.width;
+            box.x = prev_align.x + prev_align.getWidth();
         } else {
             box.x = 0;
         }
@@ -67,14 +67,14 @@ public class LineBreaker {
         block.setParent(box);
 
         // set up the extents
-        box.width = block.width;
+        box.contentWidth = block.getWidth();
         //box.height = margin.top + border.top + padding.top + bounds.height + padding.bottom + border.bottom + margin.bottom;
         box.height = block.height;
         box.break_after = false;
 
         // if it won't fit on this line, then put it on the next one
         // the box will be discarded and recalculated
-        if (box.width > avail && prev_align != null && !prev_align.break_after) {
+        if (box.getWidth() > avail && prev_align != null && !prev_align.break_after) {
             box.break_before = true;
             box.x = 0;
         }
@@ -94,6 +94,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.61  2005/10/06 03:20:21  tobega
+ * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
+ *
  * Revision 1.60  2005/10/02 21:29:59  tobega
  * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
  *

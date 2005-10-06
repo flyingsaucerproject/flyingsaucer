@@ -27,31 +27,39 @@ import org.xhtmlrenderer.util.Uu;
  * Created by IntelliJ IDEA. User: tobe Date: 2005-jan-06 Time: 08:46:37 To
  * change this template use File | Settings | File Templates.
  *
-  * @author   Joshua Marinacci
-  * @author   Torbjörn Gannholm
+ * @author Joshua Marinacci
+ * @author Torbjörn Gannholm
  */
 public class InlineTextBox extends InlineBox {
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public IdentValue whitespace = IdentValue.NORMAL;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     public String pseudoElement;
 
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private String master;
 
     /**
      * Description of the Method
      *
-     * @return   Returns
+     * @return Returns
      */
     public InlineBox copy() {
         InlineTextBox newBox = new InlineTextBox();
         InlineTextBox box = this;
         newBox.x = box.x;
         newBox.y = box.y;
-        newBox.width = box.width;
+        newBox.contentWidth = box.contentWidth;
+        newBox.leftPadding = box.leftPadding;
+        newBox.rightPadding = box.rightPadding;
         newBox.height = box.height;
         newBox.element = box.element;
         newBox.master = box.master;
@@ -62,15 +70,15 @@ public class InlineTextBox extends InlineBox {
     /**
      * Sets the substring attribute of the InlineTextBox object
      *
-     * @param start  The new substring value
-     * @param end    The new substring value
+     * @param start The new substring value
+     * @param end   The new substring value
      */
-    public void setSubstring( int start, int end ) {
-        if ( end < start ) {
-            Uu.p( "setting substring to: " + start + " " + end );
-            throw new RuntimeException( "set substring length too long: " + this );
-        } else if ( end < 0 || start < 0 ) {
-            throw new RuntimeException( "Trying to set negative index to inline box" );
+    public void setSubstring(int start, int end) {
+        if (end < start) {
+            Uu.p("setting substring to: " + start + " " + end);
+            throw new RuntimeException("set substring length too long: " + this);
+        } else if (end < 0 || start < 0) {
+            throw new RuntimeException("Trying to set negative index to inline box");
         }
         start_index = start;
         end_index = end;
@@ -79,9 +87,9 @@ public class InlineTextBox extends InlineBox {
     /**
      * Sets the masterText attribute of the InlineTextBox object
      *
-     * @param master  The new masterText value
+     * @param master The new masterText value
      */
-    public void setMasterText( String master ) {
+    public void setMasterText(String master) {
         //Uu.p("set master text to: \"" + master + "\"");
         this.master = master;
     }
@@ -89,7 +97,7 @@ public class InlineTextBox extends InlineBox {
     /**
      * Gets the endOfParentContent attribute of the InlineTextBox object
      *
-     * @return   The endOfParentContent value
+     * @return The endOfParentContent value
      */
     public boolean isEndOfParentContent() {
         return end_index == master.length();
@@ -98,20 +106,20 @@ public class InlineTextBox extends InlineBox {
     /**
      * Gets the substring attribute of the InlineBox object
      *
-     * @return   The substring value
+     * @return The substring value
      */
     public String getSubstring() {
         // new code for whitepsace handling
-        if ( getMasterText() != null ) {
-            if ( start_index == -1 || end_index == -1 ) {
-                throw new RuntimeException( "negative index in InlineBox" );
+        if (getMasterText() != null) {
+            if (start_index == -1 || end_index == -1) {
+                throw new RuntimeException("negative index in InlineBox");
             }
-            if ( end_index < start_index ) {
-                throw new RuntimeException( "end is less than start" );
+            if (end_index < start_index) {
+                throw new RuntimeException("end is less than start");
             }
-            return getMasterText().substring( start_index, end_index );
+            return getMasterText().substring(start_index, end_index);
         } else {
-            throw new RuntimeException( "No master text set!" );
+            throw new RuntimeException("No master text set!");
         }
 
     }
@@ -119,7 +127,7 @@ public class InlineTextBox extends InlineBox {
     /**
      * Gets the masterText attribute of the InlineTextBox object
      *
-     * @return   The masterText value
+     * @return The masterText value
      */
     public String getMasterText() {
         return master;

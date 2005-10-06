@@ -181,7 +181,7 @@ public class BoxFinder {
             }
 
             if (bx.right_set) {
-                int off = (bfc.getWidth() - bx.width - bx.right);
+                int off = (bfc.getWidth() - bx.getWidth() - bx.right);
                 dx = off;
             }
 
@@ -308,7 +308,7 @@ public class BoxFinder {
                 tx -= bx.left;
             }
             if (bx.right_set) {
-                int off = (bfc.getWidth() - bx.width - bx.right);
+                int off = (bfc.getWidth() - bx.getWidth() - bx.right);
                 tx -= off;
             }
             if (bx.top_set) {

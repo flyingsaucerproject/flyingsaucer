@@ -34,12 +34,12 @@ public class FloatManager {
 
         int xoff = 0;
         // create a rectangle for the line we are attempting to adjust
-        Rectangle lr = new Rectangle(line.x, line.y, line.width, line.height);
+        Rectangle lr = new Rectangle(line.x, line.y, line.contentWidth, line.height);
 
         // this is a hack to deal with lines w/o width or height. is this valid?
         // possibly, since the line doesn't know how long it should be until it's already
         // done float adjustments
-        if (line.width == 0) {
+        if (line.contentWidth == 0) {
             lr.width = 10;
         }
         if (line.height == 0) {
@@ -58,7 +58,7 @@ public class FloatManager {
             Box floater = (Box) floatsList.get(i);
             //Uu.p("the floater = " + floater);
             // create a rect from the box
-            Rectangle fr = new Rectangle(floater.x, floater.y, floater.width, floater.height);
+            Rectangle fr = new Rectangle(floater.x, floater.y, floater.getWidth(), floater.height);
             //Uu.p("float rect: " + fr);
             // get the point where the float was added
             Point fpt = bfc.getOffset(floater);
@@ -117,7 +117,7 @@ return floater;
 //Uu.p("testing against float = " + floater + " " + floater.hashCode());
             //Uu.p("content = " + floater.element);
 
-            Rectangle fr = new Rectangle(floater.x, floater.y, floater.width, floater.height);
+            Rectangle fr = new Rectangle(floater.x, floater.y, floater.getWidth(), floater.height);
             //Uu.p("float rect: " + fr);
             // get the point where the float was added
             Point fpt = bfc.getOffset(floater);

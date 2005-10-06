@@ -40,10 +40,6 @@ public abstract class InlineBox extends Box {
      */
     public int popstyles = 0;
 
-    //to keep track of right padding to be added by closing inline elements
-    public int rightPadding = 0;
-
-    public int leftPadding = 0;
     
     // if we are an inline block, then this is
     // the reference to the real block inside
@@ -95,7 +91,7 @@ public abstract class InlineBox extends Box {
     public String toString() {
 
         return "InlineBox " +
-                "bnds = " + x + "," + y + " - " + width + "x" + height +
+                "bnds = " + x + "," + y + " - " + getWidth() + "x" + height +
                 " start = " + this.start_index + " end = " + this.end_index;
     }
 
@@ -126,6 +122,9 @@ public abstract class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2005/10/06 03:20:22  tobega
+ * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
+ *
  * Revision 1.38  2005/07/14 22:25:16  joshy
  * major updates to float code. should fix *most* issues.
  * Issue number:

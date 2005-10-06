@@ -281,11 +281,12 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         if (doc == null) {
             return;
         }
-
 // set up CSS
         Context c = newContext((Graphics2D) g);
-//getContext().setMaxWidth(0);
-        this.layout_context = c;
+        synchronized (this) {
+            if (this.layout_context != null) this.layout_context.stopRendering();
+            this.layout_context = c;
+        }
         getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
 //TODO: maybe temporary hack
         if (c.getBlockFormattingContext() != null) c.popBFC();//we set one for the top level before

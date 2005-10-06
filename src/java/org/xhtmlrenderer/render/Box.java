@@ -69,25 +69,18 @@ public class Box {
     /**
      * Box width.
      */
-    public int width;
+    //public int width;
+    public int contentWidth;
+    public int rightPadding = 0;
+    public int leftPadding = 0;
 
     /**
      * Gets the width attribute of the Box object
      *
      * @return The width value
      */
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int inner_width;
-
-    public void setInnerWidth(int width) {
-        this.inner_width = width;
-    }
-
-    public int getInnerWidth() {
-        return this.inner_width;
+    public int getWidth() {
+        return contentWidth + leftPadding + rightPadding;
     }
 
     /**
@@ -237,7 +230,6 @@ public class Box {
 
     public boolean clear_left = false;
     public boolean clear_right = false;
-    public int contentWidth;
 
     private float _marginTopOverride;
     private boolean _marginTopOverrideSet = false;
@@ -253,23 +245,6 @@ public class Box {
     }
 
     /**
-     * Constructor for the Box object
-     *
-     * @param x      x-pos
-     * @param y      y-pos
-     * @param width  width
-     * @param height height
-     */
-    public Box(int x, int y, int width, int height) {
-        this();
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-    }
-
-
-    /**
      * Return true if the target coordinates are inside of this box. The target
      * coordinates are already translated to be relative to the origin of this
      * box. ie x=0 & y=0. Thus the point 100,100 in a box with coordinates 20,20
@@ -282,7 +257,7 @@ public class Box {
      */
 
     public boolean contains(int x, int y) {
-        if ((x >= 0) && (x <= 0 + this.width)) {
+        if ((x >= 0) && (x <= 0 + this.getWidth())) {
             if ((y >= 0) && (y <= 0 + this.height)) {
                 return true;
             }
@@ -303,7 +278,7 @@ public class Box {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Box: ");
-        sb.append(" (" + x + "," + y + ")->(" + width + " x " + height + ")");
+        sb.append(" (" + x + "," + y + ")->(" + getWidth() + " x " + height + ")");
         return sb.toString();
     }
 
@@ -383,15 +358,6 @@ public class Box {
      */
     public int getHeight() {
         return height;
-    }
-
-    /**
-     * Gets the width attribute of the Box object
-     *
-     * @return The width value
-     */
-    public int getWidth() {
-        return width;
     }
 
     /**
@@ -496,7 +462,7 @@ public class Box {
         }
 
         // dimensions and location
-        sb.append("-box(" + x + "," + y + ")-(" + width + "x" + height + ")");
+        sb.append("-box(" + x + "," + y + ")-(" + getWidth() + "x" + height + ")");
 
         if (fixed) {
             sb.append("-fixed");
@@ -606,6 +572,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.61  2005/10/06 03:20:22  tobega
+ * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
+ *
  * Revision 1.60  2005/10/02 21:30:00  tobega
  * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
  *

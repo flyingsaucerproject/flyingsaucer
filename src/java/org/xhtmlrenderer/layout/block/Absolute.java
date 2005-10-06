@@ -48,7 +48,7 @@ public class Absolute {
      */
     public static void preChildrenLayout(Context c, Box block) {
         BlockFormattingContext bfc = new BlockFormattingContext(block, c);
-        bfc.setWidth(block.width);
+        bfc.setWidth(block.getWidth());
         c.pushBFC(bfc);
     }
 
@@ -73,7 +73,7 @@ public class Absolute {
         BlockFormattingContext bfc = c.getBlockFormattingContext();
         // handle the left and right
         if (child_box.right_set) {
-            child_box.x = -bfc.getX() + bfc.getWidth() - child_box.right - child_box.width
+            child_box.x = -bfc.getX() + bfc.getWidth() - child_box.right - child_box.getWidth()
                     - bfc.getInsets().right;
         } else {
             child_box.x = bfc.getX() + child_box.left;
@@ -148,7 +148,8 @@ public class Absolute {
             
             // if right and left are set calculate width
             if (box.right_set && box.left_set) {
-                box.width = box.width - box.right - box.left;
+                //TODO: do this right
+                box.contentWidth = box.contentWidth - box.right - box.left;
             }
         }
     }

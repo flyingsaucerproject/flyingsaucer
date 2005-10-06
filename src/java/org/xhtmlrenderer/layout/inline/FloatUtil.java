@@ -21,7 +21,6 @@ package org.xhtmlrenderer.layout.inline;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
@@ -50,9 +49,9 @@ public class FloatUtil {
      * @return Returns
      */
     public static int adjustForTab(Context c, LineBox prev_line, int remaining_width) {
-        if (prev_line.width == 0) {
+        if (prev_line.contentWidth == 0) {
 //temporarily set width as an "easy" way of passing this as parameter
-            prev_line.width = remaining_width;
+            prev_line.contentWidth = remaining_width;
         } else {
             Uu.p("warning. possible error. line already has width: " + prev_line);
         }
@@ -60,7 +59,7 @@ public class FloatUtil {
         remaining_width -= bfc.getLeftFloatDistance(prev_line);
         remaining_width -= bfc.getRightFloatDistance(prev_line);
         //reset the line width to allow shrink wrap
-        prev_line.width = 0;
+        prev_line.contentWidth = 0;
         //Uu.p("adjusting the line by: " + remaining_width);
         return remaining_width;
     }
@@ -101,33 +100,20 @@ public class FloatUtil {
         }
 
         if (ident == IdentValue.RIGHT) {
-            inline_block.x = oe.width - inline_block.width;
+            inline_block.x = oe.width - inline_block.getWidth();
         }
         //HACK: tobe 2004-12-22 end
 
         Point offset = c.getBlockFormattingContext().getOffset(inline_block);
         inline_block.y += offset.y;
 
-        //Uu.p("got a box now = : " + inline_block);
-        Rectangle bounds = new Rectangle(inline_block.x, inline_block.y,
-                inline_block.width, inline_block.height);
         c.setExtents(oe);
-
-        //InlineBox box =
-        // Uu.p("before newbox block = " + inline_block);
-        int x = inline_block.x;
-        int y = inline_block.y;
-        CalculatedStyle style = c.getCurrentStyle();
 
         //TODO: check if floats should be affected by vertical alignment
 
-        inline_block.x = x;
-        inline_block.y = y;
-        inline_block.width = bounds.width;
-        inline_block.height = bounds.height;
         inline_block.break_after = false;
         inline_block.floated = true;
-        if (inline_block.width > avail) {
+        if (inline_block.getWidth() > avail) {
             inline_block.break_before = true;
         }
 

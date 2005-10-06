@@ -99,7 +99,7 @@ public class BlockRendering {
             if (c.getGraphics().getClip() != null) {
                 Shape oldclip = (Shape) c.getGraphics().getClip();
 
-                Rectangle box_rect = new Rectangle(box.x, box.y, box.width, box.height);
+                Rectangle box_rect = new Rectangle(box.x, box.y, box.getWidth(), box.height);
                 Rectangle old_clip = c.getGraphics().getClipBounds();
                 // Uu.p("old clip = " + old_clip);
                 // Uu.p("box rect = " + box_rect);

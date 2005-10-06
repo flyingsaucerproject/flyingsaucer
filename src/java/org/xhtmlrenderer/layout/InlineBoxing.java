@@ -26,7 +26,6 @@ import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.*;
-import org.xhtmlrenderer.layout.inline.BoxBuilder;
 import org.xhtmlrenderer.layout.inline.Breaker;
 import org.xhtmlrenderer.layout.inline.FloatUtil;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
@@ -105,7 +104,7 @@ public class InlineBoxing {
         int pendingLeftPadding = 0;
         int pendingRightPadding = 0;
         // loop until no more nodes
-        while (contentList.size() > 0) {
+        while (contentList.size() > 0 && !c.shouldStop()) {
             Object o = contentList.get(0);
             contentList.remove(0);
             if (o instanceof FirstLineStyle) {//can actually only be the first object in list
@@ -174,7 +173,6 @@ public class InlineBoxing {
                     int rp = padding.right + border.right + margin.right;
                     //CHECK: not sure this is where the padding really goes, always
                     prev_inline.rightPadding += rp;
-                    prev_inline.setWidth(prev_inline.getWidth() + rp);
                     pendingRightPadding -= rp;
                     remaining_width -= rp;
                     prev_inline.popstyles++;
@@ -273,7 +271,6 @@ public class InlineBoxing {
                 new_inline.pushstyles = pendingPushStyles;
                 pendingPushStyles = null;
                 new_inline.leftPadding += pendingLeftPadding;
-                new_inline.width += pendingLeftPadding;
                 pendingLeftPadding = 0;
 
                 // calc new height of the line
@@ -284,10 +281,10 @@ public class InlineBoxing {
 
                 if (!(currentContent instanceof FloatedBlockContent)) {
                     // calc new width of the line
-                    curr_line.width += new_inline.width;
+                    curr_line.contentWidth += new_inline.getWidth();
                 }
                 // reduce the available width
-                remaining_width = remaining_width - new_inline.width;
+                remaining_width = remaining_width - new_inline.getWidth();
 
                 // if the last inline was at the end of a line, then go to next line
                 if (new_inline.break_after) {
@@ -324,7 +321,7 @@ public class InlineBoxing {
         // save the final line
         saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, true, blockLineHeight, pushedOnFirstLine);
         bounds.height += curr_line.height;
-        if (!c.shrinkWrap()) box.width = bounds.width;
+        if (!c.shrinkWrap()) box.contentWidth = bounds.width;
         box.height = bounds.height;
         //box.x = 0;
         //box.y = 0;
@@ -367,7 +364,7 @@ public class InlineBoxing {
             curr_line.setParent(box);
         }
         curr_line.x = bounds.x;
-        curr_line.width = 0;
+        curr_line.contentWidth = 0;
         if (prev_line != null) {
             curr_line.y = prev_line.y + prev_line.height;
         }
@@ -497,36 +494,48 @@ public class InlineBoxing {
             // Uu.p("calculating inline: text = " + text);
             // Uu.p("avail space = " + avail + " max = " + max_width + "   start index = " + start);
 
-            //CHECK:what's so very differnt between a first-letter box and another box? Can't we create them equal?
             if (isFirstLetter && firstLetterStyle != null) {
                 //TODO: what if first letter is whitespace?
                 end = start + 1;
                 inline.setSubstring(start, end);
                 c.pushStyle(firstLetterStyle);
-
-                CalculatedStyle style1 = c.getCurrentStyle();
-                inline.whitespace = WhitespaceStripper.getWhitespace(style1);
-                BoxBuilder.prepBox(c, inline, prev_align);
+                prepareBox(prev_align, inline, c);
                 Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
+                //first letter is a pseudo-element, so has borders, etc.
                 //note: percentages here refer to width of containing block
-                Border margin = style1.getMarginWidth(max_width, max_width, c.getCtx());
-                Border padding = style1.getPaddingWidth(max_width, max_width, c.getCtx());
+                Border margin = c.getCurrentStyle().getMarginWidth(max_width, max_width, c.getCtx());
+                Border padding = c.getCurrentStyle().getPaddingWidth(max_width, max_width, c.getCtx());
                 inline.rightPadding = margin.right + border.right + padding.right;
                 inline.leftPadding = margin.left + border.left + padding.left;
-                inline.width += inline.rightPadding + inline.leftPadding;
                 c.popStyle();
                 result = inline;
 
             } else {
                 inline.setSubstring(start, end);
-                CalculatedStyle style1 = c.getCurrentStyle();
-                inline.whitespace = WhitespaceStripper.getWhitespace(style1);
                 Breaker.breakText(c, inline, prev_align, avail, font);
-                BoxBuilder.prepBox(c, inline, prev_align);
-                result = inline;
+                prepareBox(prev_align, inline, c);
             }
+            result = inline;
         }
         return result;
+    }
+
+    private static void prepareBox(InlineBox prev_align, InlineTextBox inline, Context c) {
+        inline.whitespace = WhitespaceStripper.getWhitespace(c.getCurrentStyle());
+        if (prev_align != null &&
+                !prev_align.break_after &&
+                !inline.break_before
+        ) {
+            inline.x = prev_align.x + prev_align.getWidth();
+        } else {
+            inline.x = 0;
+
+        }
+
+        inline.y = 0;
+
+        inline.contentWidth = (int) FontUtil.getTextBounds(c, inline).getWidth();
+        inline.height = (int) FontUtil.getLineMetrics(c, inline).getHeight();
     }
 
 
@@ -557,7 +566,8 @@ public class InlineBoxing {
             c.clearFirstLineStyles();
         }
         if (c.shrinkWrap()) {
-            if (line_to_save.width > block.width) block.width = line_to_save.width;
+            //if (line_to_save.width > block.width) block.width = line_to_save.width;
+            block.adjustWidthForChild(line_to_save.contentWidth);
         }
         //text-align now handled in render
         // set the y
@@ -582,6 +592,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2005/10/06 03:20:21  tobega
+ * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
+ *
  * Revision 1.39  2005/10/02 21:29:58  tobega
  * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
  *

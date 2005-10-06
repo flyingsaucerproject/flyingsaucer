@@ -72,6 +72,7 @@ public class Boxing {
         if (bh != null) {
             bh.box = block;
         }
+        if (c.shouldStop()) return block;
         return realLayout(c, block, content);
     }
 
@@ -85,6 +86,7 @@ public class Boxing {
         } else {
             block = new BlockBox();
             block.element = content.getElement();
+            //block.width = (int) c.getExtents().getWidth();
         }
         Element element = content.getElement();
         if (element != null) {
@@ -100,7 +102,7 @@ public class Boxing {
         if (content instanceof AnonymousBlockContent) {
             return AnonymousBoxing.layout(c, block, content);
         } else if (content instanceof TableContent) {
-            return TableBoxing.layout(c, block, content);
+            return TableBoxing.layout(c, (BlockBox) block, content);
         } else
             return layout(c, block, content);
     }
@@ -147,6 +149,8 @@ public class Boxing {
         //note: percentages here refer to width of containing block
         Border margin = block.getMarginWidth(c, (float) oe.getWidth());
         Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+        block.leftPadding = margin.left + border.left + padding.left;
+        block.rightPadding = padding.right + border.right + margin.right;
 
         CalculatedStyle style = c.getCurrentStyle();
         boolean hasSpecifiedWidth = !style.isIdent(CSSName.WIDTH, IdentValue.AUTO);
@@ -161,10 +165,8 @@ public class Boxing {
             int setWidth = -1;//means width is not set by css
             if (hasSpecifiedWidth) {
                 setWidth = (int) style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
-                c.getExtents().width =
-                        margin.left + border.left + padding.left + setWidth + padding.right + border.right + margin.right;
-                //TODO: CHECK: what does isSubBlock mean?
-                if (!c.isSubBlock()) block.setWidth(setWidth);
+                block.contentWidth = setWidth;
+                c.getExtents().width = block.getWidth();
 
                 block.auto_width = false;
             }
@@ -182,7 +184,7 @@ public class Boxing {
                 Rectangle bounds = cc.getBounds();
                 //block.x = bounds.x;
                 //block.y = bounds.y;
-                block.setWidth(bounds.width);
+                block.contentWidth = bounds.width;
                 block.height = bounds.height;
                 block.component = cc;
             }
@@ -262,8 +264,8 @@ public class Boxing {
         }
 
         // calculate the total outer width
-        block.contentWidth = block.getWidth();
-        block.width = margin.left + border.left + padding.left + block.width + padding.right + border.right + margin.right;
+        //block.contentWidth = block.getWidth();
+        //block.width = margin.left + border.left + padding.left + block.contentWidth + padding.right + border.right + margin.right;
         block.height = margin.top + border.top + padding.top + block.height + padding.bottom + border.bottom + margin.bottom;
 
         //restore the extents
@@ -328,6 +330,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2005/10/06 03:20:21  tobega
+ * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
+ *
  * Revision 1.36  2005/10/02 21:29:58  tobega
  * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
  *

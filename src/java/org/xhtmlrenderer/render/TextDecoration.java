@@ -58,7 +58,7 @@ class TextDecoration {
 
         int ix = line.x;
         int iy = line.y + line.getBaseline();
-        int width = (isEnded() ? end : line.width);
+        int width = (isEnded() ? end : line.contentWidth);
         if (start > 0) {
             ix += start;
             width -= start;

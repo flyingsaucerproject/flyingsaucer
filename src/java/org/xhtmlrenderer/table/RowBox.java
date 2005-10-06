@@ -43,20 +43,6 @@ public class RowBox extends BlockBox {
      */
     public Element elem;
 
-    /**
-     * Constructor for the RowBox object
-     *
-     * @param x      PARAM
-     * @param y      PARAM
-     * @param width  PARAM
-     * @param height PARAM
-     */
-    public RowBox(int x, int y, int width, int height) {
-
-        super(x, y, width, height);
-
-    }
-
     public RowBox() {
     }
 }
@@ -64,6 +50,9 @@ public class RowBox extends BlockBox {
 /*
  * $Id$
  * $Log$
+ * Revision 1.5  2005/10/06 03:20:24  tobega
+ * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
+ *
  * Revision 1.4  2005/06/05 01:02:35  tobega
  * Very simple and not completely functional table layout
  *
