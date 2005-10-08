@@ -20,11 +20,13 @@
 package org.xhtmlrenderer.swing;
 
 import org.w3c.dom.Document;
+import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BoxRendering;
@@ -160,7 +162,6 @@ public abstract class BasicPanel extends RootPanel {
         this.documentListeners.put(listener, listener);
     }
 
-
     /**
      * Description of the Method
      *
@@ -178,13 +179,14 @@ public abstract class BasicPanel extends RootPanel {
         
         //Uu.p("paint component () called");
         // if this is the first time painting this document, then calc layout
-        if (bh == null || bh.box == null) {
+        Box root = getRootBox();
+        if (root == null) {
             //Uu.p("dispatching an initial resize event");
             //queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, this.getSize()));
             Uu.p("skipping the actual painting");
         } else {
-            Context c = newContext((Graphics2D) g);
-            executeRenderThread(c);
+            Context c = newContext(getPageInfo(), (Graphics2D) g);
+            executeRenderThread(c, root);
         }
     }
 
@@ -261,7 +263,7 @@ public abstract class BasicPanel extends RootPanel {
    */
 
 
-    protected void executeRenderThread(Context c) {
+    protected void executeRenderThread(Context c, Box root) {
         //Uu.p("do render called");
         //Uu.p("last render event = " + last_event);
 		
@@ -272,18 +274,16 @@ public abstract class BasicPanel extends RootPanel {
             g.setColor(getBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
         }
-		
-        // start painting the box tree
-        if (bh != null && bh.box != null) {
-            //Uu.p("not null. doing real painting");
-            long start = System.currentTimeMillis();
-            BoxRendering.paint(c, bh.box, false, false);//no restyle demanded on top level
-            long after = System.currentTimeMillis();
-            if (Configuration.isTrue("xr.incremental.repaint.print-timing", false)) {
-                Uu.p("repaint took ms: " + (after - start));
-            }
+
+        long start = System.currentTimeMillis();
+        if (!c.isPrint()) {
+            BoxRendering.paint(c, root, false, false);//no restyle demanded on top level
         } else {
-            //Uu.p("still null. failing :(");
+            renderPagedView(c, root);
+        }
+        long after = System.currentTimeMillis();
+        if (Configuration.isTrue("xr.incremental.repaint.print-timing", false)) {
+            Uu.p("repaint took ms: " + (after - start));
         }
 
         if (!c.isStylesAllPopped()) {
@@ -294,7 +294,52 @@ public abstract class BasicPanel extends RootPanel {
 
     }
 
-    
+    private void renderPagedView(Context c, Box box) {
+        int pageCount = (int) (c.getMaxHeight() / c.getPageInfo().getContentHeight() + 1);
+
+        setPreferredSize(new Dimension(c.getMaxWidth(),
+                (int) (pageCount * c.getPageInfo().getContentHeight() +
+                pageCount * c.getPageInfo().getMargins().top +
+                pageCount + c.getPageInfo().getMargins().bottom)));
+        revalidate();
+
+        PageInfo info = c.getPageInfo();
+        Border margins = info.getMargins();
+
+        Graphics2D g = c.getGraphics();
+        Shape working = g.getClip();
+
+        for (int i = 0; i < pageCount; i++) {
+            c.setCurrentPage(i + 1);
+
+            g.setClip(working);
+            g.clip(new Rectangle(margins.left,
+                    (int) (i * info.getContentHeight() + i * margins.top + i * margins.bottom + margins.top),
+                    (int) info.getContentWidth(), (int) info.getContentHeight()));
+            g.translate(margins.left, i * margins.top + i * margins.bottom + margins.top);
+            BoxRendering.paint(c, box, false, false);//no restyle demanded on top level
+            g.translate(-margins.left, -(i * margins.top + i * margins.bottom) + -margins.top);
+
+            Stroke oldStroke = g.getStroke();
+            Color oldColor = g.getColor();
+
+            if (i > 0) {
+                g.setClip(working);
+
+                g.setStroke(new BasicStroke(3));
+                g.setColor(Color.BLACK);
+
+                g.drawLine(0,
+                        (int) (i * info.getContentHeight() + i * margins.top + i * margins.bottom),
+                        (int) info.getContentWidth() + margins.left + margins.right,
+                        (int) (i * info.getContentHeight() + i * margins.top + i * margins.bottom));
+
+                g.setColor(oldColor);
+                g.setStroke(oldStroke);
+            }
+        }
+    }
+
     /**
      * Description of the Method
      *
@@ -541,7 +586,7 @@ public abstract class BasicPanel extends RootPanel {
      * Description of the Method
      */
     public void printTree() {
-        printTree(this.body_box, "");
+        printTree(getRootBox(), "");
     }
 
     /**
@@ -899,16 +944,6 @@ public abstract class BasicPanel extends RootPanel {
         }
     }
 
-
-    /**
-     * Gets the rootBox attribute of the BasicPanel object
-     *
-     * @return The rootBox value
-     */
-    public Box getRootBox() {
-        return body_box;
-    }
-
     /**
      * Gets the context attribute of the BasicPanel object
      *
@@ -932,7 +967,6 @@ public abstract class BasicPanel extends RootPanel {
             return new Rectangle(0, 0, dim.width, dim.height);
         }
     }
-
 
     /**
      * Recalculate the layout of the panel. Only called by paintComponent(). Use
@@ -1025,6 +1059,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.72  2005/10/08 17:40:22  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.71  2005/10/02 21:30:00  tobega
  * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
  *

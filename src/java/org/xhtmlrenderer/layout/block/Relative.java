@@ -36,7 +36,7 @@ public class Relative {
      *
      * @param c PARAM
      */
-    public static void translateRelative(Context c) {
+    public static void translateRelative(Context c, boolean rendering) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;
@@ -45,6 +45,9 @@ public class Relative {
             top = topLeft[0];
             left = topLeft[1];
             c.translate(left, top);
+            if (rendering) {
+                c.getGraphics().translate(left, top);
+            }
         }
     }
 
@@ -53,7 +56,7 @@ public class Relative {
      *
      * @param c PARAM
      */
-    public static void untranslateRelative(Context c) {
+    public static void untranslateRelative(Context c, boolean rendering) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;
@@ -62,6 +65,9 @@ public class Relative {
             top = topLeft[0];
             left = topLeft[1];
             c.translate(-left, -top);
+            if (rendering) {
+                c.getGraphics().translate(-left, -top);
+            }
         }
     }
 

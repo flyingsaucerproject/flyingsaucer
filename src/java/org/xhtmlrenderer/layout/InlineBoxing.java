@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.value.Border;
@@ -104,9 +105,9 @@ public class InlineBoxing {
         int pendingLeftPadding = 0;
         int pendingRightPadding = 0;
         // loop until no more nodes
-        while (contentList.size() > 0 && !c.shouldStop()) {
-            Object o = contentList.get(0);
-            contentList.remove(0);
+        Iterator contentIter = contentList.iterator();
+        while (contentIter.hasNext() && !c.shouldStop()) {
+            Object o = contentIter.next();
             if (o instanceof FirstLineStyle) {//can actually only be the first object in list
                 box.firstLineStyle = ((FirstLineStyle) o).getStyle();
                 c.addFirstLineStyle(box.firstLineStyle);
@@ -142,7 +143,7 @@ public class InlineBoxing {
                     pendingPushStyles = new LinkedList();
                 }
                 pendingPushStyles.addLast((StylePush) o);
-                Relative.translateRelative(c);
+                Relative.translateRelative(c, false);
                 CalculatedStyle style = c.getCurrentStyle();
                 int parent_width = bounds.width;
                 Border border = style.getBorderWidth(c.getCtx());
@@ -173,6 +174,7 @@ public class InlineBoxing {
                     int rp = padding.right + border.right + margin.right;
                     //CHECK: not sure this is where the padding really goes, always
                     prev_inline.rightPadding += rp;
+
                     pendingRightPadding -= rp;
                     remaining_width -= rp;
                     prev_inline.popstyles++;
@@ -180,7 +182,7 @@ public class InlineBoxing {
                 if (c.hasFirstLineStyles()) {
                     pushedOnFirstLine.removeLast();
                 }
-                Relative.untranslateRelative(c);
+                Relative.untranslateRelative(c, false);
                 c.popStyle();
                 continue;
             }
@@ -232,6 +234,7 @@ public class InlineBoxing {
                 // break off the longest section that will fit
                 int fit = pendingRightPadding;//Note: this is not necessarily entirely correct
                 if (start == 0) fit += pendingLeftPadding;
+                start = trimLeadingSpace(c, prev_inline, currentContent, start);
                 new_inline = calculateInline(c, currentContent, remaining_width - fit, bounds.width,
                         prev_align_inline, isFirstLetter, box.firstLetterStyle,
                         curr_line, start, pendingBlockBox);
@@ -241,7 +244,7 @@ public class InlineBoxing {
                 if (prev_align_inline != null && new_inline.break_before) {
                     // Uu.p("break before");
                     remaining_width = bounds.width;
-                    saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, false, blockLineHeight, pushedOnFirstLine);
+                    saveLine(curr_line, currentStyle, prev_line, bounds, c, box, false, blockLineHeight, pushedOnFirstLine);
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line, blockLineMetrics);
@@ -281,6 +284,7 @@ public class InlineBoxing {
 
                 if (!(currentContent instanceof FloatedBlockContent)) {
                     // calc new width of the line
+
                     curr_line.contentWidth += new_inline.getWidth();
                 }
                 // reduce the available width
@@ -292,7 +296,7 @@ public class InlineBoxing {
                     // then remaining_width = max_width
                     remaining_width = bounds.width;
                     // save the line
-                    saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, false, blockLineHeight, pushedOnFirstLine);
+                    saveLine(curr_line, currentStyle, prev_line, bounds, c, box, false, blockLineHeight, pushedOnFirstLine);
                     // increase bounds height to account for the new line
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
@@ -319,7 +323,7 @@ public class InlineBoxing {
         }
 
         // save the final line
-        saveLine(curr_line, currentStyle, prev_line, bounds.width, bounds.x, c, box, true, blockLineHeight, pushedOnFirstLine);
+        saveLine(curr_line, currentStyle, prev_line, bounds, c, box, true, blockLineHeight, pushedOnFirstLine);
         bounds.height += curr_line.height;
         if (!c.shrinkWrap()) box.contentWidth = bounds.width;
         box.height = bounds.height;
@@ -328,6 +332,21 @@ public class InlineBoxing {
         // Uu.p("- InlineLayout.layoutContent(): " + box);
         //pop the dummy style, but no, see above
         //c.popStyle();
+    }
+
+
+    private static int trimLeadingSpace(Context c, InlineBox prev_inline,
+                                        Content currentContent, int start) {
+        if ((prev_inline == null || (prev_inline != null && prev_inline.break_after)) && currentContent instanceof TextContent) {
+            TextContent textContent = (TextContent) currentContent;
+            if (textContent.getText().substring(start).startsWith(WhitespaceStripper.SPACE)) {
+                IdentValue whitespace = c.getCurrentStyle().getIdent(CSSName.WHITE_SPACE);
+                if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE) {
+                    start++;
+                }
+            }
+        }
+        return start;
     }
 
 
@@ -512,6 +531,7 @@ public class InlineBoxing {
 
             } else {
                 inline.setSubstring(start, end);
+                inline.whitespace = WhitespaceStripper.getWhitespace(c.getCurrentStyle());
                 Breaker.breakText(c, inline, prev_align, avail, font);
                 prepareBox(prev_align, inline, c);
             }
@@ -521,7 +541,6 @@ public class InlineBoxing {
     }
 
     private static void prepareBox(InlineBox prev_align, InlineTextBox inline, Context c) {
-        inline.whitespace = WhitespaceStripper.getWhitespace(c.getCurrentStyle());
         if (prev_align != null &&
                 !prev_align.break_after &&
                 !inline.break_before
@@ -552,7 +571,7 @@ public class InlineBoxing {
      * @param last         PARAM
      * @param minHeight
      */
-    private static void saveLine(LineBox line_to_save, CalculatedStyle style, LineBox prev_line, int width, int x,
+    private static void saveLine(LineBox line_to_save, CalculatedStyle style, LineBox prev_line, Rectangle bounds,
                                  Context c, Box block, boolean last, int minHeight, LinkedList pushedOnFirstLine) {
         if (c.hasFirstLineStyles()) {
             //first pop element styles pushed on first line
@@ -584,6 +603,10 @@ public class InlineBoxing {
             }
         }
         block.addChild(line_to_save);
+
+        if (c.isPrint() && line_to_save.crossesPageBreak(c)) {
+            line_to_save.moveToNextPage(c, bounds);
+        }
     }
 
 }
@@ -592,6 +615,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2005/10/08 17:40:20  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.40  2005/10/06 03:20:21  tobega
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *

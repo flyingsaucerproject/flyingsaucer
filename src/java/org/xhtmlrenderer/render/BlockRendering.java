@@ -22,6 +22,7 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -112,14 +113,14 @@ public class BlockRendering {
                 // partially built boxes should be painted fully
                 // boxes which intersect the cliprect should be painted fully
                 // we should skip the rest
-                if (box.getState() == 2) {
+                if (box.getState() == Box.CHILDREN_FLUX) {
                     //Uu.p("calling paint for partial");
                     BoxRendering.paint(c, box, false, restyle);
                 } else {
                     if (oldclip.intersects(box_rect) || (box instanceof AnonymousBlockBox)) {
                         BoxRendering.paint(c, box, false, restyle);
                     } else {
-                        //Uu.p("no intersection. skipping");
+                        Uu.p("no intersection. skipping");
                     }
                 }
                 c.getGraphics().setClip(old_clip);

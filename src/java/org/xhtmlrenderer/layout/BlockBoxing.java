@@ -26,7 +26,6 @@ import org.xhtmlrenderer.layout.content.FirstLetterStyle;
 import org.xhtmlrenderer.layout.content.FirstLineStyle;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.ReflowEvent;
-import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
@@ -92,7 +91,10 @@ public class BlockBoxing {
             child_box.list_count = c.getListCounter();
             // set the child_box location
             child_box.x = 0;
-            child_box.y = box.height;
+
+            double initialY = box.height;
+            child_box.y = (int) initialY;
+            
             //Uu.p("set child box y to: " + child_box);
             box.addChild(child_box);
 
@@ -156,7 +158,7 @@ public class BlockBoxing {
             c.addMaxWidth(box.getWidth());
 
             // increase the final layout height by the height of the child
-            box.height += child_box.height;
+            box.height += (child_box.y - initialY) + child_box.height;
             c.addMaxHeight(box.height + box.y + (int) c.getOriginOffset().getY());
             if (c.shouldStop()) {
                 System.out.println("doing a quick stop");
@@ -166,8 +168,8 @@ public class BlockBoxing {
             //Uu.p("alerting that there is a box available");
             Dimension max_size = new Dimension(c.getMaxWidth(), c.getMaxHeight());
             if (c.isInteractive()) {
-                if (Configuration.isTrue("xr.incremental.enabled", false)) {
-                    RenderQueue.getInstance().dispatchRepaintEvent(new ReflowEvent(ReflowEvent.MORE_BOXES_AVAILABLE, box, max_size));
+                if (Configuration.isTrue("xr.incremental.enabled", false) && c.isRenderQueueAvailable()) {
+                    c.getRenderQueue().dispatchRepaintEvent(new ReflowEvent(ReflowEvent.MORE_BOXES_AVAILABLE, box, max_size));
                 }
 
                 int delay = Configuration.valueAsInt("xr.incremental.debug.layoutdelay", 0);
@@ -199,6 +201,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/10/08 17:40:20  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.17  2005/10/06 03:20:20  tobega
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *

@@ -176,9 +176,9 @@ public class BoxRendering {
      * @param restyle
      */
     public static void paintRelative(Context ctx, Box block, boolean restyle) {
-        Relative.translateRelative(ctx);
+        Relative.translateRelative(ctx, true);
         paintNormal(ctx, block, restyle);
-        Relative.untranslateRelative(ctx);
+        Relative.untranslateRelative(ctx, true);
     }
 
     // adjustments for fixed painting
@@ -374,6 +374,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2005/10/08 17:40:21  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.39  2005/10/02 21:30:00  tobega
  * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
  *

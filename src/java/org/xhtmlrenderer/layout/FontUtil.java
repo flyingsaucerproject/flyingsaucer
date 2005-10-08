@@ -25,7 +25,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 
-import java.awt.Font;
+import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 
@@ -57,7 +57,7 @@ public class FontUtil {
      * @return Returns
      */
     public static int len(Context c, InlineTextBox box) {
-        return (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), c.getCurrentFont(), box.getSubstring()).getWidth());
+        return len(c, box.getSubstring(), c.getCurrentFont());
     }
 
     /**
@@ -109,6 +109,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2005/10/08 17:40:20  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.38  2005/06/22 23:48:44  tobega
  * Refactored the css package to allow a clean separation from the core.
  *

@@ -65,6 +65,8 @@ public class WhitespaceStripper {
      */
     public final static Pattern space_collapse = Pattern.compile("( )+");
 
+    public final static Pattern space_before_linefeed_collapse = Pattern.compile("\\s+\\n");
+
 
     /**
      * Strips whitespace early in inline content generation. This can be done
@@ -239,8 +241,10 @@ public class WhitespaceStripper {
 
     static String collapseWhitespace(IdentValue whitespace, String text, boolean collapseLeading) {
         // do step 1
-        if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE) {
+        if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
             text = linefeed_space_collapse.matcher(text).replaceAll(EOL);
+        } else if (whitespace == IdentValue.PRE) {
+            text = space_before_linefeed_collapse.matcher(text).replaceAll(EOL);
         }
 
         // do step 2
@@ -249,23 +253,22 @@ public class WhitespaceStripper {
         // resolve that later, the space-sequence may only be broken at the end!
 
 
-        // do step 3
-        // convert line feeds to spaces
         if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
             text = linefeed_to_space.matcher(text).replaceAll(SPACE);
-        }
-
-        // do step 4
-        if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE) {
             text = tab_to_space.matcher(text).replaceAll(SPACE);
             text = space_collapse.matcher(text).replaceAll(SPACE);
+        } else if (whitespace == IdentValue.PRE) {
+            text = tab_to_space.matcher(text).replaceAll(SPACE);
+        }
 
+        if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE) {
             // collapse first space against prev inline
             if (text.startsWith(SPACE) &&
                     collapseLeading) {
                 text = text.substring(1, text.length());
             }
         }
+
         return text;
     }
 

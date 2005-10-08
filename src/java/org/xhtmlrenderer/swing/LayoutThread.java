@@ -1,12 +1,10 @@
 package org.xhtmlrenderer.swing;
 
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Dimension;
+import java.awt.*;
 
 /*
 
@@ -23,7 +21,7 @@ public class LayoutThread implements Runnable {
     private Graphics graphics;
     private BasicPanel panel;
     private boolean threaded;
-	private Context context;
+    private Context context;
 
     public LayoutThread(BasicPanel panel) {
         this.panel = panel;
@@ -53,20 +51,23 @@ public class LayoutThread implements Runnable {
             }
         }
     }
-    
+
     protected boolean second_set = false;
-    
+
     public synchronized void waitForLayoutStopped() throws InterruptedException {
         wait();
     }
-    
+
     protected Dimension last_size;
+
     protected void requestReLayout(final Dimension d) {
         //Uu.p("layout already in progress. skipping layout "+d);
-        if(last_size != null && d.equals(last_size)) {
+        if (last_size != null && d.equals(last_size)) {
             //Uu.p("we are trying to lay out the same as the last size");
         }
-        if(second_set)  { return; }
+        if (second_set) {
+            return;
+        }
         second_set = true;
         last_size = d;
         new Thread(new Runnable() {
@@ -81,15 +82,15 @@ public class LayoutThread implements Runnable {
                 } catch (Exception ex) {
                     Uu.p(ex);
                 }
-               // Uu.p("layout is stopped now");
+                // Uu.p("layout is stopped now");
                 // call start layout again w/ the current graphics (is that safe?)
                 second_set = false;
                 //Uu.p("calling layout again. dim = " + d);
                 //Uu.p("panel intrinsic =  " + panel.getIntrinsicSize());
-                if(panel.getIntrinsicSize()!= null &&
-                    panel.getIntrinsicSize().equals(d)) {
-                        //Uu.p("the old intrinsic size matches. skiping the extra repaint");
-                        return;
+                if (panel.getIntrinsicSize() != null &&
+                        panel.getIntrinsicSize().equals(d)) {
+                    //Uu.p("the old intrinsic size matches. skiping the extra repaint");
+                    return;
                 }
                 //panel.calcLayout();
                 panel.repaint();
@@ -98,10 +99,10 @@ public class LayoutThread implements Runnable {
         }).start();
     }
 
-	
-	public void stopLayout() {
-		this.context.stopRendering();
-	}
+
+    public void stopLayout() {
+        this.context.stopRendering();
+    }
 
     public void run() {
         // Uu.p("layout thread starting");
@@ -112,12 +113,12 @@ public class LayoutThread implements Runnable {
 
     // skip for now
     private synchronized void completeLayout() {
-       // Uu.p("layout thread ending");
+        // Uu.p("layout thread ending");
         done = true;
         graphics = null;
         panel.repaint();
         notifyAll();
-       // Uu.p("body box = " + panel.body_box );
+        // Uu.p("body box = " + panel.body_box );
     }
 
     // always done because not really threaded yet
@@ -134,6 +135,8 @@ public class LayoutThread implements Runnable {
         return false;
     }
 
+    /* not used, delete? */
+    /*
     public void startRender(Context c) {
 		this.context = c;
         Graphics g = c.getGraphics();
@@ -156,4 +159,5 @@ public class LayoutThread implements Runnable {
             //Uu.p("still doing layout");
         }
     }
+    */
 }

@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import java.util.Iterator;
+import java.util.List;
+
 
 /**
  * A representation of a CSS style sheet. A Stylesheet has the sheet's rules in
@@ -45,6 +48,8 @@ public class Stylesheet {
      * Description of the Field
      */
     private java.util.List _rulesets;
+
+    private List _pageRulesets;
 
     /**
      * Creates a new instance of Stylesheet
@@ -105,12 +110,24 @@ public class Stylesheet {
     public void addStylesheet(StylesheetInfo s) {
         _rulesets.add(s);
     }
+
+    public void addPageRuleset(Ruleset r) {
+        _pageRulesets.add(r);
+    }
+
+    public Iterator getPageRulesets() {
+        return _pageRulesets.iterator();
+    }
+
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/10/08 17:40:18  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.11  2005/06/22 23:48:40  tobega
  * Refactored the css package to allow a clean separation from the core.
  *

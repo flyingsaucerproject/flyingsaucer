@@ -22,6 +22,7 @@ package org.xhtmlrenderer.layout.content;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -78,6 +79,6 @@ public abstract class AbstractCachingContent implements CachingContent {
         if (_childContent == null) {
             _childContent = makeChildContent(c);
         }
-        return _childContent;
+        return Collections.unmodifiableList(_childContent);
     }
 }

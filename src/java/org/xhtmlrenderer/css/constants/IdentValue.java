@@ -61,11 +61,19 @@ public class IdentValue {
     /**
      * Description of the Field
      */
+    public final static IdentValue ALWAYS = addValue("always");
+    /**
+     * Description of the Field
+     */
     public final static IdentValue ARMENIAN = addValue("armenian");
     /**
      * Description of the Field
      */
     public final static IdentValue AUTO = addValue("auto");
+    /**
+     * Description of the Field
+     */
+    public final static IdentValue AVOID = addValue("avoid");
     /**
      * Description of the Field
      */
@@ -518,6 +526,9 @@ public class IdentValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/10/08 17:40:18  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.9  2005/09/26 22:40:16  tobega
  * Applied patch from Peter Brant concerning margin collapsing
  *

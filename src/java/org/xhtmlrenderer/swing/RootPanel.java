@@ -6,9 +6,9 @@ import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.UserInterface;
-import org.xhtmlrenderer.layout.BoxHolder;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.Box;
@@ -29,7 +29,6 @@ import java.util.logging.Level;
 
 public class RootPanel extends JPanel implements ComponentListener, UserInterface {
 
-
     /**
      * Description of the Field
      */
@@ -43,11 +42,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     public Dimension getIntrinsicSize() {
         return intrinsic_size;
     }
-
-
-    /* can we figure out how to get rid of this?
-    */
-    protected BoxHolder bh;
 
     /**
      * Description of the Field
@@ -84,10 +78,12 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     /**
      * Description of the Field
      */
-    protected Box body_box = null;
+    private Box body_box = null;
 
     private Thread layoutThread;
     private Thread renderThread;
+
+    private PageInfo pageInfo = null;
 
     /**
      * Sets the document attribute of the BasicPanel object
@@ -98,16 +94,18 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      */
     public void setDocument(Document doc, String url, NamespaceHandler nsh) {
         resetScrollPosition();
+        setRootBox(null);
         this.doc = doc;
 
         //have to do this first
         getRenderingContext().setBaseURL(url);
         getContext().setNamespaceHandler(nsh);
+        getRenderingContext().setMedia(pageInfo == null ? "screen" : "print");
         getRenderingContext().getStyleReference().setDocumentContext(getContext(), getContext().getNamespaceHandler(), doc, this);
 
-        RenderQueue.getInstance().dispatchLayoutEvent(new ReflowEvent(ReflowEvent.DOCUMENT_SET));
-        //calcLayout();
-        repaint();
+        if (queue != null) {
+            queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.DOCUMENT_SET));
+        }
     }
 
 
@@ -205,7 +203,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      */
     protected void init() {
 
-        queue = RenderQueue.getInstance();
+        queue = new RenderQueue();
         documentListeners = new HashMap();
         setBackground(Color.white);
         super.setLayout(null);
@@ -245,7 +243,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
     public ReflowEvent last_event = null;
 
-    protected Context newContext(Graphics2D g) {
+    protected Context newContext(PageInfo pageInfo, Graphics2D g) {
         XRLog.layout(Level.FINEST, "new context begin");
 
         getContext().setCanvas(this);
@@ -253,13 +251,15 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
         Rectangle extents;
 
-        if (enclosingScrollPane != null) {
+        if (pageInfo != null) {
+            extents = new Rectangle(0, 0,
+                    (int) pageInfo.getContentWidth(), (int) pageInfo.getContentHeight());
+        } else if (enclosingScrollPane != null) {
             Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
             extents = new Rectangle(0, 0, bnds.width, bnds.height);
             //Uu.p("bnds = " + bnds);
         } else {
             extents = new Rectangle(getWidth(), getHeight());//200, 200 ) );
-
         }
 
 
@@ -268,8 +268,13 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         //getContext().setMaxHeight(0);
         XRLog.layout(Level.FINEST, "new context end");
         //Uu.p("new context with extents: " + extents);
-        setRenderWidth((int) extents.getWidth());
-        return getContext().newContextInstance(extents);
+        
+        Context result = getContext().newContextInstance(extents);
+
+        result.setPrint(pageInfo != null);
+        result.setInteractive(pageInfo == null);
+
+        return result;
     }
 
     public void doActualLayout(Graphics g) {
@@ -282,18 +287,21 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             return;
         }
 // set up CSS
-        Context c = newContext((Graphics2D) g);
+        Context c = newContext(pageInfo, (Graphics2D) g);
         synchronized (this) {
             if (this.layout_context != null) this.layout_context.stopRendering();
             this.layout_context = c;
         }
+        c.setRenderQueue(queue);
+        setRenderWidth((int) c.getExtents().getWidth());
         getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
 //TODO: maybe temporary hack
         if (c.getBlockFormattingContext() != null) c.popBFC();//we set one for the top level before
         // do the actual layout
-        bh = new org.xhtmlrenderer.layout.BoxHolder();
 //Uu.p("doing actual layout here");
-        body_box = Boxing.layout(c, new DomToplevelNode(doc), bh);
+        Box root = Boxing.preLayout(c, new DomToplevelNode(doc));
+        setRootBox(root);
+        Boxing.realLayout(c, root, new DomToplevelNode(doc));
 //Uu.p("body box = " + body_box);
         if (!c.isStylesAllPopped()) {
             XRLog.layout(Level.SEVERE, "mismatch in style popping and pushing");
@@ -482,7 +490,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         Uu.p("componentResized() " + this.getSize());
         Uu.p("viewport = " + enclosingScrollPane.getViewport().getSize());
         if (doc != null)
-            RenderQueue.getInstance().dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED,
+            queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED,
                     enclosingScrollPane.getViewport().getSize()));
     }
 
@@ -492,6 +500,34 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      * @param e PARAM
      */
     public void componentShown(ComponentEvent e) {
+    }
+
+    public double getLayoutWidth() {
+        if (enclosingScrollPane != null) {
+            return enclosingScrollPane.getViewportBorderBounds().width;
+        } else {
+            return getSize().width;
+        }
+    }
+
+    public PageInfo getPageInfo() {
+        return pageInfo;
+    }
+
+    public void setPageInfo(PageInfo pageInfo) {
+        this.pageInfo = pageInfo;
+    }
+
+    public boolean isPrintView() {
+        return this.pageInfo != null;
+    }
+
+    public synchronized Box getRootBox() {
+        return body_box;
+    }
+
+    protected synchronized void setRootBox(Box box) {
+        this.body_box = box;
     }
 
 }

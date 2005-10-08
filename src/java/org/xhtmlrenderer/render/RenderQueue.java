@@ -131,10 +131,4 @@ public class RenderQueue {
     public ReflowEvent collapseRepaintEvents(ReflowEvent evt) {
         return collapseEvents(evt, repaint_queue, ReflowEvent.MORE_BOXES_AVAILABLE);
     }
-
-    public static RenderQueue getInstance() {
-        return single;
-    }
-
-    private static RenderQueue single = new RenderQueue();
 }

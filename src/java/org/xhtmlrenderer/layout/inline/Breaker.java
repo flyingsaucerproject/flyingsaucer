@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -81,22 +81,35 @@ public class Breaker {
             return;
         }
 
-        //check if it all fits on this line
-        if (FontUtil.len(c, inline.getSubstring(), font) <= avail) {
+        String currentString = inline.getSubstring();
+        int n = 0;
+        int possibleWrap;
+        boolean lastLenCheck = false;
+
+        while (true) {
+            possibleWrap = n;
+            n = currentString.indexOf(WhitespaceStripper.SPACE, n + 1);
+            if (n == -1) {
+                break;
+            }
+            lastLenCheck = FontUtil.len(c, currentString.substring(0, n), font) > avail;
+            if (lastLenCheck) {
+                break;
+            }
+        }
+
+        if (n == -1 && FontUtil.len(c, currentString, font) <= avail) {
             return;
         }
 
-        //all newlines are already taken care of
-        //text too long to fit on this line, we may wrap
-        //just find a space that works
-        String currentString = inline.getSubstring();
-        int n = currentString.length();
-        int possibleWrap;
-        do {
-            possibleWrap = n;
-            n = currentString.lastIndexOf(WhitespaceStripper.SPACE, possibleWrap - 1);
-        } while (n > 0 && FontUtil.len(c, currentString.substring(0, n), font) > avail);
-
+        if (possibleWrap == 0) {
+            if (lastLenCheck) {
+                n = 0;
+            } else {
+                possibleWrap = currentString.length();
+            }
+        }
+        
         // (0 is a boundary condition when the first was a space)
         if (n <= 0) {//unbreakable string
             inline.setSubstring(inline.start_index, inline.start_index + possibleWrap);//the best we can do
@@ -106,7 +119,7 @@ public class Breaker {
             inline.break_after = true;
             //}
         } else {//found a place to wrap
-            inline.setSubstring(inline.start_index, inline.start_index + n);
+            inline.setSubstring(inline.start_index, inline.start_index + possibleWrap);
             inline.break_after = true;
         }
         return;

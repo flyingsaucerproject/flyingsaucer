@@ -35,7 +35,7 @@ public class RenderLoop implements Runnable {
                 continue;
             }
 
-            if (Configuration.isTrue("xr.incremental.enabled", false)) {
+            if (!root.isPrintView() && Configuration.isTrue("xr.incremental.enabled", false)) {
                 /*
     // i might be able to delete this now. handled in layout loop I think.
                 if(getContext() != null && bh != null && bh.box != null) {

@@ -19,12 +19,10 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.content.WhitespaceStripper;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.util.logging.Level;
 
@@ -66,12 +64,6 @@ public class LineBox extends Box {
         }
         if (getChildCount() == 0 && ib instanceof InlineTextBox) {//first box on line
             InlineTextBox child = (InlineTextBox) ib;
-            if (child.getSubstring().startsWith(WhitespaceStripper.SPACE)) {
-                IdentValue whitespace = c.getCurrentStyle().getIdent(CSSName.WHITE_SPACE);
-                if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE) {
-                    child.setSubstring(child.start_index + 1, child.end_index);
-                }
-            }
             if (child.getSubstring().equals("")) {
                 child.contentWidth = 0;
                 child.height = 0;
@@ -107,12 +99,30 @@ public class LineBox extends Box {
         return ascent + leading / 2;
     }
 
+    public void moveToNextPage(Context c, Rectangle bounds) {
+        if (getParent().getChildCount() == 1 && getParent().getChild(0) == this) {
+            getParent().moveToNextPage(c, true);
+        } else {
+            double delta = getDistanceFromPageBreak(c, false);
+
+            y += delta;
+            bounds.height += delta;
+        }
+    }
+
+    protected double getAbsY(Context c) {
+        return c.getOriginOffset().y + y;
+    }
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/10/08 17:40:21  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.18  2005/10/06 03:20:23  tobega
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *

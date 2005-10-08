@@ -92,6 +92,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      */
     BrowserPanelListener listener;
 
+    JButton print_preview;
+
     /**
      * Description of the Field
      */
@@ -124,6 +126,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         manager = new PanelManager();
         view = new XHTMLPanel(manager);
         scroll = new FSScrollPane(view);
+        print_preview = new JButton();
 
         RenderingContext rc = view.getRenderingContext();
         try {
@@ -173,6 +176,12 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         gbl.setConstraints(url, c);
         add(url);
 
+        c.gridx++;
+        c.fill = GridBagConstraints.NONE;
+        c.weightx = c.weighty = 0.0;
+        gbl.setConstraints(print_preview, c);
+        add(print_preview);
+
         c.gridx = 0;
         c.gridy++;
         c.fill = GridBagConstraints.BOTH;
@@ -197,6 +206,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         backward.setAction(root.actions.backward);
         forward.setAction(root.actions.forward);
         reload.setAction(root.actions.reload);
+        print_preview.setAction(root.actions.print_preview);
         url.setAction(root.actions.load);
         updateButtons();
     }
@@ -240,7 +250,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         try {
 
             logger.info("Loading Page: " + url_text);
-			view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+            view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             view.setDocument(url_text);
             view.addDocumentListener(this);
             updateButtons();
@@ -260,7 +270,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Method
      */
     public void documentLoaded() {
-		view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
 
@@ -298,6 +308,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/10/08 17:40:17  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.27  2005/06/19 23:32:46  joshy
  * cursor stuff
  * Issue number:

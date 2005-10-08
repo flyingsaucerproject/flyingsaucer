@@ -28,6 +28,7 @@ import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.swing.RootPanel;
 
 import java.awt.*;
@@ -361,5 +362,27 @@ public interface Context {
     public void pushParentContent(Content content);
 
     public void popParentContent();
+
+    public boolean isPrint();
+
+    public void setPrint(boolean b);
+
+    public PageInfo getPageInfo();
+
+    public void setPageInfo(PageInfo p);
+
+    public boolean isRenderQueueAvailable();
+
+    public RenderQueue getRenderQueue();
+
+    public void setRenderQueue(RenderQueue queue);
+
+    public int getCurrentPage();
+
+    public void setCurrentPage(int currentPage);
+
+    public void setPendingPageBreak(boolean b);
+
+    public boolean isPendingPageBreak();
 }
 

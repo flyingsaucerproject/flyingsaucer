@@ -56,22 +56,8 @@ public class Boxing {
     private Boxing() {
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c       PARAM
-     * @param content PARAM
-     * @return Returns
-     */
     public static Box layout(Context c, Content content) {
-        return layout(c, content, null);
-    }
-
-    public static Box layout(Context c, Content content, BoxHolder bh) {
         Box block = preLayout(c, content);
-        if (bh != null) {
-            bh.box = block;
-        }
         if (c.shouldStop()) return block;
         return realLayout(c, block, content);
     }
@@ -105,6 +91,36 @@ public class Boxing {
             return TableBoxing.layout(c, (BlockBox) block, content);
         } else
             return layout(c, block, content);
+    }
+
+    private static void checkPageBreakBefore(Context c, Box block) {
+        if (c.isPrint()) {
+            if ((c.isPendingPageBreak() ||
+                    c.getCurrentStyle().propertyByName(CSSName.PAGE_BREAK_BEFORE).isIdent(IdentValue.ALWAYS))) {
+                block.moveToNextPage(c, false);
+                block.setMarginTopOverride(0f);
+            }
+            c.setPendingPageBreak(false);
+        }
+    }
+
+    private static void checkPageBreakAfter(Context c, Box block) {
+        if (c.isPrint() && c.getCurrentStyle().propertyByName(CSSName.PAGE_BREAK_AFTER).isIdent(IdentValue.ALWAYS)) {
+            c.setPendingPageBreak(true);
+        }
+    }
+
+    /**
+     * @return if true block should be layouted again
+     */
+    private static boolean checkPageBreakInside(Context c, Box block) {
+        boolean relayout = c.isPrint() && c.getCurrentStyle().propertyByName(CSSName.PAGE_BREAK_INSIDE).isIdent(IdentValue.AVOID) &&
+                !block.isMovedPastPageBreak() &&
+                block.crossesPageBreak(c);
+        if (relayout) {
+            c.setPendingPageBreak(true);
+        }
+        return relayout;
     }
 
     /**
@@ -145,6 +161,8 @@ public class Boxing {
 
         VerticalMarginCollapser.collapseVerticalMargins(c, block, content, (float) oe.getWidth());
 
+        checkPageBreakBefore(c, block);
+
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
         Border margin = block.getMarginWidth(c, (float) oe.getWidth());
@@ -184,6 +202,7 @@ public class Boxing {
                 Rectangle bounds = cc.getBounds();
                 //block.x = bounds.x;
                 //block.y = bounds.y;
+
                 block.contentWidth = bounds.width;
                 block.height = bounds.height;
                 block.component = cc;
@@ -232,7 +251,7 @@ public class Boxing {
         int ty = margin.top + border.top + padding.top;
         block.tx = tx;
         block.ty = ty;
-        c.translate(tx, ty);
+        c.translate(tx, ty + (int) block.paginationTranslation);
         c.shrinkExtents(tx + margin.right + border.right + padding.right, ty + margin.bottom + border.bottom + padding.bottom);
         if (block.component == null)
             layoutChildren(c, block, content);//when this is really an anonymous, InlineLayout.layoutChildren is called
@@ -244,8 +263,10 @@ public class Boxing {
             }
         }
         c.unshrinkExtents();
-        c.translate(-tx, -ty);
+        c.translate(-tx, -ty - (int) block.paginationTranslation);
         c.setSubBlock(old_sub);
+
+        checkPageBreakAfter(c, block);
 
         // restore height incase fixed height
         if (block.auto_height == false) {
@@ -283,9 +304,16 @@ public class Boxing {
             c.popBFC();
         }
 
+        boolean relayout = checkPageBreakInside(c, block);
+
         //and now, back to previous style
         if (pushed != null) {
             c.popStyle();
+        }
+
+        if (relayout) {
+            block.reset();
+            layout(c, block, content);
         }
 
         // Uu.p("BoxLayout: finished with block: " + block);
@@ -301,7 +329,7 @@ public class Boxing {
      */
     public static Box layoutChildren(Context c, Box box, Content content) {
         List contentList = content.getChildContent(c);
-        box.setState(box.CHILDREN_FLUX);
+        box.setState(Box.CHILDREN_FLUX);
 
         if (contentList == null) {
             return box;
@@ -317,7 +345,7 @@ public class Boxing {
             InlineBoxing.layoutContent(c, box, contentList);
         }
         c.popParentContent();
-        box.setState(box.DONE);
+        box.setState(Box.DONE);
         return box;
     }
 
@@ -330,6 +358,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2005/10/08 17:40:20  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.37  2005/10/06 03:20:21  tobega
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *

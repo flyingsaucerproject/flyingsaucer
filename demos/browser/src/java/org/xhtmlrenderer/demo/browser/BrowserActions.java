@@ -23,6 +23,7 @@ import org.xhtmlrenderer.demo.browser.actions.CopySelectionAction;
 import org.xhtmlrenderer.demo.browser.actions.FontSizeAction;
 import org.xhtmlrenderer.demo.browser.actions.GenerateDiffAction;
 import org.xhtmlrenderer.demo.browser.actions.PrintAction;
+import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
@@ -30,8 +31,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.net.URL;
 import java.io.File;
+import java.net.URL;
 import java.util.logging.Logger;
 
 /**
@@ -51,7 +52,7 @@ public class BrowserActions {
     /**
      * Description of the Field
      */
-    public Action forward, backward, refresh, reload, load, stop;
+    public Action forward, backward, refresh, reload, load, stop, print_preview;
 
     public Action generate_diff;
     /**
@@ -84,8 +85,8 @@ public class BrowserActions {
         stop = new AbstractAction("", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 // TODO: stop not coded
-				System.out.println("stop called");
-				root.panel.view.stop();
+                System.out.println("stop called");
+                root.panel.view.stop();
             }
         };
         // TODO: need right API call for ESC
@@ -98,8 +99,8 @@ public class BrowserActions {
                         try {
                             FileDialog fd = new FileDialog(root.frame, "Open a local file", FileDialog.LOAD);
                             fd.show();
-                            if(fd.getFile() != null) {
-                                String url = new File(fd.getDirectory(),fd.getFile()).toURI().toURL().toString();
+                            if (fd.getFile() != null) {
+                                String url = new File(fd.getDirectory(), fd.getFile()).toURI().toURL().toString();
                                 root.panel.loadPage(url);
                             }
                         } catch (Exception ex) {
@@ -132,9 +133,9 @@ public class BrowserActions {
 
         copy = new CopySelectionAction(root);
         copy.setEnabled(true);
-		copy.putValue(Action.ACCELERATOR_KEY, 
-			KeyStroke.getKeyStroke(KeyEvent.VK_C,
-				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        copy.putValue(Action.ACCELERATOR_KEY,
+                KeyStroke.getKeyStroke(KeyEvent.VK_C,
+                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         setMnemonic(copy, new Integer(KeyEvent.VK_C));
         setName(copy, "Copy");
 
@@ -207,6 +208,21 @@ public class BrowserActions {
                         InputEvent.SHIFT_MASK));
         reload.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_R));
 
+        print_preview = new EmptyAction("Print Preview") {
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    root.panel.view.setPageInfo(root.panel.view.getPageInfo() == null ? PageInfo.LETTER : null);
+                    print_preview.putValue(Action.NAME,
+                            root.panel.view.getPageInfo() == null ? "Print Preview" : "Normal View");
+                    root.panel.reloadPage();
+                    root.panel.view.repaint();
+                } catch (Exception ex) {
+                    Uu.p(ex);
+                }
+            }
+        };
+        print_preview.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_V));
+
         load = new AbstractAction("Load") {
             public void actionPerformed(ActionEvent evt) {
                 try {
@@ -220,25 +236,25 @@ public class BrowserActions {
         };
 
         generate_diff = new GenerateDiffAction(root);
-		
+
         increase_font = new FontSizeAction(root, FontSizeAction.INCREMENT);
-        increase_font.putValue(Action.ACCELERATOR_KEY, 
-			KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
-				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        increase_font.putValue(Action.ACCELERATOR_KEY,
+                KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
+                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         increase_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_I));
-		
+
         reset_font = new FontSizeAction(root, FontSizeAction.RESET);
-        reset_font.putValue(Action.ACCELERATOR_KEY, 
-			KeyStroke.getKeyStroke(KeyEvent.VK_0,
-				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        reset_font.putValue(Action.ACCELERATOR_KEY,
+                KeyStroke.getKeyStroke(KeyEvent.VK_0,
+                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         reset_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_N));
-		
+
         decrease_font = new FontSizeAction(root, FontSizeAction.DECREMENT);
-        decrease_font.putValue(Action.ACCELERATOR_KEY, 
-			KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,
-				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        decrease_font.putValue(Action.ACCELERATOR_KEY,
+                KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,
+                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         decrease_font.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_D));
-		
+
         setName(increase_font, "Increase");
         setName(reset_font, "Normal");
         setName(decrease_font, "Decrease");
@@ -282,6 +298,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/10/08 17:40:17  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.18  2005/07/21 22:07:43  joshy
  * fixed open action problem in the browser (escaping issue)
  *

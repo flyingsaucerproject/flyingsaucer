@@ -74,6 +74,8 @@ public class Box {
     public int rightPadding = 0;
     public int leftPadding = 0;
 
+    public double paginationTranslation = 0;
+
     /**
      * Gets the width attribute of the Box object
      *
@@ -231,11 +233,13 @@ public class Box {
     public boolean clear_left = false;
     public boolean clear_right = false;
 
-    private float _marginTopOverride;
-    private boolean _marginTopOverrideSet = false;
+    private float marginTopOverride;
+    private boolean marginTopOverrideSet = false;
 
-    private float _marginBottomOverride;
-    private boolean _marginBottomOverrideSet = false;
+    private float marginBottomOverride;
+    private boolean marginBottomOverrideSet = false;
+
+    private boolean movedPastPageBreak;
 
     /**
      * Constructor for the Box object
@@ -306,6 +310,11 @@ public class Box {
      */
     public void removeAllChildren() {
         boxes.clear();
+    }
+
+    public void reset() {
+        removeAllChildren();
+        height = tx = ty = 0;
     }
 
     /**
@@ -533,22 +542,22 @@ public class Box {
     }
 
     public float getMarginTopOverride() {
-        return _marginTopOverride;
+        return this.marginTopOverride;
     }
 
     public void setMarginTopOverride(float marginTopOverride) {
-        _marginTopOverride = marginTopOverride;
-        _marginTopOverrideSet = true;
+        this.marginTopOverride = marginTopOverride;
+        this.marginTopOverrideSet = true;
     }
 
 
     public float getMarginBottomOverride() {
-        return _marginBottomOverride;
+        return this.marginBottomOverride;
     }
 
     public void setMarginBottomOverride(float marginBottomOverride) {
-        _marginBottomOverride = marginBottomOverride;
-        _marginBottomOverrideSet = true;
+        this.marginBottomOverride = marginBottomOverride;
+        this.marginBottomOverrideSet = true;
     }
 
     /**
@@ -557,21 +566,67 @@ public class Box {
      */
     public Border getMarginWidth(Context c, float parentWidth) {
         Border result = c.getCurrentStyle().getMarginWidth(parentWidth, parentWidth, c.getCtx());
-        if (_marginTopOverrideSet) {
-            result.top = (int) _marginTopOverride;
+        if (this.marginTopOverrideSet) {
+            result.top = (int) this.marginTopOverride;
         }
-        if (_marginBottomOverrideSet) {
-            result.bottom = (int) _marginBottomOverride;
+        if (this.marginBottomOverrideSet) {
+            result.bottom = (int) this.marginBottomOverride;
         }
         return result;
     }
 
+    public boolean crossesPageBreak(Context c) {
+        double absTop = getAbsY(c);
+        double absBottom = absTop + height;
+
+        double pageHeight = c.getPageInfo().getContentHeight();
+
+        return absBottom > absTop && (int) (absTop / pageHeight) != (int) (absBottom / pageHeight);
+    }
+
+    protected double getAbsY(Context c) {
+        return c.getOriginOffset().y;
+    }
+
+    protected double getDistanceFromPageBreak(Context c, boolean considerTy) {
+        double absTop = getAbsY(c);
+
+        if (considerTy) {
+            absTop -= ty;
+        }
+
+        double pageHeight = c.getPageInfo().getContentHeight();
+        double delta = pageHeight - (absTop % pageHeight);
+
+        return delta;
+    }
+
+    public void moveToNextPage(Context c, boolean considerTy) {
+        double delta = getDistanceFromPageBreak(c, considerTy);
+        y += delta;
+        paginationTranslation = delta;
+        if (considerTy) {
+            c.translate(0, (int) delta);
+        }
+        this.movedPastPageBreak = true;
+    }
+
+    public boolean isMovedPastPageBreak() {
+        return movedPastPageBreak;
+    }
+
+    public void setMovedPastPageBreak(boolean movedPastPageBreak) {
+        this.movedPastPageBreak = movedPastPageBreak;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.62  2005/10/08 17:40:21  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.61  2005/10/06 03:20:22  tobega
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *

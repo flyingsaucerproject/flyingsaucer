@@ -28,6 +28,7 @@ import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -44,6 +45,16 @@ public class ContextImpl implements Context {
     private boolean shrinkWrap = false;
 
     private boolean interactive = true;
+
+    private boolean print;
+    private PageInfo pageSize = PageInfo.LETTER;
+
+    private RenderQueue renderQueue;
+
+    private int currentPage;
+
+    private boolean pendingPageBreak;
+    private boolean setPageBreak;
 
     public RenderingContext getRenderingContext() {
         return sharedContext.getRenderingContext();
@@ -439,5 +450,49 @@ public class ContextImpl implements Context {
 
     public void popParentContent() {
         parentContentStack.pop();
+    }
+
+    public PageInfo getPageInfo() {
+        return pageSize;
+    }
+
+    public void setPageInfo(PageInfo pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public boolean isPrint() {
+        return print;
+    }
+
+    public void setPrint(boolean print) {
+        this.print = print;
+    }
+
+    public RenderQueue getRenderQueue() {
+        return renderQueue;
+    }
+
+    public void setRenderQueue(RenderQueue renderQueue) {
+        this.renderQueue = renderQueue;
+    }
+
+    public boolean isRenderQueueAvailable() {
+        return this.renderQueue != null;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public boolean isPendingPageBreak() {
+        return pendingPageBreak;
+    }
+
+    public void setPendingPageBreak(boolean pendingPageBreak) {
+        this.pendingPageBreak = pendingPageBreak;
     }
 }

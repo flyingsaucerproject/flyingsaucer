@@ -305,6 +305,10 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
                 info.setStylesheet(mr);//there, the "dummy" connection is made
                 pullRulesets(cssmr.getCssRules(), mr, info);
                 stylesheet.addStylesheet(info);
+            } else if (rl.item(i).getType() == org.w3c.dom.css.CSSRule.PAGE_RULE) {
+                CSSPageRule cssPageRule = (CSSPageRule) rl.item(i);
+                Ruleset pageRules = new Ruleset(new CSSPageRuleAdapter(cssPageRule), stylesheet.getOrigin());
+                stylesheet.addPageRuleset(pageRules);
             }
         }
     }

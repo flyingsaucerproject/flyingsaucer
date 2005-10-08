@@ -331,7 +331,7 @@ public class BoxFinder {
     findBoxByCoords() method?
     */
     public static int findBoxX(BasicPanel panel, int x, int y) {
-        return findBoxX(panel.body_box, x, y);
+        return findBoxX(panel.getRootBox(), x, y);
     }
 
     public static int findBoxX(Box box, int x, int y) {

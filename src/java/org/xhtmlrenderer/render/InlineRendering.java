@@ -500,7 +500,7 @@ public class InlineRendering {
         Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
         paintRightPadding(c, line, ib, padX, border, padding);
         padX += padding.right + border.right;
-        Relative.untranslateRelative(c);
+        Relative.untranslateRelative(c, true);
         c.popStyle();
         if (pushedStyles != null) pushedStyles.removeLast();
         style = c.getCurrentStyle();
@@ -524,7 +524,7 @@ public class InlineRendering {
 
         c.pushStyle(cascaded);
         //Now we know that an inline element started here, handle borders and such
-        Relative.translateRelative(c);
+        Relative.translateRelative(c, true);
         style = c.getCurrentStyle();
         Border border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block

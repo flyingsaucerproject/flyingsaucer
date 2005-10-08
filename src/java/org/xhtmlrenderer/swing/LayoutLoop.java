@@ -44,7 +44,7 @@ public class LayoutLoop implements Runnable {
             if (evt.getDimension() != null) {
 
                 // if the renderwidth != to the actual panel width, then re-layout
-                if (root.getRenderWidth() != root.getWidth()) {
+                if (root.getRenderWidth() != root.getLayoutWidth()) {
                     // Uu.p("render width != panel width. resizing");
                     doRelayout(evt);
                 } else {
@@ -92,7 +92,7 @@ public class LayoutLoop implements Runnable {
                 //root.layoutInProgress = false;
                 // Uu.p("layout thread finished");
             }
-        }).start();
+        }, "FlyingSaucer-Layout2").start();
         // NOTE: joshy: is this sleep necessary?
         Uu.sleep(100);
     }
