@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -69,11 +70,9 @@ public class LineBox extends Box {
                 child.height = 0;
             }
         }
-        ib.setParent(this);
         addChild(ib);
-        if (ib.isChildrenExceedBounds()) {
-            setChildrenExceedBounds(true);
-        }
+        Boxing.checkExceeds(ib);
+        propagateChildProperties(ib);
     }
 
     /**
@@ -120,6 +119,9 @@ public class LineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/10/12 21:17:14  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.19  2005/10/08 17:40:21  tobega
  * Patch from Peter Brant
  *

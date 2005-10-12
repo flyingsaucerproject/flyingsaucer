@@ -65,7 +65,7 @@ public class WhitespaceStripper {
      */
     public final static Pattern space_collapse = Pattern.compile("( )+");
 
-    public final static Pattern space_before_linefeed_collapse = Pattern.compile("\\s+\\n");
+    public final static Pattern space_before_linefeed_collapse = Pattern.compile("[\\s&&[^\\n]]\\n");
 
 
     /**
@@ -257,7 +257,7 @@ public class WhitespaceStripper {
             text = linefeed_to_space.matcher(text).replaceAll(SPACE);
             text = tab_to_space.matcher(text).replaceAll(SPACE);
             text = space_collapse.matcher(text).replaceAll(SPACE);
-        } else if (whitespace == IdentValue.PRE) {
+        } else if (whitespace == IdentValue.PRE) { // not correct, should treat as 8 space tab stops
             text = tab_to_space.matcher(text).replaceAll(SPACE);
         }
 

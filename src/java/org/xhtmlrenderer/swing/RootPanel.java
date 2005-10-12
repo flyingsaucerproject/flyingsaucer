@@ -311,22 +311,22 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             return;
         }
 
-        XRLog.layout(Level.FINEST, "is a fixed child: " + body_box.isChildrenExceedBounds());
-
+        XRLog.layout(Level.FINEST, "is a fixed child: " + root.isChildrenExceedBounds());
+        
 // if there is a fixed child then we need to set opaque to false
 // so that the entire viewport will be repainted. this is slower
 // but that's the hit you get from using fixed layout
-        if (body_box.isChildrenExceedBounds()) {
+        if (root.isChildrenExceedBounds()) {
             super.setOpaque(false);
         } else {
             super.setOpaque(true);
         }
 
-        getRenderingContext().setRootBox(body_box);
+        getRenderingContext().setRootBox(root);
 
-        XRLog.layout(Level.FINEST, "after layout: " + body_box);
+        XRLog.layout(Level.FINEST, "after layout: " + root);
 
-        intrinsic_size = new Dimension(getContext().getMaxWidth(), body_box.height);
+        intrinsic_size = new Dimension(getContext().getMaxWidth(), root.height);
         //Uu.p("intrinsic size = " + intrinsic_size);
         if (intrinsic_size.width != this.getWidth()) {
             //Uu.p("intrisic and this widths don't match: " + this.getSize() + " "  + intrinsic_size);
@@ -346,10 +346,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                     this.revalidate();
                 }
                 //Uu.p("need to do the body hack");
-                if (body_box != null) {
-                    body_box.height = enclosingScrollPane.getViewport().getHeight();
-                    bodyExpandHack(body_box, body_box.height);
-                    intrinsic_size.height = body_box.height;
+                if (root != null) {
+                    root.height = enclosingScrollPane.getViewport().getHeight();
+                    bodyExpandHack(root, root.height);
+                    intrinsic_size.height = root.height;
                 }
             } else {  // if doc is taller than viewport
                 if (this.getHeight() != intrinsic_size.height) {
@@ -361,7 +361,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             
             
             // turn on simple scrolling mode if there's any fixed elements
-            if (body_box.isFixedDescendant()) {
+            if (root.isFixedDescendant()) {
                 // Uu.p("is fixed");
                 enclosingScrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
             } else {

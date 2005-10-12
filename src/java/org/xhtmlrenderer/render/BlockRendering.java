@@ -22,7 +22,6 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -82,53 +81,23 @@ public class BlockRendering {
         //if (box.getPersistentBFC() != null) c.popBFC();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c       PARAM
-     * @param box     PARAM
-     * @param restyle PARAM
-     */
     public static void paintChild(Context c, Box box, boolean restyle) {
-        if (box.isChildrenExceedBounds()) {
-            //Uu.p("box children exceed: " + box);
-            //BoxRendering.paint(c, box, false, restyle);
-            //return;
+        if (!canBeSkipped(c, box)) {
+            BoxRendering.paint(c, box, false, restyle);
+        }
+    }
+
+    public static boolean canBeSkipped(Context c, Box box) {
+        Shape clip = c.getGraphics().getClip();
+        if (!box.isChildrenExceedBounds() &&
+                Configuration.isTrue("xr.renderer.viewport-repaint", false) &&
+                box.getState() != Box.CHILDREN_FLUX && clip != null) {
+            Rectangle bounds = new Rectangle(box.x, box.y, box.getWidth(), box.height);
+
+            return !clip.intersects(bounds);
         }
 
-        if (Configuration.isTrue("xr.renderer.viewport-repaint", false)) {
-            if (c.getGraphics().getClip() != null) {
-                Shape oldclip = (Shape) c.getGraphics().getClip();
-
-                Rectangle box_rect = new Rectangle(box.x, box.y, box.getWidth(), box.height);
-                Rectangle old_clip = c.getGraphics().getClipBounds();
-                // Uu.p("old clip = " + old_clip);
-                // Uu.p("box rect = " + box_rect);
-                box_rect = box_rect.union(old_clip);
-                // Uu.p("union = " + box_rect);
-                // c.getGraphics().setClip(box_rect);
-                //TODO: handle floated content. HACK: descend into anonymous boxes, won't work for deeper nesting
-                // Uu.p("test box in state: " + box.stateToString(box.getState()));
-                
-                // partially built boxes should be painted fully
-                // boxes which intersect the cliprect should be painted fully
-                // we should skip the rest
-                if (box.getState() == Box.CHILDREN_FLUX) {
-                    //Uu.p("calling paint for partial");
-                    BoxRendering.paint(c, box, false, restyle);
-                } else {
-                    if (oldclip.intersects(box_rect) || (box instanceof AnonymousBlockBox)) {
-                        BoxRendering.paint(c, box, false, restyle);
-                    } else {
-                        Uu.p("no intersection. skipping");
-                    }
-                }
-                c.getGraphics().setClip(old_clip);
-                return;
-            }
-        }
-
-        BoxRendering.paint(c, box, false, restyle);
+        return false;
     }
 
 }

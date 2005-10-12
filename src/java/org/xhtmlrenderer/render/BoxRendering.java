@@ -88,7 +88,7 @@ public class BoxRendering {
                 if (block.firstLineStyle != null) {
                     c.addFirstLineStyle(block.firstLineStyle);
                 }
-                if (Relative.isRelative(c)) {
+                if (box.relative) {
                     paintRelative(c, block, restyle);
                 } else {
                     paintNormal(c, block, restyle);
@@ -374,6 +374,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2005/10/12 21:17:14  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.40  2005/10/08 17:40:21  tobega
  * Patch from Peter Brant
  *

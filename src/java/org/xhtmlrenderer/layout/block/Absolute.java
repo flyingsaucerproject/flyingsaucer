@@ -106,7 +106,6 @@ public class Absolute {
 
         //Uu.p("got a block box from the sub layout: " + box);
         c.setExtents(oe);
-        box.setChildrenExceedBounds(true);
 
         box.absolute = true;
 

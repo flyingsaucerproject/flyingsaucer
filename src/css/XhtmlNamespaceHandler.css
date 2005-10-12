@@ -108,3 +108,8 @@ a {
 h5, h6, b, strong { 
   font-weight: bold; 
 }
+
+/* Match default behavior of Firefox and Opera */
+pre {
+  margin: 1em 0;
+}

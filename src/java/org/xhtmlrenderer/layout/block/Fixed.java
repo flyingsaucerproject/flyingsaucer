@@ -62,7 +62,6 @@ public class Fixed {
         if (c.getCurrentStyle().isIdent(CSSName.POSITION, IdentValue.FIXED)) {
             box.fixed = true;
             box.setFixedDescendant(true);
-            box.setChildrenExceedBounds(true);
             Rectangle rect = c.getFixedRectangle();
 
             CalculatedStyle style = c.getCurrentStyle();

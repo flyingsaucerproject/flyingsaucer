@@ -218,6 +218,7 @@ public class TableBoxing {
             outerBox.adjustWidthForChild(child.getWidth());
         }
         tableBox.setState(Box.DONE);
+        outerBox.propagateChildProperties(tableBox);
         outerBox.setState(Box.DONE);
         return outerBox;
     }
@@ -584,6 +585,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.27  2005/10/12 21:17:15  tobega
+   patch from Peter Brant
+
    Revision 1.26  2005/10/06 03:20:25  tobega
    Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
 

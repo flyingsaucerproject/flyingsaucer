@@ -107,6 +107,11 @@ public class Box {
     public boolean floated = false;
 
     /**
+     * True if the box is relatively positioned
+     */
+    public boolean relative = false;
+
+    /**
      * Description of the Field
      */
     public int top = 0;
@@ -297,6 +302,10 @@ public class Box {
         }
         child.setParent(this);
         boxes.add(child);
+        propagateChildProperties(child);
+    }
+
+    public void propagateChildProperties(Box child) {
         if (child.isChildrenExceedBounds()) {
             setChildrenExceedBounds(true);
         }
@@ -624,6 +633,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.63  2005/10/12 21:17:13  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.62  2005/10/08 17:40:21  tobega
  * Patch from Peter Brant
  *

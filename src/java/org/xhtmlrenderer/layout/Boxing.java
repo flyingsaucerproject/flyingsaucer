@@ -28,6 +28,7 @@ import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Fixed;
 import org.xhtmlrenderer.layout.block.FloatUtil;
+import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.ContentUtil;
@@ -142,7 +143,7 @@ public class Boxing {
             block.setChildrenExceedBounds(true);
             block.setFixedDescendant(true);
         }
-
+        
         // install a block formatting context for the body,
         // ie. if it's null.
         // set up the outtermost bfc
@@ -169,6 +170,7 @@ public class Boxing {
         Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
         block.leftPadding = margin.left + border.left + padding.left;
         block.rightPadding = padding.right + border.right + margin.right;
+        block.contentWidth = (int) (c.getExtents().getWidth() - block.leftPadding - block.rightPadding);
 
         CalculatedStyle style = c.getCurrentStyle();
         boolean hasSpecifiedWidth = !style.isIdent(CSSName.WIDTH, IdentValue.AUTO);
@@ -208,6 +210,7 @@ public class Boxing {
                 block.component = cc;
             }
         }
+        
         //block.x = c.getExtents().x;
         //block.y = c.getExtents().y;
 
@@ -294,9 +297,12 @@ public class Boxing {
 
         // account for special positioning
         // need to add bfc/unbfc code for absolutes
+        Relative.setupRelative(c, block);
         Absolute.setupAbsolute(block, c);
         Fixed.setupFixed(c, block);
         FloatUtil.setupFloat(c, block, content.getStyle());
+
+        checkExceeds(block);
 
         // remove the outtermost bfc
         if (set_bfc) {
@@ -320,6 +326,25 @@ public class Boxing {
         return block;
     }
 
+    public static void checkExceeds(Box block) {
+        Box parent = block.getParent();
+        if (parent != null) {
+            // FIXME Not right, for example
+            // <div style="height: 3in; width: 1in;">
+            //   <div>
+            //     <div style="height 5in; width: 1in;">
+            //     </div>
+            //   </div>
+            // </div>
+            // but OK for most situations
+            if ((!block.auto_height && !parent.auto_height) ||
+                    (!block.auto_width && !block.auto_width) ||
+                    (block.absolute || block.fixed || block.floated || block.relative)) {
+                parent.setChildrenExceedBounds(true);
+            }
+        }
+    }
+
     /**
      * Description of the Method
      *
@@ -331,20 +356,16 @@ public class Boxing {
         List contentList = content.getChildContent(c);
         box.setState(Box.CHILDREN_FLUX);
 
-        if (contentList == null) {
-            return box;
+        if (contentList != null && contentList.size() > 0) {
+            c.pushParentContent(content);
+            if (ContentUtil.hasBlockContent(contentList)) {//this should be block layed out
+                BlockBoxing.layoutContent(c, box, contentList, box);
+            } else {
+                InlineBoxing.layoutContent(c, box, contentList);
+            }
+            c.popParentContent();
         }
-        if (contentList.size() == 0) {
-            return box;
-        }//we can do this if there is no content, right?
 
-        c.pushParentContent(content);
-        if (ContentUtil.hasBlockContent(contentList)) {//this should be block layed out
-            BlockBoxing.layoutContent(c, box, contentList, box);
-        } else {
-            InlineBoxing.layoutContent(c, box, contentList);
-        }
-        c.popParentContent();
         box.setState(Box.DONE);
         return box;
     }
@@ -358,6 +379,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2005/10/12 21:17:12  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.38  2005/10/08 17:40:20  tobega
  * Patch from Peter Brant
  *

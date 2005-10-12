@@ -212,6 +212,7 @@ public class InlineBoxing {
                     // Uu.p("this might be a problem, but it could just be an absolute block");
                     //     result = new BoxLayout().layout(c,content);
                     Box absolute = Absolute.generateAbsoluteBox(c, currentContent);
+                    curr_line.setChildrenExceedBounds(true);
                     curr_line.addChild(absolute);
                     break;
                 }
@@ -260,6 +261,7 @@ public class InlineBoxing {
                     continue;
                 }
 
+                Relative.setupRelative(c, new_inline);
                 // save the new inline to the list
                 // Uu.p("adding inline child: " + new_inline);
                 //the inline might be set to size 0,0 after this, if it is first whitespace on line.
@@ -615,6 +617,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2005/10/12 21:17:12  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.41  2005/10/08 17:40:20  tobega
  * Patch from Peter Brant
  *

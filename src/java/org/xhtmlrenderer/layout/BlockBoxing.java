@@ -97,8 +97,8 @@ public class BlockBoxing {
             
             //Uu.p("set child box y to: " + child_box);
             box.addChild(child_box);
-
             Boxing.realLayout(c, child_box, currentContent);
+            box.propagateChildProperties(child_box);
 
             c.translate(0, -box.height);
 
@@ -167,7 +167,7 @@ public class BlockBoxing {
 
             //Uu.p("alerting that there is a box available");
             Dimension max_size = new Dimension(c.getMaxWidth(), c.getMaxHeight());
-            if (c.isInteractive()) {
+            if (c.isInteractive() && !c.isPrint()) {
                 if (Configuration.isTrue("xr.incremental.enabled", false) && c.isRenderQueueAvailable()) {
                     c.getRenderQueue().dispatchRepaintEvent(new ReflowEvent(ReflowEvent.MORE_BOXES_AVAILABLE, box, max_size));
                 }
@@ -201,6 +201,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/10/12 21:17:12  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.18  2005/10/08 17:40:20  tobega
  * Patch from Peter Brant
  *

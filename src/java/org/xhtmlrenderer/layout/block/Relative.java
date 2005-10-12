@@ -23,6 +23,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.render.Box;
 
 
 /**
@@ -77,8 +78,12 @@ public class Relative {
      * @param c PARAM
      * @return The relative value
      */
-    public static boolean isRelative(Context c) {
+    private static boolean isRelative(Context c) {
         return c.getCurrentStyle().isIdent(CSSName.POSITION, IdentValue.RELATIVE);
+    }
+
+    public static void setupRelative(Context c, Box box) {
+        box.relative = isRelative(c);
     }
 
     /**
