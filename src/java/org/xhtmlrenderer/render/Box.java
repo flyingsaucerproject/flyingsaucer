@@ -76,6 +76,8 @@ public class Box {
 
     public double paginationTranslation = 0;
 
+    private Border marginWidth;
+
     /**
      * Gets the width attribute of the Box object
      *
@@ -569,21 +571,6 @@ public class Box {
         this.marginBottomOverrideSet = true;
     }
 
-    /**
-     * NOTE: Depends on <code>c.getCurrentStyle()</code> returning the style
-     * for this box.
-     */
-    public Border getMarginWidth(Context c, float parentWidth) {
-        Border result = c.getCurrentStyle().getMarginWidth(parentWidth, parentWidth, c.getCtx());
-        if (this.marginTopOverrideSet) {
-            result.top = (int) this.marginTopOverride;
-        }
-        if (this.marginBottomOverrideSet) {
-            result.bottom = (int) this.marginBottomOverride;
-        }
-        return result;
-    }
-
     public boolean crossesPageBreak(Context c) {
         double absTop = getAbsY(c);
         double absBottom = absTop + height;
@@ -627,12 +614,36 @@ public class Box {
     public void setMovedPastPageBreak(boolean movedPastPageBreak) {
         this.movedPastPageBreak = movedPastPageBreak;
     }
+
+    public Border getMarginWidth() {
+        if (marginWidth == null) {
+            throw new NullPointerException("internal error: marginWidth is null");
+        }
+        if (this.marginTopOverrideSet) {
+            marginWidth.top = (int) this.marginTopOverride;
+        }
+        if (this.marginBottomOverrideSet) {
+            marginWidth.bottom = (int) this.marginBottomOverride;
+        }
+        return marginWidth;
+    }
+
+    public void setMarginWidth(Context c, float parentWidth) {
+        this.marginWidth = c.getCurrentStyle().getMarginWidth(parentWidth, parentWidth, c.getCtx());
+    }
+
+    public void setMarginWidth(Border margin) {
+        this.marginWidth = new Border(margin);
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.64  2005/10/15 23:39:18  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.63  2005/10/12 21:17:13  tobega
  * patch from Peter Brant
  *

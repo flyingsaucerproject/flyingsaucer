@@ -30,8 +30,7 @@ import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.Color;
-import java.awt.Point;
+import java.awt.*;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -187,8 +186,17 @@ public class DerivedValue {
     public DerivedValue(CSSName cssName, CSSPrimitiveValue primitive, CalculatedStyle style) {
         _cssName = cssName;
         _domCSSPrimitiveValue = primitive;
+
         String org = _domCSSPrimitiveValue.getCssText();
-        primitive.setCssText(Idents.convertIdent(cssName, org));
+        if (primitive.getCssText() == null) {
+            primitive.setCssText(org);
+        }
+
+        String converted = Idents.convertIdent(cssName, org);
+        if (!converted.equals(org)) {
+            primitive.setCssText(converted);
+        }
+
         if (primitive.getCssText() == null) {
             throw new XRRuntimeException("CSSValue for '" + cssName + "' is null after " +
                     "resolving CSS identifier for value '" + org + "'");

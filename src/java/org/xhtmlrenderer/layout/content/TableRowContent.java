@@ -119,7 +119,8 @@ public class TableRowContent implements Content {
         FirstLetterStyle firstLetterStyle = null;
 
         if (_elem != null) {
-            if (ContentUtil.mayHaveFirstLine(_style)) {
+            c.pushStyle(_style);
+            if (ContentUtil.mayHaveFirstLine(c.getCurrentStyle())) {
                 //put in a marker if there is first-line styling
                 CascadedStyle firstLine = c.getCss().getPseudoElementStyle(_elem, "first-line");
                 if (firstLine != null) {
@@ -127,13 +128,14 @@ public class TableRowContent implements Content {
                 }
             }
 
-            if (ContentUtil.mayHaveFirstLetter(_style)) {
+            if (ContentUtil.mayHaveFirstLetter(c.getCurrentStyle())) {
                 //put in a marker if there is first-letter styling
                 CascadedStyle firstLetter = c.getCss().getPseudoElementStyle(_elem, "first-letter");
                 if (firstLetter != null) {
                     firstLetterStyle = new FirstLetterStyle(firstLetter);
                 }
             }
+            c.popStyle();
 
             /* Ignore before content of tables for now
             //TODO: before and after may be block!

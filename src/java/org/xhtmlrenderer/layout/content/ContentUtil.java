@@ -26,6 +26,7 @@ import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 
 import java.util.Iterator;
@@ -51,8 +52,7 @@ public class ContentUtil {
      * @param style PARAM
      * @return Returns
      */
-    public static boolean mayHaveFirstLetter(CascadedStyle style) {
-        // ASK: why use CascadedStyle here, instead of Calculated? (PWW 25-01-05)
+    public static boolean mayHaveFirstLetter(CalculatedStyle style) {
         if (style == null) {
             return false;
         }//for DomToplevelNode
@@ -71,8 +71,7 @@ public class ContentUtil {
      * @param style PARAM
      * @return Returns
      */
-    public static boolean mayHaveFirstLine(CascadedStyle style) {
-        // ASK: why use CascadedStyle here, instead of Calculated? (PWW 25-01-05)
+    public static boolean mayHaveFirstLine(CalculatedStyle style) {
         if (style == null) {
             return false;
         }//for DomToplevelNode
@@ -118,7 +117,7 @@ public class ContentUtil {
      * @param style PARAM
      * @return The blockLevel value
      */
-    public static boolean isBlockLevel(CascadedStyle style) {
+    public static boolean isBlockLevel(CalculatedStyle style) {
         if (style == null) {
             return false;
         }
@@ -132,7 +131,7 @@ public class ContentUtil {
      * @param style PARAM
      * @return The hidden value
      */
-    public static boolean isHidden(CascadedStyle style) {
+    public static boolean isHidden(CalculatedStyle style) {
         IdentValue display = style.getIdent(CSSName.DISPLAY);
         return display != null && display == IdentValue.NONE;
     }
@@ -143,7 +142,7 @@ public class ContentUtil {
      * @param style PARAM
      * @return The runIn value
      */
-    public static boolean isRunIn(CascadedStyle style) {
+    public static boolean isRunIn(CalculatedStyle style) {
         IdentValue display = style.getIdent(CSSName.DISPLAY);
         return display != null && display == IdentValue.RUN_IN;
     }
@@ -154,7 +153,7 @@ public class ContentUtil {
      * @param style PARAM
      * @return The table value
      */
-    public static boolean isTable(CascadedStyle style) {
+    public static boolean isTable(CalculatedStyle style) {
         IdentValue display = style.getIdent(CSSName.DISPLAY);
         return display != null && display == IdentValue.TABLE;
     }
@@ -165,7 +164,7 @@ public class ContentUtil {
      * @param style PARAM
      * @return The table value
      */
-    public static boolean isTableDescendant(CascadedStyle style) {
+    public static boolean isTableDescendant(CalculatedStyle style) {
         IdentValue display = style.getIdent(CSSName.DISPLAY);
         if (display == null) return false;
         if (display == IdentValue.TABLE) return false;
@@ -179,7 +178,7 @@ public class ContentUtil {
      * @param style PARAM
      * @return The listItem value
      */
-    public static boolean isListItem(CascadedStyle style) {
+    public static boolean isListItem(CalculatedStyle style) {
         if (style == null) {
             return false;
         }
@@ -193,7 +192,7 @@ public class ContentUtil {
      * @param style PARAM
      * @return The absoluteOrFixed value
      */
-    public static boolean isAbsoluteOrFixed(CascadedStyle style) {
+    public static boolean isAbsoluteOrFixed(CalculatedStyle style) {
         IdentValue position = style.getIdent(CSSName.POSITION);
         return position != null && (position == IdentValue.ABSOLUTE || position == IdentValue.FIXED);
     }
@@ -204,7 +203,7 @@ public class ContentUtil {
      * @param style PARAM
      * @return The inlineBlock value
      */
-    public static boolean isInlineBlock(CascadedStyle style) {
+    public static boolean isInlineBlock(CalculatedStyle style) {
         IdentValue display = style.getIdent(CSSName.DISPLAY);
         return display != null && display == IdentValue.INLINE_BLOCK;
     }
@@ -215,7 +214,7 @@ public class ContentUtil {
      * @param style PARAM
      * @return The floated value
      */
-    public static boolean isFloated(CascadedStyle style) {
+    public static boolean isFloated(CalculatedStyle style) {
         if (style == null) {
             return false;
         }
@@ -281,7 +280,8 @@ public class ContentUtil {
         Element parentElement = parent.getElement();
 
         if (parentElement != null) {
-            if (mayHaveFirstLine(parentStyle)) {
+            c.pushStyle(parentStyle);
+            if (mayHaveFirstLine(c.getCurrentStyle())) {
                 //put in a marker if there is first-line styling
                 CascadedStyle firstLine = c.getCss().getPseudoElementStyle(parentElement, "first-line");
                 if (firstLine != null) {
@@ -289,13 +289,14 @@ public class ContentUtil {
                 }
             }
 
-            if (mayHaveFirstLetter(parentStyle)) {
+            if (mayHaveFirstLetter(c.getCurrentStyle())) {
                 //put in a marker if there is first-letter styling
                 CascadedStyle firstLetter = c.getCss().getPseudoElementStyle(parentElement, "first-letter");
                 if (firstLetter != null) {
                     firstLetterStyle = new FirstLetterStyle(firstLetter);
                 }
             }
+            c.popStyle();
 
             //TODO: before and after may be block!
             //<br/> handling should be done by :before content
@@ -339,8 +340,9 @@ public class ContentUtil {
             Element elem = (Element) curr;
             CascadedStyle style = c.getCss().getCascadedStyle(elem, true);//this is the place where restyle is done for layout (boxing)
             c.pushStyle(style);//just remember to pop it before continue
+            CalculatedStyle currentStyle = c.getCurrentStyle();
 
-            if (isTableDescendant(style)) {
+            if (isTableDescendant(currentStyle)) {
                 if (anonymousTable == null) {
                     anonymousTable = new TableContent();
                     inlineList.add(anonymousTable);
@@ -352,12 +354,12 @@ public class ContentUtil {
             //if we reach here, our anonymous table is done
             anonymousTable = null;
 
-            if (isHidden(style)) {
+            if (isHidden(currentStyle)) {
                 c.popStyle();
                 continue;//at least for now, don't generate hidden content
             }
 
-            if (isAbsoluteOrFixed(style)) {
+            if (isAbsoluteOrFixed(currentStyle)) {
                 // Uu.p("adding replaced: " + curr);
                 textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                 inlineList.add(new AbsolutelyPositionedContent((Element) curr, style));
@@ -366,7 +368,7 @@ public class ContentUtil {
             }
 
             //have to check for float here already. The element may still be replaced, though
-            if (isFloated(style)) {
+            if (isFloated(currentStyle)) {
                 // Uu.p("adding floated block: " + curr);
                 textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                 inlineList.add(new FloatedBlockContent((Element) curr, style));
@@ -374,7 +376,7 @@ public class ContentUtil {
                 continue;
             }
 
-            if (isInlineBlock(style)) {
+            if (isInlineBlock(currentStyle)) {
                 //treat it like a replaced element
                 textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                 inlineList.add(new InlineBlockContent(elem, style));
@@ -382,7 +384,7 @@ public class ContentUtil {
                 continue;
             }
 
-            if (isRunIn(style)) {
+            if (isRunIn(currentStyle)) {
                 RunInContent runIn = new RunInContent(elem, style);
                 textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                 inlineList.add(runIn);//resolve it when we can
@@ -390,7 +392,7 @@ public class ContentUtil {
                 continue;
             }
 
-            if (isTable(style)) {
+            if (isTable(currentStyle)) {
                 textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                 TableContent table = new TableContent(elem, style);
                 inlineList.add(table);
@@ -400,7 +402,7 @@ public class ContentUtil {
 
             //TODO:list-items, anonymous tables, inline tables, etc.
 
-            if (isBlockLevel(style)) {
+            if (isBlockLevel(currentStyle)) {
                 textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                 BlockContent block = new BlockContent(elem, style);
                 inlineList.add(block);
@@ -517,6 +519,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2005/10/15 23:39:16  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.40  2005/09/26 22:40:18  tobega
  * Applied patch from Peter Brant concerning margin collapsing
  *

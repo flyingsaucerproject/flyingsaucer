@@ -86,7 +86,7 @@ public class BrowserActions {
             public void actionPerformed(ActionEvent evt) {
                 // TODO: stop not coded
                 System.out.println("stop called");
-                root.panel.view.stop();
+                // root.panel.view.stop();
             }
         };
         // TODO: need right API call for ESC
@@ -298,6 +298,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/10/15 23:39:13  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.19  2005/10/08 17:40:17  tobega
  * Patch from Peter Brant
  *

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
@@ -61,17 +62,17 @@ public class BlockRendering {
             }
         } else {
             int start = 0;
-            int end = box.getChildCount()-1;
-            if(ALTERNATE_CLIP_DAMAGE) {
-                if(box.getChildCount() > 10) {
-                    int tstart = getFirstNonSkippedChild(c,box);
+            int end = box.getChildCount() - 1;
+            if (ALTERNATE_CLIP_DAMAGE) {
+                if (box.getChildCount() > 10) {
+                    int tstart = getFirstNonSkippedChild(c, box);
                     Uu.p("first non skip = " + tstart);
-                    if(tstart != -1) {
+                    if (tstart != -1) {
                         start = tstart;
                     }
-                    int tend = getLastNonSkippedChild(c,box);
+                    int tend = getLastNonSkippedChild(c, box);
                     Uu.p("last non skip = " + tend);
-                    if(tend != -1) {
+                    if (tend != -1) {
                         end = tend;
                     }
                 }
@@ -97,7 +98,7 @@ public class BlockRendering {
         c.getGraphics().translate(-box.x, -box.y);
         //if (box.getPersistentBFC() != null) c.popBFC();
     }
-    
+
     public static final boolean ALTERNATE_CLIP_DAMAGE = true;
 
     public static void paintChild(Context c, Box box, boolean restyle) {
@@ -110,47 +111,53 @@ public class BlockRendering {
         Shape clip = c.getGraphics().getClip();
         if (!box.isChildrenExceedBounds() &&
                 Configuration.isTrue("xr.renderer.viewport-repaint", false) &&
-                box.getState() != Box.CHILDREN_FLUX && clip != null) {
-            Rectangle bounds = new Rectangle(box.x, box.y, box.getWidth(), box.height);
-            // Uu.p("testing: " + box);
+                box.getState() != Box.CHILDREN_FLUX && clip != null &&
+                !(box instanceof AnonymousBlockBox)) {
+
+            Border margin = box.getMarginWidth();
+            Rectangle bounds = new Rectangle(box.x + margin.left,
+                    box.y + margin.top,
+                    box.getWidth() - margin.left - margin.right,
+                    box.height - margin.top - margin.bottom);
 
             return !clip.intersects(bounds);
         }
 
         return false;
     }
-    
+
     public static int getFirstNonSkippedChild(Context c, Box box) {
         Rectangle clip = c.getGraphics().getClipRect();
-        return doesIntersect(clip,box,0,box.getChildCount());
+        return doesIntersect(clip, box, 0, box.getChildCount());
     }
+
     public static int getLastNonSkippedChild(Context c, Box box) {
         Rectangle clip = c.getGraphics().getClipRect();
-        return doesIntersect2(clip,box,0,box.getChildCount());
+        return doesIntersect2(clip, box, 0, box.getChildCount());
     }
-    
+
     public static int doesIntersect(Rectangle clip, Box box, int start, int end) {
         // Uu.p("doesIntersect: " + clip + " " + start + " " + end);
         // end case
-        if(start > end) {
+        if (start > end) {
             // Uu.p("start is greater than end. returning");
             return -1;
         }
-        
-        int mid = (end-start)/2 + start;
+
+        int mid = (end - start) / 2 + start;
         // Uu.p("mid = " + mid);
-        if(mid >= box.getChildCount()) {
+        if (mid >= box.getChildCount()) {
             return -1;
         }
         Box child = box.getChild(mid);
         // if clip intersects
         // Uu.p("testing: " + child);
-        if(clip.intersects(new Rectangle(child.x,child.y,child.getWidth(),child.getHeight()))) {
+        if (clip.intersects(new Rectangle(child.x, child.y, child.getWidth(), child.getHeight()))) {
             // Uu.p("it intersects. checking above:");
-            if(mid > 0) {
-                Box child2 = box.getChild(mid-1);
+            if (mid > 0) {
+                Box child2 = box.getChild(mid - 1);
                 // Uu.p("second test: " + child2);
-                if(!clip.intersects(new Rectangle(child2.x,child2.y,child2.getWidth(),child2.getHeight()))) {
+                if (!clip.intersects(new Rectangle(child2.x, child2.y, child2.getWidth(), child2.getHeight()))) {
                     // Uu.p("before doesn't intersect so this is the first");
                     // Uu.p("returning: " + mid);
                     return mid;
@@ -164,37 +171,38 @@ public class BlockRendering {
         }
         
         // if clip is above box
-        if(clip.y <= child.y) {
+        if (clip.y <= child.y) {
             // Uu.p("clip is above");
-            return doesIntersect(clip,box,start,mid-1);
+            return doesIntersect(clip, box, start, mid - 1);
         } else {
-        // if clip is below box
+            // if clip is below box
             // Uu.p("clip is below");
-            return doesIntersect(clip,box,mid+1,end);
+            return doesIntersect(clip, box, mid + 1, end);
         }
     }
+
     public static int doesIntersect2(Rectangle clip, Box box, int start, int end) {
         // Uu.p("doesIntersect2: " + clip + " " + start + " " + end);
         // end case
-        if(start > end) {
+        if (start > end) {
             // Uu.p("start is greater than end. returning");
             return -1;
         }
-        
-        int mid = (end-start)/2 + start;
+
+        int mid = (end - start) / 2 + start;
         // Uu.p("mid = " + mid);
-        if(mid >= box.getChildCount()) {
+        if (mid >= box.getChildCount()) {
             return -1;
         }
         Box child = box.getChild(mid);
         // if clip intersects
         // Uu.p("testing: " + child);
-        if(clip.intersects(new Rectangle(child.x,child.y,child.getWidth(),child.getHeight()))) {
+        if (clip.intersects(new Rectangle(child.x, child.y, child.getWidth(), child.getHeight()))) {
             // Uu.p("it intersects. checking below:");
-            if(mid+1 < box.getChildCount()) {
-                Box child2 = box.getChild(mid+1);
+            if (mid + 1 < box.getChildCount()) {
+                Box child2 = box.getChild(mid + 1);
                 // Uu.p("second test: " + child2);
-                if(!clip.intersects(new Rectangle(child2.x,child2.y,child2.getWidth(),child2.getHeight()))) {
+                if (!clip.intersects(new Rectangle(child2.x, child2.y, child2.getWidth(), child2.getHeight()))) {
                     // Uu.p("after doesn't intersect so this is the last");
                     // Uu.p("returning: " + mid);
                     return mid;
@@ -208,13 +216,13 @@ public class BlockRendering {
         }
         
         // if clip is above box
-        if(clip.y+clip.height <= child.y) {
+        if (clip.y + clip.height <= child.y) {
             // Uu.p("clip is above");
-            return doesIntersect2(clip,box,start,mid-1);
+            return doesIntersect2(clip, box, start, mid - 1);
         } else {
-        // if clip is below box
+            // if clip is below box
             // Uu.p("clip is below");
-            return doesIntersect2(clip,box,mid+1,end);
+            return doesIntersect2(clip, box, mid + 1, end);
         }
     }
 

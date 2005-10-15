@@ -21,7 +21,6 @@ package org.xhtmlrenderer.layout.block;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
@@ -159,7 +158,7 @@ public class Absolute {
      * @param style PARAM
      * @return The absolute value
      */
-    public static boolean isAbsolute(CascadedStyle style) {
+    public static boolean isAbsolute(CalculatedStyle style) {
         if (style == null) {
             return false;
         }

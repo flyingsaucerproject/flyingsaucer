@@ -104,7 +104,7 @@ public class BoxRendering {
             }
 
             //Uu.p("here it's : " + c.getListCounter());
-            if (ContentUtil.isListItem(style)) {
+            if (ContentUtil.isListItem(c.getCurrentStyle())) {
                 paintListItem(c, box);
             }
 
@@ -141,7 +141,7 @@ public class BoxRendering {
         if (block.getState() != Box.DONE) {
             height += c.getCanvas().getHeight();
         }
-        Border margin = block.getMarginWidth(c, width);
+        Border margin = block.getMarginWidth();
 
         Rectangle bounds = new Rectangle(block.x + margin.left,
                 block.y + margin.top,
@@ -374,6 +374,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2005/10/15 23:39:18  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.41  2005/10/12 21:17:14  tobega
  * patch from Peter Brant
  *

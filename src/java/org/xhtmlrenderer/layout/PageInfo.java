@@ -22,7 +22,7 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.css.value.Border;
 
 public class PageInfo {
-    public static final PageInfo LETTER = new PageInfo(72 * 10.5, 72 * 10, new Border(36, 36, 36, 36));
+    public static final PageInfo LETTER = new PageInfo(72 * 7.5, 72 * 10, new Border(36, 36, 36, 36));
 
     private double contentWidth;
     private double contentHeight;

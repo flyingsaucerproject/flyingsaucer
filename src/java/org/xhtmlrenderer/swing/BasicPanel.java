@@ -190,6 +190,34 @@ public abstract class BasicPanel extends RootPanel {
         }
     }
 
+    public void paintPage(Graphics2D g, int page) {
+        Box root = getRootBox();
+
+        if (root == null) {
+            throw new RuntimeException("Document needs layout");
+        }
+
+        Context c = newContext(getPageInfo(), (Graphics2D) g);
+
+        PageInfo info = c.getPageInfo();
+        Border margins = info.getMargins();
+
+        Shape working = g.getClip();
+
+        g.translate(0, -(info.getContentHeight()) * (page - 1));
+
+        g.translate(margins.left, margins.top);
+
+        g.clipRect(0, (int) (info.getContentHeight() * (page - 1)), (int) info.getContentWidth(), (int) info.getContentHeight());
+
+        BoxRendering.paint(c, root, false, false);
+
+        g.translate(-margins.left, -margins.top);
+        g.translate(0, info.getContentHeight() * (page - 1));
+
+        g.setClip(working);
+    }
+
     /**
      * Description of the Method
      *
@@ -294,8 +322,22 @@ public abstract class BasicPanel extends RootPanel {
 
     }
 
+    public int getPageCount() {
+        return getPageCount(layout_context);
+    }
+
+    private int getPageCount(Context c) {
+        if (c == null || !c.isPrint() ||
+                c.getPageInfo() == null) {
+            return -1;
+        } else {
+            return (int) (c.getMaxHeight() /
+                    c.getPageInfo().getContentHeight() + 1);
+        }
+    }
+
     private void renderPagedView(Context c, Box box) {
-        int pageCount = (int) (c.getMaxHeight() / c.getPageInfo().getContentHeight() + 1);
+        int pageCount = getPageCount(c);
 
         setPreferredSize(new Dimension(c.getMaxWidth(),
                 (int) (pageCount * c.getPageInfo().getContentHeight() +
@@ -1017,13 +1059,6 @@ public abstract class BasicPanel extends RootPanel {
         }
     }
 
-    private Context layout_context;
-
-    public void stop() {
-        this.layout_context.stopRendering();
-    }
-
-
     private boolean isAnchorInCurrentDocument(String str) {
         if (str.startsWith("#")) {
             return true;
@@ -1059,6 +1094,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.73  2005/10/15 23:39:18  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.72  2005/10/08 17:40:22  tobega
  * Patch from Peter Brant
  *

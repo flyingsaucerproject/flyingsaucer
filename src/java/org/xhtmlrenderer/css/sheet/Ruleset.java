@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import com.steadystate.css.dom.CSSStyleRuleImpl;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -51,10 +52,11 @@ public class Ruleset {
      * Convenience parser for selector text
      */
     private final static com.steadystate.css.parser.CSSOMParser CSOM_PARSER;
+
     static {
         try {
             Object obj = Class.forName("com.steadystate.css.parser.SACParser").newInstance();
-            org.w3c.css.sac.Parser psr = (org.w3c.css.sac.Parser)obj;
+            org.w3c.css.sac.Parser psr = (org.w3c.css.sac.Parser) obj;
             CSOM_PARSER = new com.steadystate.css.parser.CSSOMParser(psr);
         } catch (Exception ex) {
             throw new XRRuntimeException("Bad!  Couldn't load the CSS parser. Everything after this will fail.");
@@ -125,14 +127,16 @@ public class Ruleset {
      * @param sacRule PARAM
      */
     private void pullSelectorsFromDOMRule(org.w3c.dom.css.CSSStyleRule sacRule) {
-        try {
-            // note, we parse the selector for this instance, not the one from the CSS Style, which
-            // might still be multi-part; selector for TODO is always single (no commas)
-            sacSelectorList =
-                    CSOM_PARSER.parseSelectors(new org.w3c.css.sac.InputSource(new java.io.StringReader(sacRule.getSelectorText())));
-        } catch (java.io.IOException ex) {
-            throw new XRRuntimeException("Could not pull SAC Selectors from SAC CSSStyleRule.", ex);
-        }
+        // HACK, but right now we already depend on Steady State classes
+        sacSelectorList = ((CSSStyleRuleImpl) sacRule).getSelectorList();
+        
+        /*
+        // note, we parse the selector for this instance, not the one from the CSS Style, which
+        // might still be multi-part; selector for TODO is always single (no commas)
+        
+        sacSelectorList =
+                CSOM_PARSER.parseSelectors(new org.w3c.css.sac.InputSource(new java.io.StringReader(sacRule.getSelectorText())));
+        */
     }
 
     /**
@@ -168,6 +172,9 @@ public class Ruleset {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/10/15 23:39:15  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.9  2005/07/14 17:43:39  joshy
  * fixes for parser access exceptions when running in a sandbox (webstart basically)
  *

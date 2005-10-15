@@ -61,7 +61,7 @@ public class BackgroundPainter {
         if (border == null) {
             return;
         }
-        Border margin = block.getMarginWidth(c, width);
+        Border margin = block.getMarginWidth();
         Rectangle box = new Rectangle(block.x + margin.left + border.left,
                 block.y + margin.top + border.top,
                 width - margin.left - margin.right - border.left - border.right,
@@ -171,6 +171,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/10/15 23:39:17  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.32  2005/10/02 21:29:59  tobega
  * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
  *

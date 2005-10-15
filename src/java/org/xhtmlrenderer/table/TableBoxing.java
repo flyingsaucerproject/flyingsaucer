@@ -89,6 +89,7 @@ public class TableBoxing {
      */
     public static Box layout(Context c, BlockBox outerBox, Content content) {
         boolean set_bfc = false;
+
         if (content instanceof TableContent) {
             // install a block formatting context for the body,
             // ie. if it's null.
@@ -113,6 +114,7 @@ public class TableBoxing {
         //HACK: for now
         outerBox.contentWidth = c.getExtents().width;
         outerBox.height = c.getExtents().height;
+        outerBox.setMarginWidth(new Border(0, 0, 0, 0));
 
         TableBox tableBox = new TableBox();
         outerBox.addChild(tableBox);
@@ -137,7 +139,8 @@ public class TableBoxing {
 
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
-        Border margin = tableBox.getMarginWidth(c, (float) oe.getWidth());
+        tableBox.setMarginWidth(c, (float) oe.getWidth());
+        Border margin = tableBox.getMarginWidth();
         Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
         int tx = margin.left + border.left + padding.left;
         int ty = margin.top + border.top + padding.top;
@@ -332,6 +335,7 @@ public class TableBoxing {
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
         RowBox row = new RowBox();
+        row.setMarginWidth(c, (float) oe.getWidth());
         CascadedStyle pushed = tableRowContent.getStyle();
         if (pushed != null) {
             c.pushStyle(pushed);
@@ -480,6 +484,7 @@ public class TableBoxing {
         }
 
         // a cell defines a new bfc
+        cell.setMarginWidth(c, c.getExtents().width);
         BlockFormattingContext bfc = new BlockFormattingContext(cell, c);
         c.pushBFC(bfc);
         bfc.setWidth((int) c.getExtents().getWidth());
@@ -585,6 +590,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.28  2005/10/15 23:39:19  tobega
+   patch from Peter Brant
+
    Revision 1.27  2005/10/12 21:17:15  tobega
    patch from Peter Brant
 

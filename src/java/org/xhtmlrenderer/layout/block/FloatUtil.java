@@ -21,7 +21,6 @@ package org.xhtmlrenderer.layout.block;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.ContentUtil;
@@ -66,11 +65,11 @@ public class FloatUtil {
      * @param box   PARAM
      * @param style PARAM
      */
-    public static void setupFloat(Context c, Box box, CascadedStyle style) {
-        if (ContentUtil.isFloated(style)) {
+    public static void setupFloat(Context c, Box box) {
+        if (ContentUtil.isFloated(c.getCurrentStyle())) {
             //Uu.p("==== setup float ====");
             //Uu.dump_stack();
-            IdentValue floatVal = style.getIdent(CSSName.FLOAT);
+            IdentValue floatVal = c.getCurrentStyle().getIdent(CSSName.FLOAT);
             if (floatVal == IdentValue.NONE) {
                 return;
             }
@@ -167,6 +166,9 @@ public class FloatUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/10/15 23:39:16  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.22  2005/10/06 03:20:19  tobega
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *

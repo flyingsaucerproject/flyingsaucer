@@ -19,67 +19,66 @@
  */
 package org.xhtmlrenderer.extend;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.font.*;
-import java.awt.geom.*;
+import java.awt.*;
+import java.awt.font.LineMetrics;
+import java.awt.geom.Rectangle2D;
 
 
 /**
  * Description of the Interface
  *
- * @author   Who?
+ * @author Who?
  */
 public interface TextRenderer {
 
     /**
      * Description of the Method
      *
-     * @param graphics  PARAM
+     * @param graphics PARAM
      */
-    public void setupGraphics( Graphics2D graphics );
+    public void setupGraphics(Graphics2D graphics);
 
     /**
      * Description of the Method
      *
-     * @param graphics  PARAM
-     * @param string    PARAM
-     * @param x         PARAM
-     * @param y         PARAM
+     * @param graphics PARAM
+     * @param string   PARAM
+     * @param x        PARAM
+     * @param y        PARAM
      */
-    public void drawString( Graphics2D graphics, String string, float x, float y );
+    public void drawString(Graphics2D graphics, String string, float x, float y);
 
     /**
      * Gets the lineMetrics attribute of the TextRenderer object
      *
-     * @param graphics  PARAM
-     * @param font      PARAM
-     * @param string    PARAM
-     * @return          The lineMetrics value
+     * @param graphics PARAM
+     * @param font     PARAM
+     * @param string   PARAM
+     * @return The lineMetrics value
      */
-    public LineMetrics getLineMetrics( Graphics2D graphics, Font font, String string );
+    public LineMetrics getLineMetrics(Graphics2D graphics, Font font, String string);
 
     /**
      * Gets the logicalBounds attribute of the TextRenderer object
      *
-     * @param graphics  PARAM
-     * @param font      PARAM
-     * @param string    PARAM
-     * @return          The logicalBounds value
+     * @param graphics PARAM
+     * @param font     PARAM
+     * @param string   PARAM
+     * @return The logicalBounds value
      */
-    public Rectangle2D getLogicalBounds( Graphics2D graphics, Font font, String string );
+    public Rectangle2D getLogicalBounds(Graphics2D graphics, Font font, String string);
 
     /**
      * Sets the fontScale attribute of the TextRenderer object
      *
-     * @param scale  The new fontScale value
+     * @param scale The new fontScale value
      */
-    public void setFontScale( float scale );
+    public void setFontScale(float scale);
 
     /**
      * Gets the fontScale attribute of the TextRenderer object
      *
-     * @return   The fontScale value
+     * @return The fontScale value
      */
     public float getFontScale();
 
@@ -91,31 +90,39 @@ public interface TextRenderer {
     /**
      * Sets the smoothingThreshold attribute of the TextRenderer object
      *
-     * @param fontsize  The new smoothingThreshold value
+     * @param fontsize The new smoothingThreshold value
      */
-    public void setSmoothingThreshold( float fontsize );
+    public void setSmoothingThreshold(float fontsize);
 
     /**
      * Gets the smoothingLevel attribute of the TextRenderer object
      *
-     * @return   The smoothingLevel value
+     * @return The smoothingLevel value
      */
     public int getSmoothingLevel();
 
     /**
      * Sets the smoothingLevel attribute of the TextRenderer object
      *
-     * @param level  The new smoothingLevel value
+     * @param level The new smoothingLevel value
      */
-    public void setSmoothingLevel( int level );
+    public void setSmoothingLevel(int level);
 
-    /** Description of the Field */
-    public final int NONE = 0;
-    /** Description of the Field */
-    public final int LOW = 1;
-    /** Description of the Field */
-    public final int MEDIUM = 2;
-    /** Description of the Field */
-    public final int HIGH = 3;
+    /**
+     * Description of the Field
+     */
+    public static final int NONE = 0;
+    /**
+     * Description of the Field
+     */
+    public static final int LOW = 1;
+    /**
+     * Description of the Field
+     */
+    public static final int MEDIUM = 2;
+    /**
+     * Description of the Field
+     */
+    public static final int HIGH = 3;
 }
 

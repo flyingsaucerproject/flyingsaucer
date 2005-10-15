@@ -39,7 +39,7 @@ public class PersistentBFC {
         CalculatedStyle style = c.getCurrentStyle();
         Border border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
-        Border margin = master.getMarginWidth(c, parent_width);
+        Border margin = master.getMarginWidth();
         padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
         insets = new Border(margin.top + border.top + padding.top,
                 padding.right + border.right + margin.right,

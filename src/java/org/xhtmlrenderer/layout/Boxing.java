@@ -139,6 +139,10 @@ public class Boxing {
             c.pushStyle(pushed);
         }
 
+        Rectangle oe = c.getExtents();
+
+        block.setMarginWidth(c, (float) oe.getWidth());
+
         if (c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
             block.setChildrenExceedBounds(true);
             block.setFixedDescendant(true);
@@ -157,7 +161,6 @@ public class Boxing {
         }
 
         // copy the extents
-        Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
 
         VerticalMarginCollapser.collapseVerticalMargins(c, block, content, (float) oe.getWidth());
@@ -166,7 +169,7 @@ public class Boxing {
 
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
-        Border margin = block.getMarginWidth(c, (float) oe.getWidth());
+        Border margin = block.getMarginWidth();
         Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
         block.leftPadding = margin.left + border.left + padding.left;
         block.rightPadding = padding.right + border.right + margin.right;
@@ -214,12 +217,12 @@ public class Boxing {
         //block.x = c.getExtents().x;
         //block.y = c.getExtents().y;
 
-        if (ContentUtil.isFloated(content.getStyle())) {
+        if (ContentUtil.isFloated(c.getCurrentStyle())) {
             // set up a float bfc
             FloatUtil.preChildrenLayout(c, block);
         }
 
-        if (Absolute.isAbsolute(content.getStyle())) {
+        if (Absolute.isAbsolute(c.getCurrentStyle())) {
             // set up an absolute bfc
             Absolute.preChildrenLayout(c, block);
         }
@@ -277,12 +280,12 @@ public class Boxing {
             block.height = original_height;
         }
 
-        if (ContentUtil.isFloated(content.getStyle())) {
+        if (ContentUtil.isFloated(c.getCurrentStyle())) {
             // remove the float bfc
             FloatUtil.postChildrenLayout(c);
         }
 
-        if (Absolute.isAbsolute(content.getStyle())) {
+        if (Absolute.isAbsolute(c.getCurrentStyle())) {
             // remove the absolute bfc
             Absolute.postChildrenLayout(c);
         }
@@ -300,7 +303,7 @@ public class Boxing {
         Relative.setupRelative(c, block);
         Absolute.setupAbsolute(block, c);
         Fixed.setupFixed(c, block);
-        FloatUtil.setupFloat(c, block, content.getStyle());
+        FloatUtil.setupFloat(c, block);
 
         checkExceeds(block);
 
@@ -379,6 +382,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2005/10/15 23:39:17  tobega
+ * patch from Peter Brant
+ *
  * Revision 1.39  2005/10/12 21:17:12  tobega
  * patch from Peter Brant
  *

@@ -113,3 +113,12 @@ h5, h6, b, strong {
 pre {
   margin: 1em 0;
 }
+
+/* Sanity adjustments */
+@media print {
+  h1 { 
+    page-break-after: avoid; 
+    page-break-before: auto;
+  }
+}
+
