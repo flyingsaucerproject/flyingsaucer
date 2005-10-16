@@ -31,10 +31,13 @@ import org.xhtmlrenderer.layout.inline.Breaker;
 import org.xhtmlrenderer.layout.inline.FloatUtil;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.font.LineMetrics;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -75,7 +78,7 @@ public class InlineBoxing {
 
         // prepare remaining width and first linebox
         int remaining_width = bounds.width;
-        LineBox curr_line = newLine(box, bounds, null, blockLineMetrics);
+        LineBox curr_line = newLine(box, bounds, null, blockLineMetrics, c);
         LinkedList pushedOnFirstLine = null;
 
         // account for text-indent
@@ -245,10 +248,10 @@ public class InlineBoxing {
                 if (prev_align_inline != null && new_inline.break_before) {
                     // Uu.p("break before");
                     remaining_width = bounds.width;
-                    saveLine(curr_line, currentStyle, prev_line, bounds, c, box, false, blockLineHeight, pushedOnFirstLine);
+                    saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine);
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
-                    curr_line = newLine(box, bounds, prev_line, blockLineMetrics);
+                    curr_line = newLine(box, bounds, prev_line, blockLineMetrics, c);
                     // skip adjusting for tabs if this box is cleared
                     if (!box.clear_left && !box.clear_right) {
                         remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
@@ -298,11 +301,11 @@ public class InlineBoxing {
                     // then remaining_width = max_width
                     remaining_width = bounds.width;
                     // save the line
-                    saveLine(curr_line, currentStyle, prev_line, bounds, c, box, false, blockLineHeight, pushedOnFirstLine);
+                    saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine);
                     // increase bounds height to account for the new line
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
-                    curr_line = newLine(box, bounds, prev_line, blockLineMetrics);
+                    curr_line = newLine(box, bounds, prev_line, blockLineMetrics, c);
                     if (!box.clear_left && !box.clear_right) {
                         remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
                     }
@@ -325,7 +328,7 @@ public class InlineBoxing {
         }
 
         // save the final line
-        saveLine(curr_line, currentStyle, prev_line, bounds, c, box, true, blockLineHeight, pushedOnFirstLine);
+        saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine);
         bounds.height += curr_line.height;
         if (!c.shrinkWrap()) box.contentWidth = bounds.width;
         box.height = bounds.height;
@@ -375,10 +378,14 @@ public class InlineBoxing {
      * @param bounds           PARAM
      * @param prev_line        PARAM
      * @param blockLineMetrics
+     * @param c
      * @return Returns
      */
-    private static LineBox newLine(Box box, Rectangle bounds, LineBox prev_line, LineMetrics blockLineMetrics) {
+    private static LineBox newLine(Box box, Rectangle bounds, LineBox prev_line, LineMetrics blockLineMetrics, Context c) {
         LineBox curr_line = new LineBox();
+        if (Configuration.isTrue("xr.stackingcontext.enabled", false)) {
+            curr_line.renderIndex = c.getNewRenderIndex();
+        }
         if (prev_line != null) {
             curr_line.setParent(prev_line.getParent());
         } else {
@@ -564,17 +571,13 @@ public class InlineBoxing {
      * Description of the Method
      *
      * @param line_to_save PARAM
-     * @param style
      * @param prev_line    PARAM
-     * @param width        PARAM
-     * @param x            PARAM
      * @param c            PARAM
      * @param block        PARAM
-     * @param last         PARAM
      * @param minHeight
      */
-    private static void saveLine(LineBox line_to_save, CalculatedStyle style, LineBox prev_line, Rectangle bounds,
-                                 Context c, Box block, boolean last, int minHeight, LinkedList pushedOnFirstLine) {
+    private static void saveLine(LineBox line_to_save, LineBox prev_line, Rectangle bounds,
+                                 Context c, Box block, int minHeight, LinkedList pushedOnFirstLine) {
         if (c.hasFirstLineStyles()) {
             //first pop element styles pushed on first line
             for (int i = 0; i < pushedOnFirstLine.size(); i++) c.popStyle();
@@ -609,6 +612,14 @@ public class InlineBoxing {
         if (c.isPrint() && line_to_save.crossesPageBreak(c)) {
             line_to_save.moveToNextPage(c, bounds);
         }
+        if (Configuration.isTrue("xr.stackingcontext.enabled", false)) {
+            //line should now be fixed
+            Point origin = c.getOriginOffset();
+            line_to_save.absY = origin.getY() + line_to_save.y;
+            line_to_save.absX = origin.getX() + line_to_save.x;
+            StackingContext s = c.getStackingContext();
+            s.addLine(line_to_save);
+        }
     }
 
 }
@@ -617,6 +628,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2005/10/16 23:57:15  tobega
+ * Starting experiment with flat representation of render tree
+ *
  * Revision 1.42  2005/10/12 21:17:12  tobega
  * patch from Peter Brant
  *

@@ -29,9 +29,13 @@ import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.RenderQueue;
+import org.xhtmlrenderer.render.StackingContext;
 import org.xhtmlrenderer.swing.RootPanel;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 
 
@@ -384,5 +388,9 @@ public interface Context {
     public void setPendingPageBreak(boolean b);
 
     public boolean isPendingPageBreak();
+
+    public int getNewRenderIndex();
+
+    StackingContext getStackingContext();
 }
 

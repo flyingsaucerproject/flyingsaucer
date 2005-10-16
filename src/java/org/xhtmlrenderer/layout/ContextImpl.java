@@ -29,10 +29,14 @@ import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.RenderQueue;
+import org.xhtmlrenderer.render.StackingContext;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -55,6 +59,8 @@ public class ContextImpl implements Context {
 
     private boolean pendingPageBreak;
     private boolean setPageBreak;
+    //HACK:
+    private StackingContext initialStackingContext = new StackingContext();
 
     public RenderingContext getRenderingContext() {
         return sharedContext.getRenderingContext();
@@ -490,6 +496,16 @@ public class ContextImpl implements Context {
 
     public boolean isPendingPageBreak() {
         return pendingPageBreak;
+    }
+
+    int renderIndex = 0;
+
+    public int getNewRenderIndex() {
+        return renderIndex++;
+    }
+
+    public StackingContext getStackingContext() {
+        return initialStackingContext;
     }
 
     public void setPendingPageBreak(boolean pendingPageBreak) {

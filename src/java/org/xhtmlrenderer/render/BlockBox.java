@@ -19,13 +19,22 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.value.Border;
+import org.xhtmlrenderer.layout.Context;
+
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+
 
 /**
  * Description of the Class
  *
  * @author empty
  */
-public class BlockBox extends Box {
+public class BlockBox extends Box implements Renderable {
+    private double absY;
+    private int renderIndex;
+    private double absX;
 
 
     /**
@@ -63,12 +72,46 @@ public class BlockBox extends Box {
         }
         return sb.toString();
     }
+
+    public int getIndex() {
+        return renderIndex;
+    }
+
+    //HACK: Context should not be necessary
+    public void render(Context c, Graphics2D g2) {
+        //HACK:
+        g2.translate(absX - x, absY - y);
+        int width = getWidth();
+        int height = getHeight();
+        if (getState() != Box.DONE) {
+            height += c.getCanvas().getHeight();
+        }
+        Border margin = getMarginWidth();
+
+        Rectangle bounds = new Rectangle(x + margin.left,
+                y + margin.top,
+                width - margin.left - margin.right,
+                height - margin.top - margin.bottom);
+        BoxRendering.paintBackground(c, this, bounds);
+        g2.translate(x - absX, y - absY);
+    }
+
+    public double getAbsTop() {
+        return absY;
+    }
+
+    public double getAbsBottom() {
+        return absY + height;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/10/16 23:57:16  tobega
+ * Starting experiment with flat representation of render tree
+ *
  * Revision 1.10  2005/10/06 03:20:22  tobega
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *

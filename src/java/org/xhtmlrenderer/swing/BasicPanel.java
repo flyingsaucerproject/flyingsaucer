@@ -305,7 +305,12 @@ public abstract class BasicPanel extends RootPanel {
 
         long start = System.currentTimeMillis();
         if (!c.isPrint()) {
-            BoxRendering.paint(c, root, false, false);//no restyle demanded on top level
+            if (Configuration.isTrue("xr.stackingcontext.enabled", false)) {
+                Rectangle clip = c.getGraphics().getClipBounds();
+                initialStackingContext.render(c, c.getGraphics(), clip.getMinY(), clip.getMaxY());
+            } else {
+                BoxRendering.paint(c, root, false, false);//no restyle demanded on top level
+            }
         } else {
             renderPagedView(c, root);
         }
@@ -1094,6 +1099,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.74  2005/10/16 23:57:20  tobega
+ * Starting experiment with flat representation of render tree
+ *
  * Revision 1.73  2005/10/15 23:39:18  tobega
  * patch from Peter Brant
  *

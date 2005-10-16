@@ -55,7 +55,8 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -549,7 +550,7 @@ public class TableBoxing {
         c.translate(tx, ty);
         c.shrinkExtents(tx + border.right + padding.right, ty + border.bottom + padding.bottom);
         if (cell.component == null)
-            Boxing.layoutChildren(c, cell, content);//when this is really an anonymous, InlineLayout.layoutChildren is called
+            Boxing.layoutChildren(c, cell, content);
         else {
             Point origin = c.getOriginOffset();
             cell.component.setLocation((int) origin.getX(), (int) origin.getY());
@@ -590,6 +591,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.29  2005/10/16 23:57:21  tobega
+   Starting experiment with flat representation of render tree
+
    Revision 1.28  2005/10/15 23:39:19  tobega
    patch from Peter Brant
 

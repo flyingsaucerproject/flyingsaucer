@@ -14,6 +14,7 @@ import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.render.RenderQueue;
+import org.xhtmlrenderer.render.StackingContext;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -33,6 +34,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      * Description of the Field
      */
     protected Dimension intrinsic_size;
+    protected StackingContext initialStackingContext;
 
     /**
      * Gets the intrinsicSize attribute of the BasicPanel object
@@ -291,6 +293,8 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         synchronized (this) {
             if (this.layout_context != null) this.layout_context.stopRendering();
             this.layout_context = c;
+            //HACK:
+            this.initialStackingContext = c.getStackingContext();
         }
         c.setRenderQueue(queue);
         setRenderWidth((int) c.getExtents().getWidth());

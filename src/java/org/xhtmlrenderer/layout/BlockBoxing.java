@@ -29,7 +29,7 @@ import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.List;
 
@@ -201,6 +201,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/10/16 23:57:14  tobega
+ * Starting experiment with flat representation of render tree
+ *
  * Revision 1.19  2005/10/12 21:17:12  tobega
  * patch from Peter Brant
  *

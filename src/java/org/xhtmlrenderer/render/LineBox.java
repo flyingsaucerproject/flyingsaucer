@@ -23,8 +23,10 @@ import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.font.LineMetrics;
+import java.util.LinkedList;
 import java.util.logging.Level;
 
 
@@ -33,7 +35,7 @@ import java.util.logging.Level;
  *
  * @author empty
  */
-public class LineBox extends Box {
+public class LineBox extends Box implements Renderable {
 
     /**
      * Description of the Field
@@ -46,6 +48,9 @@ public class LineBox extends Box {
 
     public LineMetrics blockLineMetrics;
     public boolean textAligned = false;
+    public double absY;
+    public double absX;
+    public int renderIndex;
 
     /**
      * Constructor for the LineBox object
@@ -113,12 +118,33 @@ public class LineBox extends Box {
         return c.getOriginOffset().y + y;
     }
 
+    public int getIndex() {
+        return renderIndex;
+    }
+
+    public void render(Context c, Graphics2D g2) {
+        //HACK:
+        g2.translate(absX - x, absY - y);
+        InlineRendering.paintLine(c, this, false, new LinkedList());
+        g2.translate(x - absX, y - absY);
+    }
+
+    public double getAbsTop() {
+        return absY;
+    }
+
+    public double getAbsBottom() {
+        return absY + height;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/10/16 23:57:17  tobega
+ * Starting experiment with flat representation of render tree
+ *
  * Revision 1.20  2005/10/12 21:17:14  tobega
  * patch from Peter Brant
  *
