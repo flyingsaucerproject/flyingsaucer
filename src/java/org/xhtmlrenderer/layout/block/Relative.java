@@ -23,7 +23,6 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.render.Box;
 
 
 /**
@@ -37,11 +36,11 @@ public class Relative {
      *
      * @param c PARAM
      */
-    public static void translateRelative(Context c, boolean rendering) {
+    public static void translateRelative(Context c, CalculatedStyle activeStyle, boolean rendering) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;
-        topLeft = extractLeftTopRelative(c);
+        topLeft = extractLeftTopRelative(c, activeStyle);
         if (topLeft != null) {
             top = topLeft[0];
             left = topLeft[1];
@@ -57,11 +56,11 @@ public class Relative {
      *
      * @param c PARAM
      */
-    public static void untranslateRelative(Context c, boolean rendering) {
+    public static void untranslateRelative(Context c, CalculatedStyle activeStyle, boolean rendering) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;
-        topLeft = extractLeftTopRelative(c);
+        topLeft = extractLeftTopRelative(c, activeStyle);
         if (topLeft != null) {
             top = topLeft[0];
             left = topLeft[1];
@@ -73,27 +72,12 @@ public class Relative {
     }
 
     /**
-     * Gets the relative attribute of the Relative class
-     *
-     * @param c PARAM
-     * @return The relative value
-     */
-    private static boolean isRelative(Context c) {
-        return c.getCurrentStyle().isIdent(CSSName.POSITION, IdentValue.RELATIVE);
-    }
-
-    public static void setupRelative(Context c, Box box) {
-        box.relative = isRelative(c);
-    }
-
-    /**
      * Description of the Method
      *
      * @param c PARAM
      * @return Returns
      */
-    private static int[] extractLeftTopRelative(Context c) {
-        CalculatedStyle style = c.getCurrentStyle();
+    private static int[] extractLeftTopRelative(Context c, CalculatedStyle style) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;

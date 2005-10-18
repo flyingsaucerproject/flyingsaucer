@@ -31,7 +31,8 @@ import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 
 /**
@@ -92,8 +93,6 @@ public class FloatUtil {
             throw new XRRuntimeException("Invalid call to  generateFloatedBlockInlineBox(); where float: none ");
         }
 
-        inline_block.floated = true;
-
         IdentValue ident = c.getCurrentStyle().getIdent(CSSName.FLOAT);
         if (ident == IdentValue.LEFT) {
             //inline_block.x = 0;
@@ -112,7 +111,6 @@ public class FloatUtil {
         //TODO: check if floats should be affected by vertical alignment
 
         inline_block.break_after = false;
-        inline_block.floated = true;
         if (inline_block.getWidth() > avail) {
             inline_block.break_before = true;
         }

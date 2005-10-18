@@ -9,7 +9,7 @@ import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -84,7 +84,7 @@ public class BoxFinder {
         int dy = 0;
         // adjust for own absolute positioning
         if (bfc != null) {
-            if (box.absolute) {
+            if (box.getStyle().isAbsolute()) {
                 dx += bfc.getX();
                 dy += bfc.getY();
                 int[] adj = adjustForAbsolute2(box, x, y, bfc);
@@ -238,7 +238,7 @@ public class BoxFinder {
             ty -= bx.y;
             ty -= bx.ty;
 
-            if (bx.absolute) {
+            if (bx.getStyle().isAbsolute()) {
                 Uu.p("abs");
                 int[] adj = adjustForAbsolute(bx, tx, ty, bfc);
                 tx = adj[0];

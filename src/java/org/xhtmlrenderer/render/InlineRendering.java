@@ -19,16 +19,13 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
-import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.layout.inline.TextAlignJustify;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.util.GraphicsUtil;
@@ -95,9 +92,9 @@ public class InlineRendering {
         Graphics g = c.getGraphics();
         //adjust font for current settings
         Font oldfont = c.getGraphics().getFont();
-        c.getGraphics().setFont(c.getCurrentFont());
+        c.getGraphics().setFont(inline.getStyle().getFont(c.getCtx()));
         Color oldcolor = c.getGraphics().getColor();
-        c.getGraphics().setColor(c.getCurrentStyle().getColor());
+        c.getGraphics().setColor(inline.getStyle().getCalculatedStyle().getColor());
 
         //baseline is baseline! iy -= (int) lm.getDescent();
 
@@ -219,11 +216,6 @@ public class InlineRendering {
             // account for the origin of the containing box
             c.translate(box.x, box.y);
             c.getGraphics().translate(box.x, box.y);
-            // for each line box
-            BlockBox block = null;
-            if (box instanceof BlockBox) {//Why isn't it always a BlockBox? Because of e.g. Floats!
-                block = (BlockBox) box;
-            }
 
             for (int i = 0; i < box.getChildCount(); i++) {
                 // get the line box
@@ -266,7 +258,7 @@ public class InlineRendering {
         int padX = 0;
         for (int j = 0; j < line.getChildCount(); j++) {
             Box child = line.getChild(j);
-            if (child.absolute) {
+            if (child.getStyle().isAbsolute() || child.getStyle().isFixed()) {
                 LinkedList unpropagated = (LinkedList) decorations.clone();
                 decorations.clear();
                 paintAbsolute(c, child, restyle);
@@ -277,14 +269,14 @@ public class InlineRendering {
             InlineBox box = (InlineBox) child;
             lastInline = box;
             padX = 0;
-            if (c.hasFirstLineStyles() && pushedStyles == null) {
-                //Uu.p("doing first line styles");
-                pushedStyles = new LinkedList();
-                for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext();) {
-                    CascadedStyle firstLineStyle = (CascadedStyle) i.next();
-                    padX = handleInlineElementStart(c, firstLineStyle, line, box, padX, decorations);
-                }
-            }
+//            if (c.hasFirstLineStyles() && pushedStyles == null) {
+//                //Uu.p("doing first line styles");
+//                pushedStyles = new LinkedList();
+//                for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext();) {
+//                    CascadedStyle firstLineStyle = (CascadedStyle) i.next();
+//                    padX = handleInlineElementStart(c, firstLineStyle, line, box, padX, decorations);
+//                }
+//            }
             padX = paintInline(c, box, lx, ly, line, restyle, pushedStyles, decorations, padX);
         }
 
@@ -309,20 +301,23 @@ public class InlineRendering {
             for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext(); i.next()) {
                 c.getInlineBorders().add(pushedBorders.removeFirst());//paint the first-line pseudo-element border
             }
+
+            padX = handleInlineElementEnd(c, decorations, lastInline, padX, line, null);//get rid of firstLineStyle
+            
             //should really be reverse order here, but since it isn't used...
-            for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext(); i.next()) {
-                padX = handleInlineElementEnd(c, decorations, lastInline, padX, line, null);//get rid of firstLineStyle
-            }
+//            for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext(); i.next()) {
+//                padX = handleInlineElementEnd(c, decorations, lastInline, padX, line, null);//get rid of firstLineStyle
+//            }
             //reinstitute the rest
-            c.getInlineBorders().addAll(pushedBorders);
-            for (Iterator i = pushedStyles.iterator(); i.hasNext();) {
-                c.pushStyle((CascadedStyle) i.next());
-                IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
-                if (decoration != IdentValue.NONE) {
-                    decorations.addLast(new TextDecoration(decoration, 0, c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
-                }
-            }
-            c.clearFirstLineStyles();
+//            c.getInlineBorders().addAll(pushedBorders);
+//            for (Iterator i = pushedStyles.iterator(); i.hasNext();) {
+//                c.pushStyle((CascadedStyle) i.next());
+//                IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
+//                if (decoration != IdentValue.NONE) {
+//                    decorations.addLast(new TextDecoration(decoration, 0, c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
+//                }
+//            }
+//            c.clearFirstLineStyles();
         }
         if (c.debugDrawLineBoxes()) {
             c.getGraphics().translate(lx, ly - line.getBaseline());
@@ -334,17 +329,18 @@ public class InlineRendering {
     //HACK: this is just a quick hack
     //TODO: paint lines taking bidi into consideration
     private static int getTextAlign(Context c, LineBox line) {
-        if (c.getCurrentStyle().isIdent(CSSName.TEXT_ALIGN, IdentValue.LEFT)) return 0;
+        CalculatedStyle calculatedStyle = line.getStyle().getCalculatedStyle();
+        if (calculatedStyle.isIdent(CSSName.TEXT_ALIGN, IdentValue.LEFT)) return 0;
         int leftover = line.getParent().contentWidth - line.contentWidth;
-        if (c.getCurrentStyle().isIdent(CSSName.TEXT_ALIGN, IdentValue.RIGHT)) {
+        if (calculatedStyle.isIdent(CSSName.TEXT_ALIGN, IdentValue.RIGHT)) {
             //Uu.p("leftover = " + leftover);
             return leftover;
         }
-        if (c.getCurrentStyle().isIdent(CSSName.TEXT_ALIGN, IdentValue.CENTER)) {
+        if (calculatedStyle.isIdent(CSSName.TEXT_ALIGN, IdentValue.CENTER)) {
             return leftover / 2;
         }
         //HACK: justified text, should probably be done better
-        if (c.getCurrentStyle().isIdent(CSSName.TEXT_ALIGN, IdentValue.JUSTIFY)) {
+        if (calculatedStyle.isIdent(CSSName.TEXT_ALIGN, IdentValue.JUSTIFY)) {
             if (leftover > 1) TextAlignJustify.justifyLine(c, line, line.getParent().contentWidth);
         }
         return 0;
@@ -370,24 +366,10 @@ public class InlineRendering {
         //Uu.p("paint inline: " + ib);
         restyle = restyle || ib.restyle;//cascade it down
         ib.restyle = false;//reset
-        if (ib.pushstyles != null) {
-            for (Iterator i = ib.pushstyles.iterator(); i.hasNext();) {
-                StylePush sp = (StylePush) i.next();
-                Element e = sp.getElement();
-                CascadedStyle cascaded;
-                if (e == null) {//anonymous inline box
-                    cascaded = CascadedStyle.emptyCascadedStyle;
-                } else {
-                    cascaded = c.getCss().getCascadedStyle(e, restyle);
-                }
-                if (pushedStyles != null) pushedStyles.addLast(cascaded);
 
-                padX = handleInlineElementStart(c, cascaded, line, ib, padX, decorations);
+        padX = handleInlineElementStart(c, line, ib, padX, decorations);
 
-            }
-        }
-
-        if (ib.floated) {
+        if (ib.getStyle().isFloated()) {
             LinkedList unpropagated = (LinkedList) decorations.clone();
             decorations.clear();
             paintFloat(c, ib, restyle);
@@ -406,7 +388,7 @@ public class InlineRendering {
                 restarted.addLast(td.getRestarted(ib.x + ib.getWidth()));
             }
             decorations.clear();
-            c.pushStyle(c.getCss().getCascadedStyle(ib.element, restyle));
+            // c.pushStyle(c.getCss().getCascadedStyle(ib.element, restyle));
             //int textAlign = getTextAlign(c, line);
             //Uu.p("line.x = " + line.x + " text align = " + textAlign);
             //Uu.p("ib.x .y = " + ib.x + " " + ib.y);
@@ -436,7 +418,7 @@ public class InlineRendering {
                     VerticalAlign.getBaselineOffset(c, line, ib) -
                     ib.height)));
             debugInlines(c, ib, lx, ly);
-            c.popStyle();
+            // c.popStyle();
             decorations.addAll(restarted);
         } else {
 
@@ -473,18 +455,19 @@ public class InlineRendering {
 
         padX = ib.getWidth() - ib.rightPadding;
 
-        if (ib.popstyles != 0) {
-            for (int i = 0; i < ib.popstyles; i++) {
-                padX = handleInlineElementEnd(c, decorations, ib, padX, line, pushedStyles);
-            }
-        }
+        /* Come back to this */
+//        if (ib.popstyles != 0) {
+//            for (int i = 0; i < ib.popstyles; i++) {
+//                padX = handleInlineElementEnd(c, decorations, ib, padX, line, pushedStyles);
+//            }
+//        }
 
         return padX;
     }
 
     private static int handleInlineElementEnd(Context c, LinkedList decorations, InlineBox ib, int padX, LineBox line, LinkedList pushedStyles) {
         //end text decoration?
-        IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
+        IdentValue decoration = ib.getStyle().getCalculatedStyle().getIdent(CSSName.TEXT_DECORATION);
         if (decoration != IdentValue.NONE) {
             TextDecoration td = (TextDecoration) decorations.getLast();
             td.setEnd(ib.x + padX);
@@ -492,7 +475,7 @@ public class InlineRendering {
             decorations.removeLast();
         }
         //right padding for this inline element
-        CalculatedStyle style = c.getCurrentStyle();
+        CalculatedStyle style = ib.getStyle().getCalculatedStyle();
         int parent_width = line.getParent().getWidth();
         Border border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
@@ -500,9 +483,10 @@ public class InlineRendering {
         Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
         paintRightPadding(c, line, ib, padX, border, padding);
         padX += padding.right + border.right;
-        Relative.untranslateRelative(c, true);
+        Relative.untranslateRelative(c, ib.getStyle().getCalculatedStyle(), true);
         c.popStyle();
         if (pushedStyles != null) pushedStyles.removeLast();
+        // TODO What does this do?
         style = c.getCurrentStyle();
         //border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
@@ -513,22 +497,25 @@ public class InlineRendering {
         return padX;
     }
 
-    private static int handleInlineElementStart(Context c, CascadedStyle cascaded, LineBox line, InlineBox ib, int padX, LinkedList decorations) {
-        CalculatedStyle style = c.getCurrentStyle();
+    private static int handleInlineElementStart(Context c, LineBox line, InlineBox ib, int padX, LinkedList decorations) {
+        // NOT RIGHT (ib.getStyle()...), refers to previous inline? Comment out for now
+        /*
+        CalculatedStyle style = ib.getStyle().getCalculatedStyle();
         int parent_width = line.getParent().getWidth();
         //Border border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
         Border margin = style.getMarginWidth(parent_width, parent_width, c.getCtx());
         //Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
         paintMargin(c, line, ib, padX, margin.left);
+        */
 
-        c.pushStyle(cascaded);
+        int parent_width = line.getParent().getWidth();
         //Now we know that an inline element started here, handle borders and such
-        Relative.translateRelative(c, true);
-        style = c.getCurrentStyle();
+        Relative.translateRelative(c, ib.getStyle().getCalculatedStyle(), true);
+        CalculatedStyle style = ib.getStyle().getCalculatedStyle();
         Border border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
-        margin = style.getMarginWidth(parent_width, parent_width, c.getCtx());
+        Border margin = style.getMarginWidth(parent_width, parent_width, c.getCtx());
         Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
         //left padding for this inline element
         //paintLeftPadding takes the margin into account

@@ -26,6 +26,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.Style;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -120,28 +121,30 @@ public class VerticalMarginCollapser {
                 }
             }
 
+            Style style = block.getStyle();
+
             if (collapsableContent.isTopMarginCollapsed()) {
-                block.setMarginTopOverride(0);
+                style.setMarginTopOverride(0);
             } else if (mayCollapseInto(c, collapsableContent)) {
                 Float collapsedTopMargin = collapseTopMargin(c, collapsableContent, parentWidth);
                 if (collapsedTopMargin != null) {
-                    block.setMarginTopOverride(collapsedTopMargin.intValue());
+                    style.setMarginTopOverride(collapsedTopMargin.intValue());
                 }
             } else {
                 Float collapsedTopMargin = calculateCollapsedTop(c, content, parentWidth);
-                block.setMarginTopOverride(collapsedTopMargin.intValue());
+                style.setMarginTopOverride(collapsedTopMargin.intValue());
             }
 
             if (collapsableContent.isBottomMarginCollapsed()) {
-                block.setMarginBottomOverride(0);
+                style.setMarginBottomOverride(0);
             } else if (mayCollapseInto(c, collapsableContent)) {
                 Float collapsedBottomMargin = collapseBottomMargin(c, collapsableContent, parentWidth);
                 if (collapsedBottomMargin != null) {
-                    block.setMarginBottomOverride(collapsedBottomMargin.intValue());
+                    style.setMarginBottomOverride(collapsedBottomMargin.intValue());
                 }
             } else {
                 Float collapsedBottomMargin = calculateAdjustedMarginBottom(c, content, parentWidth);
-                block.setMarginBottomOverride(collapsedBottomMargin.intValue());
+                style.setMarginBottomOverride(collapsedBottomMargin.intValue());
             }
         }
     }
@@ -154,8 +157,9 @@ public class VerticalMarginCollapser {
             ((CollapsableContent) sibling).setMarginToCollapse(result);
             return false;
         } else {
-            block.setMarginTopOverride(0f);
-            block.setMarginBottomOverride(result.getValue());
+            Style style = block.getStyle();
+            style.setMarginTopOverride(0f);
+            style.setMarginBottomOverride(result.getValue());
             return true;
         }
     }

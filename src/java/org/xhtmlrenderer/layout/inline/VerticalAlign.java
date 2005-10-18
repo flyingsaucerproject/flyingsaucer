@@ -55,7 +55,7 @@ public class VerticalAlign {
         if (new_inline instanceof InlineTextBox) {
             // should be the metrics of the font, actually is the metrics of the text
             LineMetrics metrics = FontUtil.getLineMetrics(c, new_inline);
-            lineHeight = FontUtil.lineHeight(c);//assume that current context is valid for new_inline
+            lineHeight = FontUtil.lineHeight(c, new_inline);//assume that current context is valid for new_inline
             ascent = (int) metrics.getAscent();
             descent = (int) metrics.getDescent();
             leading = (int) metrics.getLeading();

@@ -23,10 +23,10 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
-import org.xhtmlrenderer.layout.LayoutUtil;
 import org.xhtmlrenderer.render.Box;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 
 /**
@@ -42,7 +42,7 @@ public class Fixed {
      * @param box PARAM
      */
     public static void positionFixedChild(Context c, Box box) {
-        if (LayoutUtil.isFixed(c.getCss().getCascadedStyle(box.element, false))) {//already restyled by ContentUtil
+        if (box.getStyle().isFixed()) {//already restyled by ContentUtil
             Point origin = c.getOriginOffset();
             box.x = 0;
             box.y = 0;
@@ -59,8 +59,7 @@ public class Fixed {
      * @param box PARAM
      */
     public static void setupFixed(Context c, Box box) {
-        if (c.getCurrentStyle().isIdent(CSSName.POSITION, IdentValue.FIXED)) {
-            box.fixed = true;
+        if (box.getStyle().isFixed()) {
             box.setFixedDescendant(true);
             Rectangle rect = c.getFixedRectangle();
 

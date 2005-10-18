@@ -19,12 +19,14 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.List;
 
 
@@ -70,7 +72,7 @@ public class AnonymousBoxing {
         c.setSubBlock(old_sub);
 
         // restore height incase fixed height
-        if (block.auto_height == false) {
+        if (!block.getStyle().isAutoHeight()) {
             Uu.p("restoring original height");
             block.height = original_height;
         }
@@ -83,6 +85,9 @@ public class AnonymousBoxing {
 
     public static Box createBox(Context c, Content content) {
         Box block = new AnonymousBlockBox(content);
+        c.pushStyle(CascadedStyle.emptyCascadedStyle);
+        block.setStyle(new Style(c.getCurrentStyle(), 0, c.getCtx()));
+        c.popStyle();
         return block;
     }
 }
@@ -91,6 +96,9 @@ public class AnonymousBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/10/18 20:57:01  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.3  2005/10/02 21:29:58  tobega
  * Fixed a lot of concurrency (and other) issues from incremental rendering. Also some house-cleaning.
  *

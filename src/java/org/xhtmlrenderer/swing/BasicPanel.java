@@ -186,7 +186,10 @@ public abstract class BasicPanel extends RootPanel {
             Uu.p("skipping the actual painting");
         } else {
             Context c = newContext(getPageInfo(), (Graphics2D) g);
+            long start = System.currentTimeMillis();
             executeRenderThread(c, root);
+            long end = System.currentTimeMillis();
+            System.out.println("RENDERING TOOK " + (end - start) + " ms");
         }
     }
 
@@ -1099,6 +1102,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.75  2005/10/18 20:57:07  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.74  2005/10/16 23:57:20  tobega
  * Starting experiment with flat representation of render tree
  *

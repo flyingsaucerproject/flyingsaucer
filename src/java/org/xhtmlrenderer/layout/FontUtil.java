@@ -22,10 +22,11 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 
-import java.awt.*;
+import java.awt.Font;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 
@@ -57,7 +58,7 @@ public class FontUtil {
      * @return Returns
      */
     public static int len(Context c, InlineTextBox box) {
-        return len(c, box.getSubstring(), c.getCurrentFont());
+        return len(c, box.getSubstring(), box.getStyle().getFont(c.getCtx()));
     }
 
     /**
@@ -66,9 +67,10 @@ public class FontUtil {
      * @param c PARAM
      * @return Returns
      */
-    public static int lineHeight(Context c) {
+    public static int lineHeight(Context c, Box box) {
         CalculatedStyle style = c.getCurrentStyle();
-        int val = (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), c.getCurrentFont(), "Test").getHeight());
+        int val = (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(),
+                box.getStyle().getFont(c.getCtx()), "Test").getHeight());
         if (!style.isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL)) {
             val = (int) style.getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, c.getBlockFormattingContext().getHeight(), c.getCtx());
         }
@@ -89,7 +91,7 @@ public class FontUtil {
             sample = ((InlineTextBox) box).getSubstring();
         }
         return c.getTextRenderer().getLineMetrics(c.getGraphics(),
-                c.getCurrentFont(), sample);
+                box.getStyle().getFont(c.getCtx()), sample);
     }
 
     /**
@@ -101,7 +103,7 @@ public class FontUtil {
      */
     public static Rectangle2D getTextBounds(Context c, InlineTextBox box) {
         return c.getTextRenderer().getLogicalBounds(c.getGraphics(),
-                c.getCurrentFont(), box.getSubstring());
+                box.getStyle().getFont(c.getCtx()), box.getSubstring());
     }
 }
 
@@ -109,6 +111,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2005/10/18 20:57:03  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.39  2005/10/08 17:40:20  tobega
  * Patch from Peter Brant
  *

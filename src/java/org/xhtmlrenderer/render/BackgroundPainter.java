@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
@@ -57,18 +58,19 @@ public class BackgroundPainter {
         if (block.getState() != Box.DONE) {
             height += c.getCanvas().getHeight();
         }
-        Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
+        CalculatedStyle currentStyle = block.getStyle().getCalculatedStyle();
+        Border border = currentStyle.getBorderWidth(c.getCtx());
         if (border == null) {
             return;
         }
-        Border margin = block.getMarginWidth();
+        Border margin = block.getStyle().getMarginWidth();
         Rectangle box = new Rectangle(block.x + margin.left + border.left,
                 block.y + margin.top + border.top,
                 width - margin.left - margin.right - border.left - border.right,
                 height - margin.top - border.top - border.bottom - margin.bottom);
 
         // paint the background
-        Color background_color = c.getCurrentStyle().getBackgroundColor();
+        Color background_color = currentStyle.getBackgroundColor();
         if (background_color != null) {
             // skip transparent background
             if (!background_color.equals(transparent)) {
@@ -80,7 +82,7 @@ public class BackgroundPainter {
         int xoff = 0;
         int yoff = 0;
 
-        if (block.attachment == IdentValue.FIXED) {
+        if (block.getStyle().getBackgroundAttachment() == IdentValue.FIXED) {
             yoff = c.getCanvas().getLocation().y;
             c.getGraphics().setClip(c.getCanvas().getVisibleRect());
         }
@@ -103,15 +105,13 @@ public class BackgroundPainter {
 
             boolean horiz = false;
             boolean vert = false;
-            if (block.repeat == IdentValue.REPEAT_X) {
+            if (block.getStyle().getBackgroundRepeat() == IdentValue.REPEAT_X) {
                 horiz = true;
                 vert = false;
-            }
-            if (block.repeat == IdentValue.REPEAT_Y) {
+            } else if (block.getStyle().getBackgroundRepeat() == IdentValue.REPEAT_Y) {
                 horiz = false;
                 vert = true;
-            }
-            if (block.repeat == IdentValue.REPEAT) {
+            } else if (block.getStyle().getBackgroundRepeat() == IdentValue.REPEAT) {
                 horiz = true;
                 vert = true;
             }
@@ -171,6 +171,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/10/18 20:57:04  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.33  2005/10/15 23:39:17  tobega
  * patch from Peter Brant
  *

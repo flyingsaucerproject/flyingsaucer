@@ -45,7 +45,7 @@ public class BlockBox extends Box implements Renderable {
     }
 
     public void adjustWidthForChild(int childWidth) {
-        if (auto_width && childWidth > contentWidth) {
+        if (getStyle().isAutoWidth() && childWidth > contentWidth) {
             contentWidth = childWidth;
         }
         if (getParent() != null) {
@@ -64,7 +64,7 @@ public class BlockBox extends Box implements Renderable {
         sb.append("BlockBox:");
         sb.append(super.toString());
 
-        if (this.fixed) {
+        if (getStyle().isFixed()) {
             sb.append(" position: fixed");
         }
         if (this.right_set) {
@@ -86,7 +86,7 @@ public class BlockBox extends Box implements Renderable {
         if (getState() != Box.DONE) {
             height += c.getCanvas().getHeight();
         }
-        Border margin = getMarginWidth();
+        Border margin = getStyle().getMarginWidth();
 
         Rectangle bounds = new Rectangle(x + margin.left,
                 y + margin.top,
@@ -109,6 +109,9 @@ public class BlockBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/10/18 20:57:04  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.11  2005/10/16 23:57:16  tobega
  * Starting experiment with flat representation of render tree
  *

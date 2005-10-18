@@ -33,7 +33,6 @@ import org.xhtmlrenderer.render.StackingContext;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -406,10 +405,6 @@ public class ContextImpl implements Context {
 
     public boolean shouldStop() {
         return shouldStop;
-    }
-
-    public Font getCurrentFont() {
-        return getCtx().getFont(getCurrentStyle().getFont(getCtx()));
     }
 
     public void stopRendering() {

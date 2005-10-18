@@ -25,7 +25,10 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.font.LineMetrics;
 
 
@@ -42,7 +45,7 @@ public class ListItemPainter {
      * @param box PARAM
      */
     public static void paint(Context c, Box box) {
-        CalculatedStyle style = c.getCurrentStyle();
+        CalculatedStyle style = box.getStyle().getCalculatedStyle();
         IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
 
         if (listStyle == IdentValue.NONE) {
@@ -76,7 +79,7 @@ public class ListItemPainter {
 
         // calculations for bullets
         int rad = 8;// change this to use the glyph height
-        int h = FontUtil.lineHeight(c);
+        int h = FontUtil.lineHeight(c, box);
         rad = h / 3;
         int x = box.x - rad - rad / 2;
         int y = box.y + (h - rad / 2) / 2;
@@ -188,10 +191,10 @@ public class ListItemPainter {
             text = toRoman(box.list_count).toUpperCase() + ".";
         }
 
-        Font font = c.getCurrentFont();
+        Font font = box.getStyle().getFont(c.getCtx());
         LineMetrics lm = font.getLineMetrics(text, ((Graphics2D) c.getGraphics()).getFontRenderContext());
         int w = FontUtil.len(c, text, font);
-        int h = FontUtil.lineHeight(c);
+        int h = FontUtil.lineHeight(c, box);
         int x = box.x - w - 2;
         int y = box.y + h;
         y -= (int) lm.getDescent();
@@ -204,6 +207,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/10/18 20:57:07  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.20  2005/06/25 17:23:34  tobega
  * first refactoring of UAC: ImageResource
  *

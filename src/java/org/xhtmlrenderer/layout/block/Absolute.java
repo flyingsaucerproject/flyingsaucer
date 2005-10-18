@@ -29,7 +29,7 @@ import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 
 /**
@@ -106,8 +106,6 @@ public class Absolute {
         //Uu.p("got a block box from the sub layout: " + box);
         c.setExtents(oe);
 
-        box.absolute = true;
-
         return box;
     }
 
@@ -142,7 +140,6 @@ public class Absolute {
                 box.top_set = true;
                 //Uu.p("set top to: " + box.top + " " + box.top_set);
             }
-            box.absolute = true;
             
             // if right and left are set calculate width
             if (box.right_set && box.left_set) {
@@ -150,20 +147,6 @@ public class Absolute {
                 box.contentWidth = box.contentWidth - box.right - box.left;
             }
         }
-    }
-
-    /**
-     * Gets the absolute attribute of the Absolute class
-     *
-     * @param style PARAM
-     * @return The absolute value
-     */
-    public static boolean isAbsolute(CalculatedStyle style) {
-        if (style == null) {
-            return false;
-        }
-        IdentValue position = style.getIdent(CSSName.POSITION);
-        return position != null && position == IdentValue.ABSOLUTE;
     }
 }
 

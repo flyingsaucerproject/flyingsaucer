@@ -25,7 +25,9 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.LinkedList;
 
 /**
@@ -114,7 +116,7 @@ public class BlockRendering {
                 box.getState() != Box.CHILDREN_FLUX && clip != null &&
                 !(box instanceof AnonymousBlockBox)) {
 
-            Border margin = box.getMarginWidth();
+            Border margin = box.getStyle().getMarginWidth();
             Rectangle bounds = new Rectangle(box.x + margin.left,
                     box.y + margin.top,
                     box.getWidth() - margin.left - margin.right,

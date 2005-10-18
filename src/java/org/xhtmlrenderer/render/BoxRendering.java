@@ -21,7 +21,6 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
@@ -33,7 +32,9 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 
 /**
@@ -63,6 +64,7 @@ public class BoxRendering {
         } else {
 
             //set the current style
+            /*
             CascadedStyle style = null;
             if (!stylePushed) {//if elem == null, this is an anonymous box,so push empty style. && block.element != null) {
                 style = c.getCss().getCascadedStyle(block.element, restyle);
@@ -70,25 +72,28 @@ public class BoxRendering {
             if (style != null) {
                 c.pushStyle(style);
             }
+            */
+            
+            CalculatedStyle calculatedStyle = box.getStyle().getCalculatedStyle();
 
             // copy the bounds to we don't mess it up
             Rectangle oldBounds = new Rectangle(c.getExtents());
 
-            if (block.fixed) {
+            if (block.getStyle().isFixed()) {
                 paintFixed(c, block, restyle);
-            } else if (block.absolute) {
+            } else if (block.getStyle().isAbsolute()) {
                 paintAbsoluteBox(c, block, restyle);
             } else {
                 //text decoration?
-                IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
+                IdentValue decoration = calculatedStyle.getIdent(CSSName.TEXT_DECORATION);
                 if (decoration != IdentValue.NONE) {
-                    c.getDecorations().addLast(new TextDecoration(decoration, 0, c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
+                    c.getDecorations().addLast(new TextDecoration(decoration, 0, calculatedStyle.getColor(), FontUtil.getLineMetrics(c, null)));
                 }
                 //special style for first line?
                 if (block.firstLineStyle != null) {
                     c.addFirstLineStyle(block.firstLineStyle);
                 }
-                if (box.relative) {
+                if (box.getStyle().isRelative()) {
                     paintRelative(c, block, restyle);
                 } else {
                     paintNormal(c, block, restyle);
@@ -104,19 +109,14 @@ public class BoxRendering {
             }
 
             //Uu.p("here it's : " + c.getListCounter());
-            if (ContentUtil.isListItem(c.getCurrentStyle())) {
+            if (ContentUtil.isListItem(calculatedStyle)) {
                 paintListItem(c, box);
             }
 
             // move the origin down to account for the contents plus the margin, borders, and padding
-            if (!box.absolute) {
+            if (!box.getStyle().isAbsolute()) {
                 oldBounds.y = oldBounds.y + block.height;
                 c.setExtents(oldBounds);
-            }
-
-            //reset style
-            if (style != null) {
-                c.popStyle();
             }
         }
 
@@ -141,7 +141,7 @@ public class BoxRendering {
         if (block.getState() != Box.DONE) {
             height += c.getCanvas().getHeight();
         }
-        Border margin = block.getMarginWidth();
+        Border margin = block.getStyle().getMarginWidth();
 
         Rectangle bounds = new Rectangle(block.x + margin.left,
                 block.y + margin.top,
@@ -163,7 +163,8 @@ public class BoxRendering {
         c.translate(-block.tx, -block.ty);
         //c.untranslateInsets(block);
 
-        BorderPainter.paint(bounds, BorderPainter.ALL, c.getCurrentStyle(), c.getGraphics(), c.getCtx(), 0);
+        BorderPainter.paint(bounds, BorderPainter.ALL,
+                block.getStyle().getCalculatedStyle(), c.getGraphics(), c.getCtx(), 0);
 
     }
 
@@ -176,9 +177,9 @@ public class BoxRendering {
      * @param restyle
      */
     public static void paintRelative(Context ctx, Box block, boolean restyle) {
-        Relative.translateRelative(ctx, true);
+        Relative.translateRelative(ctx, block.getStyle().getCalculatedStyle(), true);
         paintNormal(ctx, block, restyle);
-        Relative.untranslateRelative(ctx, true);
+        Relative.untranslateRelative(ctx, block.getStyle().getCalculatedStyle(), true);
     }
 
     // adjustments for fixed painting
@@ -262,7 +263,7 @@ public class BoxRendering {
         // since block.top can only be calculated at render time (in case of % widths)
         // then we should either get rid of block.top, or find a way to do this at
         // layout time.
-        CalculatedStyle style = c.getCurrentStyle();
+        CalculatedStyle style = block.getStyle().getCalculatedStyle();
         //Uu.p("style = " + style);
         /*if (style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
             //Uu.p("top is auto");
@@ -308,10 +309,8 @@ public class BoxRendering {
         //no sense getBackgroundColor(c);
 
         // get the css properties
-        CalculatedStyle style = c.getCurrentStyle();
+        CalculatedStyle style = box.getStyle().getCalculatedStyle();
         String back_image = style.getStringProperty(CSSName.BACKGROUND_IMAGE);
-        block.repeat = style.getIdent(CSSName.BACKGROUND_REPEAT);
-        block.attachment = style.getIdent(CSSName.BACKGROUND_ATTACHMENT);
 
         // load the background image
         block.background_image = null;
@@ -374,6 +373,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2005/10/18 20:57:05  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.42  2005/10/15 23:39:18  tobega
  * patch from Peter Brant
  *

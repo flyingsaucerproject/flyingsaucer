@@ -51,6 +51,7 @@ import org.xhtmlrenderer.layout.content.TableContent;
 import org.xhtmlrenderer.layout.content.TableRowContent;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -115,7 +116,10 @@ public class TableBoxing {
         //HACK: for now
         outerBox.contentWidth = c.getExtents().width;
         outerBox.height = c.getExtents().height;
-        outerBox.setMarginWidth(new Border(0, 0, 0, 0));
+
+        c.pushStyle(CascadedStyle.emptyCascadedStyle);
+        outerBox.setStyle(new Style(c.getCurrentStyle(), 0, c.getCtx()));
+        c.popStyle();
 
         TableBox tableBox = new TableBox();
         outerBox.addChild(tableBox);
@@ -128,20 +132,22 @@ public class TableBoxing {
             c.pushStyle(CascadedStyle.emptyCascadedStyle);
         }
 
+        tableBox.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth(), c.getCtx()));
+
         VerticalMarginCollapser.collapseVerticalMargins(c, tableBox, content, (float) oe.getWidth());
 
         TableContent tableContent = (TableContent) content;
         if (tableContent.isTopMarginCollapsed()) {
-            tableBox.setMarginTopOverride(0f);
+            tableBox.getStyle().setMarginTopOverride(0f);
         }
         if (tableContent.isBottomMarginCollapsed()) {
-            tableBox.setMarginBottomOverride(0f);
+            tableBox.getStyle().setMarginBottomOverride(0f);
         }
 
+        tableBox.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth(), c.getCtx()));
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
-        tableBox.setMarginWidth(c, (float) oe.getWidth());
-        Border margin = tableBox.getMarginWidth();
+        Border margin = tableBox.getStyle().getMarginWidth();
         Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
         int tx = margin.left + border.left + padding.left;
         int ty = margin.top + border.top + padding.top;
@@ -336,13 +342,15 @@ public class TableBoxing {
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
         RowBox row = new RowBox();
-        row.setMarginWidth(c, (float) oe.getWidth());
+
         CascadedStyle pushed = tableRowContent.getStyle();
         if (pushed != null) {
             c.pushStyle(pushed);
         } else {
             c.pushStyle(CascadedStyle.emptyCascadedStyle);
         }
+
+        row.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth(), c.getCtx()));
 
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         //rows have no margin or padding
@@ -485,7 +493,7 @@ public class TableBoxing {
         }
 
         // a cell defines a new bfc
-        cell.setMarginWidth(c, c.getExtents().width);
+        cell.setStyle(new Style(c.getCurrentStyle(), (float) c.getExtents().width, c.getCtx()));
         BlockFormattingContext bfc = new BlockFormattingContext(cell, c);
         c.pushBFC(bfc);
         bfc.setWidth((int) c.getExtents().getWidth());
@@ -503,24 +511,18 @@ public class TableBoxing {
         }
 
         CalculatedStyle style = c.getCurrentStyle();
-        boolean hasSpecifiedWidth = !style.isIdent(CSSName.WIDTH, IdentValue.AUTO);
-        //TODO: handle relative heights, but only if containing cell height is not defined by content height
-        boolean hasSpecifiedHeight = !style.isIdent(CSSName.HEIGHT, IdentValue.AUTO);
-        //HACK: assume containing cell height is auto, so percentages become auto
-        hasSpecifiedHeight = hasSpecifiedHeight && style.propertyByName(CSSName.HEIGHT).computedValue().hasAbsoluteUnit();
 
         // calculate the width and height as much as possible
         int setHeight = -1;//means height is not set by css
         int setWidth = -1;//means width is not set by css
-        if (hasSpecifiedWidth) {
+        if (!cell.getStyle().isAutoWidth()) {
             setWidth = (int) style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
             c.getExtents().width = setWidth;
         }
-        if (hasSpecifiedHeight) {
+        if (!cell.getStyle().isAutoHeight()) {
             setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
             c.getExtents().height = setHeight;
             cell.height = setHeight;
-            cell.auto_height = false;
         }
         //check if replaced
         JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c, setWidth, setHeight);
@@ -563,7 +565,7 @@ public class TableBoxing {
         c.setSubBlock(old_sub);
 
         // restore height incase fixed height
-        if (cell.auto_height == false) {
+        if (!cell.getStyle().isAutoHeight()) {
             Uu.p("restoring original height");
             cell.height = original_height;
         }
@@ -591,6 +593,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.30  2005/10/18 20:57:08  tobega
+   Patch from Peter Brant
+
    Revision 1.29  2005/10/16 23:57:21  tobega
    Starting experiment with flat representation of render tree
 

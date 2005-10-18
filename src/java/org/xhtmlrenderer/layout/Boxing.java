@@ -28,7 +28,6 @@ import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Fixed;
 import org.xhtmlrenderer.layout.block.FloatUtil;
-import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.ContentUtil;
@@ -36,11 +35,13 @@ import org.xhtmlrenderer.layout.content.TableContent;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.table.TableBoxing;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.List;
 
 
@@ -99,7 +100,7 @@ public class Boxing {
             if ((c.isPendingPageBreak() ||
                     c.getCurrentStyle().propertyByName(CSSName.PAGE_BREAK_BEFORE).isIdent(IdentValue.ALWAYS))) {
                 block.moveToNextPage(c, false);
-                block.setMarginTopOverride(0f);
+                block.getStyle().setMarginTopOverride(0f);
             }
             c.setPendingPageBreak(false);
         }
@@ -141,7 +142,7 @@ public class Boxing {
 
         Rectangle oe = c.getExtents();
 
-        block.setMarginWidth(c, (float) oe.getWidth());
+        block.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth(), c.getCtx()));
 
         if (c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
             block.setChildrenExceedBounds(true);
@@ -169,37 +170,28 @@ public class Boxing {
 
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
-        Border margin = block.getMarginWidth();
+        Border margin = block.getStyle().getMarginWidth();
         Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
         block.leftPadding = margin.left + border.left + padding.left;
         block.rightPadding = padding.right + border.right + margin.right;
         block.contentWidth = (int) (c.getExtents().getWidth() - block.leftPadding - block.rightPadding);
 
         CalculatedStyle style = c.getCurrentStyle();
-        boolean hasSpecifiedWidth = !style.isIdent(CSSName.WIDTH, IdentValue.AUTO);
-        //TODO: handle relative heights, but only if containing block height is not defined by content height
-        boolean hasSpecifiedHeight = !style.isIdent(CSSName.HEIGHT, IdentValue.AUTO);
-        //HACK: assume containing block height is auto, so percentages become auto
-        hasSpecifiedHeight = hasSpecifiedHeight && style.propertyByName(CSSName.HEIGHT).computedValue().hasAbsoluteUnit();
 
         // calculate the width and height as much as possible
         if (!(block instanceof AnonymousBlockBox)) {
             int setHeight = -1;//means height is not set by css
             int setWidth = -1;//means width is not set by css
-            if (hasSpecifiedWidth) {
+            if (!block.getStyle().isAutoWidth()) {
                 setWidth = (int) style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
                 block.contentWidth = setWidth;
                 c.getExtents().width = block.getWidth();
-
-                block.auto_width = false;
             }
-            if (hasSpecifiedHeight) {
+            if (!block.getStyle().isAutoHeight()) {
                 setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
                 c.getExtents().height = margin.top + border.top + padding.top +
                         setHeight + padding.bottom + border.bottom + margin.bottom;
                 block.height = setHeight;
-
-                block.auto_height = false;
             }
             //check if replaced
             JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c, setWidth, setHeight);
@@ -222,24 +214,9 @@ public class Boxing {
             FloatUtil.preChildrenLayout(c, block);
         }
 
-        if (Absolute.isAbsolute(c.getCurrentStyle())) {
+        if (block.getStyle().isAbsolute()) {
             // set up an absolute bfc
             Absolute.preChildrenLayout(c, block);
-        }
-
-        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.LEFT)) {
-            block.clear_left = true;
-        }
-        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.RIGHT)) {
-            block.clear_right = true;
-        }
-        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.BOTH)) {
-            block.clear_left = true;
-            block.clear_right = true;
-        }
-        if (c.getCurrentStyle().isIdent(CSSName.CLEAR, IdentValue.NONE)) {
-            block.clear_left = false;
-            block.clear_right = false;
         }
         
         // save height incase fixed height
@@ -275,7 +252,7 @@ public class Boxing {
         checkPageBreakAfter(c, block);
 
         // restore height incase fixed height
-        if (block.auto_height == false) {
+        if (!block.getStyle().isAutoHeight()) {
             Uu.p("restoring original height");
             block.height = original_height;
         }
@@ -285,7 +262,7 @@ public class Boxing {
             FloatUtil.postChildrenLayout(c);
         }
 
-        if (Absolute.isAbsolute(c.getCurrentStyle())) {
+        if (block.getStyle().isAbsolute()) {
             // remove the absolute bfc
             Absolute.postChildrenLayout(c);
         }
@@ -300,7 +277,6 @@ public class Boxing {
 
         // account for special positioning
         // need to add bfc/unbfc code for absolutes
-        Relative.setupRelative(c, block);
         Absolute.setupAbsolute(block, c);
         Fixed.setupFixed(c, block);
         FloatUtil.setupFloat(c, block);
@@ -340,9 +316,9 @@ public class Boxing {
             //   </div>
             // </div>
             // but OK for most situations
-            if ((!block.auto_height && !parent.auto_height) ||
-                    (!block.auto_width && !block.auto_width) ||
-                    (block.absolute || block.fixed || block.floated || block.relative)) {
+            if ((!block.getStyle().isAutoHeight() && !parent.getStyle().isAutoHeight()) ||
+                    (!block.getStyle().isAutoWidth() && !parent.getStyle().isAutoWidth()) ||
+                    (block.getStyle().isPostionedOrFloated())) {
                 parent.setChildrenExceedBounds(true);
             }
         }
@@ -382,6 +358,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2005/10/18 20:57:02  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.40  2005/10/15 23:39:17  tobega
  * patch from Peter Brant
  *

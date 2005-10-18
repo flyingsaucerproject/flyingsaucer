@@ -26,7 +26,7 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.render.Box;
 
-import java.awt.*;
+import java.awt.Point;
 
 
 /**
@@ -61,9 +61,8 @@ public class FloatUtil {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
-     * @param box   PARAM
-     * @param style PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
     public static void setupFloat(Context c, Box box) {
         if (ContentUtil.isFloated(c.getCurrentStyle())) {
@@ -73,7 +72,7 @@ public class FloatUtil {
             if (floatVal == IdentValue.NONE) {
                 return;
             }
-            box.floated = true;
+            //box.floated = true;
             Point offset = c.getBlockFormattingContext().getOffset();
             box.y = -offset.y;
             if (floatVal == IdentValue.LEFT) {
@@ -116,7 +115,7 @@ public class FloatUtil {
 
         box.x = floater.x + floater.getWidth();
 
-        if (box.clear_left || (box.x + box.getWidth() > c.getExtents().width &&
+        if (box.getStyle().isClearLeft() || (box.x + box.getWidth() > c.getExtents().width &&
                 box.getWidth() <= c.getExtents().width)) {
             //Uu.p("not enough room!!!");
             // move the box to be below the last float and
@@ -148,7 +147,7 @@ public class FloatUtil {
 
         box.x = floater.x - box.getWidth();
 
-        if (box.clear_right || (box.x < 0 &&
+        if (box.getStyle().isClearRight() || (box.x < 0 &&
                 box.getWidth() <= c.getExtents().width)) {
             // Uu.p("not enough room!!!");
             // move the box to be below the last float and
@@ -166,6 +165,9 @@ public class FloatUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/10/18 20:56:58  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.23  2005/10/15 23:39:16  tobega
  * patch from Peter Brant
  *

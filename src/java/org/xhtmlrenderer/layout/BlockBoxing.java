@@ -104,19 +104,19 @@ public class BlockBoxing {
 
             //JMM. new code to handle the 'clear' property
             // if clear set
-            if (child_box.clear_left || child_box.clear_right) {
+            if (child_box.getStyle().isCleared()) {
 //Uu.p("doing a clear on: " + child_box);
                 // get the distance we have to move it down
                 int down = 0;
                 //Uu.p("down = " + down);
-                if (child_box.clear_left) {
+                if (child_box.getStyle().isClearLeft()) {
                     //Uu.p("left clear");
                     //Uu.p("left down = " + c.getPersistentBFC().getLeftDownDistance(child_box));
                     down = Math.max(down, c.getBlockFormattingContext().getLeftDownDistance(child_box));
                 }
                 //Uu.p("down = " + down);
 
-                if (child_box.clear_right) {
+                if (child_box.getStyle().isClearRight()) {
                     //Uu.p("right clear");
                     //Uu.p("right down = " + c.getPersistentBFC().getRightDownDistance(child_box));
                     down = Math.max(down, c.getBlockFormattingContext().getRightDownDistance(child_box));
@@ -137,19 +137,19 @@ public class BlockBoxing {
             //joshy fix the 'fixed' stuff later
             // if fixed or abs then don't modify the final layout bounds
             // because fixed elements are removed from normal flow
-            if (child_box.fixed) {
+            if (child_box.getStyle().isFixed()) {
                 // put fixed positioning in later
                 Fixed.positionFixedChild(c, child_box);
             }
 
 
-            if (child_box.absolute) {
+            if (child_box.getStyle().isAbsolute()) {
                 Absolute.positionAbsoluteChild(c, child_box);
             }
 
             // skip adjusting the parent box if the child
             // doesn't affect flow layout
-            if (LayoutUtil.isOutsideNormalFlow(child_box)) {
+            if (child_box.getStyle().isOutsideNormalFlow()) {
                 continue;
             }
 
@@ -201,6 +201,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/10/18 20:57:01  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.20  2005/10/16 23:57:14  tobega
  * Starting experiment with flat representation of render tree
  *

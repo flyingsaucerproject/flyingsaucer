@@ -64,6 +64,8 @@ public class LineBreaker {
         else
             block = (BlockBox) Boxing.layout(c, content);
         box.sub_block = block;
+        // does this make sense?
+        box.setStyle(block.getStyle());
         block.setParent(box);
 
         // set up the extents
@@ -94,6 +96,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.62  2005/10/18 20:57:03  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.61  2005/10/06 03:20:21  tobega
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *

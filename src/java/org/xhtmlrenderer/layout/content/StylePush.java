@@ -20,26 +20,33 @@
 package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.render.Style;
 
 
 /**
  * A marker for changing the style of the first letter
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class StylePush {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private String _pseudo;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Element _elem;//needed for dynamic stuff
 
-            /**
+    private Style _style;
+
+    /**
      * Constructor for the StylePush object
      *
-     * @param pseudo  PARAM
-     * @param e       PARAM
+     * @param pseudo PARAM
+     * @param e      PARAM
      */
-    StylePush( String pseudo, Element e ) {
+    StylePush(String pseudo, Element e) {
         _pseudo = pseudo;
         _elem = e;
     }
@@ -47,7 +54,7 @@ public class StylePush {
     /**
      * Gets the pseudoElement attribute of the StylePush object
      *
-     * @return   The pseudoElement value
+     * @return The pseudoElement value
      */
     public String getPseudoElement() {
         return _pseudo;
@@ -56,10 +63,18 @@ public class StylePush {
     /**
      * Gets the element attribute of the StylePush object
      *
-     * @return   The element value
+     * @return The element value
      */
     public Element getElement() {
         return _elem;
+    }
+
+    public Style getStyle() {
+        return _style;
+    }
+
+    public void setStyle(Style style) {
+        _style = style;
     }
 }
 

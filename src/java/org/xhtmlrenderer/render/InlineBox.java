@@ -19,9 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.util.List;
-
-
 /**
  * Description of the Class
  *
@@ -29,18 +26,6 @@ import java.util.List;
  */
 public abstract class InlineBox extends Box {
 
-    //might need to push styles before rendering this box
-    /**
-     * Description of the Field
-     */
-    public List pushstyles;
-    //might need to pop styles after rendering this box
-    /**
-     * Description of the Field
-     */
-    public int popstyles = 0;
-
-    
     // if we are an inline block, then this is
     // the reference to the real block inside
 
@@ -101,7 +86,7 @@ public abstract class InlineBox extends Box {
      * @return The endOfParentContent value
      */
     public abstract boolean isEndOfParentContent();
-
+    
     //TODO: figure out another way to find the font, if we still need this method
     /*
      * public int getAdvance(int x, Graphics g) {
@@ -122,6 +107,9 @@ public abstract class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2005/10/18 20:57:06  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.39  2005/10/06 03:20:22  tobega
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *

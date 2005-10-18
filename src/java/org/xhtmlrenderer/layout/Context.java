@@ -32,7 +32,6 @@ import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.render.StackingContext;
 import org.xhtmlrenderer.swing.RootPanel;
 
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -343,8 +342,6 @@ public interface Context {
     public void stopRendering();
 
     public boolean shouldStop();
-
-    Font getCurrentFont();
 
     public void addIDBox(String id, Box box);
 

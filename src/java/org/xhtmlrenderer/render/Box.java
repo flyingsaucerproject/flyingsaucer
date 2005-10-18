@@ -20,14 +20,12 @@
 package org.xhtmlrenderer.render;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.PersistentBFC;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,7 +36,7 @@ import java.util.List;
  *
  * @author empty
  */
-public class Box {
+public abstract class Box {
 
     /**
      * Description of the Field
@@ -76,8 +74,6 @@ public class Box {
 
     public double paginationTranslation = 0;
 
-    private Border marginWidth;
-
     /**
      * Gets the width attribute of the Box object
      *
@@ -93,26 +89,6 @@ public class Box {
     public int height;
 
     // position stuff
-    /**
-     * True if the box is in fixed position.
-     */
-    public boolean fixed = false;
-
-    /**
-     * True if the box is absolute-positioned.
-     */
-    public boolean absolute = false;
-
-    /**
-     * True if the box is floated.
-     */
-    public boolean floated = false;
-
-    /**
-     * True if the box is relatively positioned
-     */
-    public boolean relative = false;
-
     /**
      * Description of the Field
      */
@@ -165,16 +141,6 @@ public class Box {
     public String background_uri;
 
     /**
-     * The background-repeat IdentValue.
-     */
-    public IdentValue repeat;
-
-    /**
-     * The background-attachment IdentValue.
-     */
-    public IdentValue attachment;
-
-    /**
      * Description of the Field
      */
     public int background_position_vertical = 0;
@@ -194,8 +160,6 @@ public class Box {
     /**
      * Description of the Field
      */
-    public boolean auto_height = true;
-    public boolean auto_width = true;
 
     /**
      * Description of the Field
@@ -236,17 +200,9 @@ public class Box {
     public int tx;
     public int ty;
 
-
-    public boolean clear_left = false;
-    public boolean clear_right = false;
-
-    private float marginTopOverride;
-    private boolean marginTopOverrideSet = false;
-
-    private float marginBottomOverride;
-    private boolean marginBottomOverrideSet = false;
-
     private boolean movedPastPageBreak;
+
+    private Style style;
 
     /**
      * Constructor for the Box object
@@ -484,14 +440,14 @@ public class Box {
         // dimensions and location
         sb.append("-box(" + x + "," + y + ")-(" + getWidth() + "x" + height + ")");
 
-        if (fixed) {
+        if (style.isFixed()) {
             sb.append("-fixed");
         }
-        if (absolute) {
+        if (style.isAbsolute()) {
             sb.append("-absolute");
         }
         sb.append("-pos(" + top + "," + right + "," + bottom + "," + left + ")");
-        if (floated) {
+        if (style.isFloated()) {
             sb.append("-floated");
         }
 
@@ -507,8 +463,8 @@ public class Box {
 		
         // background images
         sb.append("-backimg(" + background_image);
-        sb.append("-" + repeat);
-        sb.append("-" + attachment);
+        sb.append("-" + style.getBackgroundRepeat());
+        sb.append("-" + style.getBackgroundAttachment());
         sb.append("-" + background_position_vertical);
         sb.append("-" + background_position_horizontal + ")");
 
@@ -550,25 +506,6 @@ public class Box {
             default:
                 return "unknown";
         }
-    }
-
-    public float getMarginTopOverride() {
-        return this.marginTopOverride;
-    }
-
-    public void setMarginTopOverride(float marginTopOverride) {
-        this.marginTopOverride = marginTopOverride;
-        this.marginTopOverrideSet = true;
-    }
-
-
-    public float getMarginBottomOverride() {
-        return this.marginBottomOverride;
-    }
-
-    public void setMarginBottomOverride(float marginBottomOverride) {
-        this.marginBottomOverride = marginBottomOverride;
-        this.marginBottomOverrideSet = true;
     }
 
     public boolean crossesPageBreak(Context c) {
@@ -615,25 +552,12 @@ public class Box {
         this.movedPastPageBreak = movedPastPageBreak;
     }
 
-    public Border getMarginWidth() {
-        if (marginWidth == null) {
-            throw new NullPointerException("internal error: marginWidth is null");
-        }
-        if (this.marginTopOverrideSet) {
-            marginWidth.top = (int) this.marginTopOverride;
-        }
-        if (this.marginBottomOverrideSet) {
-            marginWidth.bottom = (int) this.marginBottomOverride;
-        }
-        return marginWidth;
+    public final Style getStyle() {
+        return this.style;
     }
 
-    public void setMarginWidth(Context c, float parentWidth) {
-        this.marginWidth = c.getCurrentStyle().getMarginWidth(parentWidth, parentWidth, c.getCtx());
-    }
-
-    public void setMarginWidth(Border margin) {
-        this.marginWidth = new Border(margin);
+    public void setStyle(Style style) {
+        this.style = style;
     }
 }
 
@@ -641,6 +565,9 @@ public class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.65  2005/10/18 20:57:05  tobega
+ * Patch from Peter Brant
+ *
  * Revision 1.64  2005/10/15 23:39:18  tobega
  * patch from Peter Brant
  *

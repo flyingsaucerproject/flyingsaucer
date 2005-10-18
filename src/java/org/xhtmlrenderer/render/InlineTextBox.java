@@ -47,6 +47,10 @@ public class InlineTextBox extends InlineBox {
      */
     private String master;
 
+    public InlineTextBox() {
+
+    }
+
     /**
      * Description of the Method
      *
@@ -55,6 +59,7 @@ public class InlineTextBox extends InlineBox {
     public InlineBox copy() {
         InlineTextBox newBox = new InlineTextBox();
         InlineTextBox box = this;
+        newBox.setStyle(box.getStyle());
         newBox.x = box.x;
         newBox.y = box.y;
         newBox.contentWidth = box.contentWidth;

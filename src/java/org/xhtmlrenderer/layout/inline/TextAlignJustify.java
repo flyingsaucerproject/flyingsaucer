@@ -114,11 +114,6 @@ public class TextAlignJustify {
             currentWordPosition = currentWordPosition + words[i].length() + 1;//skip the space too
             copy.contentWidth = FontUtil.len(c, copy);
             temp_list.add(copy);
-            if (i == 0) {
-                copy.pushstyles = box.pushstyles;
-            } else if (i == words.length - 1) {
-                copy.popstyles = box.popstyles;
-            }
         }
     }
 
