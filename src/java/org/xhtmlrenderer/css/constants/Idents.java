@@ -344,9 +344,6 @@ public final class Idents {
                 }
             }
         }
-        if (retval == null) {
-            System.out.println("!!! can't identify specified color:" + value);
-        }
         return retval;
     }
 
@@ -493,6 +490,9 @@ public final class Idents {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/10/20 20:48:03  pdoubleya
+ * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
+ *
  * Revision 1.8  2005/07/04 00:12:11  tobega
  * text-align now works for table-cells too (is done in render, not in layout)
  *

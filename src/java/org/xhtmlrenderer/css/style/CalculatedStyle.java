@@ -19,11 +19,14 @@
  */
 package org.xhtmlrenderer.css.style;
 
+import org.w3c.dom.css.CSSPrimitiveValue;
+import org.w3c.dom.css.RGBColor;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.css.value.FontSpecification;
@@ -60,6 +63,8 @@ public class CalculatedStyle {
      */
     private CalculatedStyle _parent;
 
+    private String _styleKey;
+
     /**
      * Cache child styles of this style that have the same cascaded properties
      */
@@ -71,10 +76,7 @@ public class CalculatedStyle {
         }
     };
 
-    /**
-     * Array of DerivedProperties, keyed by the {@link CSSName#getAssignedID()).
-     */
-    private DerivedProperty[] _derivedPropertiesById;
+    private FSDerivedValue[] _derivedValuesById;
 
     /**
      * The derived border width for this RuleSet
@@ -117,7 +119,7 @@ public class CalculatedStyle {
      * this for class instantiation externally.
      */
     protected CalculatedStyle() {
-        _derivedPropertiesById = new DerivedProperty[CSSName.countCSSPrimitiveNames()];
+        _derivedValuesById = new FSDerivedValue[CSSName.countCSSPrimitiveNames()];
     }
 
 
@@ -133,6 +135,23 @@ public class CalculatedStyle {
         _parent = parent;
 
         derive(matched);
+        this._styleKey = genStyleKey();
+    }
+
+    private String genStyleKey() {
+       StringBuffer sb = new StringBuffer();
+       for (int i = 0; i < _derivedValuesById.length; i++) {
+           CSSName name = CSSName.getByID(i);
+           FSDerivedValue val = _derivedValuesById[i];
+           if (val != null) {
+               sb.append(name.toString());
+           } else {
+               sb.append("(no prop assigned in this pos)");
+           }
+           sb.append("|\n");
+       }
+       return sb.toString();
+
     }
 
     /**
@@ -144,6 +163,8 @@ public class CalculatedStyle {
      * @return The derived child style
      */
     public synchronized CalculatedStyle deriveStyle(CascadedStyle matched) {
+        // if ( matched.countAssigned() == 0 ) System.out.println("!!! deriving style with no matched properties.");
+
         CalculatedStyle cs = (CalculatedStyle) _childCache.get(matched);
 
         if (cs == null) {
@@ -153,29 +174,34 @@ public class CalculatedStyle {
         return cs;
     }
 
+    public int countAssigned() {
+        int c = 0;
+        for (int i = 0; i < _derivedValuesById.length; i++) {
+            if (_derivedValuesById[i] != null) c++;
+        }
+        return c;
+    }
 
     /**
-     * Returns a {@link DerivedProperty} by name. Because we are a derived
-     * style, the property will already be resolved at this point. Thus, on this
-     * DerivedProperty you can call {@link DerivedProperty#computedValue()} to
-     * get something meaningful.
+     * Returns a {@link FSDerivedValue} by name. Because we are a derived
+     * style, the property will already be resolved at this point.
      *
      * @param cssName The CSS property name, e.g. "font-family"
      * @return See desc.
      */
-    public DerivedProperty propertyByName(CSSName cssName) {
-        DerivedProperty prop = (DerivedProperty) _derivedPropertiesById[cssName.getAssignedID()];
+    private FSDerivedValue valueByName(CSSName cssName) {
+        FSDerivedValue val = _derivedValuesById[cssName.getAssignedID()];
 
         // but the property may not be defined for this Element
-        if (prop == null) {
+        if (val == null) {
             // if it is inheritable (like color) and we are not root, ask our parent
             // for the value
             if (CSSName.propertyInherits(cssName)
                     && _parent != null
-                    && (prop = _parent.propertyByName(cssName)) != null) {
+                    //
+                    && (val = _parent.valueByName(cssName)) != null) {
 
-                // get a copy, which is always a calculated value!
-                prop = prop.copyForInherit();
+                val = val.copyOf();
             } else {
                 // otherwise, use the initial value (defined by the CSS2 Spec)
                 String initialValue = CSSName.initialValue(cssName);
@@ -185,55 +211,79 @@ public class CalculatedStyle {
                 }
                 if (initialValue.startsWith("=")) {
                     CSSName ref = CSSName.getByPropertyName(initialValue.substring(1));
-                    initialValue = propertyByName(ref).computedValue().asString();
+                    val = valueByName(ref);
+                } else {
+                    initialValue = Idents.convertIdent(cssName, initialValue);
+
+                    short type = guessType(initialValue);
+
+                    val = DerivedValueFactory.newDerivedValue(
+                            this,
+                            cssName,
+                            type,
+                            initialValue,
+                            initialValue,
+                            null
+                    );
                 }
-                initialValue = Idents.convertIdent(cssName, initialValue);
-                org.xhtmlrenderer.css.impl.DefaultCSSPrimitiveValue cssval =
-                        new org.xhtmlrenderer.css.impl.DefaultCSSPrimitiveValue(initialValue);
-
-                // ASK: a default value should always be absolute?
-                DerivedValue xrVal = new DerivedValue(cssName, cssval, this);
-                prop = new DerivedProperty(cssName, xrVal);
             }
-            _derivedPropertiesById[cssName.getAssignedID()] = prop;
+            _derivedValuesById[cssName.getAssignedID()] = val;
         }
-        return prop;
+        return val;
     }
-
-    /** */
-    public void dumpProperties() {
-        StringBuffer out = new StringBuffer();
-        for (int i = 0; i < _derivedPropertiesById.length; i++) {
-            DerivedProperty derivedProperty = _derivedPropertiesById[i];
-            if (derivedProperty == null) {
-                out.append("There is an UNEXPECTED null derived property in this CalculatedStyle.\n");
+    // Incomplete routine to try and determine the
+    // CSSPrimitiveValue short code for a given value,
+    // e.g. 14pt is CSS_PT.
+    /**
+     * Description of the Method
+     *
+     * @param value PARAM
+     * @return Returns
+     */
+    private static short guessType(String value) {
+        short type = CSSPrimitiveValue.CSS_STRING;
+        if (value != null && value.length() > 1) {
+            if (value.endsWith("%")) {
+                type = CSSPrimitiveValue.CSS_PERCENTAGE;
+            } else if (value.startsWith("rgb") || value.startsWith("#")) {
+                type = CSSPrimitiveValue.CSS_RGBCOLOR;
             } else {
-                String s = derivedProperty.propertyName();
-                out.append("  " + s + " = " + derivedProperty.computedValue().asString() + "\n");
+                String hmm = value.substring(value.length() - 2);
+                if ("pt".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_PT;
+                } else if ("px".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_PX;
+                } else if ("em".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_EMS;
+                } else if ("ex".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_EXS;
+                } else if ("in".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_IN;
+                } else if ("cm".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_CM;
+                } else if ("mm".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_MM;
+                } else {
+                    try {
+                        new Float(value);
+                        type = CSSPrimitiveValue.CSS_NUMBER;
+                    } catch (NumberFormatException ex) {
+                        type = CSSPrimitiveValue.CSS_STRING;
+                    }
+                }
             }
         }
-        System.out.println(out);
+        return type;
     }
 
     /**
      * Converts to a String representation of the object.
      *
-     * @return A string representation of the object.
+     * @return The borderWidth value
      */
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < _derivedPropertiesById.length; i++) {
-            DerivedProperty derivedProperty = _derivedPropertiesById[i];
-            if (derivedProperty != null) {
-                sb.append(derivedProperty.propertyName());
-            } else {
-                sb.append("null");
-            }
-            sb.append("|");
-        }
-        return sb.toString();
-    }
-
+   public String toString() {
+        return _styleKey;
+   }
 
     /**
      * Convenience property accessor; returns a Border initialized with the
@@ -249,16 +299,16 @@ public class CalculatedStyle {
             _drvBorderWidth = deriveBorderInstance(new CSSName[]{CSSName.BORDER_WIDTH_TOP, CSSName.BORDER_WIDTH_BOTTOM, CSSName.BORDER_WIDTH_LEFT, CSSName.BORDER_WIDTH_RIGHT},
                     0,
                     0, ctx);
-            if (propertyByName(CSSName.BORDER_STYLE_TOP).asIdentValue() == IdentValue.NONE) {
+            if (valueByName(CSSName.BORDER_STYLE_TOP) == IdentValue.NONE) {
                 _drvBorderWidth.top = 0;
             }
-            if (propertyByName(CSSName.BORDER_STYLE_BOTTOM).asIdentValue() == IdentValue.NONE) {
+            if (valueByName(CSSName.BORDER_STYLE_BOTTOM) == IdentValue.NONE) {
                 _drvBorderWidth.bottom = 0;
             }
-            if (propertyByName(CSSName.BORDER_STYLE_LEFT).asIdentValue() == IdentValue.NONE) {
+            if (valueByName(CSSName.BORDER_STYLE_LEFT) == IdentValue.NONE) {
                 _drvBorderWidth.left = 0;
             }
-            if (propertyByName(CSSName.BORDER_STYLE_RIGHT).asIdentValue() == IdentValue.NONE) {
+            if (valueByName(CSSName.BORDER_STYLE_RIGHT) == IdentValue.NONE) {
                 _drvBorderWidth.right = 0;
             }
         }
@@ -315,7 +365,7 @@ public class CalculatedStyle {
      */
     public Color getBackgroundColor() {
         if (_drvBackgroundColor == null) {
-            _drvBackgroundColor = propertyByName(CSSName.BACKGROUND_COLOR).computedValue().asColor();
+            _drvBackgroundColor = valueByName(CSSName.BACKGROUND_COLOR).asColor();
             XRLog.cascade(Level.FINEST, "Background color: " + _drvBackgroundColor);
         }
         return _drvBackgroundColor;
@@ -332,15 +382,19 @@ public class CalculatedStyle {
     public BorderColor getBorderColor() {
         if (_drvBorderColor == null) {
             BorderColor bcolor = new BorderColor();
-            bcolor.topColor = propertyByName(CSSName.BORDER_COLOR_TOP).computedValue().asColor();
-            bcolor.rightColor = propertyByName(CSSName.BORDER_COLOR_RIGHT).computedValue().asColor();
-            bcolor.bottomColor = propertyByName(CSSName.BORDER_COLOR_BOTTOM).computedValue().asColor();
-            bcolor.leftColor = propertyByName(CSSName.BORDER_COLOR_LEFT).computedValue().asColor();
+            bcolor.topColor = valueByName(CSSName.BORDER_COLOR_TOP).asColor();
+            bcolor.rightColor = valueByName(CSSName.BORDER_COLOR_RIGHT).asColor();
+            bcolor.bottomColor = valueByName(CSSName.BORDER_COLOR_BOTTOM).asColor();
+            bcolor.leftColor = valueByName(CSSName.BORDER_COLOR_LEFT).asColor();
             _drvBorderColor = bcolor;
         }
         return _drvBorderColor;
     }
 
+
+    public float asFloat(CSSName cssName) {
+        return valueByName(cssName).asFloat();
+    }
 
     /**
      * Convenience property accessor; returns a Color initialized with the
@@ -351,7 +405,7 @@ public class CalculatedStyle {
      */
     public Color getColor() {
         if (_drvColor == null) {
-            _drvColor = propertyByName(CSSName.COLOR).computedValue().asColor();
+            _drvColor = valueByName(CSSName.COLOR).asColor();
             XRLog.cascade(Level.FINEST, "Color: " + _drvColor);
         }
         return _drvColor;
@@ -364,35 +418,30 @@ public class CalculatedStyle {
      * @return The "background-position" property as a Point
      */
     public Point getBackgroundPosition(float parentWidth, float parentHeight, CssContext ctx) {
-        DerivedProperty xrProp = propertyByName(CSSName.BACKGROUND_POSITION);
-        DerivedValue dv = (DerivedValue) xrProp.computedValue();
-        return dv.asPoint(parentWidth, parentHeight, ctx);
+        return valueByName(CSSName.BACKGROUND_POSITION).asPoint(parentWidth, parentHeight, ctx);
     }
 
+    public float getFloatPropertyProportionalTo(CSSName cssName, float baseValue, CssContext ctx) {
+        return valueByName(cssName).getFloatProportionalTo(baseValue, ctx);
+    }
     /**
      * @param cssName
      * @param parentWidth
      * @param ctx
-     * @return
+     * @return TODO
      */
     public float getFloatPropertyProportionalWidth(CSSName cssName, float parentWidth, CssContext ctx) {
-        DerivedProperty prop = propertyByName(cssName);
-        DerivedValue value = prop.computedValue();
-        float floatProportionalWidth = value.getFloatProportionalWidth(parentWidth, ctx);
-        return floatProportionalWidth;
+        return valueByName(cssName).getFloatProportionalTo(parentWidth, ctx);
     }
 
     /**
      * @param cssName
      * @param parentHeight
      * @param ctx
-     * @return
+     * @return TODO
      */
     public float getFloatPropertyProportionalHeight(CSSName cssName, float parentHeight, CssContext ctx) {
-        DerivedProperty prop = propertyByName(cssName);
-        DerivedValue value = prop.computedValue();
-        float floatProportionalHeight = value.getFloatProportionalHeight(parentHeight, ctx);
-        return floatProportionalHeight;
+        return valueByName(cssName).getFloatProportionalTo(parentHeight, ctx);
     }
 
     /**
@@ -406,10 +455,15 @@ public class CalculatedStyle {
 
     /**
      * @param cssName
-     * @return
+     * @return TODO
      */
     public String getStringProperty(CSSName cssName) {
-        return propertyByName(cssName).computedValue().asString();
+        return valueByName(cssName).asString();
+    }
+
+    // TODO: doc
+    public boolean hasAbsoluteUnit(CSSName cssName) {
+        return valueByName(cssName).hasAbsoluteUnit();
     }
 
     /**
@@ -420,7 +474,7 @@ public class CalculatedStyle {
      * @return The ident value
      */
     public boolean isIdent(CSSName cssName, IdentValue val) {
-        return propertyByName(cssName).isIdent(val);
+        return valueByName(cssName)== val;
     }
 
     /**
@@ -430,7 +484,7 @@ public class CalculatedStyle {
      * @return The ident value
      */
     public IdentValue getIdent(CSSName cssName) {
-        return propertyByName(cssName).asIdentValue();
+        return valueByName(cssName).asIdentValue();
     }
 
     /**
@@ -480,29 +534,31 @@ public class CalculatedStyle {
         }//nothing to derive
 
         Iterator mProps = matched.getCascadedPropertyDeclarations();
-        int i = 0;
         while (mProps.hasNext()) {
             PropertyDeclaration pd = (PropertyDeclaration) mProps.next();
-            DerivedProperty prop = deriveProperty(pd.getCSSName(), pd.getValue());
-            _derivedPropertiesById[pd.getCSSName().getAssignedID()] = prop;
+            FSDerivedValue val = deriveValue(pd.getCSSName(), pd.getValue());
+            _derivedValuesById[pd.getCSSName().getAssignedID()] = val;
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param cssName PARAM
-     * @param value   PARAM
-     * @return Returns
-     */
-    private DerivedProperty deriveProperty(CSSName cssName, org.w3c.dom.css.CSSPrimitiveValue value) {
+    private FSDerivedValue deriveValue(CSSName cssName, org.w3c.dom.css.CSSPrimitiveValue value) {
         // Start assuming our computed value is the same as the specified value
-        DerivedValue specified = new DerivedValue(cssName, value, this);
-        DerivedValue computed = specified;
+        RGBColor rgb = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_RGBCOLOR ? value.getRGBColorValue() : null);
+        String s = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_STRING ? value.getStringValue() : null);
+
+        FSDerivedValue dval = DerivedValueFactory.newDerivedValue(
+                this,
+                cssName,
+                value.getPrimitiveType(),
+                value.getCssText(),
+                s,
+                rgb
+        );
+        FSDerivedValue cval = dval;
 
         //whats the point? (tobe) if (!specified.hasAbsoluteUnit()) {
         // inherit the value from parent element if value is set to inherit
-        if (specified.forcedInherit()) {
+        if (dval.isDeclaredInherit()) {
             // if we are root, have no parent, use the initial value as
             // defined by the CSS2 spec
             if (_parent == null) {
@@ -511,20 +567,19 @@ public class CalculatedStyle {
                         "property '" + cssName + "' may not be defined in CSS.");
             } else {
                 // pull from our parent CalculatedStyle
-                computed = _parent.propertyByName(cssName).computedValue();
+                cval = _parent.valueByName(cssName).copyOf();
             }
         }
-        //}
-        return new DerivedProperty(cssName, computed);
+        return cval;
     }
 
     public FontSpecification getFont(CssContext ctx) {
         if (_font == null) {
             _font = new FontSpecification();
-            _font.size = getFloatPropertyProportionalHeight(CSSName.FONT_SIZE, 0, ctx);
+            _font.size = getFloatPropertyProportionalTo(CSSName.FONT_SIZE, 0, ctx);
 
             _font.fontWeight = getIdent(CSSName.FONT_WEIGHT);
-            _font.families = propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
+            _font.families = valueByName(CSSName.FONT_FAMILY).asStringArray();
 
             _font.fontStyle = getIdent(CSSName.FONT_STYLE);
             _font.variant = getIdent(CSSName.FONT_VARIANT);
@@ -532,29 +587,19 @@ public class CalculatedStyle {
         return _font;
     }
 
-    //TODO: this stuff is a bit of a mess
-    public float getFontSizeForXHeight(CssContext ctx, float xHeight) {
-        FontSpecification f = new FontSpecification();
-        //can't set size now
-
-        f.fontWeight = getIdent(CSSName.FONT_WEIGHT);
-        f.families = propertyByName(CSSName.FONT_FAMILY).computedValue().asStringArray();
-
-        f.fontStyle = getIdent(CSSName.FONT_STYLE);
-        f.variant = getIdent(CSSName.FONT_VARIANT);
-
-        return ctx.getFontSizeForXHeight(getParent().getFont(ctx), f, xHeight);
+    public String[] asStringArray(CSSName cssName){
+        return valueByName(cssName).asStringArray();
     }
 
-    public float getNumberProperty(CSSName cssName) {
-        return propertyByName(cssName).computedValue().asFloat();
-    }
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/10/20 20:48:01  pdoubleya
+ * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
+ *
  * Revision 1.30  2005/10/03 23:44:43  tobega
  * thread-safer css code and improved style caching
  *

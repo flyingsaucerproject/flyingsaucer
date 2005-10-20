@@ -19,8 +19,11 @@
  */
 package org.xhtmlrenderer.css.constants;
 
+import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+import java.awt.*;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -49,7 +52,7 @@ import java.util.TreeMap;
  *
  * @author Patrick Wright
  */
-public class IdentValue {
+public class IdentValue implements FSDerivedValue {
     /**
      * Description of the Field
      */
@@ -214,6 +217,11 @@ public class IdentValue {
      * Description of the Field
      */
     public final static IdentValue HIRAGANA_IROHA = addValue("hiragana-iroha");
+    /**
+     * Description of the Field
+     * TODO: check use of this
+     */
+    public final static IdentValue INHERIT = addValue("inherit");
     /**
      * Description of the Field
      */
@@ -507,6 +515,13 @@ public class IdentValue {
     }
 
     /**
+     * TODO: doc
+     */
+    public static boolean looksLikeIdent(String ident) {
+        return (IdentValue) ALL_IDENT_VALUES.get(ident) != null;
+    }
+
+    /**
      * Adds a feature to the Value attribute of the IdentValue class
      *
      * @param ident The feature to be added to the Value attribute
@@ -520,12 +535,61 @@ public class IdentValue {
         ALL_IDENT_VALUES.put(ident, val);
         return val;
     }
+
+    public FSDerivedValue copyOf() {
+        return this;
+    }
+
+    public boolean isDeclaredInherit() {
+        return false;
+    }
+
+    public FSDerivedValue computedValue() {
+        return this;
+    }
+
+    public float asFloat() {
+        throw new XRRuntimeException("Ident value is never a float; wrong class used for derived value.");
+    }
+
+    public Color asColor() {
+        throw new XRRuntimeException("Ident value is never a color; wrong class used for derived value.");
+    }
+    public Point asPoint(
+            float parentWidth,
+            float parentHeight,
+            CssContext ctx
+    ) {
+            throw new XRRuntimeException("Ident value is never a point; wrong class used for derived value.");
+    }
+    public float getFloatProportionalTo(
+            float baseValue,
+            CssContext ctx
+    ) {
+        throw new XRRuntimeException("Ident value (" + toString() + ") is never a length; wrong class used for derived value.");
+    }
+    public String asString() {
+        return toString();
+    }
+    public String[] asStringArray() {
+        throw new XRRuntimeException("Ident value is never a string array; wrong class used for derived value.");
+    }
+    public IdentValue asIdentValue() { return this; }
+    public boolean hasAbsoluteUnit() {
+        throw new XRRuntimeException("Ident value is never an absolute unit; wrong class used for derived value.");
+    }
+    public boolean isIdent() {
+        return true;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/10/20 20:48:04  pdoubleya
+ * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
+ *
  * Revision 1.10  2005/10/08 17:40:18  tobega
  * Patch from Peter Brant
  *

@@ -20,8 +20,6 @@
  */
 package org.xhtmlrenderer.css.constants;
 
-import org.xhtmlrenderer.util.XRLog;
-
 import java.util.*;
 
 
@@ -47,6 +45,46 @@ public final class CSSName {
     private int assignedID;
 
     private boolean isPrimitive;
+
+
+    private static final Comparator COMPARATOR = new Comparator() {
+        public int compare(Object o1, Object o2) {
+            CSSName n1 = (CSSName)o1;
+            CSSName n2 = (CSSName)o2;
+            return n1.getAssignedID() - n2.getAssignedID();  //To change body of implemented methods use File | Settings | File Templates.
+        }
+    };
+
+    /**
+     * Map of all CSS properties
+     */
+    private static CSSName[] ALL_PROPERTIES;
+
+    /**
+     * Map of all CSS properties
+     */
+    private static Map ALL_PROPERTY_NAMES = new TreeMap();
+
+    /**
+     * Map of all non-shorthand CSS properties
+     */
+    private static Map ALL_PRIMITIVE_PROPERTY_NAMES = new TreeMap();
+
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    private final static List DEFAULT_INHERITABLE;// static block at bottom of class
+
+    /**
+     * Map of property names to initial values, per property, as defined by CSS
+     * Spec.
+     */
+    private final static Map INITIAL_VALUE_MAP;
+
+    /**
+     * Array of custom properties which user has declared; may include typos, however.
+     */
+    private static Map CSS_UNKNOWN_PROPERTIES = new HashMap();
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -568,33 +606,6 @@ public final class CSSName {
                 }
             };
     /**
-     * Map of all CSS properties
-     */
-    private static Map ALL_PROPERTY_NAMES;
-
-    /**
-     * Map of all non-shorthand CSS properties
-     */
-    private static Map ALL_PRIMITIVE_PROPERTY_NAMES;
-
-    /**
-     * Unique CSSName instance for CSS2 property.
-     */
-    private final static List DEFAULT_INHERITABLE;// static block at bottom of class
-
-    /**
-     * Map of property names to initial values, per property, as defined by CSS
-     * Spec.
-     */
-    private final static Map INITIAL_VALUE_MAP;
-
-    /**
-     * Array of custom properties which user has declared; may include typos, however.
-     */
-    private static Map CSS_UNKNOWN_PROPERTIES = new HashMap();
-
-
-    /**
      * Constructor for the CSSName object
      *
      * @param propName    PARAM
@@ -697,17 +708,12 @@ public final class CSSName {
      */
     public static CSSName getByPropertyName(String propName) {
         CSSName cssName = (CSSName) ALL_PROPERTY_NAMES.get(propName);
-        if (cssName == null) {
-            XRLog.layout("Property name " + propName + " has no CSSName instance assigned to it.");
-            cssName = (CSSName) CSS_UNKNOWN_PROPERTIES.get(propName);
-            if (cssName == null) {
-                XRLog.layout("Adding property " + propName + " as an unknown CSS property.");
 
-                cssName = addProperty(propName, false);
-                CSS_UNKNOWN_PROPERTIES.put(propName, cssName);
-            }
-        }
         return cssName;
+    }
+
+    public static CSSName getByID(int id) {
+        return ALL_PROPERTIES[id];
     }
 
     /**
@@ -727,12 +733,6 @@ public final class CSSName {
      * @return Returns
      */
     private final static synchronized CSSName addProperty(String propName, boolean isPrimitive) {
-        if (ALL_PROPERTY_NAMES == null) {
-            ALL_PROPERTY_NAMES = new TreeMap();
-        }
-        if (ALL_PRIMITIVE_PROPERTY_NAMES == null) {
-            ALL_PRIMITIVE_PROPERTY_NAMES = new TreeMap();
-        }
         CSSName cssName = new CSSName(propName, isPrimitive);
         ALL_PROPERTY_NAMES.put(propName, cssName);
         if (isPrimitive) {
@@ -923,17 +923,27 @@ public final class CSSName {
                 css.setAssignedID(cnt++);
             }
         }
+        iter = ALL_PROPERTY_NAMES.values().iterator();
+        ALL_PROPERTIES = new CSSName[ALL_PROPERTY_NAMES.size()];
+        while(iter.hasNext()) {
+            CSSName name = (CSSName) iter.next();
+            ALL_PROPERTIES[name.getAssignedID()] = name;
+        }
     }
 
     private void setAssignedID(int assignedID) {
         this.assignedID = assignedID;
     }
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/10/20 20:48:03  pdoubleya
+ * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
+ *
  * Revision 1.14  2005/06/27 00:05:44  tobega
  * Added support for fs-specific colspan and rowspan css properties. Created a modified version of cssparser
  *

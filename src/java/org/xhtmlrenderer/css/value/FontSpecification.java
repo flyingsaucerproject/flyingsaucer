@@ -2,6 +2,8 @@ package org.xhtmlrenderer.css.value;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 
+import java.util.Arrays;
+
 /**
  * Created by IntelliJ IDEA.
  * User: tobe
@@ -15,4 +17,15 @@ public class FontSpecification {
     public String[] families;
     public IdentValue fontStyle;
     public IdentValue variant;
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer("Font specification: ");
+        sb
+                .append(" families: " + Arrays.asList(families).toString())
+                .append(" size: " + size)
+                .append(" weight: " + fontWeight)
+                .append(" style: " + fontStyle)
+                .append(" variant: " + variant);
+        return sb.toString();
+    }
 }

@@ -20,16 +20,15 @@
  */
 package org.xhtmlrenderer.css.sheet.factory;
 
-import java.util.*;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.css.CSSValueList;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.util.XRLog;
+
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -208,6 +207,9 @@ public abstract class AbstractPropertyDeclarationFactory implements PropertyDecl
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/10/20 20:47:59  pdoubleya
+ * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
+ *
  * Revision 1.5  2005/01/29 20:24:25  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

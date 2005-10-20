@@ -128,8 +128,7 @@ public class Style {
         // HACK: assume containing block height is auto, so percentages become
         // auto
         return calculatedStyle.isIdent(CSSName.HEIGHT, IdentValue.AUTO)
-                || !calculatedStyle.propertyByName(CSSName.HEIGHT)
-                .computedValue().hasAbsoluteUnit();
+                || !calculatedStyle.hasAbsoluteUnit(CSSName.HEIGHT);
     }
 
     public boolean isOutsideNormalFlow() {

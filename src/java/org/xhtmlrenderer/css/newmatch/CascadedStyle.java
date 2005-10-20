@@ -160,6 +160,8 @@ public class CascadedStyle {
         return list.iterator();
     }
 
+    public int countAssigned() { return cascadedProperties.size(); }
+
     public String getFingerprint() {
         StringBuffer sb = new StringBuffer();
         Iterator iter = cascadedProperties.values().iterator();
@@ -174,6 +176,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/10/20 20:48:02  pdoubleya
+ * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
+ *
  * Revision 1.11  2005/06/21 08:06:47  pdoubleya
  * Changed to use Map of properties again.
  *

@@ -98,7 +98,7 @@ public class Boxing {
     private static void checkPageBreakBefore(Context c, Box block) {
         if (c.isPrint()) {
             if ((c.isPendingPageBreak() ||
-                    c.getCurrentStyle().propertyByName(CSSName.PAGE_BREAK_BEFORE).isIdent(IdentValue.ALWAYS))) {
+                    c.getCurrentStyle().isIdent(CSSName.PAGE_BREAK_BEFORE, IdentValue.ALWAYS))) {
                 block.moveToNextPage(c, false);
                 block.getStyle().setMarginTopOverride(0f);
             }
@@ -107,7 +107,7 @@ public class Boxing {
     }
 
     private static void checkPageBreakAfter(Context c, Box block) {
-        if (c.isPrint() && c.getCurrentStyle().propertyByName(CSSName.PAGE_BREAK_AFTER).isIdent(IdentValue.ALWAYS)) {
+        if (c.isPrint() && c.getCurrentStyle().isIdent(CSSName.PAGE_BREAK_AFTER, IdentValue.ALWAYS)) {
             c.setPendingPageBreak(true);
         }
     }
@@ -116,7 +116,7 @@ public class Boxing {
      * @return if true block should be layouted again
      */
     private static boolean checkPageBreakInside(Context c, Box block) {
-        boolean relayout = c.isPrint() && c.getCurrentStyle().propertyByName(CSSName.PAGE_BREAK_INSIDE).isIdent(IdentValue.AVOID) &&
+        boolean relayout = c.isPrint() && c.getCurrentStyle().isIdent(CSSName.PAGE_BREAK_INSIDE, IdentValue.AVOID) &&
                 !block.isMovedPastPageBreak() &&
                 block.crossesPageBreak(c);
         if (relayout) {
@@ -358,6 +358,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2005/10/20 20:47:59  pdoubleya
+ * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
+ *
  * Revision 1.41  2005/10/18 20:57:02  tobega
  * Patch from Peter Brant
  *

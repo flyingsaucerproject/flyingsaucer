@@ -404,7 +404,7 @@ public class VerticalMarginCollapser {
     }
 
     public static boolean mayCollapseInto(Context c, CollapsableContent content) {
-        return content.mayCollapseInto() && c.getCurrentStyle().propertyByName(CSSName.OVERFLOW).isIdent(IdentValue.VISIBLE);
+        return content.mayCollapseInto() && c.getCurrentStyle().isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE);
     }
 
     private static Float calculateCollapsedTop(Context c, Content topContent, float parentWidth) {
@@ -550,7 +550,7 @@ public class VerticalMarginCollapser {
 
         return borderWidth.top == 0 && borderWidth.bottom == 0 &&
                 padding.top == 0 && padding.bottom == 0 &&
-                (style.propertyByName(CSSName.HEIGHT).isIdent(IdentValue.AUTO) ||
-                style.propertyByName(CSSName.HEIGHT).computedValue().asFloat() == 0);
+                (style.isIdent(CSSName.HEIGHT, IdentValue.AUTO) ||
+                style.asFloat(CSSName.HEIGHT) == 0);
     }
 }

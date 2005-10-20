@@ -502,8 +502,8 @@ public class TableBoxing {
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
 
-        cell.colspan = (int) c.getCurrentStyle().getNumberProperty(CSSName.FS_COLSPAN);
-        cell.rowspan = (int) c.getCurrentStyle().getNumberProperty(CSSName.FS_ROWSPAN);
+        cell.colspan = (int) c.getCurrentStyle().asFloat(CSSName.FS_COLSPAN);
+        cell.rowspan = (int) c.getCurrentStyle().asFloat(CSSName.FS_ROWSPAN);
         if (fixed) {
             int width = 0;
             for (int i = 0; i < cell.colspan; i++) width += table.columns[col + i];
@@ -593,6 +593,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.31  2005/10/20 20:48:06  pdoubleya
+   Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
+
    Revision 1.30  2005/10/18 20:57:08  tobega
    Patch from Peter Brant
 

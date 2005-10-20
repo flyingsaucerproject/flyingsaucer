@@ -22,6 +22,7 @@ package org.xhtmlrenderer.css.sheet;
 import com.steadystate.css.dom.CSSStyleRuleImpl;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xhtmlrenderer.util.XRLog;
 
 import java.util.Iterator;
 import java.util.List;
@@ -157,11 +158,16 @@ public class Ruleset {
             String propName = decl.item(i);
             CSSName cssName = CSSName.getByPropertyName(propName);
 
-            Iterator iter = PropertyDeclaration.newFactory(cssName).buildDeclarations(decl, cssName, _origin);
+            if ( cssName == null ) {
+                // TODO: didn't we used to accept unknown properties?
+                XRLog.cascade("Unknown property in stylesheet: " + propName + ", skipping it.");
+            } else {
+                Iterator iter = PropertyDeclaration.newFactory(cssName).buildDeclarations(decl, cssName, _origin);
 
-            while (iter.hasNext()) {
-                // the cast is just for doc purposes
-                _props.add((PropertyDeclaration) iter.next());
+                while (iter.hasNext()) {
+                    // the cast is just for doc purposes
+                    _props.add((PropertyDeclaration) iter.next());
+                }
             }
         }
     }
@@ -172,6 +178,9 @@ public class Ruleset {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/10/20 20:48:05  pdoubleya
+ * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
+ *
  * Revision 1.10  2005/10/15 23:39:15  tobega
  * patch from Peter Brant
  *
