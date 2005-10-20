@@ -181,6 +181,9 @@ public abstract class BasicPanel extends RootPanel {
         // if this is the first time painting this document, then calc layout
         Box root = getRootBox();
         if (root == null) {
+            if (! Configuration.isTrue("xr.use.threads", true)) {
+                doActualLayout(getGraphics());
+            }
             //Uu.p("dispatching an initial resize event");
             //queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, this.getSize()));
             Uu.p("skipping the actual painting");
@@ -1102,6 +1105,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.76  2005/10/20 22:51:39  peterbrant
+ * Add non-threaded rendering mode
+ *
  * Revision 1.75  2005/10/18 20:57:07  tobega
  * Patch from Peter Brant
  *

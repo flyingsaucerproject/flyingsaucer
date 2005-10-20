@@ -15,6 +15,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.render.StackingContext;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -105,8 +106,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         getRenderingContext().setMedia(pageInfo == null ? "screen" : "print");
         getRenderingContext().getStyleReference().setDocumentContext(getContext(), getContext().getNamespaceHandler(), doc, this);
 
-        if (queue != null) {
+        if (Configuration.isTrue("xr.use.threads", true)) {
             queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.DOCUMENT_SET));
+        } else {
+            repaint();
         }
     }
 
@@ -205,25 +208,36 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      */
     protected void init() {
 
-        queue = new RenderQueue();
+        
         documentListeners = new HashMap();
         setBackground(Color.white);
         super.setLayout(null);
 
-        layoutThread = new Thread(new LayoutLoop(this), "FlyingSaucer-Layout");
-        renderThread = new Thread(new RenderLoop(this), "FlyingSaucer-Render");
+        if (Configuration.isTrue("xr.use.threads", true)) {
+            queue = new RenderQueue();
+            
+            layoutThread = new Thread(new LayoutLoop(this), "FlyingSaucer-Layout");
+            renderThread = new Thread(new RenderLoop(this), "FlyingSaucer-Render");
 
-        layoutThread.start();
-        renderThread.start();
+            layoutThread.start();
+            renderThread.start();
+        }
     }
 
     public synchronized void shutdown() {
         try {
-            layoutThread.interrupt();
-            layoutThread.join();
+            if (layoutThread != null) {
+                layoutThread.interrupt();
+                layoutThread.join();
+                layoutThread = null;
+            }
 
-            renderThread.interrupt();
-            renderThread.join();
+            if (renderThread != null) {
+                renderThread.interrupt();
+                renderThread.join();
+                renderThread = null;
+            }
+            
         } catch (InterruptedException e) {
             // ignore
         }
@@ -375,7 +389,9 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
 
 
-        queue.dispatchRepaintEvent(new ReflowEvent(ReflowEvent.LAYOUT_COMPLETE));
+        if (Configuration.isTrue("xr.use.threads", true)) {
+            queue.dispatchRepaintEvent(new ReflowEvent(ReflowEvent.LAYOUT_COMPLETE));
+        }
         this.fireDocumentLoaded();
     }
 
@@ -493,9 +509,14 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     public void componentResized(ComponentEvent e) {
         Uu.p("componentResized() " + this.getSize());
         Uu.p("viewport = " + enclosingScrollPane.getViewport().getSize());
-        if (doc != null)
-            queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED,
-                    enclosingScrollPane.getViewport().getSize()));
+        if (doc != null) {
+            if (Configuration.isTrue("xr.use.threads", true)) {
+                queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED,
+                        enclosingScrollPane.getViewport().getSize()));
+            } else {
+                setRootBox(null);
+            }
+        }
     }
 
     /**
