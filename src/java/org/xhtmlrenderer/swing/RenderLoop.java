@@ -30,7 +30,7 @@ public class RenderLoop implements Runnable {
             }
             //Uu.p("got a repaint event: " + evt);
             evt = root.queue.collapseRepaintEvents(evt);
-            if (evt.getType() == evt.LAYOUT_COMPLETE) {
+            if (evt.getType() == ReflowEvent.LAYOUT_COMPLETE) {
                 root.repaint();
                 continue;
             }
@@ -50,7 +50,7 @@ public class RenderLoop implements Runnable {
                 }
                 */
                 // if the height has changed due to new boxes, then set a new height
-                if (evt.getType() == evt.MORE_BOXES_AVAILABLE) {
+                if (evt.getType() == ReflowEvent.MORE_BOXES_AVAILABLE) {
                     //Uu.p("doing a more available");
                     Dimension dim = evt.getDimension();
                     //Uu.p("current dimensions = " + this.getSize());
