@@ -29,16 +29,13 @@ import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.*;
-
-import org.xhtmlrenderer.util.XRLog;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Description of the Class
@@ -627,6 +624,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/10/20 20:31:04  pdoubleya
+ * Cleaned imports.
+ *
  * Revision 1.34  2005/08/16 22:46:27  joshy
  * added new demos, streamlined downloads
  *
