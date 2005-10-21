@@ -142,10 +142,10 @@ public class BoxRendering {
         RectPropertySet margin = block.getStyle().getMarginWidth();
 
         // CLEAN: cast to int
-        Rectangle bounds = new Rectangle(block.x + (int)margin.getLeftWidth(),
-                block.y + (int)margin.getTopWidth(),
-                width - (int)margin.getLeftWidth() - (int)margin.getRightWidth(),
-                height - (int)margin.getTopWidth() - (int)margin.getBottomWidth());
+        Rectangle bounds = new Rectangle(block.x + (int)margin.left(),
+                block.y + (int)margin.top(),
+                width - (int)margin.left() - (int)margin.right(),
+                height - (int)margin.top() - (int)margin.bottom());
         paintBackground(c, block, bounds);
 
         //c.translateInsets(block);
@@ -254,8 +254,8 @@ public class BoxRendering {
         xoff += bfc.getX();
         yoff += bfc.getY();
         //Uu.p("xoff = " + xoff + " yoff = " + yoff);
-        xoff += (bfc.getInsets().left - (int)bfc.getPadding().getLeftWidth());
-        yoff += (bfc.getInsets().top - (int)bfc.getPadding().getTopWidth());
+        xoff += (bfc.getInsets().left - (int)bfc.getPadding().left());
+        yoff += (bfc.getInsets().top - (int)bfc.getPadding().top());
         //Uu.p("xoff = " + xoff + " yoff = " + yoff);
         
         
@@ -372,6 +372,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.46  2005/10/21 13:17:16  pdoubleya
+ * Rename some methods in RectPropertySet, cleanup.
+ *
  * Revision 1.45  2005/10/21 13:02:23  pdoubleya
  * Changed to cache padding in RectPropertySet.
  *

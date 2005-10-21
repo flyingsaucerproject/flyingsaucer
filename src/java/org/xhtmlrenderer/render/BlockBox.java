@@ -88,10 +88,10 @@ public class BlockBox extends Box implements Renderable {
         RectPropertySet margin = getStyle().getMarginWidth();
 
         // CLEAN: cast to int
-        Rectangle bounds = new Rectangle(x + (int)margin.getLeftWidth(),
-                y + (int)margin.getTopWidth(),
-                width - (int)margin.getLeftWidth() - (int)margin.getRightWidth(),
-                height - (int)margin.getTopWidth() - (int)margin.getBottomWidth());
+        Rectangle bounds = new Rectangle(x + (int)margin.left(),
+                y + (int)margin.top(),
+                width - (int)margin.left() - (int)margin.right(),
+                height - (int)margin.top() - (int)margin.bottom());
         BoxRendering.paintBackground(c, this, bounds);
         g2.translate(x - absX, y - absY);
     }
@@ -109,6 +109,9 @@ public class BlockBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/10/21 13:17:15  pdoubleya
+ * Rename some methods in RectPropertySet, cleanup.
+ *
  * Revision 1.14  2005/10/21 12:01:20  pdoubleya
  * Added cachable rect property for margin, cleanup minor in styling.
  *

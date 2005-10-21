@@ -115,10 +115,10 @@ public class BlockRendering {
                 !(box instanceof AnonymousBlockBox)) {
 
             RectPropertySet margin = box.getStyle().getMarginWidth();
-            Rectangle bounds = new Rectangle(box.x + (int)margin.getLeftWidth(),
-                    box.y + (int)margin.getTopWidth(),
-                    box.getWidth() - (int)margin.getLeftWidth() - (int)margin.getRightWidth(),
-                    box.height - (int)margin.getTopWidth() - (int)margin.getBottomWidth());
+            Rectangle bounds = new Rectangle(box.x + (int)margin.left(),
+                    box.y + (int)margin.top(),
+                    box.getWidth() - (int)margin.left() - (int)margin.right(),
+                    box.height - (int)margin.top() - (int)margin.bottom());
 
             return !clip.intersects(bounds);
         }

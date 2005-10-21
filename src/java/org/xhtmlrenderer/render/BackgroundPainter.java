@@ -66,10 +66,10 @@ public class BackgroundPainter {
         }
         RectPropertySet margin = block.getStyle().getMarginWidth();
         // CLEAN: cast to int
-        Rectangle box = new Rectangle(block.x + (int)margin.getLeftWidth() + border.left,
-                block.y + (int)margin.getTopWidth() + border.top,
-                width - (int)margin.getLeftWidth() - (int)margin.getRightWidth() - border.left - border.right,
-                height - (int)margin.getTopWidth() - border.top - border.bottom - (int)margin.getBottomWidth());
+        Rectangle box = new Rectangle(block.x + (int)margin.left() + border.left,
+                block.y + (int)margin.top() + border.top,
+                width - (int)margin.left() - (int)margin.right() - border.left - border.right,
+                height - (int)margin.top() - border.top - border.bottom - (int)margin.bottom());
 
         // paint the background
         Color background_color = currentStyle.getBackgroundColor();
@@ -173,6 +173,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2005/10/21 13:17:14  pdoubleya
+ * Rename some methods in RectPropertySet, cleanup.
+ *
  * Revision 1.35  2005/10/21 12:01:19  pdoubleya
  * Added cachable rect property for margin, cleanup minor in styling.
  *

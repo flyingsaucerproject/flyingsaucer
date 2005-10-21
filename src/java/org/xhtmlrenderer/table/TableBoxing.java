@@ -151,12 +151,12 @@ public class TableBoxing {
         RectPropertySet margin = tableBox.getStyle().getMarginWidth();
         RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
         // CLEAN: cast to int
-        int tx = (int)margin.getLeftWidth() + border.left + (int)padding.getLeftWidth();
-        int ty = (int)margin.getTopWidth() + border.top + (int)padding.getTopWidth();
+        int tx = (int)margin.left() + border.left + (int)padding.left();
+        int ty = (int)margin.top() + border.top + (int)padding.top();
         tableBox.tx = tx;
         tableBox.ty = ty;
         c.translate(tx, ty);
-        c.shrinkExtents(tx + (int)margin.getRightWidth() + border.right + (int)padding.getRightWidth(), ty + (int)margin.getBottomWidth() + border.bottom + (int)padding.getBottomWidth());
+        c.shrinkExtents(tx + (int)margin.right() + border.right + (int)padding.right(), ty + (int)margin.bottom() + border.bottom + (int)padding.bottom());
         IdentValue borderStyle = c.getCurrentStyle().getIdent(CSSName.BORDER_COLLAPSE);
         int borderSpacingHorizontal = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_HORIZONTAL, 0, c.getCtx());
         int borderSpacingVertical = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_VERTICAL, 0, c.getCtx());
@@ -207,12 +207,12 @@ public class TableBoxing {
         }
 
         //TODO: margins go on the outer box
-        tableBox.leftPadding = border.left + (int)padding.getLeftWidth();
+        tableBox.leftPadding = border.left + (int)padding.left();
         // CLEAN: cast to int
-        tableBox.leftPadding += (int)margin.getLeftWidth();
-        tableBox.rightPadding = border.right + (int)margin.getRightWidth();
-        tableBox.rightPadding += (int)margin.getRightWidth();
-        tableBox.height = (int)margin.getTopWidth() + border.top + (int)padding.getTopWidth() + tableBox.height + (int)padding.getBottomWidth() + border.bottom + (int)margin.getBottomWidth();
+        tableBox.leftPadding += (int)margin.left();
+        tableBox.rightPadding = border.right + (int)margin.right();
+        tableBox.rightPadding += (int)margin.right();
+        tableBox.height = (int)margin.top() + border.top + (int)padding.top() + tableBox.height + (int)padding.bottom() + border.bottom + (int)margin.bottom();
 
         c.popStyle();
 
@@ -546,14 +546,14 @@ public class TableBoxing {
         c.setSubBlock(false);
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
-        cell.leftPadding = border.left + (int)padding.getLeftWidth();
-        cell.rightPadding = (int)padding.getRightWidth() + border.right;
-        int tx = border.left + (int)padding.getLeftWidth();
-        int ty = border.top + (int)padding.getTopWidth();
+        cell.leftPadding = border.left + (int)padding.left();
+        cell.rightPadding = (int)padding.right() + border.right;
+        int tx = border.left + (int)padding.left();
+        int ty = border.top + (int)padding.top();
         cell.tx = tx;
         cell.ty = ty;
         c.translate(tx, ty);
-        c.shrinkExtents(tx + border.right + (int)padding.getRightWidth(), ty + border.bottom + (int)padding.getBottomWidth());
+        c.shrinkExtents(tx + border.right + (int)padding.right(), ty + border.bottom + (int)padding.bottom());
         if (cell.component == null)
             Boxing.layoutChildren(c, cell, content);
         else {
@@ -573,7 +573,7 @@ public class TableBoxing {
             cell.height = original_height;
         }
 
-        cell.height = border.top + (int)padding.getTopWidth() + cell.height + (int)padding.getBottomWidth() + border.bottom;
+        cell.height = border.top + (int)padding.top() + cell.height + (int)padding.bottom() + border.bottom;
 
         //restore the extents
         c.setExtents(oe);
@@ -596,6 +596,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.34  2005/10/21 13:17:18  pdoubleya
+   Rename some methods in RectPropertySet, cleanup.
+
    Revision 1.33  2005/10/21 13:02:25  pdoubleya
    Changed to cache padding in RectPropertySet.
 

@@ -155,8 +155,8 @@ public class InlineRendering {
             // CLEAN: cast to int
             ((InlineBorder) i.next()).paint(c,
                     line,
-                    padX + inline.x + (int)margin.getLeftWidth(),
-                    (int)padding.getLeftWidth() + border.left,
+                    padX + inline.x + (int)margin.left(),
+                    (int)padding.left() + border.left,
                     BorderPainter.TOP + BorderPainter.BOTTOM);
         }
 
@@ -164,8 +164,8 @@ public class InlineRendering {
         InlineBorder ib = new InlineBorder(inline.y, inline.height, margin, border, padding, c.getCurrentStyle(), lm, background_color);
         // CLEAN: cast to int
         ib.paint(c, line,
-                inline.x + padX + (int)margin.getLeftWidth(),
-                border.left + (int)padding.getLeftWidth(), BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM);
+                inline.x + padX + (int)margin.left(),
+                border.left + (int)padding.left(), BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM);
         c.getInlineBorders().addLast(ib);
     }
 
@@ -189,11 +189,11 @@ public class InlineRendering {
                     c,
                     line,
                     padX + inline.x,
-                    (int)padding.getRightWidth() + border.right,
+                    (int)padding.right() + border.right,
                     BorderPainter.TOP + BorderPainter.BOTTOM);
         }
 
-        ib.paint(c, line, padX + inline.x, (int)padding.getRightWidth() + border.right, BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM);
+        ib.paint(c, line, padX + inline.x, (int)padding.right() + border.right, BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM);
     }
 
     /**
@@ -501,7 +501,7 @@ public class InlineRendering {
         paintRightPadding(c, line, ib, padX, border, padding);
 
         // CLEAN: cast to int
-        padX += (int)padding.getRightWidth() + border.right;
+        padX += (int)padding.right() + border.right;
         Relative.untranslateRelative(c, ib.getStyle().getCalculatedStyle(), true);
         c.popStyle();
         if (pushedStyles != null) pushedStyles.removeLast();
@@ -512,8 +512,8 @@ public class InlineRendering {
         margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
         //padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
         // CLEAN: cast to int
-        paintMargin(c, line, ib, padX, (int)margin.getRightWidth());
-        padX += margin.getRightWidth();
+        paintMargin(c, line, ib, padX, (int)margin.right());
+        padX += margin.right();
         return padX;
     }
 
@@ -541,12 +541,12 @@ public class InlineRendering {
         //paintLeftPadding takes the margin into account
         paintLeftPadding(c, line, ib, padX, margin, border, padding);
         // CLEAN: cast to int
-        padX += (int)margin.getLeftWidth() + border.left + (int)padding.getLeftWidth();
+        padX += (int)margin.left() + border.left + (int)padding.left();
         //text decoration?
         IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
         if (decoration != IdentValue.NONE) {
             // CLEAN: cast to int
-            decorations.addLast(new TextDecoration(decoration, ib.x + (int)margin.getLeftWidth() + border.left + (int)padding.getLeftWidth(), c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
+            decorations.addLast(new TextDecoration(decoration, ib.x + (int)margin.left() + border.left + (int)padding.left(), c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
         }
         return padX;
     }

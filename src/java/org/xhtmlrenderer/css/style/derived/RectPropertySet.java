@@ -15,31 +15,24 @@ public class RectPropertySet {
     protected float _right;
     protected float _bottom;
     protected float _left;
-    protected CSSName _cssName;
 
     protected RectPropertySet() {
         _top = _right = _bottom = _left = 0f;
     }
 
-    public RectPropertySet(CSSName cssName) {
-        this();
-        this._cssName = cssName;
-    }
-
     public RectPropertySet(
-            CalculatedStyle style,
             CSSName cssName,
             float top,
             float right,
             float bottom,
             float left
     ) {
-        this(cssName);
+        this();
         this._top = top;
         this._right = right;
         this._bottom = bottom;
         this._left = left;
-        this.buildKey();
+        this.buildKey(cssName);
     }
 
     public static RectPropertySet newInstance(
@@ -52,7 +45,6 @@ public class RectPropertySet {
     ) {
         RectPropertySet rect =
                 new RectPropertySet(
-                        style,
                         shortHandProperty,
                         style.getFloatPropertyProportionalHeight(sideProperties[0], parentHeight, ctx),
                         style.getFloatPropertyProportionalWidth(sideProperties[1], parentWidth, ctx),
@@ -66,20 +58,32 @@ public class RectPropertySet {
         return getPropertyIdentifier();
     }
 
-    public float getTopWidth() {
+    public float top() {
         return _top;
     }
 
-    public float getRightWidth() {
+    public float right() {
         return _right;
     }
 
-    public float getBottomWidth() {
+    public float bottom() {
         return _bottom;
     }
 
-    public float getLeftWidth() {
+    public float left() {
         return _left;
+    }
+
+    public float getLeftRightDiff() {
+        return _left - _right;
+    }
+
+    public float height() {
+        return _top + _bottom;
+    }
+
+    public float width() {
+        return _left + _right;
     }
 
     public String getPropertyIdentifier() {
@@ -104,7 +108,6 @@ public class RectPropertySet {
 
     public static String deriveKey(
             CalculatedStyle style,
-            CSSName shortHandProperty,
             CSSName[] sideProperties
     ) {
         String key = null;
@@ -115,7 +118,7 @@ public class RectPropertySet {
         }
         if (isAbs) {
             key = new StringBuffer()
-                    .append(shortHandProperty.toString() + ": ")
+                    .append("side-rect : ")
                     .append(style.asFloat(sideProperties[0]) + "px ")
                     .append(style.asFloat(sideProperties[1]) + "px ")
                     .append(style.asFloat(sideProperties[2]) + "px ")
@@ -135,9 +138,9 @@ public class RectPropertySet {
         return newRect;
     }
 
-    protected void buildKey() {
+    protected void buildKey(CSSName name) {
         this._key = new StringBuffer()
-                .append(_cssName.toString() + ": ")
+                .append(name.toString() + ": ")
                 .append(_top + "px ")
                 .append(_right + "px ")
                 .append(_bottom + "px ")

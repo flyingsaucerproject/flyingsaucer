@@ -69,15 +69,15 @@ public class InlineBorder {
 
     void paint(Context c, LineBox line, int start, int width, int sides) {
         if (width <= 0) return;
-        int ty = line.getBaseline() - y - height - (int)margin.getTopWidth() - border.top - (int)padding.getTopWidth() + line.y;
+        int ty = line.getBaseline() - y - height - (int)margin.top() - border.top - (int)padding.top() + line.y;
         ty += (int) lm.getDescent();
         c.translate(0, ty);
         c.getGraphics().translate(0, ty);
         // CLEAN: cast to int
         Rectangle bounds = new Rectangle(start,
-                y + (int)margin.getTopWidth(),
+                y + (int)margin.top(),
                 width,
-                height + border.top + (int)padding.getTopWidth() + (int)padding.getBottomWidth() + border.bottom);
+                height + border.top + (int)padding.top() + (int)padding.bottom() + border.bottom);
         //first the background
         if (background_color != null) {
             // skip transparent background

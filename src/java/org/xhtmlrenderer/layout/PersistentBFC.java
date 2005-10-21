@@ -43,10 +43,10 @@ public class PersistentBFC {
         RectPropertySet margin = master.getStyle().getMarginWidth();
         padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
         // CLEAN: cast to int
-        insets = new Border((int)margin.getTopWidth() + border.top + (int)padding.getTopWidth(),
-                (int)padding.getRightWidth() + border.right + (int)margin.getRightWidth(),
-                (int)padding.getBottomWidth() + border.bottom + (int)margin.getBottomWidth(),
-                (int)margin.getLeftWidth() + border.left + (int)padding.getLeftWidth());
+        insets = new Border((int)margin.top() + border.top + (int)padding.top(),
+                (int)padding.right() + border.right + (int)margin.right(),
+                (int)padding.bottom() + border.bottom + (int)margin.bottom(),
+                (int)margin.left() + border.left + (int)padding.left());
         this.master = master;
         master.setPersistentBFC(this);
     }

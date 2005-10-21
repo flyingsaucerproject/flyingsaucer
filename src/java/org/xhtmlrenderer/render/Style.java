@@ -109,26 +109,16 @@ public class Style {
     }
 
     public RectPropertySet getMarginWidth() {
-        /* CLEAN
-        Border result = new Border(calculatedStyle.getMarginRect(parentWidth,
-                parentWidth, cssContext));
+        RectPropertySet rect = calculatedStyle.getMarginRect(parentWidth, parentWidth, cssContext).copyOf();
+
+        // TODO: this is bad for cached rects...
         if (this.marginTopOverrideSet) {
-            result.top = (int) this.marginTopOverride;
+            rect.setTop((int) this.marginTopOverride);
         }
         if (this.marginBottomOverrideSet) {
-            result.bottom = (int) this.marginBottomOverride;
+            rect.setBottom((int) this.marginBottomOverride);
         }
-        return result;
-        */
-        RectPropertySet result = calculatedStyle.getMarginRect(parentWidth,
-                parentWidth, cssContext).copyOf();
-        if (this.marginTopOverrideSet) {
-            result.setTop((int) this.marginTopOverride);
-        }
-        if (this.marginBottomOverrideSet) {
-            result.setBottom((int) this.marginBottomOverride);
-        }
-        return result;
+        return rect;
     }
 
     public boolean isAutoWidth() {

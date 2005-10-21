@@ -169,14 +169,14 @@ public class VerticalMarginCollapser {
         Border width = c.getCurrentStyle().getBorderWidth(c.getCtx());
         RectPropertySet padding = c.getCurrentStyle().getPaddingRect(parentWidth, parentWidth, c.getCtx());
 
-        return width.top != 0 || (int)padding.getTopWidth() != 0;
+        return width.top != 0 || (int)padding.top() != 0;
     }
 
     private static boolean hasBottomBorderOrPadding(Context c, float parentWidth) {
         Border width = c.getCurrentStyle().getBorderWidth(c.getCtx());
         RectPropertySet padding = c.getCurrentStyle().getPaddingRect(parentWidth, parentWidth, c.getCtx());
 
-        return width.bottom != 0 || (int)padding.getBottomWidth() != 0;
+        return width.bottom != 0 || (int)padding.bottom() != 0;
     }
 
     private static Float collapseTopMargin(Context c, CachingContent content, float parentWidth) {
@@ -480,8 +480,8 @@ public class VerticalMarginCollapser {
             RectPropertySet padding = style.getPaddingRect(parentWidth, parentWidth, c.getCtx());
             Border borderWidth = style.getBorderWidth(c.getCtx());
             return parentWidth -
-                    margin.getLeftWidth() - borderWidth.left - (int)padding.getLeftWidth() -
-                    (int)padding.getRightWidth() - borderWidth.right - margin.getRightWidth();
+                    margin.left() - borderWidth.left - (int)padding.left() -
+                    (int)padding.right() - borderWidth.right - margin.right();
         }
     }
 
@@ -550,7 +550,7 @@ public class VerticalMarginCollapser {
         RectPropertySet padding = style.getPaddingRect(parentWidth, parentWidth, c.getCtx());
 
         return borderWidth.top == 0 && borderWidth.bottom == 0 &&
-                (int)padding.getTopWidth() == 0 && (int)padding.getBottomWidth() == 0 &&
+                (int)padding.top() == 0 && (int)padding.bottom() == 0 &&
                 (style.isIdent(CSSName.HEIGHT, IdentValue.AUTO) ||
                 style.asFloat(CSSName.HEIGHT) == 0);
     }
