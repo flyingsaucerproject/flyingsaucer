@@ -100,7 +100,7 @@ public class BlockRendering {
         //if (box.getPersistentBFC() != null) c.popBFC();
     }
 
-    public static final boolean ALTERNATE_CLIP_DAMAGE = true;
+    public static final boolean ALTERNATE_CLIP_DAMAGE = false;
 
     public static void paintChild(Context c, Box box, boolean restyle) {
         if (!canBeSkipped(c, box)) {
@@ -109,6 +109,10 @@ public class BlockRendering {
     }
 
     public static boolean canBeSkipped(Context c, Box box) {
+        if (box.getStyle() == null) {
+            return true;
+        }
+        
         Shape clip = c.getGraphics().getClip();
         if (!box.isChildrenExceedBounds() &&
                 Configuration.isTrue("xr.renderer.viewport-repaint", false) &&
