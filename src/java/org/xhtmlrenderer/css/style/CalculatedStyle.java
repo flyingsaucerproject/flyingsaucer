@@ -58,7 +58,7 @@ import java.util.logging.Level;
  * @author Patrick Wright
  */
 public class CalculatedStyle {
-    private static final Map _cachedRects = new HashMap();
+    private static final Map _cachedRects = new HashMap(500);
 
     /**
      * The parent-style we inherit from
@@ -567,6 +567,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2005/10/21 18:14:59  pdoubleya
+ * set  initial capacity for cached rects.
+ *
  * Revision 1.37  2005/10/21 18:10:50  pdoubleya
  * Support for cachable borders. Still buggy on some pages, but getting there.
  *
