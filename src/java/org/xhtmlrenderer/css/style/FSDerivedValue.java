@@ -32,6 +32,7 @@ public interface FSDerivedValue {
     );
 
     float getFloatProportionalTo(
+            CSSName cssName,
             float baseValue,
             CssContext ctx
     );

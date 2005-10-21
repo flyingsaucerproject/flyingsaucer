@@ -19,15 +19,13 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.value.Border;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
+import java.awt.*;
 import java.util.LinkedList;
 
 /**
@@ -116,11 +114,11 @@ public class BlockRendering {
                 box.getState() != Box.CHILDREN_FLUX && clip != null &&
                 !(box instanceof AnonymousBlockBox)) {
 
-            Border margin = box.getStyle().getMarginWidth();
-            Rectangle bounds = new Rectangle(box.x + margin.left,
-                    box.y + margin.top,
-                    box.getWidth() - margin.left - margin.right,
-                    box.height - margin.top - margin.bottom);
+            RectPropertySet margin = box.getStyle().getMarginWidth();
+            Rectangle bounds = new Rectangle(box.x + (int)margin.getLeftWidth(),
+                    box.y + (int)margin.getTopWidth(),
+                    box.getWidth() - (int)margin.getLeftWidth() - (int)margin.getRightWidth(),
+                    box.height - (int)margin.getTopWidth() - (int)margin.getBottomWidth());
 
             return !clip.intersects(bounds);
         }

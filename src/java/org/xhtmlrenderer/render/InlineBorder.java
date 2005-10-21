@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.Context;
 
@@ -32,7 +33,8 @@ import java.awt.font.LineMetrics;
 public class InlineBorder {
     private CalculatedStyle style;
     private LineMetrics lm;
-    private Border margin;
+    // CLEAN:
+    private RectPropertySet margin;
     private Border border;
     private Border padding;
     private int y;
@@ -54,7 +56,7 @@ public class InlineBorder {
      * @param lm
      * @param background_color
      */
-    InlineBorder(int y, int height, Border margin, Border border, Border padding, CalculatedStyle style, LineMetrics lm, Color background_color) {
+    InlineBorder(int y, int height, RectPropertySet margin, Border border, Border padding, CalculatedStyle style, LineMetrics lm, Color background_color) {
         this.y = y;
         this.height = height;
         this.margin = margin;
@@ -67,12 +69,13 @@ public class InlineBorder {
 
     void paint(Context c, LineBox line, int start, int width, int sides) {
         if (width <= 0) return;
-        int ty = line.getBaseline() - y - height - margin.top - border.top - padding.top + line.y;
+        int ty = line.getBaseline() - y - height - (int)margin.getTopWidth() - border.top - padding.top + line.y;
         ty += (int) lm.getDescent();
         c.translate(0, ty);
         c.getGraphics().translate(0, ty);
+        // CLEAN: cast to int
         Rectangle bounds = new Rectangle(start,
-                y + margin.top,
+                y + (int)margin.getTopWidth(),
                 width,
                 height + border.top + padding.top + padding.bottom + border.bottom);
         //first the background

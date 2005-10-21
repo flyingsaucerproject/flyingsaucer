@@ -23,6 +23,7 @@ import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.render.Box;
@@ -475,12 +476,12 @@ public class VerticalMarginCollapser {
         if (hasSpecifiedWidth) {
             return style.getFloatPropertyProportionalWidth(CSSName.WIDTH, parentWidth, c.getCtx());
         } else {
-            Border margin = style.getMarginWidth(parentWidth, parentWidth, c.getCtx());
+            RectPropertySet margin = style.getMarginRect(parentWidth, parentWidth, c.getCtx());
             Border padding = style.getPaddingWidth(parentWidth, parentWidth, c.getCtx());
             Border borderWidth = style.getBorderWidth(c.getCtx());
             return parentWidth -
-                    margin.left - borderWidth.left - padding.left -
-                    padding.right - borderWidth.right - margin.right;
+                    margin.getLeftWidth() - borderWidth.left - padding.left -
+                    padding.right - borderWidth.right - margin.getRightWidth();
         }
     }
 

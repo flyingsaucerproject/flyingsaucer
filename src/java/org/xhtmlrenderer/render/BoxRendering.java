@@ -22,7 +22,7 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.css.value.Border;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
@@ -32,9 +32,7 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 
 
 /**
@@ -141,12 +139,13 @@ public class BoxRendering {
         if (block.getState() != Box.DONE) {
             height += c.getCanvas().getHeight();
         }
-        Border margin = block.getStyle().getMarginWidth();
+        RectPropertySet margin = block.getStyle().getMarginWidth();
 
-        Rectangle bounds = new Rectangle(block.x + margin.left,
-                block.y + margin.top,
-                width - margin.left - margin.right,
-                height - margin.top - margin.bottom);
+        // CLEAN: cast to int
+        Rectangle bounds = new Rectangle(block.x + (int)margin.getLeftWidth(),
+                block.y + (int)margin.getTopWidth(),
+                width - (int)margin.getLeftWidth() - (int)margin.getRightWidth(),
+                height - (int)margin.getTopWidth() - (int)margin.getBottomWidth());
         paintBackground(c, block, bounds);
 
         //c.translateInsets(block);
@@ -373,6 +372,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2005/10/21 12:01:20  pdoubleya
+ * Added cachable rect property for margin, cleanup minor in styling.
+ *
  * Revision 1.43  2005/10/18 20:57:05  tobega
  * Patch from Peter Brant
  *

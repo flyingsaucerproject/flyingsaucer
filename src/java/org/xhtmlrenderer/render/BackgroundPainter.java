@@ -21,6 +21,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
@@ -63,11 +64,12 @@ public class BackgroundPainter {
         if (border == null) {
             return;
         }
-        Border margin = block.getStyle().getMarginWidth();
-        Rectangle box = new Rectangle(block.x + margin.left + border.left,
-                block.y + margin.top + border.top,
-                width - margin.left - margin.right - border.left - border.right,
-                height - margin.top - border.top - border.bottom - margin.bottom);
+        RectPropertySet margin = block.getStyle().getMarginWidth();
+        // CLEAN: cast to int
+        Rectangle box = new Rectangle(block.x + (int)margin.getLeftWidth() + border.left,
+                block.y + (int)margin.getTopWidth() + border.top,
+                width - (int)margin.getLeftWidth() - (int)margin.getRightWidth() - border.left - border.right,
+                height - (int)margin.getTopWidth() - border.top - border.bottom - (int)margin.getBottomWidth());
 
         // paint the background
         Color background_color = currentStyle.getBackgroundColor();
@@ -171,6 +173,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/10/21 12:01:19  pdoubleya
+ * Added cachable rect property for margin, cleanup minor in styling.
+ *
  * Revision 1.34  2005/10/18 20:57:04  tobega
  * Patch from Peter Brant
  *

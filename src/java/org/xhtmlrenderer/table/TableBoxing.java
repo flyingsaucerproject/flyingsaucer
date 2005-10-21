@@ -40,6 +40,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
@@ -147,14 +148,15 @@ public class TableBoxing {
         tableBox.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth(), c.getCtx()));
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
-        Border margin = tableBox.getStyle().getMarginWidth();
+        RectPropertySet margin = tableBox.getStyle().getMarginWidth();
         Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
-        int tx = margin.left + border.left + padding.left;
-        int ty = margin.top + border.top + padding.top;
+        // CLEAN: cast to int
+        int tx = (int)margin.getLeftWidth() + border.left + padding.left;
+        int ty = (int)margin.getTopWidth() + border.top + padding.top;
         tableBox.tx = tx;
         tableBox.ty = ty;
         c.translate(tx, ty);
-        c.shrinkExtents(tx + margin.right + border.right + padding.right, ty + margin.bottom + border.bottom + padding.bottom);
+        c.shrinkExtents(tx + (int)margin.getRightWidth() + border.right + padding.right, ty + (int)margin.getBottomWidth() + border.bottom + padding.bottom);
         IdentValue borderStyle = c.getCurrentStyle().getIdent(CSSName.BORDER_COLLAPSE);
         int borderSpacingHorizontal = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_HORIZONTAL, 0, c.getCtx());
         int borderSpacingVertical = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_VERTICAL, 0, c.getCtx());
@@ -206,10 +208,11 @@ public class TableBoxing {
 
         //TODO: margins go on the outer box
         tableBox.leftPadding = border.left + padding.left;
-        tableBox.leftPadding += margin.left;
-        tableBox.rightPadding = border.right + margin.right;
-        tableBox.rightPadding += margin.right;
-        tableBox.height = margin.top + border.top + padding.top + tableBox.height + padding.bottom + border.bottom + margin.bottom;
+        // CLEAN: cast to int
+        tableBox.leftPadding += (int)margin.getLeftWidth();
+        tableBox.rightPadding = border.right + (int)margin.getRightWidth();
+        tableBox.rightPadding += (int)margin.getRightWidth();
+        tableBox.height = (int)margin.getTopWidth() + border.top + padding.top + tableBox.height + padding.bottom + border.bottom + (int)margin.getBottomWidth();
 
         c.popStyle();
 
@@ -593,6 +596,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.32  2005/10/21 12:01:21  pdoubleya
+   Added cachable rect property for margin, cleanup minor in styling.
+
    Revision 1.31  2005/10/20 20:48:06  pdoubleya
    Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
 

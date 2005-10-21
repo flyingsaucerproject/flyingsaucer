@@ -95,6 +95,7 @@ public abstract class DerivedValue implements FSDerivedValue {
     }
 
     public float getFloatProportionalTo(
+            CSSName cssName,
             float baseValue,
             CssContext ctx
     ) {

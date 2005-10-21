@@ -4,10 +4,10 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.css.value.Border;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.RenderingContext;
 
-import java.awt.Font;
+import java.awt.*;
 
 /**
  * Encapuslates anything style related in a Box. A separate bean is used to
@@ -108,14 +108,25 @@ public class Style {
         this.marginBottomOverrideSet = true;
     }
 
-    public Border getMarginWidth() {
-        Border result = new Border(calculatedStyle.getMarginWidth(parentWidth,
+    public RectPropertySet getMarginWidth() {
+        /* CLEAN
+        Border result = new Border(calculatedStyle.getMarginRect(parentWidth,
                 parentWidth, cssContext));
         if (this.marginTopOverrideSet) {
             result.top = (int) this.marginTopOverride;
         }
         if (this.marginBottomOverrideSet) {
             result.bottom = (int) this.marginBottomOverride;
+        }
+        return result;
+        */
+        RectPropertySet result = calculatedStyle.getMarginRect(parentWidth,
+                parentWidth, cssContext).copyOf();
+        if (this.marginTopOverrideSet) {
+            result.setTop((int) this.marginTopOverride);
+        }
+        if (this.marginBottomOverrideSet) {
+            result.setBottom((int) this.marginBottomOverride);
         }
         return result;
     }

@@ -27,6 +27,8 @@ import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
+import org.xhtmlrenderer.css.style.derived.MarginPropertySet;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.css.value.FontSpecification;
@@ -34,6 +36,7 @@ import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.awt.*;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
@@ -57,6 +60,7 @@ import java.util.logging.Level;
  * @author Patrick Wright
  */
 public class CalculatedStyle {
+    private static final Map _cachedRects = new HashMap();
 
     /**
      * The parent-style we inherit from
@@ -98,6 +102,11 @@ public class CalculatedStyle {
     private Border _drvMarginWidth;
 
     /**
+     * Cached
+     * <p/>
+     * /**
+     * <p/>
+     * /**
      * The derived padding width for this RuleSet
      */
     private Border _drvPaddingWidth;
@@ -151,8 +160,6 @@ public class CalculatedStyle {
      * @return The derived child style
      */
     public synchronized CalculatedStyle deriveStyle(CascadedStyle matched) {
-        // if ( matched.countAssigned() == 0 ) System.out.println("!!! deriving style with no matched properties.");
-
         CalculatedStyle cs = (CalculatedStyle) _childCache.get(matched);
 
         if (cs == null) {
@@ -322,7 +329,7 @@ public class CalculatedStyle {
     }
 
     public float getFloatPropertyProportionalTo(CSSName cssName, float baseValue, CssContext ctx) {
-        return valueByName(cssName).getFloatProportionalTo(baseValue, ctx);
+        return valueByName(cssName).getFloatProportionalTo(cssName, baseValue, ctx);
     }
 
     /**
@@ -332,7 +339,7 @@ public class CalculatedStyle {
      * @return TODO
      */
     public float getFloatPropertyProportionalWidth(CSSName cssName, float parentWidth, CssContext ctx) {
-        return valueByName(cssName).getFloatProportionalTo(parentWidth, ctx);
+        return valueByName(cssName).getFloatProportionalTo(cssName, parentWidth, ctx);
     }
 
     /**
@@ -342,7 +349,7 @@ public class CalculatedStyle {
      * @return TODO
      */
     public float getFloatPropertyProportionalHeight(CSSName cssName, float parentHeight, CssContext ctx) {
-        return valueByName(cssName).getFloatProportionalTo(parentHeight, ctx);
+        return valueByName(cssName).getFloatProportionalTo(cssName, parentHeight, ctx);
     }
 
     /**
@@ -355,13 +362,43 @@ public class CalculatedStyle {
      * @param ctx
      * @return The marginWidth value
      */
-    public Border getMarginWidth(float parentWidth, float parentHeight, CssContext ctx) {
-        if (_drvMarginWidth == null) {
-            _drvMarginWidth = deriveBorderInstance(new CSSName[]{CSSName.MARGIN_TOP, CSSName.MARGIN_BOTTOM, CSSName.MARGIN_LEFT, CSSName.MARGIN_RIGHT},
-                    parentHeight,
-                    parentWidth, ctx);
+    public RectPropertySet getMarginRect(float parentWidth, float parentHeight, CssContext ctx) {
+        return getRectProperty(this, CSSName.MARGIN_SHORTHAND, parentWidth, parentHeight, ctx);
+    }
+
+    public static RectPropertySet getRectProperty(
+            CalculatedStyle style,
+            CSSName cssName,
+            float parentWidth,
+            float parentHeight,
+            CssContext ctx
+    ) {
+        RectPropertySet rect = null;
+        if (cssName == CSSName.MARGIN_SHORTHAND) {
+            String key = null;
+            if ((key = MarginPropertySet.deriveKey(style)) == null) {
+                rect = newMarginRectInstance(style, parentHeight, parentWidth, ctx);
+            } else {
+                rect = (RectPropertySet) _cachedRects.get(key);
+                if (rect == null) {
+                    rect = newMarginRectInstance(style, parentHeight, parentWidth, ctx);
+                    _cachedRects.put(key, rect);
+                }
+            }
         }
-        return _drvMarginWidth;
+
+        return rect;
+    }
+
+    private static RectPropertySet newMarginRectInstance(CalculatedStyle style, float parentHeight, float parentWidth, CssContext ctx) {
+        RectPropertySet rect;
+        rect = MarginPropertySet.newInstance(
+                style,
+                parentHeight,
+                parentWidth,
+                ctx
+        );
+        return rect;
     }
 
     /**
@@ -543,9 +580,10 @@ public class CalculatedStyle {
 
     }
 
-    // Incomplete routine to try and determine the
-    // CSSPrimitiveValue short code for a given value,
-    // e.g. 14pt is CSS_PT.
+// Incomplete routine to try and determine the
+// CSSPrimitiveValue short code for a given value,
+// e.g. 14pt is CSS_PT.
+
     /**
      * Description of the Method
      *
@@ -593,6 +631,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/10/21 12:01:13  pdoubleya
+ * Added cachable rect property for margin, cleanup minor in styling.
+ *
  * Revision 1.32  2005/10/21 10:02:54  pdoubleya
  * Cleanup, removed unneeded vars, reorg code in CS.
  *

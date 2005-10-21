@@ -564,6 +564,7 @@ public class IdentValue implements FSDerivedValue {
             throw new XRRuntimeException("Ident value is never a point; wrong class used for derived value.");
     }
     public float getFloatProportionalTo(
+            CSSName cssName,
             float baseValue,
             CssContext ctx
     ) {
@@ -588,6 +589,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/10/21 12:01:13  pdoubleya
+ * Added cachable rect property for margin, cleanup minor in styling.
+ *
  * Revision 1.12  2005/10/21 10:02:53  pdoubleya
  * Cleanup, removed unneeded vars, reorg code in CS.
  *

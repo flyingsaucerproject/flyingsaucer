@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.render.Box;
 
@@ -39,12 +40,13 @@ public class PersistentBFC {
         CalculatedStyle style = c.getCurrentStyle();
         Border border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
-        Border margin = master.getStyle().getMarginWidth();
+        RectPropertySet margin = master.getStyle().getMarginWidth();
         padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
-        insets = new Border(margin.top + border.top + padding.top,
-                padding.right + border.right + margin.right,
-                padding.bottom + border.bottom + margin.bottom,
-                margin.left + border.left + padding.left);
+        // CLEAN: cast to int
+        insets = new Border((int)margin.getTopWidth() + border.top + padding.top,
+                padding.right + border.right + (int)margin.getRightWidth(),
+                padding.bottom + border.bottom + (int)margin.getBottomWidth(),
+                (int)margin.getLeftWidth() + border.left + padding.left);
         this.master = master;
         master.setPersistentBFC(this);
     }

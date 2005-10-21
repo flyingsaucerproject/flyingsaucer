@@ -19,11 +19,10 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.value.Border;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.Context;
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 
 
 /**
@@ -86,12 +85,13 @@ public class BlockBox extends Box implements Renderable {
         if (getState() != Box.DONE) {
             height += c.getCanvas().getHeight();
         }
-        Border margin = getStyle().getMarginWidth();
+        RectPropertySet margin = getStyle().getMarginWidth();
 
-        Rectangle bounds = new Rectangle(x + margin.left,
-                y + margin.top,
-                width - margin.left - margin.right,
-                height - margin.top - margin.bottom);
+        // CLEAN: cast to int
+        Rectangle bounds = new Rectangle(x + (int)margin.getLeftWidth(),
+                y + (int)margin.getTopWidth(),
+                width - (int)margin.getLeftWidth() - (int)margin.getRightWidth(),
+                height - (int)margin.getTopWidth() - (int)margin.getBottomWidth());
         BoxRendering.paintBackground(c, this, bounds);
         g2.translate(x - absX, y - absY);
     }
@@ -109,6 +109,9 @@ public class BlockBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/10/21 12:01:20  pdoubleya
+ * Added cachable rect property for margin, cleanup minor in styling.
+ *
  * Revision 1.13  2005/10/21 05:52:10  tobega
  * A little more experimenting with flattened render tree
  *
