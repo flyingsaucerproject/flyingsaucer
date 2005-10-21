@@ -96,21 +96,6 @@ public class CalculatedStyle {
     private Border _drvBorderWidth;
 
     /**
-     * The derived margin width for this RuleSet
-     */
-    private Border _drvMarginWidth;
-
-    /**
-     * Cached
-     * <p/>
-     * /**
-     * <p/>
-     * /**
-     * The derived padding width for this RuleSet
-     */
-    private Border _drvPaddingWidth;
-
-    /**
      * The derived background color value for this RuleSet
      */
     private Color _drvBackgroundColor;
@@ -362,48 +347,7 @@ public class CalculatedStyle {
      * @return The marginWidth value
      */
     public RectPropertySet getMarginRect(float parentWidth, float parentHeight, CssContext ctx) {
-        return getRectProperty(this, CSSName.MARGIN_SHORTHAND, parentWidth, parentHeight, ctx);
-    }
-
-    public static RectPropertySet getRectProperty(
-            CalculatedStyle style,
-            CSSName cssName,
-            float parentWidth,
-            float parentHeight,
-            CssContext ctx
-    ) {
-        RectPropertySet rect = null;
-        if (cssName == CSSName.MARGIN_SHORTHAND) {
-            String key = null;
-            if ((key = RectPropertySet.deriveKey(
-                    style,
-                    CSSName.MARGIN_SHORTHAND,
-                    CSSName.MARGIN_SIDE_PROPERTIES
-            )) == null) {
-                rect = newMarginRectInstance(style, parentHeight, parentWidth, ctx);
-            } else {
-                rect = (RectPropertySet) _cachedRects.get(key);
-                if (rect == null) {
-                    rect = newMarginRectInstance(style, parentHeight, parentWidth, ctx);
-                    _cachedRects.put(key, rect);
-                }
-            }
-        }
-
-        return rect;
-    }
-
-    private static RectPropertySet newMarginRectInstance(CalculatedStyle style, float parentHeight, float parentWidth, CssContext ctx) {
-        RectPropertySet rect;
-        rect = RectPropertySet.newInstance(
-                style,
-                CSSName.MARGIN_SHORTHAND,
-                CSSName.MARGIN_SIDE_PROPERTIES,
-                parentHeight,
-                parentWidth,
-                ctx
-        );
-        return rect;
+        return getRectProperty(this, CSSName.MARGIN_SHORTHAND, CSSName.MARGIN_SIDE_PROPERTIES, parentWidth, parentHeight, ctx);
     }
 
     /**
@@ -416,13 +360,8 @@ public class CalculatedStyle {
      * @param ctx
      * @return The paddingWidth value
      */
-    public Border getPaddingWidth(float parentWidth, float parentHeight, CssContext ctx) {
-        if (_drvPaddingWidth == null) {
-            _drvPaddingWidth = deriveBorderInstance(new CSSName[]{CSSName.PADDING_TOP, CSSName.PADDING_BOTTOM, CSSName.PADDING_LEFT, CSSName.PADDING_RIGHT},
-                    parentHeight,
-                    parentWidth, ctx);
-        }
-        return _drvPaddingWidth;
+    public RectPropertySet getPaddingRect(float parentWidth, float parentHeight, CssContext ctx) {
+        return getRectProperty(this, CSSName.PADDING_SHORTHAND, CSSName.PADDING_SIDE_PROPERTIES, parentWidth, parentHeight, ctx);
     }
 
     /**
@@ -630,12 +569,62 @@ public class CalculatedStyle {
         }
         return type;
     }
+
+    public static RectPropertySet getRectProperty(
+            CalculatedStyle style,
+            CSSName shorthandProp,
+            CSSName[] sides,
+            float parentWidth,
+            float parentHeight,
+            CssContext ctx
+    ) {
+        RectPropertySet rect = null;
+        String key = null;
+        if ((key = RectPropertySet.deriveKey(
+                style,
+                sides
+        )) == null) {
+            rect = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
+        } else {
+            rect = (RectPropertySet) _cachedRects.get(key);
+            if (rect == null) {
+                rect = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
+                _cachedRects.put(key, rect);
+            }
+        }
+
+        return rect;
+    }
+
+    private static RectPropertySet newRectInstance(
+            CalculatedStyle style,
+            CSSName shorthand,
+            CSSName[] sides,
+            float parentHeight,
+            float parentWidth,
+            CssContext ctx
+    ) {
+        RectPropertySet rect;
+        rect = RectPropertySet.newInstance(
+                style,
+                shorthand,
+                sides,
+                parentHeight,
+                parentWidth,
+                ctx
+        );
+        return rect;
+    }
+
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2005/10/21 13:02:20  pdoubleya
+ * Changed to cache padding in RectPropertySet.
+ *
  * Revision 1.35  2005/10/21 12:20:04  pdoubleya
  * Added array for margin side props.
  *

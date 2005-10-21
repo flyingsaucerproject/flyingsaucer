@@ -254,8 +254,8 @@ public class BoxRendering {
         xoff += bfc.getX();
         yoff += bfc.getY();
         //Uu.p("xoff = " + xoff + " yoff = " + yoff);
-        xoff += (bfc.getInsets().left - bfc.getPadding().left);
-        yoff += (bfc.getInsets().top - bfc.getPadding().top);
+        xoff += (bfc.getInsets().left - (int)bfc.getPadding().getLeftWidth());
+        yoff += (bfc.getInsets().top - (int)bfc.getPadding().getTopWidth());
         //Uu.p("xoff = " + xoff + " yoff = " + yoff);
         
         
@@ -372,6 +372,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2005/10/21 13:02:23  pdoubleya
+ * Changed to cache padding in RectPropertySet.
+ *
  * Revision 1.44  2005/10/21 12:01:20  pdoubleya
  * Added cachable rect property for margin, cleanup minor in styling.
  *

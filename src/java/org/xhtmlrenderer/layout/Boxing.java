@@ -171,10 +171,10 @@ public class Boxing {
         Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
         RectPropertySet margin = block.getStyle().getMarginWidth();
-        Border padding = c.getCurrentStyle().getPaddingWidth((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+        RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
         // CLEAN: cast to int
-        block.leftPadding = (int)margin.getLeftWidth() + border.left + padding.left;
-        block.rightPadding = padding.right + border.right + (int)margin.getRightWidth();
+        block.leftPadding = (int)margin.getLeftWidth() + border.left + (int)padding.getLeftWidth();
+        block.rightPadding = (int)padding.getRightWidth() + border.right + (int)margin.getRightWidth();
         block.contentWidth = (int) (c.getExtents().getWidth() - block.leftPadding - block.rightPadding);
 
         CalculatedStyle style = c.getCurrentStyle();
@@ -191,8 +191,8 @@ public class Boxing {
             if (!block.getStyle().isAutoHeight()) {
                 setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
                 // CLEAN: cast to int
-                c.getExtents().height = (int)margin.getTopWidth() + border.top + padding.top +
-                        setHeight + padding.bottom + border.bottom + (int)margin.getBottomWidth();
+                c.getExtents().height = (int)margin.getTopWidth() + border.top + (int)padding.getTopWidth() +
+                        setHeight + (int)padding.getBottomWidth() + border.bottom + (int)margin.getBottomWidth();
                 block.height = setHeight;
             }
             //check if replaced
@@ -233,13 +233,13 @@ public class Boxing {
         c.setSubBlock(false);
 
         // CLEAN: cast to int
-        int tx = (int)margin.getLeftWidth() + border.left + padding.left;
-        int ty = (int)margin.getTopWidth() + border.top + padding.top;
+        int tx = (int)margin.getLeftWidth() + border.left + (int)padding.getLeftWidth();
+        int ty = (int)margin.getTopWidth() + border.top + (int)padding.getTopWidth();
         block.tx = tx;
         block.ty = ty;
         c.translate(tx, ty + (int) block.paginationTranslation);
         // CLEAN: cast to int
-        c.shrinkExtents(tx + (int)margin.getRightWidth() + border.right + padding.right, ty + (int)margin.getBottomWidth() + border.bottom + padding.bottom);
+        c.shrinkExtents(tx + (int)margin.getRightWidth() + border.right + (int)padding.getRightWidth(), ty + (int)margin.getBottomWidth() + border.bottom + (int)padding.getBottomWidth());
         if (block.component == null)
             layoutChildren(c, block, content);//when this is really an anonymous, InlineLayout.layoutChildren is called
         else {
@@ -275,7 +275,7 @@ public class Boxing {
         //block.contentWidth = block.getWidth();
         //block.width = margin.left + border.left + padding.left + block.contentWidth + padding.right + border.right + margin.right;
         // CLEAN: cast to int
-        block.height = (int)margin.getTopWidth() + border.top + padding.top + block.height + padding.bottom + border.bottom + (int)margin.getBottomWidth();
+        block.height = (int)margin.getTopWidth() + border.top + (int)padding.getTopWidth() + block.height + (int)padding.getBottomWidth() + border.bottom + (int)margin.getBottomWidth();
 
         //restore the extents
         c.setExtents(oe);
@@ -374,6 +374,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2005/10/21 13:02:22  pdoubleya
+ * Changed to cache padding in RectPropertySet.
+ *
  * Revision 1.44  2005/10/21 12:01:16  pdoubleya
  * Added cachable rect property for margin, cleanup minor in styling.
  *

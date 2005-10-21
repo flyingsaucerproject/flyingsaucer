@@ -149,14 +149,14 @@ public class InlineRendering {
             int padX,
             RectPropertySet margin,
             Border border,
-            Border padding) {
+            RectPropertySet padding) {
         LineMetrics lm = FontUtil.getLineMetrics(c, inline);
         for (Iterator i = c.getInlineBorders().iterator(); i.hasNext();) {
             // CLEAN: cast to int
             ((InlineBorder) i.next()).paint(c,
                     line,
                     padX + inline.x + (int)margin.getLeftWidth(),
-                    padding.left + border.left,
+                    (int)padding.getLeftWidth() + border.left,
                     BorderPainter.TOP + BorderPainter.BOTTOM);
         }
 
@@ -165,7 +165,7 @@ public class InlineRendering {
         // CLEAN: cast to int
         ib.paint(c, line,
                 inline.x + padX + (int)margin.getLeftWidth(),
-                border.left + padding.left, BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM);
+                border.left + (int)padding.getLeftWidth(), BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM);
         c.getInlineBorders().addLast(ib);
     }
 
@@ -176,17 +176,24 @@ public class InlineRendering {
      * @param border
      * @param padding
      */
-    public static void paintRightPadding(Context c, LineBox line, InlineBox inline, int padX, Border border, Border padding) {
+    public static void paintRightPadding(
+            Context c,
+            LineBox line,
+            InlineBox inline,
+            int padX,
+            Border border,
+            RectPropertySet padding) {
         InlineBorder ib = (InlineBorder) c.getInlineBorders().removeLast();
         for (Iterator i = c.getInlineBorders().iterator(); i.hasNext();) {
-            ((InlineBorder) i.next()).paint(c,
+            ((InlineBorder) i.next()).paint(
+                    c,
                     line,
                     padX + inline.x,
-                    padding.right + border.right,
+                    (int)padding.getRightWidth() + border.right,
                     BorderPainter.TOP + BorderPainter.BOTTOM);
         }
 
-        ib.paint(c, line, padX + inline.x, padding.right + border.right, BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM);
+        ib.paint(c, line, padX + inline.x, (int)padding.getRightWidth() + border.right, BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM);
     }
 
     /**
@@ -490,9 +497,11 @@ public class InlineRendering {
         Border border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
         RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
-        Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
+        RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
         paintRightPadding(c, line, ib, padX, border, padding);
-        padX += padding.right + border.right;
+
+        // CLEAN: cast to int
+        padX += (int)padding.getRightWidth() + border.right;
         Relative.untranslateRelative(c, ib.getStyle().getCalculatedStyle(), true);
         c.popStyle();
         if (pushedStyles != null) pushedStyles.removeLast();
@@ -501,7 +510,7 @@ public class InlineRendering {
         //border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
         margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
-        //padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
+        //padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
         // CLEAN: cast to int
         paintMargin(c, line, ib, padX, (int)margin.getRightWidth());
         padX += margin.getRightWidth();
@@ -516,7 +525,7 @@ public class InlineRendering {
         //Border border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
         Border margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
-        //Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
+        //Border padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
         paintMargin(c, line, ib, padX, margin.left);
         */
 
@@ -527,17 +536,17 @@ public class InlineRendering {
         Border border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
         RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
-        Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
+        RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
         //left padding for this inline element
         //paintLeftPadding takes the margin into account
         paintLeftPadding(c, line, ib, padX, margin, border, padding);
         // CLEAN: cast to int
-        padX += (int)margin.getLeftWidth() + border.left + padding.left;
+        padX += (int)margin.getLeftWidth() + border.left + (int)padding.getLeftWidth();
         //text decoration?
         IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
         if (decoration != IdentValue.NONE) {
             // CLEAN: cast to int
-            decorations.addLast(new TextDecoration(decoration, ib.x + (int)margin.getLeftWidth() + border.left + padding.left, c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
+            decorations.addLast(new TextDecoration(decoration, ib.x + (int)margin.getLeftWidth() + border.left + (int)padding.getLeftWidth(), c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
         }
         return padX;
     }

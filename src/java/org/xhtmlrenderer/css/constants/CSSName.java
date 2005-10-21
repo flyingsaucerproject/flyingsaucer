@@ -600,6 +600,15 @@ public final class CSSName {
                             CSSName.MARGIN_BOTTOM,
                             CSSName.MARGIN_LEFT
                     };
+
+    public final static CSSName[] PADDING_SIDE_PROPERTIES =
+            new CSSName[] {
+                            CSSName.PADDING_TOP,
+                            CSSName.PADDING_RIGHT,
+                            CSSName.PADDING_BOTTOM,
+                            CSSName.PADDING_LEFT
+                    };
+
     /**
      * Description of the Field
      */
@@ -949,6 +958,9 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/10/21 13:02:20  pdoubleya
+ * Changed to cache padding in RectPropertySet.
+ *
  * Revision 1.16  2005/10/21 12:20:04  pdoubleya
  * Added array for margin side props.
  *

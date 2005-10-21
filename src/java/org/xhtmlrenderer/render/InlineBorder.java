@@ -36,7 +36,7 @@ public class InlineBorder {
     // CLEAN:
     private RectPropertySet margin;
     private Border border;
-    private Border padding;
+    private RectPropertySet padding;
     private int y;
     private int height;
     private Color background_color;
@@ -56,7 +56,7 @@ public class InlineBorder {
      * @param lm
      * @param background_color
      */
-    InlineBorder(int y, int height, RectPropertySet margin, Border border, Border padding, CalculatedStyle style, LineMetrics lm, Color background_color) {
+    InlineBorder(int y, int height, RectPropertySet margin, Border border, RectPropertySet padding, CalculatedStyle style, LineMetrics lm, Color background_color) {
         this.y = y;
         this.height = height;
         this.margin = margin;
@@ -69,7 +69,7 @@ public class InlineBorder {
 
     void paint(Context c, LineBox line, int start, int width, int sides) {
         if (width <= 0) return;
-        int ty = line.getBaseline() - y - height - (int)margin.getTopWidth() - border.top - padding.top + line.y;
+        int ty = line.getBaseline() - y - height - (int)margin.getTopWidth() - border.top - (int)padding.getTopWidth() + line.y;
         ty += (int) lm.getDescent();
         c.translate(0, ty);
         c.getGraphics().translate(0, ty);
@@ -77,7 +77,7 @@ public class InlineBorder {
         Rectangle bounds = new Rectangle(start,
                 y + (int)margin.getTopWidth(),
                 width,
-                height + border.top + padding.top + padding.bottom + border.bottom);
+                height + border.top + (int)padding.getTopWidth() + (int)padding.getBottomWidth() + border.bottom);
         //first the background
         if (background_color != null) {
             // skip transparent background

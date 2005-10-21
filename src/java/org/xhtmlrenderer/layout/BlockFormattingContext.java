@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.value.Border;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
 
@@ -29,7 +30,7 @@ public class BlockFormattingContext {
         return persistentBFC.insets;
     }
 
-    public Border getPadding() {
+    public RectPropertySet getPadding() {
         return persistentBFC.padding;
     }
 

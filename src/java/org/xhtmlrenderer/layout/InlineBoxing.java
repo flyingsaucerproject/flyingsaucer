@@ -149,9 +149,9 @@ public class InlineBoxing {
                 Border border = style.getBorderWidth(c.getCtx());
                 //note: percentages here refer to width of containing block
                 RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
-                Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
-                pendingLeftPadding += margin.getLeftWidth() + border.left + padding.left;
-                pendingRightPadding += padding.right + border.right + margin.getRightWidth();
+                RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
+                pendingLeftPadding += margin.getLeftWidth() + border.left + (int)padding.getLeftWidth();
+                pendingRightPadding += (int)padding.getRightWidth() + border.right + margin.getRightWidth();
                 continue;
             }
             if (o instanceof StylePop) {
@@ -167,9 +167,9 @@ public class InlineBoxing {
                 Border border = style.getBorderWidth(c.getCtx());
                 //note: percentages here refer to width of containing block
                 RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
-                Border padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
+                RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
                 // CLEAN: cast to int
-                int rp = padding.right + border.right + (int)margin.getRightWidth();
+                int rp = (int)padding.getRightWidth() + border.right + (int)margin.getRightWidth();
                 //CHECK: not sure this is where the padding really goes, always
                 prev_inline.rightPadding += rp;
 
@@ -523,10 +523,10 @@ public class InlineBoxing {
                 //first letter is a pseudo-element, so has borders, etc.
                 //note: percentages here refer to width of containing block
                 RectPropertySet margin = c.getCurrentStyle().getMarginRect(max_width, max_width, c.getCtx());
-                Border padding = c.getCurrentStyle().getPaddingWidth(max_width, max_width, c.getCtx());
+                RectPropertySet padding = c.getCurrentStyle().getPaddingRect(max_width, max_width, c.getCtx());
                 // CLEAN: cast to ints
-                inline.rightPadding = (int)margin.getRightWidth() + border.right + padding.right;
-                inline.leftPadding = (int)margin.getLeftWidth() + border.left + padding.left;
+                inline.rightPadding = (int)margin.getRightWidth() + border.right + (int)padding.getRightWidth();
+                inline.leftPadding = (int)margin.getLeftWidth() + border.left + (int)padding.getLeftWidth();
                 c.popStyle();
                 result = inline;
 
@@ -620,6 +620,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.46  2005/10/21 13:02:22  pdoubleya
+ * Changed to cache padding in RectPropertySet.
+ *
  * Revision 1.45  2005/10/21 12:01:16  pdoubleya
  * Added cachable rect property for margin, cleanup minor in styling.
  *

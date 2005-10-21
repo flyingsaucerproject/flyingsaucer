@@ -25,7 +25,7 @@ public class PersistentBFC {
     protected Map offset_map;
     protected List abs_bottom;
     protected Border insets;
-    protected Border padding;
+    protected RectPropertySet padding;
 
     private PersistentBFC() {
         left_floats = new ArrayList();
@@ -41,12 +41,12 @@ public class PersistentBFC {
         Border border = style.getBorderWidth(c.getCtx());
         //note: percentages here refer to width of containing block
         RectPropertySet margin = master.getStyle().getMarginWidth();
-        padding = style.getPaddingWidth(parent_width, parent_width, c.getCtx());
+        padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
         // CLEAN: cast to int
-        insets = new Border((int)margin.getTopWidth() + border.top + padding.top,
-                padding.right + border.right + (int)margin.getRightWidth(),
-                padding.bottom + border.bottom + (int)margin.getBottomWidth(),
-                (int)margin.getLeftWidth() + border.left + padding.left);
+        insets = new Border((int)margin.getTopWidth() + border.top + (int)padding.getTopWidth(),
+                (int)padding.getRightWidth() + border.right + (int)margin.getRightWidth(),
+                (int)padding.getBottomWidth() + border.bottom + (int)margin.getBottomWidth(),
+                (int)margin.getLeftWidth() + border.left + (int)padding.getLeftWidth());
         this.master = master;
         master.setPersistentBFC(this);
     }
