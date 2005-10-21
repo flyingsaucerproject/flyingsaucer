@@ -74,6 +74,13 @@ public class CalculatedStyle {
      */
     private String _styleKey;
 
+
+    private String _borderKey;
+    private String _marginKey;
+    private String _paddingKey;
+    private boolean _marginKeySet;
+    private boolean _paddingKeySet;
+
     /**
      * Cache child styles of this style that have the same cascaded properties
      */
@@ -298,7 +305,7 @@ public class CalculatedStyle {
      * @return The marginWidth value
      */
     public RectPropertySet getMarginRect(float parentWidth, float parentHeight, CssContext ctx) {
-        return getRectProperty(this, CSSName.MARGIN_SHORTHAND, CSSName.MARGIN_SIDE_PROPERTIES, parentWidth, parentHeight, ctx);
+        return getMarginProperty(this, CSSName.MARGIN_SHORTHAND, CSSName.MARGIN_SIDE_PROPERTIES, parentWidth, parentHeight, ctx);
     }
 
     /**
@@ -312,7 +319,7 @@ public class CalculatedStyle {
      * @return The paddingWidth value
      */
     public RectPropertySet getPaddingRect(float parentWidth, float parentHeight, CssContext ctx) {
-        return getRectProperty(this, CSSName.PADDING_SHORTHAND, CSSName.PADDING_SIDE_PROPERTIES, parentWidth, parentHeight, ctx);
+        return getPaddingProperty(this, CSSName.PADDING_SHORTHAND, CSSName.PADDING_SIDE_PROPERTIES, parentWidth, parentHeight, ctx);
     }
 
     /**
@@ -500,7 +507,7 @@ public class CalculatedStyle {
         return type;
     }
 
-    public static RectPropertySet getRectProperty(
+    public static RectPropertySet getPaddingProperty(
             CalculatedStyle style,
             CSSName shorthandProp,
             CSSName[] sides,
@@ -510,11 +517,49 @@ public class CalculatedStyle {
     ) {
         RectPropertySet rect = null;
         String key = null;
-        if ((key = RectPropertySet.deriveKey(
-                style,
-                sides
-        )) == null) {
+
+        if ( style._marginKeySet ) {
+            key = style._marginKey;
+        } else {
+            key = RectPropertySet.deriveKey(style, sides);
+            style._marginKey = key;
+            style._marginKeySet = true;
+        }
+        if ( key == null ) {
             rect = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
+            return rect;
+        } else {
+            rect = (RectPropertySet) _cachedRects.get(key);
+            if (rect == null) {
+                rect = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
+                _cachedRects.put(key, rect);
+            }
+        }
+
+        return rect;
+    }
+
+    public static RectPropertySet getMarginProperty(
+            CalculatedStyle style,
+            CSSName shorthandProp,
+            CSSName[] sides,
+            float parentWidth,
+            float parentHeight,
+            CssContext ctx
+    ) {
+        RectPropertySet rect = null;
+        String key = null;
+
+        if ( style._paddingKeySet ) {
+            key = style._paddingKey;
+        } else {
+            key = RectPropertySet.deriveKey(style, sides);
+            style._paddingKey = key;
+            style._paddingKeySet = true;
+        }
+        if ( key == null ) {
+            rect = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
+            return rect;
         } else {
             rect = (RectPropertySet) _cachedRects.get(key);
             if (rect == null) {
@@ -551,11 +596,13 @@ public class CalculatedStyle {
             CssContext ctx
     ) {
         BorderPropertySet border = null;
-        String key = BorderPropertySet.deriveKey(style);
-        border = (BorderPropertySet) _cachedRects.get(key);
+        if ( style._borderKey == null ) {
+            style._borderKey = BorderPropertySet.deriveKey(style);
+        }
+        border = (BorderPropertySet) _cachedRects.get(style._borderKey);
         if (border == null) {
             border = newBorderInstance(style, ctx);
-            _cachedRects.put(key, border);
+            _cachedRects.put(style._borderKey, border);
         }
         return border;
     }
@@ -569,6 +616,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2005/10/21 23:11:26  pdoubleya
+ * Store key for margin, border and padding in each style instance, was re-creating on each call.
+ *
  * Revision 1.40  2005/10/21 23:04:02  peterbrant
  * Make box level restyle work again
  *
