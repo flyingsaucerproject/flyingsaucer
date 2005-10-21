@@ -378,12 +378,7 @@ public class CalculatedStyle {
             if ((key = RectPropertySet.deriveKey(
                     style,
                     CSSName.MARGIN_SHORTHAND,
-                    new CSSName[] {
-                            CSSName.MARGIN_TOP,
-                            CSSName.MARGIN_RIGHT,
-                            CSSName.MARGIN_BOTTOM,
-                            CSSName.MARGIN_LEFT
-                    }
+                    CSSName.MARGIN_SIDE_PROPERTIES
             )) == null) {
                 rect = newMarginRectInstance(style, parentHeight, parentWidth, ctx);
             } else {
@@ -403,12 +398,7 @@ public class CalculatedStyle {
         rect = RectPropertySet.newInstance(
                 style,
                 CSSName.MARGIN_SHORTHAND,
-                new CSSName[] {
-                        CSSName.MARGIN_TOP,
-                        CSSName.MARGIN_RIGHT,
-                        CSSName.MARGIN_BOTTOM,
-                        CSSName.MARGIN_LEFT
-                },
+                CSSName.MARGIN_SIDE_PROPERTIES,
                 parentHeight,
                 parentWidth,
                 ctx
@@ -646,6 +636,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/10/21 12:20:04  pdoubleya
+ * Added array for margin side props.
+ *
  * Revision 1.34  2005/10/21 12:16:18  pdoubleya
  * Removed use of MarginPropertySet; using RectPS  now.
  *

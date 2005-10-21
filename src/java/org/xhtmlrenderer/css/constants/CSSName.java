@@ -592,6 +592,14 @@ public final class CSSName {
      * Unique CSSName instance for CSS2 property.
      */
     public final static CSSName PADDING_LEFT = addProperty("padding-left", true);
+
+    public final static CSSName[] MARGIN_SIDE_PROPERTIES =
+            new CSSName[] {
+                            CSSName.MARGIN_TOP,
+                            CSSName.MARGIN_RIGHT,
+                            CSSName.MARGIN_BOTTOM,
+                            CSSName.MARGIN_LEFT
+                    };
     /**
      * Description of the Field
      */
@@ -941,6 +949,9 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/10/21 12:20:04  pdoubleya
+ * Added array for margin side props.
+ *
  * Revision 1.15  2005/10/20 20:48:03  pdoubleya
  * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
  *
