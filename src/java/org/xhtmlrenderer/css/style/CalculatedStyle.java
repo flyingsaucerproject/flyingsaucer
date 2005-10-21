@@ -27,7 +27,6 @@ import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
-import org.xhtmlrenderer.css.style.derived.MarginPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.css.value.BorderColor;
@@ -376,7 +375,16 @@ public class CalculatedStyle {
         RectPropertySet rect = null;
         if (cssName == CSSName.MARGIN_SHORTHAND) {
             String key = null;
-            if ((key = MarginPropertySet.deriveKey(style)) == null) {
+            if ((key = RectPropertySet.deriveKey(
+                    style,
+                    CSSName.MARGIN_SHORTHAND,
+                    new CSSName[] {
+                            CSSName.MARGIN_TOP,
+                            CSSName.MARGIN_RIGHT,
+                            CSSName.MARGIN_BOTTOM,
+                            CSSName.MARGIN_LEFT
+                    }
+            )) == null) {
                 rect = newMarginRectInstance(style, parentHeight, parentWidth, ctx);
             } else {
                 rect = (RectPropertySet) _cachedRects.get(key);
@@ -392,8 +400,15 @@ public class CalculatedStyle {
 
     private static RectPropertySet newMarginRectInstance(CalculatedStyle style, float parentHeight, float parentWidth, CssContext ctx) {
         RectPropertySet rect;
-        rect = MarginPropertySet.newInstance(
+        rect = RectPropertySet.newInstance(
                 style,
+                CSSName.MARGIN_SHORTHAND,
+                new CSSName[] {
+                        CSSName.MARGIN_TOP,
+                        CSSName.MARGIN_RIGHT,
+                        CSSName.MARGIN_BOTTOM,
+                        CSSName.MARGIN_LEFT
+                },
                 parentHeight,
                 parentWidth,
                 ctx
@@ -631,6 +646,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/10/21 12:16:18  pdoubleya
+ * Removed use of MarginPropertySet; using RectPS  now.
+ *
  * Revision 1.33  2005/10/21 12:01:13  pdoubleya
  * Added cachable rect property for margin, cleanup minor in styling.
  *
