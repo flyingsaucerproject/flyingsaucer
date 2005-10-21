@@ -137,7 +137,6 @@ public class CalculatedStyle {
      * @return The derived child style
      */
     public synchronized CalculatedStyle deriveStyle(CascadedStyle matched) {
-        /*
         CalculatedStyle cs = (CalculatedStyle) _childCache.get(matched);
 
         if (cs == null) {
@@ -145,8 +144,6 @@ public class CalculatedStyle {
             _childCache.put(matched, cs);
         }
         return cs;
-        */
-        return new CalculatedStyle(this, matched);
     }
     
     public synchronized void refresh(CascadedStyle matched) {
@@ -616,6 +613,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2005/10/21 23:51:48  peterbrant
+ * Rollback ill-advised change in revision 1.40
+ *
  * Revision 1.41  2005/10/21 23:11:26  pdoubleya
  * Store key for margin, border and padding in each style instance, was re-creating on each call.
  *
