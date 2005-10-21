@@ -32,11 +32,10 @@ import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.layout.content.TableContent;
-import org.xhtmlrenderer.render.AnonymousBlockBox;
-import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.table.TableBoxing;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
@@ -335,6 +334,17 @@ public class Boxing {
         List contentList = content.getChildContent(c);
         box.setState(Box.CHILDREN_FLUX);
 
+        //HACK:
+        if (box instanceof BlockBox && Configuration.isTrue("xr.stackingcontext.enabled", false)) {
+            BlockBox block = (BlockBox) box;
+            Point origin = c.getOriginOffset();
+            block.absY = origin.getY() + block.y;
+            block.absX = origin.getX() + block.x;
+            block.renderIndex = c.getNewRenderIndex();
+            StackingContext s = c.getStackingContext();
+            s.addBlock(block);
+        }
+
         if (contentList != null && contentList.size() > 0) {
             c.pushParentContent(content);
             if (ContentUtil.hasBlockContent(contentList)) {//this should be block layed out
@@ -358,6 +368,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2005/10/21 05:52:10  tobega
+ * A little more experimenting with flattened render tree
+ *
  * Revision 1.42  2005/10/20 20:47:59  pdoubleya
  * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
  *

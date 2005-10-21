@@ -32,9 +32,9 @@ import java.awt.Rectangle;
  * @author empty
  */
 public class BlockBox extends Box implements Renderable {
-    private double absY;
-    private int renderIndex;
-    private double absX;
+    public double absY;
+    public int renderIndex;
+    public double absX;
 
 
     /**
@@ -109,6 +109,9 @@ public class BlockBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/10/21 05:52:10  tobega
+ * A little more experimenting with flattened render tree
+ *
  * Revision 1.12  2005/10/18 20:57:04  tobega
  * Patch from Peter Brant
  *
