@@ -19,8 +19,6 @@ import java.awt.*;
 public abstract class DerivedValue implements FSDerivedValue {
     private CalculatedStyle _style;
 
-    private CSSName _cssName;
-
     private String _asString;
 
     private short _cssSacUnitType;
@@ -32,7 +30,6 @@ public abstract class DerivedValue implements FSDerivedValue {
             String cssText,
             String cssStringValue) {
         this._style = style;
-        this._cssName = name;
         this._cssSacUnitType = cssSACUnitType;
 
         String orgText = cssText;
@@ -60,11 +57,6 @@ public abstract class DerivedValue implements FSDerivedValue {
             }
     }
 
-    /** The name of this property. */
-    public CSSName getCssName() {
-        return _cssName;
-    }
-
     /** The getCssText() or getStringValue(), depending. */
     public String getStringValue() {
         return _asString;
@@ -90,6 +82,7 @@ public abstract class DerivedValue implements FSDerivedValue {
         throw new XRRuntimeException("asFloat() needs to be overridden in subclass.");
     }
     public Point asPoint(
+            CSSName cssName,
             float parentWidth,
             float parentHeight,
             CssContext ctx

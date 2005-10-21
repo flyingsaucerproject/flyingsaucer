@@ -22,7 +22,7 @@ public class ColorValue extends DerivedValue {
     private static final Color COLOR_TRANSPARENT = new Color(0, 0, 0, 0);
     private static final String TRANSPARENT = "transparent";
 
-    private Color _color;
+    private Color _derivedColor;
 
     public ColorValue(
             CalculatedStyle style,
@@ -33,7 +33,7 @@ public class ColorValue extends DerivedValue {
             RGBColor rgbColor
     ) {
         super(style, name, cssSACUnitType, cssText, cssStringValue);
-        _color = deriveColor(rgbColor);
+        _derivedColor = deriveColor(name, rgbColor);
     }
 
     private ColorValue(
@@ -45,11 +45,11 @@ public class ColorValue extends DerivedValue {
             Color color
     ) {
         super(style, name, cssSACUnitType, cssText, cssStringValue);
-        _color = color;
+        _derivedColor = color;
     }
 
-    public FSDerivedValue copyOf() {
-        return new ColorValue(getStyle(), getCssName(), getCssSacUnitType(), getStringValue(), getStringValue(), _color);
+    public FSDerivedValue copyOf(CSSName cssName) {
+        return new ColorValue(getStyle(), cssName, getCssSacUnitType(), getStringValue(), getStringValue(), _derivedColor);
     }
 
     /**
@@ -58,10 +58,10 @@ public class ColorValue extends DerivedValue {
      * @return The rGBColorValue value
      */
     public Color asColor() {
-        return _color;
+        return _derivedColor;
     }
 
-    private Color deriveColor(RGBColor rgbColor) {
+    private Color deriveColor(CSSName cssName, RGBColor rgbColor) {
         Color color = null;
         String str = getStringValue();
         try {
@@ -74,7 +74,7 @@ public class ColorValue extends DerivedValue {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new XRRuntimeException("Could not return '" + getCssName() + "' in a DerivedValue as a Color (value '" + str + "'). ", ex);
+            throw new XRRuntimeException("Could not return '" + cssName + "' in a DerivedValue as a Color (value '" + str + "'). ", ex);
         }
         return color;
     }

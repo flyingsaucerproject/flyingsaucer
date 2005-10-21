@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.css.style;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.constants.CSSName;
 
 import java.awt.*;
 
@@ -18,12 +19,13 @@ import java.awt.*;
  * throw a RuntimeException if they can't handle the call.
  */
 public interface FSDerivedValue {
-    FSDerivedValue copyOf();
+    FSDerivedValue copyOf(CSSName cssName);
     boolean isDeclaredInherit();
 
     float asFloat();
     Color asColor();
     Point asPoint(
+            CSSName cssName,
             float parentWidth,
             float parentHeight,
             CssContext ctx

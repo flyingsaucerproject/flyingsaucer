@@ -8,7 +8,6 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.DerivedValue;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
-import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -49,8 +48,11 @@ public class LengthValue extends DerivedValue {
      * Description of the Field
      */
     private final static float PC__PER__PT = 12;
-    private String _lengthAsString;
+
+    /** The specified length value, as a float; pulled from the CSS text */
     private float _lengthAsFloat;
+
+    /** The specified primitive SAC data type given for this length, from the CSS text */
     private short _lengthPrimitiveType;
 
     public LengthValue (
@@ -61,15 +63,15 @@ public class LengthValue extends DerivedValue {
             String cssStringValue
     ) {
         super(style, name, cssSACUnitType, cssText, cssStringValue);
-        pullLengthValueParts();
+        pullLengthValueParts(name);
     }
 
     public float asFloat() {
         return _lengthAsFloat;
     }
 
-    public FSDerivedValue copyOf() {
-        return new LengthValue(getStyle(), getCssName(), getCssSacUnitType(), getStringValue(), getStringValue());
+    public FSDerivedValue copyOf(CSSName cssName) {
+        return new LengthValue(getStyle(), cssName, getCssSacUnitType(), getStringValue(), getStringValue());
     }
 
     /**
@@ -77,18 +79,19 @@ public class LengthValue extends DerivedValue {
      * the input value. Used for such properties whose parent value cannot be
      * known before layout/render
      *
-     * @param style The value that this should be relative to.
+     * @param cssName Name of the property
      * @param baseValue
      * @param ctx
      * @return the absolute value or computed absolute value
      */
     public float getFloatProportionalTo(
+            CSSName cssName,
             float baseValue,
             CssContext ctx
     ) {
         return calcFloatProportionalValue(
                 getStyle(),
-                getCssName(),
+                cssName,
                 getStringValue(),
                 _lengthAsFloat,
                 _lengthPrimitiveType,
@@ -109,22 +112,23 @@ public class LengthValue extends DerivedValue {
      * pull out the numeric portion and the type portion separately; stored as
      * member fields in this class. We use a regex to do this.
      */
-    private void pullLengthValueParts() {
+    private void pullLengthValueParts(CSSName cssName) {
         Matcher m = CSS_LENGTH_PATTERN.matcher(getStringValue());
+        String lengthAsString = null;
         if (m.matches()) {
-            _lengthAsString = m.group(1);
-            _lengthAsFloat = new Float(_lengthAsString).floatValue();
+            lengthAsString = m.group(1);
+            _lengthAsFloat = new Float(lengthAsString).floatValue();
             _lengthPrimitiveType = ValueConstants.sacPrimitiveTypeForString(m.group(3));
         } else {
             throw new XRRuntimeException(
-                    "Could not extract length for " + getCssName() +
+                    "Could not extract length for " + cssName +
                     " from " + getStringValue() +
                     " using " + CSS_LENGTH_PATTERN);
         }
 
-        if (_lengthAsString == null) {
+        if (lengthAsString == null) {
             throw new XRRuntimeException(
-                    "Could not extract length for " + getCssName() +
+                    "Could not extract length for " + cssName +
                     " from " + getStringValue() +
                     "; is null, using " + CSS_LENGTH_PATTERN);
         }

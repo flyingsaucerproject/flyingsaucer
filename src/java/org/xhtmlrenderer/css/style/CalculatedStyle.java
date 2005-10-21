@@ -63,6 +63,11 @@ public class CalculatedStyle {
      */
     private CalculatedStyle _parent;
 
+    /**
+     * A key for this style; names each of the properties defined in the style,
+     * so is a "unique" identifier for the style, matching any other style
+     * which have the same properties defined.
+     */
     private String _styleKey;
 
     /**
@@ -76,6 +81,10 @@ public class CalculatedStyle {
         }
     };
 
+    /**
+     * Our main array of property values defined in this style, keyed
+     * by the CSSName assigned ID.
+     */
     private FSDerivedValue[] _derivedValuesById;
 
     /**
@@ -102,11 +111,6 @@ public class CalculatedStyle {
      * The derived border color value for this RuleSet
      */
     private BorderColor _drvBorderColor;
-
-    /**
-     * The derived Color value for this RuleSet
-     */
-    private Color _drvColor;
 
     /**
      * The derived Font for this style
@@ -138,22 +142,6 @@ public class CalculatedStyle {
         this._styleKey = genStyleKey();
     }
 
-    private String genStyleKey() {
-       StringBuffer sb = new StringBuffer();
-       for (int i = 0; i < _derivedValuesById.length; i++) {
-           CSSName name = CSSName.getByID(i);
-           FSDerivedValue val = _derivedValuesById[i];
-           if (val != null) {
-               sb.append(name.toString());
-           } else {
-               sb.append("(no prop assigned in this pos)");
-           }
-           sb.append("|\n");
-       }
-       return sb.toString();
-
-    }
-
     /**
      * derives a child style from this style.
      * <p/>
@@ -183,97 +171,12 @@ public class CalculatedStyle {
     }
 
     /**
-     * Returns a {@link FSDerivedValue} by name. Because we are a derived
-     * style, the property will already be resolved at this point.
+     * Returns the parent style.
      *
-     * @param cssName The CSS property name, e.g. "font-family"
-     * @return See desc.
+     * @return Returns the parent style
      */
-    private FSDerivedValue valueByName(CSSName cssName) {
-        FSDerivedValue val = _derivedValuesById[cssName.getAssignedID()];
-
-        // but the property may not be defined for this Element
-        if (val == null) {
-            // if it is inheritable (like color) and we are not root, ask our parent
-            // for the value
-            if (CSSName.propertyInherits(cssName)
-                    && _parent != null
-                    //
-                    && (val = _parent.valueByName(cssName)) != null) {
-
-                val = val.copyOf();
-            } else {
-                // otherwise, use the initial value (defined by the CSS2 Spec)
-                String initialValue = CSSName.initialValue(cssName);
-                if (initialValue == null) {
-                    throw new XRRuntimeException("Property '" + cssName + "' has no initial values assigned. " +
-                            "Check CSSName declarations.");
-                }
-                if (initialValue.startsWith("=")) {
-                    CSSName ref = CSSName.getByPropertyName(initialValue.substring(1));
-                    val = valueByName(ref);
-                } else {
-                    initialValue = Idents.convertIdent(cssName, initialValue);
-
-                    short type = guessType(initialValue);
-
-                    val = DerivedValueFactory.newDerivedValue(
-                            this,
-                            cssName,
-                            type,
-                            initialValue,
-                            initialValue,
-                            null
-                    );
-                }
-            }
-            _derivedValuesById[cssName.getAssignedID()] = val;
-        }
-        return val;
-    }
-    // Incomplete routine to try and determine the
-    // CSSPrimitiveValue short code for a given value,
-    // e.g. 14pt is CSS_PT.
-    /**
-     * Description of the Method
-     *
-     * @param value PARAM
-     * @return Returns
-     */
-    private static short guessType(String value) {
-        short type = CSSPrimitiveValue.CSS_STRING;
-        if (value != null && value.length() > 1) {
-            if (value.endsWith("%")) {
-                type = CSSPrimitiveValue.CSS_PERCENTAGE;
-            } else if (value.startsWith("rgb") || value.startsWith("#")) {
-                type = CSSPrimitiveValue.CSS_RGBCOLOR;
-            } else {
-                String hmm = value.substring(value.length() - 2);
-                if ("pt".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_PT;
-                } else if ("px".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_PX;
-                } else if ("em".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_EMS;
-                } else if ("ex".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_EXS;
-                } else if ("in".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_IN;
-                } else if ("cm".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_CM;
-                } else if ("mm".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_MM;
-                } else {
-                    try {
-                        new Float(value);
-                        type = CSSPrimitiveValue.CSS_NUMBER;
-                    } catch (NumberFormatException ex) {
-                        type = CSSPrimitiveValue.CSS_STRING;
-                    }
-                }
-            }
-        }
-        return type;
+    public CalculatedStyle getParent() {
+        return _parent;
     }
 
     /**
@@ -281,9 +184,98 @@ public class CalculatedStyle {
      *
      * @return The borderWidth value
      */
-   public String toString() {
+    public String toString() {
         return _styleKey;
-   }
+    }
+
+    public float asFloat(CSSName cssName) {
+        return valueByName(cssName).asFloat();
+    }
+
+    public String[] asStringArray(CSSName cssName) {
+        return valueByName(cssName).asStringArray();
+    }
+
+    // TODO: doc
+    public boolean hasAbsoluteUnit(CSSName cssName) {
+        return valueByName(cssName).hasAbsoluteUnit();
+    }
+
+    /**
+     * Gets the ident attribute of the CalculatedStyle object
+     *
+     * @param cssName PARAM
+     * @param val     PARAM
+     * @return The ident value
+     */
+    public boolean isIdent(CSSName cssName, IdentValue val) {
+        return valueByName(cssName) == val;
+    }
+
+    /**
+     * Gets the ident attribute of the CalculatedStyle object
+     *
+     * @param cssName PARAM
+     * @return The ident value
+     */
+    public IdentValue getIdent(CSSName cssName) {
+        return valueByName(cssName).asIdentValue();
+    }
+
+    /**
+     * Convenience property accessor; returns a Color initialized with the
+     * foreground color Uses the actual value (computed actual value) for this
+     * element.
+     *
+     * @return The color value
+     */
+    public Color getColor() {
+        return valueByName(CSSName.COLOR).asColor();
+    }
+
+    /**
+     * Convenience property accessor; returns a Color initialized with the
+     * background color value; Uses the actual value (computed actual value) for
+     * this element.
+     *
+     * @return The backgroundColor value
+     */
+    public Color getBackgroundColor() {
+        if (_drvBackgroundColor == null) {
+            _drvBackgroundColor = valueByName(CSSName.BACKGROUND_COLOR).asColor();
+            XRLog.cascade(Level.FINEST, "Background color: " + _drvBackgroundColor);
+        }
+        return _drvBackgroundColor;
+    }
+
+    /**
+     * @param parentWidth
+     * @param parentHeight
+     * @param ctx
+     * @return The "background-position" property as a Point
+     */
+    public Point getBackgroundPosition(float parentWidth, float parentHeight, CssContext ctx) {
+        return valueByName(CSSName.BACKGROUND_POSITION).asPoint(CSSName.BACKGROUND_POSITION, parentWidth, parentHeight, ctx);
+    }
+
+    /**
+     * Convenience property accessor; returns a BorderColor initialized with the
+     * four-sided border color. Uses the actual value (computed actual value)
+     * for this element.
+     *
+     * @return The borderColor value
+     */
+    public BorderColor getBorderColor() {
+        if (_drvBorderColor == null) {
+            BorderColor bcolor = new BorderColor();
+            bcolor.topColor = valueByName(CSSName.BORDER_COLOR_TOP).asColor();
+            bcolor.rightColor = valueByName(CSSName.BORDER_COLOR_RIGHT).asColor();
+            bcolor.bottomColor = valueByName(CSSName.BORDER_COLOR_BOTTOM).asColor();
+            bcolor.leftColor = valueByName(CSSName.BORDER_COLOR_LEFT).asColor();
+            _drvBorderColor = bcolor;
+        }
+        return _drvBorderColor;
+    }
 
     /**
      * Convenience property accessor; returns a Border initialized with the
@@ -315,115 +307,24 @@ public class CalculatedStyle {
         return _drvBorderWidth;
     }
 
+    public FontSpecification getFont(CssContext ctx) {
+        if (_font == null) {
+            _font = new FontSpecification();
+            _font.size = getFloatPropertyProportionalTo(CSSName.FONT_SIZE, 0, ctx);
 
-    /**
-     * Convenience property accessor; returns a Border initialized with the
-     * four-sided margin width. Uses the actual value (computed actual value)
-     * for this element.
-     *
-     * @param parentWidth
-     * @param parentHeight
-     * @param ctx
-     * @return The marginWidth value
-     */
-    public Border getMarginWidth(float parentWidth, float parentHeight, CssContext ctx) {
-        if (_drvMarginWidth == null) {
-            _drvMarginWidth = deriveBorderInstance(new CSSName[]{CSSName.MARGIN_TOP, CSSName.MARGIN_BOTTOM, CSSName.MARGIN_LEFT, CSSName.MARGIN_RIGHT},
-                    parentHeight,
-                    parentWidth, ctx);
+            _font.fontWeight = getIdent(CSSName.FONT_WEIGHT);
+            _font.families = valueByName(CSSName.FONT_FAMILY).asStringArray();
+
+            _font.fontStyle = getIdent(CSSName.FONT_STYLE);
+            _font.variant = getIdent(CSSName.FONT_VARIANT);
         }
-        return _drvMarginWidth;
-    }
-
-
-    /**
-     * Convenience property accessor; returns a Border initialized with the
-     * four-sided padding width. Uses the actual value (computed actual value)
-     * for this element.
-     *
-     * @param parentWidth
-     * @param parentHeight
-     * @param ctx
-     * @return The paddingWidth value
-     */
-    public Border getPaddingWidth(float parentWidth, float parentHeight, CssContext ctx) {
-        if (_drvPaddingWidth == null) {
-            _drvPaddingWidth = deriveBorderInstance(new CSSName[]{CSSName.PADDING_TOP, CSSName.PADDING_BOTTOM, CSSName.PADDING_LEFT, CSSName.PADDING_RIGHT},
-                    parentHeight,
-                    parentWidth, ctx);
-        }
-        return _drvPaddingWidth;
-    }
-
-
-    /**
-     * Convenience property accessor; returns a Color initialized with the
-     * background color value; Uses the actual value (computed actual value) for
-     * this element.
-     *
-     * @return The backgroundColor value
-     */
-    public Color getBackgroundColor() {
-        if (_drvBackgroundColor == null) {
-            _drvBackgroundColor = valueByName(CSSName.BACKGROUND_COLOR).asColor();
-            XRLog.cascade(Level.FINEST, "Background color: " + _drvBackgroundColor);
-        }
-        return _drvBackgroundColor;
-    }
-
-
-    /**
-     * Convenience property accessor; returns a BorderColor initialized with the
-     * four-sided border color. Uses the actual value (computed actual value)
-     * for this element.
-     *
-     * @return The borderColor value
-     */
-    public BorderColor getBorderColor() {
-        if (_drvBorderColor == null) {
-            BorderColor bcolor = new BorderColor();
-            bcolor.topColor = valueByName(CSSName.BORDER_COLOR_TOP).asColor();
-            bcolor.rightColor = valueByName(CSSName.BORDER_COLOR_RIGHT).asColor();
-            bcolor.bottomColor = valueByName(CSSName.BORDER_COLOR_BOTTOM).asColor();
-            bcolor.leftColor = valueByName(CSSName.BORDER_COLOR_LEFT).asColor();
-            _drvBorderColor = bcolor;
-        }
-        return _drvBorderColor;
-    }
-
-
-    public float asFloat(CSSName cssName) {
-        return valueByName(cssName).asFloat();
-    }
-
-    /**
-     * Convenience property accessor; returns a Color initialized with the
-     * foreground color Uses the actual value (computed actual value) for this
-     * element.
-     *
-     * @return The color value
-     */
-    public Color getColor() {
-        if (_drvColor == null) {
-            _drvColor = valueByName(CSSName.COLOR).asColor();
-            XRLog.cascade(Level.FINEST, "Color: " + _drvColor);
-        }
-        return _drvColor;
-    }
-
-    /**
-     * @param parentWidth
-     * @param parentHeight
-     * @param ctx
-     * @return The "background-position" property as a Point
-     */
-    public Point getBackgroundPosition(float parentWidth, float parentHeight, CssContext ctx) {
-        return valueByName(CSSName.BACKGROUND_POSITION).asPoint(parentWidth, parentHeight, ctx);
+        return _font;
     }
 
     public float getFloatPropertyProportionalTo(CSSName cssName, float baseValue, CssContext ctx) {
         return valueByName(cssName).getFloatProportionalTo(baseValue, ctx);
     }
+
     /**
      * @param cssName
      * @param parentWidth
@@ -445,12 +346,41 @@ public class CalculatedStyle {
     }
 
     /**
-     * Returns the parent style.
+     * Convenience property accessor; returns a Border initialized with the
+     * four-sided margin width. Uses the actual value (computed actual value)
+     * for this element.
      *
-     * @return Returns the parent style
+     * @param parentWidth
+     * @param parentHeight
+     * @param ctx
+     * @return The marginWidth value
      */
-    public CalculatedStyle getParent() {
-        return _parent;
+    public Border getMarginWidth(float parentWidth, float parentHeight, CssContext ctx) {
+        if (_drvMarginWidth == null) {
+            _drvMarginWidth = deriveBorderInstance(new CSSName[]{CSSName.MARGIN_TOP, CSSName.MARGIN_BOTTOM, CSSName.MARGIN_LEFT, CSSName.MARGIN_RIGHT},
+                    parentHeight,
+                    parentWidth, ctx);
+        }
+        return _drvMarginWidth;
+    }
+
+    /**
+     * Convenience property accessor; returns a Border initialized with the
+     * four-sided padding width. Uses the actual value (computed actual value)
+     * for this element.
+     *
+     * @param parentWidth
+     * @param parentHeight
+     * @param ctx
+     * @return The paddingWidth value
+     */
+    public Border getPaddingWidth(float parentWidth, float parentHeight, CssContext ctx) {
+        if (_drvPaddingWidth == null) {
+            _drvPaddingWidth = deriveBorderInstance(new CSSName[]{CSSName.PADDING_TOP, CSSName.PADDING_BOTTOM, CSSName.PADDING_LEFT, CSSName.PADDING_RIGHT},
+                    parentHeight,
+                    parentWidth, ctx);
+        }
+        return _drvPaddingWidth;
     }
 
     /**
@@ -459,32 +389,6 @@ public class CalculatedStyle {
      */
     public String getStringProperty(CSSName cssName) {
         return valueByName(cssName).asString();
-    }
-
-    // TODO: doc
-    public boolean hasAbsoluteUnit(CSSName cssName) {
-        return valueByName(cssName).hasAbsoluteUnit();
-    }
-
-    /**
-     * Gets the ident attribute of the CalculatedStyle object
-     *
-     * @param cssName PARAM
-     * @param val     PARAM
-     * @return The ident value
-     */
-    public boolean isIdent(CSSName cssName, IdentValue val) {
-        return valueByName(cssName)== val;
-    }
-
-    /**
-     * Gets the ident attribute of the CalculatedStyle object
-     *
-     * @param cssName PARAM
-     * @return The ident value
-     */
-    public IdentValue getIdent(CSSName cssName) {
-        return valueByName(cssName).asIdentValue();
     }
 
     /**
@@ -506,6 +410,56 @@ public class CalculatedStyle {
         border.left = (int) getFloatPropertyProportionalWidth(whichProperties[2], parentWidth, ctx);
         border.right = (int) getFloatPropertyProportionalWidth(whichProperties[3], parentWidth, ctx);
         return border;
+    }
+
+    /**
+     * Returns a {@link FSDerivedValue} by name. Because we are a derived
+     * style, the property will already be resolved at this point.
+     *
+     * @param cssName The CSS property name, e.g. "font-family"
+     * @return See desc.
+     */
+    private FSDerivedValue valueByName(CSSName cssName) {
+        FSDerivedValue val = _derivedValuesById[cssName.getAssignedID()];
+
+        // but the property may not be defined for this Element
+        if (val == null) {
+            // if it is inheritable (like color) and we are not root, ask our parent
+            // for the value
+            if (CSSName.propertyInherits(cssName)
+                    && _parent != null
+                    //
+                    && (val = _parent.valueByName(cssName)) != null) {
+
+                val = val.copyOf(cssName);
+            } else {
+                // otherwise, use the initial value (defined by the CSS2 Spec)
+                String initialValue = CSSName.initialValue(cssName);
+                if (initialValue == null) {
+                    throw new XRRuntimeException("Property '" + cssName + "' has no initial values assigned. " +
+                            "Check CSSName declarations.");
+                }
+                if (initialValue.startsWith("=")) {
+                    CSSName ref = CSSName.getByPropertyName(initialValue.substring(1));
+                    val = valueByName(ref);
+                } else {
+                    initialValue = Idents.convertIdent(cssName, initialValue);
+
+                    short type = guessType(initialValue);
+
+                    val = DerivedValueFactory.newDerivedValue(
+                            this,
+                            cssName,
+                            type,
+                            initialValue,
+                            initialValue,
+                            null
+                    );
+                }
+            }
+            _derivedValuesById[cssName.getAssignedID()] = val;
+        }
+        return val;
     }
 
     /**
@@ -567,36 +521,81 @@ public class CalculatedStyle {
                         "property '" + cssName + "' may not be defined in CSS.");
             } else {
                 // pull from our parent CalculatedStyle
-                cval = _parent.valueByName(cssName).copyOf();
+                cval = _parent.valueByName(cssName).copyOf(cssName);
             }
         }
         return cval;
     }
 
-    public FontSpecification getFont(CssContext ctx) {
-        if (_font == null) {
-            _font = new FontSpecification();
-            _font.size = getFloatPropertyProportionalTo(CSSName.FONT_SIZE, 0, ctx);
-
-            _font.fontWeight = getIdent(CSSName.FONT_WEIGHT);
-            _font.families = valueByName(CSSName.FONT_FAMILY).asStringArray();
-
-            _font.fontStyle = getIdent(CSSName.FONT_STYLE);
-            _font.variant = getIdent(CSSName.FONT_VARIANT);
+    private String genStyleKey() {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < _derivedValuesById.length; i++) {
+            CSSName name = CSSName.getByID(i);
+            FSDerivedValue val = _derivedValuesById[i];
+            if (val != null) {
+                sb.append(name.toString());
+            } else {
+                sb.append("(no prop assigned in this pos)");
+            }
+            sb.append("|\n");
         }
-        return _font;
+        return sb.toString();
+
     }
 
-    public String[] asStringArray(CSSName cssName){
-        return valueByName(cssName).asStringArray();
+    // Incomplete routine to try and determine the
+    // CSSPrimitiveValue short code for a given value,
+    // e.g. 14pt is CSS_PT.
+    /**
+     * Description of the Method
+     *
+     * @param value PARAM
+     * @return Returns
+     */
+    private static short guessType(String value) {
+        short type = CSSPrimitiveValue.CSS_STRING;
+        if (value != null && value.length() > 1) {
+            if (value.endsWith("%")) {
+                type = CSSPrimitiveValue.CSS_PERCENTAGE;
+            } else if (value.startsWith("rgb") || value.startsWith("#")) {
+                type = CSSPrimitiveValue.CSS_RGBCOLOR;
+            } else {
+                String hmm = value.substring(value.length() - 2);
+                if ("pt".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_PT;
+                } else if ("px".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_PX;
+                } else if ("em".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_EMS;
+                } else if ("ex".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_EXS;
+                } else if ("in".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_IN;
+                } else if ("cm".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_CM;
+                } else if ("mm".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_MM;
+                } else {
+                    try {
+                        new Float(value);
+                        type = CSSPrimitiveValue.CSS_NUMBER;
+                    } catch (NumberFormatException ex) {
+                        type = CSSPrimitiveValue.CSS_STRING;
+                    }
+                }
+            }
+        }
+        return type;
     }
-
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2005/10/21 10:02:54  pdoubleya
+ * Cleanup, removed unneeded vars, reorg code in CS.
+ *
  * Revision 1.31  2005/10/20 20:48:01  pdoubleya
  * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
  *

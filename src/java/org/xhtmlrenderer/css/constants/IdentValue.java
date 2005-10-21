@@ -536,7 +536,7 @@ public class IdentValue implements FSDerivedValue {
         return val;
     }
 
-    public FSDerivedValue copyOf() {
+    public FSDerivedValue copyOf(CSSName cssName) {
         return this;
     }
 
@@ -556,6 +556,7 @@ public class IdentValue implements FSDerivedValue {
         throw new XRRuntimeException("Ident value is never a color; wrong class used for derived value.");
     }
     public Point asPoint(
+            CSSName cssName,
             float parentWidth,
             float parentHeight,
             CssContext ctx
@@ -587,6 +588,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/10/21 10:02:53  pdoubleya
+ * Cleanup, removed unneeded vars, reorg code in CS.
+ *
  * Revision 1.11  2005/10/20 20:48:04  pdoubleya
  * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
  *

@@ -38,8 +38,8 @@ public class StringValue extends DerivedValue {
         return _stringAsArray;
     }
 
-    public FSDerivedValue copyOf() {
-        return new StringValue(getStyle(), getCssName(), getCssSacUnitType(), getStringValue(), getStringValue());
+    public FSDerivedValue copyOf(CSSName cssName) {
+        return new StringValue(getStyle(), cssName, getCssSacUnitType(), getStringValue(), getStringValue());
     }
 
     public String toString() {

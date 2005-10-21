@@ -36,8 +36,8 @@ public class PointValue extends DerivedValue {
         }
     }
 
-    public FSDerivedValue copyOf() {
-        return new PointValue(getStyle(), getCssName(), getCssSacUnitType(), getStringValue(), getStringValue());
+    public FSDerivedValue copyOf(CSSName cssName) {
+        return new PointValue(getStyle(), cssName, getCssSacUnitType(), getStringValue(), getStringValue());
     }
 
     /**
@@ -47,6 +47,7 @@ public class PointValue extends DerivedValue {
      * @return
      */
     public Point asPoint(
+            CSSName cssName,
             float parentWidth,
             float parentHeight,
             CssContext ctx
@@ -56,15 +57,15 @@ public class PointValue extends DerivedValue {
             // It's an absolute value, so only calculate it once
             if (_point == null) {
                 _point = new Point();
-                float xF = LengthValue.calcFloatProportionalValue(getStyle(), getCssName(), getStringValue(), _xPos, _xType, parentWidth, ctx);
-                float yF = LengthValue.calcFloatProportionalValue(getStyle(), getCssName(), getStringValue(), _yPos, _yType, parentHeight, ctx);
+                float xF = LengthValue.calcFloatProportionalValue(getStyle(), cssName, getStringValue(), _xPos, _xType, parentWidth, ctx);
+                float yF = LengthValue.calcFloatProportionalValue(getStyle(), cssName, getStringValue(), _yPos, _yType, parentHeight, ctx);
                 _point.setLocation(xF, yF);
             }
             pt = _point;
         } else {
             pt = new Point();
-            float xF = LengthValue.calcFloatProportionalValue(getStyle(), getCssName(), getStringValue(), _xPos, _xType, parentWidth, ctx);
-            float yF = LengthValue.calcFloatProportionalValue(getStyle(), getCssName(), getStringValue(), _yPos, _yType, parentHeight, ctx);
+            float xF = LengthValue.calcFloatProportionalValue(getStyle(), cssName, getStringValue(), _xPos, _xType, parentWidth, ctx);
+            float yF = LengthValue.calcFloatProportionalValue(getStyle(), cssName, getStringValue(), _yPos, _yType, parentHeight, ctx);
             pt.setLocation(xF, yF);
         }
         return pt;
