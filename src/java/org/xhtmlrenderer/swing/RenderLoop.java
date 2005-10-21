@@ -55,7 +55,15 @@ public class RenderLoop implements Runnable {
                     Dimension dim = evt.getDimension();
                     //Uu.p("current dimensions = " + this.getSize());
                     //Uu.p("new dimensions = " + dim);
-                    Dimension vpdim = root.enclosingScrollPane.getViewport().getSize();
+                    //Dimension vpdim = root.enclosingScrollPane.getViewport().getSize();
+
+                    // FIX: G2D renderer will not have an enclosing scroll pane...
+                    Dimension vpdim = null;
+                    if (root.enclosingScrollPane == null) {
+                        vpdim = new Dimension(10000, 10000);
+                    } else {
+                        vpdim = root.enclosingScrollPane.getViewport().getSize();
+                    }
                     if (dim.getHeight() > root.getHeight()) {
                         //Uu.p("height is bigger now: " + dim + " setting");
                         root.setPreferredSize(new Dimension((int) vpdim.getWidth(), (int) dim.getHeight()));
