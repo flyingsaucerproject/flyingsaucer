@@ -1,13 +1,15 @@
 package org.xhtmlrenderer.render;
 
+import java.awt.Font;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.RenderingContext;
-
-import java.awt.*;
 
 /**
  * Encapuslates anything style related in a Box. A separate bean is used to
@@ -27,7 +29,7 @@ public class Style {
     private float parentWidth;
 
     private CssContext cssContext;
-
+    
     public Style(CalculatedStyle calculatedStyle, float parentWidth,
                  CssContext cssContext) {
         this.calculatedStyle = calculatedStyle;
@@ -55,10 +57,6 @@ public class Style {
 
     public CalculatedStyle getCalculatedStyle() {
         return calculatedStyle;
-    }
-
-    public void setCalculatedStyle(CalculatedStyle calculatedStyle) {
-        this.calculatedStyle = calculatedStyle;
     }
 
     public IdentValue getBackgroundRepeat() {
