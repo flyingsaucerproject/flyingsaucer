@@ -49,6 +49,8 @@ public class XMLResource extends AbstractResource {
     private Document document;
     private static final XMLResourceBuilder XML_RESOURCE_BUILDER;
     private static boolean useConfiguredParser;
+    private static XMLReader s_xmlReader;
+
 
     static {
         XML_RESOURCE_BUILDER = new XMLResourceBuilder();
@@ -107,7 +109,6 @@ public class XMLResource extends AbstractResource {
     }
 
     public static final XMLReader newXMLReader() {
-        XMLReader xmlReader = null;
         String xmlReaderClass = Configuration.valueFor("xr.load.xml-reader");
         
         //TODO: if it doesn't find the parser, note that in a static boolean--otherwise
@@ -127,7 +128,7 @@ public class XMLResource extends AbstractResource {
                             "FS configuration if necessary. Will now try JDK default.");
                 }
                 if (XMLResource.useConfiguredParser) {
-                    xmlReader = XMLReaderFactory.createXMLReader(xmlReaderClass);
+                    s_xmlReader = XMLReaderFactory.createXMLReader(xmlReaderClass);
                 }
             }
         } catch (Exception ex) {
@@ -136,7 +137,7 @@ public class XMLResource extends AbstractResource {
                     + xmlReaderClass + ". Please check classpath. Use value 'default' in " +
                     "FS configuration if necessary. Will now try JDK default.", ex);
         }
-        if (xmlReader == null) {
+        if (s_xmlReader == null) {
             try {
                 // JDK default
                 // HACK: if
@@ -147,29 +148,31 @@ public class XMLResource extends AbstractResource {
                             "No value for system property 'org.xml.sax.driver'.");
                 }
                 */
-                xmlReader = XMLReaderFactory.createXMLReader();
+                s_xmlReader = XMLReaderFactory.createXMLReader();
                 xmlReaderClass = "{JDK default}";
+                XRLog.load("SAX XMLReader in use (parser): " + s_xmlReader.getClass().getName());
             } catch (Exception ex) {
                 XRLog.general(ex.getMessage());
             }
         }
-        if (xmlReader == null) {
+        if (s_xmlReader == null) {
             try {
                 XRLog.load(Level.WARNING, "falling back on the default parser");
                 SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
-                xmlReader = parser.getXMLReader();
+                s_xmlReader = parser.getXMLReader();
                 xmlReaderClass = "SAXParserFactory default";
+                XRLog.load("SAX XMLReader in use (parser): " + s_xmlReader.getClass().getName());
             } catch (Exception ex) {
                 XRLog.general(ex.getMessage());
             }
         }
-        if (xmlReader == null) {
+        if (s_xmlReader == null) {
             throw new XRRuntimeException("Could not instantiate any SAX 2 parser, including JDK default. " +
                     "The name of the class to use should have been read from the org.xml.sax.driver System " +
                     "property, which is set to: "/*CHECK: is this meaningful? + System.getProperty("org.xml.sax.driver")*/);
         }
-        XRLog.load("SAX XMLReader in use (parser): " + xmlReader.getClass().getName());
-        return xmlReader;
+
+        return s_xmlReader;
     }
 
     private static class XMLResourceBuilder {
@@ -329,6 +332,9 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/10/21 19:50:18  pdoubleya
+ * Made XML reader static.
+ *
  * Revision 1.15  2005/07/02 09:40:24  tobega
  * More robust parsing
  *
