@@ -187,13 +187,13 @@ public abstract class BasicPanel extends RootPanel {
         if (root == null) {
             //Uu.p("dispatching an initial resize event");
             //queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, this.getSize()));
-            Uu.p("skipping the actual painting");
+            XRLog.render(Level.FINE, "skipping the actual painting");
         } else {
             Context c = newContext(getPageInfo(), (Graphics2D) g);
             long start = System.currentTimeMillis();
             executeRenderThread(c, root);
             long end = System.currentTimeMillis();
-            System.out.println("RENDERING TOOK " + (end - start) + " ms");
+            XRLog.render(Level.FINE, "RENDERING TOOK " + (end - start) + " ms");
         }
     }
 
@@ -1106,6 +1106,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.78  2005/10/21 19:54:20  pdoubleya
+ * changed logging statements to use XRLog and FINE.
+ *
  * Revision 1.77  2005/10/21 19:36:42  peterbrant
  * Paint first time through if sync mode
  *

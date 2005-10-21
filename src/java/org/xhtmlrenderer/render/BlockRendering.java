@@ -23,10 +23,11 @@ import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.*;
 import java.util.LinkedList;
+import java.util.logging.Level;
 
 /**
  * Description of the Class
@@ -66,12 +67,12 @@ public class BlockRendering {
             if (ALTERNATE_CLIP_DAMAGE) {
                 if (box.getChildCount() > 10) {
                     int tstart = getFirstNonSkippedChild(c, box);
-                    Uu.p("first non skip = " + tstart);
+                    XRLog.render(Level.FINE, "first non skip = " + tstart);
                     if (tstart != -1) {
                         start = tstart;
                     }
                     int tend = getLastNonSkippedChild(c, box);
-                    Uu.p("last non skip = " + tend);
+                    XRLog.render(Level.FINE, "last non skip = " + tend);
                     if (tend != -1) {
                         end = tend;
                     }
@@ -169,7 +170,7 @@ public class BlockRendering {
                 return mid;
             }
         }
-        
+
         // if clip is above box
         if (clip.y <= child.y) {
             // Uu.p("clip is above");
@@ -214,7 +215,7 @@ public class BlockRendering {
                 return mid;
             }
         }
-        
+
         // if clip is above box
         if (clip.y + clip.height <= child.y) {
             // Uu.p("clip is above");

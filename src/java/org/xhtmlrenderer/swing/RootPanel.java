@@ -173,7 +173,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      */
     public void addNotify() {
         super.addNotify();
-        System.out.println("add notify called");
+        XRLog.general(Level.FINE, "add notify called");
         Container p = getParent();
         if (p instanceof JViewport) {
             Container vp = p.getParent();

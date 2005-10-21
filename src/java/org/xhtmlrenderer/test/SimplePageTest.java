@@ -11,9 +11,12 @@ public class SimplePageTest {
 
     public static void main(String[] args) throws Exception {
         long total = 0;
-        int cnt = 25;
-        String demosDir = "d:/data/projects/xhtmlrenderer/demos";
-        String page = demosDir + "/browser/xhtml/dead-simple-page.xhtml";
+        int cnt = 1;
+        String demosDir = "d:/java/javanet/xhtmlrenderer/demos/browser/xhtml/new";
+        String page = demosDir + "/dead-simple-page.xhtml";
+        if ( args.length == 1 ) {
+            page = demosDir + "/" + args[0];
+        }
         //String page = demosDir + "/browser/xhtml/hamlet.xhtml";
         //String page = demosDir + "/splash/splash.html";
         System.out.println("Testing with page " + page);
