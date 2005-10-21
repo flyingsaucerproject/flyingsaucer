@@ -130,6 +130,7 @@ public class CalculatedStyle {
      * @return The derived child style
      */
     public synchronized CalculatedStyle deriveStyle(CascadedStyle matched) {
+        /*
         CalculatedStyle cs = (CalculatedStyle) _childCache.get(matched);
 
         if (cs == null) {
@@ -137,6 +138,14 @@ public class CalculatedStyle {
             _childCache.put(matched, cs);
         }
         return cs;
+        */
+        return new CalculatedStyle(this, matched);
+    }
+    
+    public synchronized void refresh(CascadedStyle matched) {
+        _derivedValuesById = new FSDerivedValue[_derivedValuesById.length]; 
+        derive(matched);
+        this._styleKey = genStyleKey();
     }
 
     public int countAssigned() {
@@ -560,6 +569,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2005/10/21 23:04:02  peterbrant
+ * Make box level restyle work again
+ *
  * Revision 1.39  2005/10/21 18:49:46  pdoubleya
  * Fixed border painting bug.
  *

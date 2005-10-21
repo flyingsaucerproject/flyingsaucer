@@ -19,8 +19,13 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
+
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
@@ -31,8 +36,6 @@ import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.Uu;
-
-import java.awt.*;
 
 
 /**
@@ -73,6 +76,11 @@ public class BoxRendering {
             */
             
             CalculatedStyle calculatedStyle = box.getStyle().getCalculatedStyle();
+            
+            if (! stylePushed && restyle) {
+                CascadedStyle style = c.getCss().getCascadedStyle(block.element, restyle);
+                calculatedStyle.refresh(style);
+            }
 
             // copy the bounds to we don't mess it up
             Rectangle oldBounds = new Rectangle(c.getExtents());
@@ -372,6 +380,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.47  2005/10/21 23:04:01  peterbrant
+ * Make box level restyle work again
+ *
  * Revision 1.46  2005/10/21 13:17:16  pdoubleya
  * Rename some methods in RectPropertySet, cleanup.
  *
