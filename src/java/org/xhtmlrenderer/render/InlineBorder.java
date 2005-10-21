@@ -20,8 +20,8 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.Context;
 
 import java.awt.*;
@@ -35,7 +35,7 @@ public class InlineBorder {
     private LineMetrics lm;
     // CLEAN:
     private RectPropertySet margin;
-    private Border border;
+    private BorderPropertySet border;
     private RectPropertySet padding;
     private int y;
     private int height;
@@ -56,7 +56,7 @@ public class InlineBorder {
      * @param lm
      * @param background_color
      */
-    InlineBorder(int y, int height, RectPropertySet margin, Border border, RectPropertySet padding, CalculatedStyle style, LineMetrics lm, Color background_color) {
+    InlineBorder(int y, int height, RectPropertySet margin, BorderPropertySet border, RectPropertySet padding, CalculatedStyle style, LineMetrics lm, Color background_color) {
         this.y = y;
         this.height = height;
         this.margin = margin;
@@ -69,7 +69,7 @@ public class InlineBorder {
 
     void paint(Context c, LineBox line, int start, int width, int sides) {
         if (width <= 0) return;
-        int ty = line.getBaseline() - y - height - (int)margin.top() - border.top - (int)padding.top() + line.y;
+        int ty = line.getBaseline() - y - height - (int)margin.top() - (int)border.top() - (int)padding.top() + line.y;
         ty += (int) lm.getDescent();
         c.translate(0, ty);
         c.getGraphics().translate(0, ty);
@@ -77,7 +77,7 @@ public class InlineBorder {
         Rectangle bounds = new Rectangle(start,
                 y + (int)margin.top(),
                 width,
-                height + border.top + (int)padding.top() + (int)padding.bottom() + border.bottom);
+                height + (int)border.top() + (int)padding.top() + (int)padding.bottom() + (int)border.bottom());
         //first the background
         if (background_color != null) {
             // skip transparent background

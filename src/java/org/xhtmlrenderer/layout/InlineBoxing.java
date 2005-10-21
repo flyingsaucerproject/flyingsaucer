@@ -23,8 +23,8 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.*;
@@ -36,8 +36,7 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -146,12 +145,12 @@ public class InlineBoxing {
                 Relative.translateRelative(c, c.getCurrentStyle(), false);
                 CalculatedStyle style = c.getCurrentStyle();
                 int parent_width = bounds.width;
-                Border border = style.getBorderWidth(c.getCtx());
+                BorderPropertySet border = style.getBorder(c.getCtx());
                 //note: percentages here refer to width of containing block
                 RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
                 RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
-                pendingLeftPadding += margin.left() + border.left + (int)padding.left();
-                pendingRightPadding += (int)padding.right() + border.right + margin.right();
+                pendingLeftPadding += margin.left() + (int)border.left() + (int)padding.left();
+                pendingRightPadding += (int)padding.right() + (int)border.right() + margin.right();
                 continue;
             }
             if (o instanceof StylePop) {
@@ -164,12 +163,12 @@ public class InlineBoxing {
                 }
                 int parent_width = bounds.width;
                 CalculatedStyle style = c.getCurrentStyle();
-                Border border = style.getBorderWidth(c.getCtx());
+                BorderPropertySet border = style.getBorder(c.getCtx());
                 //note: percentages here refer to width of containing block
                 RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
                 RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
                 // CLEAN: cast to int
-                int rp = (int)padding.right() + border.right + (int)margin.right();
+                int rp = (int)padding.right() + (int)border.right() + (int)margin.right();
                 //CHECK: not sure this is where the padding really goes, always
                 prev_inline.rightPadding += rp;
 
@@ -519,14 +518,14 @@ public class InlineBoxing {
                 c.pushStyle(firstLetterStyle);
                 inline.setStyle(new Style(c.getCurrentStyle(), max_width, c.getCtx()));
                 prepareBox(prev_align, inline, c);
-                Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
+                BorderPropertySet border = c.getCurrentStyle().getBorder(c.getCtx());
                 //first letter is a pseudo-element, so has borders, etc.
                 //note: percentages here refer to width of containing block
                 RectPropertySet margin = c.getCurrentStyle().getMarginRect(max_width, max_width, c.getCtx());
                 RectPropertySet padding = c.getCurrentStyle().getPaddingRect(max_width, max_width, c.getCtx());
                 // CLEAN: cast to ints
-                inline.rightPadding = (int)margin.right() + border.right + (int)padding.right();
-                inline.leftPadding = (int)margin.left() + border.left + (int)padding.left();
+                inline.rightPadding = (int)margin.right() + (int)border.right() + (int)padding.right();
+                inline.leftPadding = (int)margin.left() + (int)border.left() + (int)padding.left();
                 c.popStyle();
                 result = inline;
 
@@ -620,6 +619,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.48  2005/10/21 18:10:51  pdoubleya
+ * Support for cachable borders. Still buggy on some pages, but getting there.
+ *
  * Revision 1.47  2005/10/21 13:17:12  pdoubleya
  * Rename some methods in RectPropertySet, cleanup.
  *

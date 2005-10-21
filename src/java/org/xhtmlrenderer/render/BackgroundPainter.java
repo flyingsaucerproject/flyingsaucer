@@ -21,8 +21,8 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
 
@@ -60,16 +60,16 @@ public class BackgroundPainter {
             height += c.getCanvas().getHeight();
         }
         CalculatedStyle currentStyle = block.getStyle().getCalculatedStyle();
-        Border border = currentStyle.getBorderWidth(c.getCtx());
+        BorderPropertySet border = currentStyle.getBorder(c.getCtx());
         if (border == null) {
             return;
         }
         RectPropertySet margin = block.getStyle().getMarginWidth();
         // CLEAN: cast to int
-        Rectangle box = new Rectangle(block.x + (int)margin.left() + border.left,
-                block.y + (int)margin.top() + border.top,
-                width - (int)margin.left() - (int)margin.right() - border.left - border.right,
-                height - (int)margin.top() - border.top - border.bottom - (int)margin.bottom());
+        Rectangle box = new Rectangle(block.x + (int)margin.left() + (int)border.left(),
+                block.y + (int)margin.top() + (int)border.top(),
+                width - (int)margin.left() - (int)margin.right() - (int)border.left() - (int)border.right(),
+                height - (int)margin.top() - (int)border.top() - (int)border.bottom() - (int)margin.bottom());
 
         // paint the background
         Color background_color = currentStyle.getBackgroundColor();
@@ -173,6 +173,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2005/10/21 18:10:52  pdoubleya
+ * Support for cachable borders. Still buggy on some pages, but getting there.
+ *
  * Revision 1.36  2005/10/21 13:17:14  pdoubleya
  * Rename some methods in RectPropertySet, cleanup.
  *

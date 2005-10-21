@@ -26,10 +26,9 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.css.value.Border;
-import org.xhtmlrenderer.css.value.BorderColor;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -91,19 +90,9 @@ public class CalculatedStyle {
     private FSDerivedValue[] _derivedValuesById;
 
     /**
-     * The derived border width for this RuleSet
-     */
-    private Border _drvBorderWidth;
-
-    /**
      * The derived background color value for this RuleSet
      */
     private Color _drvBackgroundColor;
-
-    /**
-     * The derived border color value for this RuleSet
-     */
-    private BorderColor _drvBorderColor;
 
     /**
      * The derived Font for this style
@@ -179,6 +168,10 @@ public class CalculatedStyle {
         return _styleKey;
     }
 
+    public Color asColor(CSSName cssName) {
+        return valueByName(cssName).asColor();
+    }
+
     public float asFloat(CSSName cssName) {
         return valueByName(cssName).asFloat();
     }
@@ -249,53 +242,9 @@ public class CalculatedStyle {
         return valueByName(CSSName.BACKGROUND_POSITION).asPoint(CSSName.BACKGROUND_POSITION, parentWidth, parentHeight, ctx);
     }
 
-    /**
-     * Convenience property accessor; returns a BorderColor initialized with the
-     * four-sided border color. Uses the actual value (computed actual value)
-     * for this element.
-     *
-     * @return The borderColor value
-     */
-    public BorderColor getBorderColor() {
-        if (_drvBorderColor == null) {
-            BorderColor bcolor = new BorderColor();
-            bcolor.topColor = valueByName(CSSName.BORDER_COLOR_TOP).asColor();
-            bcolor.rightColor = valueByName(CSSName.BORDER_COLOR_RIGHT).asColor();
-            bcolor.bottomColor = valueByName(CSSName.BORDER_COLOR_BOTTOM).asColor();
-            bcolor.leftColor = valueByName(CSSName.BORDER_COLOR_LEFT).asColor();
-            _drvBorderColor = bcolor;
-        }
-        return _drvBorderColor;
-    }
-
-    /**
-     * Convenience property accessor; returns a Border initialized with the
-     * four-sided border width. Uses the actual value (computed actual value)
-     * for this element.
-     *
-     * @param ctx
-     * @return The borderWidth value
-     */
-    public Border getBorderWidth(CssContext ctx) {
-        if (_drvBorderWidth == null) {
-            //note: percentages donot apply to border
-            _drvBorderWidth = deriveBorderInstance(new CSSName[]{CSSName.BORDER_WIDTH_TOP, CSSName.BORDER_WIDTH_BOTTOM, CSSName.BORDER_WIDTH_LEFT, CSSName.BORDER_WIDTH_RIGHT},
-                    0,
-                    0, ctx);
-            if (valueByName(CSSName.BORDER_STYLE_TOP) == IdentValue.NONE) {
-                _drvBorderWidth.top = 0;
-            }
-            if (valueByName(CSSName.BORDER_STYLE_BOTTOM) == IdentValue.NONE) {
-                _drvBorderWidth.bottom = 0;
-            }
-            if (valueByName(CSSName.BORDER_STYLE_LEFT) == IdentValue.NONE) {
-                _drvBorderWidth.left = 0;
-            }
-            if (valueByName(CSSName.BORDER_STYLE_RIGHT) == IdentValue.NONE) {
-                _drvBorderWidth.right = 0;
-            }
-        }
-        return _drvBorderWidth;
+    public BorderPropertySet getBorder(CssContext ctx) {
+        BorderPropertySet b = getBorderProperty(this, ctx);
+        return b;
     }
 
     public FontSpecification getFont(CssContext ctx) {
@@ -372,26 +321,6 @@ public class CalculatedStyle {
         return valueByName(cssName).asString();
     }
 
-    /**
-     * Instantiates a Border instance for a four-sided property, e.g.
-     * border-width, padding, margin.
-     *
-     * @param whichProperties Array of CSSNames for 4 sides, in order: top,
-     *                        bottom, left, right
-     * @param parentHeight    Container parent height
-     * @param parentWidth     Container parent width
-     * @param ctx
-     * @return A Border instance representing the value for the
-     *         4 sides.
-     */
-    private Border deriveBorderInstance(CSSName[] whichProperties, float parentHeight, float parentWidth, CssContext ctx) {
-        Border border = new Border();
-        border.top = (int) getFloatPropertyProportionalHeight(whichProperties[0], parentHeight, ctx);
-        border.bottom = (int) getFloatPropertyProportionalHeight(whichProperties[1], parentHeight, ctx);
-        border.left = (int) getFloatPropertyProportionalWidth(whichProperties[2], parentWidth, ctx);
-        border.right = (int) getFloatPropertyProportionalWidth(whichProperties[3], parentWidth, ctx);
-        return border;
-    }
 
     /**
      * Returns a {@link FSDerivedValue} by name. Because we are a derived
@@ -524,13 +453,12 @@ public class CalculatedStyle {
 
     }
 
-// Incomplete routine to try and determine the
-// CSSPrimitiveValue short code for a given value,
-// e.g. 14pt is CSS_PT.
-
     /**
      * Description of the Method
      *
+     // Incomplete routine to try and determine the
+     // CSSPrimitiveValue short code for a given value,
+     // e.g. 14pt is CSS_PT.
      * @param value PARAM
      * @return Returns
      */
@@ -616,12 +544,32 @@ public class CalculatedStyle {
         return rect;
     }
 
+    private static BorderPropertySet getBorderProperty(
+            CalculatedStyle style,
+            CssContext ctx
+    ) {
+        BorderPropertySet border = null;
+        String key = BorderPropertySet.deriveKey(style);
+        border = (BorderPropertySet) _cachedRects.get(key);
+        if (border == null) {
+            border = newBorderInstance(style, ctx);
+            _cachedRects.put(key, border);
+        }
+        return border;
+    }
+
+    private static BorderPropertySet newBorderInstance(CalculatedStyle style, CssContext ctx) {
+        return BorderPropertySet.newInstance(style, ctx);
+    }
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2005/10/21 18:10:50  pdoubleya
+ * Support for cachable borders. Still buggy on some pages, but getting there.
+ *
  * Revision 1.36  2005/10/21 13:02:20  pdoubleya
  * Changed to cache padding in RectPropertySet.
  *

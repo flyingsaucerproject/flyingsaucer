@@ -22,8 +22,8 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
@@ -148,7 +148,7 @@ public class InlineRendering {
             InlineBox inline,
             int padX,
             RectPropertySet margin,
-            Border border,
+            BorderPropertySet border,
             RectPropertySet padding) {
         LineMetrics lm = FontUtil.getLineMetrics(c, inline);
         for (Iterator i = c.getInlineBorders().iterator(); i.hasNext();) {
@@ -156,7 +156,7 @@ public class InlineRendering {
             ((InlineBorder) i.next()).paint(c,
                     line,
                     padX + inline.x + (int)margin.left(),
-                    (int)padding.left() + border.left,
+                    (int)padding.left() + (int)border.left(),
                     BorderPainter.TOP + BorderPainter.BOTTOM);
         }
 
@@ -165,7 +165,7 @@ public class InlineRendering {
         // CLEAN: cast to int
         ib.paint(c, line,
                 inline.x + padX + (int)margin.left(),
-                border.left + (int)padding.left(), BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM);
+                (int)border.left() + (int)padding.left(), BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM);
         c.getInlineBorders().addLast(ib);
     }
 
@@ -181,7 +181,7 @@ public class InlineRendering {
             LineBox line,
             InlineBox inline,
             int padX,
-            Border border,
+            BorderPropertySet border,
             RectPropertySet padding) {
         InlineBorder ib = (InlineBorder) c.getInlineBorders().removeLast();
         for (Iterator i = c.getInlineBorders().iterator(); i.hasNext();) {
@@ -189,11 +189,11 @@ public class InlineRendering {
                     c,
                     line,
                     padX + inline.x,
-                    (int)padding.right() + border.right,
+                    (int)padding.right() + (int)border.right(),
                     BorderPainter.TOP + BorderPainter.BOTTOM);
         }
 
-        ib.paint(c, line, padX + inline.x, (int)padding.right() + border.right, BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM);
+        ib.paint(c, line, padX + inline.x, (int)padding.right() + (int)border.right(), BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM);
     }
 
     /**
@@ -494,20 +494,20 @@ public class InlineRendering {
         //right padding for this inline element
         CalculatedStyle style = ib.getStyle().getCalculatedStyle();
         int parent_width = line.getParent().getWidth();
-        Border border = style.getBorderWidth(c.getCtx());
+        BorderPropertySet border = style.getBorder(c.getCtx());
         //note: percentages here refer to width of containing block
         RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
         RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
         paintRightPadding(c, line, ib, padX, border, padding);
 
         // CLEAN: cast to int
-        padX += (int)padding.right() + border.right;
+        padX += (int)padding.right() + (int)border.right();
         Relative.untranslateRelative(c, ib.getStyle().getCalculatedStyle(), true);
         c.popStyle();
         if (pushedStyles != null) pushedStyles.removeLast();
         // TODO What does this do?
         style = c.getCurrentStyle();
-        //border = style.getBorderWidth(c.getCtx());
+        //border = style.getBorder(c.getCtx());
         //note: percentages here refer to width of containing block
         margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
         //padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
@@ -522,7 +522,7 @@ public class InlineRendering {
         /*
         CalculatedStyle style = ib.getStyle().getCalculatedStyle();
         int parent_width = line.getParent().getWidth();
-        //Border border = style.getBorderWidth(c.getCtx());
+        //Border border = style.getBorder(c.getCtx());
         //note: percentages here refer to width of containing block
         Border margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
         //Border padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
@@ -533,7 +533,7 @@ public class InlineRendering {
         //Now we know that an inline element started here, handle borders and such
         Relative.translateRelative(c, ib.getStyle().getCalculatedStyle(), true);
         CalculatedStyle style = ib.getStyle().getCalculatedStyle();
-        Border border = style.getBorderWidth(c.getCtx());
+        BorderPropertySet border = style.getBorder(c.getCtx());
         //note: percentages here refer to width of containing block
         RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
         RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
@@ -541,12 +541,12 @@ public class InlineRendering {
         //paintLeftPadding takes the margin into account
         paintLeftPadding(c, line, ib, padX, margin, border, padding);
         // CLEAN: cast to int
-        padX += (int)margin.left() + border.left + (int)padding.left();
+        padX += (int)margin.left() + (int)border.left() + (int)padding.left();
         //text decoration?
         IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
         if (decoration != IdentValue.NONE) {
             // CLEAN: cast to int
-            decorations.addLast(new TextDecoration(decoration, ib.x + (int)margin.left() + border.left + (int)padding.left(), c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
+            decorations.addLast(new TextDecoration(decoration, ib.x + (int)margin.left() + (int)border.left() + (int)padding.left(), c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null)));
         }
         return padX;
     }

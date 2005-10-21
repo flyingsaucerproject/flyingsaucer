@@ -40,8 +40,8 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Context;
@@ -57,8 +57,7 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -146,17 +145,17 @@ public class TableBoxing {
         }
 
         tableBox.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth(), c.getCtx()));
-        Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
+        BorderPropertySet border = c.getCurrentStyle().getBorder(c.getCtx());
         //note: percentages here refer to width of containing block
         RectPropertySet margin = tableBox.getStyle().getMarginWidth();
         RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
         // CLEAN: cast to int
-        int tx = (int)margin.left() + border.left + (int)padding.left();
-        int ty = (int)margin.top() + border.top + (int)padding.top();
+        int tx = (int)margin.left() + (int)border.left() + (int)padding.left();
+        int ty = (int)margin.top() + (int)border.top() + (int)padding.top();
         tableBox.tx = tx;
         tableBox.ty = ty;
         c.translate(tx, ty);
-        c.shrinkExtents(tx + (int)margin.right() + border.right + (int)padding.right(), ty + (int)margin.bottom() + border.bottom + (int)padding.bottom());
+        c.shrinkExtents(tx + (int)margin.right() + (int)border.right() + (int)padding.right(), ty + (int)margin.bottom() + (int)border.bottom() + (int)padding.bottom());
         IdentValue borderStyle = c.getCurrentStyle().getIdent(CSSName.BORDER_COLLAPSE);
         int borderSpacingHorizontal = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_HORIZONTAL, 0, c.getCtx());
         int borderSpacingVertical = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_VERTICAL, 0, c.getCtx());
@@ -207,12 +206,12 @@ public class TableBoxing {
         }
 
         //TODO: margins go on the outer box
-        tableBox.leftPadding = border.left + (int)padding.left();
+        tableBox.leftPadding = (int)border.left() + (int)padding.left();
         // CLEAN: cast to int
         tableBox.leftPadding += (int)margin.left();
-        tableBox.rightPadding = border.right + (int)margin.right();
+        tableBox.rightPadding = (int)border.right() + (int)margin.right();
         tableBox.rightPadding += (int)margin.right();
-        tableBox.height = (int)margin.top() + border.top + (int)padding.top() + tableBox.height + (int)padding.bottom() + border.bottom + (int)margin.bottom();
+        tableBox.height = (int)margin.top() + (int)border.top() + (int)padding.top() + tableBox.height + (int)padding.bottom() + (int)border.bottom() + (int)margin.bottom();
 
         c.popStyle();
 
@@ -355,17 +354,17 @@ public class TableBoxing {
 
         row.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth(), c.getCtx()));
 
-        Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
+        BorderPropertySet border = c.getCurrentStyle().getBorder(c.getCtx());
         //rows have no margin or padding
-        row.leftPadding = border.left;
-        row.rightPadding = border.right;
+        row.leftPadding = (int)border.left();
+        row.rightPadding = (int)border.right();
         //TODO: check how borders should interact with cell borders
-        int tx = border.left;
-        int ty = border.top;
+        int tx = (int)border.left();
+        int ty = (int)border.top();
         row.tx = tx;
         row.ty = ty;
         c.translate(tx, ty);
-        c.shrinkExtents(tx + border.right, ty + border.bottom);
+        c.shrinkExtents(tx + (int)border.right(), ty + (int)border.bottom());
         List cells = tableRowContent.getChildContent(c);
         checkColumns(table, cells.size());
         layoutCells(cells, c, row, table, fixed, borderSpacingHorizontal, borderSpacingVertical);
@@ -373,7 +372,7 @@ public class TableBoxing {
         c.translate(-tx, -ty);
         // calculate the total outer width
         row.contentWidth += borderSpacingHorizontal;
-        row.height = border.top + row.height + border.bottom;
+        row.height = (int)border.top() + row.height + (int)border.bottom();
 
         c.popStyle();
 
@@ -544,16 +543,16 @@ public class TableBoxing {
         // do children's layout
         boolean old_sub = c.isSubBlock();
         c.setSubBlock(false);
-        Border border = c.getCurrentStyle().getBorderWidth(c.getCtx());
+        BorderPropertySet border = c.getCurrentStyle().getBorder(c.getCtx());
         RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
-        cell.leftPadding = border.left + (int)padding.left();
-        cell.rightPadding = (int)padding.right() + border.right;
-        int tx = border.left + (int)padding.left();
-        int ty = border.top + (int)padding.top();
+        cell.leftPadding = (int)border.left() + (int)padding.left();
+        cell.rightPadding = (int)padding.right() + (int)border.right();
+        int tx = (int)border.left() + (int)padding.left();
+        int ty = (int)border.top() + (int)padding.top();
         cell.tx = tx;
         cell.ty = ty;
         c.translate(tx, ty);
-        c.shrinkExtents(tx + border.right + (int)padding.right(), ty + border.bottom + (int)padding.bottom());
+        c.shrinkExtents(tx + (int)border.right() + (int)padding.right(), ty + (int)border.bottom() + (int)padding.bottom());
         if (cell.component == null)
             Boxing.layoutChildren(c, cell, content);
         else {
@@ -573,7 +572,7 @@ public class TableBoxing {
             cell.height = original_height;
         }
 
-        cell.height = border.top + (int)padding.top() + cell.height + (int)padding.bottom() + border.bottom;
+        cell.height = (int)border.top() + (int)padding.top() + cell.height + (int)padding.bottom() + (int)border.bottom();
 
         //restore the extents
         c.setExtents(oe);
@@ -596,6 +595,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.35  2005/10/21 18:10:54  pdoubleya
+   Support for cachable borders. Still buggy on some pages, but getting there.
+
    Revision 1.34  2005/10/21 13:17:18  pdoubleya
    Rename some methods in RectPropertySet, cleanup.
 
