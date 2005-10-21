@@ -167,19 +167,19 @@ public class BorderPropertySet extends RectPropertySet {
     }
 
     public boolean noTop() {
-        return this._topStyle == IdentValue.NONE && (int)_top == 0;
+        return this._topStyle == IdentValue.NONE || (int) _top == 0;
     }
 
     public boolean noRight() {
-        return this._rightStyle == IdentValue.NONE && (int)_right == 0;
+        return this._rightStyle == IdentValue.NONE || (int) _right == 0;
     }
 
     public boolean noBottom() {
-        return this._bottomStyle == IdentValue.NONE && (int)_bottom == 0;
+        return this._bottomStyle == IdentValue.NONE || (int) _bottom == 0;
     }
 
     public boolean noLeft() {
-        return this._leftStyle == IdentValue.NONE && (int)_left == 0;
+        return this._leftStyle == IdentValue.NONE || (int) _left == 0;
     }
 
     public IdentValue topStyle() {
