@@ -609,6 +609,29 @@ public final class CSSName {
                             CSSName.PADDING_LEFT
                     };
 
+    public final static CSSName[] BORDER_SIDE_PROPERTIES =
+            new CSSName[] {
+                            CSSName.BORDER_WIDTH_TOP,
+                            CSSName.BORDER_WIDTH_RIGHT,
+                            CSSName.BORDER_WIDTH_BOTTOM,
+                            CSSName.BORDER_WIDTH_LEFT
+                    };
+
+    public final static CSSName[] BORDER_STYLE_PROPERTIES =
+            new CSSName[] {
+                            CSSName.BORDER_STYLE_TOP,
+                            CSSName.BORDER_STYLE_RIGHT,
+                            CSSName.BORDER_STYLE_BOTTOM,
+                            CSSName.BORDER_STYLE_LEFT
+                    };
+
+    public final static CSSName[] BORDER_COLOR_PROPERTIES =
+            new CSSName[] {
+                            CSSName.BORDER_COLOR_TOP,
+                            CSSName.BORDER_COLOR_RIGHT,
+                            CSSName.BORDER_COLOR_BOTTOM,
+                            CSSName.BORDER_COLOR_LEFT
+                    };
     /**
      * Description of the Field
      */
@@ -958,6 +981,9 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/10/21 18:10:07  pdoubleya
+ * new arrays of properties.
+ *
  * Revision 1.17  2005/10/21 13:02:20  pdoubleya
  * Changed to cache padding in RectPropertySet.
  *
