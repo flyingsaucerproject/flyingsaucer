@@ -141,7 +141,7 @@ public class DocumentDiffTest {
         renderer.render(g);
 
         StringBuffer sb = new StringBuffer();
-        getDiff(sb, renderer.getRenderingContext().getRootBox(), "");
+        getDiff(sb, renderer.getPanel().getRootBox(), "");
         return sb.toString();
     }
 
@@ -227,6 +227,9 @@ public class DocumentDiffTest {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/10/22 23:00:30  peterbrant
+ * Fix memory leak (all box trees ever built remained in memory)
+ *
  * Revision 1.15  2005/06/01 21:36:45  tobega
  * Got image scaling working, and did some refactoring along the way
  *

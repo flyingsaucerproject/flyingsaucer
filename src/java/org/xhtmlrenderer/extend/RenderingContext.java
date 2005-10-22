@@ -51,11 +51,6 @@ public class RenderingContext implements CssContext {
     protected SharedContext ctx;
 
     /**
-     * <b>need to make this protected</b>
-     */
-    protected Box root_box;
-
-    /**
      * Description of the Field
      */
     protected TextRenderer text_renderer;
@@ -123,16 +118,6 @@ public class RenderingContext implements CssContext {
     public void setContext(SharedContext ctx) {
         this.ctx = ctx;
     }
-
-    /**
-     * Sets the rootBox attribute of the RenderingContext object
-     *
-     * @param root_box The new rootBox value
-     */
-    public void setRootBox(Box root_box) {
-        this.root_box = root_box;
-    }
-
 
     /**
      * <p/>
@@ -249,17 +234,6 @@ public class RenderingContext implements CssContext {
         return ctx.getCss();
     }
 
-
-    /**
-     * Gets the root of the fully rendered box tree
-     *
-     * @return The rootBox value
-     */
-    public Box getRootBox() {
-        return root_box;
-    }
-
-
     /**
      * Gets the baseURL attribute of the RenderingContext object
      *
@@ -268,7 +242,6 @@ public class RenderingContext implements CssContext {
     public String getBaseURL() {
         return uac.getBaseURL();
     }
-
 
     /**
      * Gets the dPI attribute of the RenderingContext object

@@ -340,8 +340,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             super.setOpaque(true);
         }
 
-        getRenderingContext().setRootBox(root);
-
         XRLog.layout(Level.FINEST, "after layout: " + root);
 
         intrinsic_size = new Dimension(getContext().getMaxWidth(), root.height);

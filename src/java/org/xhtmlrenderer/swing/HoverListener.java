@@ -132,6 +132,8 @@ public class HoverListener extends MouseInputAdapter {
 		return getDeepestHover(box.getParent());
 	}
 
-	
+    public void reset() {
+        prev = null;
+    }
 }
 

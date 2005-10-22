@@ -153,7 +153,6 @@ public class Boxing {
         // set up the outtermost bfc
         boolean set_bfc = false;
         if (c.getBlockFormattingContext() == null) {
-            block.setParent(c.getCtx().getRootBox());
             BlockFormattingContext bfc = new BlockFormattingContext(block, c);
             c.pushBFC(bfc);
             set_bfc = true;
@@ -373,6 +372,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.48  2005/10/22 23:00:30  peterbrant
+ * Fix memory leak (all box trees ever built remained in memory)
+ *
  * Revision 1.47  2005/10/21 18:10:51  pdoubleya
  * Support for cachable borders. Still buggy on some pages, but getting there.
  *

@@ -97,7 +97,6 @@ public class TableBoxing {
             // ie. if it's null.
             // set up the outtermost bfc
             if (c.getBlockFormattingContext() == null) {
-                outerBox.setParent(c.getCtx().getRootBox());
                 BlockFormattingContext bfc = new BlockFormattingContext(outerBox, c);
                 c.pushBFC(bfc);
                 set_bfc = true;
@@ -595,6 +594,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.36  2005/10/22 23:00:31  peterbrant
+   Fix memory leak (all box trees ever built remained in memory)
+
    Revision 1.35  2005/10/21 18:10:54  pdoubleya
    Support for cachable borders. Still buggy on some pages, but getting there.
 

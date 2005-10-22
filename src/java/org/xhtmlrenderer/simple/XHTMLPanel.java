@@ -97,6 +97,9 @@ public class XHTMLPanel extends BasicPanel {
     private float fontScalingFactor = 1.2F;
     private float minFontScale = 0.50F;
     private float maxFontScale = 3.0F;
+    
+    private LinkListener linkListener;
+    private HoverListener hoverListener;
 
     /**
      * Instantiates an XHTMLPanel with no {@link Document} loaded by default.
@@ -121,11 +124,17 @@ public class XHTMLPanel extends BasicPanel {
 
     private void setupListeners() {
         // install a default link listener
-        addMouseListener(new LinkListener(this));
+        linkListener = new LinkListener(this);
+        addMouseListener(linkListener);
         // install a default hover listener
-        HoverListener hoverListener = new HoverListener(this);
+        hoverListener = new HoverListener(this);
         addMouseListener(hoverListener);
         addMouseMotionListener(hoverListener);
+    }
+    
+    private void resetListeners() {
+        linkListener.reset();
+        hoverListener.reset();
     }
 
     /**
@@ -165,6 +174,7 @@ public class XHTMLPanel extends BasicPanel {
      * @param url The new document value
      */
     public void setDocument(Document doc, String url) {
+        resetListeners();
         super.setDocument(doc, url, new XhtmlNamespaceHandler());
     }
 
@@ -177,6 +187,7 @@ public class XHTMLPanel extends BasicPanel {
      */
     public void setDocument(InputStream stream, String url)
             throws Exception {
+        resetListeners();
         super.setDocument(stream, url, new XhtmlNamespaceHandler());
     }
 
@@ -288,6 +299,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/10/22 23:00:29  peterbrant
+ * Fix memory leak (all box trees ever built remained in memory)
+ *
  * Revision 1.26  2005/09/28 20:13:25  joshy
  * re-enabled body height hack
  * Issue number:

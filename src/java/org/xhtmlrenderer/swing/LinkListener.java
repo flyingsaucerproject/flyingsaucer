@@ -165,5 +165,9 @@ public class LinkListener extends MouseInputAdapter {
 
         prev = box;
     }
+    
+    public void reset() {
+        prev = null;
+    }
 }
 
