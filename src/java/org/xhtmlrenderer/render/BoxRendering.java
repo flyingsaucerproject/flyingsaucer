@@ -79,7 +79,8 @@ public class BoxRendering {
             
             if (! stylePushed && restyle) {
                 CascadedStyle style = c.getCss().getCascadedStyle(block.element, restyle);
-                calculatedStyle.refresh(style);
+                calculatedStyle = calculatedStyle.getParent().deriveNewStyle(style);
+                box.getStyle().setCalculatedStyle(calculatedStyle);
             }
 
             // copy the bounds to we don't mess it up
@@ -380,6 +381,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.48  2005/10/22 22:58:15  peterbrant
+ * Box level restyle works again (really this time!)
+ *
  * Revision 1.47  2005/10/21 23:04:01  peterbrant
  * Make box level restyle work again
  *

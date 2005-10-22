@@ -133,4 +133,8 @@ public class Style {
     public boolean isOutsideNormalFlow() {
         return isFixed() || isAbsolute() || isFloated();
     }
+
+    public void setCalculatedStyle(CalculatedStyle calculatedStyle) {
+        this.calculatedStyle = calculatedStyle;
+    }
 }

@@ -146,12 +146,10 @@ public class CalculatedStyle {
         return cs;
     }
     
-    public synchronized void refresh(CascadedStyle matched) {
-        _derivedValuesById = new FSDerivedValue[_derivedValuesById.length]; 
-        derive(matched);
-        this._styleKey = genStyleKey();
+    public synchronized CalculatedStyle deriveNewStyle(CascadedStyle matched) {
+        return new CalculatedStyle(this, matched);
     }
-
+    
     public int countAssigned() {
         int c = 0;
         for (int i = 0; i < _derivedValuesById.length; i++) {
@@ -613,6 +611,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2005/10/22 22:58:15  peterbrant
+ * Box level restyle works again (really this time!)
+ *
  * Revision 1.42  2005/10/21 23:51:48  peterbrant
  * Rollback ill-advised change in revision 1.40
  *
