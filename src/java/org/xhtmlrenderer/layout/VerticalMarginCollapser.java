@@ -19,20 +19,25 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Node;
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
-import org.xhtmlrenderer.layout.content.*;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.Style;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.layout.content.BlockContent;
+import org.xhtmlrenderer.layout.content.CachingContent;
+import org.xhtmlrenderer.layout.content.CollapsableContent;
+import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.layout.content.ContentUtil;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.Style;
 
 /**
  * Exposes a utility method to collapse vertical margins (8.3.1)
@@ -110,6 +115,12 @@ public class VerticalMarginCollapser {
      */
     public static void collapseVerticalMargins(Context c, Box block, Content content, float parentWidth) {
         if (content instanceof CollapsableContent) {
+            Element elem = content.getElement();
+            if (elem.getParentNode().getNodeType() == Node.DOCUMENT_NODE ||
+                    elem.getParentNode().getParentNode().getNodeType() == Node.DOCUMENT_NODE) {
+                return;
+            }
+            
             CollapsableContent collapsableContent = (CollapsableContent) content;
 
             if (!collapsableContent.isCollapsed()) {
@@ -181,12 +192,6 @@ public class VerticalMarginCollapser {
 
     private static Float collapseTopMargin(Context c, CachingContent content, float parentWidth) {
         if (content instanceof BlockContent) {
-            if (content.getElement().getParentNode().getNodeType() == Node.DOCUMENT_NODE ||
-                    content.getElement().getParentNode().getParentNode().getNodeType() == Node.DOCUMENT_NODE) {
-                // don't collapse on html or body
-                return null;
-            }
-
             CollapsedMarginPair saved = ((BlockContent) content).getMarginToCollapse();
 
             if (hasTopBorderOrPadding(c, parentWidth)) {
@@ -308,12 +313,6 @@ public class VerticalMarginCollapser {
 
     private static Float collapseBottomMargin(Context c, CachingContent content, float parentWidth) {
         if (content instanceof BlockContent) {
-            if (content.getElement().getParentNode().getNodeType() == Node.DOCUMENT_NODE ||
-                    content.getElement().getParentNode().getParentNode().getNodeType() == Node.DOCUMENT_NODE) {
-                // don't collapse on html or body
-                return null;
-            }
-
             if (hasBottomBorderOrPadding(c, parentWidth)) {
                 return calculateAdjustedMarginBottom(c, content, parentWidth);
             }
