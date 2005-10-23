@@ -82,46 +82,42 @@ public class Breaker {
         }
 
         String currentString = inline.getSubstring();
-        int n = 0;
-        int possibleWrap;
-        boolean lastLenCheck = false;
-
-        while (true) {
-            possibleWrap = n;
-            n = currentString.indexOf(WhitespaceStripper.SPACE, n + 1);
-            if (n == -1) {
-                break;
-            }
-            lastLenCheck = FontUtil.len(c, currentString.substring(0, n), font) > avail;
-            if (lastLenCheck) {
-                break;
-            }
-        }
-
-        if (n == -1 && FontUtil.len(c, currentString, font) <= avail) {
-            return;
-        }
-
-        if (possibleWrap == 0) {
-            if (lastLenCheck) {
-                n = 0;
-            } else {
-                possibleWrap = currentString.length();
-            }
-        }
-        
-        // (0 is a boundary condition when the first was a space)
-        if (n <= 0) {//unbreakable string
-            inline.setSubstring(inline.start_index, inline.start_index + possibleWrap);//the best we can do
+	int left = 0;
+	int right = currentString.indexOf(WhitespaceStripper.SPACE, left+1);
+	int lastWrap = 0;
+	int graphicsLength = 0;
+	
+	while(right > 0 && graphicsLength <= avail) {
+	    graphicsLength += FontUtil.len(c, currentString.substring(left, right), font);
+	    lastWrap = left;
+	    left = right;
+	    right = currentString.indexOf(WhitespaceStripper.SPACE, left+1);
+	}
+	
+	if(right < 0) {
+	    //try for the last bit too!
+	    graphicsLength += FontUtil.len(c, currentString.substring(left), font);
+	}
+	
+	if(graphicsLength <= avail) {
+	    //It fit!
+	    return;
+	}
+	
+        if (lastWrap != 0) {//found a place to wrap
+            inline.setSubstring(inline.start_index, inline.start_index + lastWrap);
+            inline.break_after = true;
+        } else {//unbreakable string
+	    if(left == 0) left = currentString.length();
+            inline.setSubstring(inline.start_index, inline.start_index + left);//the best we can do
             if (prev_align != null && !prev_align.break_after) {
+		//will break the line and try to regenerate this inline
                 inline.break_before = true;
-            }//else {//I think this else should be here?
-            inline.break_after = true;
-            //}
-        } else {//found a place to wrap
-            inline.setSubstring(inline.start_index, inline.start_index + possibleWrap);
-            inline.break_after = true;
-        }
+            } else {
+		//this inline was at the start of a line, so we just have to make do with it
+		inline.break_after = true;
+            }
+        } 
         return;
     }
 
