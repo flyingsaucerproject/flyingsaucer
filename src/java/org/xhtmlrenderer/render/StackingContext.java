@@ -20,11 +20,10 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.awt.Graphics2D;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.TreeSet;
 
 /**
  * Created by IntelliJ IDEA.
@@ -33,45 +32,32 @@ import java.util.TreeSet;
  * Time: 14:45:58
  * To change this template use File | Settings | File Templates.
  */
-public class StackingContext {
+public abstract class StackingContext {
 
-    VerticalExtentList blockVerticalExtentList = new VerticalExtentList();
-    VerticalExtentList inlineVerticalExtentList = new VerticalExtentList();
+    public static StackingContext newInstance() {
+        String scClassName = Configuration.valueFor("xr.stackingcontext.class", "org.xhtmlrenderer.render.OldRenderingStackingContext");
+        try {
+            Class scClass = Class.forName(scClassName);
+            StackingContext sc = (StackingContext) scClass.newInstance();
+            return sc;
+        } catch (ClassNotFoundException e) {
+            throw new XRRuntimeException(e.getLocalizedMessage(), e);
+        } catch (IllegalAccessException e) {
+            throw new XRRuntimeException(e.getLocalizedMessage(), e);
+        } catch (InstantiationException e) {
+            throw new XRRuntimeException(e.getLocalizedMessage(), e);
+        }
 
-    public void addBlock(Renderable b) {
-        blockVerticalExtentList.addChild(b);
     }
 
-    public void addLine(Renderable b) {
-        inlineVerticalExtentList.addChild(b);
+    protected StackingContext() {
+
     }
+
+    abstract public void addBlock(Renderable b);
+
+    abstract public void addLine(Renderable b);
 
     //HACK: Context should not be used here
-    public void render(Context c, Graphics2D g2, double top, double bottom) {
-        Comparator indexer = new Comparator() {
-
-            public int compare(Object o, Object o1) {
-                Renderable r = (Renderable) o;
-                Renderable r1 = (Renderable) o1;
-                if (r.getIndex() < r1.getIndex())
-                    return -1;
-                else if (r.getIndex() > r1.getIndex())
-                    return 1;
-                else
-                    return 0;
-            }
-        };
-        //render in-flow blocks
-        TreeSet blocks = new TreeSet(indexer);
-        blockVerticalExtentList.getIntersectingChildSet(blocks, top, bottom);
-        for (Iterator i = blocks.iterator(); i.hasNext();) {
-            ((Renderable) i.next()).render(c, g2);
-        }
-        //render in-flow inlines
-        TreeSet inlines = new TreeSet(indexer);
-        inlineVerticalExtentList.getIntersectingChildSet(inlines, top, bottom);
-        for (Iterator i = inlines.iterator(); i.hasNext();) {
-            ((Renderable) i.next()).render(c, g2);
-        }
-    }
+    abstract public void render(Context c, Graphics2D g2, double top, double bottom);
 }

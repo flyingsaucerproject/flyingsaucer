@@ -29,7 +29,6 @@ import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.BoxRendering;
 import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.Configuration;
@@ -180,7 +179,7 @@ public abstract class BasicPanel extends RootPanel {
         //Uu.p("paint component () called");
         // if this is the first time painting this document, then calc layout
         Box root = getRootBox();
-        if (root == null && ! Configuration.isTrue("xr.use.threads", true)) {
+        if (root == null && !Configuration.isTrue("xr.use.threads", true)) {
             doActualLayout(getGraphics());
             root = getRootBox();
         }
@@ -217,7 +216,9 @@ public abstract class BasicPanel extends RootPanel {
 
         g.clipRect(0, (int) (info.getContentHeight() * (page - 1)), (int) info.getContentWidth(), (int) info.getContentHeight());
 
-        BoxRendering.paint(c, root, false, false);
+        Rectangle clip = g.getClipBounds();
+        initialStackingContext.render(c, g, clip.getMinY(), clip.getMaxY());
+        //BoxRendering.paint(c, root, false, false);
 
         g.translate(-margins.left, -margins.top);
         g.translate(0, info.getContentHeight() * (page - 1));
@@ -312,12 +313,12 @@ public abstract class BasicPanel extends RootPanel {
 
         long start = System.currentTimeMillis();
         if (!c.isPrint()) {
-            if (Configuration.isTrue("xr.stackingcontext.enabled", false)) {
-                Rectangle clip = c.getGraphics().getClipBounds();
-                initialStackingContext.render(c, c.getGraphics(), clip.getMinY(), clip.getMaxY());
-            } else {
-                BoxRendering.paint(c, root, false, false);//no restyle demanded on top level
-            }
+            //if (Configuration.isTrue("xr.stackingcontext.enabled", false)) {
+            Rectangle clip = c.getGraphics().getClipBounds();
+            initialStackingContext.render(c, c.getGraphics(), clip.getMinY(), clip.getMaxY());
+            //} else {
+            //    BoxRendering.paint(c, root, false, false);//no restyle demanded on top level
+            //}
         } else {
             renderPagedView(c, root);
         }
@@ -371,7 +372,9 @@ public abstract class BasicPanel extends RootPanel {
                     (int) (i * info.getContentHeight() + i * margins.top + i * margins.bottom + margins.top),
                     (int) info.getContentWidth(), (int) info.getContentHeight()));
             g.translate(margins.left, i * margins.top + i * margins.bottom + margins.top);
-            BoxRendering.paint(c, box, false, false);//no restyle demanded on top level
+            //BoxRendering.paint(c, box, false, false);//no restyle demanded on top level
+            Rectangle clip = g.getClipBounds();
+            initialStackingContext.render(c, g, clip.getMinY(), clip.getMaxY());
             g.translate(-margins.left, -(i * margins.top + i * margins.bottom) + -margins.top);
 
             Stroke oldStroke = g.getStroke();
@@ -1106,6 +1109,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.79  2005/10/23 22:16:44  tobega
+ * Preparation for StackingContext rendering
+ *
  * Revision 1.78  2005/10/21 19:54:20  pdoubleya
  * changed logging statements to use XRLog and FINE.
  *

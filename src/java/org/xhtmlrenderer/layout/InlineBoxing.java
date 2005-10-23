@@ -32,11 +32,11 @@ import org.xhtmlrenderer.layout.inline.Breaker;
 import org.xhtmlrenderer.layout.inline.FloatUtil;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.render.*;
-import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.font.LineMetrics;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -149,8 +149,8 @@ public class InlineBoxing {
                 //note: percentages here refer to width of containing block
                 RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
                 RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
-                pendingLeftPadding += margin.left() + (int)border.left() + (int)padding.left();
-                pendingRightPadding += (int)padding.right() + (int)border.right() + margin.right();
+                pendingLeftPadding += margin.left() + (int) border.left() + (int) padding.left();
+                pendingRightPadding += (int) padding.right() + (int) border.right() + margin.right();
                 continue;
             }
             if (o instanceof StylePop) {
@@ -168,7 +168,7 @@ public class InlineBoxing {
                 RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
                 RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
                 // CLEAN: cast to int
-                int rp = (int)padding.right() + (int)border.right() + (int)margin.right();
+                int rp = (int) padding.right() + (int) border.right() + (int) margin.right();
                 //CHECK: not sure this is where the padding really goes, always
                 prev_inline.rightPadding += rp;
 
@@ -374,9 +374,9 @@ public class InlineBoxing {
         c.pushStyle(CascadedStyle.emptyCascadedStyle);
         curr_line.setStyle(new Style(c.getCurrentStyle(), 0, c.getCtx()));
         c.popStyle();
-        if (Configuration.isTrue("xr.stackingcontext.enabled", false)) {
-            curr_line.renderIndex = c.getNewRenderIndex();
-        }
+        //if (Configuration.isTrue("xr.stackingcontext.enabled", false)) {
+        curr_line.renderIndex = c.getNewRenderIndex();
+        //}
         if (prev_line != null) {
             curr_line.setParent(prev_line.getParent());
         } else {
@@ -524,8 +524,8 @@ public class InlineBoxing {
                 RectPropertySet margin = c.getCurrentStyle().getMarginRect(max_width, max_width, c.getCtx());
                 RectPropertySet padding = c.getCurrentStyle().getPaddingRect(max_width, max_width, c.getCtx());
                 // CLEAN: cast to ints
-                inline.rightPadding = (int)margin.right() + (int)border.right() + (int)padding.right();
-                inline.leftPadding = (int)margin.left() + (int)border.left() + (int)padding.left();
+                inline.rightPadding = (int) margin.right() + (int) border.right() + (int) padding.right();
+                inline.leftPadding = (int) margin.left() + (int) border.left() + (int) padding.left();
                 c.popStyle();
                 result = inline;
 
@@ -603,14 +603,14 @@ public class InlineBoxing {
         if (c.isPrint() && line_to_save.crossesPageBreak(c)) {
             line_to_save.moveToNextPage(c, bounds);
         }
-        if (Configuration.isTrue("xr.stackingcontext.enabled", false)) {
-            //line should now be fixed
-            Point origin = c.getOriginOffset();
-            line_to_save.absY = origin.getY() + line_to_save.y;
-            line_to_save.absX = origin.getX() + line_to_save.x;
-            StackingContext s = c.getStackingContext();
-            s.addLine(line_to_save);
-        }
+        //if (Configuration.isTrue("xr.stackingcontext.enabled", false)) {
+        //line should now be fixed
+        Point origin = c.getOriginOffset();
+        line_to_save.absY = origin.getY() + line_to_save.y;
+        line_to_save.absX = origin.getX() + line_to_save.x;
+        StackingContext s = c.getStackingContext();
+        s.addLine(line_to_save);
+        //}
     }
 
 }
@@ -619,6 +619,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.50  2005/10/23 22:16:42  tobega
+ * Preparation for StackingContext rendering
+ *
  * Revision 1.49  2005/10/23 18:37:43  tobega
  * possibly quicker stop when c.shouldStop()
  *

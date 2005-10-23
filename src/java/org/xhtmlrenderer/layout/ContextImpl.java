@@ -59,7 +59,7 @@ public class ContextImpl implements Context {
     private boolean pendingPageBreak;
     private boolean setPageBreak;
     //HACK:
-    private StackingContext initialStackingContext = new StackingContext();
+    private StackingContext initialStackingContext = StackingContext.newInstance();
 
     public RenderingContext getRenderingContext() {
         return sharedContext.getRenderingContext();

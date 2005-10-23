@@ -36,11 +36,11 @@ import org.xhtmlrenderer.layout.content.TableContent;
 import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.table.TableBoxing;
-import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.List;
 
 
@@ -171,8 +171,8 @@ public class Boxing {
         RectPropertySet margin = block.getStyle().getMarginWidth();
         RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
         // CLEAN: cast to int
-        block.leftPadding = (int)margin.left() + (int)border.left() + (int)padding.left();
-        block.rightPadding = (int)padding.right() + (int)border.right() + (int)margin.right();
+        block.leftPadding = (int) margin.left() + (int) border.left() + (int) padding.left();
+        block.rightPadding = (int) padding.right() + (int) border.right() + (int) margin.right();
         block.contentWidth = (int) (c.getExtents().getWidth() - block.leftPadding - block.rightPadding);
 
         CalculatedStyle style = c.getCurrentStyle();
@@ -189,8 +189,8 @@ public class Boxing {
             if (!block.getStyle().isAutoHeight()) {
                 setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
                 // CLEAN: cast to int
-                c.getExtents().height = (int)margin.top() + (int)border.top() + (int)padding.top() +
-                        setHeight + (int)padding.bottom() + (int)border.bottom() + (int)margin.bottom();
+                c.getExtents().height = (int) margin.top() + (int) border.top() + (int) padding.top() +
+                        setHeight + (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom();
                 block.height = setHeight;
             }
             //check if replaced
@@ -231,13 +231,13 @@ public class Boxing {
         c.setSubBlock(false);
 
         // CLEAN: cast to int
-        int tx = (int)margin.left() + (int)border.left() + (int)padding.left();
-        int ty = (int)margin.top() + (int)border.top() + (int)padding.top();
+        int tx = (int) margin.left() + (int) border.left() + (int) padding.left();
+        int ty = (int) margin.top() + (int) border.top() + (int) padding.top();
         block.tx = tx;
         block.ty = ty;
         c.translate(tx, ty + (int) block.paginationTranslation);
         // CLEAN: cast to int
-        c.shrinkExtents(tx + (int)margin.right() + (int)border.right() + (int)padding.right(), ty + (int)margin.bottom() + (int)border.bottom() + (int)padding.bottom());
+        c.shrinkExtents(tx + (int) margin.right() + (int) border.right() + (int) padding.right(), ty + (int) margin.bottom() + (int) border.bottom() + (int) padding.bottom());
         if (block.component == null)
             layoutChildren(c, block, content);//when this is really an anonymous, InlineLayout.layoutChildren is called
         else {
@@ -273,7 +273,7 @@ public class Boxing {
         //block.contentWidth = block.getWidth();
         //block.width = margin.left + border.left + padding.left + block.contentWidth + padding.right + border.right + margin.right;
         // CLEAN: cast to int
-        block.height = (int)margin.top() + (int)border.top() + (int)padding.top() + block.height + (int)padding.bottom() + (int)border.bottom() + (int)margin.bottom();
+        block.height = (int) margin.top() + (int) border.top() + (int) padding.top() + block.height + (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom();
 
         //restore the extents
         c.setExtents(oe);
@@ -339,7 +339,7 @@ public class Boxing {
         box.setState(Box.CHILDREN_FLUX);
 
         //HACK:
-        if (box instanceof BlockBox && Configuration.isTrue("xr.stackingcontext.enabled", false)) {
+        if (box instanceof BlockBox) {// && Configuration.isTrue("xr.stackingcontext.enabled", false)) {
             BlockBox block = (BlockBox) box;
             Point origin = c.getOriginOffset();
             block.absY = origin.getY() + block.y;
@@ -372,6 +372,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.49  2005/10/23 22:16:41  tobega
+ * Preparation for StackingContext rendering
+ *
  * Revision 1.48  2005/10/22 23:00:30  peterbrant
  * Fix memory leak (all box trees ever built remained in memory)
  *
