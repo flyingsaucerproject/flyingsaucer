@@ -27,7 +27,7 @@ import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Font;
 
 
 /**
@@ -82,42 +82,43 @@ public class Breaker {
         }
 
         String currentString = inline.getSubstring();
-	int left = 0;
-	int right = currentString.indexOf(WhitespaceStripper.SPACE, left+1);
-	int lastWrap = 0;
-	int graphicsLength = 0;
-	
-	while(right > 0 && graphicsLength <= avail) {
-	    graphicsLength += FontUtil.len(c, currentString.substring(left, right), font);
-	    lastWrap = left;
-	    left = right;
-	    right = currentString.indexOf(WhitespaceStripper.SPACE, left+1);
-	}
-	
-	if(right < 0) {
-	    //try for the last bit too!
-	    graphicsLength += FontUtil.len(c, currentString.substring(left), font);
-	}
-	
-	if(graphicsLength <= avail) {
-	    //It fit!
-	    return;
-	}
-	
+        int left = 0;
+        int right = currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
+        int lastWrap = 0;
+        int graphicsLength = 0;
+
+        while (right > 0 && graphicsLength <= avail) {
+            graphicsLength += FontUtil.len(c, currentString.substring(left, right), font);
+            lastWrap = left;
+            left = right;
+            right = currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
+        }
+
+        if (graphicsLength <= avail) {
+            //try for the last bit too!
+            lastWrap = left;
+            graphicsLength += FontUtil.len(c, currentString.substring(left), font);
+        }
+
+        if (graphicsLength <= avail) {
+            //It fit!
+            return;
+        }
+
         if (lastWrap != 0) {//found a place to wrap
             inline.setSubstring(inline.start_index, inline.start_index + lastWrap);
             inline.break_after = true;
         } else {//unbreakable string
-	    if(left == 0) left = currentString.length();
+            if (left == 0) left = currentString.length();
             inline.setSubstring(inline.start_index, inline.start_index + left);//the best we can do
             if (prev_align != null && !prev_align.break_after) {
-		//will break the line and try to regenerate this inline
+                //will break the line and try to regenerate this inline
                 inline.break_before = true;
             } else {
-		//this inline was at the start of a line, so we just have to make do with it
-		inline.break_after = true;
+                //this inline was at the start of a line, so we just have to make do with it
+                inline.break_after = true;
             }
-        } 
+        }
         return;
     }
 
