@@ -305,7 +305,7 @@ public class InlineBoxing {
                 }
 
                 prev_inline = new_inline;
-            } while (new_inline == null || !new_inline.isEndOfParentContent());
+            } while (!c.shouldStop() && (new_inline == null || !new_inline.isEndOfParentContent()));
 
             if (currentContent.getStyle() != null) {
                 c.popStyle();
@@ -619,6 +619,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.49  2005/10/23 18:37:43  tobega
+ * possibly quicker stop when c.shouldStop()
+ *
  * Revision 1.48  2005/10/21 18:10:51  pdoubleya
  * Support for cachable borders. Still buggy on some pages, but getting there.
  *
