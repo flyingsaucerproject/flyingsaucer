@@ -56,7 +56,8 @@ public class IdentValue implements FSDerivedValue {
     /**
      * Description of the Field
      */
-    private String ident;
+    private final String ident;
+    
     /**
      * Description of the Field
      */
@@ -552,6 +553,10 @@ public class IdentValue implements FSDerivedValue {
         return val;
     }
 
+    /* 
+     * METHODS USED TO SUPPORT IdentValue as an FSDerivedValue, used in CalculatedStyle.
+     * Most of these throw exceptions--makes use of the interface easier in CS (avoids casting)
+     */    
     public FSDerivedValue copyOf(CSSName cssName) {
         return this;
     }
@@ -605,6 +610,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/10/24 10:19:39  pdoubleya
+ * CSSName FS_ID is now public and final, allowing direct access to the id, bypassing getAssignedID(); micro-optimization :); getAssignedID() and setAssignedID() have been removed. IdentValue string property is also final (as should have been).
+ *
  * Revision 1.14  2005/10/24 09:29:40  pdoubleya
  * Added some missing idents.
  *

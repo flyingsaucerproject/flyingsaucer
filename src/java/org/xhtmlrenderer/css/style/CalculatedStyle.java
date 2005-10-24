@@ -334,7 +334,7 @@ public class CalculatedStyle {
      * @return See desc.
      */
     private FSDerivedValue valueByName(CSSName cssName) {
-        FSDerivedValue val = _derivedValuesById[cssName.getAssignedID()];
+        FSDerivedValue val = _derivedValuesById[cssName.FS_ID];
 
         // but the property may not be defined for this Element
         if (val == null) {
@@ -371,7 +371,7 @@ public class CalculatedStyle {
                     );
                 }
             }
-            _derivedValuesById[cssName.getAssignedID()] = val;
+            _derivedValuesById[cssName.FS_ID] = val;
         }
         return val;
     }
@@ -405,7 +405,7 @@ public class CalculatedStyle {
         while (mProps.hasNext()) {
             PropertyDeclaration pd = (PropertyDeclaration) mProps.next();
             FSDerivedValue val = deriveValue(pd.getCSSName(), pd.getValue());
-            _derivedValuesById[pd.getCSSName().getAssignedID()] = val;
+            _derivedValuesById[pd.getCSSName().FS_ID] = val;
         }
     }
 
@@ -611,6 +611,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2005/10/24 10:19:40  pdoubleya
+ * CSSName FS_ID is now public and final, allowing direct access to the id, bypassing getAssignedID(); micro-optimization :); getAssignedID() and setAssignedID() have been removed. IdentValue string property is also final (as should have been).
+ *
  * Revision 1.43  2005/10/22 22:58:15  peterbrant
  * Box level restyle works again (really this time!)
  *

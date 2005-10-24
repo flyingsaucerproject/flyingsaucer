@@ -235,7 +235,7 @@ public class PropertyDeclaration {
             XRLog.cssParse("PropertyDeclarationFactory requested for NULL CSSName; returning default.");
             pdf = DEFAULT_PD_FACTORY;
         } else {
-            pdf = PROPERTY_FACTORIES[cssName.getAssignedID()];
+            pdf = PROPERTY_FACTORIES[cssName.FS_ID];
             if (pdf == null) {
                 pdf = DEFAULT_PD_FACTORY;
             }
@@ -247,23 +247,23 @@ public class PropertyDeclaration {
         // HACK: size for up to 256 custom properties (PWW 06/16/05)
         PROPERTY_FACTORIES = new PropertyDeclarationFactory[CSSName.countCSSNames() + 256];
         DEFAULT_PD_FACTORY = DefaultPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BACKGROUND_SHORTHAND.getAssignedID()] = BackgroundPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BACKGROUND_POSITION.getAssignedID()] = BackgroundPositionPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_SHORTHAND.getAssignedID()] = BorderPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_COLOR_SHORTHAND.getAssignedID()] = BorderColorPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_SPACING.getAssignedID()] = BorderSpacingPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_STYLE_SHORTHAND.getAssignedID()] = BorderStylePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_WIDTH_SHORTHAND.getAssignedID()] = BorderWidthPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_TOP_SHORTHAND.getAssignedID()] = BorderSidePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_RIGHT_SHORTHAND.getAssignedID()] = BorderSidePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_BOTTOM_SHORTHAND.getAssignedID()] = BorderSidePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.BORDER_LEFT_SHORTHAND.getAssignedID()] = BorderSidePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.FONT_SHORTHAND.getAssignedID()] = FontPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.FONT_FAMILY.getAssignedID()] = FontFamilyPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.LIST_STYLE_SHORTHAND.getAssignedID()] = ListStylePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.MARGIN_SHORTHAND.getAssignedID()] = MarginPropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.OUTLINE_SHORTHAND.getAssignedID()] = OutlinePropertyDeclarationFactory.instance();
-        PROPERTY_FACTORIES[CSSName.PADDING_SHORTHAND.getAssignedID()] = PaddingPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BACKGROUND_SHORTHAND.FS_ID] = BackgroundPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BACKGROUND_POSITION.FS_ID] = BackgroundPositionPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_SHORTHAND.FS_ID] = BorderPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_COLOR_SHORTHAND.FS_ID] = BorderColorPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_SPACING.FS_ID] = BorderSpacingPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_STYLE_SHORTHAND.FS_ID] = BorderStylePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_WIDTH_SHORTHAND.FS_ID] = BorderWidthPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_TOP_SHORTHAND.FS_ID] = BorderSidePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_RIGHT_SHORTHAND.FS_ID] = BorderSidePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_BOTTOM_SHORTHAND.FS_ID] = BorderSidePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.BORDER_LEFT_SHORTHAND.FS_ID] = BorderSidePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.FONT_SHORTHAND.FS_ID] = FontPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.FONT_FAMILY.FS_ID] = FontFamilyPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.LIST_STYLE_SHORTHAND.FS_ID] = ListStylePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.MARGIN_SHORTHAND.FS_ID] = MarginPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.OUTLINE_SHORTHAND.FS_ID] = OutlinePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.PADDING_SHORTHAND.FS_ID] = PaddingPropertyDeclarationFactory.instance();
     }
 }// end class
 
@@ -271,6 +271,9 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/10/24 10:19:40  pdoubleya
+ * CSSName FS_ID is now public and final, allowing direct access to the id, bypassing getAssignedID(); micro-optimization :); getAssignedID() and setAssignedID() have been removed. IdentValue string property is also final (as should have been).
+ *
  * Revision 1.15  2005/06/19 23:02:38  tobega
  * Implemented calculation of minimum cell-widths.
  * Implemented border-spacing.
