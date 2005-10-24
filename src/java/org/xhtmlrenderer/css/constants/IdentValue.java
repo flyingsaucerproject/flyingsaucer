@@ -294,6 +294,10 @@ public class IdentValue implements FSDerivedValue {
     /**
      * Description of the Field
      */
+    public final static IdentValue LTR = addValue("ltr");
+    /**
+     * Description of the Field
+     */
     public final static IdentValue MARKER = addValue("marker");
     /**
      * Description of the Field
@@ -323,6 +327,10 @@ public class IdentValue implements FSDerivedValue {
      * Description of the Field
      */
     public final static IdentValue OUTSET = addValue("outset");
+    /**
+     * Description of the Field
+     */
+    public final static IdentValue OUTSIDE = addValue("outside");
     /**
      * Description of the Field
      */
@@ -368,6 +376,10 @@ public class IdentValue implements FSDerivedValue {
      * Description of the Field
      */
     public final static IdentValue RUN_IN = addValue("run-in");
+    /**
+     * Description of the Field
+     */
+    public final static IdentValue SHOW = addValue("show");
     /**
      * Description of the Field
      */
@@ -448,6 +460,10 @@ public class IdentValue implements FSDerivedValue {
      * Description of the Field
      */
     public final static IdentValue TOP = addValue("top");
+    /**
+     * Description of the Field
+     */
+    public final static IdentValue TRANSPARENT = addValue("transparent");
     /**
      * Description of the Field
      */
@@ -589,6 +605,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/10/24 09:29:40  pdoubleya
+ * Added some missing idents.
+ *
  * Revision 1.13  2005/10/21 12:01:13  pdoubleya
  * Added cachable rect property for margin, cleanup minor in styling.
  *
