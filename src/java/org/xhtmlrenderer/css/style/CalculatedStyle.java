@@ -74,12 +74,9 @@ public class CalculatedStyle {
      */
     private String _styleKey;
 
-
-    private String _borderKey;
-    private String _marginKey;
-    private String _paddingKey;
-    private boolean _marginKeySet;
-    private boolean _paddingKeySet;
+    private BorderPropertySet _border;
+    private RectPropertySet _margin;
+    private RectPropertySet _padding;
 
     /**
      * Cache child styles of this style that have the same cascaded properties
@@ -145,11 +142,11 @@ public class CalculatedStyle {
         }
         return cs;
     }
-    
+
     public synchronized CalculatedStyle deriveNewStyle(CascadedStyle matched) {
         return new CalculatedStyle(this, matched);
     }
-    
+
     public int countAssigned() {
         int c = 0;
         for (int i = 0; i < _derivedValuesById.length; i++) {
@@ -459,10 +456,11 @@ public class CalculatedStyle {
 
     /**
      * Description of the Method
+     * <p/>
+     * // Incomplete routine to try and determine the
+     * // CSSPrimitiveValue short code for a given value,
+     * // e.g. 14pt is CSS_PT.
      *
-     // Incomplete routine to try and determine the
-     // CSSPrimitiveValue short code for a given value,
-     // e.g. 14pt is CSS_PT.
      * @param value PARAM
      * @return Returns
      */
@@ -510,28 +508,23 @@ public class CalculatedStyle {
             float parentHeight,
             CssContext ctx
     ) {
-        RectPropertySet rect = null;
         String key = null;
 
-        if ( style._marginKeySet ) {
-            key = style._marginKey;
-        } else {
+        if ( style._padding == null ) {
             key = RectPropertySet.deriveKey(style, sides);
-            style._marginKey = key;
-            style._marginKeySet = true;
-        }
-        if ( key == null ) {
-            rect = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
-            return rect;
-        } else {
-            rect = (RectPropertySet) _cachedRects.get(key);
-            if (rect == null) {
-                rect = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
-                _cachedRects.put(key, rect);
+            if ( key == null ) {
+                style._padding = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
+                return style._padding;
+            } else {
+                style._padding = (RectPropertySet) _cachedRects.get(key);
+                if (style._padding == null) {
+                    style._padding = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
+                    _cachedRects.put(key, style._padding);
+                }
             }
         }
 
-        return rect;
+        return style._padding;
     }
 
     public static RectPropertySet getMarginProperty(
@@ -542,28 +535,23 @@ public class CalculatedStyle {
             float parentHeight,
             CssContext ctx
     ) {
-        RectPropertySet rect = null;
         String key = null;
 
-        if ( style._paddingKeySet ) {
-            key = style._paddingKey;
-        } else {
+        if ( style._margin == null ) {
             key = RectPropertySet.deriveKey(style, sides);
-            style._paddingKey = key;
-            style._paddingKeySet = true;
-        }
-        if ( key == null ) {
-            rect = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
-            return rect;
-        } else {
-            rect = (RectPropertySet) _cachedRects.get(key);
-            if (rect == null) {
-                rect = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
-                _cachedRects.put(key, rect);
+            if ( key == null ) {
+                style._margin = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
+                return style._margin;
+            } else {
+                style._margin = (RectPropertySet) _cachedRects.get(key);
+                if (style._margin == null) {
+                    style._margin = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
+                    _cachedRects.put(key, style._margin);
+                }
             }
         }
 
-        return rect;
+        return style._margin;
     }
 
     private static RectPropertySet newRectInstance(
@@ -590,20 +578,15 @@ public class CalculatedStyle {
             CalculatedStyle style,
             CssContext ctx
     ) {
-        BorderPropertySet border = null;
-        if ( style._borderKey == null ) {
-            style._borderKey = BorderPropertySet.deriveKey(style);
+        if (style._border == null) {
+            String key = BorderPropertySet.deriveKey(style);
+            style._border = (BorderPropertySet) _cachedRects.get(key);
+            if (style._border == null) {
+                style._border = BorderPropertySet.newInstance(style, ctx);
+                _cachedRects.put(key, style._border);
+            }
         }
-        border = (BorderPropertySet) _cachedRects.get(style._borderKey);
-        if (border == null) {
-            border = newBorderInstance(style, ctx);
-            _cachedRects.put(style._borderKey, border);
-        }
-        return border;
-    }
-
-    private static BorderPropertySet newBorderInstance(CalculatedStyle style, CssContext ctx) {
-        return BorderPropertySet.newInstance(style, ctx);
+        return style._border;
     }
 }// end class
 
@@ -611,6 +594,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2005/10/24 15:37:35  pdoubleya
+ * Caching border, margin and property instances directly.
+ *
  * Revision 1.44  2005/10/24 10:19:40  pdoubleya
  * CSSName FS_ID is now public and final, allowing direct access to the id, bypassing getAssignedID(); micro-optimization :); getAssignedID() and setAssignedID() have been removed. IdentValue string property is also final (as should have been).
  *
