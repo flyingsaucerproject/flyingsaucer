@@ -24,6 +24,7 @@ import org.w3c.dom.css.RGBColor;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.Idents;
+import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
@@ -32,8 +33,7 @@ import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.Color;
-import java.awt.Point;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -358,7 +358,7 @@ public class CalculatedStyle {
                 } else {
                     initialValue = Idents.convertIdent(cssName, initialValue);
 
-                    short type = guessType(initialValue);
+                    short type = ValueConstants.guessType(initialValue);
 
                     val = DerivedValueFactory.newDerivedValue(this,
                             cssName,
@@ -452,52 +452,6 @@ public class CalculatedStyle {
 
     }
 
-    /**
-     * Description of the Method
-     * <p/>
-     * // Incomplete routine to try and determine the
-     * // CSSPrimitiveValue short code for a given value,
-     * // e.g. 14pt is CSS_PT.
-     *
-     * @param value PARAM
-     * @return Returns
-     */
-    private static short guessType(String value) {
-        short type = CSSPrimitiveValue.CSS_STRING;
-        if (value != null && value.length() > 1) {
-            if (value.endsWith("%")) {
-                type = CSSPrimitiveValue.CSS_PERCENTAGE;
-            } else if (value.startsWith("rgb") || value.startsWith("#")) {
-                type = CSSPrimitiveValue.CSS_RGBCOLOR;
-            } else {
-                String hmm = value.substring(value.length() - 2);
-                if ("pt".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_PT;
-                } else if ("px".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_PX;
-                } else if ("em".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_EMS;
-                } else if ("ex".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_EXS;
-                } else if ("in".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_IN;
-                } else if ("cm".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_CM;
-                } else if ("mm".equals(hmm)) {
-                    type = CSSPrimitiveValue.CSS_MM;
-                } else {
-                    try {
-                        new Float(value);
-                        type = CSSPrimitiveValue.CSS_NUMBER;
-                    } catch (NumberFormatException ex) {
-                        type = CSSPrimitiveValue.CSS_STRING;
-                    }
-                }
-            }
-        }
-        return type;
-    }
-
     public static RectPropertySet getPaddingProperty(CalculatedStyle style,
                                                      CSSName shorthandProp,
                                                      CSSName[] sides,
@@ -582,6 +536,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.47  2005/10/25 15:38:28  pdoubleya
+ * Moved guessType() to ValueConstants, applied fix to method suggested by Chris Oliver, to avoid exception-based catch.
+ *
  * Revision 1.46  2005/10/25 00:38:47  tobega
  * Reduced memory footprint of Matcher and stopped trying to cache the possibly uncache-able CascadedStyles, the fingerprint works just as well or better as a key in CalculatedStyle!
  *

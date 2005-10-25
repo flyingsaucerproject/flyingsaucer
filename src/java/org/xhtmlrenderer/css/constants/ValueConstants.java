@@ -304,12 +304,63 @@ public final class ValueConstants {
         sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PT), "pt");
         sacTypesStrings.put(new Short(CSSPrimitiveValue.CSS_PC), "pc");
     }
+
+    /**
+     * Incomplete routine to try and determine the
+     * CSSPrimitiveValue short code for a given value,
+     * e.g. 14pt is CSS_PT.
+     *
+     * @param value PARAM
+     * @return Returns
+     */
+    public static short guessType(String value) {
+        short type = CSSPrimitiveValue.CSS_STRING;
+        if (value != null && value.length() > 1) {
+            if (value.endsWith("%")) {
+                type = CSSPrimitiveValue.CSS_PERCENTAGE;
+            } else if (value.startsWith("rgb") || value.startsWith("#")) {
+                type = CSSPrimitiveValue.CSS_RGBCOLOR;
+            } else {
+                String hmm = value.substring(value.length() - 2);
+                if ("pt".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_PT;
+                } else if ("px".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_PX;
+                } else if ("em".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_EMS;
+                } else if ("ex".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_EXS;
+                } else if ("in".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_IN;
+                } else if ("cm".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_CM;
+                } else if ("mm".equals(hmm)) {
+                    type = CSSPrimitiveValue.CSS_MM;
+                } else {
+                    if (Character.isDigit(value.charAt(0))) {
+                        try {
+                            new Float(value);
+                            type = CSSPrimitiveValue.CSS_NUMBER;
+                        } catch (NumberFormatException ex) {
+                            type = CSSPrimitiveValue.CSS_STRING;
+                        }
+                    } else {
+                        type = CSSPrimitiveValue.CSS_STRING;
+                    }
+                }
+            }
+        }
+        return type;
+    }
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/10/25 15:38:27  pdoubleya
+ * Moved guessType() to ValueConstants, applied fix to method suggested by Chris Oliver, to avoid exception-based catch.
+ *
  * Revision 1.8  2005/09/11 20:43:15  tobega
  * Fixed table-css interaction bug, colspan now works again
  *

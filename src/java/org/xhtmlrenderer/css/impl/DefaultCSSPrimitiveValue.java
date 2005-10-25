@@ -22,6 +22,7 @@ package org.xhtmlrenderer.css.impl;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.css.*;
+import org.xhtmlrenderer.css.constants.ValueConstants;
 
 
 /**
@@ -49,7 +50,7 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
     public DefaultCSSPrimitiveValue(String value) {
         this._stringValue = value;
         this._cssValueType = CSS_PRIMITIVE_VALUE;
-        this._primitiveType = guessType(value);
+        this._primitiveType = ValueConstants.guessType(value);
     }
 
     /**
@@ -190,51 +191,6 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
     public String getStringValue()
             throws DOMException {
         return _stringValue;
-    }
-
-    // Incomplete routine to try and determine the
-    // CSSPrimitiveValue short code for a given value,
-    // e.g. 14pt is CSS_PT.
-    /**
-     * Description of the Method
-     *
-     * @param value PARAM
-     * @return Returns
-     */
-    private static short guessType(String value) {
-        short type = CSS_STRING;
-        if (value != null && value.length() > 1) {
-            if (value.endsWith("%")) {
-                type = CSS_PERCENTAGE;
-            } else if (value.startsWith("rgb") || value.startsWith("#")) {
-                type = CSS_RGBCOLOR;
-            } else {
-                String hmm = value.substring(value.length() - 2);
-                if ("pt".equals(hmm)) {
-                    type = CSS_PT;
-                } else if ("px".equals(hmm)) {
-                    type = CSS_PX;
-                } else if ("em".equals(hmm)) {
-                    type = CSS_EMS;
-                } else if ("ex".equals(hmm)) {
-                    type = CSS_EXS;
-                } else if ("in".equals(hmm)) {
-                    type = CSS_IN;
-                } else if ("cm".equals(hmm)) {
-                    type = CSS_CM;
-                } else if ("mm".equals(hmm)) {
-                    type = CSS_MM;
-                } else {
-                    try {
-                        new Float(value);
-                        type = CSS_NUMBER;
-                    } catch (NumberFormatException ex) {
-                        type = CSS_STRING;
-                    }
-                }
-            }
-        }
-        return type;
     }
 
     /**
@@ -437,6 +393,9 @@ public class DefaultCSSPrimitiveValue implements CSSPrimitiveValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/10/25 15:38:27  pdoubleya
+ * Moved guessType() to ValueConstants, applied fix to method suggested by Chris Oliver, to avoid exception-based catch.
+ *
  * Revision 1.6  2005/06/16 07:24:45  tobega
  * Fixed background image bug.
  * Caching images in browser.
