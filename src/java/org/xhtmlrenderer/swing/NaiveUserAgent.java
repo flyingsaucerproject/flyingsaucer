@@ -26,7 +26,7 @@ import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,7 +58,8 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
      */
     public NaiveUserAgent() {
         try {
-            setBaseURL(new File(".").toURL().toExternalForm());
+            //File.toURL is buggy
+            setBaseURL(new File(".").toURI().toURL().toExternalForm());
         } catch (MalformedURLException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -154,6 +155,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/10/25 19:40:38  tobega
+ * Suggestion from user to use File.toURI.toURL instead of File.toURL because the latter is buggy
+ *
  * Revision 1.20  2005/10/09 09:40:27  tobega
  * Use current directory as default base URL
  *
