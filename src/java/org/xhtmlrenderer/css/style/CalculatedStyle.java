@@ -32,7 +32,8 @@ import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -134,11 +135,12 @@ public class CalculatedStyle {
      * @return The derived child style
      */
     public synchronized CalculatedStyle deriveStyle(CascadedStyle matched) {
-        CalculatedStyle cs = (CalculatedStyle) _childCache.get(matched);
+        String fingerprint = matched.getFingerprint();
+        CalculatedStyle cs = (CalculatedStyle) _childCache.get(fingerprint);
 
         if (cs == null) {
             cs = new CalculatedStyle(this, matched);
-            _childCache.put(matched, cs);
+            _childCache.put(fingerprint, cs);
         }
         return cs;
     }
@@ -358,14 +360,12 @@ public class CalculatedStyle {
 
                     short type = guessType(initialValue);
 
-                    val = DerivedValueFactory.newDerivedValue(
-                            this,
+                    val = DerivedValueFactory.newDerivedValue(this,
                             cssName,
                             type,
                             initialValue,
                             initialValue,
-                            null
-                    );
+                            null);
                 }
             }
             _derivedValuesById[cssName.FS_ID] = val;
@@ -411,14 +411,12 @@ public class CalculatedStyle {
         RGBColor rgb = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_RGBCOLOR ? value.getRGBColorValue() : null);
         String s = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_STRING ? value.getStringValue() : null);
 
-        FSDerivedValue dval = DerivedValueFactory.newDerivedValue(
-                this,
+        FSDerivedValue dval = DerivedValueFactory.newDerivedValue(this,
                 cssName,
                 value.getPrimitiveType(),
                 value.getCssText(),
                 s,
-                rgb
-        );
+                rgb);
         FSDerivedValue cval = dval;
 
         //whats the point? (tobe) if (!specified.hasAbsoluteUnit()) {
@@ -500,19 +498,17 @@ public class CalculatedStyle {
         return type;
     }
 
-    public static RectPropertySet getPaddingProperty(
-            CalculatedStyle style,
-            CSSName shorthandProp,
-            CSSName[] sides,
-            float parentWidth,
-            float parentHeight,
-            CssContext ctx
-    ) {
+    public static RectPropertySet getPaddingProperty(CalculatedStyle style,
+                                                     CSSName shorthandProp,
+                                                     CSSName[] sides,
+                                                     float parentWidth,
+                                                     float parentHeight,
+                                                     CssContext ctx) {
         String key = null;
 
-        if ( style._padding == null ) {
+        if (style._padding == null) {
             key = RectPropertySet.deriveKey(style, sides);
-            if ( key == null ) {
+            if (key == null) {
                 style._padding = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
                 return style._padding;
             } else {
@@ -527,19 +523,17 @@ public class CalculatedStyle {
         return style._padding;
     }
 
-    public static RectPropertySet getMarginProperty(
-            CalculatedStyle style,
-            CSSName shorthandProp,
-            CSSName[] sides,
-            float parentWidth,
-            float parentHeight,
-            CssContext ctx
-    ) {
+    public static RectPropertySet getMarginProperty(CalculatedStyle style,
+                                                    CSSName shorthandProp,
+                                                    CSSName[] sides,
+                                                    float parentWidth,
+                                                    float parentHeight,
+                                                    CssContext ctx) {
         String key = null;
 
-        if ( style._margin == null ) {
+        if (style._margin == null) {
             key = RectPropertySet.deriveKey(style, sides);
-            if ( key == null ) {
+            if (key == null) {
                 style._margin = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
                 return style._margin;
             } else {
@@ -554,30 +548,24 @@ public class CalculatedStyle {
         return style._margin;
     }
 
-    private static RectPropertySet newRectInstance(
-            CalculatedStyle style,
-            CSSName shorthand,
-            CSSName[] sides,
-            float parentHeight,
-            float parentWidth,
-            CssContext ctx
-    ) {
+    private static RectPropertySet newRectInstance(CalculatedStyle style,
+                                                   CSSName shorthand,
+                                                   CSSName[] sides,
+                                                   float parentHeight,
+                                                   float parentWidth,
+                                                   CssContext ctx) {
         RectPropertySet rect;
-        rect = RectPropertySet.newInstance(
-                style,
+        rect = RectPropertySet.newInstance(style,
                 shorthand,
                 sides,
                 parentHeight,
                 parentWidth,
-                ctx
-        );
+                ctx);
         return rect;
     }
 
-    private static BorderPropertySet getBorderProperty(
-            CalculatedStyle style,
-            CssContext ctx
-    ) {
+    private static BorderPropertySet getBorderProperty(CalculatedStyle style,
+                                                       CssContext ctx) {
         if (style._border == null) {
             String key = BorderPropertySet.deriveKey(style);
             style._border = (BorderPropertySet) _cachedRects.get(key);
@@ -594,6 +582,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.46  2005/10/25 00:38:47  tobega
+ * Reduced memory footprint of Matcher and stopped trying to cache the possibly uncache-able CascadedStyles, the fingerprint works just as well or better as a key in CalculatedStyle!
+ *
  * Revision 1.45  2005/10/24 15:37:35  pdoubleya
  * Caching border, margin and property instances directly.
  *

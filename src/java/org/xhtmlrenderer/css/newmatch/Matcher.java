@@ -59,11 +59,6 @@ public class Matcher {
      * Description of the Field
      */
     private java.util.Map _peMap;
-    /**
-     * Description of the Field
-     */
-    private java.util.Map _csCache;
-    //private java.util.HashMap _elStyle;
 
     //handle dynamic
     /**
@@ -127,11 +122,30 @@ public class Matcher {
      * @return The pECascadedStyle value
      */
     public CascadedStyle getPECascadedStyle(Object e, String pseudoElement) {
-        java.util.Map elm = (java.util.Map) _peMap.get(e);
-        if (elm == null) {
+        java.util.Map pseudoSelectors = (java.util.Map) _peMap.get(e);
+        java.util.Iterator si = pseudoSelectors.entrySet().iterator();
+        if (!si.hasNext()) {
             return null;
         }
-        return (CascadedStyle) elm.get(pseudoElement);
+        CascadedStyle cs = null;
+        while (si.hasNext()) {
+            java.util.Map.Entry me = (java.util.Map.Entry) si.next();
+            if (!me.getKey().equals(pseudoElement)) continue;
+
+            java.util.List propList = new java.util.LinkedList();
+            for (java.util.Iterator i = getSelectedRulesets((java.util.List) me.getValue()); i.hasNext();) {
+                org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
+                for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
+                    propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
+                }
+            }
+            if (propList.size() == 0)
+                cs = CascadedStyle.emptyCascadedStyle;//already internalized
+            else {
+                cs = new CascadedStyle(propList.iterator());
+            }
+        }
+        return cs;
     }
 
     /**
@@ -238,14 +252,6 @@ public class Matcher {
                 cs = CascadedStyle.emptyCascadedStyle;//already internalized
             else {
                 cs = new CascadedStyle(propList.iterator());
-                //internalize (worth the trouble to make style-caching work)
-                String fingerprint = cs.getFingerprint();
-                CascadedStyle internal = (CascadedStyle) _csCache.get(fingerprint);
-                if (internal != null) {
-                    cs = internal;
-                } else {
-                    _csCache.put(fingerprint, cs);
-                }
             }
 
             return cs;
@@ -273,7 +279,6 @@ public class Matcher {
                 return size() > MAX_ENTRIES;
             }
         });
-        _csCache = Collections.synchronizedMap(new java.util.HashMap());
         _peMap = Collections.synchronizedMap(new java.util.HashMap());
         _hoverElements = Collections.synchronizedSet(new java.util.HashSet());
         _activeElements = Collections.synchronizedSet(new java.util.HashSet());
@@ -565,39 +570,7 @@ public class Matcher {
      * @param pseudoSelectors PARAM
      */
     private void resolvePseudoElements(Object e, HashMap pseudoSelectors) {
-        java.util.Iterator si = pseudoSelectors.entrySet().iterator();
-        if (!si.hasNext()) {
-            return;
-        }
-        java.util.Map pelm = new java.util.HashMap();
-        while (si.hasNext()) {
-            java.util.Map.Entry me = (java.util.Map.Entry) si.next();
-            CascadedStyle cs = null;
-
-            java.util.List propList = new java.util.LinkedList();
-            for (java.util.Iterator i = getSelectedRulesets((java.util.List) me.getValue()); i.hasNext();) {
-                org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
-                for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
-                    propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
-                }
-            }
-            if (propList.size() == 0)
-                cs = CascadedStyle.emptyCascadedStyle;//already internalized
-            else {
-                cs = new CascadedStyle(propList.iterator());
-                //internalize (worth the trouble to make style-caching work)
-                String fingerprint = cs.getFingerprint();
-                CascadedStyle internal = (CascadedStyle) _csCache.get(fingerprint);
-                if (internal != null) {
-                    cs = internal;
-                } else {
-                    _csCache.put(fingerprint, cs);
-                }
-            }
-
-            pelm.put(me.getKey(), cs);
-        }
-        _peMap.put(e, pelm);
+        _peMap.put(e, pseudoSelectors);
     }
 
     /**
