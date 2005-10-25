@@ -337,7 +337,7 @@ public final class ValueConstants {
                 } else if ("mm".equals(hmm)) {
                     type = CSSPrimitiveValue.CSS_MM;
                 } else {
-                    if (Character.isDigit(value.charAt(0))) {
+                    if (Character.isDigit(value.charAt(value.length() - 1))) {
                         try {
                             new Float(value);
                             type = CSSPrimitiveValue.CSS_NUMBER;
@@ -358,6 +358,9 @@ public final class ValueConstants {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/10/25 16:06:49  pdoubleya
+ * For guessing type, with no type code, check last char, not first.
+ *
  * Revision 1.9  2005/10/25 15:38:27  pdoubleya
  * Moved guessType() to ValueConstants, applied fix to method suggested by Chris Oliver, to avoid exception-based catch.
  *
