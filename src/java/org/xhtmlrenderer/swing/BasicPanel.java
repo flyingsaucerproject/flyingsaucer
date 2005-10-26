@@ -132,23 +132,27 @@ public abstract class BasicPanel extends RootPanel {
 
     private boolean interactive = true;
 
-    /**
-     * Constructor for the BasicPanel object
-     */
     public BasicPanel() {
         ctx = new RenderingContext();
         init();
     }
 
-    /**
-     * Constructor for the BasicPanel object
-     *
-     * @param uac PARAM
-     */
     public BasicPanel(UserAgentCallback uac) {
         ctx = new RenderingContext(uac);
         init();
     }
+    
+    public BasicPanel(boolean useThreads) {
+        super(useThreads);
+        ctx = new RenderingContext();
+        init();
+    }
+
+    public BasicPanel(boolean useThreads, UserAgentCallback uac) {
+        super(useThreads);
+        ctx = new RenderingContext(uac);
+        init();
+    }    
 
     /**
      * Adds the specified Document listener to receive Document events from this
@@ -179,7 +183,7 @@ public abstract class BasicPanel extends RootPanel {
         //Uu.p("paint component () called");
         // if this is the first time painting this document, then calc layout
         Box root = getRootBox();
-        if (root == null && !Configuration.isTrue("xr.use.threads", true)) {
+        if (root == null && ! isUseThreads()) {
             doActualLayout(getGraphics());
             root = getRootBox();
         }
@@ -680,18 +684,6 @@ public abstract class BasicPanel extends RootPanel {
     }
 
     /**
-     * Sets the threadedLayout attribute of the BasicPanel object
-     *
-     * @param threaded The new threadedLayout value
-     */
-
-    public void setThreadedLayout(boolean threaded) {
-        Uu.p("WARNING: setThreadedLayout() called. This isn't supported right now");
-        //layout_thread.setThreadedLayout(threaded);
-    }
-
-
-    /**
      * Sets the renderingContext attribute of the BasicPanel object
      *
      * @param ctx The new renderingContext value
@@ -1109,6 +1101,10 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.80  2005/10/26 17:01:44  peterbrant
+ * Allow the "use threads" config property to be set on individual instances of
+ * XHTMLPanel.
+ *
  * Revision 1.79  2005/10/23 22:16:44  tobega
  * Preparation for StackingContext rendering
  *

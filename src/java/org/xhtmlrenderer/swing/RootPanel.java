@@ -36,6 +36,16 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      */
     protected Dimension intrinsic_size;
     protected StackingContext initialStackingContext;
+    
+    private boolean useThreads;
+    
+    public RootPanel(boolean useThreads) {
+        this.useThreads = useThreads;
+    }
+    
+    public RootPanel() {
+        this(Configuration.isTrue("xr.use.threads", true));
+    }
 
     /**
      * Gets the intrinsicSize attribute of the BasicPanel object
@@ -106,7 +116,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         getRenderingContext().setMedia(pageInfo == null ? "screen" : "print");
         getRenderingContext().getStyleReference().setDocumentContext(getContext(), getContext().getNamespaceHandler(), doc, this);
 
-        if (Configuration.isTrue("xr.use.threads", true)) {
+        if (isUseThreads()) {
             queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.DOCUMENT_SET));
         } else {
             repaint();
@@ -213,7 +223,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         setBackground(Color.white);
         super.setLayout(null);
 
-        if (Configuration.isTrue("xr.use.threads", true)) {
+        if (isUseThreads()) {
             queue = new RenderQueue();
             
             layoutThread = new Thread(new LayoutLoop(this), "FlyingSaucer-Layout");
@@ -387,7 +397,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
 
 
-        if (Configuration.isTrue("xr.use.threads", true)) {
+        if (isUseThreads()) {
             queue.dispatchRepaintEvent(new ReflowEvent(ReflowEvent.LAYOUT_COMPLETE));
         }
         this.fireDocumentLoaded();
@@ -508,7 +518,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         Uu.p("componentResized() " + this.getSize());
         Uu.p("viewport = " + enclosingScrollPane.getViewport().getSize());
         if (doc != null) {
-            if (Configuration.isTrue("xr.use.threads", true)) {
+            if (isUseThreads()) {
                 queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED,
                         enclosingScrollPane.getViewport().getSize()));
             } else {
@@ -551,6 +561,14 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
     protected synchronized void setRootBox(Box box) {
         this.body_box = box;
+    }
+
+    public boolean isUseThreads() {
+        return useThreads;
+    }
+
+    public void setUseThreads(boolean useThreads) {
+        this.useThreads = useThreads;
     }
 
 }

@@ -121,6 +121,33 @@ public class XHTMLPanel extends BasicPanel {
         super(uac);
         setupListeners();
     }
+    
+    /**
+     * Instantiates an XHTMLPanel with no {@link Document} loaded by default.
+     * 
+     * @param useThreads If true, use threads for better responsiveness.  Otherwise
+     * layout and rendering will occur synchronously.
+     */
+    public XHTMLPanel(boolean useThreads) {
+        super(useThreads);
+        // jmm: moved to field def. fontScalingFactor = 1.2F;
+        //minFontScale = 0.50F;
+        //maxFontScale = 3.0F;
+        setupListeners();
+    }
+
+    /**
+     * Instantiates a panel with a custom {@link org.xhtmlrenderer.extend.UserAgentCallback}
+     * implementation.
+     *
+     * @param useThreads If true, use threads for better responsiveness.  Otherwise
+     * layout and rendering will occur synchronously.
+     * @param uac The custom UserAgentCallback implementation.
+     */
+    public XHTMLPanel(boolean useThreads, UserAgentCallback uac) {
+        super(useThreads, uac);
+        setupListeners();
+    }    
 
     private void setupListeners() {
         // install a default link listener
@@ -299,6 +326,10 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/10/26 17:01:44  peterbrant
+ * Allow the "use threads" config property to be set on individual instances of
+ * XHTMLPanel.
+ *
  * Revision 1.27  2005/10/22 23:00:29  peterbrant
  * Fix memory leak (all box trees ever built remained in memory)
  *

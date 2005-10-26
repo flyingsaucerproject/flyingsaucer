@@ -61,8 +61,7 @@ public class Graphics2DRenderer {
      * Constructor for the Graphics2DRenderer object
      */
     public Graphics2DRenderer() {
-        panel = new XHTMLPanel();
-        panel.setThreadedLayout(false);
+        panel = new XHTMLPanel(false);
         panel.setInteractive(false);
     }
 
@@ -210,6 +209,10 @@ public class Graphics2DRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/10/26 17:01:44  peterbrant
+ * Allow the "use threads" config property to be set on individual instances of
+ * XHTMLPanel.
+ *
  * Revision 1.13  2005/09/29 06:15:06  tobega
  * Patch from Peter Brant:
  * List of changes:
