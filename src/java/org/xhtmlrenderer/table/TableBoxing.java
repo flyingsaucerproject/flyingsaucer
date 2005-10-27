@@ -160,6 +160,7 @@ public class TableBoxing {
         int borderSpacingHorizontal = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_HORIZONTAL, 0, c);
         int borderSpacingVertical = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_VERTICAL, 0, c);
         layoutChildren(c, tableBox, content, false, borderSpacingHorizontal, borderSpacingVertical);
+        if (c.shouldStop()) return outerBox;
         c.unshrinkExtents();
         c.translate(-tx, -ty);
         //OK, now we basically have the maximum cell widths, is that a smart order?
@@ -197,13 +198,7 @@ public class TableBoxing {
                 }
             }
         }
-        //now the width is settled, fix vertical alignment
-        for (Iterator i = tableBox.getChildIterator(); i.hasNext();) {
-            Object o = i.next();
-            if (o instanceof RowBox) {
-                fixVerticalAlign(c, (RowBox) o);
-            }
-        }
+        fixHeights(tableBox, borderSpacingVertical);
 
         //TODO: margins go on the outer box
         tableBox.leftPadding = (int) border.left() + (int) padding.left();
@@ -235,14 +230,6 @@ public class TableBoxing {
         return outerBox;
     }
 
-    private static void fixVerticalAlign(LayoutContext c, RowBox rowBox) {
-        //TODO: improve this
-        for (Iterator i = rowBox.getChildIterator(); i.hasNext();) {
-            CellBox cell = (CellBox) i.next();
-            if (cell.height < rowBox.height) cell.height = rowBox.height;
-        }
-    }
-
     /**
      * increases cell size without re-layout.
      */
@@ -263,13 +250,62 @@ public class TableBoxing {
                 int col = 0;
                 int x = borderSpacingHorizontal;
                 for (Iterator cbi = row.getChildIterator(); cbi.hasNext();) {
+                    while (tableBox.columnRows[col] != 0) {
+                        x += borderSpacingHorizontal + tableBox.columns[col];
+                        col = col + 1;
+                    }
                     CellBox cb = (CellBox) cbi.next();
                     cb.contentWidth = 0;
                     for (int i = 0; i < cb.colspan; i++) cb.contentWidth += tableBox.columns[col + i];
                     cb.contentWidth += borderSpacingHorizontal * (cb.colspan - 1);
+                    cb.contentWidth -= cb.leftPadding + cb.rightPadding;
                     cb.x = x;
                     x += cb.getWidth() + borderSpacingHorizontal;
+                    for (int j = 0; j < cb.colspan; j++) {
+                        tableBox.columnRows[col + j] = cb.rowspan;
+                    }
                     col += cb.colspan;
+                }
+                for (int j = 0; j < tableBox.columns.length; j++) {
+                    tableBox.columnRows[j]--;
+                }
+            } else
+                XRLog.layout(Level.WARNING, "Can't fix widths of " + tc.getClass().getName() + " yet!");
+        }
+    }
+
+    private static void fixHeights(TableBox tableBox, int borderSpacingVertical) {
+        for (Iterator tci = tableBox.getChildIterator(); tci.hasNext();) {
+            Object tc = tci.next();
+            if (tc instanceof RowBox) {
+                RowBox row = (RowBox) tc;
+                int col = 0;
+                for (Iterator cbi = row.getChildIterator(); cbi.hasNext();) {
+                    while (tableBox.columnRows[col] != 0) {
+                        if (tableBox.columnCell != null) {
+                            tableBox.columnCell[col].height += borderSpacingVertical + row.height;
+                        }
+                        col = col + 1;
+                    }
+                    CellBox cb = (CellBox) cbi.next();
+                    for (int j = 0; j < cb.colspan; j++) {
+                        tableBox.columnRows[col + j] = cb.rowspan;
+                        if (j == 0)
+                            tableBox.columnCell[col + j] = cb;
+                        else
+                            tableBox.columnCell[col + j] = null;
+                    }
+                    cb.height = row.height;
+                    col += cb.colspan;
+                }
+                while (col < tableBox.columnRows.length && tableBox.columnRows[col] != 0) {
+                    if (tableBox.columnCell != null) {
+                        tableBox.columnCell[col].height += borderSpacingVertical + row.height;
+                    }
+                    col = col + 1;
+                }
+                for (int j = 0; j < tableBox.columns.length; j++) {
+                    tableBox.columnRows[j]--;
                 }
             } else
                 XRLog.layout(Level.WARNING, "Can't fix widths of " + tc.getClass().getName() + " yet!");
@@ -386,9 +422,10 @@ public class TableBoxing {
         int col = 0;
         for (Iterator i = cells.iterator(); i.hasNext() && !c.shouldStop();) {
             checkColumns(table, col + 1);
-            if (table.columnRows[col] != 0) {
+            while (table.columnRows[col] != 0) {
+                row.contentWidth += borderSpacingHorizontal + table.columns[col];
+                table.columnCell[col] = null;
                 col = col + 1;
-                continue;
             }
             TableCellContent tcc = (TableCellContent) i.next();
             CellBox cellBox = new CellBox();
@@ -414,6 +451,7 @@ public class TableBoxing {
             table.columnCell[col] = cellBox;
             int width = 0;
             for (int j = 0; j < cellBox.colspan; j++) width += table.columns[col + j];
+            width += borderSpacingHorizontal * (cellBox.colspan - 1);
             if (!fixed && cellBox.getWidth() > width) {
                 int extra = (cellBox.getWidth() - width) / cellBox.colspan;
                 for (int j = 0; j < cellBox.colspan; j++) table.columns[col + j] += extra;
@@ -421,6 +459,7 @@ public class TableBoxing {
             cellBox.contentWidth = 0;
             for (int j = 0; j < cellBox.colspan; j++) cellBox.contentWidth += table.columns[col + j];
             cellBox.contentWidth += (cellBox.colspan - 1) * borderSpacingHorizontal;
+            cellBox.contentWidth -= cellBox.leftPadding + cellBox.rightPadding;
             row.contentWidth = cellBox.x + cellBox.getWidth();
             col += cellBox.colspan;
             //this will be fixed again later!
@@ -595,6 +634,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.38  2005/10/27 22:54:00  tobega
+   row span works, but not if the row is outside the viewport ?!?!?! Also cleaned LayoutContext and PersistentBFC
+
    Revision 1.37  2005/10/27 00:09:09  tobega
    Sorted out Context into RenderingContext and LayoutContext
 

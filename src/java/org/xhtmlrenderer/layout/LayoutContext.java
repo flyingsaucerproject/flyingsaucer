@@ -46,15 +46,12 @@ import java.util.logging.Level;
 
 public class LayoutContext implements CssContext, PageContext {
     SharedContext sharedContext;
-    private LinkedList decorations = new LinkedList();
-    private LinkedList inlineBorders = new LinkedList();
     private LinkedList firstLineStyles = new LinkedList();
     private boolean shrinkWrap = false;
 
     private RenderQueue renderQueue;
 
     private boolean pendingPageBreak;
-    private boolean setPageBreak;
     //HACK:
     private StackingContext initialStackingContext = StackingContext.newInstance();
     private Graphics2D graphics;
@@ -79,18 +76,6 @@ public class LayoutContext implements CssContext, PageContext {
         return sharedContext.getMaxHeight();
     }
 
-    public void clearSelection() {
-        sharedContext.clearSelection();
-    }
-
-    public void updateSelection(Box box) {
-        sharedContext.updateSelection(box);
-    }
-
-    public boolean inSelection(Box box) {
-        return sharedContext.inSelection(box);
-    }
-
     public Graphics2D getGraphics() {
         return graphics;
     }
@@ -100,26 +85,6 @@ public class LayoutContext implements CssContext, PageContext {
      */
     public void setGraphics(Graphics2D graphics) {
         this.graphics = graphics;
-    }
-
-    public void flushFonts() {
-        sharedContext.flushFonts();
-    }
-
-    public Box getSelectionStart() {
-        return sharedContext.getSelectionStart();
-    }
-
-    public Box getSelectionEnd() {
-        return sharedContext.getSelectionEnd();
-    }
-
-    public int getSelectionStartX() {
-        return sharedContext.getSelectionStartX();
-    }
-
-    public int getSelectionEndX() {
-        return sharedContext.getSelectionEndX();
     }
 
     public StyleReference getCss() {
@@ -136,14 +101,6 @@ public class LayoutContext implements CssContext, PageContext {
 
     public NamespaceHandler getNamespaceHandler() {
         return sharedContext.getNamespaceHandler();
-    }
-
-    public LinkedList getDecorations() {
-        return decorations;
-    }
-
-    public LinkedList getInlineBorders() {
-        return inlineBorders;
     }
 
     public void addFirstLineStyle(CascadedStyle firstLineStyle) {
@@ -408,10 +365,6 @@ public class LayoutContext implements CssContext, PageContext {
     /* code to keep track of all of the id'd boxes */
     public void addIDBox(String id, Box box) {
         this.sharedContext.addIDBox(id, box);
-    }
-
-    public Box getIDBox(String id) {
-        return this.sharedContext.getIDBox(id);
     }
 
     public boolean isInteractive() {

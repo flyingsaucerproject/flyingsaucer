@@ -46,177 +46,178 @@
             <tr><td>cell one</td><td>cell two</td></tr>
             </table>
             -->
-        <h3>Normal cell tests</h3>
+        <!--        <h3>Normal cell tests</h3>
 
-        <table class="testa1">
-            <tr>
-                <td>auto width of table</td>
-            </tr>
-        </table>
-        <table class="testa2">
-            <tr>
-                <td>fixed width of table</td>
-            </tr>
-        </table>
-        <table class="testa2">
-            <tr>
-                <td style="text-align: left;">text aligned on the left</td>
-            </tr>
-            <tr>
-                <td style="text-align: center;">text aligned in the center</td>
-            </tr>
-            <tr>
-                <td style="text-align: right;">text aligned on the right</td>
-            </tr>
-            <tr>
-                <td style="text-align: justify;">text aligned on both (justified)</td>
-            </tr>
-        </table>
-        <table class="testa3">
-            <tr>
-                <th>head</th>
-                <th>head</th>
-            </tr>
-            <tr>
-                <td>cell</td>
-                <td>cell</td>
-            </tr>
-        </table>
-        <table class="testa4">
-            <tr>
-                <td>cell has really long text that will need to be wrapped.</td>
-                <td>cell</td>
-            </tr>
-            <tr>
-                <td>cell</td>
-                <td>cell</td>
-            </tr>
-        </table>
-        <h3>Explicit cell width tests</h3>
-        <table class="testb1">
-            <tr>
-                <td>fixed</td>
-                <td>fixed</td>
-            </tr>
-        </table>
-        <table class="testb2">
-            <tr>
-                <td class="fixed">fixed</td>
-                <td>auto</td>
-            </tr>
-        </table>
-
-
-        <table class="testb3">
-            <tr>
-                <td>fixed</td>
-                <td>fixed</td>
-            </tr>
-            <tr>
-                <td>fixed</td>
-                <td>fixed</td>
-            </tr>
-        </table>
-
-        <table class="testb4">
-            <tr>
-                <td colspan="2" class="fixed">fixed span</td>
-                <td>auto</td>
-            </tr>
-            <tr>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-            </tr>
-        </table>
-
-        <table class="testb5">
-            <tr>
-                <td colspan="2" class="fixed">fixed span</td>
-                <td class="fixed">fixed</td>
-            </tr>
-            <tr>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-            </tr>
-        </table>
+                <table class="testa1">
+                    <tr>
+                        <td>auto width of table</td>
+                    </tr>
+                </table>
+                <table class="testa2">
+                    <tr>
+                        <td>fixed width of table</td>
+                    </tr>
+                </table>
+                <table class="testa2">
+                    <tr>
+                        <td style="text-align: left;">text aligned on the left</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">text aligned in the center</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">text aligned on the right</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: justify;">text aligned on both (justified)</td>
+                    </tr>
+                </table>
+                <table class="testa3">
+                    <tr>
+                        <th>head</th>
+                        <th>head</th>
+                    </tr>
+                    <tr>
+                        <td>cell</td>
+                        <td>cell</td>
+                    </tr>
+                </table>
+                <table class="testa4">
+                    <tr>
+                        <td>cell has really long text that will need to be wrapped.</td>
+                        <td>cell</td>
+                    </tr>
+                    <tr>
+                        <td>cell</td>
+                        <td>cell</td>
+                    </tr>
+                </table>
+                <h3>Explicit cell width tests</h3>
+                <table class="testb1">
+                    <tr>
+                        <td>fixed</td>
+                        <td>fixed</td>
+                    </tr>
+                </table>
+                <table class="testb2">
+                    <tr>
+                        <td class="fixed">fixed</td>
+                        <td>auto</td>
+                    </tr>
+                </table>
 
 
-        <h3>Column Span Tests</h3>
-        <table>
-            <tr>
-                <td colspan="3">span 3</td>
-                <td>cell</td>
-            </tr>
-            <tr>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-            </tr>
-        </table>
-        <table>
-            <tr>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-            </tr>
-            <tr>
-                <td>cell</td>
-                <td colspan="2">span 2</td>
-                <td>cell</td>
-            </tr>
-        </table>
-        <table>
-            <tr>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-            </tr>
-            <tr>
-                <td colspan="2">span 2</td>
-                <td>cell</td>
-                <td>cell</td>
-            </tr>
-            <tr>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-            </tr>
-        </table>
-        <table>
-            <tr>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-            </tr>
-            <tr>
-                <td>cell</td>
-                <td>cell</td>
-                <td colspan="2">span 2</td>
-            </tr>
-            <tr>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-                <td>cell</td>
-            </tr>
-        </table>
-        <h3>Row span tests</h3>
-        <table>
-            <tr>
-                <td>cell</td>
-                <td rowspan="2">row span 2</td>
-            </tr>
-            <tr>
-                <td>cell</td>
-            </tr>
-        </table>
+                <table class="testb3">
+                    <tr>
+                        <td>fixed</td>
+                        <td>fixed</td>
+                    </tr>
+                    <tr>
+                        <td>fixed</td>
+                        <td>fixed</td>
+                    </tr>
+                </table>
+
+                <table class="testb4">
+                    <tr>
+                        <td colspan="2" class="fixed">fixed span</td>
+                        <td>auto</td>
+                    </tr>
+                    <tr>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                    </tr>
+                </table>
+
+                <table class="testb5">
+                    <tr>
+                        <td colspan="2" class="fixed">fixed span</td>
+                        <td class="fixed">fixed</td>
+                    </tr>
+                    <tr>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                    </tr>
+                </table>
+
+
+                <h3>Column Span Tests</h3>
+                <table>
+                    <tr>
+                        <td colspan="3">span 3</td>
+                        <td>cell</td>
+                    </tr>
+                    <tr>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                    </tr>
+                    <tr>
+                        <td>cell</td>
+                        <td colspan="2">span 2</td>
+                        <td>cell</td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">span 2</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                    </tr>
+                    <tr>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                    </tr>
+                    <tr>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td colspan="2">span 2</td>
+                    </tr>
+                    <tr>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                        <td>cell</td>
+                    </tr>
+                </table>
+                <h3>Row span tests</h3>
+                <table>
+                    <tr>
+                        <td>cell</td>
+                        <td rowspan="2">row span 2</td>
+                    </tr>
+                    <tr>
+                        <td>cell</td>
+                    </tr>
+                </table>
+        -->
         <table>
             <tr>
                 <td>cell</td>
@@ -242,6 +243,41 @@
             </tr>
         </table>
 
+        <table>
+            <tr>
+                <td>cell</td>
+                <td rowspan="2">row span 2</td>
+                <td>cell</td>
+            </tr>
+            <tr>
+                <td>cell</td>
+                <td>cell</td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>cell</td>
+                <td rowspan="2">very very long
+                    <br/>row span 2
+                </td>
+            </tr>
+            <tr>
+                <td>cell</td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td rowspan="2">very
+                    <br/> very
+                    <br/> long
+                    <br/>row span 2
+                </td>
+                <td>cell</td>
+            </tr>
+            <tr>
+                <td>cell</td>
+            </tr>
+        </table>
         <!--
         <h3>Nested Table</h3>
         <table><tr><td>

@@ -53,12 +53,4 @@ public class PersistentBFC {
     }
 
 
-    public int getWidth() {
-        return width;
-        //return master.width - master.totalHorizontalPadding();
-    }
-
-    public int getHeight() {
-        return master.height;
-    }
 }
