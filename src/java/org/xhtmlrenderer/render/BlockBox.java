@@ -20,9 +20,9 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.layout.Context;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 
 /**
@@ -31,9 +31,7 @@ import java.awt.*;
  * @author empty
  */
 public class BlockBox extends Box implements Renderable {
-    public double absY;
     public int renderIndex;
-    public double absX;
 
 
     /**
@@ -77,7 +75,7 @@ public class BlockBox extends Box implements Renderable {
     }
 
     //HACK: Context should not be necessary
-    public void render(Context c, Graphics2D g2) {
+    public void render(RenderingContext c, Graphics2D g2) {
         //HACK:
         g2.translate(absX - x, absY - y);
         int width = getWidth();
@@ -85,13 +83,13 @@ public class BlockBox extends Box implements Renderable {
         if (getState() != Box.DONE) {
             height += c.getCanvas().getHeight();
         }
-        RectPropertySet margin = getStyle().getMarginWidth();
+        RectPropertySet margin = getStyle().getMarginWidth(c);
 
         // CLEAN: cast to int
-        Rectangle bounds = new Rectangle(x + (int)margin.left(),
-                y + (int)margin.top(),
-                width - (int)margin.left() - (int)margin.right(),
-                height - (int)margin.top() - (int)margin.bottom());
+        Rectangle bounds = new Rectangle(x + (int) margin.left(),
+                y + (int) margin.top(),
+                width - (int) margin.left() - (int) margin.right(),
+                height - (int) margin.top() - (int) margin.bottom());
         BoxRendering.paintBackground(c, this, bounds);
         g2.translate(x - absX, y - absY);
     }
@@ -109,6 +107,9 @@ public class BlockBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/10/27 00:09:02  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.15  2005/10/21 13:17:15  pdoubleya
  * Rename some methods in RectPropertySet, cleanup.
  *

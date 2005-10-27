@@ -23,7 +23,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-import org.xhtmlrenderer.layout.Context;
 
 import javax.swing.*;
 import java.io.InputStream;
@@ -121,13 +120,12 @@ public interface NamespaceHandler {
 
     /**
      * @param e
-     * @param c
      * @param setWidth  a non-negative value if the width is set by css, see css spec for allowed handling
      * @param setHeight a non-negative value if the height is set by css, see css spec for allowed handling
      * @return null if no custom component, else the custom component to draw
      *         in place of this element and its descendants.
      */
-    public JComponent getCustomComponent(Element e, Context c, int setWidth, int setHeight);
+    public JComponent getCustomComponent(Element e, UserAgentCallback uac, int setWidth, int setHeight);
 
 }
 

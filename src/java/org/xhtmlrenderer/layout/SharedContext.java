@@ -22,35 +22,80 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.context.FontResolver;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.EmptyStyle;
+import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.Java2DTextRenderer;
+import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.swing.RootPanel;
-import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.util.Map;
+import java.awt.*;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Description of the Class
+ * The SharedContext is that which is kept between successive layout and render runs.
  *
  * @author empty
  */
-//TODO: clarify this class, is it just a pile of different functionality at the moment?
 public class SharedContext {
+    private TextRenderer text_renderer;
+    private String media;
+    private UserAgentCallback uac;
+
+    private boolean interactive = true;
+
+    /*
+     * used to adjust fonts, ems, points, into screen resolution
+     */
+    /**
+     * Description of the Field
+     */
+    private float dpi;
+    /**
+     * Description of the Field
+     */
+    private final static int MM__PER__CM = 10;
+    /**
+     * Description of the Field
+     */
+    private final static float CM__PER__IN = 2.54F;
+    /**
+     * dpi in a more usable way
+     */
+    private float mm_per_px;
+
+    private final static float DEFAULT_DPI = 72;
+    private boolean print;
 
     /**
      * Constructor for the Context object
      */
-    public SharedContext() {
+    public SharedContext(UserAgentCallback uac) {
         font_resolver = new FontResolver();
+        setMedia("screen");
+        this.uac = uac;
+        setCss(new StyleReference(uac));
+        XRLog.render("Using CSS implementation from: " + getCss().getClass().getName());
+        setTextRenderer(new Java2DTextRenderer());
+        try {
+            setDPI(Toolkit.getDefaultToolkit().getScreenResolution());
+        } catch (HeadlessException e) {
+            setDPI(DEFAULT_DPI);
+        }
     }
 
-    public Context newContextInstance(Rectangle extents) {
-        Context c = new ContextImpl(this, extents);
+    public LayoutContext newLayoutContextInstance(Rectangle extents) {
+        LayoutContext c = new LayoutContext(this, extents);
+        c.initializeStyles(new EmptyStyle());
+        return c;
+    }
+
+    public RenderingContext newRenderingContextInstance(Rectangle extents) {
+        RenderingContext c = new RenderingContext(this, extents);
         c.initializeStyles(new EmptyStyle());
         return c;
     }
@@ -76,31 +121,10 @@ public class SharedContext {
     protected FontResolver font_resolver;
 
     /**
-     * Description of the Field
-     */
-    protected Graphics2D graphics;
-
-    /**
-     * Gets the graphics attribute of the Context object
-     *
-     * @return The graphics value
-     */
-    public Graphics2D getGraphics() {
-        return graphics;
-    }
-
-    /**
-     * Description of the Field
-     */
-    public void setGraphics(Graphics2D graphics) {
-        this.graphics = graphics;
-    }
-
-    /**
      * The media for this context
      */
     public String getMedia() {
-        return getCtx().getMedia();
+        return media;
     }
 
     /**
@@ -150,14 +174,8 @@ public class SharedContext {
     protected int max_width;
     protected int max_height;
 
-    protected RenderingContext ctx;
-
-    public RenderingContext getRenderingContext() {
-        return getCtx();
-    }
-
     public TextRenderer getTextRenderer() {
-        return getCtx().getTextRenderer();
+        return text_renderer;
     }
 
     /**
@@ -217,9 +235,10 @@ public class SharedContext {
             this.max_width = max_width;
         }
     }
+
     public void addMaxHeight(int max_height) {
         if (max_height > this.max_height) {
-			//Uu.p("upping max height to : " + max_height);
+            //Uu.p("upping max height to : " + max_height);
             this.max_height = max_height;
         }
     }
@@ -286,6 +305,7 @@ public class SharedContext {
     public int getMaxWidth() {
         return this.max_width;
     }
+
     public int getMaxHeight() {
         return this.max_height;
     }
@@ -382,15 +402,6 @@ public class SharedContext {
     }
 
 
-    public RenderingContext getCtx() {
-        return ctx;
-    }
-
-    public void setCtx(RenderingContext ctx) {
-        this.ctx = ctx;
-    }
-
-
     public Rectangle getFixedRectangle() {
         //Uu.p("this = " + canvas);
         Rectangle rect = getCanvas().getFixedRectangle();
@@ -408,28 +419,233 @@ public class SharedContext {
         return namespaceHandler;
     }
 
-	private Map id_map;
-	public void addIDBox(String id, Box box) {
-		if(id_map == null) {
-			id_map = new HashMap();
-		}
-		id_map.put(id,box);
-	}
+    private Map id_map;
 
-	public Box getIDBox(String id) {
-		if(id_map == null) {
-			id_map = new HashMap();
-		}
-		return (Box)id_map.get(id);
-	}
-	
-	
+    public void addIDBox(String id, Box box) {
+        if (id_map == null) {
+            id_map = new HashMap();
+        }
+        id_map.put(id, box);
+    }
+
+    public Box getIDBox(String id) {
+        if (id_map == null) {
+            id_map = new HashMap();
+        }
+        return (Box) id_map.get(id);
+    }
+
+
+    /**
+     * Sets the textRenderer attribute of the RenderingContext object
+     *
+     * @param text_renderer The new textRenderer value
+     */
+    public void setTextRenderer(TextRenderer text_renderer) {
+        this.text_renderer = text_renderer;
+    }// = "screen";
+
+    /**
+     * <p/>
+     * <p/>
+     * Set the current media type. This is usually something like <i>screen</i>
+     * or <i>print</i> . See the <a href="http://www.w3.org/TR/CSS21/media.html">
+     * media section</a> of the CSS 2.1 spec for more information on media
+     * types.</p>
+     *
+     * @param media The new media value
+     */
+    public void setMedia(String media) {
+        this.media = media;
+    }
+
+    /**
+     * Gets the uac attribute of the RenderingContext object
+     *
+     * @return The uac value
+     */
+    public UserAgentCallback getUac() {
+        return uac;
+    }
+
+    /**
+     * Gets the dPI attribute of the RenderingContext object
+     *
+     * @return The dPI value
+     */
+    public float getDPI() {
+        return this.dpi;
+    }
+
+    /**
+     * Sets the effective DPI (Dots Per Inch) of the screen. You should normally
+     * never need to override the dpi, as it is already set to the system
+     * default by <code>Toolkit.getDefaultToolkit().getScreenResolution()</code>
+     * . You can override the value if you want to scale the fonts for
+     * accessibility or printing purposes. Currently the DPI setting only
+     * affects font sizing.
+     *
+     * @param dpi The new dPI value
+     */
+    public void setDPI(float dpi) {
+        this.dpi = dpi;
+        this.mm_per_px = (CM__PER__IN * MM__PER__CM) / dpi;
+    }
+
+    /**
+     * Gets the dPI attribute in a more useful form of the RenderingContext object
+     *
+     * @return The dPI value
+     */
+    public float getMmPerPx() {
+        return this.mm_per_px;
+    }
+
+    public float getFontSizeForXHeight(FontSpecification parent, FontSpecification desired, float xHeight, Graphics2D g2) {
+        float bestGuess = getFontSize2D(parent);
+        float bestHeight = getXHeight(parent, g2);
+        float nextGuess = bestGuess * xHeight / bestHeight;
+        while (true) {
+            desired.size = nextGuess;
+            float nextHeight = getXHeight(desired, g2);
+            //this check is needed in cases where the iteration can hop back and forth between two values
+            if (Math.abs(nextHeight - xHeight) < Math.abs(bestHeight - xHeight)) {
+                bestGuess = nextGuess;
+                bestHeight = nextHeight;
+                nextGuess = bestGuess * xHeight / nextHeight;
+            } else
+                break;
+        }
+        return bestGuess;
+    }
+
+    //strike-through offset should always be half of the height of lowercase x...
+    //and it is defined even for fonts without 'x'!
+    public float getXHeight(FontSpecification fs, Graphics2D g2) {
+        Font f = getFontResolver().resolveFont(this, fs.families, fs.size, fs.fontWeight, fs.fontStyle, fs.variant);
+        float sto = getTextRenderer().getLineMetrics(g2, f, " ").getStrikethroughOffset();
+        return 2 * Math.abs(sto);
+    }
+
+    public float getFontSize2D(FontSpecification font) {
+        return getFontResolver().resolveFont(this, font).getSize2D();
+    }
+
+    public Font getFont(FontSpecification font) {
+        return getFontResolver().resolveFont(this, font);
+    }
+
+    /**
+     * Gets the baseURL attribute of the RenderingContext object
+     *
+     * @return The baseURL value
+     */
+    public String getBaseURL() {
+        return uac.getBaseURL();
+    }
+
+    /**
+     * Sets the baseURL attribute of the RenderingContext object
+     *
+     * @param url The new baseURL value
+     */
+    public void setBaseURL(String url) {
+        uac.setBaseURL(url);
+    }
+
+    /**
+     * Returns true if the currently set media type is paged. Currently returns
+     * true only for <i>print</i> , <i>projection</i> , and <i>embossed</i> ,
+     * <i>handheld</i> , and <i>tv</i> . See the <a
+     * href="http://www.w3.org/TR/CSS21/media.html">media section</a> of the CSS
+     * 2.1 spec for more information on media types.
+     *
+     * @return The paged value
+     */
+    public boolean isPaged() {
+        if (media.equals("print")) {
+            return true;
+        }
+        if (media.equals("projection")) {
+            return true;
+        }
+        if (media.equals("embossed")) {
+            return true;
+        }
+        if (media.equals("handheld")) {
+            return true;
+        }
+        if (media.equals("tv")) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isInteractive() {
+        return interactive;
+    }
+
+    public void setInteractive(boolean interactive) {
+        this.interactive = interactive;
+    }
+
+    public boolean isPrint() {
+        return print;
+    }
+
+    public void setPrint(boolean print) {
+        this.print = print;
+    }
+
+    private PageInfo pageSize = PageInfo.LETTER;
+
+    public PageInfo getPageInfo() {
+        return pageSize;
+    }
+
+    /**
+     * <p/>
+     * <p/>
+     * Adds or overrides a font mapping, meaning you can associate a particular
+     * font with a particular string. For example, the following would load a
+     * font out of the cool.ttf file and associate it with the name <i>CoolFont
+     * </i>:</p> <p/>
+     * <p/>
+     * <pre>
+     *   Font font = Font.createFont(Font.TRUETYPE_FONT,
+     *   new FileInputStream("cool.ttf");
+     *   setFontMapping("CoolFont", font);
+     * </pre> <p/>
+     * <p/>
+     * <p/>
+     * <p/>
+     * You could then put the following css in your page </p> <pre>
+     *   p { font-family: CoolFont Arial sans-serif; }
+     * </pre> <p/>
+     * <p/>
+     * <p/>
+     * <p/>
+     * You can also override existing font mappings, like replacing Arial with
+     * Helvetica.</p>
+     *
+     * @param name The new font name
+     * @param font The actual Font to map
+     */
+    /*
+     * add a new font mapping, or replace an existing one
+     */
+    public void setFontMapping(String name, Font font) {
+        getFontResolver().setFontMapping(name, font);
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/10/27 00:09:01  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.17  2005/09/29 21:34:03  joshy
  * minor updates to a lot of files. pulling in more incremental rendering code.
  * fixed another resize bug
@@ -502,7 +718,7 @@ public class SharedContext {
  * Now using entirely static methods for render. Need to implement table. Need to clean.
  *
  * Revision 1.1  2004/12/29 10:39:33  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.40  2004/12/29 07:35:38  tobega
  * Prepared for cloned Context instances by encapsulating fields

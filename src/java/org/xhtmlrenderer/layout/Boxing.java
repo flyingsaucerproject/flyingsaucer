@@ -57,13 +57,13 @@ public class Boxing {
     private Boxing() {
     }
 
-    public static Box layout(Context c, Content content) {
+    public static Box layout(LayoutContext c, Content content) {
         Box block = preLayout(c, content);
         if (c.shouldStop()) return block;
         return realLayout(c, block, content);
     }
 
-    public static Box preLayout(Context c, Content content) {
+    public static Box preLayout(LayoutContext c, Content content) {
         Box block = null;
         if (content instanceof AnonymousBlockContent) {
             return AnonymousBoxing.createBox(c, content);
@@ -85,7 +85,7 @@ public class Boxing {
         return block;
     }
 
-    public static Box realLayout(Context c, Box block, Content content) {
+    public static Box realLayout(LayoutContext c, Box block, Content content) {
         if (content instanceof AnonymousBlockContent) {
             return AnonymousBoxing.layout(c, block, content);
         } else if (content instanceof TableContent) {
@@ -94,7 +94,7 @@ public class Boxing {
             return layout(c, block, content);
     }
 
-    private static void checkPageBreakBefore(Context c, Box block) {
+    private static void checkPageBreakBefore(LayoutContext c, Box block) {
         if (c.isPrint()) {
             if ((c.isPendingPageBreak() ||
                     c.getCurrentStyle().isIdent(CSSName.PAGE_BREAK_BEFORE, IdentValue.ALWAYS))) {
@@ -105,7 +105,7 @@ public class Boxing {
         }
     }
 
-    private static void checkPageBreakAfter(Context c, Box block) {
+    private static void checkPageBreakAfter(LayoutContext c, Box block) {
         if (c.isPrint() && c.getCurrentStyle().isIdent(CSSName.PAGE_BREAK_AFTER, IdentValue.ALWAYS)) {
             c.setPendingPageBreak(true);
         }
@@ -114,7 +114,7 @@ public class Boxing {
     /**
      * @return if true block should be layouted again
      */
-    private static boolean checkPageBreakInside(Context c, Box block) {
+    private static boolean checkPageBreakInside(LayoutContext c, Box block) {
         boolean relayout = c.isPrint() && c.getCurrentStyle().isIdent(CSSName.PAGE_BREAK_INSIDE, IdentValue.AVOID) &&
                 !block.isMovedPastPageBreak() &&
                 block.crossesPageBreak(c);
@@ -132,7 +132,7 @@ public class Boxing {
      * @param content PARAM
      * @return Returns
      */
-    public static Box layout(Context c, Box block, Content content) {
+    public static Box layout(LayoutContext c, Box block, Content content) {
         //OK, first set up the current style. All depends on this...
         CascadedStyle pushed = content.getStyle();
         if (pushed != null) {
@@ -141,7 +141,7 @@ public class Boxing {
 
         Rectangle oe = c.getExtents();
 
-        block.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth(), c.getCtx()));
+        block.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth(), c));
 
         if (c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
             block.setChildrenExceedBounds(true);
@@ -166,10 +166,10 @@ public class Boxing {
 
         checkPageBreakBefore(c, block);
 
-        BorderPropertySet border = c.getCurrentStyle().getBorder(c.getCtx());
+        BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //note: percentages here refer to width of containing block
-        RectPropertySet margin = block.getStyle().getMarginWidth();
-        RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c.getCtx());
+        RectPropertySet margin = block.getStyle().getMarginWidth(c);
+        RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c);
         // CLEAN: cast to int
         block.leftPadding = (int) margin.left() + (int) border.left() + (int) padding.left();
         block.rightPadding = (int) padding.right() + (int) border.right() + (int) margin.right();
@@ -182,19 +182,19 @@ public class Boxing {
             int setHeight = -1;//means height is not set by css
             int setWidth = -1;//means width is not set by css
             if (!block.getStyle().isAutoWidth()) {
-                setWidth = (int) style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c.getCtx());
+                setWidth = (int) style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c);
                 block.contentWidth = setWidth;
                 c.getExtents().width = block.getWidth();
             }
             if (!block.getStyle().isAutoHeight()) {
-                setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c.getCtx());
+                setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c);
                 // CLEAN: cast to int
                 c.getExtents().height = (int) margin.top() + (int) border.top() + (int) padding.top() +
                         setHeight + (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom();
                 block.height = setHeight;
             }
             //check if replaced
-            JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c, setWidth, setHeight);
+            JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c.getUac(), setWidth, setHeight);
             if (cc != null) {
                 Rectangle bounds = cc.getBounds();
                 //block.x = bounds.x;
@@ -334,7 +334,7 @@ public class Boxing {
      * @param box PARAM
      * @return Returns
      */
-    public static Box layoutChildren(Context c, Box box, Content content) {
+    public static Box layoutChildren(LayoutContext c, Box box, Content content) {
         List contentList = content.getChildContent(c);
         box.setState(Box.CHILDREN_FLUX);
 
@@ -372,6 +372,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.50  2005/10/27 00:08:58  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.49  2005/10/23 22:16:41  tobega
  * Preparation for StackingContext rendering
  *
@@ -588,7 +591,7 @@ public class Boxing {
  * Started adding in the table support.
  *
  * Revision 1.58  2004/12/29 10:39:32  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.57  2004/12/28 01:48:23  tobega
  * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.

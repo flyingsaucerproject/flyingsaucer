@@ -8,7 +8,7 @@ import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.swing.BasicPanel;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -25,10 +25,10 @@ public class CopySelectionAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent evt) {
         BasicPanel panel = root.panel.view;
-        Box start = panel.getContext().getSelectionStart();
-        Box end = panel.getContext().getSelectionEnd();
+        Box start = panel.getSharedContext().getSelectionStart();
+        Box end = panel.getSharedContext().getSelectionEnd();
         StringBuffer sb = new StringBuffer();
-        collectSelection(panel.getContext(), panel.getRootBox(), start, end, sb, false);
+        collectSelection(panel.getSharedContext(), panel.getRootBox(), start, end, sb, false);
         Toolkit tk = Toolkit.getDefaultToolkit();
         Clipboard clip = tk.getSystemClipboard();
         clip.setContents(new StringSelection(sb.toString()), null);

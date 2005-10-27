@@ -25,7 +25,7 @@ import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -113,7 +113,7 @@ public class TableRowContent implements Content {
      * @param c PARAM
      * @return The childContent value
      */
-    public List getChildContent(Context c) {
+    public List getChildContent(LayoutContext c) {
         LinkedList contentList = new LinkedList();
         FirstLineStyle firstLineStyle = null;
         FirstLetterStyle firstLetterStyle = null;

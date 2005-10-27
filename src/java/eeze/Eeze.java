@@ -119,7 +119,7 @@ public class Eeze {
                 try {
                     File fontFile = new File(directory + "/support/AHEM____.TTF");
                     if (fontFile.exists()) {
-                        html.getRenderingContext().setFontMapping("Ahem",
+                        html.getSharedContext().setFontMapping("Ahem",
                                 Font.createFont(Font.TRUETYPE_FONT, fontFile.toURL().openStream()));
                     }
                 } catch (FontFormatException e) {
@@ -233,7 +233,7 @@ public class Eeze {
     private void switchPage(File file, boolean reload) {
         eezeFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
-            if ( reload ) {
+            if (reload) {
                 XRLog.load("Reloading " + currentDisplayed);
                 html.reloadDocument(file.toURL().toExternalForm());
             } else {

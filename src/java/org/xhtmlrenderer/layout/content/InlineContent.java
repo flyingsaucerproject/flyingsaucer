@@ -19,10 +19,11 @@
  */
 package org.xhtmlrenderer.layout.content;
 
-import java.util.List;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
+
+import java.util.List;
 
 
 /**
@@ -30,21 +31,25 @@ import org.xhtmlrenderer.layout.Context;
  * returned in a content-list, instead, a StylePush and a StylePop marker is
  * placed in the list around its child contents.
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 class InlineContent implements Content {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Element _elem;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private CascadedStyle _style;
 
     /**
      * Constructor for the InlineContent object
      *
-     * @param e      PARAM
-     * @param style  PARAM
+     * @param e     PARAM
+     * @param style PARAM
      */
-    InlineContent( Element e, CascadedStyle style ) {
+    InlineContent(Element e, CascadedStyle style) {
         _elem = e;
         _style = style;
     }
@@ -52,7 +57,7 @@ class InlineContent implements Content {
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
         return "Block: " + _elem.getNodeName();
@@ -61,7 +66,7 @@ class InlineContent implements Content {
     /**
      * Gets the element attribute of the InlineContent object
      *
-     * @return   The element value
+     * @return The element value
      */
     public Element getElement() {
         return _elem;
@@ -70,7 +75,7 @@ class InlineContent implements Content {
     /**
      * Gets the style attribute of the InlineContent object
      *
-     * @return   The style value
+     * @return The style value
      */
     public CascadedStyle getStyle() {
         return _style;
@@ -79,11 +84,11 @@ class InlineContent implements Content {
     /**
      * Gets the childContent attribute of the InlineContent object
      *
-     * @param c  PARAM
-     * @return   The childContent value
+     * @param c PARAM
+     * @return The childContent value
      */
-    public List getChildContent( Context c ) {
-        return ContentUtil.getChildContentList( c, this );
+    public List getChildContent(LayoutContext c) {
+        return ContentUtil.getChildContentList(c, this);
     }
 
 }

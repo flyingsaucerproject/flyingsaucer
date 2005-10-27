@@ -22,7 +22,7 @@ package org.xhtmlrenderer.layout.block;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.Box;
 
 import java.awt.Point;
@@ -41,7 +41,7 @@ public class Fixed {
      * @param c   PARAM
      * @param box PARAM
      */
-    public static void positionFixedChild(Context c, Box box) {
+    public static void positionFixedChild(LayoutContext c, Box box) {
         if (box.getStyle().isFixed()) {//already restyled by ContentUtil
             Point origin = c.getOriginOffset();
             box.x = 0;
@@ -58,26 +58,26 @@ public class Fixed {
      * @param c   PARAM
      * @param box PARAM
      */
-    public static void setupFixed(Context c, Box box) {
+    public static void setupFixed(LayoutContext c, Box box) {
         if (box.getStyle().isFixed()) {
             box.setFixedDescendant(true);
             Rectangle rect = c.getFixedRectangle();
 
             CalculatedStyle style = c.getCurrentStyle();
             if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-                box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, (float) (rect.getHeight()), c.getCtx());
+                box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, (float) (rect.getHeight()), c);
                 box.top_set = true;
             }
             if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-                box.right = (int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, (float) (rect.getWidth()), c.getCtx());
+                box.right = (int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, (float) (rect.getWidth()), c);
                 box.right_set = true;
             }
             if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-                box.bottom = (int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, (float) (rect.getHeight()), c.getCtx());
+                box.bottom = (int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, (float) (rect.getHeight()), c);
                 box.bottom_set = true;
             }
             if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
-                box.left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, (float) (rect.getWidth()), c.getCtx());
+                box.left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, (float) (rect.getWidth()), c);
                 box.left_set = true;
             }
         }

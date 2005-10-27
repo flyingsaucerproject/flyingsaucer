@@ -19,11 +19,11 @@
  */
 package org.xhtmlrenderer.layout.inline;
 
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.render.RenderingContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +39,10 @@ public class TextAlignJustify {
     /**
      * Description of the Method
      *
-     * @param c     PARAM
      * @param line  PARAM
      * @param width PARAM
      */
-    public static void justifyLine(Context c, LineBox line, int width) {
+    public static void justifyLine(RenderingContext c, LineBox line, int width) {
         if (line.contentWidth > width) {
             return;
         }
@@ -95,7 +94,7 @@ public class TextAlignJustify {
      * @param ibox      PARAM
      * @param temp_list PARAM
      */
-    private static void splitInlineBox(Context c, InlineBox ibox, List temp_list) {
+    private static void splitInlineBox(RenderingContext c, InlineBox ibox, List temp_list) {
         if (!(ibox instanceof InlineTextBox)) {
             temp_list.add(ibox.copy());
             return;
@@ -112,7 +111,7 @@ public class TextAlignJustify {
             InlineTextBox copy = (InlineTextBox) box.copy();
             copy.setSubstring(currentWordPosition, currentWordPosition + words[i].length());//was: (words[i]);
             currentWordPosition = currentWordPosition + words[i].length() + 1;//skip the space too
-            copy.contentWidth = FontUtil.len(c, copy);
+            copy.contentWidth = FontUtil.len(c, copy, c.getTextRenderer(), c.getGraphics());
             temp_list.add(copy);
         }
     }

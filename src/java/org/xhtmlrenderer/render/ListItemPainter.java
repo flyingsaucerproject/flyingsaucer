@@ -22,7 +22,6 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 
 import java.awt.Font;
@@ -44,7 +43,7 @@ public class ListItemPainter {
      * @param c   PARAM
      * @param box PARAM
      */
-    public static void paint(Context c, Box box) {
+    public static void paint(RenderingContext c, Box box) {
         CalculatedStyle style = box.getStyle().getCalculatedStyle();
         IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
 
@@ -61,7 +60,7 @@ public class ListItemPainter {
         String image = style.getStringProperty(CSSName.LIST_STYLE_IMAGE);
         Image img = null;
         if (!image.equals("none")) {
-            img = c.getCtx().getUac().getImageResource(image).getImage();
+            img = c.getUac().getImageResource(image).getImage();
             if (img != null) {
                 int baseline = box.height;
                 c.getGraphics().drawImage(img, box.x - img.getWidth(null) - 2, box.y + baseline / 2 - img.getHeight(null) / 2 + 2, null);
@@ -79,7 +78,7 @@ public class ListItemPainter {
 
         // calculations for bullets
         int rad = 8;// change this to use the glyph height
-        int h = FontUtil.lineHeight(c, box);
+        int h = FontUtil.lineHeight(box, c.getTextRenderer(), c.getGraphics(), c, c.getBlockFormattingContext());
         rad = h / 3;
         int x = box.x - rad - rad / 2;
         int y = box.y + (h - rad / 2) / 2;
@@ -170,7 +169,7 @@ public class ListItemPainter {
      * @param box       PARAM
      * @param listStyle PARAM
      */
-    private static void drawText(Context c, Box box, IdentValue listStyle) {
+    private static void drawText(RenderingContext c, Box box, IdentValue listStyle) {
         String text = "";
         if (listStyle == IdentValue.DECIMAL) {
             text = box.list_count + ".";
@@ -191,10 +190,10 @@ public class ListItemPainter {
             text = toRoman(box.list_count).toUpperCase() + ".";
         }
 
-        Font font = box.getStyle().getFont(c.getCtx());
+        Font font = box.getStyle().getFont(c);
         LineMetrics lm = font.getLineMetrics(text, ((Graphics2D) c.getGraphics()).getFontRenderContext());
-        int w = FontUtil.len(c, text, font);
-        int h = FontUtil.lineHeight(c, box);
+        int w = FontUtil.len(text, font, c.getTextRenderer(), c.getGraphics());
+        int h = FontUtil.lineHeight(box, c.getTextRenderer(), c.getGraphics(), c, c.getBlockFormattingContext());
         int x = box.x - w - 2;
         int y = box.y + h;
         y -= (int) lm.getDescent();
@@ -207,6 +206,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/10/27 00:09:04  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.21  2005/10/18 20:57:07  tobega
  * Patch from Peter Brant
  *
@@ -235,7 +237,7 @@ public class ListItemPainter {
  * Simplified (and hopefully improved) handling of vertical-align. Added support for line-height. As always, provoked a few bugs in the process.
  *
  * Revision 1.12  2004/12/29 10:39:35  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.11  2004/12/28 02:15:19  tobega
  * More cleaning.

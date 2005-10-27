@@ -2,6 +2,8 @@ package org.xhtmlrenderer.css.style;
 
 import org.xhtmlrenderer.css.value.FontSpecification;
 
+import java.awt.Font;
+
 /**
  * Created by IntelliJ IDEA.
  * User: tobe
@@ -17,4 +19,6 @@ public interface CssContext {
     float getXHeight(FontSpecification parentFont);
 
     float getFontSizeForXHeight(FontSpecification parent, FontSpecification desired, float xHeight);
+
+    Font getFont(FontSpecification font);
 }

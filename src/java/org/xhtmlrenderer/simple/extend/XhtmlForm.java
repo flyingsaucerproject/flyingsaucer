@@ -21,7 +21,6 @@ package org.xhtmlrenderer.simple.extend;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
@@ -61,22 +60,21 @@ public class XhtmlForm {
     /**
      * Constructor for the XhtmlForm object
      *
-     * @param c PARAM
-     * @param e PARAM
+     * @param uac PARAM
+     * @param e   PARAM
      */
-    public XhtmlForm(Context c, Element e) {
-        uac = c.getRenderingContext().getUac();
+    public XhtmlForm(UserAgentCallback uac, Element e) {
+        this.uac = uac;
         formElement = e;
     }
 
     /**
      * Adds a feature to the Component attribute of the XhtmlForm object
      *
-     * @param c The feature to be added to the Component attribute
      * @param e The feature to be added to the Component attribute
      * @return Returns
      */
-    public JComponent addComponent(Context c, Element e) {
+    public JComponent addComponent(Element e) {
         JComponent cc = (JComponent) components.get(e);
         if (cc != null) {
             return cc;
@@ -104,7 +102,7 @@ public class XhtmlForm {
                 Image im = null;
                 if (e.hasAttribute("src")) {
                     System.out.println("pulling from here: " + e.getAttribute("src"));
-                    im = c.getCtx().getUac().getImageResource(e.getAttribute("src")).getImage();
+                    im = uac.getImageResource(e.getAttribute("src")).getImage();
                 }
                 if (im == null) {
                     jb = new JButton("Image unreachable. " + e.getAttribute("alt"));

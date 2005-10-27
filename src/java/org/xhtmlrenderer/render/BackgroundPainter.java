@@ -23,7 +23,6 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
 
 import java.awt.*;
@@ -47,7 +46,7 @@ public class BackgroundPainter {
      * @param c     PARAM
      * @param block PARAM
      */
-    public static void paint(Context c, Box block) {
+    public static void paint(RenderingContext c, Box block) {
 
         // don't draw if the backgrounds are turned off
         if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
@@ -60,16 +59,16 @@ public class BackgroundPainter {
             height += c.getCanvas().getHeight();
         }
         CalculatedStyle currentStyle = block.getStyle().getCalculatedStyle();
-        BorderPropertySet border = currentStyle.getBorder(c.getCtx());
+        BorderPropertySet border = currentStyle.getBorder(c);
         if (border == null) {
             return;
         }
-        RectPropertySet margin = block.getStyle().getMarginWidth();
+        RectPropertySet margin = block.getStyle().getMarginWidth(c);
         // CLEAN: cast to int
-        Rectangle box = new Rectangle(block.x + (int)margin.left() + (int)border.left(),
-                block.y + (int)margin.top() + (int)border.top(),
-                width - (int)margin.left() - (int)margin.right() - (int)border.left() - (int)border.right(),
-                height - (int)margin.top() - (int)border.top() - (int)border.bottom() - (int)margin.bottom());
+        Rectangle box = new Rectangle(block.x + (int) margin.left() + (int) border.left(),
+                block.y + (int) margin.top() + (int) border.top(),
+                width - (int) margin.left() - (int) margin.right() - (int) border.left() - (int) border.right(),
+                height - (int) margin.top() - (int) border.top() - (int) border.bottom() - (int) margin.bottom());
 
         // paint the background
         Color background_color = currentStyle.getBackgroundColor();
@@ -173,6 +172,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2005/10/27 00:09:02  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.37  2005/10/21 18:10:52  pdoubleya
  * Support for cachable borders. Still buggy on some pages, but getting there.
  *
@@ -260,7 +262,7 @@ public class BackgroundPainter {
  * Cleaned out old layout code
  *
  * Revision 1.13  2004/12/29 10:39:34  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.12  2004/12/29 07:35:38  tobega
  * Prepared for cloned Context instances by encapsulating fields

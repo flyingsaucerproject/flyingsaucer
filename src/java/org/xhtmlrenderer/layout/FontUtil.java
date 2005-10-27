@@ -22,11 +22,14 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 
@@ -41,13 +44,12 @@ public class FontUtil {
     /**
      * Description of the Method
      *
-     * @param c    PARAM
      * @param str  PARAM
      * @param font PARAM
      * @return Returns the length of the string in graphics units
      */
-    public static int len(Context c, String str, Font font) {
-        return (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(), font, str).getWidth());
+    public static int len(String str, Font font, TextRenderer tr, Graphics2D g2) {
+        return (int) Math.ceil(tr.getLogicalBounds(g2, font, str).getWidth());
     }
 
     /**
@@ -57,8 +59,8 @@ public class FontUtil {
      * @param box PARAM
      * @return Returns
      */
-    public static int len(Context c, InlineTextBox box) {
-        return len(c, box.getSubstring(), box.getStyle().getFont(c.getCtx()));
+    public static int len(CssContext c, InlineTextBox box, TextRenderer tr, Graphics2D g2) {
+        return len(box.getSubstring(), box.getStyle().getFont(c), tr, g2);
     }
 
     /**
@@ -67,12 +69,12 @@ public class FontUtil {
      * @param c PARAM
      * @return Returns
      */
-    public static int lineHeight(Context c, Box box) {
-        CalculatedStyle style = c.getCurrentStyle();
-        int val = (int) Math.ceil(c.getTextRenderer().getLogicalBounds(c.getGraphics(),
-                box.getStyle().getFont(c.getCtx()), "Test").getHeight());
+    public static int lineHeight(Box box, TextRenderer textRenderer, Graphics2D g2, CssContext c, BlockFormattingContext bfc) {
+        CalculatedStyle style = box.getStyle().getCalculatedStyle();
+        int val = (int) Math.ceil(textRenderer.getLogicalBounds(g2,
+                box.getStyle().getFont(c), "Test").getHeight());
         if (!style.isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL)) {
-            val = (int) style.getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, c.getBlockFormattingContext().getHeight(), c.getCtx());
+            val = (int) style.getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, bfc.getHeight(), c);
         }
         return val;
     }
@@ -85,13 +87,13 @@ public class FontUtil {
      * @param box PARAM
      * @return The lineMetrics value
      */
-    public static LineMetrics getLineMetrics(Context c, InlineBox box) {
+    public static LineMetrics getLineMetrics(CssContext c, InlineBox box, TextRenderer tr, Graphics2D g2) {
         String sample = "Test";
         if ((box instanceof InlineTextBox) && !((InlineTextBox) box).getSubstring().equals("")) {
             sample = ((InlineTextBox) box).getSubstring();
         }
-        return c.getTextRenderer().getLineMetrics(c.getGraphics(),
-                box.getStyle().getFont(c.getCtx()), sample);
+        return tr.getLineMetrics(g2,
+                box.getStyle().getFont(c), sample);
     }
 
     /**
@@ -101,9 +103,9 @@ public class FontUtil {
      * @param box PARAM
      * @return The textBounds value
      */
-    public static Rectangle2D getTextBounds(Context c, InlineTextBox box) {
-        return c.getTextRenderer().getLogicalBounds(c.getGraphics(),
-                box.getStyle().getFont(c.getCtx()), box.getSubstring());
+    public static Rectangle2D getTextBounds(CssContext c, InlineTextBox box, TextRenderer tr, Graphics2D g2) {
+        return tr.getLogicalBounds(g2,
+                box.getStyle().getFont(c), box.getSubstring());
     }
 }
 
@@ -111,6 +113,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2005/10/27 00:08:59  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.40  2005/10/18 20:57:03  tobega
  * Patch from Peter Brant
  *
@@ -171,7 +176,7 @@ public class FontUtil {
  * Reduced memory more, especially by using WeakHashMap for caching Mappers. Look over other caching to use similar schemes (cache when memory available).
  *
  * Revision 1.22  2004/12/29 10:39:32  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.21  2004/12/14 00:32:20  tobega
  * Cleaned and fixed line breaking. Renamed BodyContent to DomToplevelNode

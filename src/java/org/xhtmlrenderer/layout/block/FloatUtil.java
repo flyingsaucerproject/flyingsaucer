@@ -22,7 +22,7 @@ package org.xhtmlrenderer.layout.block;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.render.Box;
 
@@ -42,7 +42,7 @@ public class FloatUtil {
      * @param c     PARAM
      * @param block PARAM
      */
-    public static void preChildrenLayout(Context c, Box block) {
+    public static void preChildrenLayout(LayoutContext c, Box block) {
         BlockFormattingContext bfc = new BlockFormattingContext(block, c);
         bfc.setWidth(block.getWidth());
         c.pushBFC(bfc);
@@ -53,7 +53,7 @@ public class FloatUtil {
      *
      * @param c PARAM
      */
-    public static void postChildrenLayout(Context c) {
+    public static void postChildrenLayout(LayoutContext c) {
         c.getBlockFormattingContext().doFinalAdjustments();
         c.popBFC();
     }
@@ -64,7 +64,7 @@ public class FloatUtil {
      * @param c   PARAM
      * @param box PARAM
      */
-    public static void setupFloat(Context c, Box box) {
+    public static void setupFloat(LayoutContext c, Box box) {
         if (ContentUtil.isFloated(c.getCurrentStyle())) {
             //Uu.p("==== setup float ====");
             //Uu.dump_stack();
@@ -98,7 +98,7 @@ public class FloatUtil {
      * @param c   PARAM
      * @param box PARAM
      */
-    private static void positionBoxLeft(Context c, Box box) {
+    private static void positionBoxLeft(LayoutContext c, Box box) {
         //Uu.p("positionBoxLeft()");
         //Uu.dump_stack();
         //Uu.p("calling the new float routine");
@@ -135,7 +135,7 @@ public class FloatUtil {
      * @param c   PARAM
      * @param box PARAM
      */
-    private static void positionBoxRight(Context c, Box box) {
+    private static void positionBoxRight(LayoutContext c, Box box) {
         BlockFormattingContext bfc = c.getBlockFormattingContext();
         Box floater = bfc.getRightFloatX(box);
         if (floater == null) {
@@ -165,6 +165,9 @@ public class FloatUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/10/27 00:08:54  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.24  2005/10/18 20:56:58  tobega
  * Patch from Peter Brant
  *

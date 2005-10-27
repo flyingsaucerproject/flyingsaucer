@@ -20,8 +20,8 @@
 package org.xhtmlrenderer.layout.inline;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.WhitespaceStripper;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
@@ -45,7 +45,7 @@ public class Breaker {
      * @param avail      PARAM
      * @param font       PARAM
      */
-    public static void breakText(Context c, InlineTextBox inline, InlineBox prev_align, int avail, Font font) {
+    public static void breakText(LayoutContext c, InlineTextBox inline, InlineBox prev_align, int avail, Font font) {
         boolean db = false;
         if (db) {
             Uu.p("=========================");
@@ -88,7 +88,7 @@ public class Breaker {
         int graphicsLength = 0;
 
         while (right > 0 && graphicsLength <= avail) {
-            graphicsLength += FontUtil.len(c, currentString.substring(left, right), font);
+            graphicsLength += FontUtil.len(currentString.substring(left, right), font, c.getTextRenderer(), c.getGraphics());
             lastWrap = left;
             left = right;
             right = currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
@@ -97,7 +97,7 @@ public class Breaker {
         if (graphicsLength <= avail) {
             //try for the last bit too!
             lastWrap = left;
-            graphicsLength += FontUtil.len(c, currentString.substring(left), font);
+            graphicsLength += FontUtil.len(currentString.substring(left), font, c.getTextRenderer(), c.getGraphics());
         }
 
         if (graphicsLength <= avail) {

@@ -19,12 +19,12 @@
  */
 package org.xhtmlrenderer.layout.content;
 
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 
 public interface CachingContent extends Content {
-    public Content getNextSibling(Context c, Content which);
+    public Content getNextSibling(LayoutContext c, Content which);
 
-    public Content getNextInFlowSibling(Context c, Content which);
+    public Content getNextInFlowSibling(LayoutContext c, Content which);
 
-    public Content getPreviousInFlowSibling(Context c, Content which);
+    public Content getPreviousInFlowSibling(LayoutContext c, Content which);
 }

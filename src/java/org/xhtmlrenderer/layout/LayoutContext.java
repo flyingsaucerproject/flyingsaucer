@@ -22,17 +22,21 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.EmptyStyle;
+import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.PageContext;
 import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.render.StackingContext;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -40,49 +44,23 @@ import java.util.LinkedList;
 import java.util.Stack;
 import java.util.logging.Level;
 
-public class ContextImpl implements Context {
+public class LayoutContext implements CssContext, PageContext {
     SharedContext sharedContext;
     private LinkedList decorations = new LinkedList();
     private LinkedList inlineBorders = new LinkedList();
     private LinkedList firstLineStyles = new LinkedList();
     private boolean shrinkWrap = false;
 
-    private boolean interactive = true;
-
-    private boolean print;
-    private PageInfo pageSize = PageInfo.LETTER;
-
     private RenderQueue renderQueue;
-
-    private int currentPage;
 
     private boolean pendingPageBreak;
     private boolean setPageBreak;
     //HACK:
     private StackingContext initialStackingContext = StackingContext.newInstance();
-
-    public RenderingContext getRenderingContext() {
-        return sharedContext.getRenderingContext();
-    }
+    private Graphics2D graphics;
 
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
-    }
-
-    public boolean debugDrawBoxes() {
-        return sharedContext.debugDrawBoxes();
-    }
-
-    public boolean debugDrawLineBoxes() {
-        return sharedContext.debugDrawLineBoxes();
-    }
-
-    public boolean debugDrawInlineBoxes() {
-        return sharedContext.debugDrawInlineBoxes();
-    }
-
-    public boolean debugDrawFontMetrics() {
-        return sharedContext.debugDrawFontMetrics();
     }
 
     public void addMaxWidth(int max_width) {
@@ -114,7 +92,14 @@ public class ContextImpl implements Context {
     }
 
     public Graphics2D getGraphics() {
-        return sharedContext.getGraphics();
+        return graphics;
+    }
+
+    /**
+     * Description of the Field
+     */
+    public void setGraphics(Graphics2D graphics) {
+        this.graphics = graphics;
     }
 
     public void flushFonts() {
@@ -143,10 +128,6 @@ public class ContextImpl implements Context {
 
     public RootPanel getCanvas() {
         return sharedContext.getCanvas();
-    }
-
-    public RenderingContext getCtx() {
-        return sharedContext.getCtx();
     }
 
     public Rectangle getFixedRectangle() {
@@ -206,7 +187,7 @@ public class ContextImpl implements Context {
     }
 
     //the stuff that needs to have a separate instance for each run.
-    ContextImpl(SharedContext sharedContext, Rectangle extents) {
+    LayoutContext(SharedContext sharedContext, Rectangle extents) {
         this.sharedContext = sharedContext;
         bfc_stack = new Stack();
         setExtents(extents);
@@ -434,11 +415,11 @@ public class ContextImpl implements Context {
     }
 
     public boolean isInteractive() {
-        return interactive;
+        return sharedContext.isInteractive();
     }
 
     public void setInteractive(boolean interactive) {
-        this.interactive = interactive;
+        sharedContext.setInteractive(interactive);
     }
 
     public Content getParentContent() {
@@ -453,22 +434,6 @@ public class ContextImpl implements Context {
         parentContentStack.pop();
     }
 
-    public PageInfo getPageInfo() {
-        return pageSize;
-    }
-
-    public void setPageInfo(PageInfo pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public boolean isPrint() {
-        return print;
-    }
-
-    public void setPrint(boolean print) {
-        this.print = print;
-    }
-
     public RenderQueue getRenderQueue() {
         return renderQueue;
     }
@@ -479,14 +444,6 @@ public class ContextImpl implements Context {
 
     public boolean isRenderQueueAvailable() {
         return this.renderQueue != null;
-    }
-
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
     }
 
     public boolean isPendingPageBreak() {
@@ -505,5 +462,41 @@ public class ContextImpl implements Context {
 
     public void setPendingPageBreak(boolean pendingPageBreak) {
         this.pendingPageBreak = pendingPageBreak;
+    }
+
+    public float getMmPerPx() {
+        return sharedContext.getMmPerPx();
+    }
+
+    public float getFontSize2D(FontSpecification font) {
+        return sharedContext.getFontSize2D(font);
+    }
+
+    public float getXHeight(FontSpecification parentFont) {
+        return sharedContext.getXHeight(parentFont, graphics);
+    }
+
+    public float getFontSizeForXHeight(FontSpecification parent, FontSpecification desired, float xHeight) {
+        return sharedContext.getFontSizeForXHeight(parent, desired, xHeight, graphics);
+    }
+
+    public Font getFont(FontSpecification font) {
+        return sharedContext.getFont(font);
+    }
+
+    public UserAgentCallback getUac() {
+        return sharedContext.getUac();
+    }
+
+    public PageInfo getPageInfo() {
+        return sharedContext.getPageInfo();
+    }
+
+    public void setPrint(boolean b) {
+        sharedContext.setPrint(b);
+    }
+
+    public boolean isPrint() {
+        return sharedContext.isPrint();
     }
 }

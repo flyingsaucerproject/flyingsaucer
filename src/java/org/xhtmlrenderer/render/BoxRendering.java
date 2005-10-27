@@ -19,23 +19,22 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.GraphicsUtil;
 import org.xhtmlrenderer.util.Uu;
+
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 
 /**
@@ -55,7 +54,7 @@ public class BoxRendering {
      * @param restyle
      */
     //HACK: the stylePushed is because we need to set style for inline blocks earlier
-    public static void paint(Context c, Box box, boolean stylePushed, boolean restyle) {
+    public static void paint(RenderingContext c, Box box, boolean stylePushed, boolean restyle) {
         Box block = (Box) box;
         restyle = restyle || box.restyle;//cascade it down
         box.restyle = false;//reset
@@ -76,8 +75,8 @@ public class BoxRendering {
             */
             
             CalculatedStyle calculatedStyle = box.getStyle().getCalculatedStyle();
-            
-            if (! stylePushed && restyle) {
+
+            if (!stylePushed && restyle) {
                 CascadedStyle style = c.getCss().getCascadedStyle(block.element, restyle);
                 calculatedStyle = calculatedStyle.getParent().deriveNewStyle(style);
                 box.getStyle().setCalculatedStyle(calculatedStyle);
@@ -94,7 +93,7 @@ public class BoxRendering {
                 //text decoration?
                 IdentValue decoration = calculatedStyle.getIdent(CSSName.TEXT_DECORATION);
                 if (decoration != IdentValue.NONE) {
-                    c.getDecorations().addLast(new TextDecoration(decoration, 0, calculatedStyle.getColor(), FontUtil.getLineMetrics(c, null)));
+                    c.getDecorations().addLast(new TextDecoration(decoration, 0, calculatedStyle.getColor(), FontUtil.getLineMetrics(c, null, c.getTextRenderer(), c.getGraphics())));
                 }
                 //special style for first line?
                 if (block.firstLineStyle != null) {
@@ -141,20 +140,20 @@ public class BoxRendering {
      * @param block   PARAM
      * @param restyle
      */
-    public static void paintNormal(Context c, Box block, boolean restyle) {
+    public static void paintNormal(RenderingContext c, Box block, boolean restyle) {
 
         int width = block.getWidth();
         int height = block.getHeight();
         if (block.getState() != Box.DONE) {
             height += c.getCanvas().getHeight();
         }
-        RectPropertySet margin = block.getStyle().getMarginWidth();
+        RectPropertySet margin = block.getStyle().getMarginWidth(c);
 
         // CLEAN: cast to int
-        Rectangle bounds = new Rectangle(block.x + (int)margin.left(),
-                block.y + (int)margin.top(),
-                width - (int)margin.left() - (int)margin.right(),
-                height - (int)margin.top() - (int)margin.bottom());
+        Rectangle bounds = new Rectangle(block.x + (int) margin.left(),
+                block.y + (int) margin.top(),
+                width - (int) margin.left() - (int) margin.right(),
+                height - (int) margin.top() - (int) margin.bottom());
         paintBackground(c, block, bounds);
 
         //c.translateInsets(block);
@@ -172,7 +171,7 @@ public class BoxRendering {
         //c.untranslateInsets(block);
 
         BorderPainter.paint(bounds, BorderPainter.ALL,
-                block.getStyle().getCalculatedStyle(), c.getGraphics(), c.getCtx(), 0);
+                block.getStyle().getCalculatedStyle(), c.getGraphics(), c, 0);
 
     }
 
@@ -184,7 +183,7 @@ public class BoxRendering {
      * @param block   PARAM
      * @param restyle
      */
-    public static void paintRelative(Context ctx, Box block, boolean restyle) {
+    public static void paintRelative(RenderingContext ctx, Box block, boolean restyle) {
         Relative.translateRelative(ctx, block.getStyle().getCalculatedStyle(), true);
         paintNormal(ctx, block, restyle);
         Relative.untranslateRelative(ctx, block.getStyle().getCalculatedStyle(), true);
@@ -198,7 +197,7 @@ public class BoxRendering {
      * @param block   PARAM
      * @param restyle
      */
-    public static void paintFixed(Context c, Box block, boolean restyle) {
+    public static void paintFixed(RenderingContext c, Box block, boolean restyle) {
         //Uu.p("painting fixed");
         Rectangle rect = c.getFixedRectangle();
         int by = c.getBlockFormattingContext().getY();
@@ -248,7 +247,7 @@ public class BoxRendering {
       layout time because some things (like the bottom of the containing block) may not be known
       at layout time.
       */
-    public static void paintAbsoluteBox(Context c, Box block, boolean restyle) {
+    public static void paintAbsoluteBox(RenderingContext c, Box block, boolean restyle) {
         Rectangle rect = c.getExtents();
         //why this?
 		
@@ -263,8 +262,8 @@ public class BoxRendering {
         xoff += bfc.getX();
         yoff += bfc.getY();
         //Uu.p("xoff = " + xoff + " yoff = " + yoff);
-        xoff += (bfc.getInsets().left - (int)bfc.getPadding().left());
-        yoff += (bfc.getInsets().top - (int)bfc.getPadding().top());
+        xoff += (bfc.getInsets().left - (int) bfc.getPadding().left());
+        yoff += (bfc.getInsets().top - (int) bfc.getPadding().top());
         //Uu.p("xoff = " + xoff + " yoff = " + yoff);
         
         
@@ -280,7 +279,7 @@ public class BoxRendering {
             yoff = 0;
         }*/
         if (block.top_set) {
-            yoff += (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c.getCtx());
+            yoff += (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c);
         } else {
             yoff = 0;
         }
@@ -310,7 +309,7 @@ public class BoxRendering {
      * @param c   PARAM
      * @param box PARAM
      */
-    public static void paintBackground(Context c, Box box, Rectangle bounds) {
+    public static void paintBackground(RenderingContext c, Box box, Rectangle bounds) {
         Box block = box;
 
         // cache the background color
@@ -326,7 +325,7 @@ public class BoxRendering {
         int backImageHeight = 0;
         if (back_image != null && !"none".equals(back_image)) {
             try {
-                block.background_image = c.getCtx().getUac().getImageResource(back_image).getImage();
+                block.background_image = c.getUac().getImageResource(back_image).getImage();
                 block.background_uri = back_image;
                 backImageWidth = block.background_image.getWidth(null);
                 backImageHeight = block.background_image.getHeight(null);
@@ -338,7 +337,7 @@ public class BoxRendering {
 
         // handle image positioning issues
 
-        Point pt = style.getBackgroundPosition(bounds.width - backImageWidth, bounds.height - backImageHeight, c.getCtx());
+        Point pt = style.getBackgroundPosition(bounds.width - backImageWidth, bounds.height - backImageHeight, c);
         block.background_position_horizontal = (int) pt.getX();
         block.background_position_vertical = (int) pt.getY();
 
@@ -352,7 +351,7 @@ public class BoxRendering {
      * @param c   PARAM
      * @param box PARAM
      */
-    public static void paintListItem(Context c, Box box) {
+    public static void paintListItem(RenderingContext c, Box box) {
         ListItemPainter.paint(c, box);
     }
 
@@ -381,6 +380,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.49  2005/10/27 00:09:03  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.48  2005/10/22 22:58:15  peterbrant
  * Box level restyle works again (really this time!)
  *

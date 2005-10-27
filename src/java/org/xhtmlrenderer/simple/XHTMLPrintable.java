@@ -3,7 +3,10 @@ package org.xhtmlrenderer.simple;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 
@@ -79,11 +82,11 @@ public class XHTMLPrintable implements Printable {
             if (g2r == null) {
                 //Uu.p("building new Graphics2DRenderer");
                 g2r = new Graphics2DRenderer();
-                g2r.getRenderingContext().setMedia("print");
-                g2r.getRenderingContext().setDPI(72f);
-                g2r.getRenderingContext().getTextRenderer().setSmoothingThreshold(0);
-                g2r.getRenderingContext().getTextRenderer().setSmoothingLevel(TextRenderer.HIGH);
-                g2r.setDocument(panel.getRenderingContext().getUac().getBaseURL());
+                g2r.getSharedContext().setMedia("print");
+                g2r.getSharedContext().setDPI(72f);
+                g2r.getSharedContext().getTextRenderer().setSmoothingThreshold(0);
+                g2r.getSharedContext().getTextRenderer().setSmoothingLevel(TextRenderer.HIGH);
+                g2r.setDocument(panel.getSharedContext().getUac().getBaseURL());
                 Dimension dim = new Dimension((int) w, (int) h);
                 g2r.layout(g2, dim);
                 Rectangle rect = g2r.getMinimumSize();

@@ -19,11 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -31,13 +26,14 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.layout.content.BlockContent;
-import org.xhtmlrenderer.layout.content.CachingContent;
-import org.xhtmlrenderer.layout.content.CollapsableContent;
-import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.layout.content.ContentUtil;
+import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Style;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Exposes a utility method to collapse vertical margins (8.3.1)
@@ -110,17 +106,17 @@ public class VerticalMarginCollapser {
     }
 
     /**
-     * Be sure to use it or call {@link Box#getMarginWidth(Context, float)} to pick
+     * Be sure to use it or call {@link Box#getMarginWidth(org.xhtmlrenderer.css.style.CssContext, float)} to pick
      * up modified margins.
      */
-    public static void collapseVerticalMargins(Context c, Box block, Content content, float parentWidth) {
+    public static void collapseVerticalMargins(LayoutContext c, Box block, Content content, float parentWidth) {
         if (content instanceof CollapsableContent) {
             Element elem = content.getElement();
             if (elem.getParentNode().getNodeType() == Node.DOCUMENT_NODE ||
                     elem.getParentNode().getParentNode().getNodeType() == Node.DOCUMENT_NODE) {
                 return;
             }
-            
+
             CollapsableContent collapsableContent = (CollapsableContent) content;
 
             if (!collapsableContent.isCollapsed()) {
@@ -161,7 +157,7 @@ public class VerticalMarginCollapser {
         }
     }
 
-    private static boolean collapseInBetweenAdjoining(Context c, Box block, CollapsableContent content, List adjoining) {
+    private static boolean collapseInBetweenAdjoining(LayoutContext c, Box block, CollapsableContent content, List adjoining) {
         CollapsedMarginPair result = collapseAdjoining(content.getMarginToCollapse(), adjoining);
         CachingContent parent = (CachingContent) c.getParentContent();
         Content sibling = parent.getNextInFlowSibling(c, content);
@@ -176,21 +172,21 @@ public class VerticalMarginCollapser {
         }
     }
 
-    private static boolean hasTopBorderOrPadding(Context c, float parentWidth) {
-        BorderPropertySet width = c.getCurrentStyle().getBorder(c.getCtx());
-        RectPropertySet padding = c.getCurrentStyle().getPaddingRect(parentWidth, parentWidth, c.getCtx());
+    private static boolean hasTopBorderOrPadding(LayoutContext c, float parentWidth) {
+        BorderPropertySet width = c.getCurrentStyle().getBorder(c);
+        RectPropertySet padding = c.getCurrentStyle().getPaddingRect(parentWidth, parentWidth, c);
 
-        return (int)width.top() != 0 || (int)padding.top() != 0;
+        return (int) width.top() != 0 || (int) padding.top() != 0;
     }
 
-    private static boolean hasBottomBorderOrPadding(Context c, float parentWidth) {
-        BorderPropertySet width = c.getCurrentStyle().getBorder(c.getCtx());
-        RectPropertySet padding = c.getCurrentStyle().getPaddingRect(parentWidth, parentWidth, c.getCtx());
+    private static boolean hasBottomBorderOrPadding(LayoutContext c, float parentWidth) {
+        BorderPropertySet width = c.getCurrentStyle().getBorder(c);
+        RectPropertySet padding = c.getCurrentStyle().getPaddingRect(parentWidth, parentWidth, c);
 
-        return (int)width.bottom() != 0 || (int)padding.bottom() != 0;
+        return (int) width.bottom() != 0 || (int) padding.bottom() != 0;
     }
 
-    private static Float collapseTopMargin(Context c, CachingContent content, float parentWidth) {
+    private static Float collapseTopMargin(LayoutContext c, CachingContent content, float parentWidth) {
         if (content instanceof BlockContent) {
             CollapsedMarginPair saved = ((BlockContent) content).getMarginToCollapse();
 
@@ -211,7 +207,7 @@ public class VerticalMarginCollapser {
 
                 CollapsingMargin top = new CollapsingMargin();
                 top.content = (CollapsableContent) content;
-                top.marginWidth = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_TOP, parentWidth, c.getCtx());
+                top.marginWidth = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_TOP, parentWidth, c);
 
                 collapsed.add(top);
 
@@ -222,7 +218,7 @@ public class VerticalMarginCollapser {
         }
     }
 
-    private static void collapseTopMarginHelper(Context c, CachingContent content, List collapsed, float parentWidth) {
+    private static void collapseTopMarginHelper(LayoutContext c, CachingContent content, List collapsed, float parentWidth) {
         List children = content.getChildContent(c);
         Object target = null;
         for (Iterator i = children.iterator(); i.hasNext();) {
@@ -249,7 +245,7 @@ public class VerticalMarginCollapser {
 
             CollapsingMargin margin = new CollapsingMargin();
             margin.content = targetContent;
-            margin.marginWidth = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_TOP, nextParentWidth, c.getCtx());
+            margin.marginWidth = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_TOP, nextParentWidth, c);
 
             collapsed.add(margin);
 
@@ -264,7 +260,7 @@ public class VerticalMarginCollapser {
     private static final int DIR_DOWN = 1;
     private static final int DIR_UP = 2;
 
-    private static CollapsableContent collapseAdjoiningIntervening(Context c, CachingContent parent, float parentWidth,
+    private static CollapsableContent collapseAdjoiningIntervening(LayoutContext c, CachingContent parent, float parentWidth,
                                                                    CollapsableContent target, List collapsed, int direction) {
         CollapsableContent currentTarget = target;
 
@@ -311,7 +307,7 @@ public class VerticalMarginCollapser {
         }
     }
 
-    private static Float collapseBottomMargin(Context c, CachingContent content, float parentWidth) {
+    private static Float collapseBottomMargin(LayoutContext c, CachingContent content, float parentWidth) {
         if (content instanceof BlockContent) {
             if (hasBottomBorderOrPadding(c, parentWidth)) {
                 return calculateAdjustedMarginBottom(c, content, parentWidth);
@@ -330,7 +326,7 @@ public class VerticalMarginCollapser {
 
                 CollapsingMargin top = new CollapsingMargin();
                 top.content = (CollapsableContent) content;
-                top.marginWidth = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_BOTTOM, parentWidth, c.getCtx());
+                top.marginWidth = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_BOTTOM, parentWidth, c);
 
                 collapsed.add(top);
 
@@ -341,14 +337,14 @@ public class VerticalMarginCollapser {
         }
     }
 
-    private static Float calculateAdjustedMarginBottom(Context c, Content topContent, float parentWidth) {
+    private static Float calculateAdjustedMarginBottom(LayoutContext c, Content topContent, float parentWidth) {
         CollapsingMargin top = new CollapsingMargin();
         top.content = (CollapsableContent) topContent;
-        top.marginWidth = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_BOTTOM, parentWidth, c.getCtx());
+        top.marginWidth = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_BOTTOM, parentWidth, c);
         return calculateAdjustedMarginBottom(c, Collections.singletonList(top));
     }
 
-    private static Float calculateAdjustedMarginBottom(Context c, List collapsed) {
+    private static Float calculateAdjustedMarginBottom(LayoutContext c, List collapsed) {
         CachingContent parent = (CachingContent) c.getParentContent();
         CollapsingMargin which = (CollapsingMargin) collapsed.get(collapsed.size() - 1);
 
@@ -363,7 +359,7 @@ public class VerticalMarginCollapser {
         }
     }
 
-    private static void collapseBottomMarginHelper(Context c, CachingContent content, List collapsed, float parentWidth) {
+    private static void collapseBottomMarginHelper(LayoutContext c, CachingContent content, List collapsed, float parentWidth) {
         List children = content.getChildContent(c);
         Object target = null;
 
@@ -390,7 +386,7 @@ public class VerticalMarginCollapser {
             CollapsingMargin margin = new CollapsingMargin();
             margin.content = targetContent;
 
-            margin.marginWidth = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_TOP, nextParentWidth, c.getCtx());
+            margin.marginWidth = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_TOP, nextParentWidth, c);
 
             collapsed.add(margin);
 
@@ -403,14 +399,14 @@ public class VerticalMarginCollapser {
         }
     }
 
-    public static boolean mayCollapseInto(Context c, CollapsableContent content) {
+    public static boolean mayCollapseInto(LayoutContext c, CollapsableContent content) {
         return content.mayCollapseInto() && c.getCurrentStyle().isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE);
     }
 
-    private static Float calculateCollapsedTop(Context c, Content topContent, float parentWidth) {
+    private static Float calculateCollapsedTop(LayoutContext c, Content topContent, float parentWidth) {
         CollapsingMargin top = new CollapsingMargin();
         top.content = (CollapsableContent) topContent;
-        top.marginWidth = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_TOP, parentWidth, c.getCtx());
+        top.marginWidth = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_TOP, parentWidth, c);
 
         return new Float(calculateCollapsedMargin(((CollapsableContent) topContent).getMarginToCollapse(),
                 Collections.singletonList(top)).getValue());
@@ -469,26 +465,26 @@ public class VerticalMarginCollapser {
         return new CollapsedMarginPair(maxNegative, maxPositive);
     }
 
-    private static float adjustWidth(float parentWidth, Context c) {
+    private static float adjustWidth(float parentWidth, LayoutContext c) {
         CalculatedStyle style = c.getCurrentStyle();
         boolean hasSpecifiedWidth = !style.isIdent(CSSName.WIDTH, IdentValue.AUTO);
         if (hasSpecifiedWidth) {
-            return style.getFloatPropertyProportionalWidth(CSSName.WIDTH, parentWidth, c.getCtx());
+            return style.getFloatPropertyProportionalWidth(CSSName.WIDTH, parentWidth, c);
         } else {
-            RectPropertySet margin = style.getMarginRect(parentWidth, parentWidth, c.getCtx());
-            RectPropertySet padding = style.getPaddingRect(parentWidth, parentWidth, c.getCtx());
-            BorderPropertySet borderWidth = style.getBorder(c.getCtx());
+            RectPropertySet margin = style.getMarginRect(parentWidth, parentWidth, c);
+            RectPropertySet padding = style.getPaddingRect(parentWidth, parentWidth, c);
+            BorderPropertySet borderWidth = style.getBorder(c);
             return parentWidth -
-                    margin.left() - (int)borderWidth.left() - (int)padding.left() -
-                    (int)padding.right() - (int)borderWidth.right() - margin.right();
+                    margin.left() - (int) borderWidth.left() - (int) padding.left() -
+                    (int) padding.right() - (int) borderWidth.right() - margin.right();
         }
     }
 
-    private static List areMarginsAdjoining(Context c, CollapsableContent content, float parentWidth) {
+    private static List areMarginsAdjoining(LayoutContext c, CollapsableContent content, float parentWidth) {
         return areMarginsAdjoiningHelper(c, content, parentWidth, new ArrayList());
     }
 
-    private static List areMarginsAdjoiningHelper(Context c, CollapsableContent content, float parentWidth, List adjoining) {
+    private static List areMarginsAdjoiningHelper(LayoutContext c, CollapsableContent content, float parentWidth, List adjoining) {
 
         if (content.isMarginsAdjoiningCalculated() && !content.isMarginsAdjoining()) {
             // Fast path for common case, otherwise just recalculate
@@ -500,8 +496,8 @@ public class VerticalMarginCollapser {
 
         CollapsingNode n = new CollapsingNode();
         n.content = content;
-        n.marginTop = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_TOP, parentWidth, c.getCtx());
-        n.marginBottom = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_BOTTOM, parentWidth, c.getCtx());
+        n.marginTop = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_TOP, parentWidth, c);
+        n.marginBottom = c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.MARGIN_BOTTOM, parentWidth, c);
         adjoining.add(n);
 
         if (!b) {
@@ -543,13 +539,13 @@ public class VerticalMarginCollapser {
         return result;
     }
 
-    private static boolean hasNoBordersPaddingOrHeight(Context c, float parentWidth) {
+    private static boolean hasNoBordersPaddingOrHeight(LayoutContext c, float parentWidth) {
         CalculatedStyle style = c.getCurrentStyle();
-        BorderPropertySet borderWidth = style.getBorder(c.getCtx());
-        RectPropertySet padding = style.getPaddingRect(parentWidth, parentWidth, c.getCtx());
+        BorderPropertySet borderWidth = style.getBorder(c);
+        RectPropertySet padding = style.getPaddingRect(parentWidth, parentWidth, c);
 
-        return (int)borderWidth.top() == 0 && (int)borderWidth.bottom() == 0 &&
-                (int)padding.top() == 0 && (int)padding.bottom() == 0 &&
+        return (int) borderWidth.top() == 0 && (int) borderWidth.bottom() == 0 &&
+                (int) padding.top() == 0 && (int) padding.bottom() == 0 &&
                 (style.isIdent(CSSName.HEIGHT, IdentValue.AUTO) ||
                 style.asFloat(CSSName.HEIGHT) == 0);
     }

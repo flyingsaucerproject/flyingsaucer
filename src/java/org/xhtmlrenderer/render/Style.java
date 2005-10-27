@@ -1,15 +1,12 @@
 package org.xhtmlrenderer.render;
 
-import java.awt.Font;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.extend.RenderingContext;
+
+import java.awt.Font;
 
 /**
  * Encapuslates anything style related in a Box. A separate bean is used to
@@ -28,17 +25,16 @@ public class Style {
 
     private float parentWidth;
 
-    private CssContext cssContext;
+    //NO! can't cache this! private CssContext cssContext;
     
     public Style(CalculatedStyle calculatedStyle, float parentWidth,
                  CssContext cssContext) {
         this.calculatedStyle = calculatedStyle;
         this.parentWidth = parentWidth;
-        this.cssContext = cssContext;
     }
 
-    public Font getFont(RenderingContext renderingContext) {
-        return renderingContext.getFont(calculatedStyle.getFont(cssContext));
+    public Font getFont(CssContext cssContext) {
+        return cssContext.getFont(calculatedStyle.getFont(cssContext));
     }
 
     public boolean isClearLeft() {
@@ -106,7 +102,7 @@ public class Style {
         this.marginBottomOverrideSet = true;
     }
 
-    public RectPropertySet getMarginWidth() {
+    public RectPropertySet getMarginWidth(CssContext cssContext) {
         RectPropertySet rect = calculatedStyle.getMarginRect(parentWidth, parentWidth, cssContext).copyOf();
 
         // TODO: this is bad for cached rects...

@@ -20,8 +20,9 @@
 package org.xhtmlrenderer.simple;
 
 import org.w3c.dom.Document;
-import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.HoverListener;
@@ -70,7 +71,7 @@ import java.net.URL;
  * <p/>
  * XHTMLPanel also lets you make simple changes with simple methods like
  * {@link #setFontScalingFactor(float)}. If you want to make other changes you will
- * need to get the rendering context ({@link #getRenderingContext()}) and call methods on
+ * need to get the rendering context ({@link #getSharedContext()}) and call methods on
  * that. Ex: </p> <p/>
  * <p/>
  * <pre>
@@ -97,7 +98,7 @@ public class XHTMLPanel extends BasicPanel {
     private float fontScalingFactor = 1.2F;
     private float minFontScale = 0.50F;
     private float maxFontScale = 3.0F;
-    
+
     private LinkListener linkListener;
     private HoverListener hoverListener;
 
@@ -121,12 +122,12 @@ public class XHTMLPanel extends BasicPanel {
         super(uac);
         setupListeners();
     }
-    
+
     /**
      * Instantiates an XHTMLPanel with no {@link Document} loaded by default.
-     * 
+     *
      * @param useThreads If true, use threads for better responsiveness.  Otherwise
-     * layout and rendering will occur synchronously.
+     *                   layout and rendering will occur synchronously.
      */
     public XHTMLPanel(boolean useThreads) {
         super(useThreads);
@@ -141,13 +142,13 @@ public class XHTMLPanel extends BasicPanel {
      * implementation.
      *
      * @param useThreads If true, use threads for better responsiveness.  Otherwise
-     * layout and rendering will occur synchronously.
-     * @param uac The custom UserAgentCallback implementation.
+     *                   layout and rendering will occur synchronously.
+     * @param uac        The custom UserAgentCallback implementation.
      */
     public XHTMLPanel(boolean useThreads, UserAgentCallback uac) {
         super(useThreads, uac);
         setupListeners();
-    }    
+    }
 
     private void setupListeners() {
         // install a default link listener
@@ -158,7 +159,7 @@ public class XHTMLPanel extends BasicPanel {
         addMouseListener(hoverListener);
         addMouseMotionListener(hoverListener);
     }
-    
+
     private void resetListeners() {
         linkListener.reset();
         hoverListener.reset();
@@ -169,7 +170,7 @@ public class XHTMLPanel extends BasicPanel {
      */
     public void relayout() {
         //super.calcLayout();
-        ctx.getContext().flushFonts();
+        sharedContext.flushFonts();
         Uu.p("WARNING: the relayout() method may not work!");
     }
 
@@ -222,13 +223,13 @@ public class XHTMLPanel extends BasicPanel {
      * Sets the {@link RenderingContext} attribute of the XHTMLPanel object. Generally
      * you should not use this unless you have a heavily customized context to
      * use. To modify just some rendering behavior, consider using
-     * {@link #getRenderingContext()} to retrieve the current context, and using
+     * {@link #getSharedContext()} to retrieve the current context, and using
      * mutators to change its behavior.
      *
      * @param ctx A new RenderingContext to use for rendering.
      */
-    public void setRenderingContext(RenderingContext ctx) {
-        super.setRenderingContext(ctx);
+    public void setSharedContext(SharedContext ctx) {
+        super.setSharedContext(ctx);
     }
 
     /**
@@ -260,7 +261,7 @@ public class XHTMLPanel extends BasicPanel {
      * specified in the document's styling instructions.
      */
     public void resetFontSize() {
-        RenderingContext rc = getRenderingContext();
+        SharedContext rc = getSharedContext();
         rc.getTextRenderer().setFontScale(1.0F);
         relayout();
         repaint();
@@ -283,7 +284,7 @@ public class XHTMLPanel extends BasicPanel {
      * renderer.
      */
     private void scaleFont(float scaleBy) {
-        RenderingContext rc = getRenderingContext();
+        SharedContext rc = getSharedContext();
         float fs = rc.getTextRenderer().getFontScale() * scaleBy;
         if (fs < minFontScale || fs > maxFontScale) return;
         rc.getTextRenderer().setFontScale(fs);
@@ -326,6 +327,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/10/27 00:09:07  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.28  2005/10/26 17:01:44  peterbrant
  * Allow the "use threads" config property to be set on individual instances of
  * XHTMLPanel.

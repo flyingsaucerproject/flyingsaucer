@@ -1,7 +1,6 @@
 package org.xhtmlrenderer.demo.browser.actions;
 
 import org.xhtmlrenderer.demo.browser.BrowserStartup;
-import org.xhtmlrenderer.extend.RenderingContext;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -11,7 +10,7 @@ public class FontSizeAction extends AbstractAction {
     protected BrowserStartup root;
     public static final int DECREMENT = 0;
     public static final int INCREMENT = 1;
-    public static final int RESET     = 2;
+    public static final int RESET = 2;
     private int whichDirection;
 
     public FontSizeAction(BrowserStartup root, int which) {
@@ -26,7 +25,7 @@ public class FontSizeAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent evt) {
-        switch ( whichDirection ) {
+        switch (whichDirection) {
             case INCREMENT:
                 root.panel.view.incrementFontSize();
                 break;

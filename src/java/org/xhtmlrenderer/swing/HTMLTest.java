@@ -25,7 +25,7 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -53,7 +53,6 @@ public class HTMLTest extends JFrame {
      * Constructor for the HTMLTest object
      *
      * @param args PARAM
-     * @throws Exception Throws
      */
     public HTMLTest(String[] args) {
         super(BASE_TITLE);
@@ -66,7 +65,7 @@ public class HTMLTest extends JFrame {
         scroll.setVerticalScrollBarPolicy(scroll.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(scroll.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setPreferredSize(new Dimension(width, height));
-		LinkListener ll = new LinkListener(panel);
+        LinkListener ll = new LinkListener(panel);
         panel.addMouseListener(ll);
         panel.addMouseMotionListener(ll);
         /*
@@ -265,7 +264,7 @@ panel.addMouseMotionListener(hov);
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            panel.getRenderingContext().getContext().setDebug_draw_boxes(!panel.getRenderingContext().getContext().debugDrawBoxes());
+            panel.getSharedContext().setDebug_draw_boxes(!panel.getSharedContext().debugDrawBoxes());
             panel.repaint();
         }
     }
@@ -290,7 +289,7 @@ panel.addMouseMotionListener(hov);
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            panel.getRenderingContext().getContext().setDebug_draw_line_boxes(!panel.getRenderingContext().getContext().debugDrawLineBoxes());
+            panel.getSharedContext().setDebug_draw_line_boxes(!panel.getSharedContext().debugDrawLineBoxes());
             panel.repaint();
         }
     }
@@ -315,7 +314,7 @@ panel.addMouseMotionListener(hov);
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            panel.getRenderingContext().getContext().setDebug_draw_inline_boxes(!panel.getRenderingContext().getContext().debugDrawInlineBoxes());
+            panel.getSharedContext().setDebug_draw_inline_boxes(!panel.getSharedContext().debugDrawInlineBoxes());
             panel.repaint();
         }
     }
@@ -335,7 +334,7 @@ panel.addMouseMotionListener(hov);
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            panel.getRenderingContext().getContext().setDebug_draw_font_metrics(!panel.getRenderingContext().getContext().debugDrawFontMetrics());
+            panel.getSharedContext().setDebug_draw_font_metrics(!panel.getSharedContext().debugDrawFontMetrics());
             panel.repaint();
         }
     }
@@ -349,7 +348,7 @@ panel.addMouseMotionListener(hov);
         }
 
         public void actionPerformed(ActionEvent evt) {
-            panel.getRenderingContext().getTextRenderer().setSmoothingLevel(hint);
+            panel.getSharedContext().getTextRenderer().setSmoothingLevel(hint);
             panel.repaint();
         }
     }
@@ -389,7 +388,7 @@ panel.addMouseMotionListener(hov);
             if (inspector == null) {
                 // inspectorFrame = new JFrame("DOM Tree Inspector");
 
-                inspector = new DOMInspector(panel.doc, panel.getRenderingContext().getContext(), panel.getRenderingContext().getContext().getCss());
+                inspector = new DOMInspector(panel.doc, panel.getSharedContext(), panel.getSharedContext().getCss());
 
                 inspectorFrame.getContentPane().add(inspector);
 
@@ -397,7 +396,7 @@ panel.addMouseMotionListener(hov);
                 inspectorFrame.setSize(400, 600);
                 inspectorFrame.show();
             } else {
-                inspector.setForDocument(panel.doc, panel.getRenderingContext().getContext(), panel.getRenderingContext().getContext().getCss());
+                inspector.setForDocument(panel.doc, panel.getSharedContext(), panel.getSharedContext().getCss());
             }
             inspectorFrame.show();
         }
@@ -471,6 +470,9 @@ panel.addMouseMotionListener(hov);
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/10/27 00:09:08  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.33  2005/07/15 23:39:49  joshy
  * updates to try to fix the resize issue
  *
@@ -511,7 +513,7 @@ panel.addMouseMotionListener(hov);
  * Started massaging the extension interfaces
  *
  * Revision 1.26  2004/12/29 10:39:35  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.25  2004/12/29 07:35:39  tobega
  * Prepared for cloned Context instances by encapsulating fields

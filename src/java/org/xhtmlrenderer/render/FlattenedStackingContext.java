@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.layout.Context;
 
 import java.awt.Graphics2D;
 import java.util.Comparator;
@@ -47,7 +46,7 @@ public class FlattenedStackingContext extends StackingContext {
     }
 
     //HACK: Context should not be used here
-    public void render(Context c, Graphics2D g2, double top, double bottom) {
+    public void render(RenderingContext c, Graphics2D g2, double top, double bottom) {
         Comparator indexer = new Comparator() {
 
             public int compare(Object o, Object o1) {

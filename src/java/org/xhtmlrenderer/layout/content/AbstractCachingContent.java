@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.layout.content;
 
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.util.Collections;
@@ -29,9 +29,9 @@ import java.util.List;
 public abstract class AbstractCachingContent implements CachingContent {
     private List _childContent;
 
-    protected abstract List makeChildContent(Context c);
+    protected abstract List makeChildContent(LayoutContext c);
 
-    public Content getNextSibling(Context c, Content which) {
+    public Content getNextSibling(LayoutContext c, Content which) {
         for (Iterator i = getChildContent(c).iterator(); i.hasNext();) {
             Object obj = i.next();
             if (obj == which) {
@@ -41,7 +41,7 @@ public abstract class AbstractCachingContent implements CachingContent {
         throw new XRRuntimeException("Could not find sibling to: " + which);
     }
 
-    public Content getPreviousInFlowSibling(Context c, Content which) {
+    public Content getPreviousInFlowSibling(LayoutContext c, Content which) {
         List children = getChildContent(c);
         for (int i = 0; i < children.size(); i++) {
             Object obj = children.get(i);
@@ -58,7 +58,7 @@ public abstract class AbstractCachingContent implements CachingContent {
         throw new XRRuntimeException("Could not find sibling to: " + which);
     }
 
-    public Content getNextInFlowSibling(Context c, Content which) {
+    public Content getNextInFlowSibling(LayoutContext c, Content which) {
         for (Iterator i = getChildContent(c).iterator(); i.hasNext();) {
             Object obj = i.next();
             if (obj == which) {
@@ -75,7 +75,7 @@ public abstract class AbstractCachingContent implements CachingContent {
         throw new XRRuntimeException("Could not find sibling to: " + which);
     }
 
-    public List getChildContent(Context c) {
+    public List getChildContent(LayoutContext c) {
         if (_childContent == null) {
             _childContent = makeChildContent(c);
         }

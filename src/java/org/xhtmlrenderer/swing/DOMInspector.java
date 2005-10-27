@@ -788,6 +788,9 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/10/27 00:09:08  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.15  2005/06/22 23:48:46  tobega
  * Refactored the css package to allow a clean separation from the core.
  *
@@ -810,7 +813,7 @@ class DOMTreeCellRenderer extends DefaultTreeCellRenderer {
  * Cleaned out unnecessary styling/matching code. styling/matching is now called during boxing/rendering rather than as a separate stage.
  *
  * Revision 1.9  2004/12/29 10:39:35  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.8  2004/12/12 04:18:58  tobega
  * Now the core compiles at least. Now we must make it work right. Table layout is one point that really needs to be looked over

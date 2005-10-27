@@ -20,9 +20,11 @@
 package org.xhtmlrenderer.simple;
 
 import org.w3c.dom.Document;
-import org.xhtmlrenderer.extend.RenderingContext;
+import org.xhtmlrenderer.layout.SharedContext;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 
@@ -116,8 +118,8 @@ public class Graphics2DRenderer {
      *
      * @param ctx The new renderingContext value
      */
-    public void setRenderingContext(RenderingContext ctx) {
-        panel.setRenderingContext(ctx);
+    public void setSharedContext(SharedContext ctx) {
+        panel.setSharedContext(ctx);
     }
 
     /**
@@ -143,8 +145,8 @@ public class Graphics2DRenderer {
      *
      * @return The renderingContext value
      */
-    public RenderingContext getRenderingContext() {
-        return panel.getRenderingContext();
+    public SharedContext getSharedContext() {
+        return panel.getSharedContext();
     }
 
     public XHTMLPanel getPanel() {
@@ -209,6 +211,9 @@ public class Graphics2DRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/10/27 00:09:07  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.14  2005/10/26 17:01:44  peterbrant
  * Allow the "use threads" config property to be set on individual instances of
  * XHTMLPanel.

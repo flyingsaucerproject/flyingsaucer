@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.Boxing;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Graphics2D;
@@ -48,8 +47,6 @@ public class LineBox extends Box implements Renderable {
 
     public LineMetrics blockLineMetrics;
     public boolean textAligned = false;
-    public double absY;
-    public double absX;
     public int renderIndex;
 
     /**
@@ -61,10 +58,9 @@ public class LineBox extends Box implements Renderable {
     /**
      * Adds a feature to the InlineChild attribute of the LineBox object
      *
-     * @param c  The feature to be added to the InlineChild attribute
      * @param ib The feature to be added to the InlineChild attribute
      */
-    public void addInlineChild(Context c, InlineBox ib) {
+    public void addInlineChild(InlineBox ib) {
         if (ib == null) {
             throw new NullPointerException("trying to add null child");
         }
@@ -103,7 +99,7 @@ public class LineBox extends Box implements Renderable {
         return ascent + leading / 2;
     }
 
-    public void moveToNextPage(Context c, Rectangle bounds) {
+    public void moveToNextPage(PageContext c, Rectangle bounds) {
         if (getParent().getChildCount() == 1 && getParent().getChild(0) == this) {
             getParent().moveToNextPage(c, true);
         } else {
@@ -114,15 +110,11 @@ public class LineBox extends Box implements Renderable {
         }
     }
 
-    protected double getAbsY(Context c) {
-        return c.getOriginOffset().y + y;
-    }
-
     public int getIndex() {
         return renderIndex;
     }
 
-    public void render(Context c, Graphics2D g2) {
+    public void render(RenderingContext c, Graphics2D g2) {
         //HACK:
         g2.translate(absX - x, absY - y);
         InlineRendering.paintLine(c, this, false, new LinkedList());
@@ -142,6 +134,9 @@ public class LineBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/10/27 00:09:04  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.21  2005/10/16 23:57:17  tobega
  * Starting experiment with flat representation of render tree
  *
@@ -192,7 +187,7 @@ public class LineBox extends Box implements Renderable {
  * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
  *
  * Revision 1.6  2004/12/29 10:39:35  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.5  2004/12/15 00:53:40  tobega
  * Started playing a bit with inline box, provoked a few nasties, probably created some, seems to work now

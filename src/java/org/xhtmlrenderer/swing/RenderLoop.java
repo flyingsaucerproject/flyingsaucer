@@ -4,7 +4,7 @@ import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Dimension;
 
 public class RenderLoop implements Runnable {
     private RootPanel root;
@@ -38,9 +38,9 @@ public class RenderLoop implements Runnable {
             if (!root.isPrintView() && Configuration.isTrue("xr.incremental.enabled", false)) {
                 /*
     // i might be able to delete this now. handled in layout loop I think.
-                if(getContext() != null && bh != null && bh.box != null) {
-                    Dimension intrinsic_size = new Dimension(getContext().getMaxWidth(),
-                        getContext().getMaxHeight());//bh.box.height);
+                if(getSharedContext() != null && bh != null && bh.box != null) {
+                    Dimension intrinsic_size = new Dimension(getSharedContext().getMaxWidth(),
+                        getSharedContext().getMaxHeight());//bh.box.height);
                     Uu.p("now size = " + intrinsic_size);
                     if(!intrinsic_size.equals(this.intrinsic_size)) {
                         Uu.p("they are different. refreshing");

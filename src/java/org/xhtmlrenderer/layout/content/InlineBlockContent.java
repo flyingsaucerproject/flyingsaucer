@@ -21,7 +21,7 @@ package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 
 import java.util.List;
 
@@ -85,7 +85,7 @@ public class InlineBlockContent implements Content {
      * @param c PARAM
      * @return The childContent value
      */
-    public List getChildContent(Context c) {
+    public List getChildContent(LayoutContext c) {
         return ContentUtil.getChildContentList(c, this);
     }
 

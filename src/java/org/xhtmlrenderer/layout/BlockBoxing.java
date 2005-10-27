@@ -55,7 +55,7 @@ public class BlockBoxing {
      * @param block       PARAM
      */
 
-    public static void layoutContent(Context c, Box box, List contentList, Box block) {
+    public static void layoutContent(LayoutContext c, Box box, List contentList, Box block) {
         // prepare for the list items
         int old_counter = c.getListCounter();
         c.setListCounter(0);
@@ -201,6 +201,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/10/27 00:08:58  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.21  2005/10/18 20:57:01  tobega
  * Patch from Peter Brant
  *
@@ -307,7 +310,7 @@ public class BlockBoxing {
  * Started adding in the table support.
  *
  * Revision 1.58  2004/12/29 10:39:32  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.57  2004/12/28 01:48:23  tobega
  * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.

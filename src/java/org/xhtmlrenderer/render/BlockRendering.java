@@ -21,11 +21,12 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
@@ -44,7 +45,7 @@ public class BlockRendering {
      * @param box     PARAM
      * @param restyle
      */
-    public static void paintBlockContext(Context c, Box box, boolean restyle) {
+    public static void paintBlockContext(RenderingContext c, Box box, boolean restyle) {
         //if (box.getPersistentBFC() != null) c.pushBFC(box.getPersistentBFC());
         c.translate(box.x, box.y);
         c.getGraphics().translate(box.x, box.y);
@@ -102,28 +103,28 @@ public class BlockRendering {
 
     public static final boolean ALTERNATE_CLIP_DAMAGE = false;
 
-    public static void paintChild(Context c, Box box, boolean restyle) {
+    public static void paintChild(RenderingContext c, Box box, boolean restyle) {
         if (!canBeSkipped(c, box)) {
             BoxRendering.paint(c, box, false, restyle);
         }
     }
 
-    public static boolean canBeSkipped(Context c, Box box) {
+    public static boolean canBeSkipped(RenderingContext c, Box box) {
         if (box.getStyle() == null) {
             return true;
         }
-        
+
         Shape clip = c.getGraphics().getClip();
         if (!box.isChildrenExceedBounds() &&
                 Configuration.isTrue("xr.renderer.viewport-repaint", false) &&
                 box.getState() != Box.CHILDREN_FLUX && clip != null &&
                 !(box instanceof AnonymousBlockBox)) {
 
-            RectPropertySet margin = box.getStyle().getMarginWidth();
-            Rectangle bounds = new Rectangle(box.x + (int)margin.left(),
-                    box.y + (int)margin.top(),
-                    box.getWidth() - (int)margin.left() - (int)margin.right(),
-                    box.height - (int)margin.top() - (int)margin.bottom());
+            RectPropertySet margin = box.getStyle().getMarginWidth(c);
+            Rectangle bounds = new Rectangle(box.x + (int) margin.left(),
+                    box.y + (int) margin.top(),
+                    box.getWidth() - (int) margin.left() - (int) margin.right(),
+                    box.height - (int) margin.top() - (int) margin.bottom());
 
             return !clip.intersects(bounds);
         }
@@ -131,13 +132,13 @@ public class BlockRendering {
         return false;
     }
 
-    public static int getFirstNonSkippedChild(Context c, Box box) {
-        Rectangle clip = c.getGraphics().getClipRect();
+    public static int getFirstNonSkippedChild(RenderingContext c, Box box) {
+        Rectangle clip = c.getGraphics().getClipBounds();
         return doesIntersect(clip, box, 0, box.getChildCount());
     }
 
-    public static int getLastNonSkippedChild(Context c, Box box) {
-        Rectangle clip = c.getGraphics().getClipRect();
+    public static int getLastNonSkippedChild(RenderingContext c, Box box) {
+        Rectangle clip = c.getGraphics().getClipBounds();
         return doesIntersect2(clip, box, 0, box.getChildCount());
     }
 

@@ -21,7 +21,7 @@ package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class TableColumnContent implements Content {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public List getChildContent(Context c) {
+    public List getChildContent(LayoutContext c) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

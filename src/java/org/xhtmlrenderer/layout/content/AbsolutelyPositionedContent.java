@@ -21,7 +21,7 @@ package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 
 import java.util.List;
 
@@ -80,7 +80,7 @@ public class AbsolutelyPositionedContent extends AbstractCachingContent implemen
         return _style;
     }
 
-    protected List makeChildContent(Context c) {
+    protected List makeChildContent(LayoutContext c) {
         return ContentUtil.getChildContentList(c, this);
     }
 }

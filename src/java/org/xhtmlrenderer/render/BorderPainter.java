@@ -22,7 +22,6 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
-import org.xhtmlrenderer.extend.RenderingContext;
 
 import java.awt.*;
 
@@ -134,8 +133,7 @@ public class BorderPainter {
     private static void paintBorderSide(final BorderPropertySet border, final Graphics g, final Rectangle bounds, final int sides, int currentSide, final IdentValue borderSideStyle, int xOffset) {
         Graphics2D g2 = (Graphics2D) g;
         if (borderSideStyle == IdentValue.RIDGE || borderSideStyle == IdentValue.GROOVE) {
-            BorderPropertySet bd2 = new BorderPropertySet(
-                    (int) (border.top() / 2),
+            BorderPropertySet bd2 = new BorderPropertySet((int) (border.top() / 2),
                     (int) (border.right() / 2),
                     (int) (border.bottom() / 2),
                     (int) (border.left() / 2));
@@ -171,8 +169,7 @@ public class BorderPainter {
         if (borderSideStyle == IdentValue.DOUBLE) {
             // this may need to be modified to account for rounding errors
             // create a new border only 1/3 the thickness
-            BorderPropertySet outer = new BorderPropertySet(
-                    (int) (border.top() / 3),
+            BorderPropertySet outer = new BorderPropertySet((int) (border.top() / 3),
                     (int) (border.bottom() / 3),
                     (int) (border.left() / 3),
                     (int) (border.right() / 3));
@@ -438,6 +435,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2005/10/27 00:09:02  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.37  2005/10/21 18:49:44  pdoubleya
  * Fixed border painting bug.
  *
@@ -516,7 +516,7 @@ public class BorderPainter {
  * Prepared improved handling of margins, borders and padding.
  *
  * Revision 1.15  2004/12/29 10:39:34  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.14  2004/12/27 09:40:48  tobega
  * Moved more styling to render stage. Now inlines have backgrounds and borders again.

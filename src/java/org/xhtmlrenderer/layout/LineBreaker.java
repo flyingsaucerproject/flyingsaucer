@@ -45,7 +45,7 @@ public class LineBreaker {
      * @param pendingBlockBox
      * @return Returns
      */
-    public static InlineBox generateReplacedInlineBox(Context c, Content content, int avail, InlineBox prev_align, LineBox curr_line, InlineBlockBox pendingBlockBox) {
+    public static InlineBox generateReplacedInlineBox(LayoutContext c, Content content, int avail, InlineBox prev_align, LineBox curr_line, InlineBlockBox pendingBlockBox) {
         InlineBlockBox box = new InlineBlockBox();
         box.element = content.getElement();
         // use the prev_align to calculate the x
@@ -96,6 +96,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.63  2005/10/27 00:09:00  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.62  2005/10/18 20:57:03  tobega
  * Patch from Peter Brant
  *
@@ -161,7 +164,7 @@ public class LineBreaker {
  * img tags now handled as custom components.
  *
  * Revision 1.42  2004/12/29 10:39:33  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.41  2004/12/28 02:15:18  tobega
  * More cleaning.

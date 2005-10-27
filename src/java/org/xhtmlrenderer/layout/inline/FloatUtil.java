@@ -23,7 +23,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
@@ -49,7 +49,7 @@ public class FloatUtil {
      * @param remaining_width PARAM
      * @return Returns
      */
-    public static int adjustForTab(Context c, LineBox prev_line, int remaining_width) {
+    public static int adjustForTab(LayoutContext c, LineBox prev_line, int remaining_width) {
         if (prev_line.contentWidth == 0) {
 //temporarily set width as an "easy" way of passing this as parameter
             prev_line.contentWidth = remaining_width;
@@ -76,7 +76,7 @@ public class FloatUtil {
      * @param curr_line PARAM
      * @return Returns
      */
-    public static InlineBox generateFloatedBlockInlineBox(Context c, Content content, int avail, LineBox curr_line) {
+    public static InlineBox generateFloatedBlockInlineBox(LayoutContext c, Content content, int avail, LineBox curr_line) {
         //Uu.p("generate floated block inline box: avail = " + avail);
         //Uu.p("generate floated block inline box");
         Rectangle oe = c.getExtents();// copy the extents for safety

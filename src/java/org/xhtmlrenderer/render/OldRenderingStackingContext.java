@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.layout.Context;
 
 import java.awt.Graphics2D;
 
@@ -41,7 +40,7 @@ public class OldRenderingStackingContext extends StackingContext {
     }
 
     //HACK: Context should not be used here
-    public void render(Context c, Graphics2D g2, double top, double bottom) {
+    public void render(RenderingContext c, Graphics2D g2, double top, double bottom) {
         if (root == null) return;
         BoxRendering.paint(c, root, false, false);
     }

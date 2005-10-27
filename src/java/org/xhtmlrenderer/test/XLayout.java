@@ -20,9 +20,9 @@
 package org.xhtmlrenderer.test;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 
-import java.awt.*;
+import java.awt.Dimension;
 
 
 /**
@@ -60,7 +60,7 @@ public class XLayout /*extends CustomBlockLayout*/ {
      * @param elem PARAM
      * @return The intrinsicDimensions value
      */
-    public Dimension getIntrinsicDimensions(Context c, Element elem) {
+    public Dimension getIntrinsicDimensions(LayoutContext c, Element elem) {
         return new Dimension(50, 50);
     }
 
@@ -70,6 +70,9 @@ public class XLayout /*extends CustomBlockLayout*/ {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/10/27 00:09:10  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.10  2005/05/13 15:23:57  tobega
  * Done refactoring box borders, margin and padding. Hover is working again.
  *
@@ -83,7 +86,7 @@ public class XLayout /*extends CustomBlockLayout*/ {
  * Cleaned out old layout code
  *
  * Revision 1.6  2004/12/29 10:39:37  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.5  2004/12/27 07:43:34  tobega
  * Cleaned out border from box, it can be gotten from current style. Is it maybe needed for dynamic stuff?

@@ -20,7 +20,7 @@
 package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.extend.RenderingContext;
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Uu;
@@ -128,7 +128,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         scroll = new FSScrollPane(view);
         print_preview = new JButton();
 
-        RenderingContext rc = view.getRenderingContext();
+        SharedContext rc = view.getSharedContext();
         try {
             rc.setFontMapping("Fuzz", Font.createFont(Font.TRUETYPE_FONT,
                     new DemoMarker().getClass().getResourceAsStream("/demos/fonts/fuzz.ttf")));
@@ -308,6 +308,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/10/27 00:08:50  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.28  2005/10/08 17:40:17  tobega
  * Patch from Peter Brant
  *
@@ -352,7 +355,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * Added preparation of values for a form submission
  *
  * Revision 1.16  2004/12/29 10:39:38  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.15  2004/12/12 16:11:04  tobega
  * Fixed bug concerning order of inline content. Added a demo for pseudo-elements.

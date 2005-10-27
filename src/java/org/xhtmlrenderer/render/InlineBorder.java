@@ -22,9 +22,9 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.layout.Context;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.font.LineMetrics;
 
 /**
@@ -67,17 +67,17 @@ public class InlineBorder {
         this.background_color = background_color;
     }
 
-    void paint(Context c, LineBox line, int start, int width, int sides) {
+    void paint(RenderingContext c, LineBox line, int start, int width, int sides) {
         if (width <= 0) return;
-        int ty = line.getBaseline() - y - height - (int)margin.top() - (int)border.top() - (int)padding.top() + line.y;
+        int ty = line.getBaseline() - y - height - (int) margin.top() - (int) border.top() - (int) padding.top() + line.y;
         ty += (int) lm.getDescent();
         c.translate(0, ty);
         c.getGraphics().translate(0, ty);
         // CLEAN: cast to int
         Rectangle bounds = new Rectangle(start,
-                y + (int)margin.top(),
+                y + (int) margin.top(),
                 width,
-                height + (int)border.top() + (int)padding.top() + (int)padding.bottom() + (int)border.bottom());
+                height + (int) border.top() + (int) padding.top() + (int) padding.bottom() + (int) border.bottom());
         //first the background
         if (background_color != null) {
             // skip transparent background
@@ -89,7 +89,7 @@ public class InlineBorder {
         }
 
         //then the border
-        BorderPainter.paint(bounds, sides, style, c.getGraphics(), c.getCtx(), xOffset);
+        BorderPainter.paint(bounds, sides, style, c.getGraphics(), c, xOffset);
         c.getGraphics().translate(0, -ty);
         c.translate(0, -ty);
         xOffset += width;

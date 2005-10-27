@@ -22,7 +22,10 @@ package org.xhtmlrenderer.layout.block;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.layout.BlockFormattingContext;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.RenderingContext;
 
 
 /**
@@ -36,11 +39,11 @@ public class Relative {
      *
      * @param c PARAM
      */
-    public static void translateRelative(Context c, CalculatedStyle activeStyle, boolean rendering) {
+    public static void translateRelative(RenderingContext c, CalculatedStyle activeStyle, boolean rendering) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;
-        topLeft = extractLeftTopRelative(c, activeStyle);
+        topLeft = extractLeftTopRelative(c, c.getBlockFormattingContext(), activeStyle);
         if (topLeft != null) {
             top = topLeft[0];
             left = topLeft[1];
@@ -56,11 +59,51 @@ public class Relative {
      *
      * @param c PARAM
      */
-    public static void untranslateRelative(Context c, CalculatedStyle activeStyle, boolean rendering) {
+    public static void translateRelative(LayoutContext c, CalculatedStyle activeStyle, boolean rendering) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;
-        topLeft = extractLeftTopRelative(c, activeStyle);
+        topLeft = extractLeftTopRelative(c, c.getBlockFormattingContext(), activeStyle);
+        if (topLeft != null) {
+            top = topLeft[0];
+            left = topLeft[1];
+            c.translate(left, top);
+            if (rendering) {
+                c.getGraphics().translate(left, top);
+            }
+        }
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param c PARAM
+     */
+    public static void untranslateRelative(RenderingContext c, CalculatedStyle activeStyle, boolean rendering) {
+        int top = 0;
+        int left = 0;
+        int topLeft[] = null;
+        topLeft = extractLeftTopRelative(c, c.getBlockFormattingContext(), activeStyle);
+        if (topLeft != null) {
+            top = topLeft[0];
+            left = topLeft[1];
+            c.translate(-left, -top);
+            if (rendering) {
+                c.getGraphics().translate(-left, -top);
+            }
+        }
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param c PARAM
+     */
+    public static void untranslateRelative(LayoutContext c, CalculatedStyle activeStyle, boolean rendering) {
+        int top = 0;
+        int left = 0;
+        int topLeft[] = null;
+        topLeft = extractLeftTopRelative(c, c.getBlockFormattingContext(), activeStyle);
         if (topLeft != null) {
             top = topLeft[0];
             left = topLeft[1];
@@ -77,22 +120,22 @@ public class Relative {
      * @param c PARAM
      * @return Returns
      */
-    private static int[] extractLeftTopRelative(Context c, CalculatedStyle style) {
+    private static int[] extractLeftTopRelative(CssContext c, BlockFormattingContext bfc, CalculatedStyle style) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;
         if (style.isIdent(CSSName.POSITION, IdentValue.RELATIVE)) {
             if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-                left = -(int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth(), c.getCtx());
+                left = -(int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, bfc.getWidth(), c);
             }
             if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-                top = -(int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, c.getBlockFormattingContext().getHeight(), c.getCtx());
+                top = -(int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, bfc.getHeight(), c);
             }
             if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-                top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c.getCtx());
+                top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, bfc.getHeight(), c);
             }
             if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
-                left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, c.getBlockFormattingContext().getWidth(), c.getCtx());
+                left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, bfc.getWidth(), c);
             }
             topLeft = new int[]{top, left};
         }

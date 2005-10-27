@@ -27,7 +27,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 
 import javax.swing.*;
 import java.io.InputStream;
@@ -150,7 +150,7 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
         return refs;
     }
 
-    public JComponent getCustomComponent(Element e, Context c, int setWidth, int setHeight) {
+    public JComponent getCustomComponent(Element e, UserAgentCallback uac, int setWidth, int setHeight) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

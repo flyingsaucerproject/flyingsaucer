@@ -21,8 +21,7 @@ package org.xhtmlrenderer.context;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
-import org.xhtmlrenderer.extend.RenderingContext;
-import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.layout.SharedContext;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -81,7 +80,7 @@ public class FontResolver {
      * @param variant  PARAM
      * @return Returns
      */
-    public Font resolveFont(RenderingContext ctx, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
+    public Font resolveFont(SharedContext ctx, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         //Uu.p("familes = ");
         //Uu.p(families);
         // for each font family
@@ -100,16 +99,11 @@ public class FontResolver {
         if (style == IdentValue.ITALIC) {
             family = "Serif";
         }
-        try {
-            Font fnt = createFont(ctx, (Font) available_fonts_hash.get(family), size, weight, style, variant);
-            instance_hash.put(getFontInstanceHashName(family, size, weight, style, variant), fnt);
-            //Uu.p("subbing in base sans : " + fnt);
-            return fnt;
-        } catch (Exception ex) {
-            Uu.p("exception: " + ex);
-            return ctx.getGraphics().getFont();
-        }
 
+        Font fnt = createFont(ctx, (Font) available_fonts_hash.get(family), size, weight, style, variant);
+        instance_hash.put(getFontInstanceHashName(family, size, weight, style, variant), fnt);
+        //Uu.p("subbing in base sans : " + fnt);
+        return fnt;
     }
 
     /**
@@ -133,7 +127,7 @@ public class FontResolver {
      * @param variant   PARAM
      * @return Returns
      */
-    protected static Font createFont(RenderingContext ctx, Font root_font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
+    protected static Font createFont(SharedContext ctx, Font root_font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         //Uu.p("creating font: " + root_font + " size = " + size +
         //    " weight = " + weight + " style = " + style + " variant = " + variant);
         int font_const = Font.PLAIN;
@@ -173,7 +167,7 @@ public class FontResolver {
      * @param variant PARAM
      * @return Returns
      */
-    protected Font resolveFont(RenderingContext ctx, String font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
+    protected Font resolveFont(SharedContext ctx, String font, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         //Uu.p("here");
         // strip off the "s if they are there
         if (font.startsWith("\"")) {
@@ -251,7 +245,7 @@ public class FontResolver {
         return name + "-" + size + "-" + weight + "-" + style + "-" + variant;
     }
 
-    public Font resolveFont(RenderingContext renderingContext, FontSpecification spec) {
+    public Font resolveFont(SharedContext renderingContext, FontSpecification spec) {
         return resolveFont(renderingContext, spec.families, spec.size, spec.fontWeight, spec.fontStyle, spec.variant);
     }
 }
@@ -260,6 +254,9 @@ public class FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2005/10/27 00:08:51  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.1  2005/06/22 23:48:40  tobega
  * Refactored the css package to allow a clean separation from the core.
  *
@@ -292,7 +289,7 @@ public class FontResolver {
  * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
  *
  * Revision 1.9  2004/12/29 10:39:26  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.8  2004/12/12 03:32:55  tobega
  * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it

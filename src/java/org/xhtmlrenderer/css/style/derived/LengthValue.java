@@ -49,19 +49,21 @@ public class LengthValue extends DerivedValue {
      */
     private final static float PC__PER__PT = 12;
 
-    /** The specified length value, as a float; pulled from the CSS text */
+    /**
+     * The specified length value, as a float; pulled from the CSS text
+     */
     private float _lengthAsFloat;
 
-    /** The specified primitive SAC data type given for this length, from the CSS text */
+    /**
+     * The specified primitive SAC data type given for this length, from the CSS text
+     */
     private short _lengthPrimitiveType;
 
-    public LengthValue (
-            CalculatedStyle style,
-            CSSName name,
-            short cssSACUnitType,
-            String cssText,
-            String cssStringValue
-    ) {
+    public LengthValue(CalculatedStyle style,
+                       CSSName name,
+                       short cssSACUnitType,
+                       String cssText,
+                       String cssStringValue) {
         super(style, name, cssSACUnitType, cssText, cssStringValue);
         pullLengthValueParts(name);
     }
@@ -79,18 +81,15 @@ public class LengthValue extends DerivedValue {
      * the input value. Used for such properties whose parent value cannot be
      * known before layout/render
      *
-     * @param cssName Name of the property
+     * @param cssName   Name of the property
      * @param baseValue
      * @param ctx
      * @return the absolute value or computed absolute value
      */
-    public float getFloatProportionalTo(
-            CSSName cssName,
-            float baseValue,
-            CssContext ctx
-    ) {
-        return calcFloatProportionalValue(
-                getStyle(),
+    public float getFloatProportionalTo(CSSName cssName,
+                                        float baseValue,
+                                        CssContext ctx) {
+        return calcFloatProportionalValue(getStyle(),
                 cssName,
                 getStringValue(),
                 _lengthAsFloat,
@@ -120,29 +119,26 @@ public class LengthValue extends DerivedValue {
             _lengthAsFloat = new Float(lengthAsString).floatValue();
             _lengthPrimitiveType = ValueConstants.sacPrimitiveTypeForString(m.group(3));
         } else {
-            throw new XRRuntimeException(
-                    "Could not extract length for " + cssName +
+            throw new XRRuntimeException("Could not extract length for " + cssName +
                     " from " + getStringValue() +
                     " using " + CSS_LENGTH_PATTERN);
         }
 
         if (lengthAsString == null) {
-            throw new XRRuntimeException(
-                    "Could not extract length for " + cssName +
+            throw new XRRuntimeException("Could not extract length for " + cssName +
                     " from " + getStringValue() +
                     "; is null, using " + CSS_LENGTH_PATTERN);
         }
     }
 
 
-    protected static float calcFloatProportionalValue(
-            CalculatedStyle style,
-            CSSName cssName,
-            String stringValue,
-            float relVal,
-            short primitiveType,
-            float baseValue,
-            CssContext ctx ) {
+    protected static float calcFloatProportionalValue(CalculatedStyle style,
+                                                      CSSName cssName,
+                                                      String stringValue,
+                                                      float relVal,
+                                                      short primitiveType,
+                                                      float baseValue,
+                                                      CssContext ctx) {
 
         float absVal = Float.MIN_VALUE;
 
@@ -152,22 +148,22 @@ public class LengthValue extends DerivedValue {
         // track if the calculation is already done.
         switch (primitiveType) {
             case CSSPrimitiveValue.CSS_PX:
-                    absVal = relVal;
+                absVal = relVal;
                 break;
             case CSSPrimitiveValue.CSS_IN:
-                    absVal = (((relVal * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerPx());
+                absVal = (((relVal * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerPx());
                 break;
             case CSSPrimitiveValue.CSS_CM:
-                    absVal = ((relVal * MM__PER__CM) / ctx.getMmPerPx());
+                absVal = ((relVal * MM__PER__CM) / ctx.getMmPerPx());
                 break;
             case CSSPrimitiveValue.CSS_MM:
-                    absVal = relVal / ctx.getMmPerPx();
+                absVal = relVal / ctx.getMmPerPx();
                 break;
             case CSSPrimitiveValue.CSS_PT:
-                    absVal = (((relVal * PT__PER__IN) * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerPx();
+                absVal = (((relVal * PT__PER__IN) * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerPx();
                 break;
             case CSSPrimitiveValue.CSS_PC:
-                    absVal = ((((relVal * PC__PER__PT) * PT__PER__IN) * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerPx();
+                absVal = ((((relVal * PC__PER__PT) * PT__PER__IN) * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerPx();
                 break;
             case CSSPrimitiveValue.CSS_EMS:
                 // EM is equal to font-size of element on which it is used

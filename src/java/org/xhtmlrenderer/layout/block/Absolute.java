@@ -24,7 +24,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.Uu;
@@ -45,7 +45,7 @@ public class Absolute {
      * @param c     PARAM
      * @param block PARAM
      */
-    public static void preChildrenLayout(Context c, Box block) {
+    public static void preChildrenLayout(LayoutContext c, Box block) {
         BlockFormattingContext bfc = new BlockFormattingContext(block, c);
         bfc.setWidth(block.getWidth());
         c.pushBFC(bfc);
@@ -56,7 +56,7 @@ public class Absolute {
      *
      * @param c PARAM
      */
-    public static void postChildrenLayout(Context c) {
+    public static void postChildrenLayout(LayoutContext c) {
         c.getBlockFormattingContext().doFinalAdjustments();
         c.popBFC();
     }
@@ -67,7 +67,7 @@ public class Absolute {
      * @param c         PARAM
      * @param child_box PARAM
      */
-    public static void positionAbsoluteChild(Context c, Box child_box) {
+    public static void positionAbsoluteChild(LayoutContext c, Box child_box) {
         Uu.p("positioning an absolute child: " + child_box);
         BlockFormattingContext bfc = c.getBlockFormattingContext();
         // handle the left and right
@@ -96,7 +96,7 @@ public class Absolute {
      * @param content PARAM
      * @return Returns
      */
-    public static Box generateAbsoluteBox(Context c, Content content) {
+    public static Box generateAbsoluteBox(LayoutContext c, Content content) {
         //Uu.p("generate absolute block inline box: avail = " + content);
         Rectangle oe = c.getExtents();// copy the extents for safety
         c.setExtents(new Rectangle(oe));
@@ -115,28 +115,28 @@ public class Absolute {
      * @param box PARAM
      * @param c   PARAM
      */
-    public static void setupAbsolute(Box box, Context c) {
+    public static void setupAbsolute(Box box, LayoutContext c) {
         //Uu.p("setting up an abs for box: " +box);
         CalculatedStyle style = c.getCurrentStyle();
         if (style.isIdent(CSSName.POSITION, IdentValue.ABSOLUTE)) {
             //Uu.p("is absolute pos");
             if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-                box.right = (int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth(), c.getCtx());
+                box.right = (int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth(), c);
                 box.right_set = true;
                 //Uu.p("right set to : " + box.right);
             }
             if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
-                box.left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, c.getBlockFormattingContext().getWidth(), c.getCtx());
+                box.left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, c.getBlockFormattingContext().getWidth(), c);
                 box.left_set = true;
                 //Uu.p("left set to : " + box.left);
             }
 
             if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-                box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, c.getBlockFormattingContext().getHeight(), c.getCtx());
+                box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, c.getBlockFormattingContext().getHeight(), c);
                 box.bottom_set = true;
             }
             if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-                box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c.getCtx());
+                box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c);
                 box.top_set = true;
                 //Uu.p("set top to: " + box.top + " " + box.top_set);
             }

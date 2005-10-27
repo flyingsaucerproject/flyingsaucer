@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.layout.Context;
 
 import java.awt.Graphics2D;
 import java.util.LinkedList;
@@ -42,13 +41,13 @@ public class HierarchicalStackingContext extends StackingContext {
     }
 
     //HACK: Context should not be used here
-    public void render(Context c, Graphics2D g2, double top, double bottom) {
+    public void render(RenderingContext c, Graphics2D g2, double top, double bottom) {
         if (root == null) return;
         paintBox(c, g2, (BlockBox) root);
         paintLines(c, g2, (BlockBox) root);
     }
 
-    private void paintBox(Context c, Graphics2D g2, BlockBox box) {
+    private void paintBox(RenderingContext c, Graphics2D g2, BlockBox box) {
         /*if (box.component != null) {
             //HACK: the positions during layout are still not perfect, reset here - tobe 2005-01-07
             //TODO: fix the translates during layout to handle this directly instead
@@ -82,7 +81,7 @@ public class HierarchicalStackingContext extends StackingContext {
 
     }
 
-    private void paintLines(Context c, Graphics2D g2, BlockBox box) {
+    private void paintLines(RenderingContext c, Graphics2D g2, BlockBox box) {
         int start = 0;
         int end = box.getChildCount() - 1;
         if (box.getChildCount() > 10) {

@@ -107,6 +107,9 @@ public abstract class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2005/10/27 00:09:03  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.40  2005/10/18 20:57:06  tobega
  * Patch from Peter Brant
  *
@@ -151,7 +154,7 @@ public abstract class InlineBox extends Box {
  * Went wild with code analysis tool. removed unused stuff. Lucky we have CVS...
  *
  * Revision 1.27  2004/12/29 10:39:35  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.26  2004/12/28 02:15:19  tobega
  * More cleaning.

@@ -57,7 +57,7 @@ public class InlineBoxing {
      * @param box         PARAM
      * @param contentList PARAM
      */
-    public static void layoutContent(Context c, Box box, List contentList) {
+    public static void layoutContent(LayoutContext c, Box box, List contentList) {
         //Here we should always be inside something that corresponds to a block-level element
         //for formatting purposes
         Rectangle bounds = new Rectangle();
@@ -71,9 +71,9 @@ public class InlineBoxing {
         //doesn't work here because blocks may be inside inlines, losing inline styling:
         //c.pushStyle(CascadedStyle.emptyCascadedStyle);
 
-        int blockLineHeight = FontUtil.lineHeight(c, box);
+        int blockLineHeight = FontUtil.lineHeight(box, c.getTextRenderer(), c.getGraphics(), c, c.getBlockFormattingContext());
         LineMetrics blockLineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(),
-                box.getStyle().getFont(c.getCtx()), "thequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG");
+                box.getStyle().getFont(c), "thequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG");
 
         // prepare remaining width and first linebox
         int remaining_width = bounds.width;
@@ -82,14 +82,14 @@ public class InlineBoxing {
 
         // account for text-indent
         CalculatedStyle parentStyle = c.getCurrentStyle();
-        float indent = parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, remaining_width, c.getCtx());
+        float indent = parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, remaining_width, c);
         remaining_width = remaining_width - (int) indent;
         curr_line.x = curr_line.x + (int) indent;
 
         // more setup
         LineBox prev_line = new LineBox();
         c.pushStyle(CascadedStyle.emptyCascadedStyle);
-        prev_line.setStyle(new Style(c.getCurrentStyle(), 0, c.getCtx()));
+        prev_line.setStyle(new Style(c.getCurrentStyle(), 0, c));
         c.popStyle();
         prev_line.setParent(box);
         prev_line.y = bounds.y;
@@ -145,10 +145,10 @@ public class InlineBoxing {
                 Relative.translateRelative(c, c.getCurrentStyle(), false);
                 CalculatedStyle style = c.getCurrentStyle();
                 int parent_width = bounds.width;
-                BorderPropertySet border = style.getBorder(c.getCtx());
+                BorderPropertySet border = style.getBorder(c);
                 //note: percentages here refer to width of containing block
-                RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
-                RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
+                RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c);
+                RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c);
                 pendingLeftPadding += margin.left() + (int) border.left() + (int) padding.left();
                 pendingRightPadding += (int) padding.right() + (int) border.right() + margin.right();
                 continue;
@@ -163,10 +163,10 @@ public class InlineBoxing {
                 }
                 int parent_width = bounds.width;
                 CalculatedStyle style = c.getCurrentStyle();
-                BorderPropertySet border = style.getBorder(c.getCtx());
+                BorderPropertySet border = style.getBorder(c);
                 //note: percentages here refer to width of containing block
-                RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c.getCtx());
-                RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c.getCtx());
+                RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c);
+                RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c);
                 // CLEAN: cast to int
                 int rp = (int) padding.right() + (int) border.right() + (int) margin.right();
                 //CHECK: not sure this is where the padding really goes, always
@@ -229,7 +229,7 @@ public class InlineBoxing {
                 // break off the longest section that will fit
                 int fit = pendingRightPadding;//Note: this is not necessarily entirely correct
                 if (start == 0) fit += pendingLeftPadding;
-                start = trimLeadingSpace(c, prev_inline, currentContent, start);
+                start = trimLeadingSpace(c.getCurrentStyle(), prev_inline, currentContent, start);
                 new_inline = calculateInline(c, currentContent, remaining_width - fit, bounds.width,
                         prev_align_inline, isFirstLetter, box.firstLetterStyle,
                         curr_line, start, pendingBlockBox);
@@ -259,7 +259,7 @@ public class InlineBoxing {
                 // Uu.p("adding inline child: " + new_inline);
                 //the inline might be set to size 0,0 after this, if it is first whitespace on line.
                 // Cannot discard because it may contain style-pushes
-                curr_line.addInlineChild(c, new_inline);
+                curr_line.addInlineChild(new_inline);
                 // Uu.p("current line = " + curr_line);
                 if (new_inline instanceof InlineTextBox) {
                     start = ((InlineTextBox) new_inline).end_index;
@@ -328,12 +328,12 @@ public class InlineBoxing {
     }
 
 
-    private static int trimLeadingSpace(Context c, InlineBox prev_inline,
+    private static int trimLeadingSpace(CalculatedStyle style, InlineBox prev_inline,
                                         Content currentContent, int start) {
         if ((prev_inline == null || (prev_inline != null && prev_inline.break_after)) && currentContent instanceof TextContent) {
             TextContent textContent = (TextContent) currentContent;
             if (textContent.getText().substring(start).startsWith(WhitespaceStripper.SPACE)) {
-                IdentValue whitespace = c.getCurrentStyle().getIdent(CSSName.WHITE_SPACE);
+                IdentValue whitespace = style.getIdent(CSSName.WHITE_SPACE);
                 if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE) {
                     start++;
                 }
@@ -369,10 +369,10 @@ public class InlineBoxing {
      * @param c
      * @return Returns
      */
-    private static LineBox newLine(Box box, Rectangle bounds, LineBox prev_line, LineMetrics blockLineMetrics, Context c) {
+    private static LineBox newLine(Box box, Rectangle bounds, LineBox prev_line, LineMetrics blockLineMetrics, LayoutContext c) {
         LineBox curr_line = new LineBox();
         c.pushStyle(CascadedStyle.emptyCascadedStyle);
-        curr_line.setStyle(new Style(c.getCurrentStyle(), 0, c.getCtx()));
+        curr_line.setStyle(new Style(c.getCurrentStyle(), 0, c));
         c.popStyle();
         //if (Configuration.isTrue("xr.stackingcontext.enabled", false)) {
         curr_line.renderIndex = c.getNewRenderIndex();
@@ -412,14 +412,14 @@ public class InlineBoxing {
      * @param curr_line  PARAM
      * @param new_inline PARAM
      */
-    private static void adjustLineHeight(Context c, LineBox curr_line, InlineBox new_inline) {
+    private static void adjustLineHeight(LayoutContext c, LineBox curr_line, InlineBox new_inline) {
         int lineHeight;
         int ascent;
         int descent;
         if (new_inline instanceof InlineTextBox && !((InlineTextBox) new_inline).getSubstring().equals("")) {
             // should be the metrics of the font, actually is the metrics of the text
-            LineMetrics metrics = FontUtil.getLineMetrics(c, new_inline);
-            lineHeight = FontUtil.lineHeight(c, new_inline);//assume that current context is valid for new_inline
+            LineMetrics metrics = FontUtil.getLineMetrics(c, new_inline, c.getTextRenderer(), c.getGraphics());
+            lineHeight = FontUtil.lineHeight(new_inline, c.getTextRenderer(), c.getGraphics(), c, c.getBlockFormattingContext());//assume that current context is valid for new_inline
             ascent = (int) metrics.getAscent();
             descent = (int) metrics.getDescent();
         } else {
@@ -432,7 +432,7 @@ public class InlineBoxing {
             curr_line.height = lineHeight;
         }
 
-        int raised = VerticalAlign.getBaselineOffset(c, curr_line, new_inline);
+        int raised = VerticalAlign.getBaselineOffset(c, curr_line, new_inline, c.getTextRenderer(), c.getGraphics(), c.getBlockFormattingContext());
 
         if (ascent + raised > curr_line.ascent) {
             curr_line.ascent = ascent + raised;
@@ -461,7 +461,7 @@ public class InlineBoxing {
      * @param pendingBlockBox
      * @return Returns
      */
-    private static InlineBox calculateInline(Context c, Content content, int avail, int max_width,
+    private static InlineBox calculateInline(LayoutContext c, Content content, int avail, int max_width,
                                              InlineBox prev_align, boolean isFirstLetter, CascadedStyle firstLetterStyle,
                                              LineBox curr_line, int start, InlineBlockBox pendingBlockBox) {
 
@@ -492,7 +492,7 @@ public class InlineBoxing {
             int end = text.length();
 
             InlineTextBox inline = new InlineTextBox();
-            inline.setStyle(new Style(c.getCurrentStyle(), max_width, c.getCtx()));
+            inline.setStyle(new Style(c.getCurrentStyle(), max_width, c));
             inline.element = textContent.getElement();
 
             if (inline.element != null) {
@@ -516,13 +516,13 @@ public class InlineBoxing {
                 end = start + 1;
                 inline.setSubstring(start, end);
                 c.pushStyle(firstLetterStyle);
-                inline.setStyle(new Style(c.getCurrentStyle(), max_width, c.getCtx()));
+                inline.setStyle(new Style(c.getCurrentStyle(), max_width, c));
                 prepareBox(prev_align, inline, c);
-                BorderPropertySet border = c.getCurrentStyle().getBorder(c.getCtx());
+                BorderPropertySet border = c.getCurrentStyle().getBorder(c);
                 //first letter is a pseudo-element, so has borders, etc.
                 //note: percentages here refer to width of containing block
-                RectPropertySet margin = c.getCurrentStyle().getMarginRect(max_width, max_width, c.getCtx());
-                RectPropertySet padding = c.getCurrentStyle().getPaddingRect(max_width, max_width, c.getCtx());
+                RectPropertySet margin = c.getCurrentStyle().getMarginRect(max_width, max_width, c);
+                RectPropertySet padding = c.getCurrentStyle().getPaddingRect(max_width, max_width, c);
                 // CLEAN: cast to ints
                 inline.rightPadding = (int) margin.right() + (int) border.right() + (int) padding.right();
                 inline.leftPadding = (int) margin.left() + (int) border.left() + (int) padding.left();
@@ -532,7 +532,7 @@ public class InlineBoxing {
             } else {
                 inline.setSubstring(start, end);
                 inline.whitespace = WhitespaceStripper.getWhitespace(c.getCurrentStyle());
-                Breaker.breakText(c, inline, prev_align, avail, inline.getStyle().getFont(c.getCtx()));
+                Breaker.breakText(c, inline, prev_align, avail, inline.getStyle().getFont(c));
                 prepareBox(prev_align, inline, c);
             }
             result = inline;
@@ -540,7 +540,7 @@ public class InlineBoxing {
         return result;
     }
 
-    private static void prepareBox(InlineBox prev_align, InlineTextBox inline, Context c) {
+    private static void prepareBox(InlineBox prev_align, InlineTextBox inline, LayoutContext c) {
         if (prev_align != null &&
                 !prev_align.break_after &&
                 !inline.break_before
@@ -553,8 +553,8 @@ public class InlineBoxing {
 
         inline.y = 0;
 
-        inline.contentWidth = (int) FontUtil.getTextBounds(c, inline).getWidth();
-        inline.height = (int) FontUtil.getLineMetrics(c, inline).getHeight();
+        inline.contentWidth = (int) FontUtil.getTextBounds(c, inline, c.getTextRenderer(), c.getGraphics()).getWidth();
+        inline.height = (int) FontUtil.getLineMetrics(c, inline, c.getTextRenderer(), c.getGraphics()).getHeight();
     }
 
 
@@ -568,7 +568,7 @@ public class InlineBoxing {
      * @param minHeight
      */
     private static void saveLine(LineBox line_to_save, LineBox prev_line, Rectangle bounds,
-                                 Context c, Box block, int minHeight, LinkedList pushedOnFirstLine) {
+                                 LayoutContext c, Box block, int minHeight, LinkedList pushedOnFirstLine) {
         if (c.hasFirstLineStyles()) {
             //first pop element styles pushed on first line
             for (int i = 0; i < pushedOnFirstLine.size(); i++) c.popStyle();
@@ -619,6 +619,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.51  2005/10/27 00:08:59  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.50  2005/10/23 22:16:42  tobega
  * Preparation for StackingContext rendering
  *
@@ -805,7 +808,7 @@ public class InlineBoxing {
  * Started adding in the table support.
  *
  * Revision 1.74  2004/12/29 10:39:33  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.73  2004/12/28 01:48:24  tobega
  * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.

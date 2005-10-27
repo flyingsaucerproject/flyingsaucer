@@ -4,17 +4,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.Boxing;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.ReflowEvent;
-import org.xhtmlrenderer.render.RenderQueue;
-import org.xhtmlrenderer.render.StackingContext;
+import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
@@ -36,13 +33,13 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      */
     protected Dimension intrinsic_size;
     protected StackingContext initialStackingContext;
-    
+
     private boolean useThreads;
-    
+
     public RootPanel(boolean useThreads) {
         this.useThreads = useThreads;
     }
-    
+
     public RootPanel() {
         this(Configuration.isTrue("xr.use.threads", true));
     }
@@ -67,25 +64,17 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      *
      * @return The context value
      */
-    public SharedContext getContext() {
-        return getRenderingContext().getContext();
+    public SharedContext getSharedContext() {
+        return sharedContext;
     }
 
     /**
      * Description of the Field
      */
-    protected RenderingContext ctx;
+    protected SharedContext sharedContext;
 
-    /**
-     * Gets the renderingContext attribute of the BasicPanel object
-     *
-     * @return The renderingContext value
-     */
-    public RenderingContext getRenderingContext() {
-        return ctx;
-    }
-
-    protected volatile Context layout_context;
+    //TODO: layout_context should not be stored!
+    protected volatile LayoutContext layout_context;
 
 
     /**
@@ -111,10 +100,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         this.doc = doc;
 
         //have to do this first
-        getRenderingContext().setBaseURL(url);
-        getContext().setNamespaceHandler(nsh);
-        getRenderingContext().setMedia(pageInfo == null ? "screen" : "print");
-        getRenderingContext().getStyleReference().setDocumentContext(getContext(), getContext().getNamespaceHandler(), doc, this);
+        getSharedContext().setBaseURL(url);
+        getSharedContext().setNamespaceHandler(nsh);
+        getSharedContext().setMedia(pageInfo == null ? "screen" : "print");
+        getSharedContext().getCss().setDocumentContext(getSharedContext(), getSharedContext().getNamespaceHandler(), doc, this);
 
         if (isUseThreads()) {
             queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.DOCUMENT_SET));
@@ -218,14 +207,14 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
      */
     protected void init() {
 
-        
+
         documentListeners = new HashMap();
         setBackground(Color.white);
         super.setLayout(null);
 
         if (isUseThreads()) {
             queue = new RenderQueue();
-            
+
             layoutThread = new Thread(new LayoutLoop(this), "FlyingSaucer-Layout");
             renderThread = new Thread(new RenderLoop(this), "FlyingSaucer-Render");
 
@@ -247,7 +236,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                 renderThread.join();
                 renderThread = null;
             }
-            
+
         } catch (InterruptedException e) {
             // ignore
         }
@@ -269,11 +258,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
     public ReflowEvent last_event = null;
 
-    protected Context newContext(PageInfo pageInfo, Graphics2D g) {
+    protected RenderingContext newRenderingContext(PageInfo pageInfo, Graphics2D g) {
         XRLog.layout(Level.FINEST, "new context begin");
 
-        getContext().setCanvas(this);
-        getContext().setGraphics(g);
+        getSharedContext().setCanvas(this);
 
         Rectangle extents;
 
@@ -290,12 +278,46 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
 
         //Uu.p("newContext() = extents = " + extents);
-        getContext().setMaxWidth(0);
-        //getContext().setMaxHeight(0);
+        getSharedContext().setMaxWidth(0);
+        //getSharedContext().setMaxHeight(0);
         XRLog.layout(Level.FINEST, "new context end");
         //Uu.p("new context with extents: " + extents);
         
-        Context result = getContext().newContextInstance(extents);
+        RenderingContext result = getSharedContext().newRenderingContextInstance(extents);
+        result.setGraphics(g);
+        result.setPrint(pageInfo != null);
+        result.setInteractive(pageInfo == null);
+
+        return result;
+    }
+
+    protected LayoutContext newLayoutContext(PageInfo pageInfo, Graphics2D g) {
+        XRLog.layout(Level.FINEST, "new context begin");
+
+        getSharedContext().setCanvas(this);
+
+        Rectangle extents;
+
+        if (pageInfo != null) {
+            extents = new Rectangle(0, 0,
+                    (int) pageInfo.getContentWidth(), (int) pageInfo.getContentHeight());
+        } else if (enclosingScrollPane != null) {
+            Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
+            extents = new Rectangle(0, 0, bnds.width, bnds.height);
+            //Uu.p("bnds = " + bnds);
+        } else {
+            extents = new Rectangle(getWidth(), getHeight());//200, 200 ) );
+        }
+
+
+        //Uu.p("newContext() = extents = " + extents);
+        getSharedContext().setMaxWidth(0);
+        //getSharedContext().setMaxHeight(0);
+        XRLog.layout(Level.FINEST, "new context end");
+        //Uu.p("new context with extents: " + extents);
+
+        LayoutContext result = getSharedContext().newLayoutContextInstance(extents);
+        result.setGraphics(g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics());
 
         result.setPrint(pageInfo != null);
         result.setInteractive(pageInfo == null);
@@ -313,7 +335,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             return;
         }
 // set up CSS
-        Context c = newContext(pageInfo, (Graphics2D) g);
+        LayoutContext c = newLayoutContext(pageInfo, (Graphics2D) g);
         synchronized (this) {
             if (this.layout_context != null) this.layout_context.stopRendering();
             this.layout_context = c;
@@ -322,7 +344,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
         c.setRenderQueue(queue);
         setRenderWidth((int) c.getExtents().getWidth());
-        getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
+        getSharedContext().getTextRenderer().setupGraphics(c.getGraphics());
 //TODO: maybe temporary hack
         if (c.getBlockFormattingContext() != null) c.popBFC();//we set one for the top level before
         // do the actual layout
@@ -352,7 +374,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
         XRLog.layout(Level.FINEST, "after layout: " + root);
 
-        intrinsic_size = new Dimension(getContext().getMaxWidth(), root.height);
+        intrinsic_size = new Dimension(getSharedContext().getMaxWidth(), root.height);
         //Uu.p("intrinsic size = " + intrinsic_size);
         if (intrinsic_size.width != this.getWidth()) {
             //Uu.p("intrisic and this widths don't match: " + this.getSize() + " "  + intrinsic_size);

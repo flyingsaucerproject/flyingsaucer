@@ -25,7 +25,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -78,7 +78,7 @@ public class WhitespaceStripper {
      * @return a list cleaned of empty content and the thereby
      *         redundant style-changes
      */
-    public static List stripInlineContent(Context c, List inlineContent) {
+    public static List stripInlineContent(LayoutContext c, List inlineContent) {
         LinkedList stripped = new LinkedList();
         LinkedList pendingStylePushes = new LinkedList();
         boolean collapse = false;

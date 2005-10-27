@@ -32,7 +32,7 @@ public class LayoutLoop implements Runnable {
             evt = root.queue.collapseLayoutEvents(evt);
 
             // if only the height changed, then lets just skip the event
-            int mxw = root.getContext().getMaxWidth();
+            int mxw = root.getSharedContext().getMaxWidth();
             // Uu.p("current max width = " + mxw);
             // the actual width of the panel
             // Uu.p("current width = " + root.getWidth());

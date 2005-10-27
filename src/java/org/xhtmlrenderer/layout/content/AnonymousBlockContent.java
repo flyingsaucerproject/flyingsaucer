@@ -19,31 +19,36 @@
  */
 package org.xhtmlrenderer.layout.content;
 
-import java.util.List;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
+
+import java.util.List;
 
 
 /**
  * Represents content that should be layed out as an anonymous block. The
  * associated element is the parent element.
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class AnonymousBlockContent implements Content {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Element _elem;
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private List _inline;
 
     /**
      * Constructor for the AnonymousBlockContent object
      *
-     * @param parent      PARAM
-     * @param inlineList  PARAM
+     * @param parent     PARAM
+     * @param inlineList PARAM
      */
-    AnonymousBlockContent( Element parent, List inlineList ) {
+    AnonymousBlockContent(Element parent, List inlineList) {
         _elem = parent;
         _inline = inlineList;
     }
@@ -51,7 +56,7 @@ public class AnonymousBlockContent implements Content {
     /**
      * Gets the element attribute of the AnonymousBlockContent object
      *
-     * @return   The element value
+     * @return The element value
      */
     public Element getElement() {
         return _elem;
@@ -60,17 +65,17 @@ public class AnonymousBlockContent implements Content {
     /**
      * Gets the childContent attribute of the AnonymousBlockContent object
      *
-     * @param c  PARAM
-     * @return   The childContent value
+     * @param c PARAM
+     * @return The childContent value
      */
-    public List getChildContent( Context c ) {
+    public List getChildContent(LayoutContext c) {
         return _inline;
     }
 
     /**
      * Gets the style attribute of the AnonymousBlockContent object
      *
-     * @return   The style value
+     * @return The style value
      */
     public CascadedStyle getStyle() {
         return null;

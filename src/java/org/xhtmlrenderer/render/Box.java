@@ -21,7 +21,6 @@ package org.xhtmlrenderer.render;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.PersistentBFC;
 
 import javax.swing.*;
@@ -63,6 +62,9 @@ public abstract class Box {
      * Box y-pos.
      */
     public int y;
+
+    public double absY;
+    public double absX;
 
     /**
      * Box width.
@@ -508,8 +510,8 @@ public abstract class Box {
         }
     }
 
-    public boolean crossesPageBreak(Context c) {
-        double absTop = getAbsY(c);
+    public boolean crossesPageBreak(PageContext c) {
+        double absTop = absY;
         double absBottom = absTop + height;
 
         double pageHeight = c.getPageInfo().getContentHeight();
@@ -517,12 +519,8 @@ public abstract class Box {
         return absBottom > absTop && (int) (absTop / pageHeight) != (int) (absBottom / pageHeight);
     }
 
-    protected double getAbsY(Context c) {
-        return c.getOriginOffset().y;
-    }
-
-    protected double getDistanceFromPageBreak(Context c, boolean considerTy) {
-        double absTop = getAbsY(c);
+    protected double getDistanceFromPageBreak(PageContext c, boolean considerTy) {
+        double absTop = absY;
 
         if (considerTy) {
             absTop -= ty;
@@ -534,12 +532,12 @@ public abstract class Box {
         return delta;
     }
 
-    public void moveToNextPage(Context c, boolean considerTy) {
+    public void moveToNextPage(PageContext c, boolean considerTy) {
         double delta = getDistanceFromPageBreak(c, considerTy);
         y += delta;
         paginationTranslation = delta;
         if (considerTy) {
-            c.translate(0, (int) delta);
+            //TODO: fix: c.translate(0, (int) delta);
         }
         this.movedPastPageBreak = true;
     }
@@ -565,6 +563,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.66  2005/10/27 00:09:02  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.65  2005/10/18 20:57:05  tobega
  * Patch from Peter Brant
  *

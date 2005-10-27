@@ -21,12 +21,15 @@ package org.xhtmlrenderer.layout.inline;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 import org.xhtmlrenderer.render.LineBox;
 
+import java.awt.Graphics2D;
 import java.awt.font.LineMetrics;
 
 
@@ -45,7 +48,7 @@ public class VerticalAlign {
      * @param new_inline PARAM
      * @return The baselineOffset value
      */
-    public static int getBaselineOffset(Context c, LineBox curr_line, InlineBox new_inline) {
+    public static int getBaselineOffset(CssContext c, LineBox curr_line, InlineBox new_inline, TextRenderer tr, Graphics2D g2, BlockFormattingContext bfc) {
         int lineHeight;
         int ascent;
         int descent;
@@ -54,8 +57,8 @@ public class VerticalAlign {
         int baselineOffset;
         if (new_inline instanceof InlineTextBox) {
             // should be the metrics of the font, actually is the metrics of the text
-            LineMetrics metrics = FontUtil.getLineMetrics(c, new_inline);
-            lineHeight = FontUtil.lineHeight(c, new_inline);//assume that current context is valid for new_inline
+            LineMetrics metrics = FontUtil.getLineMetrics(c, new_inline, tr, g2);
+            lineHeight = FontUtil.lineHeight(new_inline, tr, g2, c, bfc);//assume that current context is valid for new_inline
             ascent = (int) metrics.getAscent();
             descent = (int) metrics.getDescent();
             leading = (int) metrics.getLeading();
@@ -70,7 +73,7 @@ public class VerticalAlign {
         LineMetrics blockLineMetrics = curr_line.blockLineMetrics;
 
         //Assumption: our baseline is aligned with parent baseline
-        IdentValue vertical_align = c.getCurrentStyle().getIdent(CSSName.VERTICAL_ALIGN);
+        IdentValue vertical_align = new_inline.getStyle().getCalculatedStyle().getIdent(CSSName.VERTICAL_ALIGN);
         if (vertical_align == IdentValue.BASELINE) {
             baselineOffset = 0;
         } else if (vertical_align == IdentValue.SUPER) {
@@ -103,7 +106,7 @@ public class VerticalAlign {
         } else if (vertical_align == IdentValue.BOTTOM) {
             baselineOffset = descent - (curr_line.height - curr_line.getBaseline());
         } else {
-            baselineOffset = (int) c.getCurrentStyle().getFloatPropertyProportionalHeight(CSSName.VERTICAL_ALIGN, c.getBlockFormattingContext().getHeight(), c.getCtx());
+            baselineOffset = (int) new_inline.getStyle().getCalculatedStyle().getFloatPropertyProportionalHeight(CSSName.VERTICAL_ALIGN, bfc.getHeight(), c);
         }
         return baselineOffset;
     }

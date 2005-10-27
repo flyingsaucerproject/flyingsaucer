@@ -19,8 +19,8 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
-import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.render.MiniumTextRenderer;
 import org.xhtmlrenderer.swing.DOMInspector;
@@ -29,7 +29,8 @@ import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -200,7 +201,7 @@ public class BrowserMenuBar extends JMenuBar {
             String s = (String) iter.next();
             demos.add(new LoadAction(s, (String) allDemos.get(s)));
         }
-        
+
 
         add(demos);
 
@@ -217,7 +218,7 @@ public class BrowserMenuBar extends JMenuBar {
         ButtonGroup implementation = new ButtonGroup();
         JRadioButtonMenuItem java2d = new JRadioButtonMenuItem(new AbstractAction("Java2D Implementation") {
             public void actionPerformed(ActionEvent evt) {
-                RenderingContext rc = root.panel.view.getRenderingContext();
+                SharedContext rc = root.panel.view.getSharedContext();
                 int level = rc.getTextRenderer().getSmoothingLevel();
                 rc.setTextRenderer(new Java2DTextRenderer());
                 rc.getTextRenderer().setSmoothingLevel(level);
@@ -230,7 +231,7 @@ public class BrowserMenuBar extends JMenuBar {
 
         JRadioButtonMenuItem minium = new JRadioButtonMenuItem(new AbstractAction("Minium Implementation") {
             public void actionPerformed(ActionEvent evt) {
-                RenderingContext rc = root.panel.view.getRenderingContext();
+                SharedContext rc = root.panel.view.getSharedContext();
                 int level = rc.getTextRenderer().getSmoothingLevel();
                 rc.setTextRenderer(new MiniumTextRenderer());
                 rc.getTextRenderer().setSmoothingLevel(level);
@@ -339,7 +340,7 @@ public class BrowserMenuBar extends JMenuBar {
                 inspectorFrame = new JFrame("DOM Tree Inspector");
             }
             if (inspector == null) {
-                inspector = new DOMInspector(root.panel.view.getDocument(), root.panel.view.getContext(), root.panel.view.getContext().getCss());
+                inspector = new DOMInspector(root.panel.view.getDocument(), root.panel.view.getSharedContext(), root.panel.view.getSharedContext().getCss());
 
                 inspectorFrame.getContentPane().add(inspector);
 
@@ -347,7 +348,7 @@ public class BrowserMenuBar extends JMenuBar {
                 inspectorFrame.setSize(500, 600);
                 inspectorFrame.show();
             } else {
-                inspector.setForDocument(root.panel.view.getDocument(), root.panel.view.getContext(), root.panel.view.getContext().getCss());
+                inspector.setForDocument(root.panel.view.getDocument(), root.panel.view.getSharedContext(), root.panel.view.getSharedContext().getCss());
             }
             inspectorFrame.show();
         }
@@ -373,7 +374,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getContext().setDebug_draw_boxes(!root.panel.view.getContext().debugDrawBoxes());
+            root.panel.view.getSharedContext().setDebug_draw_boxes(!root.panel.view.getSharedContext().debugDrawBoxes());
             root.panel.view.repaint();
         }
     }
@@ -398,7 +399,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getContext().setDebug_draw_line_boxes(!root.panel.view.getContext().debugDrawLineBoxes());
+            root.panel.view.getSharedContext().setDebug_draw_line_boxes(!root.panel.view.getSharedContext().debugDrawLineBoxes());
             root.panel.view.repaint();
         }
     }
@@ -423,7 +424,7 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getContext().setDebug_draw_inline_boxes(!root.panel.view.getContext().debugDrawInlineBoxes());
+            root.panel.view.getSharedContext().setDebug_draw_inline_boxes(!root.panel.view.getSharedContext().debugDrawInlineBoxes());
             root.panel.view.repaint();
         }
     }
@@ -443,10 +444,11 @@ public class BrowserMenuBar extends JMenuBar {
          * @param evt PARAM
          */
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getContext().setDebug_draw_font_metrics(!root.panel.view.getContext().debugDrawFontMetrics());
+            root.panel.view.getSharedContext().setDebug_draw_font_metrics(!root.panel.view.getSharedContext().debugDrawFontMetrics());
             root.panel.view.repaint();
         }
     }
+
     class NextDemoAction extends AbstractAction {
 
         public NextDemoAction() {
@@ -454,6 +456,7 @@ public class BrowserMenuBar extends JMenuBar {
             putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_N));
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_MASK));
         }
+
         /**
          * Invoked when an action occurs.
          */
@@ -461,14 +464,14 @@ public class BrowserMenuBar extends JMenuBar {
             String nextPage = null;
             for (Iterator iter = allDemos.keySet().iterator(); iter.hasNext();) {
                 String s = (String) iter.next();
-                if ( s.equals(lastDemoOpened)) {
-                    if ( iter.hasNext()) {
-                        nextPage = (String)iter.next();
+                if (s.equals(lastDemoOpened)) {
+                    if (iter.hasNext()) {
+                        nextPage = (String) iter.next();
                         break;
                     }
                 }
             }
-            if ( nextPage == null ) {
+            if (nextPage == null) {
                 // go to first page
                 Iterator iter = allDemos.keySet().iterator();
                 nextPage = (String) iter.next();
@@ -492,6 +495,7 @@ public class BrowserMenuBar extends JMenuBar {
             putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_P));
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.ALT_MASK));
         }
+
         /**
          * Invoked when an action occurs.
          */
@@ -499,12 +503,12 @@ public class BrowserMenuBar extends JMenuBar {
             String priorPage = null;
             for (Iterator iter = allDemos.keySet().iterator(); iter.hasNext();) {
                 String s = (String) iter.next();
-                if ( s.equals(lastDemoOpened)) {
+                if (s.equals(lastDemoOpened)) {
                     break;
                 }
                 priorPage = s;
             }
-            if ( priorPage == null ) {
+            if (priorPage == null) {
                 // go to last page
                 Iterator iter = allDemos.keySet().iterator();
                 while (iter.hasNext()) {
@@ -520,6 +524,7 @@ public class BrowserMenuBar extends JMenuBar {
             }
         }
     }
+
     /**
      * Description of the Class
      *
@@ -570,7 +575,7 @@ public class BrowserMenuBar extends JMenuBar {
         }
 
         public void actionPerformed(ActionEvent evt) {
-            root.panel.view.getRenderingContext().getTextRenderer().setSmoothingLevel(hint);
+            root.panel.view.getSharedContext().getTextRenderer().setSmoothingLevel(hint);
             root.panel.view.repaint();
         }
     }
@@ -624,6 +629,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2005/10/27 00:08:50  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.35  2005/10/20 20:31:04  pdoubleya
  * Cleaned imports.
  *
@@ -652,7 +660,7 @@ class EmptyAction extends AbstractAction {
  * Added next and prior page; refactored demos into Map for manipulation.
  *
  * Revision 1.26  2004/12/29 10:39:38  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.25  2004/12/29 07:35:40  tobega
  * Prepared for cloned Context instances by encapsulating fields

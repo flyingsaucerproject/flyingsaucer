@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.layout.Context;
-
 import java.awt.Graphics2D;
 
 /**
@@ -35,5 +33,5 @@ public interface Renderable extends VerticalExtent {
     int getIndex();
 
     //HACK: Context should not be necessary
-    void render(Context c, Graphics2D g2);
+    void render(RenderingContext c, Graphics2D g2);
 }

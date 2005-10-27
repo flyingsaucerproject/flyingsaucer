@@ -24,13 +24,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.swing.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Image;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -308,12 +308,12 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
      * Gets the customComponent attribute of the XhtmlNamespaceHandler object
      *
      * @param e         PARAM
-     * @param c         PARAM
+     * @param uac       PARAM
      * @param setWidth
      * @param setHeight
      * @return The customComponent value
      */
-    public JComponent getCustomComponent(Element e, Context c, int setWidth, int setHeight) {
+    public JComponent getCustomComponent(Element e, UserAgentCallback uac, int setWidth, int setHeight) {
         JComponent cc = null;
         if (e == null) {
             return null;
@@ -325,7 +325,7 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
             }
             JButton jb = null;
             Image im = null;
-            im = c.getCtx().getUac().getImageResource(e.getAttribute("src")).getImage();
+            im = uac.getImageResource(e.getAttribute("src")).getImage();
             if (im == null) {
                 jb = new JButton("Image unreachable. " + e.getAttribute("alt"));
             } else {
@@ -343,10 +343,10 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
         //parentForm may be null! No problem! Assume action is this document and method is get.
         XhtmlForm form = getForm(parentForm);
         if (form == null) {
-            form = new XhtmlForm(c, parentForm);
+            form = new XhtmlForm(uac, parentForm);
             addForm(parentForm, form);
         }
-        cc = form.addComponent(c, e);
+        cc = form.addComponent(e);
         return cc;
     }
 

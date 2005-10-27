@@ -20,9 +20,9 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.layout.Context;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.font.LineMetrics;
 
 /**
@@ -50,7 +50,7 @@ class TextDecoration {
         this.end = end;
     }
 
-    void paint(Context c, LineBox line) {
+    void paint(RenderingContext c, LineBox line) {
         //NONEs are not added. if(decoration == IdentValue.NONE) return;
         Graphics g = c.getGraphics();
         Color oldcolor = c.getGraphics().getColor();

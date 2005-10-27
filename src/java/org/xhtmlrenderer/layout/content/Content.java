@@ -19,38 +19,39 @@
  */
 package org.xhtmlrenderer.layout.content;
 
-import java.util.List;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
+
+import java.util.List;
 
 
 /**
  * Represents content in the visual model. This is the link between element,
  * style and renderable content.
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public interface Content {
     /**
      * Gets the element attribute of the Content object
      *
-     * @return   The element value
+     * @return The element value
      */
     public Element getElement();
 
     /**
      * @param c
-     * @return   either a String (for TextContent) or a List of Content objects.
-     *      The List may be headed by FirstLineStyle and/or FirstLetterStyle if
-     *      these are applicable
+     * @return either a String (for TextContent) or a List of Content objects.
+     *         The List may be headed by FirstLineStyle and/or FirstLetterStyle if
+     *         these are applicable
      */
-    public List getChildContent( Context c );
+    public List getChildContent(LayoutContext c);
 
     /**
      * Gets the style attribute of the Content object
      *
-     * @return   The style value
+     * @return The style value
      */
     public CascadedStyle getStyle();
 }

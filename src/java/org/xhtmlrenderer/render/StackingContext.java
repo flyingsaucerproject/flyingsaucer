@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -59,5 +58,5 @@ public abstract class StackingContext {
     abstract public void addLine(Renderable b);
 
     //HACK: Context should not be used here
-    abstract public void render(Context c, Graphics2D g2, double top, double bottom);
+    abstract public void render(RenderingContext c, Graphics2D g2, double top, double bottom);
 }

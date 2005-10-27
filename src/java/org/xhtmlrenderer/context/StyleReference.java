@@ -252,6 +252,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/10/27 00:08:51  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.4  2005/06/26 15:48:10  tobega
  * Converted to almost standard html4 default css, which shook out a bug: position should not inherit
  *
@@ -325,7 +328,7 @@ public class StyleReference {
  * Cleaned out unnecessary styling/matching code. styling/matching is now called during boxing/rendering rather than as a separate stage.
  *
  * Revision 1.15  2004/12/29 10:39:27  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.14  2004/12/28 01:48:22  tobega
  * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.

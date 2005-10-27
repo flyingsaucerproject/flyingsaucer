@@ -2,15 +2,9 @@ package org.xhtmlrenderer.swing;
 
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.event.MouseInputAdapter;
 import java.awt.event.MouseEvent;
-
-
-import org.xhtmlrenderer.render.*;
-import org.xhtmlrenderer.layout.*;
-import java.util.Iterator;
 
 public class HoverListener extends MouseInputAdapter {
     private BasicPanel panel;
@@ -34,23 +28,24 @@ public class HoverListener extends MouseInputAdapter {
         Box ib = findBox(evt);
         restyle(ib);
     }
+
     public Box findBox(MouseEvent evt) {
         //Box box = panel.findElementBox(evt.getX(), evt.getY());
-		//Uu.p("-----");
-		Box box = BoxFinder.findElementBox2(panel.getRootBox(),evt.getX(),evt.getY(),null);
-		//Uu.p("-----");
+        //Uu.p("-----");
+        Box box = BoxFinder.findElementBox2(panel.getRootBox(), evt.getX(), evt.getY(), null);
+        //Uu.p("-----");
         if (box == null) return null;
         if (box instanceof LineBox) return null;
         return box;
     }
-	
+
 
     private void restyle(Box ib) {
-		//Uu.p("under cursor = " + ib);
+        //Uu.p("under cursor = " + ib);
         boolean needRepaint = false;
-		// return this box or one if it's parents to find the deepest hovered element.
-		// if none then just return null
-		ib = getDeepestHover(ib);
+        // return this box or one if it's parents to find the deepest hovered element.
+        // if none then just return null
+        ib = getDeepestHover(ib);
         //Uu.p("deepest hover = " + ib);
 
         if (prev == ib) {
@@ -65,7 +60,7 @@ public class HoverListener extends MouseInputAdapter {
 
         // if moved out of the old block then unstyle it
         if (prev != null) {
-            boolean restyled = panel.getContext().getCss().isHoverStyled(prev.element);
+            boolean restyled = panel.getSharedContext().getCss().isHoverStyled(prev.element);
             if (restyled) {
                 prev.restyle = true;//notify rendering to restyle the box
                 //prev.hover = false;
@@ -75,7 +70,7 @@ public class HoverListener extends MouseInputAdapter {
 
         // return if no new hovered block;
         if (ib != null) {
-			//System.out.println("Using: " + ib);
+            //System.out.println("Using: " + ib);
 
             /*
                 if the box is an inline box
@@ -88,10 +83,10 @@ public class HoverListener extends MouseInputAdapter {
             // skip it if it's just a text child of a block. we should
             // do the block instead
             //if (ib.isInlineElement() || !(ib instanceof InlineBox)) {
-            boolean restyled = panel.getContext().getCss().isHoverStyled(ib.element);
+            boolean restyled = panel.getSharedContext().getCss().isHoverStyled(ib.element);
             //Uu.p("was styled = " + ib);
-			
-			// if the block isn't a hover then go up to the parent.
+
+            // if the block isn't a hover then go up to the parent.
 
             // if the block has a hover style then restyle it
             if (restyled) {
@@ -104,33 +99,33 @@ public class HoverListener extends MouseInputAdapter {
         prev = ib;
         if (needRepaint) panel.repaint();
     }
-	
-	private Box getDeepestHover(Box box) {
-		if(box == null) {
-			return null;
-		}
-		
-		//System.out.println("elem =       " + box.element);
-		//System.out.println("parent elem = " + box.getParent().element);
-		//System.out.println("parent elem = " + box.getParent().getParent().element);
-		
-		// joshy: this is a hack to determine if the child is really just a text node child of
-		// a real element that's the parent. in that case we really want to check the hover of the
-		// parent. we do getparent().getParent() to be sure we skip line boxes
-		// text only child node
-		if(box.getParent()!=null) {
-			if(box.getParent().getParent()!=null) {
-				if(box.element == box.getParent().getParent().element) {
-					return getDeepestHover(box.getParent());
-				}
-			}
-		}
-		if(panel.getContext().getCss().isHoverStyled(box.element)) {
-			return box;
-		}
-		//System.out.println("going to parent: " + box.getParent());
-		return getDeepestHover(box.getParent());
-	}
+
+    private Box getDeepestHover(Box box) {
+        if (box == null) {
+            return null;
+        }
+
+        //System.out.println("elem =       " + box.element);
+        //System.out.println("parent elem = " + box.getParent().element);
+        //System.out.println("parent elem = " + box.getParent().getParent().element);
+
+        // joshy: this is a hack to determine if the child is really just a text node child of
+        // a real element that's the parent. in that case we really want to check the hover of the
+        // parent. we do getparent().getParent() to be sure we skip line boxes
+        // text only child node
+        if (box.getParent() != null) {
+            if (box.getParent().getParent() != null) {
+                if (box.element == box.getParent().getParent().element) {
+                    return getDeepestHover(box.getParent());
+                }
+            }
+        }
+        if (panel.getSharedContext().getCss().isHoverStyled(box.element)) {
+            return box;
+        }
+        //System.out.println("going to parent: " + box.getParent());
+        return getDeepestHover(box.getParent());
+    }
 
     public void reset() {
         prev = null;

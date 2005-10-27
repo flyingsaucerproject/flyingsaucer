@@ -23,13 +23,12 @@ import org.w3c.dom.Document;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.RenderingContext;
 import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.layout.Context;
 import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBlockBox;
+import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
@@ -133,26 +132,26 @@ public abstract class BasicPanel extends RootPanel {
     private boolean interactive = true;
 
     public BasicPanel() {
-        ctx = new RenderingContext();
+        sharedContext = new SharedContext(new NaiveUserAgent());
         init();
     }
 
     public BasicPanel(UserAgentCallback uac) {
-        ctx = new RenderingContext(uac);
+        sharedContext = new SharedContext(uac);
         init();
     }
-    
+
     public BasicPanel(boolean useThreads) {
         super(useThreads);
-        ctx = new RenderingContext();
+        sharedContext = new SharedContext(new NaiveUserAgent());
         init();
     }
 
     public BasicPanel(boolean useThreads, UserAgentCallback uac) {
         super(useThreads);
-        ctx = new RenderingContext(uac);
+        sharedContext = new SharedContext(uac);
         init();
-    }    
+    }
 
     /**
      * Adds the specified Document listener to receive Document events from this
@@ -183,7 +182,7 @@ public abstract class BasicPanel extends RootPanel {
         //Uu.p("paint component () called");
         // if this is the first time painting this document, then calc layout
         Box root = getRootBox();
-        if (root == null && ! isUseThreads()) {
+        if (root == null && !isUseThreads()) {
             doActualLayout(getGraphics());
             root = getRootBox();
         }
@@ -192,7 +191,7 @@ public abstract class BasicPanel extends RootPanel {
             //queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, this.getSize()));
             XRLog.render(Level.FINE, "skipping the actual painting");
         } else {
-            Context c = newContext(getPageInfo(), (Graphics2D) g);
+            RenderingContext c = newRenderingContext(getPageInfo(), (Graphics2D) g);
             long start = System.currentTimeMillis();
             executeRenderThread(c, root);
             long end = System.currentTimeMillis();
@@ -207,7 +206,7 @@ public abstract class BasicPanel extends RootPanel {
             throw new RuntimeException("Document needs layout");
         }
 
-        Context c = newContext(getPageInfo(), (Graphics2D) g);
+        RenderingContext c = newRenderingContext(getPageInfo(), (Graphics2D) g);
 
         PageInfo info = c.getPageInfo();
         Border margins = info.getMargins();
@@ -232,8 +231,6 @@ public abstract class BasicPanel extends RootPanel {
 
     /**
      * Description of the Method
-     *
-     * @param g PARAM
      */
 
     /*
@@ -251,7 +248,7 @@ public abstract class BasicPanel extends RootPanel {
 
        // set up CSS
        Context c = newContext((Graphics2D) g);
-       //getContext().setMaxWidth(0);
+       //getSharedContext().setMaxWidth(0);
        this.layout_context = c;
        getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
        //TODO: maybe temporary hack
@@ -277,7 +274,7 @@ public abstract class BasicPanel extends RootPanel {
 
        XRLog.layout(Level.FINEST, "after layout: " + body_box);
 
-       intrinsic_size = new Dimension(getContext().getMaxWidth(), body_box.height);
+       intrinsic_size = new Dimension(getSharedContext().getMaxWidth(), body_box.height);
        //Uu.p("intrinsic size = " + intrinsic_size);
        if (enclosingScrollPane != null) {
            XRLog.layout(Level.FINEST, "enclosing scroll pane = " + this.enclosingScrollPane);
@@ -303,7 +300,7 @@ public abstract class BasicPanel extends RootPanel {
    */
 
 
-    protected void executeRenderThread(Context c, Box root) {
+    protected void executeRenderThread(RenderingContext c, Box root) {
         //Uu.p("do render called");
         //Uu.p("last render event = " + last_event);
 		
@@ -339,11 +336,13 @@ public abstract class BasicPanel extends RootPanel {
 
     }
 
+    //TODO: CHECK: is layout_context really an appropriate place to store page count?
+    //layout_context should only be alive in the layout thread!
     public int getPageCount() {
-        return getPageCount(layout_context);
+        return getPageCount(sharedContext);
     }
 
-    private int getPageCount(Context c) {
+    private int getPageCount(SharedContext c) {
         if (c == null || !c.isPrint() ||
                 c.getPageInfo() == null) {
             return -1;
@@ -353,10 +352,10 @@ public abstract class BasicPanel extends RootPanel {
         }
     }
 
-    private void renderPagedView(Context c, Box box) {
-        int pageCount = getPageCount(c);
+    private void renderPagedView(RenderingContext c, Box box) {
+        int pageCount = getPageCount(sharedContext);
 
-        setPreferredSize(new Dimension(c.getMaxWidth(),
+        setPreferredSize(new Dimension(sharedContext.getMaxWidth(),
                 (int) (pageCount * c.getPageInfo().getContentHeight() +
                 pageCount * c.getPageInfo().getMargins().top +
                 pageCount + c.getPageInfo().getMargins().bottom)));
@@ -688,8 +687,8 @@ public abstract class BasicPanel extends RootPanel {
      *
      * @param ctx The new renderingContext value
      */
-    public void setRenderingContext(RenderingContext ctx) {
-        this.ctx = ctx;
+    public void setSharedContext(SharedContext ctx) {
+        this.sharedContext = ctx;
     }
 
     /**
@@ -800,10 +799,10 @@ public abstract class BasicPanel extends RootPanel {
      * @param filename The new document to load
      */
     protected void setDocumentRelative(String filename) {
-        String url = getRenderingContext().getUac().resolveURI(filename);
+        String url = getSharedContext().getUac().resolveURI(filename);
         if (isAnchorInCurrentDocument(filename)) {
             String id = getAnchorID(filename);
-            Box bxx = getContext().getIDBox(id);
+            Box bxx = getSharedContext().getIDBox(id);
             if (bxx != null) {
                 Point pt = BoxFinder.findCoordsByBox(bxx);
                 scrollTo(pt);
@@ -838,8 +837,8 @@ public abstract class BasicPanel extends RootPanel {
         }
         ;
         this.doc = doc;
-        getRenderingContext().getStyleReference().flushStyleSheets();
-        setDocument(this.doc, getRenderingContext().getBaseURL(), getContext().getNamespaceHandler());
+        getSharedContext().getCss().flushStyleSheets();
+        setDocument(this.doc, getSharedContext().getBaseURL(), getSharedContext().getNamespaceHandler());
     }
 
 
@@ -851,7 +850,7 @@ public abstract class BasicPanel extends RootPanel {
     public URL getURL() {
         URL base = null;
         try {
-            base = new URL(getRenderingContext().getUac().getBaseURL());
+            base = new URL(getSharedContext().getUac().getBaseURL());
         } catch (MalformedURLException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -873,7 +872,7 @@ public abstract class BasicPanel extends RootPanel {
      * @return The documentTitle value
      */
     public String getDocumentTitle() {
-        return getContext().getNamespaceHandler().getDocumentTitle(doc);
+        return getSharedContext().getNamespaceHandler().getDocumentTitle(doc);
     }
 
 
@@ -884,7 +883,7 @@ public abstract class BasicPanel extends RootPanel {
      * @return Returns
      */
     protected Document loadDocument(final String uri) {
-        return ctx.getUac().getXMLResource(uri).getDocument();
+        return sharedContext.getUac().getXMLResource(uri).getDocument();
     }
 
 
@@ -938,15 +937,6 @@ public abstract class BasicPanel extends RootPanel {
         return false;
     }
 
-    /**
-     * Gets the renderingContext attribute of the BasicPanel object
-     *
-     * @return The renderingContext value
-     */
-    public RenderingContext getRenderingContext() {
-        return ctx;
-    }
-
 
     /**
      * Returns whether the background of this <code>BasicPanel</code> will
@@ -998,8 +988,8 @@ public abstract class BasicPanel extends RootPanel {
      *
      * @return The context value
      */
-    public SharedContext getContext() {
-        return getRenderingContext().getContext();
+    public SharedContext getSharedContext() {
+        return sharedContext;
     }
 
 
@@ -1101,6 +1091,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.81  2005/10/27 00:09:07  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.80  2005/10/26 17:01:44  peterbrant
  * Allow the "use threads" config property to be set on individual instances of
  * XHTMLPanel.
@@ -1333,7 +1326,7 @@ public abstract class BasicPanel extends RootPanel {
  * Now using entirely static methods for render. Need to implement table. Need to clean.
  *
  * Revision 1.22  2004/12/29 10:39:35  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.21  2004/12/29 07:35:39  tobega
  * Prepared for cloned Context instances by encapsulating fields

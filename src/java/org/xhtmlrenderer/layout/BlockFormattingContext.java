@@ -1,11 +1,11 @@
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.List;
 
 //TODO: refactor so that BFC utilizes master's contentWidth, etc.
@@ -18,7 +18,7 @@ public class BlockFormattingContext {
         persistentBFC = p;
     }
 
-    public BlockFormattingContext(Box block, Context c) {
+    public BlockFormattingContext(Box block, LayoutContext c) {
         persistentBFC = new PersistentBFC(block, c);
     }
 

@@ -54,16 +54,16 @@ public class SelectionMouseListener implements MouseListener, MouseMotionListene
     public void mousePressed(MouseEvent e) {
         if (e.getComponent() instanceof BasicPanel) {
             panel = (BasicPanel) e.getComponent();
-            panel.getContext().clearSelection();
-            Box box = BoxFinder.findBoxByCoords(panel,e.getX(), e.getY());
+            panel.getSharedContext().clearSelection();
+            Box box = BoxFinder.findBoxByCoords(panel, e.getX(), e.getY());
             if (box == null) {
                 return;
             }
             // if box is text node then start selection
             if (box instanceof InlineBox) {
-                int x = BoxFinder.findBoxX(panel,e.getX(), e.getY());
-                panel.getContext().setSelectionStart(box, x);
-                panel.getContext().setSelectionEnd(box, x + 1);
+                int x = BoxFinder.findBoxX(panel, e.getX(), e.getY());
+                panel.getSharedContext().setSelectionStart(box, x);
+                panel.getSharedContext().setSelectionEnd(box, x + 1);
                 panel.repaint();
             }
         }
@@ -88,14 +88,14 @@ public class SelectionMouseListener implements MouseListener, MouseMotionListene
     public void mouseDragged(MouseEvent e) {
         if (e.getComponent() instanceof BasicPanel) {
             panel = (BasicPanel) e.getComponent();
-            Box box = BoxFinder.findBoxByCoords(panel,e.getX(),e.getY());
+            Box box = BoxFinder.findBoxByCoords(panel, e.getX(), e.getY());
             if (box == null) {
                 return;
             }
             // if box is text node then start selection
             if ((box instanceof InlineTextBox)) {
-                int x = BoxFinder.findBoxX(panel,e.getX(), e.getY());
-                panel.getContext().setSelectionEnd(box, x);
+                int x = BoxFinder.findBoxX(panel, e.getX(), e.getY());
+                panel.getSharedContext().setSelectionEnd(box, x);
                 panel.repaint();
             }
         }

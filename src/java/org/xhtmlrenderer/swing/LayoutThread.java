@@ -1,10 +1,11 @@
 package org.xhtmlrenderer.swing;
 
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
 
 /*
 
@@ -21,7 +22,7 @@ public class LayoutThread implements Runnable {
     private Graphics graphics;
     private BasicPanel panel;
     private boolean threaded;
-    private Context context;
+    private LayoutContext context;
 
     public LayoutThread(BasicPanel panel) {
         this.panel = panel;

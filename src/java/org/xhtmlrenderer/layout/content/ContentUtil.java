@@ -27,7 +27,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -230,7 +230,7 @@ public class ContentUtil {
      * @param c              PARAM
      * @return Returns
      */
-    static List resolveBlockContent(List pendingInlines, Element parentElement, Context c) {
+    static List resolveBlockContent(List pendingInlines, Element parentElement, LayoutContext c) {
         //return new LinkedList(pendingInlines);//pendingInlines.clone();
 
         List inline = new LinkedList();
@@ -271,7 +271,7 @@ public class ContentUtil {
      * @param parent The parent Content to get the child content for
      * @return A list of content.
      */
-    static List getChildContentList(Context c, Content parent) {
+    static List getChildContentList(LayoutContext c, Content parent) {
         List inlineList = new LinkedList();
         FirstLineStyle firstLineStyle = null;
         FirstLetterStyle firstLetterStyle = null;
@@ -519,6 +519,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2005/10/27 00:08:55  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.41  2005/10/15 23:39:16  tobega
  * patch from Peter Brant
  *
@@ -574,7 +577,7 @@ public class ContentUtil {
  * Started adding in the table support.
  *
  * Revision 1.24  2004/12/29 10:39:30  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.23  2004/12/29 07:35:37  tobega
  * Prepared for cloned Context instances by encapsulating fields

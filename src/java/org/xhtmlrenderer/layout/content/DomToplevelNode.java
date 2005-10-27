@@ -19,11 +19,12 @@
  */
 package org.xhtmlrenderer.layout.content;
 
-import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.Context;
+import org.xhtmlrenderer.layout.LayoutContext;
+
+import java.util.List;
 
 
 /**
@@ -31,25 +32,27 @@ import org.xhtmlrenderer.layout.Context;
  * point, the content object that should be created by anyone using the content
  * model. Don't forget to set the EmptyStyle to the Context.
  *
- * @author   Torbjörn Gannholm
+ * @author Torbjörn Gannholm
  */
 public class DomToplevelNode implements Content {
-    /** Description of the Field */
+    /**
+     * Description of the Field
+     */
     private Node _node;
 
     /**
      * Constructor for the DomToplevelNode object
      *
-     * @param node  PARAM
+     * @param node PARAM
      */
-    public DomToplevelNode( Node node ) {
+    public DomToplevelNode(Node node) {
         _node = node;
     }
 
     /**
      * Converts to a String representation of the object.
      *
-     * @return   A string representation of the object.
+     * @return A string representation of the object.
      */
     public String toString() {
         return "Body: " + _node.getNodeName();
@@ -58,7 +61,7 @@ public class DomToplevelNode implements Content {
     /**
      * Gets the element attribute of the DomToplevelNode object
      *
-     * @return   The element value
+     * @return The element value
      */
     public Element getElement() {
         return null;
@@ -67,7 +70,7 @@ public class DomToplevelNode implements Content {
     /**
      * Gets the style attribute of the DomToplevelNode object
      *
-     * @return   The style value
+     * @return The style value
      */
     public CascadedStyle getStyle() {
         return null;
@@ -76,17 +79,17 @@ public class DomToplevelNode implements Content {
     /**
      * Gets the childContent attribute of the DomToplevelNode object
      *
-     * @param c  PARAM
-     * @return   The childContent value
+     * @param c PARAM
+     * @return The childContent value
      */
-    public List getChildContent( Context c ) {
-        return ContentUtil.getChildContentList( c, this );
+    public List getChildContent(LayoutContext c) {
+        return ContentUtil.getChildContentList(c, this);
     }
 
     /**
      * Gets the node attribute of the DomToplevelNode object
      *
-     * @return   The node value
+     * @return The node value
      */
     Node getNode() {
         return _node;

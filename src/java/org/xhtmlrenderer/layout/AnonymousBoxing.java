@@ -51,7 +51,7 @@ public class AnonymousBoxing {
      * @param content PARAM
      * @return Returns
      */
-    public static Box layout(Context c, Box block, Content content) {
+    public static Box layout(LayoutContext c, Box block, Content content) {
         // copy the extents
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
@@ -83,10 +83,10 @@ public class AnonymousBoxing {
         return block;
     }
 
-    public static Box createBox(Context c, Content content) {
+    public static Box createBox(LayoutContext c, Content content) {
         Box block = new AnonymousBlockBox(content);
         c.pushStyle(CascadedStyle.emptyCascadedStyle);
-        block.setStyle(new Style(c.getCurrentStyle(), 0, c.getCtx()));
+        block.setStyle(new Style(c.getCurrentStyle(), 0, c));
         c.popStyle();
         return block;
     }
@@ -96,6 +96,9 @@ public class AnonymousBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2005/10/27 00:08:58  tobega
+ * Sorted out Context into RenderingContext and LayoutContext
+ *
  * Revision 1.4  2005/10/18 20:57:01  tobega
  * Patch from Peter Brant
  *
@@ -112,7 +115,7 @@ public class AnonymousBoxing {
  * Referencing Context instead of SharedContext where it was wrongly set before.
  *
  * Revision 1.14  2004/12/29 10:39:32  tobega
- * Separated current state Context into ContextImpl and the rest into SharedContext.
+ * Separated current state Context into LayoutContext and the rest into SharedContext.
  *
  * Revision 1.13  2004/12/28 01:48:23  tobega
  * More cleaning. Magically, the financial report demo is starting to look reasonable, without any effort being put on it.
