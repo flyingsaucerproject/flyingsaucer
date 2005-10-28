@@ -435,7 +435,6 @@ public class TableBoxing {
             c.unsetShrinkWrap();
             c.translate(-row.contentWidth, 0);
 
-            row.addChild(cellBox);
             cellBox.setParent(row);
             cellBox.element = tcc.getElement();
             // set the child_box location
@@ -464,6 +463,9 @@ public class TableBoxing {
             col += cellBox.colspan;
             //this will be fixed again later!
             cellBox.height = 0;
+            //have to do this late in the game
+            if (cellBox.rowspan > 1) row.setChildrenExceedBounds(true);
+            row.addChild(cellBox);
         }
         for (int j = 0; j < table.columns.length; j++) {
             // increase the final layout height if the child was greater
@@ -634,6 +636,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.39  2005/10/28 08:00:44  tobega
+   fixed rowspan repaint bug
+
    Revision 1.38  2005/10/27 22:54:00  tobega
    row span works, but not if the row is outside the viewport ?!?!?! Also cleaned LayoutContext and PersistentBFC
 
