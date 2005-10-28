@@ -97,8 +97,29 @@ public class XhtmlNamespaceHandler extends NoNamespaceHandler {
      */
     public String getElementStyling(org.w3c.dom.Element e) {
         StringBuffer style = new StringBuffer();
-        if (e.getNodeName().equals("td") || e.getNodeName().equals("th")) {
+        if (e.getNodeName().equals("table")) {
             String s;
+            if (!(s = e.getAttribute("cellspacing")).equals("")) {
+                style.append("border-collapse: separate; border-spacing: ");
+                style.append(s);
+                style.append(";");
+            }
+        } else if (e.getNodeName().equals("td") || e.getNodeName().equals("th")) {
+            String s;
+            //check for cellpadding
+            for (Node n = e.getParentNode(); n != null; n = n.getParentNode()) {
+                if (n.getNodeType() == Node.ELEMENT_NODE) {
+                    Element t = (Element) n;
+                    if (t.getNodeName().equals("table")) {
+                        if (!(s = e.getAttribute("cellpadding")).equals("")) {
+                            style.append("padding: ");
+                            style.append(s);
+                            style.append(";");
+                        }
+                        break;
+                    }
+                }
+            }
             if (!(s = e.getAttribute("colspan")).equals("")) {
                 style.append("-fs-table-cell-colspan: ");
                 style.append(s);
