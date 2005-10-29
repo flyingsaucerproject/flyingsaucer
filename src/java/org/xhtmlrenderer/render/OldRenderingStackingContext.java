@@ -42,6 +42,6 @@ public class OldRenderingStackingContext extends StackingContext {
     //HACK: Context should not be used here
     public void render(RenderingContext c, Graphics2D g2, double top, double bottom) {
         if (root == null) return;
-        BoxRendering.paint(c, root, false, false);
+        BoxRendering.paint(c, root);
     }
 }

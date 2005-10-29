@@ -21,7 +21,6 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
@@ -48,19 +47,14 @@ public class BoxRendering {
     /**
      * Description of the Method
      *
-     * @param c           PARAM
-     * @param box         PARAM
-     * @param stylePushed
-     * @param restyle
+     * @param c   PARAM
+     * @param box PARAM
      */
-    //HACK: the stylePushed is because we need to set style for inline blocks earlier
-    public static void paint(RenderingContext c, Box box, boolean stylePushed, boolean restyle) {
+    public static void paint(RenderingContext c, Box box) {
         Box block = (Box) box;
-        restyle = restyle || box.restyle;//cascade it down
-        box.restyle = false;//reset
 
         if (block instanceof AnonymousBlockBox) {
-            InlineRendering.paintInlineContext(c, block, restyle);
+            InlineRendering.paintInlineContext(c, block);
         } else {
 
             //set the current style
@@ -76,19 +70,13 @@ public class BoxRendering {
             
             CalculatedStyle calculatedStyle = box.getStyle().getCalculatedStyle();
 
-            if (!stylePushed && restyle) {
-                CascadedStyle style = c.getCss().getCascadedStyle(block.element, restyle);
-                calculatedStyle = calculatedStyle.getParent().deriveNewStyle(style);
-                box.getStyle().setCalculatedStyle(calculatedStyle);
-            }
-
             // copy the bounds to we don't mess it up
             Rectangle oldBounds = new Rectangle(c.getExtents());
 
             if (block.getStyle().isFixed()) {
-                paintFixed(c, block, restyle);
+                paintFixed(c, block);
             } else if (block.getStyle().isAbsolute()) {
-                paintAbsoluteBox(c, block, restyle);
+                paintAbsoluteBox(c, block);
             } else {
                 //text decoration?
                 //TODO: can't this apply to fixeds and absolutes?
@@ -101,9 +89,9 @@ public class BoxRendering {
                     c.addFirstLineStyle(block.firstLineStyle);
                 }
                 if (box.getStyle().isRelative()) {
-                    paintRelative(c, block, restyle);
+                    paintRelative(c, block);
                 } else {
-                    paintNormal(c, block, restyle);
+                    paintNormal(c, block);
                 }
                 //pop in case not used
                 if (block.firstLineStyle != null) {
@@ -137,11 +125,10 @@ public class BoxRendering {
     /**
      * Description of the Method
      *
-     * @param c       PARAM
-     * @param block   PARAM
-     * @param restyle
+     * @param c     PARAM
+     * @param block PARAM
      */
-    public static void paintNormal(RenderingContext c, Box block, boolean restyle) {
+    public static void paintNormal(RenderingContext c, Box block) {
 
         int width = block.getWidth();
         int height = block.getHeight();
@@ -163,9 +150,9 @@ public class BoxRendering {
         /* Q&D for now if (block instanceof TableBox) {
             TableRendering.paintTable(c, (TableBox) block, restyle);
         } else */ if (isInlineLayedOut(block)) {
-            InlineRendering.paintInlineContext(c, block, restyle);
+            InlineRendering.paintInlineContext(c, block);
         } else {
-            BlockRendering.paintBlockContext(c, block, restyle);
+            BlockRendering.paintBlockContext(c, block);
         }
         c.getGraphics().translate(-block.tx, -block.ty);
         c.translate(-block.tx, -block.ty);
@@ -180,13 +167,12 @@ public class BoxRendering {
     /**
      * Description of the Method
      *
-     * @param ctx     PARAM
-     * @param block   PARAM
-     * @param restyle
+     * @param ctx   PARAM
+     * @param block PARAM
      */
-    public static void paintRelative(RenderingContext ctx, Box block, boolean restyle) {
+    public static void paintRelative(RenderingContext ctx, Box block) {
         Relative.translateRelative(ctx, block.getStyle().getCalculatedStyle(), true);
-        paintNormal(ctx, block, restyle);
+        paintNormal(ctx, block);
         Relative.untranslateRelative(ctx, block.getStyle().getCalculatedStyle(), true);
     }
 
@@ -194,12 +180,10 @@ public class BoxRendering {
     /**
      * Description of the Method
      *
-     * @param c       PARAM
-     * @param block   PARAM
-     * @param restyle
+     * @param c     PARAM
+     * @param block PARAM
      */
-    public static void paintFixed(RenderingContext c, Box block, boolean restyle) {
-        //Uu.p("painting fixed");
+    public static void paintFixed(RenderingContext c, Box block) {
         Rectangle rect = c.getFixedRectangle();
         int by = c.getBlockFormattingContext().getY();
         int bx = c.getBlockFormattingContext().getX();
@@ -224,7 +208,7 @@ public class BoxRendering {
 
         c.translate(xoff, yoff);
         c.getGraphics().translate(xoff, yoff);
-        paintNormal(c, block, restyle);
+        paintNormal(c, block);
         c.getGraphics().translate(-xoff, -yoff);
         c.translate(-xoff, -yoff);
 
@@ -233,9 +217,8 @@ public class BoxRendering {
     /**
      * Description of the Method
      *
-     * @param c       PARAM
-     * @param block   PARAM
-     * @param restyle
+     * @param c     PARAM
+     * @param block PARAM
      */
     //HACK: more or less copied paintFixed - tobe
     //TODO: paint fixed & absolute are duplicates code blocks--need to decide how they differ, or leave as common method (PWW 25-01-05)
@@ -248,7 +231,7 @@ public class BoxRendering {
       layout time because some things (like the bottom of the containing block) may not be known
       at layout time.
       */
-    public static void paintAbsoluteBox(RenderingContext c, Box block, boolean restyle) {
+    public static void paintAbsoluteBox(RenderingContext c, Box block) {
         Rectangle rect = c.getExtents();
         //why this?
 		
@@ -298,7 +281,7 @@ public class BoxRendering {
 
         c.translate(xoff, yoff);
         c.getGraphics().translate(xoff, yoff);
-        paintNormal(c, block, restyle);
+        paintNormal(c, block);
         c.getGraphics().translate(-xoff, -yoff);
         c.translate(-xoff, -yoff);
     }
@@ -381,6 +364,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.51  2005/10/29 22:31:01  tobega
+ * House-cleaning
+ *
  * Revision 1.50  2005/10/29 00:58:04  tobega
  * Split out restyling from rendering and fixed up hovering
  *

@@ -117,7 +117,7 @@ public class LineBox extends Box implements Renderable {
     public void render(RenderingContext c, Graphics2D g2) {
         //HACK:
         g2.translate(absX - x, absY - y);
-        InlineRendering.paintLine(c, this, false, new LinkedList());
+        InlineRendering.paintLine(c, this, new LinkedList());
         g2.translate(x - absX, y - absY);
     }
 
@@ -134,6 +134,9 @@ public class LineBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/10/29 22:31:02  tobega
+ * House-cleaning
+ *
  * Revision 1.22  2005/10/27 00:09:04  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

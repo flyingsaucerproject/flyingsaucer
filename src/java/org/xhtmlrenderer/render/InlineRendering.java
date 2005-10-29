@@ -212,11 +212,10 @@ public class InlineRendering {
      * Paint all of the inlines in this box. It recurses through each line, and
      * then each inline in each line, and paints them individually.
      *
-     * @param c       PARAM
-     * @param box     PARAM
-     * @param restyle PARAM
+     * @param c   PARAM
+     * @param box PARAM
      */
-    static void paintInlineContext(RenderingContext c, Box box, boolean restyle) {
+    static void paintInlineContext(RenderingContext c, Box box) {
         //dummy style to make sure that text nodes don't get extra padding and such
         {
 
@@ -232,7 +231,7 @@ public class InlineRendering {
 
             for (int i = 0; i < box.getChildCount(); i++) {
                 // get the line box
-                paintLine(c, (LineBox) box.getChild(i), restyle, decorations);
+                paintLine(c, (LineBox) box.getChild(i), decorations);
             }
 
             // translate back to parent coords
@@ -248,10 +247,9 @@ public class InlineRendering {
      *
      * @param c           PARAM
      * @param line        PARAM
-     * @param restyle     PARAM
      * @param decorations
      */
-    static void paintLine(RenderingContext c, LineBox line, boolean restyle, LinkedList decorations) {
+    static void paintLine(RenderingContext c, LineBox line, LinkedList decorations) {
         //Uu.p("painting line: " + line);
         // get Xx and y
         if (!line.textAligned) {
@@ -274,7 +272,7 @@ public class InlineRendering {
             if (child.getStyle().isAbsolute() || child.getStyle().isFixed()) {
                 LinkedList unpropagated = (LinkedList) decorations.clone();
                 decorations.clear();
-                paintAbsolute(c, child, restyle);
+                paintAbsolute(c, child);
                 decorations.addAll(unpropagated);
                 continue;
             }
@@ -290,7 +288,7 @@ public class InlineRendering {
 //                    padX = handleInlineElementStart(c, firstLineStyle, line, box, padX, decorations);
 //                }
 //            }
-            padX = paintInline(c, box, lx, ly, line, restyle, pushedStyles, decorations, padX);
+            padX = paintInline(c, box, lx, ly, line, pushedStyles, decorations, padX);
         }
 
         //do text decorations, all are still active
@@ -371,21 +369,16 @@ public class InlineRendering {
      * @param lx          PARAM
      * @param ly          PARAM
      * @param line        PARAM
-     * @param restyle     PARAM
      * @param decorations
      * @param padX
      */
-    static int paintInline(RenderingContext c, InlineBox ib, int lx, int ly, LineBox line, boolean restyle, LinkedList pushedStyles, LinkedList decorations, int padX) {
-        //Uu.p("paint inline: " + ib);
-        restyle = restyle || ib.restyle;//cascade it down
-        ib.restyle = false;//reset
-
+    static int paintInline(RenderingContext c, InlineBox ib, int lx, int ly, LineBox line, LinkedList pushedStyles, LinkedList decorations, int padX) {
         padX = handleInlineElementStart(c, line, ib, padX, decorations);
 
         if (ib.getStyle().isFloated()) {
             LinkedList unpropagated = (LinkedList) decorations.clone();
             decorations.clear();
-            paintFloat(c, ib, restyle);
+            paintFloat(c, ib);
             decorations.addAll(unpropagated);
             debugInlines(c, ib, lx, ly);
         } // Uu.p("paintInline: " + inline);
@@ -417,7 +410,7 @@ public class InlineRendering {
                     ib.height));
             c.translate(ib.x, ib.y);
             c.getGraphics().translate(ib.x, ib.y);
-            BoxRendering.paint(c, ((InlineBlockBox) ib).sub_block, false, restyle);
+            BoxRendering.paint(c, ((InlineBlockBox) ib).sub_block);
             c.getGraphics().translate(-ib.x, -ib.y);
             c.translate(-ib.x, -ib.y);
             c.getGraphics().translate(-line.x,
@@ -566,36 +559,28 @@ public class InlineRendering {
     /**
      * Description of the Method
      *
-     * @param c       PARAM
-     * @param inline  PARAM
-     * @param restyle PARAM
+     * @param c      PARAM
+     * @param inline PARAM
      */
-    static void paintAbsolute(RenderingContext c, Box inline, boolean restyle) {
-        restyle = restyle || inline.restyle;
-        inline.restyle = false;//reset
-        // Uu.p("paint absolute: " + inline);
-        BoxRendering.paint(c, inline, false, restyle);
+    static void paintAbsolute(RenderingContext c, Box inline) {
+        BoxRendering.paint(c, inline);
     }
 
 
     /**
      * Description of the Method
      *
-     * @param c       PARAM
-     * @param inline  PARAM
-     * @param restyle PARAM
+     * @param c      PARAM
+     * @param inline PARAM
      */
-    static void paintFloat(RenderingContext c, InlineBox inline, boolean restyle) {
-        restyle = restyle || inline.restyle;//should already have been done, but it can't hurt
-        inline.restyle = false;//reset
-        // Uu.p("painting a float: " + inline);
+    static void paintFloat(RenderingContext c, InlineBox inline) {
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe.x, 0, oe.width, oe.height));
         int xoff = 0;
         int yoff = 0;//line.y + ( line.baseline - inline.height );// + inline.y;
         c.translate(xoff, yoff);
         c.getGraphics().translate(xoff, yoff);
-        BoxRendering.paint(c, inline, false, restyle);
+        BoxRendering.paint(c, inline);
         c.getGraphics().translate(-xoff, -yoff);
         c.translate(-xoff, -yoff);
         c.setExtents(oe);

@@ -662,16 +662,11 @@ public class Matcher {
             if (_attRes == null || _styleFactory == null) {
                 return null;
             }
-            org.xhtmlrenderer.css.sheet.Ruleset rs;// = (org.xhtmlrenderer.css.sheet.Ruleset) _elStyle.get(e);
-            //if (rs == null) {
             String style = _attRes.getElementStyling(e);
             if (style == null || style.equals("")) {
                 return null;
             }
-            rs = _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
-            //_elStyle.put(e, rs);
-            //}
-            return rs;
+            return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
         }
     }
 
@@ -680,16 +675,11 @@ public class Matcher {
             if (_attRes == null || _styleFactory == null) {
                 return null;
             }
-            org.xhtmlrenderer.css.sheet.Ruleset rs;// = (org.xhtmlrenderer.css.sheet.Ruleset) _elStyle.get(e);
-            //if (rs == null) {
             String style = _attRes.getNonCssStyling(e);
             if (style == null || style.equals("")) {
                 return null;
             }
-            rs = _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
-            //_elStyle.put(e, rs);
-            //}
-            return rs;
+            return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
         }
     }
 

@@ -41,11 +41,10 @@ public class BlockRendering {
     /**
      * Description of the Method
      *
-     * @param c       PARAM
-     * @param box     PARAM
-     * @param restyle
+     * @param c   PARAM
+     * @param box PARAM
      */
-    public static void paintBlockContext(RenderingContext c, Box box, boolean restyle) {
+    public static void paintBlockContext(RenderingContext c, Box box) {
         //if (box.getPersistentBFC() != null) c.pushBFC(box.getPersistentBFC());
         c.translate(box.x, box.y);
         c.getGraphics().translate(box.x, box.y);
@@ -87,7 +86,7 @@ public class BlockRendering {
                     inlineBorders = (LinkedList) c.getInlineBorders().clone();
                     c.getInlineBorders().clear();
                 }
-                paintChild(c, child, restyle);
+                paintChild(c, child);
                 if (!(child instanceof AnonymousBlockBox)) {
                     c.getInlineBorders().addAll(inlineBorders);
                 }
@@ -103,9 +102,9 @@ public class BlockRendering {
 
     public static final boolean ALTERNATE_CLIP_DAMAGE = false;
 
-    public static void paintChild(RenderingContext c, Box box, boolean restyle) {
+    public static void paintChild(RenderingContext c, Box box) {
         if (!canBeSkipped(c, box)) {
-            BoxRendering.paint(c, box, false, restyle);
+            BoxRendering.paint(c, box);
         }
     }
 

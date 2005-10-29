@@ -47,11 +47,6 @@ public abstract class Box {
      */
     public JComponent component = null;
 
-    /**
-     * Description of the Field
-     */
-    public boolean restyle = false;
-
     // dimensions stuff
     /**
      * Box x-pos.
@@ -563,6 +558,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.67  2005/10/29 22:31:01  tobega
+ * House-cleaning
+ *
  * Revision 1.66  2005/10/27 00:09:02  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *
