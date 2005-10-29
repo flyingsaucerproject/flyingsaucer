@@ -89,6 +89,10 @@ public class StandardAttributeResolver implements AttributeResolver {
         return nsh.getID((Element) e);
     }
 
+    public String getNonCssStyling(Object e) {
+        return nsh.getNonCssStyling((Element) e);
+    }
+
     /**
      * Gets the elementStyling attribute of the StandardAttributeResolver object
      *

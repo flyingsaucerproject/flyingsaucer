@@ -236,13 +236,22 @@ public class Matcher {
         synchronized (e) {
             CascadedStyle cs = null;
             org.xhtmlrenderer.css.sheet.Ruleset elementStyling = getElementStyle(e);
+            org.xhtmlrenderer.css.sheet.Ruleset nonCssStyling = getNonCssStyle(e);
             java.util.List propList = new java.util.LinkedList();
+            //specificity 0,0,0,0
+            if (nonCssStyling != null) {
+                for (java.util.Iterator j = nonCssStyling.getPropertyDeclarations(); j.hasNext();) {
+                    propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
+                }
+            }
+            //these should have been returned in order of specificity
             for (java.util.Iterator i = getMatchedRulesets(matchedSelectors); i.hasNext();) {
                 org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
                 for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
                     propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
                 }
             }
+            //specificity 0,0,0,0
             if (elementStyling != null) {
                 for (java.util.Iterator j = elementStyling.getPropertyDeclarations(); j.hasNext();) {
                     propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
@@ -648,12 +657,6 @@ public class Matcher {
                 };
     }
 
-    /**
-     * Gets the elementStyle attribute of the Matcher object
-     *
-     * @param e PARAM
-     * @return The elementStyle value
-     */
     private org.xhtmlrenderer.css.sheet.Ruleset getElementStyle(Object e) {
         synchronized (e) {
             if (_attRes == null || _styleFactory == null) {
@@ -662,6 +665,24 @@ public class Matcher {
             org.xhtmlrenderer.css.sheet.Ruleset rs;// = (org.xhtmlrenderer.css.sheet.Ruleset) _elStyle.get(e);
             //if (rs == null) {
             String style = _attRes.getElementStyling(e);
+            if (style == null || style.equals("")) {
+                return null;
+            }
+            rs = _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
+            //_elStyle.put(e, rs);
+            //}
+            return rs;
+        }
+    }
+
+    private org.xhtmlrenderer.css.sheet.Ruleset getNonCssStyle(Object e) {
+        synchronized (e) {
+            if (_attRes == null || _styleFactory == null) {
+                return null;
+            }
+            org.xhtmlrenderer.css.sheet.Ruleset rs;// = (org.xhtmlrenderer.css.sheet.Ruleset) _elStyle.get(e);
+            //if (rs == null) {
+            String style = _attRes.getNonCssStyling(e);
             if (style == null || style.equals("")) {
                 return null;
             }

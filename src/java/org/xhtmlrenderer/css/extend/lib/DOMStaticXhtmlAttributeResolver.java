@@ -40,6 +40,10 @@ public class DOMStaticXhtmlAttributeResolver implements AttributeResolver {
         return ((Element) e).getAttribute("id");
     }
 
+    public String getNonCssStyling(Object e) {
+        return null;
+    }
+
     public String getLang(Object e) {
         return ((Element) e).getAttribute("lang");
     }

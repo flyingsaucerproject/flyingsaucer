@@ -69,6 +69,10 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
         return null;
     }
 
+    public String getNonCssStyling(Element e) {
+        return null;
+    }
+
     public String getLinkUri(org.w3c.dom.Element e) {
         return null;
     }

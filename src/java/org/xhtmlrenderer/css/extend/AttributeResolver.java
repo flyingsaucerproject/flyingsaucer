@@ -66,7 +66,16 @@ public interface AttributeResolver {
      * may return null
      *
      * @param e PARAM
+     * @return The non css styling (specificity 0,0,0,0 on author styles, according to css 2.1)
+     */
+    public String getNonCssStyling(Object e);
+
+    /**
+     * may return null
+     *
+     * @param e PARAM
      * @return The elementStyling value
+     *         (corresponding to xhtml style attribute, specificity 1,0,0,0 according to css 2.1)
      */
     public String getElementStyling(Object e);
 

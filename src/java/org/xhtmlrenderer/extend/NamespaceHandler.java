@@ -98,9 +98,17 @@ public interface NamespaceHandler {
      * may return null
      *
      * @param e PARAM
-     * @return The elementStyling value
+     * @return The elementStyling value (style attribute)
      */
     public String getElementStyling(org.w3c.dom.Element e);
+
+    /**
+     * may return null
+     *
+     * @param e
+     * @return The corresponding css properties for styling that is obtained in other ways.
+     */
+    public String getNonCssStyling(org.w3c.dom.Element e);
 
     /**
      * may return null
