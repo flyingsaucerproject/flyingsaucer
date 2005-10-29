@@ -1,5 +1,9 @@
 package org.xhtmlrenderer.swing;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xhtmlrenderer.layout.Restyling;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
 
@@ -45,59 +49,74 @@ public class HoverListener extends MouseInputAdapter {
         boolean needRepaint = false;
         // return this box or one if it's parents to find the deepest hovered element.
         // if none then just return null
-        ib = getDeepestHover(ib);
+        //ib = getDeepestHover(ib);
         //Uu.p("deepest hover = " + ib);
+        Element hovered_element = getHoveredElement(ib);
 
-        if (prev == ib) {
+        if (hovered_element == panel.hovered_element) {
             return;
         }
-
-
-        if (ib == null)
-            panel.hovered_element = null;
-        else
-            panel.hovered_element = ib.element;
+        Element previousHoveredElement = panel.hovered_element;
+        panel.hovered_element = hovered_element;
 
         // if moved out of the old block then unstyle it
         if (prev != null) {
-            boolean restyled = panel.getSharedContext().getCss().isHoverStyled(prev.element);
-            if (restyled) {
-                prev.restyle = true;//notify rendering to restyle the box
-                //prev.hover = false;
-                needRepaint = true;
-            }
+            //prev.hover = false;
+            needRepaint = true;
+            restyleElementChildBoxes(previousHoveredElement, prev);
+            prev = null;
         }
 
-        // return if no new hovered block;
-        if (ib != null) {
-            //System.out.println("Using: " + ib);
-
-            /*
-                if the box is an inline box
-                 and if it is a text only box, meaning it
-                 does not have it's own element but is merely a child
-                 of an enclosing box.
-                 is inline element
-            */
-            // Uu.p("real element = " + ib.getRealElement());
-            // skip it if it's just a text child of a block. we should
-            // do the block instead
-            //if (ib.isInlineElement() || !(ib instanceof InlineBox)) {
-            boolean restyled = panel.getSharedContext().getCss().isHoverStyled(ib.element);
-            //Uu.p("was styled = " + ib);
-
-            // if the block isn't a hover then go up to the parent.
-
-            // if the block has a hover style then restyle it
-            if (restyled) {
-                ib.restyle = true;
-                //ib.hover = true;
-                needRepaint = true;
-            }
-            //}
+        if (hovered_element != null) {
+            needRepaint = true;
+            restyleElementChildBoxes(hovered_element, ib);
+            prev = ib;
         }
-        prev = ib;
         if (needRepaint) panel.repaint();
+    }
+
+    private void restyleElementChildBoxes(Element e, Box ib) {
+        //HACK:Find the parent block box whose element is self-or-parent of e
+        Box p = ib;
+        while (true) {
+            while (p != null && (!(p instanceof BlockBox) || p.element == null)) {
+                p = p.getParent();
+            }
+            if (p == null) {//root box was not a block box! impossible at time of coding
+                Restyling.restyle(panel.getSharedContext().newLayoutContextInstance(panel.getBaseExtents(panel.getSharedContext().getPageInfo())),
+                        (BlockBox) panel.getRootBox());
+                return;
+            }
+            Element pe = p.element;
+            Element ie = e;
+            while (ie != null && ie != pe) {
+                Node n = ie.getParentNode();
+                if (n.getNodeType() == Node.ELEMENT_NODE) {
+                    ie = (Element) n;
+                } else {
+                    ie = null;
+                }
+            }
+            if (ie == pe) {
+                Restyling.restyle(panel.getSharedContext().newLayoutContextInstance(panel.getBaseExtents(panel.getSharedContext().getPageInfo())),
+                        (BlockBox) p);
+                return;
+            }
+        }
+    }
+
+    private Element getHoveredElement(Box ib) {
+        if (ib == null) return null;
+        Element e = ib.element;
+        while (e != null && !panel.getSharedContext().getCss().isHoverStyled(e)) {
+            Node n = e.getParentNode();
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                e = (Element) n;
+            } else {
+                e = null;
+            }
+        }
+        return e;
     }
 
     private Box getDeepestHover(Box box) {

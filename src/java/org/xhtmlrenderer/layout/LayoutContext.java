@@ -23,7 +23,6 @@ import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.TextRenderer;
@@ -155,7 +154,7 @@ public class LayoutContext implements CssContext, PageContext {
 
     private Stack parentContentStack = new Stack();
 
-    public void initializeStyles(EmptyStyle c) {
+    public void initializeStyles(CalculatedStyle c) {
         styleStack = new Stack();
         styleStack.push(c);
     }

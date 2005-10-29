@@ -91,6 +91,7 @@ public class BoxRendering {
                 paintAbsoluteBox(c, block, restyle);
             } else {
                 //text decoration?
+                //TODO: can't this apply to fixeds and absolutes?
                 IdentValue decoration = calculatedStyle.getIdent(CSSName.TEXT_DECORATION);
                 if (decoration != IdentValue.NONE) {
                     c.getDecorations().addLast(new TextDecoration(decoration, 0, calculatedStyle.getColor(), FontUtil.getLineMetrics(c, null, c.getTextRenderer(), c.getGraphics())));
@@ -380,6 +381,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.50  2005/10/29 00:58:04  tobega
+ * Split out restyling from rendering and fixed up hovering
+ *
  * Revision 1.49  2005/10/27 00:09:03  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

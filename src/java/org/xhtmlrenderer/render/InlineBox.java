@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.util.List;
+
 /**
  * Description of the Class
  *
@@ -54,6 +56,15 @@ public abstract class InlineBox extends Box {
      * Description of the Field
      */
     public int end_index = -1;
+
+    /**
+     * Next two fields are needed to keep track of the element tree
+     * for restyling.
+     * A pushstyle is the start of an inline element.
+     * A popstyle is the end of an inline element.
+     */
+    public int popstyles;
+    public List pushstyles;
 
     /**
      * Constructor for the InlineBox object
@@ -107,6 +118,9 @@ public abstract class InlineBox extends Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2005/10/29 00:58:04  tobega
+ * Split out restyling from rendering and fixed up hovering
+ *
  * Revision 1.41  2005/10/27 00:09:03  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

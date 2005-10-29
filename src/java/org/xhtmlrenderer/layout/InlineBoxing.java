@@ -105,6 +105,7 @@ public class InlineBoxing {
 
         boolean isFirstLetter = true;
 
+        LinkedList pendingPushStyles = null;
         int pendingLeftPadding = 0;
         int pendingRightPadding = 0;
         // loop until no more nodes
@@ -142,6 +143,10 @@ public class InlineBoxing {
                     pushedOnFirstLine.addLast(cascaded);
                 }
                 c.pushStyle(cascaded);
+                if (pendingPushStyles == null) {
+                    pendingPushStyles = new LinkedList();
+                }
+                pendingPushStyles.addLast((StylePush) o);
                 Relative.translateRelative(c, c.getCurrentStyle(), false);
                 CalculatedStyle style = c.getCurrentStyle();
                 int parent_width = bounds.width;
@@ -154,27 +159,31 @@ public class InlineBoxing {
                 continue;
             }
             if (o instanceof StylePop) {
-                if (prev_inline == null) {
-                    prev_inline = new InlineTextBox();//hope it is decently initialised as empty
-                    ((InlineTextBox) prev_inline).setMasterText("");
-                    ((InlineTextBox) prev_inline).start_index = 0;
-                    ((InlineTextBox) prev_inline).end_index = 0;
-                    curr_line.addChild(prev_inline);
+                if (pendingPushStyles != null && pendingPushStyles.size() != 0) {
+                    pendingPushStyles.removeLast();//was a redundant one
+                } else {
+                    if (prev_inline == null) {
+                        prev_inline = new InlineTextBox();//hope it is decently initialised as empty
+                        ((InlineTextBox) prev_inline).setMasterText("");
+                        ((InlineTextBox) prev_inline).start_index = 0;
+                        ((InlineTextBox) prev_inline).end_index = 0;
+                        curr_line.addChild(prev_inline);
+                    }
+                    prev_inline.popstyles++;
+                    int parent_width = bounds.width;
+                    CalculatedStyle style = c.getCurrentStyle();
+                    BorderPropertySet border = style.getBorder(c);
+                    //note: percentages here refer to width of containing block
+                    RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c);
+                    RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c);
+                    // CLEAN: cast to int
+                    int rp = (int) padding.right() + (int) border.right() + (int) margin.right();
+                    //CHECK: not sure this is where the padding really goes, always
+                    prev_inline.rightPadding += rp;
+
+                    pendingRightPadding -= rp;
+                    remaining_width -= rp;
                 }
-                int parent_width = bounds.width;
-                CalculatedStyle style = c.getCurrentStyle();
-                BorderPropertySet border = style.getBorder(c);
-                //note: percentages here refer to width of containing block
-                RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c);
-                RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c);
-                // CLEAN: cast to int
-                int rp = (int) padding.right() + (int) border.right() + (int) margin.right();
-                //CHECK: not sure this is where the padding really goes, always
-                prev_inline.rightPadding += rp;
-
-                pendingRightPadding -= rp;
-                remaining_width -= rp;
-
                 if (c.hasFirstLineStyles()) {
                     pushedOnFirstLine.removeLast();
                 }
@@ -266,6 +275,8 @@ public class InlineBoxing {
                 }
 
                 isFirstLetter = false;
+                new_inline.pushstyles = pendingPushStyles;
+                pendingPushStyles = null;
                 new_inline.leftPadding += pendingLeftPadding;
                 pendingLeftPadding = 0;
 
@@ -619,6 +630,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.52  2005/10/29 00:58:03  tobega
+ * Split out restyling from rendering and fixed up hovering
+ *
  * Revision 1.51  2005/10/27 00:08:59  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

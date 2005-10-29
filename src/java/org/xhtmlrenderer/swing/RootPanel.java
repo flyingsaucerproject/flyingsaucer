@@ -265,16 +265,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
         Rectangle extents;
 
-        if (pageInfo != null) {
-            extents = new Rectangle(0, 0,
-                    (int) pageInfo.getContentWidth(), (int) pageInfo.getContentHeight());
-        } else if (enclosingScrollPane != null) {
-            Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
-            extents = new Rectangle(0, 0, bnds.width, bnds.height);
-            //Uu.p("bnds = " + bnds);
-        } else {
-            extents = new Rectangle(getWidth(), getHeight());//200, 200 ) );
-        }
+        extents = getBaseExtents(pageInfo);
 
 
         //Uu.p("newContext() = extents = " + extents);
@@ -298,16 +289,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
         Rectangle extents;
 
-        if (pageInfo != null) {
-            extents = new Rectangle(0, 0,
-                    (int) pageInfo.getContentWidth(), (int) pageInfo.getContentHeight());
-        } else if (enclosingScrollPane != null) {
-            Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
-            extents = new Rectangle(0, 0, bnds.width, bnds.height);
-            //Uu.p("bnds = " + bnds);
-        } else {
-            extents = new Rectangle(getWidth(), getHeight());//200, 200 ) );
-        }
+        extents = getBaseExtents(pageInfo);
 
 
         //Uu.p("newContext() = extents = " + extents);
@@ -323,6 +305,21 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         result.setInteractive(pageInfo == null);
 
         return result;
+    }
+
+    public Rectangle getBaseExtents(PageInfo pageInfo) {
+        Rectangle extents;
+        if (pageInfo != null) {
+            extents = new Rectangle(0, 0,
+                    (int) pageInfo.getContentWidth(), (int) pageInfo.getContentHeight());
+        } else if (enclosingScrollPane != null) {
+            Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
+            extents = new Rectangle(0, 0, bnds.width, bnds.height);
+            //Uu.p("bnds = " + bnds);
+        } else {
+            extents = new Rectangle(getWidth(), getHeight());//200, 200 ) );
+        }
+        return extents;
     }
 
     public void doActualLayout(Graphics g) {

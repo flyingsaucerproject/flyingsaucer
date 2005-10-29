@@ -54,16 +54,12 @@ public class AnonymousBoxing {
     public static Box layout(LayoutContext c, Box block, Content content) {
         // copy the extents
         Rectangle oe = c.getExtents();
-        c.setExtents(new Rectangle(oe));
-
-        //block.x = c.getExtents().x;
-        //block.y = c.getExtents().y;
-
         // save height incase fixed height
         int original_height = block.height;
 
         // do children's layout
         boolean old_sub = c.isSubBlock();
+        c.setExtents(new Rectangle(c.getExtents()));
         c.setSubBlock(false);
         List contentList = content.getChildContent(c);
         if (contentList != null && contentList.size() != 0) {
@@ -96,6 +92,9 @@ public class AnonymousBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/10/29 00:58:02  tobega
+ * Split out restyling from rendering and fixed up hovering
+ *
  * Revision 1.5  2005/10/27 00:08:58  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

@@ -94,20 +94,20 @@ public class TableBoxing {
         boolean set_bfc = false;
 
         if (content instanceof TableContent) {
-            // install a block formatting context for the body,
-            // ie. if it's null.
-            // set up the outtermost bfc
-            if (c.getBlockFormattingContext() == null) {
-                BlockFormattingContext bfc = new BlockFormattingContext(outerBox, c);
-                c.pushBFC(bfc);
-                set_bfc = true;
-                bfc.setWidth((int) c.getExtents().getWidth());
-            }
         } else {
             XRLog.layout(Level.WARNING, "Unsupported table type " + content.getClass().getName());
             return null;
         }
 
+        // install a block formatting context for the body,
+        // ie. if it's null.
+        // set up the outtermost bfc
+        if (c.getBlockFormattingContext() == null) {
+            BlockFormattingContext bfc = new BlockFormattingContext(outerBox, c);
+            c.pushBFC(bfc);
+            set_bfc = true;
+            bfc.setWidth((int) c.getExtents().getWidth());
+        }
         // copy the extents
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
@@ -636,6 +636,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.40  2005/10/29 00:58:05  tobega
+   Split out restyling from rendering and fixed up hovering
+
    Revision 1.39  2005/10/28 08:00:44  tobega
    fixed rowspan repaint bug
 
