@@ -562,7 +562,7 @@ public class IdentValue implements FSDerivedValue {
     }
 
     public boolean isDeclaredInherit() {
-        return false;
+        return this == INHERIT;
     }
 
     public FSDerivedValue computedValue() {
@@ -610,6 +610,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/10/29 14:36:26  pdoubleya
+ * isDeclaredInherit() was not implemented correctly, always returning false.
+ *
  * Revision 1.15  2005/10/24 10:19:39  pdoubleya
  * CSSName FS_ID is now public and final, allowing direct access to the id, bypassing getAssignedID(); micro-optimization :); getAssignedID() and setAssignedID() have been removed. IdentValue string property is also final (as should have been).
  *
