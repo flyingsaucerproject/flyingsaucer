@@ -142,10 +142,10 @@ public class LengthValue extends DerivedValue {
 
         float absVal = Float.MIN_VALUE;
 
-        // NOTE: absolute datatypes (px, pt, pc, cm, etc.) are converted once and stored.
-        // this could be done on instantiation, but it seems more clear to have all the calcs
-        // in one place. For this reason we use the member field boolean hasAbsCalculated to
-        // track if the calculation is already done.
+        // NOTE: we used to cache absolute values, but have removed that to see if it
+        // really makes a difference, since the calcs are so simple. In any case, for DPI-relative
+        // values we shouldn't be caching, unless we also check if the DPI is changed, which
+        // would seem to obviate the advantage of caching anyway.
         switch (primitiveType) {
             case CSSPrimitiveValue.CSS_PX:
                 absVal = relVal;
@@ -172,8 +172,8 @@ public class LengthValue extends DerivedValue {
                 // to the calculated font size of the parent element
                 // http://www.w3.org/TR/CSS21/fonts.html#font-size-props
                 if (cssName == CSSName.FONT_SIZE) {
-                    absVal = relVal * ctx.getFontSize2D(style.getParent().getFont(ctx));
-                    FontSpecification fs = style.getParent().getFont(ctx);
+                    FontSpecification parentFont = style.getParent().getFont(ctx);
+                    absVal = relVal * ctx.getFontSize2D(parentFont);
                 } else {
                     absVal = relVal * ctx.getFontSize2D(style.getFont(ctx));
                 }
@@ -201,8 +201,8 @@ public class LengthValue extends DerivedValue {
                     relVal = style.getParent().getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, baseValue, ctx);
                 } else if (cssName == CSSName.FONT_SIZE) {
                     // same as with EM
-                    FontSpecification font = style.getParent().getFont(ctx);
-                    baseValue = ctx.getFontSize2D(font);
+                    FontSpecification parentFont = style.getParent().getFont(ctx);
+                    baseValue = ctx.getFontSize2D(parentFont);
                 }
                 absVal = (relVal / 100F) * baseValue;
 
@@ -239,6 +239,9 @@ public class LengthValue extends DerivedValue {
         FontSpecification f = new FontSpecification();
 
         //can't set size now
+        // ASK: why don't we just use the style's getFont()? we're already caching these values
+        // e.g.
+        // return ctx.getFontSizeForXHeight(style.getParent().getFont(ctx), style.getFont(ctx), xHeight);
         f.fontWeight = style.getIdent(CSSName.FONT_WEIGHT);
         f.families = style.asStringArray(CSSName.FONT_FAMILY);
 
