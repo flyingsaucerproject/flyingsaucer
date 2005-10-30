@@ -27,8 +27,7 @@ public class Style {
 
     //NO! can't cache this! private CssContext cssContext;
     
-    public Style(CalculatedStyle calculatedStyle, float parentWidth,
-                 CssContext cssContext) {
+    public Style(CalculatedStyle calculatedStyle, float parentWidth) {
         this.calculatedStyle = calculatedStyle;
         this.parentWidth = parentWidth;
     }
@@ -103,7 +102,8 @@ public class Style {
     }
 
     public RectPropertySet getMarginWidth(CssContext cssContext) {
-        RectPropertySet rect = calculatedStyle.getMarginRect(parentWidth, parentWidth, cssContext).copyOf();
+        RectPropertySet rect = 
+            calculatedStyle.getMarginRect(parentWidth, parentWidth, cssContext).copyOf();
 
         // TODO: this is bad for cached rects...
         if (this.marginTopOverrideSet) {

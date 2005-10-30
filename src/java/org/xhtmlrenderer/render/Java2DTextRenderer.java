@@ -109,7 +109,7 @@ public class Java2DTextRenderer implements TextRenderer {
      * @return          The lineMetrics value
      */
     public LineMetrics getLineMetrics( Graphics2D graphics, Font font, String string ) {
-        return font.getLineMetrics( string, graphics.getFontRenderContext() );
+        return new ScaledLineMetrics(font, font.getLineMetrics( string, graphics.getFontRenderContext() ));
     }
 
     /**

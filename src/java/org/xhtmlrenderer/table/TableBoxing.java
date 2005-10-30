@@ -118,7 +118,7 @@ public class TableBoxing {
         outerBox.height = c.getExtents().height;
 
         c.pushStyle(CascadedStyle.emptyCascadedStyle);
-        outerBox.setStyle(new Style(c.getCurrentStyle(), 0, c));
+        outerBox.setStyle(new Style(c.getCurrentStyle(), 0));
         c.popStyle();
 
         TableBox tableBox = new TableBox();
@@ -132,7 +132,7 @@ public class TableBoxing {
             c.pushStyle(CascadedStyle.emptyCascadedStyle);
         }
 
-        tableBox.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth(), c));
+        tableBox.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth()));
 
         VerticalMarginCollapser.collapseVerticalMargins(c, tableBox, content, (float) oe.getWidth());
 
@@ -144,7 +144,7 @@ public class TableBoxing {
             tableBox.getStyle().setMarginBottomOverride(0f);
         }
 
-        tableBox.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth(), c));
+        tableBox.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth()));
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //note: percentages here refer to width of containing block
         RectPropertySet margin = tableBox.getStyle().getMarginWidth(c);
@@ -388,7 +388,7 @@ public class TableBoxing {
             c.pushStyle(CascadedStyle.emptyCascadedStyle);
         }
 
-        row.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth(), c));
+        row.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth()));
 
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //rows have no margin or padding
@@ -536,7 +536,7 @@ public class TableBoxing {
         }
 
         // a cell defines a new bfc
-        cell.setStyle(new Style(c.getCurrentStyle(), (float) c.getExtents().width, c));
+        cell.setStyle(new Style(c.getCurrentStyle(), (float) c.getExtents().width));
         BlockFormattingContext bfc = new BlockFormattingContext(cell, c);
         c.pushBFC(bfc);
         bfc.setWidth((int) c.getExtents().getWidth());
@@ -636,6 +636,11 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.41  2005/10/30 00:02:36  peterbrant
+   - Minor cleanup to get rid of unused CssContext in Style constructor
+   - Switch to ArrayList from LinkedList in a few places (saves several MBs of memory on Hamlet)
+   - Introduce ScaledLineMetrics to work around apparent Java bug
+
    Revision 1.40  2005/10/29 00:58:05  tobega
    Split out restyling from rendering and fixed up hovering
 

@@ -137,17 +137,6 @@ public class RenderingContext implements CssContext {
         return sharedContext;
     }
 
-
-    /**
-     * Sets the StyleReference implemenation. This is part of the CSS module.
-     * Developers should normally never need to call this
-     *
-     * @return The styleReference value
-     */
-    public StyleReference getCss() {
-        return sharedContext.getCss();
-    }
-
     /**
      * Gets the baseURL attribute of the RenderingContext object
      *

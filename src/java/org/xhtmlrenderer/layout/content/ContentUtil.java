@@ -19,6 +19,12 @@
  */
 package org.xhtmlrenderer.layout.content;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -28,11 +34,6 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.LayoutContext;
-
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 
 /**
@@ -272,7 +273,7 @@ public class ContentUtil {
      * @return A list of content.
      */
     static List getChildContentList(LayoutContext c, Content parent) {
-        List inlineList = new LinkedList();
+        List inlineList = new ArrayList();
         FirstLineStyle firstLineStyle = null;
         FirstLetterStyle firstLetterStyle = null;
         StringBuffer textContent = null;
@@ -519,6 +520,11 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2005/10/30 00:02:35  peterbrant
+ * - Minor cleanup to get rid of unused CssContext in Style constructor
+ * - Switch to ArrayList from LinkedList in a few places (saves several MBs of memory on Hamlet)
+ * - Introduce ScaledLineMetrics to work around apparent Java bug
+ *
  * Revision 1.42  2005/10/27 00:08:55  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

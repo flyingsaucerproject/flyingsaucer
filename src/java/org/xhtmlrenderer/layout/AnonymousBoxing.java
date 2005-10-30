@@ -82,7 +82,7 @@ public class AnonymousBoxing {
     public static Box createBox(LayoutContext c, Content content) {
         Box block = new AnonymousBlockBox(content);
         c.pushStyle(CascadedStyle.emptyCascadedStyle);
-        block.setStyle(new Style(c.getCurrentStyle(), 0, c));
+        block.setStyle(new Style(c.getCurrentStyle(), 0));
         c.popStyle();
         return block;
     }
@@ -92,6 +92,11 @@ public class AnonymousBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/10/30 00:02:35  peterbrant
+ * - Minor cleanup to get rid of unused CssContext in Style constructor
+ * - Switch to ArrayList from LinkedList in a few places (saves several MBs of memory on Hamlet)
+ * - Introduce ScaledLineMetrics to work around apparent Java bug
+ *
  * Revision 1.6  2005/10/29 00:58:02  tobega
  * Split out restyling from rendering and fixed up hovering
  *

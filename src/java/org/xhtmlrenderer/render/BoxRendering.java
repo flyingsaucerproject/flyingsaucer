@@ -56,18 +56,6 @@ public class BoxRendering {
         if (block instanceof AnonymousBlockBox) {
             InlineRendering.paintInlineContext(c, block);
         } else {
-
-            //set the current style
-            /*
-            CascadedStyle style = null;
-            if (!stylePushed) {//if elem == null, this is an anonymous box,so push empty style. && block.element != null) {
-                style = c.getCss().getCascadedStyle(block.element, restyle);
-            }
-            if (style != null) {
-                c.pushStyle(style);
-            }
-            */
-            
             CalculatedStyle calculatedStyle = box.getStyle().getCalculatedStyle();
 
             // copy the bounds to we don't mess it up
@@ -364,6 +352,11 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.52  2005/10/30 00:02:35  peterbrant
+ * - Minor cleanup to get rid of unused CssContext in Style constructor
+ * - Switch to ArrayList from LinkedList in a few places (saves several MBs of memory on Hamlet)
+ * - Introduce ScaledLineMetrics to work around apparent Java bug
+ *
  * Revision 1.51  2005/10/29 22:31:01  tobega
  * House-cleaning
  *
