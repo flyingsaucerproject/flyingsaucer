@@ -26,6 +26,7 @@ import org.xhtmlrenderer.layout.PersistentBFC;
 import javax.swing.*;
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -205,7 +206,6 @@ public abstract class Box {
      * Constructor for the Box object
      */
     public Box() {
-        boxes = new ArrayList();
     }
 
     /**
@@ -252,6 +252,9 @@ public abstract class Box {
      * @param child The feature to be added to the Child attribute
      */
     public void addChild(Box child) {
+        if (boxes == null) { 
+            boxes = new ArrayList();
+        }
         if (child == null) {
             throw new NullPointerException("trying to add null child");
         }
@@ -273,7 +276,9 @@ public abstract class Box {
      * Description of the Method
      */
     public void removeAllChildren() {
-        boxes.clear();
+        if (boxes != null) {
+            boxes.clear();
+        }
     }
 
     public void reset() {
@@ -348,7 +353,7 @@ public abstract class Box {
      * @return The childCount value
      */
     public int getChildCount() {
-        return boxes.size();
+        return boxes == null ? 0 : boxes.size();
     }
 
     /**
@@ -358,7 +363,11 @@ public abstract class Box {
      * @return The child value
      */
     public Box getChild(int i) {
-        return (Box) boxes.get(i);
+        if (boxes == null) {
+            throw new IndexOutOfBoundsException();
+        } else {
+            return (Box) boxes.get(i);
+        }
     }
 
     /**
@@ -367,7 +376,11 @@ public abstract class Box {
      * @return The childIterator value
      */
     public Iterator getChildIterator() {
-        return boxes.iterator();
+        if (boxes == null) {
+            return Collections.EMPTY_LIST.iterator();
+        } else {
+            return boxes.iterator();
+        }
     }
 
     /**
@@ -558,6 +571,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.68  2005/10/30 22:06:15  peterbrant
+ * Only create child List if necessary
+ *
  * Revision 1.67  2005/10/29 22:31:01  tobega
  * House-cleaning
  *
