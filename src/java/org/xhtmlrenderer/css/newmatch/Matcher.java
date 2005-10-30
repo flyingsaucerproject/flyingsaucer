@@ -128,22 +128,20 @@ public class Matcher {
             return null;
         }
         CascadedStyle cs = null;
-        while (si.hasNext()) {
-            java.util.Map.Entry me = (java.util.Map.Entry) si.next();
-            if (!me.getKey().equals(pseudoElement)) continue;
+        java.util.List pe = (java.util.List) pseudoSelectors.get(pseudoElement);
+        if (pe == null) return null;
 
-            java.util.List propList = new java.util.LinkedList();
-            for (java.util.Iterator i = getSelectedRulesets((java.util.List) me.getValue()); i.hasNext();) {
-                org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
-                for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
-                    propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
-                }
+        java.util.List propList = new java.util.LinkedList();
+        for (java.util.Iterator i = getSelectedRulesets(pe); i.hasNext();) {
+            org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
+            for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
+                propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
             }
-            if (propList.size() == 0)
-                cs = CascadedStyle.emptyCascadedStyle;//already internalized
-            else {
-                cs = new CascadedStyle(propList.iterator());
-            }
+        }
+        if (propList.size() == 0)
+            cs = CascadedStyle.emptyCascadedStyle;//already internalized
+        else {
+            cs = new CascadedStyle(propList.iterator());
         }
         return cs;
     }
