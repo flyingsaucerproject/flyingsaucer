@@ -36,7 +36,27 @@ public class InheritedLength extends LengthValue {
             float baseValue,
             CssContext ctx
     ) {
-        return baseValue;
+        float f = Float.MIN_VALUE;
+        if ( cssName == CSSName.PADDING_TOP ) {
+            f = _inheritedFrom.getStyle().getCachedPadding().top();
+        } else if ( cssName == CSSName.PADDING_RIGHT ) {
+            f = _inheritedFrom.getStyle().getCachedPadding().right();
+        } else if ( cssName == CSSName.PADDING_BOTTOM ) {
+            f = _inheritedFrom.getStyle().getCachedPadding().bottom();
+        } else if ( cssName == CSSName.PADDING_LEFT ) {
+            f = _inheritedFrom.getStyle().getCachedPadding().left();
+        } else if ( cssName == CSSName.MARGIN_TOP ) {
+            f = _inheritedFrom.getStyle().getCachedMargin().top();
+        } else if ( cssName == CSSName.MARGIN_RIGHT ) {
+            f = _inheritedFrom.getStyle().getCachedMargin().right();
+        } else if ( cssName == CSSName.MARGIN_BOTTOM ) {
+            f = _inheritedFrom.getStyle().getCachedMargin().bottom();
+        } else if ( cssName == CSSName.MARGIN_LEFT ) {
+            f = _inheritedFrom.getStyle().getCachedMargin().left();
+        } else {
+            f = baseValue;
+        }
+        return f;
     }
 
 

@@ -444,6 +444,21 @@ public class CalculatedStyle {
 
     }
 
+    public RectPropertySet getCachedPadding() {
+        if ( _padding == null ) {
+            throw new XRRuntimeException("No padding property cached yet; should have called getPropertyRect() at least once before.");
+        } else {
+            return _padding;
+        }
+    }
+
+    public RectPropertySet getCachedMargin() {
+        if ( _margin == null ) {
+            throw new XRRuntimeException("No margin property cached yet; should have called getMarginRect() at least once before.");
+        } else {
+            return _margin;
+        }
+    }
     private static RectPropertySet getPaddingProperty(CalculatedStyle style,
                                                      CSSName shorthandProp,
                                                      CSSName[] sides,
@@ -528,6 +543,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.51  2005/10/31 19:02:12  pdoubleya
+ * support for inherited padding and margins.
+ *
  * Revision 1.50  2005/10/31 18:01:44  pdoubleya
  * InheritedLength is created per-length, to accomodate calls that need to defer to a specific parent.
  *
