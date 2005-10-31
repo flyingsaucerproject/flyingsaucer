@@ -349,24 +349,44 @@ public final class Idents {
 
     static {
         COLOR_MAP = new HashMap();
-        COLOR_MAP.put("black", "#000000");
-        COLOR_MAP.put("white", "#FFFFFF");
-        COLOR_MAP.put("red", "#FF0000");
-        COLOR_MAP.put("yellow", "#FFFF00");
-        COLOR_MAP.put("lime", "#00ff00");
+        /* From CSS 2.1- 4.3.6: Colors
+        aqua #00ffff
+        black #000000
+        blue #0000ff
+        fuchsia #ff00ff
+        gray #808080
+        green #008000
+        lime #00ff00
+        maroon #800000
+        navy #000080
+        olive #808000
+        orange #ffA500
+        purple #800080
+        red #ff0000
+        silver #c0c0c0
+        teal #008080
+        white #ffffff
+        yellow #ffff00
+        */
         COLOR_MAP.put("aqua", "#00ffff");
+        COLOR_MAP.put("black", "#000000");
         COLOR_MAP.put("blue", "#0000ff");
         COLOR_MAP.put("fuchsia", "#ff00ff");
         COLOR_MAP.put("gray", "#808080");
-        COLOR_MAP.put("silver", "#c0c0c0");
-        COLOR_MAP.put("maroon", "#800000");
-        COLOR_MAP.put("olive", "#808000");
         COLOR_MAP.put("green", "#008000");
-        COLOR_MAP.put("teal", "#008080");
+        COLOR_MAP.put("lime", "#00ff00");
+        COLOR_MAP.put("maroon", "#800000");
         COLOR_MAP.put("navy", "#000080");
+        COLOR_MAP.put("olive", "#808000");
+        COLOR_MAP.put("orange", "#ffa500");
         COLOR_MAP.put("purple", "#800080");
-        //COLOR_MAP.put("orange", "#FFA500");
+        COLOR_MAP.put("red", "#ff0000");
+        COLOR_MAP.put("silver", "#c0c0c0");
+        COLOR_MAP.put("teal", "#008080");
         COLOR_MAP.put("transparent", "transparent");
+        COLOR_MAP.put("white", "#ffffff");
+        COLOR_MAP.put("yellow", "#ffff00");
+
 
         FONT_SIZES = new HashMap();
         FONT_SIZES.put("xx-small", "6.9pt");
@@ -490,6 +510,9 @@ public final class Idents {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/10/31 16:19:58  pdoubleya
+ * Orange is a CSS 2.1 color; double-checked list of color constants.
+ *
  * Revision 1.9  2005/10/20 20:48:03  pdoubleya
  * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
  *
