@@ -328,6 +328,9 @@ public class CalculatedStyle {
         return  val instanceof LengthValue;
     }
 
+    public FSDerivedValue copyOf(CSSName cssName) {
+        return valueByName(cssName).copyOf(cssName);
+    }
     /**
      * Returns a {@link FSDerivedValue} by name. Because we are a derived
      * style, the property will already be resolved at this point.
@@ -414,6 +417,7 @@ public class CalculatedStyle {
         RGBColor rgb = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_RGBCOLOR ? value.getRGBColorValue() : null);
         String s = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_STRING ? value.getStringValue() : null);
 
+        // derive the value, will also handle "inherit"
         FSDerivedValue dval = DerivedValueFactory.newDerivedValue(
                 this,
                 cssName,
@@ -421,23 +425,7 @@ public class CalculatedStyle {
                 value.getCssText(),
                 s,
                 rgb);
-        FSDerivedValue cval = dval;
-
-        //whats the point? (tobe) if (!specified.hasAbsoluteUnit()) {
-        // inherit the value from parent element if value is set to inherit
-        if (dval.isDeclaredInherit()) {
-            // if we are root, have no parent, use the initial value as
-            // defined by the CSS2 spec
-            if (_parent == null) {
-                throw new XRRuntimeException("CalculatedStyle: trying to resolve an inherited property, " +
-                        "but have no parent CalculatedStyle (root of document?)--" +
-                        "property '" + cssName + "' may not be defined in CSS.");
-            } else {
-                // pull from our parent CalculatedStyle
-                cval = _parent.valueByName(cssName).copyOf(cssName);
-            }
-        }
-        return cval;
+        return dval;
     }
 
     private String genStyleKey() {
@@ -540,6 +528,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.49  2005/10/31 12:38:14  pdoubleya
+ * Additional inheritance fixes.
+ *
  * Revision 1.48  2005/10/31 10:16:08  pdoubleya
  * Preliminary support for inherited lengths.
  *

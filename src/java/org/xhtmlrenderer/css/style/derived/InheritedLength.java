@@ -13,7 +13,11 @@ import org.xhtmlrenderer.util.XRRuntimeException;
  * To change this template use File | Settings | File Templates.
  */
 public class InheritedLength extends LengthValue {
-    public InheritedLength() {}
+    private static final InheritedLength singleton = new InheritedLength();
+
+    private InheritedLength() {}
+
+    public static InheritedLength instance() { return InheritedLength.singleton; } 
 
     /**
      * Returns the calculated proportional value. In this case, this is the same as the base
