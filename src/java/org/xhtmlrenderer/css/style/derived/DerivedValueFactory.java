@@ -10,6 +10,8 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -58,7 +60,9 @@ public class DerivedValueFactory {
             if (cssName == CSSName.BACKGROUND_POSITION) {
                 val = new PointValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
             } else if (COLOR_PROPERTIES.contains(cssName)) {
-                val = new ColorValue(style, cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
+                // TODO: we should probably cache these, as colors will be reused across styles
+                // and probably won't be too many of them
+                val = newColor(style, cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
             } else if (STRING_PROPERTIES.contains(cssName)) {
                 val = new StringValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
             } else if (Idents.looksLikeALength(cssText) && !(cssName == CSSName.FONT_WEIGHT)) {
@@ -76,7 +80,29 @@ public class DerivedValueFactory {
         return val;
     }
 
+    /** Returns the ColorValue, possibly from local cache by cssText value; RGB colors are not cached (guessing
+     * these will be custom anyway).
+     *
+     */
+    private static FSDerivedValue newColor(CalculatedStyle style, CSSName cssName, short cssSACUnitType, String cssText, String cssStringValue, RGBColor rgbColor) {
+        FSDerivedValue val;
+        if ( rgbColor == null ) {
+            val = (FSDerivedValue)CACHED_COLORS.get(cssText);
+            if ( val == null ) {
+                val = new ColorValue(style, cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
+                CACHED_COLORS.put(cssText, val);
+            }
+        } else {
+            val = new ColorValue(style, cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
+        }
+        return val;
+    }
+
+    private static final Map CACHED_COLORS;
+
     static {
+        CACHED_COLORS = new HashMap();
+
         COLOR_PROPERTIES = new ArrayList();
         COLOR_PROPERTIES.add(CSSName.COLOR);
         COLOR_PROPERTIES.add(CSSName.BACKGROUND_COLOR);
