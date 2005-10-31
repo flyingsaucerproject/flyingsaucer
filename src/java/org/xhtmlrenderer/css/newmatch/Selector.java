@@ -120,6 +120,12 @@ class Selector {
     final static int FOCUS_PSEUDOCLASS = 16;
 
     /**
+     * Give each a unique ID to be able to create a key to internalize Matcher.Mappers
+     */
+    private int selectorID;
+    private static int selectorCount = 0;
+
+    /**
      * Creates a new instance of Selector. Only called in the context of adding
      * a Selector to a Ruleset or adding a chained Selector to another Selector.
      *
@@ -129,6 +135,7 @@ class Selector {
      * @param elementName matches any element if null
      */
     Selector(int pos, Ruleset parent, int axis, String elementName) {
+        this();
         _parent = parent;
         _axis = axis;
         _name = elementName;
@@ -157,6 +164,10 @@ class Selector {
         _specificityB += specificityB;
         _specificityC += specificityC;
         _specificityD += specificityD;
+    }
+
+    public Selector() {
+        selectorID = selectorCount++;
     }
 
     /**
@@ -565,5 +576,8 @@ class Selector {
         return "1" + "000" + "000" + "000" + "00000";
     }
 
+    public int getSelectorID() {
+        return selectorID;
+    }
 }
 

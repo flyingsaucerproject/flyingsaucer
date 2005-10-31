@@ -27,11 +27,15 @@ import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.css.style.derived.*;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
+import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
+import org.xhtmlrenderer.css.style.derived.LengthValue;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -80,13 +84,14 @@ public class CalculatedStyle {
     /**
      * Cache child styles of this style that have the same cascaded properties
      */
-    private java.util.HashMap _childCache = new java.util.LinkedHashMap(5, 0.75f, true) {
+    private java.util.HashMap _childCache = new java.util.HashMap();
+    /*private java.util.HashMap _childCache = new java.util.LinkedHashMap(5, 0.75f, true) {
         private static final int MAX_ENTRIES = 10;
 
         protected boolean removeEldestEntry(Map.Entry eldest) {
             return size() > MAX_ENTRIES;
         }
-    };
+    };*/
 
     /**
      * Our main array of property values defined in this style, keyed
@@ -322,15 +327,18 @@ public class CalculatedStyle {
         return valueByName(cssName).asString();
     }
 
-    /** TODO: doc */
+    /**
+     * TODO: doc
+     */
     public boolean isLengthValue(CSSName cssName) {
         FSDerivedValue val = valueByName(cssName);
-        return  val instanceof LengthValue;
+        return val instanceof LengthValue;
     }
 
     public FSDerivedValue copyOf(CSSName cssName) {
         return valueByName(cssName).copyOf(cssName);
     }
+
     /**
      * Returns a {@link FSDerivedValue} by name. Because we are a derived
      * style, the property will already be resolved at this point.
@@ -418,8 +426,7 @@ public class CalculatedStyle {
         String s = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_STRING ? value.getStringValue() : null);
 
         // derive the value, will also handle "inherit"
-        FSDerivedValue dval = DerivedValueFactory.newDerivedValue(
-                this,
+        FSDerivedValue dval = DerivedValueFactory.newDerivedValue(this,
                 cssName,
                 value.getPrimitiveType(),
                 value.getCssText(),
@@ -445,7 +452,7 @@ public class CalculatedStyle {
     }
 
     public RectPropertySet getCachedPadding() {
-        if ( _padding == null ) {
+        if (_padding == null) {
             throw new XRRuntimeException("No padding property cached yet; should have called getPropertyRect() at least once before.");
         } else {
             return _padding;
@@ -453,18 +460,19 @@ public class CalculatedStyle {
     }
 
     public RectPropertySet getCachedMargin() {
-        if ( _margin == null ) {
+        if (_margin == null) {
             throw new XRRuntimeException("No margin property cached yet; should have called getMarginRect() at least once before.");
         } else {
             return _margin;
         }
     }
+
     private static RectPropertySet getPaddingProperty(CalculatedStyle style,
-                                                     CSSName shorthandProp,
-                                                     CSSName[] sides,
-                                                     float parentWidth,
-                                                     float parentHeight,
-                                                     CssContext ctx) {
+                                                      CSSName shorthandProp,
+                                                      CSSName[] sides,
+                                                      float parentWidth,
+                                                      float parentHeight,
+                                                      CssContext ctx) {
         String key = null;
 
         if (style._padding == null) {
@@ -485,11 +493,11 @@ public class CalculatedStyle {
     }
 
     private static RectPropertySet getMarginProperty(CalculatedStyle style,
-                                                    CSSName shorthandProp,
-                                                    CSSName[] sides,
-                                                    float parentWidth,
-                                                    float parentHeight,
-                                                    CssContext ctx) {
+                                                     CSSName shorthandProp,
+                                                     CSSName[] sides,
+                                                     float parentWidth,
+                                                     float parentHeight,
+                                                     CssContext ctx) {
         String key = null;
 
         if (style._margin == null) {
@@ -543,6 +551,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.52  2005/10/31 22:43:15  tobega
+ * Some memory optimization of the Matcher. Probably cleaner code, too.
+ *
  * Revision 1.51  2005/10/31 19:02:12  pdoubleya
  * support for inherited padding and margins.
  *
