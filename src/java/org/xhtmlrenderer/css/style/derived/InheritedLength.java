@@ -6,18 +6,19 @@ import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: patrick
- * Date: Oct 31, 2005
- * Time: 10:19:41 AM
- * To change this template use File | Settings | File Templates.
+ * A property with value inherit, where the parent's value is a Length; defers to parent's length
+ * value for calculations; this is a marker class.
  */
 public class InheritedLength extends LengthValue {
-    private static final InheritedLength singleton = new InheritedLength();
+    private LengthValue _inheritedFrom;
 
-    private InheritedLength() {}
+    public boolean hasAbsoluteUnit() {
+        return _inheritedFrom.hasAbsoluteUnit();
+    }
 
-    public static InheritedLength instance() { return InheritedLength.singleton; } 
+    public InheritedLength(LengthValue inheritedFrom) {
+        this._inheritedFrom = inheritedFrom;
+    }
 
     /**
      * Returns the calculated proportional value. In this case, this is the same as the base

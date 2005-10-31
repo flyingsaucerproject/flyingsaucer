@@ -50,7 +50,7 @@ public class DerivedValueFactory {
         boolean declaredInherit = cssText.equals("inherit");
         if (declaredInherit) {
             if (style.getParent().isLengthValue(cssName)) {
-                val = InheritedLength.instance();
+                val = new InheritedLength((LengthValue)style.getParent().valueByName(cssName));
             } else {
                 // not as bad as it looks; all IdentValues return their
                 // own instance in copyOf, so they are really singletons

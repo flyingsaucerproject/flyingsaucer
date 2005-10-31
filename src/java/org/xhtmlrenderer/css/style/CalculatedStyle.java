@@ -338,7 +338,7 @@ public class CalculatedStyle {
      * @param cssName The CSS property name, e.g. "font-family"
      * @return See desc.
      */
-    private FSDerivedValue valueByName(CSSName cssName) {
+    public FSDerivedValue valueByName(CSSName cssName) {
         FSDerivedValue val = _derivedValuesById[cssName.FS_ID];
 
         // but the property may not be defined for this Element
@@ -528,6 +528,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.50  2005/10/31 18:01:44  pdoubleya
+ * InheritedLength is created per-length, to accomodate calls that need to defer to a specific parent.
+ *
  * Revision 1.49  2005/10/31 12:38:14  pdoubleya
  * Additional inheritance fixes.
  *
