@@ -27,9 +27,7 @@ import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.constants.ValueConstants;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
-import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
-import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.css.style.derived.*;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
@@ -324,6 +322,11 @@ public class CalculatedStyle {
         return valueByName(cssName).asString();
     }
 
+    /** TODO: doc */
+    public boolean isLengthValue(CSSName cssName) {
+        FSDerivedValue val = valueByName(cssName);
+        return  val instanceof LengthValue;
+    }
 
     /**
      * Returns a {@link FSDerivedValue} by name. Because we are a derived
@@ -411,7 +414,8 @@ public class CalculatedStyle {
         RGBColor rgb = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_RGBCOLOR ? value.getRGBColorValue() : null);
         String s = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_STRING ? value.getStringValue() : null);
 
-        FSDerivedValue dval = DerivedValueFactory.newDerivedValue(this,
+        FSDerivedValue dval = DerivedValueFactory.newDerivedValue(
+                this,
                 cssName,
                 value.getPrimitiveType(),
                 value.getCssText(),
@@ -452,7 +456,7 @@ public class CalculatedStyle {
 
     }
 
-    public static RectPropertySet getPaddingProperty(CalculatedStyle style,
+    private static RectPropertySet getPaddingProperty(CalculatedStyle style,
                                                      CSSName shorthandProp,
                                                      CSSName[] sides,
                                                      float parentWidth,
@@ -477,7 +481,7 @@ public class CalculatedStyle {
         return style._padding;
     }
 
-    public static RectPropertySet getMarginProperty(CalculatedStyle style,
+    private static RectPropertySet getMarginProperty(CalculatedStyle style,
                                                     CSSName shorthandProp,
                                                     CSSName[] sides,
                                                     float parentWidth,
@@ -536,6 +540,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.48  2005/10/31 10:16:08  pdoubleya
+ * Preliminary support for inherited lengths.
+ *
  * Revision 1.47  2005/10/25 15:38:28  pdoubleya
  * Moved guessType() to ValueConstants, applied fix to method suggested by Chris Oliver, to avoid exception-based catch.
  *

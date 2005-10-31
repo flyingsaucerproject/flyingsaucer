@@ -30,7 +30,7 @@ public class DerivedValueFactory {
 
     public static FSDerivedValue newDerivedValue(
             CalculatedStyle style,
-            CSSName name,
+            CSSName cssName,
             short cssSACUnitType,
             String cssText,
             String cssStringValue,
@@ -38,20 +38,25 @@ public class DerivedValueFactory {
     ) {
         FSDerivedValue val = null;
 
-        if (name == CSSName.BACKGROUND_POSITION) {
-            val = new PointValue(style, name, cssSACUnitType, cssText, cssStringValue);
-        } else if ( COLOR_PROPERTIES.contains(name)) {
-            val = new ColorValue(style, name, cssSACUnitType, cssText, cssStringValue, rgbColor);
-        } else if (STRING_PROPERTIES.contains(name)) {
-            val = new StringValue(style, name, cssSACUnitType, cssText, cssStringValue);
-        } else if (Idents.looksLikeALength(cssText) && !(name == CSSName.FONT_WEIGHT)) {
-            val = new LengthValue(style, name, cssSACUnitType, cssText, cssStringValue);
-        } else if (IDENT_PROPERTIES.contains(name) || IdentValue.looksLikeIdent(cssText)) {
+        if (cssName == CSSName.BACKGROUND_POSITION) {
+            val = new PointValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
+        } else if ( COLOR_PROPERTIES.contains(cssName)) {
+            val = new ColorValue(style, cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
+        } else if (STRING_PROPERTIES.contains(cssName)) {
+            val = new StringValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
+        } else if (Idents.looksLikeALength(cssText) && !(cssName == CSSName.FONT_WEIGHT)) {
+            val = new LengthValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
+        } else if (IDENT_PROPERTIES.contains(cssName) || IdentValue.looksLikeIdent(cssText)) {
             val = IdentValue.getByIdentString(cssText);
+            if ( val == IdentValue.INHERIT ) {
+                if ( style.getParent().isLengthValue(cssName)) {
+                    val = new InheritedLength();
+                }
+            }
         } else {
             throw new XRRuntimeException(
                     "Can't determine the dervived value type to use for property " +
-                     "named '" + name + "' with value " + cssText
+                     "named '" + cssName + "' with value " + cssText
             );
         }
 

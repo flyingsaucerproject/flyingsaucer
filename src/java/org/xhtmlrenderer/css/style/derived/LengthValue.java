@@ -59,6 +59,8 @@ public class LengthValue extends DerivedValue {
      */
     private short _lengthPrimitiveType;
 
+    protected LengthValue() { super(); }
+
     public LengthValue(CalculatedStyle style,
                        CSSName name,
                        short cssSACUnitType,
@@ -86,9 +88,11 @@ public class LengthValue extends DerivedValue {
      * @param ctx
      * @return the absolute value or computed absolute value
      */
-    public float getFloatProportionalTo(CSSName cssName,
-                                        float baseValue,
-                                        CssContext ctx) {
+    public float getFloatProportionalTo(
+            CSSName cssName,
+            float baseValue,
+            CssContext ctx
+    ) {
         return calcFloatProportionalValue(getStyle(),
                 cssName,
                 getStringValue(),
@@ -197,7 +201,7 @@ public class LengthValue extends DerivedValue {
                 break;
             case CSSPrimitiveValue.CSS_PERCENTAGE:
                 // percentage depends on the property this value belongs to
-                if (cssName == CSSName.VERTICAL_ALIGN) {
+                if (cssName == CSSName.VERTICAL_ALIGN ) {
                     relVal = style.getParent().getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, baseValue, ctx);
                 } else if (cssName == CSSName.FONT_SIZE) {
                     // same as with EM

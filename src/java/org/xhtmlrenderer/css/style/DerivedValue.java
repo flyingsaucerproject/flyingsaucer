@@ -23,6 +23,8 @@ public abstract class DerivedValue implements FSDerivedValue {
 
     private short _cssSacUnitType;
 
+    protected DerivedValue() {}
+
     protected DerivedValue(
             CalculatedStyle style,
             CSSName name,
