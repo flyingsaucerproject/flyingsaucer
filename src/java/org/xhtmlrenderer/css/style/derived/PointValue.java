@@ -9,11 +9,10 @@ import java.util.regex.Matcher;
 import java.awt.*;
 
 /**
- * Created by IntelliJ IDEA.
- * User: patrick
- * Date: Oct 17, 2005
- * Time: 2:09:55 PM
- * To change this template use File | Settings | File Templates.
+ * A DerivedValue representing a point in space; used for background-position.
+ * Implements asPoint() to retrieve the calculated Point value for location; must
+ * have determined parent width and height first (because location can be dependent
+ * on those).
  */
 public class PointValue extends DerivedValue {
     private float _xPos;
@@ -78,7 +77,8 @@ public class PointValue extends DerivedValue {
      * immediately because it's a small String operation that would be silly to
      * reproduce on each request.
      * <p/>
-     * precondition: the value has been canonicalized to a _point. Handled by {@link org.xhtmlrenderer.css.sheet.factory.BackgroundPositionPropertyDeclarationFactory}
+     * precondition: the value has been canonicalized to a _point.
+     * Handled by {@link org.xhtmlrenderer.css.sheet.factory.BackgroundPositionPropertyDeclarationFactory}
      *
      * @param cssText The CSS text for the property
      */
