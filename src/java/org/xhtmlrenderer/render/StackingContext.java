@@ -59,4 +59,8 @@ public abstract class StackingContext {
 
     //HACK: Context should not be used here
     abstract public void render(RenderingContext c, Graphics2D g2, double top, double bottom);
+
+    abstract public void addAbsolute(Renderable absolute);
+
+    abstract public void addFloat(Renderable floater);
 }

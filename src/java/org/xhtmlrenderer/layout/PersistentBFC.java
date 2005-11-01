@@ -25,8 +25,8 @@ public class PersistentBFC {
     protected List right_floats;
     protected Map offset_map;
     protected List abs_bottom;
-    protected Border insets;
-    protected RectPropertySet padding;
+    public Border insets;
+    public RectPropertySet padding;
 
     private PersistentBFC() {
         left_floats = new ArrayList();

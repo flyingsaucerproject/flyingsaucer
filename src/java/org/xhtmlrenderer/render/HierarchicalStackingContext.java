@@ -47,6 +47,14 @@ public class HierarchicalStackingContext extends StackingContext {
         paintLines(c, g2, (BlockBox) root);
     }
 
+    public void addAbsolute(Renderable absolute) {
+
+    }
+
+    public void addFloat(Renderable floater) {
+
+    }
+
     private void paintBox(RenderingContext c, Graphics2D g2, BlockBox box) {
         /*if (box.component != null) {
             //HACK: the positions during layout are still not perfect, reset here - tobe 2005-01-07

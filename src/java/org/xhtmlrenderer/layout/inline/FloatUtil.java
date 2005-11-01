@@ -25,8 +25,7 @@ import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.render.InlineBlockBox;
-import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -70,22 +69,20 @@ public class FloatUtil {
     /**
      * Description of the Method
      *
-     * @param c         PARAM
+     * @param c       PARAM
      * @param content
-     * @param avail     PARAM
-     * @param curr_line PARAM
      * @return Returns
      */
-    public static InlineBox generateFloatedBlockInlineBox(LayoutContext c, Content content, int avail, LineBox curr_line) {
+    public static BlockBox generateFloatedBlockInlineBox(LayoutContext c, Content content) {
         //Uu.p("generate floated block inline box: avail = " + avail);
         //Uu.p("generate floated block inline box");
         Rectangle oe = c.getExtents();// copy the extents for safety
         c.setExtents(new Rectangle(oe));
 
         //BlockBox block = (BlockBox)layout.layout( c, (Element)node );
-        InlineBlockBox inline_block = new InlineBlockBox();
-        inline_block.element = content.getElement();
-        Boxing.layout(c, inline_block, content);
+        BlockBox floated_block = new BlockBox();
+        floated_block.element = content.getElement();
+        Boxing.layout(c, floated_block, content);
         
         //HACK: tobe 2004-12-22 - guessing here
         // calculate the float property
@@ -95,27 +92,27 @@ public class FloatUtil {
 
         IdentValue ident = c.getCurrentStyle().getIdent(CSSName.FLOAT);
         if (ident == IdentValue.LEFT) {
-            //inline_block.x = 0;
+            //floated_block.x = 0;
         }
 
         if (ident == IdentValue.RIGHT) {
-            inline_block.x = oe.width - inline_block.getWidth();
+            floated_block.x = oe.width - floated_block.getWidth();
         }
         //HACK: tobe 2004-12-22 end
 
-        Point offset = c.getBlockFormattingContext().getOffset(inline_block);
-        inline_block.y += offset.y;
+        Point offset = c.getBlockFormattingContext().getOffset(floated_block);
+        floated_block.y += offset.y;
 
         c.setExtents(oe);
 
         //TODO: check if floats should be affected by vertical alignment
 
-        inline_block.break_after = false;
-        if (inline_block.getWidth() > avail) {
-            inline_block.break_before = true;
-        }
+        /*floated_block.break_after = false;
+        if (floated_block.getWidth() > avail) {
+            floated_block.break_before = true;
+        }*/
 
-        return inline_block;
+        return floated_block;
     }
 
 }

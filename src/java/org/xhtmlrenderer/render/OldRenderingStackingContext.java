@@ -21,6 +21,9 @@ package org.xhtmlrenderer.render;
 
 
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,6 +34,8 @@ import java.awt.Graphics2D;
  */
 public class OldRenderingStackingContext extends StackingContext {
     private Box root;
+    private List absolutes = new ArrayList();
+    private List floats = new ArrayList();
 
     public void addBlock(Renderable b) {
         if (root == null) root = (Box) b;
@@ -43,5 +48,33 @@ public class OldRenderingStackingContext extends StackingContext {
     public void render(RenderingContext c, Graphics2D g2, double top, double bottom) {
         if (root == null) return;
         BoxRendering.paint(c, root);
+        synchronized (floats) {
+            for (Iterator i = floats.iterator(); i.hasNext();) {
+                BlockBox box = (BlockBox) i.next();
+                g2.translate(box.absX - box.x, box.absY - box.y);
+                BoxRendering.paint(c, box);
+                g2.translate(box.x - box.absX, box.y - box.absY);
+            }
+        }
+        synchronized (absolutes) {
+            for (Iterator i = absolutes.iterator(); i.hasNext();) {
+                BlockBox box = (BlockBox) i.next();
+                BoxRendering.paintAbsoluteBox(c, box);
+            }
+        }
+    }
+
+    public void addAbsolute(Renderable absolute) {
+        //HACK: for now
+        synchronized (absolutes) {
+            absolutes.add(absolute);
+        }
+    }
+
+    public void addFloat(Renderable floater) {
+        //HACK: for now
+        synchronized (floats) {
+            floats.add(floater);
+        }
     }
 }

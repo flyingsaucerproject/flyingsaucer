@@ -230,4 +230,8 @@ public class BlockFormattingContext {
     public String toString() {
         return "BFC: (" + x + "," + y + ") - " + persistentBFC.master + "";
     }
+
+    public Box getMaster() {
+        return persistentBFC.master;
+    }
 }

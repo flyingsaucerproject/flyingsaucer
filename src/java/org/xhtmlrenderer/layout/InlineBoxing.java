@@ -19,13 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.font.LineMetrics;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -34,28 +27,20 @@ import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Relative;
-import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
-import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.layout.content.FirstLetterStyle;
-import org.xhtmlrenderer.layout.content.FirstLineStyle;
-import org.xhtmlrenderer.layout.content.FloatedBlockContent;
-import org.xhtmlrenderer.layout.content.InlineBlockContent;
-import org.xhtmlrenderer.layout.content.StylePop;
-import org.xhtmlrenderer.layout.content.StylePush;
-import org.xhtmlrenderer.layout.content.TextContent;
-import org.xhtmlrenderer.layout.content.WhitespaceStripper;
+import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.Breaker;
 import org.xhtmlrenderer.layout.inline.FloatUtil;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBlockBox;
-import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.render.InlineTextBox;
-import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.render.StackingContext;
-import org.xhtmlrenderer.render.Style;
+import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
+
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.font.LineMetrics;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -175,7 +160,7 @@ public class InlineBoxing {
             }
             if (o instanceof StylePop) {
                 if (pendingPushStyles != null && pendingPushStyles.size() != 0) {
-                    pendingPushStyles.remove(pendingPushStyles.size()-1);//was a redundant one
+                    pendingPushStyles.remove(pendingPushStyles.size() - 1);//was a redundant one
                 } else {
                     if (prev_inline == null) {
                         prev_inline = new InlineTextBox();//hope it is decently initialised as empty
@@ -200,7 +185,7 @@ public class InlineBoxing {
                     remaining_width -= rp;
                 }
                 if (c.hasFirstLineStyles()) {
-                    pushedOnFirstLine.remove(pushedOnFirstLine.size()-1);
+                    pushedOnFirstLine.remove(pushedOnFirstLine.size() - 1);
                 }
                 Relative.untranslateRelative(c, c.getCurrentStyle(), false);
                 c.popStyle();
@@ -231,9 +216,29 @@ public class InlineBoxing {
                 if (currentContent instanceof AbsolutelyPositionedContent) {
                     // Uu.p("this might be a problem, but it could just be an absolute block");
                     //     result = new BoxLayout().layout(c,content);
-                    Box absolute = Absolute.generateAbsoluteBox(c, currentContent);
-                    curr_line.setChildrenExceedBounds(true);
-                    curr_line.addChild(absolute);
+                    BlockBox absolute = Absolute.generateAbsoluteBox(c, currentContent);
+                    //curr_line.setChildrenExceedBounds(true);
+                    //curr_line.addChild(absolute);
+                    absolute.setParent(c.getBlockFormattingContext().getMaster());
+                    c.getStackingContext().addAbsolute(absolute);
+                    break;
+                } else if (currentContent instanceof FloatedBlockContent) {
+                    //Uu.p("calcinline: is floated block");
+                    BlockBox floater = FloatUtil.generateFloatedBlockInlineBox(c, currentContent);
+                    remaining_width -= floater.getWidth();
+                    if (remaining_width <= 0 && prev_align_inline != null) {
+                        remaining_width = bounds.width;
+                        saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine);
+                        bounds.height += curr_line.height;
+                        prev_line = curr_line;
+                        curr_line = newLine(box, bounds, prev_line, blockLineMetrics, c);
+                        // skip adjusting for tabs if this box is cleared
+                        if (!box.getStyle().isCleared()) {
+                            remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
+                        }
+                    }
+                    floater.setParent(c.getBlockFormattingContext().getMaster());
+                    c.getStackingContext().addFloat(floater);
                     break;
                 }
 
@@ -301,11 +306,11 @@ public class InlineBoxing {
                     adjustLineHeight(c, curr_line, new_inline);
                 }
 
-                if (!(currentContent instanceof FloatedBlockContent)) {
+                /*if (!(currentContent instanceof FloatedBlockContent)) {
                     // calc new width of the line
 
                     curr_line.contentWidth += new_inline.getWidth();
-                }
+                }*/
                 // reduce the available width
                 remaining_width = remaining_width - new_inline.getWidth();
 
@@ -326,7 +331,7 @@ public class InlineBoxing {
                 }
 
                 // set the inline to use for left alignment
-                if (!isOutsideFlow(currentContent)) {
+                if (!isOutsideFlow(currentContent)) {//is this necessary now?
                     prev_align_inline = new_inline;
                 }
 
@@ -336,7 +341,7 @@ public class InlineBoxing {
             if (currentContent.getStyle() != null) {
                 c.popStyle();
                 if (c.hasFirstLineStyles()) {
-                    pushedOnFirstLine.remove(pushedOnFirstLine.size()-1);
+                    pushedOnFirstLine.remove(pushedOnFirstLine.size() - 1);
                 }
             }
         }
@@ -497,9 +502,6 @@ public class InlineBoxing {
         if (content instanceof InlineBlockContent) {
             //Uu.p("is replaced");
             result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align, curr_line, pendingBlockBox);
-        } else if (content instanceof FloatedBlockContent) {
-            //Uu.p("calcinline: is floated block");
-            result = FloatUtil.generateFloatedBlockInlineBox(c, content, avail, curr_line);
         } else {
 
             //OK, now we should have only TextContent left, fail fast if not
@@ -645,6 +647,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.54  2005/11/01 23:49:23  tobega
+ * Pulled floats and absolutes out of the "normal" rendering
+ *
  * Revision 1.53  2005/10/30 00:02:35  peterbrant
  * - Minor cleanup to get rid of unused CssContext in Style constructor
  * - Switch to ArrayList from LinkedList in a few places (saves several MBs of memory on Hamlet)

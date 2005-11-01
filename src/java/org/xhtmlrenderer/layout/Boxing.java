@@ -338,7 +338,7 @@ public class Boxing {
         List contentList = content.getChildContent(c);
         box.setState(Box.CHILDREN_FLUX);
 
-        //HACK:
+        //HACK: This may not be the right place
         if (box instanceof BlockBox) {// && Configuration.isTrue("xr.stackingcontext.enabled", false)) {
             BlockBox block = (BlockBox) box;
             Point origin = c.getOriginOffset();
@@ -346,7 +346,8 @@ public class Boxing {
             block.absX = origin.getX() + block.x;
             block.renderIndex = c.getNewRenderIndex();
             StackingContext s = c.getStackingContext();
-            s.addBlock(block);
+            if (!block.getStyle().isAbsolute() && !block.getStyle().isFloated())
+                s.addBlock(block);
         }
 
         if (contentList != null && contentList.size() > 0) {
@@ -372,6 +373,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.52  2005/11/01 23:49:23  tobega
+ * Pulled floats and absolutes out of the "normal" rendering
+ *
  * Revision 1.51  2005/10/30 00:02:35  peterbrant
  * - Minor cleanup to get rid of unused CssContext in Style constructor
  * - Switch to ArrayList from LinkedList in a few places (saves several MBs of memory on Hamlet)

@@ -73,4 +73,12 @@ public class FlattenedStackingContext extends StackingContext {
             ((Renderable) i.next()).render(c, g2);
         }
     }
+
+    public void addAbsolute(Renderable absolute) {
+
+    }
+
+    public void addFloat(Renderable floater) {
+
+    }
 }

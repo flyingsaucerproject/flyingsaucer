@@ -48,6 +48,10 @@
   
       span.unpadded { background-color: #00ffff;
       		padding: 0;}
+
+            div#fld {color: red;}
+            div#fld:first-line {color: blue;}
+            span#ee {border-width: 2px; border-style: solid;}
         </style>
     </head>
     <body>
@@ -120,6 +124,13 @@
         <div>Now below: </div>
         <div>
             <span class="unpadded">what about with no padding?</span>
+        </div>
+        <p></p>
+        <div>First-line interaction</div>
+        <div id="fld">
+            <span id="ee">What happens with the border
+                <br/>on the first and second lines?
+            </span>
         </div>
 
 

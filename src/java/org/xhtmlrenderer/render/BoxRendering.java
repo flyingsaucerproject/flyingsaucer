@@ -23,8 +23,8 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.FontUtil;
+import org.xhtmlrenderer.layout.PersistentBFC;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.util.Configuration;
@@ -63,9 +63,10 @@ public class BoxRendering {
 
             if (block.getStyle().isFixed()) {
                 paintFixed(c, block);
-            } else if (block.getStyle().isAbsolute()) {
+            } /*else if (block.getStyle().isAbsolute()) {
                 paintAbsoluteBox(c, block);
-            } else {
+            }*/
+            else {
                 //text decoration?
                 //TODO: can't this apply to fixeds and absolutes?
                 IdentValue decoration = calculatedStyle.getIdent(CSSName.TEXT_DECORATION);
@@ -222,20 +223,26 @@ public class BoxRendering {
     public static void paintAbsoluteBox(RenderingContext c, Box block) {
         Rectangle rect = c.getExtents();
         //why this?
-		
+
         int xoff = 0;
         int yoff = 0;
         //Uu.p("xoff = " + xoff + " yoff = " + yoff);
-        BlockFormattingContext bfc = c.getBlockFormattingContext();
+        //BlockFormattingContext bfc = c.getBlockFormattingContext();
+        BlockBox parent = (BlockBox) block.getParent();
+        PersistentBFC bfc = parent.getPersistentBFC();
         //Uu.p("bfc = " + bfc + " x,y = " + bfc.getX() + "," + bfc.getY());
         //Uu.p("bfc = " + bfc.hashCode());
         //Uu.p(" insets = " + bfc.getInsets());
         //Uu.p(" padding = " + bfc.getPadding());
-        xoff += bfc.getX();
-        yoff += bfc.getY();
+        //xoff += bfc.getX();
+        //yoff += bfc.getY();
+        xoff += parent.absX;
+        yoff += parent.absY;
         //Uu.p("xoff = " + xoff + " yoff = " + yoff);
-        xoff += (bfc.getInsets().left - (int) bfc.getPadding().left());
-        yoff += (bfc.getInsets().top - (int) bfc.getPadding().top());
+        //xoff += (bfc.getInsets().left - (int) bfc.getPadding().left());
+        //yoff += (bfc.getInsets().top - (int) bfc.getPadding().top());
+        xoff += (bfc.insets.left - (int) bfc.padding.left());
+        yoff += (bfc.insets.top - (int) bfc.padding.top());
         //Uu.p("xoff = " + xoff + " yoff = " + yoff);
         
         
@@ -251,7 +258,8 @@ public class BoxRendering {
             yoff = 0;
         }*/
         if (block.top_set) {
-            yoff += (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c);
+            //yoff += (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c);
+            yoff += (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, parent.getHeight(), c);
         } else {
             yoff = 0;
         }
@@ -352,6 +360,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.53  2005/11/01 23:49:24  tobega
+ * Pulled floats and absolutes out of the "normal" rendering
+ *
  * Revision 1.52  2005/10/30 00:02:35  peterbrant
  * - Minor cleanup to get rid of unused CssContext in Style constructor
  * - Switch to ArrayList from LinkedList in a few places (saves several MBs of memory on Hamlet)

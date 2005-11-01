@@ -24,7 +24,6 @@ import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.LinkedList;
@@ -56,8 +55,8 @@ public class BlockRendering {
         if (box.component != null) {
             //HACK: the positions during layout are still not perfect, reset here - tobe 2005-01-07
             //TODO: fix the translates during layout to handle this directly instead
-            Point origin = c.getOriginOffset();
-            box.component.setLocation((int) origin.getX(), (int) origin.getY());
+            //Point origin = c.getOriginOffset();
+            //box.component.setLocation((int) origin.getX(), (int) origin.getY());
             if (!c.isInteractive()) {
                 box.component.paint(c.getGraphics());
             }

@@ -26,6 +26,7 @@ import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.util.Uu;
 
@@ -96,7 +97,7 @@ public class Absolute {
      * @param content PARAM
      * @return Returns
      */
-    public static Box generateAbsoluteBox(LayoutContext c, Content content) {
+    public static BlockBox generateAbsoluteBox(LayoutContext c, Content content) {
         //Uu.p("generate absolute block inline box: avail = " + content);
         Rectangle oe = c.getExtents();// copy the extents for safety
         c.setExtents(new Rectangle(oe));
@@ -106,7 +107,7 @@ public class Absolute {
         //Uu.p("got a block box from the sub layout: " + box);
         c.setExtents(oe);
 
-        return box;
+        return (BlockBox) box;
     }
 
     /**
