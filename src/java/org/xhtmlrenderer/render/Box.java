@@ -24,6 +24,8 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.PersistentBFC;
 
 import javax.swing.*;
+
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -201,6 +203,7 @@ public abstract class Box {
     private boolean movedPastPageBreak;
 
     private Style style;
+    private Box containingBlock;
 
     /**
      * Constructor for the Box object
@@ -565,12 +568,31 @@ public abstract class Box {
     public void setStyle(Style style) {
         this.style = style;
     }
+
+    public Box getContainingBlock() {
+        return containingBlock == null ? getParent() : containingBlock;
+    }
+
+    public void setContainingBlock(Box containingBlock) {
+        this.containingBlock = containingBlock;
+    }
+    
+    public void paint(RenderingContext c, int tx, int ty) {
+        c.translate(tx, ty);
+        c.getGraphics().translate(tx, ty);
+        BoxRendering.paint(c, this);
+        c.getGraphics().translate(-tx, -ty);
+        c.translate(-tx, -ty);
+    }    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.69  2005/11/02 18:15:29  peterbrant
+ * First merge of Tobe's and my stacking context work / Rework float code (not done yet)
+ *
  * Revision 1.68  2005/10/30 22:06:15  peterbrant
  * Only create child List if necessary
  *

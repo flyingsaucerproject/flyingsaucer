@@ -19,14 +19,11 @@
  */
 package org.xhtmlrenderer.layout.block;
 
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.IdentValue;
+import java.awt.Point;
+
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.render.Box;
-
-import java.awt.Point;
 
 
 /**
@@ -36,127 +33,66 @@ import java.awt.Point;
  */
 public class FloatUtil {
 
-    /**
-     * Description of the Method
-     *
-     * @param c     PARAM
-     * @param block PARAM
-     */
     public static void preChildrenLayout(LayoutContext c, Box block) {
         BlockFormattingContext bfc = new BlockFormattingContext(block, c);
         bfc.setWidth(block.getWidth());
         c.pushBFC(bfc);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c PARAM
-     */
     public static void postChildrenLayout(LayoutContext c) {
         c.getBlockFormattingContext().doFinalAdjustments();
         c.popBFC();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
     public static void setupFloat(LayoutContext c, Box box) {
-        if (ContentUtil.isFloated(c.getCurrentStyle())) {
-            //Uu.p("==== setup float ====");
-            //Uu.dump_stack();
-            IdentValue floatVal = c.getCurrentStyle().getIdent(CSSName.FLOAT);
-            if (floatVal == IdentValue.NONE) {
-                return;
-            }
-            //box.floated = true;
-            Point offset = c.getBlockFormattingContext().getOffset();
-            box.y = -offset.y;
-            if (floatVal == IdentValue.LEFT) {
-                //Uu.p("doing left");
+        if (box.getStyle().isFloated()) {
+            box.y = (int)c.getFloatingY();
+            if (box.getStyle().isFloatedLeft()) {
                 positionBoxLeft(c, box);
                 c.getBlockFormattingContext().pushDownLeft(box);
                 //Uu.p("final box = " + box);
                 c.getBlockFormattingContext().addLeftFloat(box);
-            } else if (floatVal == IdentValue.RIGHT) {
+            } else if (box.getStyle().isFloatedRight()) {
                 positionBoxRight(c, box);
                 c.getBlockFormattingContext().pushDownRight(box);
                 //Uu.p("final box = " + box);
                 c.getBlockFormattingContext().addRightFloat(box);
             }
-            //Uu.p("box = " + box);
-            //Uu.p("==== end setup ====");
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
     private static void positionBoxLeft(LayoutContext c, Box box) {
-        //Uu.p("positionBoxLeft()");
-        //Uu.dump_stack();
-        //Uu.p("calling the new float routine");
-        //Uu.p("starting box = " + box);
         BlockFormattingContext bfc = c.getBlockFormattingContext();
-        Box floater = bfc.newGetLeftFloatX(box);
-        //Uu.p("floater = " + floater);
-        //Uu.p("extents = " + c.getExtents());
-        if (floater == null) {
-            //Uu.p("no floater blocked. returning");
-            box.x = 0;
-            return;
+        box.x = 0;
+        Box floater = bfc.getLeftFloatX(c, box);
+        if (floater != null) {
+            box.x = floater.x + floater.getWidth();
+    
+            if (box.getStyle().isClearLeft() || (box.x + box.getWidth() > box.getContainingBlock().contentWidth &&
+                    box.getWidth() <= box.getContainingBlock().contentWidth)) {
+                box.x = 0;
+                box.y = (int)bfc.getClearDelta(c, box, floater);
+                positionBoxLeft(c, box);
+            }
         }
-
-        box.x = floater.x + floater.getWidth();
-
-        if (box.getStyle().isClearLeft() || (box.x + box.getWidth() > c.getExtents().width &&
-                box.getWidth() <= c.getExtents().width)) {
-            //Uu.p("not enough room!!!");
-            // move the box to be below the last float and
-            // try it again
-            Point floaterOffset = c.getBlockFormattingContext().getOffset(floater);
-            box.y = floater.y - floaterOffset.y + floater.height;
-            //Uu.p("trying again with box: " + box);
-            positionBoxLeft(c, box);
-            //Uu.p("final box 1 = " + box);
-        }
-        //Uu.p("final box 2 = " + box + " " + box.hashCode());
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
     private static void positionBoxRight(LayoutContext c, Box box) {
         BlockFormattingContext bfc = c.getBlockFormattingContext();
-        Box floater = bfc.getRightFloatX(box);
-        if (floater == null) {
-            // Uu.p("floaters are null");
-            // Uu.p("extents = " + c.getExtents().width);
-            box.x = c.getExtents().width - box.getWidth();
-            return;
+        box.x = box.getContainingBlock().contentWidth - box.getWidth();
+        Box floater = bfc.getRightFloatX(c, box);
+        if (floater != null) {
+            box.x = floater.x - box.getWidth();
+    
+            if (box.getStyle().isClearRight() || (box.x < 0 &&
+                    box.getWidth() <= c.getExtents().width)) {
+                // move the box to be below the last float and
+                // try it again
+                box.x = box.getContainingBlock().contentWidth - box.getWidth();
+                box.y = (int)bfc.getClearDelta(c, box, floater);
+                positionBoxRight(c, box);
+            }
         }
-
-        box.x = floater.x - box.getWidth();
-
-        if (box.getStyle().isClearRight() || (box.x < 0 &&
-                box.getWidth() <= c.getExtents().width)) {
-            // Uu.p("not enough room!!!");
-            // move the box to be below the last float and
-            // try it again
-            Point floaterOffset = c.getBlockFormattingContext().getOffset(floater);
-            box.y = floater.y - floaterOffset.y + floater.height;
-            positionBoxRight(c, box);
-        }
-        // Uu.p("final box = " + box);
     }
 
 }
@@ -165,6 +101,9 @@ public class FloatUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/11/02 18:15:30  peterbrant
+ * First merge of Tobe's and my stacking context work / Rework float code (not done yet)
+ *
  * Revision 1.25  2005/10/27 00:08:54  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

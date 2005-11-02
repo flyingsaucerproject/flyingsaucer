@@ -19,19 +19,20 @@
  */
 package org.xhtmlrenderer.layout.inline;
 
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.IdentValue;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.Iterator;
+import java.util.List;
+
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.FloatingBlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRRuntimeException;
-
-import java.awt.Point;
-import java.awt.Rectangle;
 
 
 /**
@@ -40,14 +41,7 @@ import java.awt.Rectangle;
  * @author Torbjörn Gannholm
  */
 public class FloatUtil {
-    /**
-     * the new way of doing floats
-     *
-     * @param c               PARAM
-     * @param prev_line       PARAM
-     * @param remaining_width PARAM
-     * @return Returns
-     */
+
     public static int adjustForTab(LayoutContext c, LineBox prev_line, int remaining_width) {
         if (prev_line.contentWidth == 0) {
 //temporarily set width as an "easy" way of passing this as parameter
@@ -64,56 +58,50 @@ public class FloatUtil {
         return remaining_width;
     }
 
-
-    // change this to use the existing block instead of a new one
-    /**
-     * Description of the Method
-     *
-     * @param c       PARAM
-     * @param content
-     * @return Returns
-     */
-    public static BlockBox generateFloatedBlockInlineBox(LayoutContext c, Content content) {
+    public static FloatingBlockBox generateFloatedBlock(
+            LayoutContext c, Content content, int avail, LineBox curr_line, List pendingFloats) {
         //Uu.p("generate floated block inline box: avail = " + avail);
         //Uu.p("generate floated block inline box");
         Rectangle oe = c.getExtents();// copy the extents for safety
         c.setExtents(new Rectangle(oe));
 
-        //BlockBox block = (BlockBox)layout.layout( c, (Element)node );
-        BlockBox floated_block = new BlockBox();
-        floated_block.element = content.getElement();
-        Boxing.layout(c, floated_block, content);
+        c.setFloatingY(curr_line.y);
+        FloatingBlockBox block = new FloatingBlockBox();
+        block.setContainingBlock(curr_line.getParent());
+        block.element = content.getElement();
+        Boxing.layout(c, block, content);
         
-        //HACK: tobe 2004-12-22 - guessing here
-        // calculate the float property
-        if (c.getCurrentStyle().isIdent(CSSName.FLOAT, IdentValue.NONE)) {
-            throw new XRRuntimeException("Invalid call to  generateFloatedBlockInlineBox(); where float: none ");
+        if (! block.getStyle().isFloated()) {
+            throw new XRRuntimeException("Invalid call to generateFloatedBlock(); where float: none ");
         }
-
-        IdentValue ident = c.getCurrentStyle().getIdent(CSSName.FLOAT);
-        if (ident == IdentValue.LEFT) {
-            //floated_block.x = 0;
-        }
-
-        if (ident == IdentValue.RIGHT) {
-            floated_block.x = oe.width - floated_block.getWidth();
-        }
-        //HACK: tobe 2004-12-22 end
-
-        Point offset = c.getBlockFormattingContext().getOffset(floated_block);
-        floated_block.y += offset.y;
 
         c.setExtents(oe);
-
-        //TODO: check if floats should be affected by vertical alignment
-
-        /*floated_block.break_after = false;
-        if (floated_block.getWidth() > avail) {
-            floated_block.break_before = true;
-        }*/
-
-        return floated_block;
+        
+        if (pendingFloats.size() > 0 || block.getWidth() > avail) {
+            pendingFloats.add(block);
+            c.getBlockFormattingContext().removeFloat(block);
+            block.setPending(true);
+        }
+        
+        return block;
     }
-
+    
+    public static void positionPendingFloats(LayoutContext c, List pendingFloats) {
+        if (pendingFloats.size() > 0) {
+            for (int i = 0; i < pendingFloats.size(); i++) {
+                if (i != 0) {
+                    c.setFloatingY(0d);
+                }
+                FloatingBlockBox block = (FloatingBlockBox)pendingFloats.get(i);
+                org.xhtmlrenderer.layout.block.FloatUtil.setupFloat(c, block);
+                block.setPending(false);
+                for (int j = i+1; j < pendingFloats.size(); j++) {
+                    FloatingBlockBox following = (FloatingBlockBox)pendingFloats.get(j);
+                    following.y = block.y;
+                }
+            }
+            pendingFloats.clear();
+        }
+    }
 }
 

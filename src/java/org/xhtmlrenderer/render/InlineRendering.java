@@ -32,6 +32,7 @@ import org.xhtmlrenderer.util.GraphicsUtil;
 
 import java.awt.*;
 import java.awt.font.LineMetrics;
+import java.awt.geom.AffineTransform;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -89,12 +90,12 @@ public class InlineRendering {
      */
     public static void paintText(RenderingContext c, int ix, int iy, InlineTextBox inline, LineMetrics lm) {
         String text = inline.getSubstring();
-        Graphics g = c.getGraphics();
+        Graphics2D g = (Graphics2D)c.getGraphics();
         //adjust font for current settings
-        Font oldfont = c.getGraphics().getFont();
-        c.getGraphics().setFont(inline.getStyle().getFont(c));
-        Color oldcolor = c.getGraphics().getColor();
-        c.getGraphics().setColor(inline.getStyle().getCalculatedStyle().getColor());
+        Font oldfont = g.getFont();
+        g.setFont(inline.getStyle().getFont(c));
+        Color oldcolor = g.getColor();
+        g.setColor(inline.getStyle().getCalculatedStyle().getColor());
 
         //baseline is baseline! iy -= (int) lm.getDescent();
 
@@ -103,7 +104,7 @@ public class InlineRendering {
             c.getTextRenderer().drawString(c.getGraphics(), text, ix, iy);
         }
 
-        c.getGraphics().setColor(oldcolor);
+        g.setColor(oldcolor);
         if (c.debugDrawFontMetrics()) {
             g.setColor(Color.red);
             g.drawLine(ix, iy, ix + inline.getWidth(), iy);
@@ -115,7 +116,7 @@ public class InlineRendering {
         }
 
         // restore the old font
-        c.getGraphics().setFont(oldfont);
+        g.setFont(oldfont);
     }
 
     /**

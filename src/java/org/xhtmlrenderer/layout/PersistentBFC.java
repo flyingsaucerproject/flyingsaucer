@@ -1,15 +1,18 @@
 package org.xhtmlrenderer.layout;
 
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.render.Box;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.xhtmlrenderer.render.RenderingContext;
 
 /**
  * Created by IntelliJ IDEA.
@@ -51,6 +54,24 @@ public class PersistentBFC {
         this.master = master;
         master.setPersistentBFC(this);
     }
-
-
+    
+    public void paintFloats(RenderingContext c) {
+        for (Iterator i = left_floats.iterator(); i.hasNext(); ) {
+            Box floater = (Box)i.next();
+            Point offset = (Point)offset_map.get(floater);
+            floater.paint(c, -offset.x, -offset.y);
+        }
+        
+        for (Iterator i = right_floats.iterator(); i.hasNext(); ) {
+            Box floater = (Box)i.next();
+            Point offset = (Point)offset_map.get(floater);
+            floater.paint(c, -offset.x, -offset.y);
+        }        
+    }
+    
+    public void removeFloat(Box floater) {
+        offset_map.remove(floater);
+        left_floats.remove(floater);
+        right_floats.remove(floater);
+    }
 }

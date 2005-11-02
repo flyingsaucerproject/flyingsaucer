@@ -19,6 +19,16 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
+import java.util.logging.Level;
+
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -35,14 +45,6 @@ import org.xhtmlrenderer.render.StackingContext;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.LinkedList;
-import java.util.Stack;
-import java.util.logging.Level;
-
 public class LayoutContext implements CssContext, PageContext {
     SharedContext sharedContext;
     private LinkedList firstLineStyles = new LinkedList();
@@ -51,6 +53,10 @@ public class LayoutContext implements CssContext, PageContext {
     private RenderQueue renderQueue;
 
     private boolean pendingPageBreak;
+    
+    private double floatingY;
+    private List pendingFloats;
+    
     //HACK:
     private StackingContext initialStackingContext = StackingContext.newInstance();
     private Graphics2D graphics;
@@ -450,5 +456,21 @@ public class LayoutContext implements CssContext, PageContext {
 
     public boolean isPrint() {
         return sharedContext.isPrint();
+    }
+
+    /**
+     * A holder to provide the y-coordinate relative to the containing block
+     * for floats
+     */
+    public double getFloatingY() {
+        return floatingY;
+    }
+
+    /**
+     * @see {@link #getFloatingY()}
+     * @param floatingY
+     */
+    public void setFloatingY(double floatingY) {
+        this.floatingY = floatingY;
     }
 }

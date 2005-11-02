@@ -72,9 +72,9 @@ public class OldRenderingStackingContext extends StackingContext {
     }
 
     public void addFloat(Renderable floater) {
-        //HACK: for now
-        synchronized (floats) {
-            floats.add(floater);
-        }
+//        //HACK: for now
+//        synchronized (floats) {
+//            floats.add(floater);
+//        }
     }
 }

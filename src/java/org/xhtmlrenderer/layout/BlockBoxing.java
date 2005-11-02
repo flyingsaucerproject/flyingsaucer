@@ -161,7 +161,6 @@ public class BlockBoxing {
             box.height += (child_box.y - initialY) + child_box.height;
             c.addMaxHeight(box.height + box.y + (int) c.getOriginOffset().getY());
             if (c.shouldStop()) {
-                System.out.println("doing a quick stop");
                 break;
             }
 
@@ -201,6 +200,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/11/02 18:15:25  peterbrant
+ * First merge of Tobe's and my stacking context work / Rework float code (not done yet)
+ *
  * Revision 1.22  2005/10/27 00:08:58  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

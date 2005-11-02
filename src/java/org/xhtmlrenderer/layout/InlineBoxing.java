@@ -19,6 +19,13 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.font.LineMetrics;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -27,20 +34,30 @@ import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Relative;
-import org.xhtmlrenderer.layout.content.*;
+import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
+import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.layout.content.FirstLetterStyle;
+import org.xhtmlrenderer.layout.content.FirstLineStyle;
+import org.xhtmlrenderer.layout.content.FloatedBlockContent;
+import org.xhtmlrenderer.layout.content.InlineBlockContent;
+import org.xhtmlrenderer.layout.content.StylePop;
+import org.xhtmlrenderer.layout.content.StylePush;
+import org.xhtmlrenderer.layout.content.TextContent;
+import org.xhtmlrenderer.layout.content.WhitespaceStripper;
 import org.xhtmlrenderer.layout.inline.Breaker;
 import org.xhtmlrenderer.layout.inline.FloatUtil;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
-import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.FloatingBlockBox;
+import org.xhtmlrenderer.render.InlineBlockBox;
+import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineTextBox;
+import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.render.StackingContext;
+import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
-
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.font.LineMetrics;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 
 /**
@@ -92,7 +109,7 @@ public class InlineBoxing {
         prev_line.setStyle(new Style(c.getCurrentStyle(), 0));
         c.popStyle();
         prev_line.setParent(box);
-        prev_line.y = bounds.y;
+        prev_line.y = 0;
         prev_line.height = 0;
         InlineBox prev_inline = null;
         InlineBox prev_align_inline = null;
@@ -106,6 +123,7 @@ public class InlineBoxing {
         boolean isFirstLetter = true;
 
         List pendingPushStyles = null;
+        List pendingFloats = new ArrayList();
         int pendingLeftPadding = 0;
         int pendingRightPadding = 0;
         // loop until no more nodes
@@ -224,21 +242,13 @@ public class InlineBoxing {
                     break;
                 } else if (currentContent instanceof FloatedBlockContent) {
                     //Uu.p("calcinline: is floated block");
-                    BlockBox floater = FloatUtil.generateFloatedBlockInlineBox(c, currentContent);
-                    remaining_width -= floater.getWidth();
-                    if (remaining_width <= 0 && prev_align_inline != null) {
-                        remaining_width = bounds.width;
-                        saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine);
-                        bounds.height += curr_line.height;
-                        prev_line = curr_line;
-                        curr_line = newLine(box, bounds, prev_line, blockLineMetrics, c);
-                        // skip adjusting for tabs if this box is cleared
-                        if (!box.getStyle().isCleared()) {
-                            remaining_width = FloatUtil.adjustForTab(c, curr_line, remaining_width);
-                        }
+                    FloatingBlockBox floater = FloatUtil.generateFloatedBlock(c, currentContent, remaining_width, curr_line, pendingFloats);
+                    if (! floater.isPending()) {
+                        remaining_width -= floater.getWidth();
                     }
-                    floater.setParent(c.getBlockFormattingContext().getMaster());
+                    
                     c.getStackingContext().addFloat(floater);
+                    
                     break;
                 }
 
@@ -261,14 +271,15 @@ public class InlineBoxing {
                 start = trimLeadingSpace(c.getCurrentStyle(), prev_inline, currentContent, start);
                 new_inline = calculateInline(c, currentContent, remaining_width - fit, bounds.width,
                         prev_align_inline, isFirstLetter, box.firstLetterStyle,
-                        curr_line, start, pendingBlockBox);
+                        curr_line, start, pendingBlockBox, pendingFloats);
+                
                 pendingBlockBox = null;
 
                 // if this inline needs to be on a new line
                 if (prev_align_inline != null && new_inline.break_before) {
                     // Uu.p("break before");
                     remaining_width = bounds.width;
-                    saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine);
+                    saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine, pendingFloats);
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line, blockLineMetrics, c);
@@ -288,7 +299,10 @@ public class InlineBoxing {
                 // Uu.p("adding inline child: " + new_inline);
                 //the inline might be set to size 0,0 after this, if it is first whitespace on line.
                 // Cannot discard because it may contain style-pushes
-                curr_line.addInlineChild(new_inline);
+                if (! (currentContent instanceof FloatedBlockContent)) {
+                    curr_line.addInlineChild(new_inline);
+                }
+                
                 // Uu.p("current line = " + curr_line);
                 if (new_inline instanceof InlineTextBox) {
                     start = ((InlineTextBox) new_inline).end_index;
@@ -308,7 +322,6 @@ public class InlineBoxing {
 
                 /*if (!(currentContent instanceof FloatedBlockContent)) {
                     // calc new width of the line
-
                     curr_line.contentWidth += new_inline.getWidth();
                 }*/
                 // reduce the available width
@@ -320,7 +333,7 @@ public class InlineBoxing {
                     // then remaining_width = max_width
                     remaining_width = bounds.width;
                     // save the line
-                    saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine);
+                    saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine, pendingFloats);
                     // increase bounds height to account for the new line
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
@@ -347,7 +360,7 @@ public class InlineBoxing {
         }
 
         // save the final line
-        saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine);
+        saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine, pendingFloats);
         bounds.height += curr_line.height;
         if (!c.shrinkWrap()) box.contentWidth = bounds.width;
         box.height = bounds.height;
@@ -373,13 +386,6 @@ public class InlineBoxing {
         return start;
     }
 
-
-    /**
-     * Gets the outsideFlow attribute of the InlineBoxing class
-     *
-     * @param currentContent PARAM
-     * @return The outsideFlow value
-     */
     public static boolean isOutsideFlow(Content currentContent) {
         if (currentContent instanceof FloatedBlockContent) {
             return true;
@@ -390,16 +396,6 @@ public class InlineBoxing {
         return false;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param box              PARAM
-     * @param bounds           PARAM
-     * @param prev_line        PARAM
-     * @param blockLineMetrics
-     * @param c
-     * @return Returns
-     */
     private static LineBox newLine(Box box, Rectangle bounds, LineBox prev_line, LineMetrics blockLineMetrics, LayoutContext c) {
         LineBox curr_line = new LineBox();
         c.pushStyle(CascadedStyle.emptyCascadedStyle);
@@ -476,31 +472,18 @@ public class InlineBoxing {
             curr_line.height = curr_line.ascent + curr_line.descent;
         }
     }
-
+    
     /**
      * Get the longest inline possible.
-     *
-     * @param c                PARAM
-     * @param content
-     * @param avail            PARAM
-     * @param max_width        PARAM
-     * @param prev_align       PARAM
-     * @param isFirstLetter
-     * @param firstLetterStyle
-     * @param curr_line        PARAM
-     * @param start            PARAM
-     * @param pendingBlockBox
-     * @return Returns
      */
     private static InlineBox calculateInline(LayoutContext c, Content content, int avail, int max_width,
                                              InlineBox prev_align, boolean isFirstLetter, CascadedStyle firstLetterStyle,
-                                             LineBox curr_line, int start, InlineBlockBox pendingBlockBox) {
-
-        InlineBox result;
+                                             LineBox curr_line, int start, InlineBlockBox pendingBlockBox,
+                                             List pendingFloats) {
+        InlineBox result = null;
 
         // handle each case
         if (content instanceof InlineBlockContent) {
-            //Uu.p("is replaced");
             result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align, curr_line, pendingBlockBox);
         } else {
 
@@ -565,6 +548,7 @@ public class InlineBoxing {
             }
             result = inline;
         }
+        
         return result;
     }
 
@@ -586,17 +570,9 @@ public class InlineBoxing {
     }
 
 
-    /**
-     * Description of the Method
-     *
-     * @param line_to_save PARAM
-     * @param prev_line    PARAM
-     * @param c            PARAM
-     * @param block        PARAM
-     * @param minHeight
-     */
     private static void saveLine(LineBox line_to_save, LineBox prev_line, Rectangle bounds,
-                                 LayoutContext c, Box block, int minHeight, List pushedOnFirstLine) {
+                                 LayoutContext c, Box block, int minHeight, List pushedOnFirstLine,
+                                 List pendingFloats) {
         if (c.hasFirstLineStyles()) {
             //first pop element styles pushed on first line
             for (int i = 0; i < pushedOnFirstLine.size(); i++) c.popStyle();
@@ -615,18 +591,23 @@ public class InlineBoxing {
         //text-align now handled in render
         // set the y
         line_to_save.y = prev_line.y + prev_line.height;
-
-        // new float code
-        if (!block.getStyle().isClearLeft()) {
-            line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(line_to_save);
-        }
-
+        
         if (line_to_save.height != 0) {//would like to discard it otherwise, but that loses floats
             if (line_to_save.height < minHeight) {
                 line_to_save.height = minHeight;
             }
         }
         block.addChild(line_to_save);
+        
+        if (pendingFloats.size() > 0) {
+            c.setFloatingY(c.getFloatingY() + line_to_save.height);
+            FloatUtil.positionPendingFloats(c, pendingFloats);
+        }
+        
+        // new float code
+        if (!block.getStyle().isClearLeft()) {
+            line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(line_to_save);
+        }
 
         if (c.isPrint() && line_to_save.crossesPageBreak(c)) {
             line_to_save.moveToNextPage(c, bounds);
@@ -647,6 +628,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.55  2005/11/02 18:15:24  peterbrant
+ * First merge of Tobe's and my stacking context work / Rework float code (not done yet)
+ *
  * Revision 1.54  2005/11/01 23:49:23  tobega
  * Pulled floats and absolutes out of the "normal" rendering
  *

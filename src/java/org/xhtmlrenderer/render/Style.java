@@ -74,6 +74,14 @@ public class Style {
         IdentValue floatVal = calculatedStyle.getIdent(CSSName.FLOAT);
         return floatVal == IdentValue.LEFT || floatVal == IdentValue.RIGHT;
     }
+    
+    public boolean isFloatedLeft() {
+        return calculatedStyle.isIdent(CSSName.FLOAT, IdentValue.LEFT);
+    }
+    
+    public boolean isFloatedRight() {
+        return calculatedStyle.isIdent(CSSName.FLOAT, IdentValue.RIGHT);
+    }
 
     public boolean isRelative() {
         return calculatedStyle.isIdent(CSSName.POSITION, IdentValue.RELATIVE);

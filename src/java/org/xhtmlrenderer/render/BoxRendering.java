@@ -52,7 +52,7 @@ public class BoxRendering {
      */
     public static void paint(RenderingContext c, Box box) {
         Box block = (Box) box;
-
+        
         if (block instanceof AnonymousBlockBox) {
             InlineRendering.paintInlineContext(c, block);
         } else {
@@ -101,6 +101,10 @@ public class BoxRendering {
             if (!box.getStyle().isAbsolute()) {
                 oldBounds.y = oldBounds.y + block.height;
                 c.setExtents(oldBounds);
+            }
+            
+            if (block.persistentBFC != null) {
+                block.persistentBFC.paintFloats(c);
             }
         }
 
@@ -360,6 +364,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.54  2005/11/02 18:15:28  peterbrant
+ * First merge of Tobe's and my stacking context work / Rework float code (not done yet)
+ *
  * Revision 1.53  2005/11/01 23:49:24  tobega
  * Pulled floats and absolutes out of the "normal" rendering
  *
