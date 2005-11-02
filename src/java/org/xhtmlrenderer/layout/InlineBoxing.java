@@ -320,10 +320,8 @@ public class InlineBoxing {
                     adjustLineHeight(c, curr_line, new_inline);
                 }
 
-                /*if (!(currentContent instanceof FloatedBlockContent)) {
-                    // calc new width of the line
-                    curr_line.contentWidth += new_inline.getWidth();
-                }*/
+                // calc new width of the line
+                curr_line.contentWidth += new_inline.getWidth();
                 // reduce the available width
                 remaining_width = remaining_width - new_inline.getWidth();
 
@@ -628,6 +626,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.56  2005/11/02 19:59:59  peterbrant
+ * Uncomment mistakenly commented out code
+ *
  * Revision 1.55  2005/11/02 18:15:24  peterbrant
  * First merge of Tobe's and my stacking context work / Rework float code (not done yet)
  *
