@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.util.List;
 
 /**
  * Description of the Class
@@ -60,11 +59,12 @@ public abstract class InlineBox extends Box {
     /**
      * Next two fields are needed to keep track of the element tree
      * for restyling.
-     * A pushstyle is the start of an inline element.
+     * A pushstyle is the setStartStyle of an inline element.
      * A popstyle is the end of an inline element.
      */
     public int popstyles;
-    public List pushstyles;
+    public int pushstyles;
+    private InlineElement inlineElement;
 
     /**
      * Constructor for the InlineBox object
@@ -88,7 +88,7 @@ public abstract class InlineBox extends Box {
 
         return "InlineBox " +
                 "bnds = " + x + "," + y + " - " + getWidth() + "x" + height +
-                " start = " + this.start_index + " end = " + this.end_index;
+                " setStartStyle = " + this.start_index + " end = " + this.end_index;
     }
 
     /**
@@ -97,7 +97,7 @@ public abstract class InlineBox extends Box {
      * @return The endOfParentContent value
      */
     public abstract boolean isEndOfParentContent();
-    
+
     //TODO: figure out another way to find the font, if we still need this method
     /*
      * public int getAdvance(int x, Graphics g) {
@@ -112,12 +112,22 @@ public abstract class InlineBox extends Box {
      * return fm.charsWidth(chars, 0, x);
      * }
      */
+    public void setInlineElement(InlineElement parent) {
+        inlineElement = parent;
+    }
+
+    public InlineElement getInlineElement() {
+        return inlineElement;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2005/11/02 23:36:45  tobega
+ * InlineElement in place
+ *
  * Revision 1.42  2005/10/29 00:58:04  tobega
  * Split out restyling from rendering and fixed up hovering
  *

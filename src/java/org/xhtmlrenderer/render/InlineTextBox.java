@@ -120,7 +120,7 @@ public class InlineTextBox extends InlineBox {
                 throw new RuntimeException("negative index in InlineBox");
             }
             if (end_index < start_index) {
-                throw new RuntimeException("end is less than start");
+                throw new RuntimeException("end is less than setStartStyle");
             }
             return getMasterText().substring(start_index, end_index);
         } else {

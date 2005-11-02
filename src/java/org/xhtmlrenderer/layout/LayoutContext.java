@@ -19,16 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
-import java.util.logging.Level;
-
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -38,12 +28,18 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.PageContext;
-import org.xhtmlrenderer.render.RenderQueue;
-import org.xhtmlrenderer.render.StackingContext;
+import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
+
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
+import java.util.logging.Level;
 
 public class LayoutContext implements CssContext, PageContext {
     SharedContext sharedContext;
@@ -53,13 +49,15 @@ public class LayoutContext implements CssContext, PageContext {
     private RenderQueue renderQueue;
 
     private boolean pendingPageBreak;
-    
+
     private double floatingY;
     private List pendingFloats;
-    
+
     //HACK:
     private StackingContext initialStackingContext = StackingContext.newInstance();
     private Graphics2D graphics;
+
+    private InlineElement currentInlineElement;
 
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
@@ -183,7 +181,7 @@ public class LayoutContext implements CssContext, PageContext {
     }
 
     public boolean isStylesAllPopped() {
-        return styleStack.size() == 1;//Is primed with an EmptyStyle to start off with
+        return styleStack.size() == 1;//Is primed with an EmptyStyle to setStartStyle off with
     }
 
     /**
@@ -467,10 +465,18 @@ public class LayoutContext implements CssContext, PageContext {
     }
 
     /**
-     * @see {@link #getFloatingY()}
      * @param floatingY
+     * @see {@link #getFloatingY()}
      */
     public void setFloatingY(double floatingY) {
         this.floatingY = floatingY;
+    }
+
+    public InlineElement getCurrentInlineElement() {
+        return currentInlineElement;
+    }
+
+    public void setCurrentInlineElement(InlineElement currentInlineElement) {
+        this.currentInlineElement = currentInlineElement;
     }
 }

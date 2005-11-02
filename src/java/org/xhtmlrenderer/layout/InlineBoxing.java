@@ -19,13 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.font.LineMetrics;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
@@ -33,31 +26,20 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.block.Absolute;
-import org.xhtmlrenderer.layout.block.Relative;
-import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
-import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.layout.content.FirstLetterStyle;
-import org.xhtmlrenderer.layout.content.FirstLineStyle;
-import org.xhtmlrenderer.layout.content.FloatedBlockContent;
-import org.xhtmlrenderer.layout.content.InlineBlockContent;
-import org.xhtmlrenderer.layout.content.StylePop;
-import org.xhtmlrenderer.layout.content.StylePush;
-import org.xhtmlrenderer.layout.content.TextContent;
-import org.xhtmlrenderer.layout.content.WhitespaceStripper;
+import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.Breaker;
 import org.xhtmlrenderer.layout.inline.FloatUtil;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
-import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.FloatingBlockBox;
-import org.xhtmlrenderer.render.InlineBlockBox;
-import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.render.InlineTextBox;
-import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.render.StackingContext;
-import org.xhtmlrenderer.render.Style;
+import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
+
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.font.LineMetrics;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -122,7 +104,7 @@ public class InlineBoxing {
 
         boolean isFirstLetter = true;
 
-        List pendingPushStyles = null;
+        int pendingPushStyles = 0;
         List pendingFloats = new ArrayList();
         int pendingLeftPadding = 0;
         int pendingRightPadding = 0;
@@ -161,13 +143,17 @@ public class InlineBoxing {
                     pushedOnFirstLine.add(cascaded);
                 }
                 c.pushStyle(cascaded);
-                if (pendingPushStyles == null) {
+                /*if (pendingPushStyles == null) {
                     pendingPushStyles = new ArrayList();
                 }
-                pendingPushStyles.add((StylePush) o);
-                Relative.translateRelative(c, c.getCurrentStyle(), false);
+                pendingPushStyles.add((StylePush) o);*/
+                pendingPushStyles++;
+                //Relative.translateRelative(c, c.getCurrentStyle(), false);
                 CalculatedStyle style = c.getCurrentStyle();
                 int parent_width = bounds.width;
+                c.setCurrentInlineElement(new InlineElement(((StylePush) o).getElement(), ((StylePush) o).getPseudoElement(), c.getCurrentInlineElement()));
+                c.getCurrentInlineElement().setStartStyle(new Style(style, parent_width));
+                //To break the line well, assume we don't just want to paint padding on next line
                 BorderPropertySet border = style.getBorder(c);
                 //note: percentages here refer to width of containing block
                 RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c);
@@ -177,19 +163,34 @@ public class InlineBoxing {
                 continue;
             }
             if (o instanceof StylePop) {
-                if (pendingPushStyles != null && pendingPushStyles.size() != 0) {
-                    pendingPushStyles.remove(pendingPushStyles.size() - 1);//was a redundant one
+                if (pendingPushStyles != 0) {
+                    //if (pendingPushStyles != null && pendingPushStyles.size() != 0) {
+                    //pendingPushStyles.remove(pendingPushStyles.size() - 1);//was a redundant one
+                    pendingPushStyles--;
+                    //TODO: is it correct that empty inline elements get ignored?
+                    //correct the pending padding
+                    CalculatedStyle style = c.getCurrentStyle();
+                    int parent_width = bounds.width;
+                    BorderPropertySet border = style.getBorder(c);
+                    //note: percentages here refer to width of containing block
+                    RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c);
+                    RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c);
+                    pendingLeftPadding -= margin.left() + (int) border.left() + (int) padding.left();
+                    pendingRightPadding -= (int) padding.right() + (int) border.right() + margin.right();
                 } else {
-                    if (prev_inline == null) {
+                    if (prev_inline == null) {//only when there was a block child just before element end
                         prev_inline = new InlineTextBox();//hope it is decently initialised as empty
                         ((InlineTextBox) prev_inline).setMasterText("");
                         ((InlineTextBox) prev_inline).start_index = 0;
                         ((InlineTextBox) prev_inline).end_index = 0;
                         curr_line.addChild(prev_inline);
+                        prev_inline.setInlineElement(c.getCurrentInlineElement());
                     }
                     prev_inline.popstyles++;
                     int parent_width = bounds.width;
                     CalculatedStyle style = c.getCurrentStyle();
+                    c.getCurrentInlineElement().setEndStyle(new Style(style, parent_width));
+                    c.setCurrentInlineElement(c.getCurrentInlineElement().getParent());
                     BorderPropertySet border = style.getBorder(c);
                     //note: percentages here refer to width of containing block
                     RectPropertySet margin = style.getMarginRect(parent_width, parent_width, c);
@@ -205,7 +206,7 @@ public class InlineBoxing {
                 if (c.hasFirstLineStyles()) {
                     pushedOnFirstLine.remove(pushedOnFirstLine.size() - 1);
                 }
-                Relative.untranslateRelative(c, c.getCurrentStyle(), false);
+                //Relative.untranslateRelative(c, c.getCurrentStyle(), false);
                 c.popStyle();
                 continue;
             }
@@ -243,12 +244,12 @@ public class InlineBoxing {
                 } else if (currentContent instanceof FloatedBlockContent) {
                     //Uu.p("calcinline: is floated block");
                     FloatingBlockBox floater = FloatUtil.generateFloatedBlock(c, currentContent, remaining_width, curr_line, pendingFloats);
-                    if (! floater.isPending()) {
+                    if (!floater.isPending()) {
                         remaining_width -= floater.getWidth();
                     }
-                    
+
                     c.getStackingContext().addFloat(floater);
-                    
+
                     break;
                 }
 
@@ -272,7 +273,7 @@ public class InlineBoxing {
                 new_inline = calculateInline(c, currentContent, remaining_width - fit, bounds.width,
                         prev_align_inline, isFirstLetter, box.firstLetterStyle,
                         curr_line, start, pendingBlockBox, pendingFloats);
-                
+
                 pendingBlockBox = null;
 
                 // if this inline needs to be on a new line
@@ -299,7 +300,7 @@ public class InlineBoxing {
                 // Uu.p("adding inline child: " + new_inline);
                 //the inline might be set to size 0,0 after this, if it is first whitespace on line.
                 // Cannot discard because it may contain style-pushes
-                if (! (currentContent instanceof FloatedBlockContent)) {
+                if (!(currentContent instanceof FloatedBlockContent)) {
                     curr_line.addInlineChild(new_inline);
                 }
                 
@@ -310,7 +311,7 @@ public class InlineBoxing {
 
                 isFirstLetter = false;
                 new_inline.pushstyles = pendingPushStyles;
-                pendingPushStyles = null;
+                pendingPushStyles = 0;
                 new_inline.leftPadding += pendingLeftPadding;
                 pendingLeftPadding = 0;
 
@@ -470,7 +471,7 @@ public class InlineBoxing {
             curr_line.height = curr_line.ascent + curr_line.descent;
         }
     }
-    
+
     /**
      * Get the longest inline possible.
      */
@@ -518,7 +519,7 @@ public class InlineBoxing {
             inline.setMasterText(text);
 
             // Uu.p("calculating inline: text = " + text);
-            // Uu.p("avail space = " + avail + " max = " + max_width + "   start index = " + start);
+            // Uu.p("avail space = " + avail + " max = " + max_width + "   setStartStyle index = " + setStartStyle);
 
             if (isFirstLetter && firstLetterStyle != null) {
                 //TODO: what if first letter is whitespace?
@@ -546,7 +547,7 @@ public class InlineBoxing {
             }
             result = inline;
         }
-        
+
         return result;
     }
 
@@ -589,14 +590,14 @@ public class InlineBoxing {
         //text-align now handled in render
         // set the y
         line_to_save.y = prev_line.y + prev_line.height;
-        
+
         if (line_to_save.height != 0) {//would like to discard it otherwise, but that loses floats
             if (line_to_save.height < minHeight) {
                 line_to_save.height = minHeight;
             }
         }
         block.addChild(line_to_save);
-        
+
         if (pendingFloats.size() > 0) {
             c.setFloatingY(c.getFloatingY() + line_to_save.height);
             FloatUtil.positionPendingFloats(c, pendingFloats);
@@ -626,6 +627,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.57  2005/11/02 23:36:45  tobega
+ * InlineElement in place
+ *
  * Revision 1.56  2005/11/02 19:59:59  peterbrant
  * Uncomment mistakenly commented out code
  *
@@ -766,7 +770,7 @@ public class InlineBoxing {
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
  *
  * Revision 1.18  2005/04/21 22:34:56  tobega
- * Fixed an instability in rendering arbitrary xml (added default style to start off with)
+ * Fixed an instability in rendering arbitrary xml (added default style to setStartStyle off with)
  *
  * Revision 1.17  2005/04/21 20:09:07  tobega
  * Found another bug on inline padding, almost correct now. Oh, put back real whitespace stripping.
@@ -1066,7 +1070,7 @@ public class InlineBoxing {
  * Revision 1.25  2004/11/18 02:37:26  joshy
  * moved most of default layout into layout util or box layout
  *
- * start spliting parts of box layout into the block subpackage
+ * setStartStyle spliting parts of box layout into the block subpackage
  *
  * Issue number:
  * Obtained from:

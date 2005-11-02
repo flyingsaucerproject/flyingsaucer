@@ -18,11 +18,9 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.ContentUtil;
-import org.xhtmlrenderer.layout.content.StylePush;
 import org.xhtmlrenderer.render.*;
 
 import java.util.Iterator;
@@ -121,19 +119,8 @@ public class Restyling {
     }
 
     private static void restyleInlineBox(LayoutContext c, InlineBox ib, LinkedList pushedStyles) {
-        if (ib.pushstyles != null) {
-            for (Iterator i = ib.pushstyles.iterator(); i.hasNext();) {
-                StylePush sp = (StylePush) i.next();
-                Element e = sp.getElement();
-                CascadedStyle cascaded;
-                if (e == null) {//anonymous inline box
-                    cascaded = CascadedStyle.emptyCascadedStyle;
-                } else {
-                    cascaded = c.getCss().getCascadedStyle(e, true);
-                }
-                if (pushedStyles != null) pushedStyles.addLast(cascaded);
-                c.pushStyle(cascaded);
-            }
+        if (ib.pushstyles != 0) {
+            ib.getInlineElement().restyleStart(c, ib.pushstyles, pushedStyles);
         }
 
         if (ib.getStyle().isFloated()) {
@@ -146,9 +133,7 @@ public class Restyling {
         ib.getStyle().setCalculatedStyle(c.getCurrentStyle());
 
         if (ib.popstyles != 0) {
-            for (int i = 0; i < ib.popstyles; i++) {
-                c.popStyle();
-            }
+            ib.getInlineElement().restyleEnd(c, ib.popstyles);
         }
     }
 
@@ -164,3 +149,8 @@ public class Restyling {
 
     }
 }
+
+/*
+ * $Id$
+ *
+ */
