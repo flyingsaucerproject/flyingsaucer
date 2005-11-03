@@ -43,64 +43,15 @@ public class FloatUtil {
         c.getBlockFormattingContext().doFinalAdjustments();
         c.popBFC();
     }
-
-    public static void setupFloat(LayoutContext c, Box box) {
-        if (box.getStyle().isFloated()) {
-            box.y = (int)c.getFloatingY();
-            if (box.getStyle().isFloatedLeft()) {
-                positionBoxLeft(c, box);
-                c.getBlockFormattingContext().pushDownLeft(box);
-                //Uu.p("final box = " + box);
-                c.getBlockFormattingContext().addLeftFloat(box);
-            } else if (box.getStyle().isFloatedRight()) {
-                positionBoxRight(c, box);
-                c.getBlockFormattingContext().pushDownRight(box);
-                //Uu.p("final box = " + box);
-                c.getBlockFormattingContext().addRightFloat(box);
-            }
-        }
-    }
-
-    private static void positionBoxLeft(LayoutContext c, Box box) {
-        BlockFormattingContext bfc = c.getBlockFormattingContext();
-        box.x = 0;
-        Box floater = bfc.getLeftFloatX(c, box);
-        if (floater != null) {
-            box.x = floater.x + floater.getWidth();
-    
-            if (box.getStyle().isClearLeft() || (box.x + box.getWidth() > box.getContainingBlock().contentWidth &&
-                    box.getWidth() <= box.getContainingBlock().contentWidth)) {
-                box.x = 0;
-                box.y = (int)bfc.getClearDelta(c, box, floater);
-                positionBoxLeft(c, box);
-            }
-        }
-    }
-
-    private static void positionBoxRight(LayoutContext c, Box box) {
-        BlockFormattingContext bfc = c.getBlockFormattingContext();
-        box.x = box.getContainingBlock().contentWidth - box.getWidth();
-        Box floater = bfc.getRightFloatX(c, box);
-        if (floater != null) {
-            box.x = floater.x - box.getWidth();
-    
-            if (box.getStyle().isClearRight() || (box.x < 0 &&
-                    box.getWidth() <= c.getExtents().width)) {
-                // move the box to be below the last float and
-                // try it again
-                box.x = box.getContainingBlock().contentWidth - box.getWidth();
-                box.y = (int)bfc.getClearDelta(c, box, floater);
-                positionBoxRight(c, box);
-            }
-        }
-    }
-
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/11/03 17:58:42  peterbrant
+ * Float rewrite (still stomping bugs, but demos work)
+ *
  * Revision 1.26  2005/11/02 18:15:30  peterbrant
  * First merge of Tobe's and my stacking context work / Rework float code (not done yet)
  *

@@ -246,6 +246,7 @@ public class Boxing {
             if (c.isInteractive()) {
                 c.getCanvas().add(block.component);
             }
+            block.setState(Box.DONE);
         }
         c.unshrinkExtents();
         c.translate(-tx, -ty - (int) block.paginationTranslation);
@@ -282,7 +283,10 @@ public class Boxing {
         // need to add bfc/unbfc code for absolutes
         Absolute.setupAbsolute(block, c);
         Fixed.setupFixed(c, block);
-        FloatUtil.setupFloat(c, block);
+        
+        if (block.getStyle().isFloated()) {
+            c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox)block);
+        }
 
         checkExceeds(block);
 
@@ -373,6 +377,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.53  2005/11/03 17:58:16  peterbrant
+ * Float rewrite (still stomping bugs, but demos work)
+ *
  * Revision 1.52  2005/11/01 23:49:23  tobega
  * Pulled floats and absolutes out of the "normal" rendering
  *

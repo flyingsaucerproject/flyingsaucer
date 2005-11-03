@@ -19,17 +19,14 @@
  */
 package org.xhtmlrenderer.layout.inline;
 
-import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.Iterator;
 import java.util.List;
 
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.FloatingBlockBox;
+import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -50,15 +47,15 @@ public class FloatUtil {
             Uu.p("warning. possible error. line already has width: " + prev_line);
         }
         BlockFormattingContext bfc = c.getBlockFormattingContext();
-        remaining_width -= bfc.getLeftFloatDistance(prev_line);
-        remaining_width -= bfc.getRightFloatDistance(prev_line);
+        remaining_width -= bfc.getLeftFloatDistance(c, prev_line);
+        remaining_width -= bfc.getRightFloatDistance(c, prev_line);
         //reset the line width to allow shrink wrap
         prev_line.contentWidth = 0;
         //Uu.p("adjusting the line by: " + remaining_width);
         return remaining_width;
     }
 
-    public static FloatingBlockBox generateFloatedBlock(
+    public static FloatedBlockBox generateFloatedBlock(
             LayoutContext c, Content content, int avail, LineBox curr_line, List pendingFloats) {
         //Uu.p("generate floated block inline box: avail = " + avail);
         //Uu.p("generate floated block inline box");
@@ -66,7 +63,7 @@ public class FloatUtil {
         c.setExtents(new Rectangle(oe));
 
         c.setFloatingY(curr_line.y);
-        FloatingBlockBox block = new FloatingBlockBox();
+        FloatedBlockBox block = new FloatedBlockBox();
         block.setContainingBlock(curr_line.getParent());
         block.element = content.getElement();
         Boxing.layout(c, block, content);
@@ -79,29 +76,11 @@ public class FloatUtil {
         
         if (pendingFloats.size() > 0 || block.getWidth() > avail) {
             pendingFloats.add(block);
-            c.getBlockFormattingContext().removeFloat(block);
+            c.getBlockFormattingContext().getFloatManager().removeFloat(block);
             block.setPending(true);
         }
         
         return block;
-    }
-    
-    public static void positionPendingFloats(LayoutContext c, List pendingFloats) {
-        if (pendingFloats.size() > 0) {
-            for (int i = 0; i < pendingFloats.size(); i++) {
-                if (i != 0) {
-                    c.setFloatingY(0d);
-                }
-                FloatingBlockBox block = (FloatingBlockBox)pendingFloats.get(i);
-                org.xhtmlrenderer.layout.block.FloatUtil.setupFloat(c, block);
-                block.setPending(false);
-                for (int j = i+1; j < pendingFloats.size(); j++) {
-                    FloatingBlockBox following = (FloatingBlockBox)pendingFloats.get(j);
-                    following.y = block.y;
-                }
-            }
-            pendingFloats.clear();
-        }
     }
 }
 

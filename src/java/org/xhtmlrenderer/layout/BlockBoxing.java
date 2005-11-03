@@ -104,6 +104,7 @@ public class BlockBoxing {
 
             //JMM. new code to handle the 'clear' property
             // if clear set
+            /*
             if (child_box.getStyle().isCleared()) {
 //Uu.p("doing a clear on: " + child_box);
                 // get the distance we have to move it down
@@ -133,6 +134,7 @@ public class BlockBoxing {
                     box.height += diff;
                 }
             }
+            */
 
             //joshy fix the 'fixed' stuff later
             // if fixed or abs then don't modify the final layout bounds
@@ -200,6 +202,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/11/03 17:58:16  peterbrant
+ * Float rewrite (still stomping bugs, but demos work)
+ *
  * Revision 1.23  2005/11/02 18:15:25  peterbrant
  * First merge of Tobe's and my stacking context work / Rework float code (not done yet)
  *

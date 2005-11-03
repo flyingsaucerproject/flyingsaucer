@@ -19,18 +19,22 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.layout.PersistentBFC;
-
-import javax.swing.*;
-
-import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.JComponent;
+
+import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.layout.PersistentBFC;
 
 
 /**
@@ -583,13 +587,56 @@ public abstract class Box {
         BoxRendering.paint(c, this);
         c.getGraphics().translate(-tx, -ty);
         c.translate(-tx, -ty);
-    }    
+    }
+    
+    public Rectangle getBounds(CssContext cssCtx) {
+        return getBounds(cssCtx, 0, 0);
+    }
+    
+    public Rectangle getBounds(CssContext cssCtx, int tx, int ty) {
+        // Looks unnecessarily convoluted, but necessary to get negative
+        // margins right
+        Rectangle result = getBorderBox(cssCtx);
+        addBackMargins(cssCtx, result);
+        result.translate(tx, ty);
+        return result;
+    }
+    
+    private void addBackMargins(CssContext cssCtx, Rectangle bounds) {
+        RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
+        if (margin.top() > 0) {
+            bounds.y -= margin.top();
+            bounds.height += margin.top();
+        }
+        if (margin.right() > 0) {
+            bounds.width += margin.right();
+        }
+        if (margin.bottom() > 0) {
+            bounds.height += margin.bottom();
+        }
+        if (margin.left() > 0) {
+            bounds.x -= margin.left();
+            bounds.width += margin.left();
+        }
+    }
+    
+    private Rectangle getBorderBox(CssContext cssCtx) {
+        RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
+        Rectangle result = new Rectangle(this.x + (int) margin.left(),
+                this.y + (int) margin.top(),
+                getWidth() - (int) margin.left() - (int) margin.right() ,
+                getHeight() - (int) margin.top() - (int) margin.bottom());
+        return result;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.70  2005/11/03 17:58:41  peterbrant
+ * Float rewrite (still stomping bugs, but demos work)
+ *
  * Revision 1.69  2005/11/02 18:15:29  peterbrant
  * First merge of Tobe's and my stacking context work / Rework float code (not done yet)
  *

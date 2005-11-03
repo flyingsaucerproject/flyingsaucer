@@ -243,8 +243,8 @@ public class InlineBoxing {
                     break;
                 } else if (currentContent instanceof FloatedBlockContent) {
                     //Uu.p("calcinline: is floated block");
-                    FloatingBlockBox floater = FloatUtil.generateFloatedBlock(c, currentContent, remaining_width, curr_line, pendingFloats);
-                    if (!floater.isPending()) {
+                    FloatedBlockBox floater = FloatUtil.generateFloatedBlock(c, currentContent, remaining_width, curr_line, pendingFloats);
+                    if (! floater.isPending()) {
                         remaining_width -= floater.getWidth();
                     }
 
@@ -600,12 +600,12 @@ public class InlineBoxing {
 
         if (pendingFloats.size() > 0) {
             c.setFloatingY(c.getFloatingY() + line_to_save.height);
-            FloatUtil.positionPendingFloats(c, pendingFloats);
+            c.getBlockFormattingContext().floatPending(c, pendingFloats);
         }
         
         // new float code
         if (!block.getStyle().isClearLeft()) {
-            line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(line_to_save);
+            line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(c, line_to_save);
         }
 
         if (c.isPrint() && line_to_save.crossesPageBreak(c)) {
@@ -627,6 +627,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.58  2005/11/03 17:58:15  peterbrant
+ * Float rewrite (still stomping bugs, but demos work)
+ *
  * Revision 1.57  2005/11/02 23:36:45  tobega
  * InlineElement in place
  *

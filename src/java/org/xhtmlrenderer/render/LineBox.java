@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -128,12 +129,21 @@ public class LineBox extends Box implements Renderable {
     public double getAbsBottom() {
         return absY + height;
     }
+    
+    public Rectangle getBounds(CssContext cssCtx, int tx, int ty) {
+        Rectangle result = new Rectangle(x, y, contentWidth, height);
+        result.translate(tx, ty);
+        return result;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/11/03 17:58:40  peterbrant
+ * Float rewrite (still stomping bugs, but demos work)
+ *
  * Revision 1.23  2005/10/29 22:31:02  tobega
  * House-cleaning
  *

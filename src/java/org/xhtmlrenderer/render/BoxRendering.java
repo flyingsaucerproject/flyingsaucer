@@ -104,7 +104,7 @@ public class BoxRendering {
             }
             
             if (block.persistentBFC != null) {
-                block.persistentBFC.paintFloats(c);
+                block.persistentBFC.getFloatManager().paintFloats(c);
             }
         }
 
@@ -364,6 +364,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.55  2005/11/03 17:58:41  peterbrant
+ * Float rewrite (still stomping bugs, but demos work)
+ *
  * Revision 1.54  2005/11/02 18:15:28  peterbrant
  * First merge of Tobe's and my stacking context work / Rework float code (not done yet)
  *

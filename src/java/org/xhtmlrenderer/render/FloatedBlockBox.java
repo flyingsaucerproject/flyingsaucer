@@ -1,6 +1,6 @@
 package org.xhtmlrenderer.render;
 
-public class FloatingBlockBox extends BlockBox {
+public class FloatedBlockBox extends BlockBox {
     private boolean _pending;
 
     public boolean isPending() {

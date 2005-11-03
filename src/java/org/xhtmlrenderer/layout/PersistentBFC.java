@@ -24,16 +24,16 @@ import org.xhtmlrenderer.render.RenderingContext;
 public class PersistentBFC {
     protected Box master = null;
     protected int width;
-    protected List left_floats;
-    protected List right_floats;
+    
     protected Map offset_map;
     protected List abs_bottom;
+    
     public Border insets;
     public RectPropertySet padding;
+    
+    private FloatManager floatManager = new FloatManager();
 
     private PersistentBFC() {
-        left_floats = new ArrayList();
-        right_floats = new ArrayList();
         abs_bottom = new ArrayList();
         offset_map = new HashMap();
     }
@@ -55,23 +55,7 @@ public class PersistentBFC {
         master.setPersistentBFC(this);
     }
     
-    public void paintFloats(RenderingContext c) {
-        for (Iterator i = left_floats.iterator(); i.hasNext(); ) {
-            Box floater = (Box)i.next();
-            Point offset = (Point)offset_map.get(floater);
-            floater.paint(c, -offset.x, -offset.y);
-        }
-        
-        for (Iterator i = right_floats.iterator(); i.hasNext(); ) {
-            Box floater = (Box)i.next();
-            Point offset = (Point)offset_map.get(floater);
-            floater.paint(c, -offset.x, -offset.y);
-        }        
-    }
-    
-    public void removeFloat(Box floater) {
-        offset_map.remove(floater);
-        left_floats.remove(floater);
-        right_floats.remove(floater);
+    public FloatManager getFloatManager() {
+        return floatManager;
     }
 }
