@@ -204,7 +204,7 @@ public class TableBoxing {
         tableBox.leftPadding = (int) border.left() + (int) padding.left();
         // CLEAN: cast to int
         tableBox.leftPadding += (int) margin.left();
-        tableBox.rightPadding = (int) border.right() + (int) margin.right();
+        tableBox.rightPadding = (int) border.right() + (int) padding.right();
         tableBox.rightPadding += (int) margin.right();
         tableBox.height = (int) margin.top() + (int) border.top() + (int) padding.top() + tableBox.height + (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom();
 
@@ -275,6 +275,7 @@ public class TableBoxing {
     }
 
     private static void fixHeights(TableBox tableBox, int borderSpacingVertical) {
+        tableBox.height += borderSpacingVertical;
         for (Iterator tci = tableBox.getChildIterator(); tci.hasNext();) {
             Object tc = tci.next();
             if (tc instanceof RowBox) {
@@ -554,6 +555,8 @@ public class TableBoxing {
         }
 
         CalculatedStyle style = c.getCurrentStyle();
+        BorderPropertySet border = c.getCurrentStyle().getBorder(c);
+        RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c);
 
         // calculate the width and height as much as possible
         int setHeight = -1;//means height is not set by css
@@ -561,6 +564,7 @@ public class TableBoxing {
         if (!cell.getStyle().isAutoWidth()) {
             setWidth = (int) style.getFloatPropertyProportionalWidth(CSSName.WIDTH, c.getExtents().width, c);
             c.getExtents().width = setWidth;
+            cell.contentWidth = (int) (setWidth - border.left() - padding.left() - padding.right() - border.right());
         }
         if (!cell.getStyle().isAutoHeight()) {
             setHeight = (int) style.getFloatPropertyProportionalHeight(CSSName.HEIGHT, c.getExtents().height, c);
@@ -584,8 +588,6 @@ public class TableBoxing {
         // do children's layout
         boolean old_sub = c.isSubBlock();
         c.setSubBlock(false);
-        BorderPropertySet border = c.getCurrentStyle().getBorder(c);
-        RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c);
         cell.leftPadding = (int) border.left() + (int) padding.left();
         cell.rightPadding = (int) padding.right() + (int) border.right();
         int tx = (int) border.left() + (int) padding.left();
@@ -636,6 +638,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.42  2005/11/03 22:36:23  tobega
+   Fix from Eric Neuhauser
+
    Revision 1.41  2005/10/30 00:02:36  peterbrant
    - Minor cleanup to get rid of unused CssContext in Style constructor
    - Switch to ArrayList from LinkedList in a few places (saves several MBs of memory on Hamlet)

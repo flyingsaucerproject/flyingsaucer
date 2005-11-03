@@ -275,6 +275,9 @@
 $Id$
 
 $Log$
+Revision 1.5  2005/11/03 22:35:03  tobega
+Fix from Eric Neuhauser
+
 Revision 1.4  2005/06/26 15:48:11  tobega
 Converted to almost standard html4 default css, which shook out a bug: position should not inherit
 
