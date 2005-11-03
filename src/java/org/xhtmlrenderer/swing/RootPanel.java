@@ -100,6 +100,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         this.doc = doc;
 
         //have to do this first
+        getSharedContext().getCss().flushStyleSheets();
         getSharedContext().setBaseURL(url);
         getSharedContext().setNamespaceHandler(nsh);
         getSharedContext().setMedia(pageInfo == null ? "screen" : "print");

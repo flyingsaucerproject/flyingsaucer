@@ -837,7 +837,6 @@ public abstract class BasicPanel extends RootPanel {
         }
         ;
         this.doc = doc;
-        getSharedContext().getCss().flushStyleSheets();
         setDocument(this.doc, getSharedContext().getBaseURL(), getSharedContext().getNamespaceHandler());
     }
 
@@ -1091,6 +1090,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.82  2005/11/03 18:02:02  peterbrant
+ * Flush stylesheets on a RootPanel.setDocument()
+ *
  * Revision 1.81  2005/10/27 00:09:07  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *
