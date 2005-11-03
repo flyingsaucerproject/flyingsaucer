@@ -10,4 +10,8 @@ public class FloatedBlockBox extends BlockBox {
     public void setPending(boolean pending) {
         _pending = pending;
     }
+    
+    public String toString() {
+        return super.toString() + " (floated)";
+    }
 }
