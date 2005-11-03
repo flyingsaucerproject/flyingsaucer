@@ -22,6 +22,8 @@ public class FloatManager {
     private List rightFloats = new ArrayList();
     private Map offsetMap = new HashMap();
     
+    private Box master;
+    
     public void floatBox(LayoutContext c, BlockFormattingContext bfc, FloatedBlockBox box) {
         box.y = (int)c.getFloatingY();
         if (box.getStyle().isFloatedLeft()) {
@@ -31,6 +33,14 @@ public class FloatManager {
         }
     }
     
+    public void clear(CssContext cssCtx, BlockFormattingContext bfc, Box box) {
+        if (box.getStyle().isClearLeft()) {
+            moveClear(cssCtx, bfc, box, getFloats(LEFT));
+        }
+        if (box.getStyle().isClearRight()) {
+            moveClear(cssCtx, bfc, box, getFloats(RIGHT));
+        }
+    }
     
     public void floatPending(LayoutContext c, BlockFormattingContext bfc, List pendingFloats) {
         if (pendingFloats.size() > 0) {
@@ -50,13 +60,13 @@ public class FloatManager {
         }
     }
     
-    public void floatLeft(CssContext cssCtx, BlockFormattingContext bfc, 
+    private void floatLeft(CssContext cssCtx, BlockFormattingContext bfc, 
             FloatedBlockBox current) {
         position(cssCtx, bfc, current, LEFT);
         save(current, bfc, LEFT);
     }
     
-    public void floatRight(CssContext cssCtx, BlockFormattingContext bfc, 
+    private void floatRight(CssContext cssCtx, BlockFormattingContext bfc, 
             FloatedBlockBox current) {
         position(cssCtx, bfc, current, RIGHT);
         save(current, bfc, RIGHT);
@@ -70,6 +80,8 @@ public class FloatManager {
     private void position(CssContext cssCtx, BlockFormattingContext bfc, 
             FloatedBlockBox current, int direction) {
         moveAllTheWayOver(current, direction);
+        
+        alignToLastOpposingFloat(cssCtx, bfc, current, direction);
         alignToLastFloat(cssCtx, bfc, current, direction);
         
         if (! fitsInContainingBlock(current) || 
@@ -82,6 +94,10 @@ public class FloatManager {
             moveAllTheWayOver(current, direction);
             moveClear(cssCtx, bfc, current, getFloats(direction));
             moveClear(cssCtx, bfc, current, getOpposingFloats(direction));
+        }
+        
+        if (current.getStyle().isCleared()) {
+            clear(cssCtx, bfc, current);
         }
     }
     
@@ -110,20 +126,50 @@ public class FloatManager {
             Point lastOffset = getOffset(last);
             Rectangle lastBounds = last.getBounds(cssCtx, -lastOffset.x, -lastOffset.y);
             
+            boolean moveOver = false;
+            
             if (currentBounds.y < lastBounds.y) {
                 currentBounds.translate(0, lastBounds.y - currentBounds.y);
-                
-                if (currentBounds.intersects(lastBounds)) {
-                    if (direction == LEFT) {
-                        currentBounds.x = lastBounds.x + last.getWidth();
-                    } else if (direction == RIGHT) {
-                        currentBounds.x = lastBounds.y - current.getWidth();
-                    }
+                moveOver = true;
+            }
+            
+            if (currentBounds.y >= lastBounds.y && currentBounds.y < lastBounds.y + lastBounds.width) {
+                moveOver = true;
+            }
+            
+            if (moveOver) {
+                if (direction == LEFT) {
+                    currentBounds.x = lastBounds.x + last.getWidth();
+                } else if (direction == RIGHT) {
+                    currentBounds.x = lastBounds.x - current.getWidth();
                 }
                 
                 currentBounds.translate(offset.x, offset.y);
                 
                 current.x = currentBounds.x;
+                current.y = currentBounds.y;
+            }
+        }
+    }
+    
+    private void alignToLastOpposingFloat(CssContext cssCtx, 
+            BlockFormattingContext bfc, FloatedBlockBox current, int direction) {
+        
+        List floats = getOpposingFloats(direction);
+        if (floats.size() > 0) {
+            Point offset = bfc.getOffset();
+            FloatedBlockBox last = (FloatedBlockBox)floats.get(floats.size()-1);
+            
+            Rectangle currentBounds = current.getBounds(cssCtx, -offset.x, -offset.y);
+            
+            Point lastOffset = getOffset(last);
+            Rectangle lastBounds = last.getBounds(cssCtx, -lastOffset.x, -lastOffset.y);
+            
+            if (currentBounds.y < lastBounds.y) {
+                currentBounds.translate(0, lastBounds.y - currentBounds.y);
+                
+                currentBounds.translate(offset.x, offset.y);
+                
                 current.y = currentBounds.y;
             }
         }
@@ -177,7 +223,7 @@ public class FloatManager {
     }
     
     private void moveClear(CssContext cssCtx, BlockFormattingContext bfc, 
-            FloatedBlockBox current, List floats) {
+            Box current, List floats) {
         Point offset = bfc.getOffset();
         Rectangle bounds = current.getBounds(cssCtx, -offset.x, -offset.y);
         
@@ -193,6 +239,11 @@ public class FloatManager {
     }
     
     public void paintFloats(RenderingContext c) {
+        Box master = getMaster();
+        
+        c.translate(master.x, master.y);
+        c.getGraphics().translate(master.x, master.y);
+        
         for (Iterator i = leftFloats.iterator(); i.hasNext(); ) {
             Box floater = (Box)i.next();
             Point offset = (Point)offsetMap.get(floater);
@@ -203,7 +254,10 @@ public class FloatManager {
             Box floater = (Box)i.next();
             Point offset = (Point)offsetMap.get(floater);
             floater.paint(c, -offset.x, -offset.y);
-        }        
+        }
+        
+        c.getGraphics().translate(-master.x, -master.y);
+        c.translate(-master.x, -master.y);
     }
     
     public void removeFloat(Box floater) {
@@ -258,5 +312,13 @@ public class FloatManager {
         }
 
         return xoff;
-    }    
+    }
+    
+    public void setMaster(Box owner) {
+        this.master = owner;
+    }
+    
+    public Box getMaster() {
+        return master;
+    }
 }

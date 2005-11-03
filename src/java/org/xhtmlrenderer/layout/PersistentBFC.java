@@ -53,6 +53,7 @@ public class PersistentBFC {
                 (int) margin.left() + (int) border.left() + (int) padding.left());
         this.master = master;
         master.setPersistentBFC(this);
+        floatManager.setMaster(master);
     }
     
     public FloatManager getFloatManager() {

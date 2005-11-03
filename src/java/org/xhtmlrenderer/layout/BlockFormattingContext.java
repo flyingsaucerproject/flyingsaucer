@@ -114,6 +114,10 @@ public class BlockFormattingContext {
         getFloatManager().floatPending(c, this, pending);
     }
     
+    public void clear(LayoutContext c, Box current) {
+        getFloatManager().clear(c, this, current);
+    }
+    
     public String toString() {
         return "BFC: (" + x + "," + y + ") - " + persistentBFC.master + "";
     }

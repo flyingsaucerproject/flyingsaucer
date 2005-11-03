@@ -102,39 +102,11 @@ public class BlockBoxing {
 
             c.translate(0, -box.height);
 
-            //JMM. new code to handle the 'clear' property
-            // if clear set
-            /*
             if (child_box.getStyle().isCleared()) {
-//Uu.p("doing a clear on: " + child_box);
-                // get the distance we have to move it down
-                int down = 0;
-                //Uu.p("down = " + down);
-                if (child_box.getStyle().isClearLeft()) {
-                    //Uu.p("left clear");
-                    //Uu.p("left down = " + c.getPersistentBFC().getLeftDownDistance(child_box));
-                    down = Math.max(down, c.getBlockFormattingContext().getLeftDownDistance(child_box));
-                }
-                //Uu.p("down = " + down);
-
-                if (child_box.getStyle().isClearRight()) {
-                    //Uu.p("right clear");
-                    //Uu.p("right down = " + c.getPersistentBFC().getRightDownDistance(child_box));
-                    down = Math.max(down, c.getBlockFormattingContext().getRightDownDistance(child_box));
-                }
-
-                //Uu.p("down = " + down);
-                int diff = down - child_box.y;
-                //Uu.p("child box.y = " + child_box.y);
-                //Uu.p("diff = " + diff);
-                if (diff > 0) {
-                    // move child box down
-                    child_box.y = down;
-                    // adjust parent box
-                    box.height += diff;
-                }
+                int currentX = child_box.x;
+                c.getBlockFormattingContext().clear(c, child_box);
+                box.height += child_box.x - currentX;
             }
-            */
 
             //joshy fix the 'fixed' stuff later
             // if fixed or abs then don't modify the final layout bounds
@@ -202,6 +174,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/11/03 20:58:41  peterbrant
+ * Bug fixes to rewritten float code.  Floated block positioning should be very solid now.
+ *
  * Revision 1.24  2005/11/03 17:58:16  peterbrant
  * Float rewrite (still stomping bugs, but demos work)
  *
