@@ -66,8 +66,7 @@ public class WhitespaceStripper {
     public final static Pattern space_collapse = Pattern.compile("( )+");
 
     public final static Pattern space_before_linefeed_collapse = Pattern.compile("[\\s&&[^\\n]]\\n");
-
-
+    
     /**
      * Strips whitespace early in inline content generation. This can be done
      * because "whitespage" does not ally to :first-line and :first-letter. For
@@ -139,7 +138,10 @@ public class WhitespaceStripper {
             }
             pendingStylePushes.clear();
             stripped.add(o);
-            collapse = false;//no collapsing of the next one
+            
+            if (!(o instanceof FloatedBlockContent)) {
+                collapse = false;//no collapsing of the next one
+            }
         }
 
         //there may be relevant StylePushes pending, e.g. if this is content of AnonymousBlock
@@ -236,7 +238,7 @@ public class WhitespaceStripper {
                 tc.setRemovableWhitespace(true);
             }
         }
-        return collapseNext;
+        return text.equals("") ? collapseLeading : collapseNext;
     }
 
     static String collapseWhitespace(IdentValue whitespace, String text, boolean collapseLeading) {
