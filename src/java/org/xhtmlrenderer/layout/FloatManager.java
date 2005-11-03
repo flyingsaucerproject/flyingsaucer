@@ -51,10 +51,6 @@ public class FloatManager {
                 FloatedBlockBox block = (FloatedBlockBox)pendingFloats.get(i);
                 floatBox(c, bfc, block);
                 block.setPending(false);
-                for (int j = i+1; j < pendingFloats.size(); j++) {
-                    FloatedBlockBox following = (FloatedBlockBox)pendingFloats.get(j);
-                    following.y = block.y;
-                }
             }
             pendingFloats.clear();
         }
@@ -80,6 +76,7 @@ public class FloatManager {
     private void position(CssContext cssCtx, BlockFormattingContext bfc, 
             FloatedBlockBox current, int direction) {
         moveAllTheWayOver(current, direction);
+        
         
         alignToLastOpposingFloat(cssCtx, bfc, current, direction);
         alignToLastFloat(cssCtx, bfc, current, direction);
@@ -133,7 +130,7 @@ public class FloatManager {
                 moveOver = true;
             }
             
-            if (currentBounds.y >= lastBounds.y && currentBounds.y < lastBounds.y + lastBounds.width) {
+            if (currentBounds.y >= lastBounds.y && currentBounds.y < lastBounds.y + lastBounds.height) {
                 moveOver = true;
             }
             
