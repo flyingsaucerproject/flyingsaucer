@@ -59,6 +59,16 @@ public class LayoutContext implements CssContext, PageContext {
 
     private InlineElement currentInlineElement;
 
+    public boolean isFirstLine() {
+        return firstLine;
+    }
+
+    public void setFirstLine(boolean firstLine) {
+        this.firstLine = firstLine;
+    }
+
+    private boolean firstLine;
+
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
     }

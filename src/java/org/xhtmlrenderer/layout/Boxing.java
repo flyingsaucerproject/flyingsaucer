@@ -139,6 +139,9 @@ public class Boxing {
             c.pushStyle(pushed);
         }
 
+        boolean oldFirstLine = c.isFirstLine();
+        c.setFirstLine(true);
+
         Rectangle oe = c.getExtents();
 
         block.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth()));
@@ -283,9 +286,9 @@ public class Boxing {
         // need to add bfc/unbfc code for absolutes
         Absolute.setupAbsolute(block, c);
         Fixed.setupFixed(c, block);
-        
+
         if (block.getStyle().isFloated()) {
-            c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox)block);
+            c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
         }
 
         checkExceeds(block);
@@ -302,6 +305,8 @@ public class Boxing {
         if (pushed != null) {
             c.popStyle();
         }
+
+        c.setFirstLine(oldFirstLine);
 
         if (relayout) {
             block.reset();
@@ -377,6 +382,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.54  2005/11/04 02:43:07  tobega
+ * Inline borders and backgrounds are back!
+ *
  * Revision 1.53  2005/11/03 17:58:16  peterbrant
  * Float rewrite (still stomping bugs, but demos work)
  *

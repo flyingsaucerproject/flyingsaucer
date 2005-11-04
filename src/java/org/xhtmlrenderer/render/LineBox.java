@@ -49,6 +49,7 @@ public class LineBox extends Box implements Renderable {
     public LineMetrics blockLineMetrics;
     public boolean textAligned = false;
     public int renderIndex;
+    public boolean isFirstLine = false;
 
     /**
      * Constructor for the LineBox object
@@ -129,7 +130,7 @@ public class LineBox extends Box implements Renderable {
     public double getAbsBottom() {
         return absY + height;
     }
-    
+
     public Rectangle getBounds(CssContext cssCtx, int tx, int ty) {
         Rectangle result = new Rectangle(x, y, contentWidth, height);
         result.translate(tx, ty);
@@ -141,6 +142,9 @@ public class LineBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/11/04 02:43:11  tobega
+ * Inline borders and backgrounds are back!
+ *
  * Revision 1.24  2005/11/03 17:58:40  peterbrant
  * Float rewrite (still stomping bugs, but demos work)
  *

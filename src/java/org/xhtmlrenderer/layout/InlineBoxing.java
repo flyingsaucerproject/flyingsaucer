@@ -244,7 +244,7 @@ public class InlineBoxing {
                 } else if (currentContent instanceof FloatedBlockContent) {
                     //Uu.p("calcinline: is floated block");
                     FloatedBlockBox floater = FloatUtil.generateFloatedBlock(c, currentContent, remaining_width, curr_line, pendingFloats);
-                    if (! floater.isPending()) {
+                    if (!floater.isPending()) {
                         remaining_width -= floater.getWidth();
                     }
 
@@ -547,7 +547,7 @@ public class InlineBoxing {
             }
             result = inline;
         }
-
+        result.setInlineElement(c.getCurrentInlineElement());
         return result;
     }
 
@@ -572,6 +572,8 @@ public class InlineBoxing {
     private static void saveLine(LineBox line_to_save, LineBox prev_line, Rectangle bounds,
                                  LayoutContext c, Box block, int minHeight, List pushedOnFirstLine,
                                  List pendingFloats) {
+        line_to_save.isFirstLine = c.isFirstLine();
+        c.setFirstLine(false);
         if (c.hasFirstLineStyles()) {
             //first pop element styles pushed on first line
             for (int i = 0; i < pushedOnFirstLine.size(); i++) c.popStyle();
@@ -627,6 +629,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.59  2005/11/04 02:43:07  tobega
+ * Inline borders and backgrounds are back!
+ *
  * Revision 1.58  2005/11/03 17:58:15  peterbrant
  * Float rewrite (still stomping bugs, but demos work)
  *
