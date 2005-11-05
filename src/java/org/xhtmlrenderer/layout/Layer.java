@@ -43,6 +43,8 @@ public class Layer {
     
     private List floats;
     
+    private boolean fixedBackground;
+    
     public Layer(Box master) {
         this(null, master);
         setStackingContext(true);
@@ -199,5 +201,26 @@ public class Layer {
                 child.getMaster().positionPositionedBox(cssCtx);
             }
         }
+    }
+    
+    private boolean containsFixedLayer() {
+        if (children != null) {
+            for (Iterator i = children.iterator(); i.hasNext(); ) {
+                Layer child = (Layer)i.next();
+                
+                if (child.getMaster().getStyle().isFixed()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    public boolean containsFixedContent() {
+        return fixedBackground || containsFixedLayer();
+    }
+    
+    public void setFixedBackground(boolean b) {
+        this.fixedBackground = b;
     }
 }

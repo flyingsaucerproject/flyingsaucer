@@ -41,11 +41,6 @@ public class Absolute {
         box.setContainingBlock(c.getLayer().getMaster());
         box.setStaticParent(currentLine);
         
-        // HACK
-        if (box.getStyle().isFixed()) {
-            currentLine.setFixedDescendant(true);
-        }
-        
         c.setExtents(oe);
     }
 }

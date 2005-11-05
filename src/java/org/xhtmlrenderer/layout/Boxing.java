@@ -143,7 +143,7 @@ public class Boxing {
 
         if (c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
             block.setChildrenExceedBounds(true);
-            block.setFixedDescendant(true);
+            c.getRootLayer().setFixedBackground(true);
         }
         
         if (content instanceof DomToplevelNode || block.getStyle().establishesBFC()) {
@@ -340,6 +340,10 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.57  2005/11/05 23:19:08  peterbrant
+ * Always add fixed layers to root layer / If element has fixed background just
+ * note this on the root layer instead of property in Box
+ *
  * Revision 1.56  2005/11/05 18:45:05  peterbrant
  * General cleanup / Remove obsolete code
  *

@@ -38,22 +38,10 @@ import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.PersistentBFC;
 
-
-/**
- * Description of the Class
- *
- * @author empty
- */
 public abstract class Box {
 
-    /**
-     * Description of the Field
-     */
     public Element element;
 
-    /**
-     * Description of the Field
-     */
     public JComponent component = null;
 
     // dimensions stuff
@@ -80,11 +68,6 @@ public abstract class Box {
 
     public double paginationTranslation = 0;
 
-    /**
-     * Gets the width attribute of the Box object
-     *
-     * @return The width value
-     */
     public int getWidth() {
         return contentWidth + leftPadding + rightPadding;
     }
@@ -107,60 +90,28 @@ public abstract class Box {
      */
     public String background_uri;
 
-    /**
-     * Description of the Field
-     */
     public int background_position_vertical = 0;
 
-    /**
-     * Description of the Field
-     */
     public int background_position_horizontal = 0;
 
     // list stuff
-    /**
-     * Description of the Field
-     */
     public int list_count = -1;
 
     // printing stuff
-    /**
-     * Description of the Field
-     */
-
-    /**
-     * Description of the Field
-     */
     public CascadedStyle firstLineStyle;
 
-    /**
-     * Description of the Field
-     */
     public CascadedStyle firstLetterStyle;
 
-    /**
-     * Description of the Field
-     */
     protected PersistentBFC persistentBFC = null;
     
     private Layer layer = null;
 
-    /**
-     * Description of the Field
-     */
     private Box parent;
 
     // children stuff
-    /**
-     * Description of the Field
-     */
     private List boxes;
 
-    /**
-     * Description of the Field
-     */
     private boolean children_exceeds;
-    private boolean fixed_descendant;
 
     /**
      * Keep track of the start of childrens containing block.
@@ -175,9 +126,6 @@ public abstract class Box {
     private Box containingBlock;
     private Box staticParent;
 
-    /**
-     * Constructor for the Box object
-     */
     public Box() {
     }
 
@@ -207,11 +155,6 @@ public abstract class Box {
     }
 
 
-    /**
-     * Converts to a String representation of the object.
-     *
-     * @return A string representation of the object.
-     */
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Box: ");
@@ -219,11 +162,6 @@ public abstract class Box {
         return sb.toString();
     }
 
-    /**
-     * Adds a feature to the Child attribute of the Box object
-     *
-     * @param child The feature to be added to the Child attribute
-     */
     public void addChild(Box child) {
         if (boxes == null) { 
             boxes = new ArrayList();
@@ -240,14 +178,8 @@ public abstract class Box {
         if (child.isChildrenExceedBounds()) {
             setChildrenExceedBounds(true);
         }
-        if (child.isFixedDescendant()) {
-            setFixedDescendant(true);
-        }
     }
 
-    /**
-     * Description of the Method
-     */
     public void removeAllChildren() {
         if (boxes != null) {
             boxes.clear();
@@ -259,82 +191,35 @@ public abstract class Box {
         height = tx = ty = 0;
     }
 
-    /**
-     * Sets the persistentBFC attribute of the Box object
-     *
-     * @param persistentBFC The new persistentBFC value
-     */
     public void setPersistentBFC(PersistentBFC persistentBFC) {
         this.persistentBFC = persistentBFC;
     }
 
-    /**
-     * Sets the parent attribute of the Box object
-     *
-     * @param box The new parent value
-     */
     public void setParent(Box box) {
         this.parent = box;
     }
 
-    /**
-     * Sets the childrenExceedBounds attribute of the Box object
-     *
-     * @param children_exceeds The new childrenExceedBounds value
-     */
+
     public void setChildrenExceedBounds(boolean children_exceeds) {
         this.children_exceeds = children_exceeds;
     }
 
-    public void setFixedDescendant(boolean fixed_descendant) {
-        this.fixed_descendant = fixed_descendant;
-        if (this.getParent() != null && fixed_descendant) {
-            this.getParent().setFixedDescendant(true);
-        }
-    }
-
-    /**
-     * Gets the persistentBFC attribute of the Box object
-     *
-     * @return The persistentBFC value
-     */
     public PersistentBFC getPersistentBFC() {
         return persistentBFC;
     }
 
-    /**
-     * Gets the height attribute of the Box object
-     *
-     * @return The height value
-     */
     public int getHeight() {
         return height;
     }
 
-    /**
-     * Gets the parent attribute of the Box object
-     *
-     * @return The parent value
-     */
     public Box getParent() {
         return parent;
     }
 
-    /**
-     * Gets the childCount attribute of the Box object
-     *
-     * @return The childCount value
-     */
     public int getChildCount() {
         return boxes == null ? 0 : boxes.size();
     }
 
-    /**
-     * Gets the child attribute of the Box object
-     *
-     * @param i PARAM
-     * @return The child value
-     */
     public Box getChild(int i) {
         if (boxes == null) {
             throw new IndexOutOfBoundsException();
@@ -343,11 +228,6 @@ public abstract class Box {
         }
     }
 
-    /**
-     * Gets the childIterator attribute of the Box object
-     *
-     * @return The childIterator value
-     */
     public Iterator getChildIterator() {
         if (boxes == null) {
             return Collections.EMPTY_LIST.iterator();
@@ -356,19 +236,9 @@ public abstract class Box {
         }
     }
 
-    /**
-     * Gets the childrenExceedBounds attribute of the Box object
-     *
-     * @return The childrenExceedBounds value
-     */
     public boolean isChildrenExceedBounds() {
         return children_exceeds;
     }
-
-    public boolean isFixedDescendant() {
-        return fixed_descendant;
-    }
-
 
     /**
      * This generates a string which fully represents every facet of the
@@ -649,6 +519,10 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.73  2005/11/05 23:19:07  peterbrant
+ * Always add fixed layers to root layer / If element has fixed background just
+ * note this on the root layer instead of property in Box
+ *
  * Revision 1.72  2005/11/05 18:45:06  peterbrant
  * General cleanup / Remove obsolete code
  *

@@ -365,7 +365,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             
             
             // turn on simple scrolling mode if there's any fixed elements
-            if (root.isFixedDescendant()) {
+            if (root.getLayer().containsFixedContent()) {
                 // Uu.p("is fixed");
                 enclosingScrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
             } else {

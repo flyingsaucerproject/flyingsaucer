@@ -218,9 +218,15 @@ public class LayoutContext implements CssContext, PageContext {
             layer = new Layer(master);
             rootLayer = layer;
         } else {
-            Layer parent = this.layer;
-            while (! parent.isStackingContext()) {
-                parent = parent.getParent();
+            Layer parent = this.layer;    
+            if (master.getStyle().isFixed()) {
+                while (parent.getParent() != null) {
+                    parent = parent.getParent();
+                }
+            } else {
+                while (! parent.isStackingContext()) {
+                    parent = parent.getParent();
+                }
             }
             
             layer = new Layer(parent, master);
