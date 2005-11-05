@@ -29,11 +29,13 @@ import java.util.List;
 import javax.swing.JComponent;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.PersistentBFC;
 
 
@@ -65,8 +67,8 @@ public abstract class Box {
      */
     public int y;
 
-    public double absY;
-    public double absX;
+    public int absY;
+    public int absX;
 
     /**
      * Box width.
@@ -93,6 +95,7 @@ public abstract class Box {
     public int height;
 
     // position stuff
+
     /**
      * Description of the Field
      */
@@ -102,7 +105,7 @@ public abstract class Box {
      * Description of the Field
      */
     public boolean top_set = false;
-
+    
     /**
      * Description of the Field
      */
@@ -179,6 +182,8 @@ public abstract class Box {
      * Description of the Field
      */
     protected PersistentBFC persistentBFC = null;
+    
+    private Layer layer = null;
 
     /**
      * Description of the Field
@@ -208,6 +213,7 @@ public abstract class Box {
 
     private Style style;
     private Box containingBlock;
+    private Box staticParent;
 
     /**
      * Constructor for the Box object
@@ -628,12 +634,65 @@ public abstract class Box {
                 getHeight() - (int) margin.top() - (int) margin.bottom());
         return result;
     }
+
+    public Layer getLayer() {
+        return layer;
+    }
+
+    public void setLayer(Layer layer) {
+        this.layer = layer;
+    }
+
+    public Box getStaticParent() {
+        return staticParent;
+    }
+
+    public void setStaticParent(Box staticParent) {
+        this.staticParent = staticParent;
+    }
+    
+    public int getContentWidth() {
+        return contentWidth;
+    }
+    
+    // Common code for placing absolute and relative boxes in the right place 
+    // Is the best place for it?
+    // TODO If absolute and absolute containing block is block-level, use padding box
+    // TODO Finish this!
+    // TODO Handle left: auto, right: auto for absolute blocks
+    public void positionPositionedBox(CssContext cssCtx) {
+        CalculatedStyle style = getStyle().getCalculatedStyle();
+        
+        // getContainingBlock().getWidth() and getContainingBlock().getHeight() is 
+        // wrong / use padding box
+        
+        if (! style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
+            this.x += style.getFloatPropertyProportionalWidth(
+                    CSSName.LEFT, getContainingBlock().getWidth(), cssCtx);
+        } else if (! style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
+            this.x += getContainingBlock().getWidth() - 
+                style.getFloatPropertyProportionalWidth(
+                    CSSName.RIGHT, getContainingBlock().getWidth(), cssCtx) - getWidth();
+        }
+        
+        if (! style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
+            this.y += style.getFloatPropertyProportionalHeight(
+                    CSSName.TOP, getContainingBlock().getHeight(), cssCtx);
+        } else if (! style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
+            this.y += getContainingBlock().getHeight() -
+                style.getFloatPropertyProportionalWidth(
+                    CSSName.BOTTOM, getContainingBlock().getHeight(), cssCtx) - getHeight();
+        }        
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.71  2005/11/05 03:30:01  peterbrant
+ * Start work on painting order and improved positioning implementation
+ *
  * Revision 1.70  2005/11/03 17:58:41  peterbrant
  * Float rewrite (still stomping bugs, but demos work)
  *

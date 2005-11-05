@@ -61,12 +61,12 @@ public class BoxRendering {
             // copy the bounds to we don't mess it up
             Rectangle oldBounds = new Rectangle(c.getExtents());
 
-            if (block.getStyle().isFixed()) {
-                paintFixed(c, block);
-            } /*else if (block.getStyle().isAbsolute()) {
-                paintAbsoluteBox(c, block);
-            }*/
-            else {
+//            if (block.getStyle().isFixed()) {
+//                paintFixed(c, block);
+//            } /*else if (block.getStyle().isAbsolute()) {
+//                paintAbsoluteBox(c, block);
+//            }*/
+//            else {
                 //text decoration?
                 //TODO: can't this apply to fixeds and absolutes?
                 IdentValue decoration = calculatedStyle.getIdent(CSSName.TEXT_DECORATION);
@@ -90,7 +90,7 @@ public class BoxRendering {
                 if (decoration != IdentValue.NONE) {
                     c.getDecorations().removeLast();
                 }
-            }
+//            }
 
             //Uu.p("here it's : " + c.getListCounter());
             if (ContentUtil.isListItem(calculatedStyle)) {
@@ -101,10 +101,6 @@ public class BoxRendering {
             if (!box.getStyle().isAbsolute()) {
                 oldBounds.y = oldBounds.y + block.height;
                 c.setExtents(oldBounds);
-            }
-            
-            if (block.persistentBFC != null) {
-                block.persistentBFC.getFloatManager().paintFloats(c);
             }
         }
 
@@ -364,6 +360,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.56  2005/11/05 03:30:02  peterbrant
+ * Start work on painting order and improved positioning implementation
+ *
  * Revision 1.55  2005/11/03 17:58:41  peterbrant
  * Float rewrite (still stomping bugs, but demos work)
  *

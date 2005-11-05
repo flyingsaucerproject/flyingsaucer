@@ -1,23 +1,11 @@
 package org.xhtmlrenderer.swing;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.UserInterface;
-import org.xhtmlrenderer.layout.Boxing;
-import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.layout.PageInfo;
-import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.layout.content.DomToplevelNode;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.*;
-import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRLog;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.HashMap;
@@ -25,14 +13,32 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.UserInterface;
+import org.xhtmlrenderer.layout.Boxing;
+import org.xhtmlrenderer.layout.Layer;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.PageInfo;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.layout.content.DomToplevelNode;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.ReflowEvent;
+import org.xhtmlrenderer.render.RenderQueue;
+import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
+
 
 public class RootPanel extends JPanel implements ComponentListener, UserInterface {
-
-    /**
-     * Description of the Field
-     */
     protected Dimension intrinsic_size;
-    protected StackingContext initialStackingContext;
 
     private boolean useThreads;
 
@@ -44,56 +50,28 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         this(Configuration.isTrue("xr.use.threads", true));
     }
 
-    /**
-     * Gets the intrinsicSize attribute of the BasicPanel object
-     *
-     * @return The intrinsicSize value
-     */
     public Dimension getIntrinsicSize() {
         return intrinsic_size;
     }
 
-    /**
-     * Description of the Field
-     */
     protected Map documentListeners;
 
-
-    /**
-     * Gets the context attribute of the BasicPanel object
-     *
-     * @return The context value
-     */
     public SharedContext getSharedContext() {
         return sharedContext;
     }
 
-    /**
-     * Description of the Field
-     */
     protected SharedContext sharedContext;
 
     //TODO: layout_context should not be stored!
     protected volatile LayoutContext layout_context;
 
-
-    /**
-     * Description of the Field
-     */
-    private Box body_box = null;
+    private Box rootBox = null;
 
     private Thread layoutThread;
     private Thread renderThread;
 
     private PageInfo pageInfo = null;
 
-    /**
-     * Sets the document attribute of the BasicPanel object
-     *
-     * @param doc The new document value
-     * @param url The new document value
-     * @param nsh The new document value
-     */
     public void setDocument(Document doc, String url, NamespaceHandler nsh) {
         resetScrollPosition();
         setRootBox(null);
@@ -113,15 +91,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
     }
 
-
-    /**
-     * Description of the Field
-     */
     protected JScrollPane enclosingScrollPane;
-
-    /**
-     * Description of the Method
-     */
     public void resetScrollPosition() {
         if (this.enclosingScrollPane != null) {
             this.enclosingScrollPane.getVerticalScrollBar().setValue(0);
@@ -192,20 +162,13 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         setEnclosingScrollPane(null);
     }
 
-
-    /**
-     * Description of the Field
-     */
     protected Document doc = null;
 
     /**
-     * The queue to hand painting and layout events
+     * The queue to handle painting and layout events
      */
     RenderQueue queue;
 
-    /**
-     * Description of the Method
-     */
     protected void init() {
 
 
@@ -292,7 +255,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
         extents = getBaseExtents(pageInfo);
 
-
         //Uu.p("newContext() = extents = " + extents);
         getSharedContext().setMaxWidth(0);
         //getSharedContext().setMaxHeight(0);
@@ -332,25 +294,21 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         if (doc == null) {
             return;
         }
-// set up CSS
+        
         LayoutContext c = newLayoutContext(pageInfo, (Graphics2D) g);
         synchronized (this) {
             if (this.layout_context != null) this.layout_context.stopRendering();
             this.layout_context = c;
-            //HACK:
-            this.initialStackingContext = c.getStackingContext();
         }
         c.setRenderQueue(queue);
         setRenderWidth((int) c.getExtents().getWidth());
         getSharedContext().getTextRenderer().setupGraphics(c.getGraphics());
-//TODO: maybe temporary hack
-        if (c.getBlockFormattingContext() != null) c.popBFC();//we set one for the top level before
-        // do the actual layout
-//Uu.p("doing actual layout here");
+        
         Box root = Boxing.preLayout(c, new DomToplevelNode(doc));
         setRootBox(root);
+        
         Boxing.realLayout(c, root, new DomToplevelNode(doc));
-//Uu.p("body box = " + body_box);
+        
         if (!c.isStylesAllPopped()) {
             XRLog.layout(Level.SEVERE, "mismatch in style popping and pushing");
         }
@@ -440,10 +398,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
     }
 
-
-    /**
-     * Description of the Method
-     */
     protected void fireDocumentLoaded() {
         Iterator it = this.documentListeners.keySet().iterator();
         while (it.hasNext()) {
@@ -456,29 +410,12 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     /*
     * ========= UserInterface implementation ===============
     */
-
-    /**
-     * Description of the Field
-     */
     public Element hovered_element = null;
 
-    /**
-     * Description of the Field
-     */
     public Element active_element = null;
 
-    /**
-     * Description of the Field
-     */
     public Element focus_element = null;
 
-
-    /**
-     * Gets the hover attribute of the BasicPanel object
-     *
-     * @param e PARAM
-     * @return The hover value
-     */
     public boolean isHover(org.w3c.dom.Element e) {
         if (e == hovered_element) {
             return true;
@@ -486,12 +423,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         return false;
     }
 
-    /**
-     * Gets the active attribute of the BasicPanel object
-     *
-     * @param e PARAM
-     * @return The active value
-     */
     public boolean isActive(org.w3c.dom.Element e) {
         if (e == active_element) {
             return true;
@@ -499,12 +430,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         return false;
     }
 
-    /**
-     * Gets the focus attribute of the BasicPanel object
-     *
-     * @param e PARAM
-     * @return The focus value
-     */
     public boolean isFocus(org.w3c.dom.Element e) {
         if (e == focus_element) {
             return true;
@@ -512,28 +437,12 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         return false;
     }
 
-
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
     public void componentHidden(ComponentEvent e) {
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
     public void componentMoved(ComponentEvent e) {
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
     public void componentResized(ComponentEvent e) {
         Uu.p("componentResized() " + this.getSize());
         Uu.p("viewport = " + enclosingScrollPane.getViewport().getSize());
@@ -547,11 +456,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
     public void componentShown(ComponentEvent e) {
     }
 
@@ -575,14 +479,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         return this.pageInfo != null;
     }
 
-    public synchronized Box getRootBox() {
-        return body_box;
-    }
-
-    protected synchronized void setRootBox(Box box) {
-        this.body_box = box;
-    }
-
     public boolean isUseThreads() {
         return useThreads;
     }
@@ -590,5 +486,16 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     public void setUseThreads(boolean useThreads) {
         this.useThreads = useThreads;
     }
+    
+    public synchronized Box getRootBox() {
+        return rootBox;
+    }
+    
+    public synchronized void setRootBox(Box rootBox) {
+        this.rootBox = rootBox;
+    }
 
+    public synchronized Layer getRootLayer() {
+        return getRootBox() == null ? null : getRootBox().getLayer();
+    }
 }

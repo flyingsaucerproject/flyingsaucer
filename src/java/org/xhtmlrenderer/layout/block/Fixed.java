@@ -30,17 +30,9 @@ import java.awt.Rectangle;
 
 
 /**
- * Description of the Class
- *
  * @author Torbjörn Gannholm
  */
 public class Fixed {
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
     public static void positionFixedChild(LayoutContext c, Box box) {
         if (box.getStyle().isFixed()) {//already restyled by ContentUtil
             Point origin = c.getOriginOffset();
@@ -52,12 +44,6 @@ public class Fixed {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
     public static void setupFixed(LayoutContext c, Box box) {
         if (box.getStyle().isFixed()) {
             box.setFixedDescendant(true);

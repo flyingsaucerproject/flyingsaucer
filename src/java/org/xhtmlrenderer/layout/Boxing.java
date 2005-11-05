@@ -19,6 +19,12 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.List;
+
+import javax.swing.JComponent;
+
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -28,20 +34,18 @@ import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Fixed;
-import org.xhtmlrenderer.layout.block.FloatUtil;
 import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.ContentUtil;
+import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.layout.content.TableContent;
-import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.render.AnonymousBlockBox;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.FloatedBlockBox;
+import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.table.TableBoxing;
 import org.xhtmlrenderer.util.Uu;
-
-import javax.swing.*;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.List;
 
 
 /**
@@ -123,15 +127,7 @@ public class Boxing {
         }
         return relayout;
     }
-
-    /**
-     * Description of the Method
-     *
-     * @param c       PARAM
-     * @param block   PARAM
-     * @param content PARAM
-     * @return Returns
-     */
+    
     public static Box layout(LayoutContext c, Box block, Content content) {
         //OK, first set up the current style. All depends on this...
         CascadedStyle pushed = content.getStyle();
@@ -151,17 +147,15 @@ public class Boxing {
             block.setFixedDescendant(true);
         }
         
-        // install a block formatting context for the body,
-        // ie. if it's null.
-        // set up the outtermost bfc
-        boolean set_bfc = false;
-        if (c.getBlockFormattingContext() == null) {
+        if (content instanceof DomToplevelNode || block.getStyle().establishesBFC()) {
             BlockFormattingContext bfc = new BlockFormattingContext(block, c);
             c.pushBFC(bfc);
-            set_bfc = true;
-            bfc.setWidth((int) c.getExtents().getWidth());
+        } 
+        
+        if (content instanceof DomToplevelNode || block.getStyle().requiresLayer()) {
+            c.pushLayer(block);
         }
-
+        
         // copy the extents
         c.setExtents(new Rectangle(oe));
 
@@ -211,16 +205,6 @@ public class Boxing {
         
         //block.x = c.getExtents().x;
         //block.y = c.getExtents().y;
-
-        if (ContentUtil.isFloated(c.getCurrentStyle())) {
-            // set up a float bfc
-            FloatUtil.preChildrenLayout(c, block);
-        }
-
-        if (block.getStyle().isAbsolute()) {
-            // set up an absolute bfc
-            Absolute.preChildrenLayout(c, block);
-        }
         
         // save height incase fixed height
         int original_height = block.height;
@@ -263,14 +247,12 @@ public class Boxing {
             block.height = original_height;
         }
 
-        if (ContentUtil.isFloated(c.getCurrentStyle())) {
-            // remove the float bfc
-            FloatUtil.postChildrenLayout(c);
+        if (content instanceof DomToplevelNode || block.getStyle().establishesBFC()) {
+            c.popBFC();
         }
-
-        if (block.getStyle().isAbsolute()) {
-            // remove the absolute bfc
-            Absolute.postChildrenLayout(c);
+        
+        if (content instanceof DomToplevelNode  || block.getStyle().requiresLayer()) {
+            c.popLayer();
         }
 
         // calculate the total outer width
@@ -281,7 +263,7 @@ public class Boxing {
 
         //restore the extents
         c.setExtents(oe);
-
+        
         // account for special positioning
         // need to add bfc/unbfc code for absolutes
         Absolute.setupAbsolute(block, c);
@@ -292,12 +274,6 @@ public class Boxing {
         }
 
         checkExceeds(block);
-
-        // remove the outtermost bfc
-        if (set_bfc) {
-            c.getBlockFormattingContext().doFinalAdjustments();
-            c.popBFC();
-        }
 
         boolean relayout = checkPageBreakInside(c, block);
 
@@ -347,18 +323,6 @@ public class Boxing {
         List contentList = content.getChildContent(c);
         box.setState(Box.CHILDREN_FLUX);
 
-        //HACK: This may not be the right place
-        if (box instanceof BlockBox) {// && Configuration.isTrue("xr.stackingcontext.enabled", false)) {
-            BlockBox block = (BlockBox) box;
-            Point origin = c.getOriginOffset();
-            block.absY = origin.getY() + block.y;
-            block.absX = origin.getX() + block.x;
-            block.renderIndex = c.getNewRenderIndex();
-            StackingContext s = c.getStackingContext();
-            if (!block.getStyle().isAbsolute() && !block.getStyle().isFloated())
-                s.addBlock(block);
-        }
-
         if (contentList != null && contentList.size() > 0) {
             c.pushParentContent(content);
             if (ContentUtil.hasBlockContent(contentList)) {//this should be block layed out
@@ -382,6 +346,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.55  2005/11/05 03:29:31  peterbrant
+ * Start work on painting order and improved positioning implementation
+ *
  * Revision 1.54  2005/11/04 02:43:07  tobega
  * Inline borders and backgrounds are back!
  *

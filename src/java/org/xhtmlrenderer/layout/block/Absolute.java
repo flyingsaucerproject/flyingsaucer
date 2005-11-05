@@ -19,103 +19,36 @@
  */
 package org.xhtmlrenderer.layout.block;
 
+import java.awt.Rectangle;
+
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.util.Uu;
-
-import java.awt.Rectangle;
-
+import org.xhtmlrenderer.render.LineBox;
 
 /**
- * Description of the Class
- *
  * @author Torbjörn Gannholm
  */
 public class Absolute {
-
-    /**
-     * Description of the Method
-     *
-     * @param c     PARAM
-     * @param block PARAM
-     */
-    public static void preChildrenLayout(LayoutContext c, Box block) {
-        BlockFormattingContext bfc = new BlockFormattingContext(block, c);
-        bfc.setWidth(block.getWidth());
-        c.pushBFC(bfc);
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param c PARAM
-     */
-    public static void postChildrenLayout(LayoutContext c) {
-        c.getBlockFormattingContext().doFinalAdjustments();
-        c.popBFC();
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param c         PARAM
-     * @param child_box PARAM
-     */
-    public static void positionAbsoluteChild(LayoutContext c, Box child_box) {
-        Uu.p("positioning an absolute child: " + child_box);
-        BlockFormattingContext bfc = c.getBlockFormattingContext();
-        // handle the left and right
-        if (child_box.right_set) {
-            child_box.x = -bfc.getX() + bfc.getWidth() - child_box.right - child_box.getWidth()
-                    - bfc.getInsets().right;
-        } else {
-            child_box.x = bfc.getX() + child_box.left;
-        }
-
-        // handle the top and bottom
-        if (child_box.bottom_set) {
-            // can't actually do this part yet, so save for later
-            bfc.addAbsoluteBottomBox(child_box);
-        } else {
-            // top positioning
-            child_box.y = bfc.getY() + child_box.top;
-        }
-    }
-
-
-    /**
-     * Description of the Method
-     *
-     * @param c       PARAM
-     * @param content PARAM
-     * @return Returns
-     */
-    public static BlockBox generateAbsoluteBox(LayoutContext c, Content content) {
-        //Uu.p("generate absolute block inline box: avail = " + content);
+    public static void generateAbsoluteBox(LayoutContext c, Content content, LineBox currentLine) {
         Rectangle oe = c.getExtents();// copy the extents for safety
         c.setExtents(new Rectangle(oe));
-
         Box box = Boxing.layout(c, content);
-
-        //Uu.p("got a block box from the sub layout: " + box);
+        box.setContainingBlock(c.getLayer().getMaster());
+        box.setStaticParent(currentLine);
+        
+        // HACK
+        if (box.getStyle().isFixed()) {
+            currentLine.setFixedDescendant(true);
+        }
+        
         c.setExtents(oe);
-
-        return (BlockBox) box;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param box PARAM
-     * @param c   PARAM
-     */
     public static void setupAbsolute(Box box, LayoutContext c) {
         //Uu.p("setting up an abs for box: " +box);
         CalculatedStyle style = c.getCurrentStyle();
@@ -124,12 +57,10 @@ public class Absolute {
             if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
                 box.right = (int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth(), c);
                 box.right_set = true;
-                //Uu.p("right set to : " + box.right);
             }
             if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
                 box.left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, c.getBlockFormattingContext().getWidth(), c);
                 box.left_set = true;
-                //Uu.p("left set to : " + box.left);
             }
 
             if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {

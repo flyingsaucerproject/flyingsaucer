@@ -66,7 +66,7 @@ public class FloatUtil {
         FloatedBlockBox block = new FloatedBlockBox();
         block.setContainingBlock(curr_line.getParent());
         block.element = content.getElement();
-        Boxing.layout(c, block, content);
+        Boxing.realLayout(c, block, content);
         
         if (! block.getStyle().isFloated()) {
             throw new XRRuntimeException("Invalid call to generateFloatedBlock(); where float: none ");
@@ -77,6 +77,7 @@ public class FloatUtil {
         if (pendingFloats.size() > 0 || block.getWidth() > avail) {
             pendingFloats.add(block);
             c.getBlockFormattingContext().getFloatManager().removeFloat(block);
+            c.getLayer().removeFloat(block);
             block.setPending(true);
         }
         

@@ -19,6 +19,14 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.LinkedList;
+import java.util.Stack;
+import java.util.logging.Level;
+
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -28,33 +36,22 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.content.Content;
-import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.InlineElement;
+import org.xhtmlrenderer.render.PageContext;
+import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
-import java.util.logging.Level;
-
 public class LayoutContext implements CssContext, PageContext {
-    SharedContext sharedContext;
+    private SharedContext sharedContext;
     private LinkedList firstLineStyles = new LinkedList();
     private boolean shrinkWrap = false;
-
     private RenderQueue renderQueue;
-
     private boolean pendingPageBreak;
-
     private double floatingY;
-    private List pendingFloats;
+    private Layer rootLayer;
 
-    //HACK:
-    private StackingContext initialStackingContext = StackingContext.newInstance();
     private Graphics2D graphics;
 
     private InlineElement currentInlineElement;
@@ -93,9 +90,6 @@ public class LayoutContext implements CssContext, PageContext {
         return graphics;
     }
 
-    /**
-     * Description of the Field
-     */
     public void setGraphics(Graphics2D graphics) {
         this.graphics = graphics;
     }
@@ -160,6 +154,7 @@ public class LayoutContext implements CssContext, PageContext {
     LayoutContext(SharedContext sharedContext, Rectangle extents) {
         this.sharedContext = sharedContext;
         bfc_stack = new Stack();
+        layer_stack = new Stack();
         setExtents(extents);
     }
 
@@ -195,10 +190,13 @@ public class LayoutContext implements CssContext, PageContext {
     }
 
     /**
-     * the current block formatting context
+     * The current block formatting context
      */
     private BlockFormattingContext bfc;
-    protected Stack bfc_stack;
+    private Stack bfc_stack;
+    
+    private Layer layer;
+    private Stack layer_stack;    
 
     public BlockFormattingContext getBlockFormattingContext() {
         return bfc;
@@ -212,22 +210,44 @@ public class LayoutContext implements CssContext, PageContext {
     public void popBFC() {
         bfc = (BlockFormattingContext) bfc_stack.pop();
     }
+    
+    public void pushLayer(Box master) {
+        Layer layer = null;
+        
+        if (rootLayer == null) {
+            layer = new Layer(master);
+            rootLayer = layer;
+        } else {
+            Layer parent = this.layer;
+            while (! parent.isStackingContext()) {
+                parent = parent.getParent();
+            }
+            
+            layer = new Layer(parent, master);
 
-    /**
-     * Description of the Field
-     */
+            parent.addChild(layer);
+        }
+        
+        layer_stack.push(this.layer);
+        this.layer = layer;
+    }
+    
+    public void popLayer() {
+        layer.positionChildren(this);
+        layer = (Layer)layer_stack.pop();
+    }
+    
+    public Layer getLayer() {
+        return layer;
+    }
+    
+    public Layer getRootLayer() {
+        return rootLayer;
+    }
+
     private Stack extents_stack = new Stack();
-
-    /**
-     * Description of the Field
-     */
     private Rectangle extents;
 
-    /**
-     * Sets the extents attribute of the Context object
-     *
-     * @param rect The new extents value
-     */
     public void setExtents(Rectangle rect) {
         this.extents = rect;
         if (extents.width < 1) {
@@ -236,18 +256,11 @@ public class LayoutContext implements CssContext, PageContext {
         }
     }
 
-    /**
-     * Gets the extents attribute of the Context object
-     *
-     * @return The extents value
-     */
     public Rectangle getExtents() {
         return this.extents;
     }
 
     /**
-     * Description of the Method
-     *
      * @param dw amount to shrink width by
      * @param dh amount to shrink height by
      */
@@ -262,44 +275,21 @@ public class LayoutContext implements CssContext, PageContext {
         setExtents(rect);
     }
 
-    /**
-     * Description of the Method
-     */
     public void unshrinkExtents() {
         setExtents((Rectangle) extents_stack.pop());
     }
 
-    /**
-     * Description of the Field
-     */
     private int xoff = 0;
-
-    /**
-     * Description of the Field
-     */
     private int yoff = 0;
 
     /* =========== List stuff ============== */
 
-    /**
-     * Description of the Field
-     */
     protected int list_counter;
 
-    /**
-     * Gets the listCounter attribute of the Context object
-     *
-     * @return The listCounter value
-     */
     public int getListCounter() {
         return list_counter;
     }
 
-    /**
-     * Sets the listCounter attribute of the Context object
-     *
-     * @param counter The new listCounter value
-     */
     public void setListCounter(int counter) {
         list_counter = counter;
     }
@@ -309,41 +299,19 @@ public class LayoutContext implements CssContext, PageContext {
     /*
      * notes to help manage inline sub blocks (like table cells)
      */
-    /**
-     * Sets the subBlock attribute of the Context object
-     *
-     * @param sub_block The new subBlock value
-     */
     public void setSubBlock(boolean sub_block) {
         this.sub_block = sub_block;
     }
 
-    /**
-     * Description of the Field
-     */
     protected boolean sub_block = false;
 
-    /**
-     * Gets the subBlock attribute of the Context object
-     *
-     * @return The subBlock value
-     */
     public boolean isSubBlock() {
         return sub_block;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param x PARAM
-     * @param y PARAM
-     */
     public void translate(int x, int y) {
-        //Uu.p("trans: " + x + "," + y);
-        //getGraphics().translate(x, y);//not thread-safe
-        if (bfc != null) { //is now thread-safe
-            bfc.translate(x, y);
-        }
+        bfc.translate(x, y);
+        layer.translate(x, y);
         xoff += x;
         yoff += y;
     }
@@ -362,11 +330,6 @@ public class LayoutContext implements CssContext, PageContext {
         this.shouldStop = true;
     }
 
-    /**
-     * Converts to a String representation of the object.
-     *
-     * @return A string representation of the object.
-     */
     public String toString() {
         return "Context: extents = " +
                 "(" + extents.x + "," + extents.y + ") -> (" + extents.width + "x" + extents.height + ")"
@@ -420,10 +383,6 @@ public class LayoutContext implements CssContext, PageContext {
 
     public int getNewRenderIndex() {
         return renderIndex++;
-    }
-
-    public StackingContext getStackingContext() {
-        return initialStackingContext;
     }
 
     public void setPendingPageBreak(boolean pendingPageBreak) {

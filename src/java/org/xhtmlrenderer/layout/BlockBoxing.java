@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.block.Fixed;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FirstLetterStyle;
@@ -28,6 +27,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.awt.Dimension;
 import java.util.Iterator;
@@ -99,6 +99,10 @@ public class BlockBoxing {
             box.addChild(child_box);
             Boxing.realLayout(c, child_box, currentContent);
             box.propagateChildProperties(child_box);
+            
+            if (child_box.getStyle().isAbsolute()) {
+                throw new XRRuntimeException("(PMB) Bad assumption...");
+            }
 
             c.translate(0, -box.height);
 
@@ -114,11 +118,6 @@ public class BlockBoxing {
             if (child_box.getStyle().isFixed()) {
                 // put fixed positioning in later
                 Fixed.positionFixedChild(c, child_box);
-            }
-
-
-            if (child_box.getStyle().isAbsolute()) {
-                Absolute.positionAbsoluteChild(c, child_box);
             }
 
             // skip adjusting the parent box if the child
@@ -174,6 +173,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/11/05 03:29:30  peterbrant
+ * Start work on painting order and improved positioning implementation
+ *
  * Revision 1.25  2005/11/03 20:58:41  peterbrant
  * Bug fixes to rewritten float code.  Floated block positioning should be very solid now.
  *

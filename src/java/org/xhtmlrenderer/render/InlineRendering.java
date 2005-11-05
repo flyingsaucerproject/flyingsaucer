@@ -264,14 +264,7 @@ public class InlineRendering {
         if (ib.pushstyles > 0)
             padX = ib.getInlineElement().handleStart(c, line, ib, padX, decorations, ib.pushstyles);
 
-        if (ib.getStyle().isFloated()) {
-            LinkedList unpropagated = (LinkedList) decorations.clone();
-            decorations.clear();
-            paintFloat(c, ib);
-            decorations.addAll(unpropagated);
-            debugInlines(c, ib, lx, ly);
-        } // Uu.p("paintInline: " + inline);
-        else if (ib instanceof InlineBlockBox) {
+        if (ib instanceof InlineBlockBox) {
             //no text-decorations on inline-block
             LinkedList restarted = new LinkedList();
             for (Iterator i = decorations.iterator(); i.hasNext();) {
@@ -386,26 +379,6 @@ public class InlineRendering {
      */
     static void paintAbsolute(RenderingContext c, Box inline) {
         BoxRendering.paint(c, inline);
-    }
-
-
-    /**
-     * Description of the Method
-     *
-     * @param c      PARAM
-     * @param inline PARAM
-     */
-    static void paintFloat(RenderingContext c, InlineBox inline) {
-        Rectangle oe = c.getExtents();
-        c.setExtents(new Rectangle(oe.x, 0, oe.width, oe.height));
-        int xoff = 0;
-        int yoff = 0;//line.y + ( line.baseline - inline.height );// + inline.y;
-        c.translate(xoff, yoff);
-        c.getGraphics().translate(xoff, yoff);
-        BoxRendering.paint(c, inline);
-        c.getGraphics().translate(-xoff, -yoff);
-        c.translate(-xoff, -yoff);
-        c.setExtents(oe);
     }
 }
 

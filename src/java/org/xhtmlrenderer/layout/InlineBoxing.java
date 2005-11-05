@@ -34,7 +34,6 @@ import org.xhtmlrenderer.render.*;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.font.LineMetrics;
 import java.util.ArrayList;
@@ -233,13 +232,7 @@ public class InlineBoxing {
             do {
                 new_inline = null;
                 if (currentContent instanceof AbsolutelyPositionedContent) {
-                    // Uu.p("this might be a problem, but it could just be an absolute block");
-                    //     result = new BoxLayout().layout(c,content);
-                    BlockBox absolute = Absolute.generateAbsoluteBox(c, currentContent);
-                    //curr_line.setChildrenExceedBounds(true);
-                    //curr_line.addChild(absolute);
-                    absolute.setParent(c.getBlockFormattingContext().getMaster());
-                    c.getStackingContext().addAbsolute(absolute);
+                    Absolute.generateAbsoluteBox(c, currentContent, curr_line);
                     break;
                 } else if (currentContent instanceof FloatedBlockContent) {
                     //Uu.p("calcinline: is floated block");
@@ -247,9 +240,6 @@ public class InlineBoxing {
                     if (!floater.isPending()) {
                         remaining_width -= floater.getWidth();
                     }
-
-                    c.getStackingContext().addFloat(floater);
-
                     break;
                 }
 
@@ -613,14 +603,6 @@ public class InlineBoxing {
         if (c.isPrint() && line_to_save.crossesPageBreak(c)) {
             line_to_save.moveToNextPage(c, bounds);
         }
-        //if (Configuration.isTrue("xr.stackingcontext.enabled", false)) {
-        //line should now be fixed
-        Point origin = c.getOriginOffset();
-        line_to_save.absY = origin.getY() + line_to_save.y;
-        line_to_save.absX = origin.getX() + line_to_save.x;
-        StackingContext s = c.getStackingContext();
-        s.addLine(line_to_save);
-        //}
     }
 
 }
@@ -629,6 +611,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.60  2005/11/05 03:29:30  peterbrant
+ * Start work on painting order and improved positioning implementation
+ *
  * Revision 1.59  2005/11/04 02:43:07  tobega
  * Inline borders and backgrounds are back!
  *

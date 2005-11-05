@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.context.FontResolver;
-import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
@@ -69,25 +68,13 @@ public class RenderingContext implements CssContext {
         setExtents(extents);
     }
 
-    /**
-     * Sets the context attribute of the RenderingContext object
-     *
-     * @param sharedContext The new context value
-     */
     public void setContext(SharedContext sharedContext) {
         this.sharedContext = sharedContext;
     }
 
-
-    /**
-     * Sets the baseURL attribute of the RenderingContext object
-     *
-     * @param url The new baseURL value
-     */
     public void setBaseURL(String url) {
         sharedContext.setBaseURL(url);
     }
-
 
     /**
      * Sets the effective DPI (Dots Per Inch) of the screen. You should normally
@@ -103,7 +90,6 @@ public class RenderingContext implements CssContext {
         sharedContext.setDPI(dpi);
     }
 
-
     /**
      * <p/>
      * <p/>
@@ -118,48 +104,22 @@ public class RenderingContext implements CssContext {
         sharedContext.setMedia(media);
     }
 
-    /**
-     * Gets the uac attribute of the RenderingContext object
-     *
-     * @return The uac value
-     */
     public UserAgentCallback getUac() {
         return sharedContext.getUac();
     }
 
-
-    /**
-     * Gets the context attribute of the RenderingContext object
-     *
-     * @return The context value
-     */
     public SharedContext getContext() {
         return sharedContext;
     }
 
-    /**
-     * Gets the baseURL attribute of the RenderingContext object
-     *
-     * @return The baseURL value
-     */
     public String getBaseURL() {
         return sharedContext.getBaseURL();
     }
 
-    /**
-     * Gets the dPI attribute of the RenderingContext object
-     *
-     * @return The dPI value
-     */
     public float getDPI() {
         return sharedContext.getDPI();
     }
 
-    /**
-     * Gets the dPI attribute in a more useful form of the RenderingContext object
-     *
-     * @return The dPI value
-     */
     public float getMmPerPx() {
         return sharedContext.getMmPerPx();
     }
@@ -176,21 +136,10 @@ public class RenderingContext implements CssContext {
         return sharedContext.getFontSizeForXHeight(parent, desired, xHeight, graphics);
     }
 
-
-    /**
-     * Gets the textRenderer attribute of the RenderingContext object
-     *
-     * @return The textRenderer value
-     */
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
     }
 
-    /**
-     * Gets the media attribute of the RenderingContext object
-     *
-     * @return The media value
-     */
     public String getMedia() {
         return sharedContext.getMedia();
     }
@@ -212,9 +161,6 @@ public class RenderingContext implements CssContext {
         return graphics;
     }
 
-    /**
-     * Description of the Field
-     */
     public void setGraphics(Graphics2D graphics) {
         this.graphics = graphics;
     }
@@ -225,11 +171,6 @@ public class RenderingContext implements CssContext {
 
     private Rectangle extents;
 
-    /**
-     * Sets the extents attribute of the Context object
-     *
-     * @param rect The new extents value
-     */
     public void setExtents(Rectangle rect) {
         this.extents = rect;
         if (extents.width < 1) {
@@ -238,19 +179,12 @@ public class RenderingContext implements CssContext {
         }
     }
 
-    /**
-     * Gets the extents attribute of the Context object
-     *
-     * @return The extents value
-     */
     public Rectangle getExtents() {
         return this.extents;
     }
 
     //Style-handling stuff
     private Stack styleStack;
-
-    private Stack parentContentStack = new Stack();
 
     public void initializeStyles(EmptyStyle c) {
         styleStack = new Stack();
@@ -309,22 +243,9 @@ public class RenderingContext implements CssContext {
         return sharedContext.getFixedRectangle();
     }
 
-    /**
-     * Description of the Field
-     */
     private int xoff = 0;
-
-    /**
-     * Description of the Field
-     */
     private int yoff = 0;
 
-    /**
-     * Description of the Method
-     *
-     * @param x PARAM
-     * @param y PARAM
-     */
     public void translate(int x, int y) {
         //Uu.p("trans: " + x + "," + y);
         //getGraphics().translate(x, y);//not thread-safe

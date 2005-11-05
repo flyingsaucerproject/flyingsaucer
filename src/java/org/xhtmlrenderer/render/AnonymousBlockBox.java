@@ -21,32 +21,13 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.layout.content.Content;
 
-
-/**
- * Description of the Class
- *
- * @author   empty
- */
 public class AnonymousBlockBox extends BlockBox {
-
-    /**
-     * Constructor for the AnonymousBlockBox object
-     *
-     * @param content
-     */
     public AnonymousBlockBox( Content content ) {
-
         super();
         this.element = content.getElement();
 
     }
 
-
-    /**
-     * Converts to a String representation of the object.
-     *
-     * @return   A string representation of the object.
-     */
     public String toString() {
 
         StringBuffer sb = new StringBuffer();
@@ -57,12 +38,19 @@ public class AnonymousBlockBox extends BlockBox {
 
         return sb.toString();
     }
+    
+    public int getContentWidth() {
+        return getContainingBlock().getContentWidth();
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/11/05 03:29:59  peterbrant
+ * Start work on painting order and improved positioning implementation
+ *
  * Revision 1.12  2005/01/29 20:24:24  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *

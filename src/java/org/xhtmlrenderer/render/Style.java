@@ -25,8 +25,6 @@ public class Style {
 
     private float parentWidth;
 
-    //NO! can't cache this! private CssContext cssContext;
-    
     public Style(CalculatedStyle calculatedStyle, float parentWidth) {
         this.calculatedStyle = calculatedStyle;
         this.parentWidth = parentWidth;
@@ -133,6 +131,10 @@ public class Style {
         return calculatedStyle.isIdent(CSSName.HEIGHT, IdentValue.AUTO)
                 || !calculatedStyle.hasAbsoluteUnit(CSSName.HEIGHT);
     }
+    
+    public boolean isAutoZIndex() {
+        return calculatedStyle.isIdent(CSSName.Z_INDEX, IdentValue.AUTO);
+    }
 
     public boolean isOutsideNormalFlow() {
         return isFixed() || isAbsolute() || isFloated();
@@ -140,5 +142,22 @@ public class Style {
 
     public void setCalculatedStyle(CalculatedStyle calculatedStyle) {
         this.calculatedStyle = calculatedStyle;
+    }
+    
+    public boolean establishesBFC() {
+        IdentValue display = calculatedStyle.getIdent(CSSName.DISPLAY);
+        IdentValue position = calculatedStyle.getIdent(CSSName.POSITION);
+        
+        return isFloated() || 
+            position == IdentValue.ABSOLUTE || position == IdentValue.FIXED ||
+            display == IdentValue.INLINE_BLOCK || display == IdentValue.TABLE_CELL ||
+            ! calculatedStyle.isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE);
+    }
+    
+    public boolean requiresLayer() {
+        IdentValue position = calculatedStyle.getIdent(CSSName.POSITION);
+        
+        return position == IdentValue.ABSOLUTE || position == IdentValue.RELATIVE ||
+        position == IdentValue.FIXED;
     }
 }

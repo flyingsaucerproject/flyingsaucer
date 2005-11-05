@@ -106,7 +106,6 @@ public class TableBoxing {
             BlockFormattingContext bfc = new BlockFormattingContext(outerBox, c);
             c.pushBFC(bfc);
             set_bfc = true;
-            bfc.setWidth((int) c.getExtents().getWidth());
         }
         // copy the extents
         Rectangle oe = c.getExtents();
@@ -215,7 +214,6 @@ public class TableBoxing {
 
         // remove the outtermost bfc
         if (set_bfc) {
-            c.getBlockFormattingContext().doFinalAdjustments();
             c.popBFC();
         }
         outerBox.height = 0;
@@ -540,7 +538,6 @@ public class TableBoxing {
         cell.setStyle(new Style(c.getCurrentStyle(), (float) c.getExtents().width));
         BlockFormattingContext bfc = new BlockFormattingContext(cell, c);
         c.pushBFC(bfc);
-        bfc.setWidth((int) c.getExtents().getWidth());
 
         // copy the extents
         Rectangle oe = c.getExtents();
@@ -621,7 +618,6 @@ public class TableBoxing {
         c.setExtents(oe);
 
         // remove the bfc
-        c.getBlockFormattingContext().doFinalAdjustments();
         c.popBFC();
 
         //and now, back to previous style
@@ -638,6 +634,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.43  2005/11/05 03:30:03  peterbrant
+   Start work on painting order and improved positioning implementation
+
    Revision 1.42  2005/11/03 22:36:23  tobega
    Fix from Eric Neuhauser
 

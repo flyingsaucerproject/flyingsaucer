@@ -20,14 +20,17 @@
 package org.xhtmlrenderer.render;
 
 public class FloatedBlockBox extends BlockBox {
-    private boolean _pending;
+    private boolean pending;
+    
+    public FloatedBlockBox() {
+    }
 
     public boolean isPending() {
-        return _pending;
+        return pending;
     }
 
     public void setPending(boolean pending) {
-        _pending = pending;
+        this.pending = pending;
     }
     
     public String toString() {

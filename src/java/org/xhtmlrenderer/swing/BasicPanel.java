@@ -19,11 +19,29 @@
  */
 package org.xhtmlrenderer.swing;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.LayoutManager;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.print.PrinterGraphics;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.logging.Level;
+
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
@@ -34,14 +52,6 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.ErrorHandler;
-
-import java.awt.*;
-import java.awt.print.PrinterGraphics;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.logging.Level;
 
 //hmm, IntelliJ sees references to Xx below as being Xx in Component!
 
@@ -181,10 +191,10 @@ public abstract class BasicPanel extends RootPanel {
         
         //Uu.p("paint component () called");
         // if this is the first time painting this document, then calc layout
-        Box root = getRootBox();
+        Layer root = getRootLayer();
         if (root == null && !isUseThreads()) {
             doActualLayout(getGraphics());
-            root = getRootBox();
+            root = getRootLayer();
         }
         if (root == null) {
             //Uu.p("dispatching an initial resize event");
@@ -200,7 +210,7 @@ public abstract class BasicPanel extends RootPanel {
     }
 
     public void paintPage(Graphics2D g, int page) {
-        Box root = getRootBox();
+        Layer root = getRootLayer();
 
         if (root == null) {
             throw new RuntimeException("Document needs layout");
@@ -219,9 +229,7 @@ public abstract class BasicPanel extends RootPanel {
 
         g.clipRect(0, (int) (info.getContentHeight() * (page - 1)), (int) info.getContentWidth(), (int) info.getContentHeight());
 
-        Rectangle clip = g.getClipBounds();
-        initialStackingContext.render(c, g, clip.getMinY(), clip.getMaxY());
-        //BoxRendering.paint(c, root, false, false);
+        root.paint(c, 0, 0);
 
         g.translate(-margins.left, -margins.top);
         g.translate(0, info.getContentHeight() * (page - 1));
@@ -300,7 +308,7 @@ public abstract class BasicPanel extends RootPanel {
    */
 
 
-    protected void executeRenderThread(RenderingContext c, Box root) {
+    protected void executeRenderThread(RenderingContext c, Layer root) {
         //Uu.p("do render called");
         //Uu.p("last render event = " + last_event);
 		
@@ -314,12 +322,7 @@ public abstract class BasicPanel extends RootPanel {
 
         long start = System.currentTimeMillis();
         if (!c.isPrint()) {
-            //if (Configuration.isTrue("xr.stackingcontext.enabled", false)) {
-            Rectangle clip = c.getGraphics().getClipBounds();
-            initialStackingContext.render(c, c.getGraphics(), clip.getMinY(), clip.getMaxY());
-            //} else {
-            //    BoxRendering.paint(c, root, false, false);//no restyle demanded on top level
-            //}
+            root.paint(c, 0, 0);
         } else {
             renderPagedView(c, root);
         }
@@ -352,7 +355,7 @@ public abstract class BasicPanel extends RootPanel {
         }
     }
 
-    private void renderPagedView(RenderingContext c, Box box) {
+    private void renderPagedView(RenderingContext c, Layer root) {
         int pageCount = getPageCount(sharedContext);
 
         setPreferredSize(new Dimension(sharedContext.getMaxWidth(),
@@ -375,9 +378,7 @@ public abstract class BasicPanel extends RootPanel {
                     (int) (i * info.getContentHeight() + i * margins.top + i * margins.bottom + margins.top),
                     (int) info.getContentWidth(), (int) info.getContentHeight()));
             g.translate(margins.left, i * margins.top + i * margins.bottom + margins.top);
-            //BoxRendering.paint(c, box, false, false);//no restyle demanded on top level
-            Rectangle clip = g.getClipBounds();
-            initialStackingContext.render(c, g, clip.getMinY(), clip.getMaxY());
+            root.paint(c, 0, 0);
             g.translate(-margins.left, -(i * margins.top + i * margins.bottom) + -margins.top);
 
             Stroke oldStroke = g.getStroke();
@@ -1090,6 +1091,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.83  2005/11/05 03:30:03  peterbrant
+ * Start work on painting order and improved positioning implementation
+ *
  * Revision 1.82  2005/11/03 18:02:02  peterbrant
  * Flush stylesheets on a RootPanel.setDocument()
  *
