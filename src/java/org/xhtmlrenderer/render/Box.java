@@ -97,46 +97,6 @@ public abstract class Box {
     // position stuff
 
     /**
-     * Description of the Field
-     */
-    public int top = 0;
-
-    /**
-     * Description of the Field
-     */
-    public boolean top_set = false;
-    
-    /**
-     * Description of the Field
-     */
-    public int right = 0;
-
-    /**
-     * Description of the Field
-     */
-    public boolean right_set = false;
-
-    /**
-     * Description of the Field
-     */
-    public int bottom = 0;
-
-    /**
-     * Description of the Field
-     */
-    public boolean bottom_set = false;
-
-    /**
-     * Description of the Field
-     */
-    public int left = 0;
-
-    /**
-     * Description of the Field
-     */
-    public boolean left_set = false;
-
-    /**
      * The Image shown as the Box's background.
      */
     public Image background_image;
@@ -469,7 +429,6 @@ public abstract class Box {
         if (style.isAbsolute()) {
             sb.append("-absolute");
         }
-        sb.append("-pos(" + top + "," + right + "," + bottom + "," + left + ")");
         if (style.isFloated()) {
             sb.append("-floated");
         }
@@ -690,6 +649,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.72  2005/11/05 18:45:06  peterbrant
+ * General cleanup / Remove obsolete code
+ *
  * Revision 1.71  2005/11/05 03:30:01  peterbrant
  * Start work on painting order and improved positioning implementation
  *

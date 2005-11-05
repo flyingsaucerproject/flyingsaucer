@@ -165,6 +165,8 @@ public class BoxFinder {
 
 
     private static int[] adjustForAbsolute2(Box bx, int tx, int ty, BlockFormattingContext bfc) {
+        // TODO Make layer aware
+        /*
         int dx = 0;
         int dy = 0;
         if (bfc != null) {
@@ -192,6 +194,8 @@ public class BoxFinder {
         adjs[0] = dx;
         adjs[1] = dy;
         return adjs;
+        */
+        return new int[] { 0, 0 };
     }
 
 
@@ -293,6 +297,8 @@ public class BoxFinder {
     }
 
     private static int[] adjustForAbsolute(Box bx, int tx, int ty, BlockFormattingContext bfc) {
+        // TODO make layer aware
+        /*
         tx -= bfc.getX();
         ty -= bfc.getY();
         if (bfc != null) {
@@ -324,6 +330,8 @@ public class BoxFinder {
         adjs[0] = tx;
         adjs[1] = ty;
         return adjs;
+        */
+        return new int[] { 0, 0 };
     }
 
 

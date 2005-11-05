@@ -165,124 +165,6 @@ public class BoxRendering {
         Relative.untranslateRelative(ctx, block.getStyle().getCalculatedStyle(), true);
     }
 
-    // adjustments for fixed painting
-    /**
-     * Description of the Method
-     *
-     * @param c     PARAM
-     * @param block PARAM
-     */
-    public static void paintFixed(RenderingContext c, Box block) {
-        Rectangle rect = c.getFixedRectangle();
-        int by = c.getBlockFormattingContext().getY();
-        int bx = c.getBlockFormattingContext().getX();
-        
-        // the offset is equal to the bfc origin minus the fixed rect origin
-        int xoff = bx - rect.x;
-        int yoff = by - rect.y;
-        
-        // adjust for the top, right, left, and bottom settings
-        if (block.top_set) {
-            yoff += block.top;
-        }
-        if (block.right_set) {
-            xoff += rect.width - block.getWidth() - block.right;
-        }
-        if (block.left_set) {
-            xoff += block.left;
-        }
-        if (block.bottom_set) {
-            yoff += rect.height - block.height - block.bottom;
-        }
-
-        c.translate(xoff, yoff);
-        c.getGraphics().translate(xoff, yoff);
-        paintNormal(c, block);
-        c.getGraphics().translate(-xoff, -yoff);
-        c.translate(-xoff, -yoff);
-
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param c     PARAM
-     * @param block PARAM
-     */
-    //HACK: more or less copied paintFixed - tobe
-    //TODO: paint fixed & absolute are duplicates code blocks--need to decide how they differ, or leave as common method (PWW 25-01-05)
-    //Fixed to use the BFC to calculate the absolute position
-
-
-    /*
-      this code paints an absolute block
-      according to the current understanding, the positioning is done at render time instead of at
-      layout time because some things (like the bottom of the containing block) may not be known
-      at layout time.
-      */
-    public static void paintAbsoluteBox(RenderingContext c, Box block) {
-        Rectangle rect = c.getExtents();
-        //why this?
-
-        int xoff = 0;
-        int yoff = 0;
-        //Uu.p("xoff = " + xoff + " yoff = " + yoff);
-        //BlockFormattingContext bfc = c.getBlockFormattingContext();
-        BlockBox parent = (BlockBox) block.getParent();
-        PersistentBFC bfc = parent.getPersistentBFC();
-        //Uu.p("bfc = " + bfc + " x,y = " + bfc.getX() + "," + bfc.getY());
-        //Uu.p("bfc = " + bfc.hashCode());
-        //Uu.p(" insets = " + bfc.getInsets());
-        //Uu.p(" padding = " + bfc.getPadding());
-        //xoff += bfc.getX();
-        //yoff += bfc.getY();
-        xoff += parent.absX;
-        yoff += parent.absY;
-        //Uu.p("xoff = " + xoff + " yoff = " + yoff);
-        //xoff += (bfc.getInsets().left - (int) bfc.getPadding().left());
-        //yoff += (bfc.getInsets().top - (int) bfc.getPadding().top());
-        xoff += (bfc.insets.left - (int) bfc.padding.left());
-        yoff += (bfc.insets.top - (int) bfc.padding.top());
-        //Uu.p("xoff = " + xoff + " yoff = " + yoff);
-        
-        
-        // since block.top can only be calculated at render time (in case of % widths)
-        // then we should either get rid of block.top, or find a way to do this at
-        // layout time.
-        CalculatedStyle style = block.getStyle().getCalculatedStyle();
-        //Uu.p("style = " + style);
-        /*if (style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-            //Uu.p("top is auto");
-            //Uu.p("box = " + block);
-            //Uu.p("yoff = " + yoff);
-            yoff = 0;
-        }*/
-        if (block.top_set) {
-            //yoff += (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c);
-            yoff += (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, parent.getHeight(), c);
-        } else {
-            yoff = 0;
-        }
-        if (block.right_set) {
-            xoff += -rect.x + rect.width - block.getWidth() - block.right;
-        }
-        //Uu.p("xoff = " + xoff + " yoff = " + yoff);
-        if (block.left_set) {
-            xoff += block.left;
-        }
-        if (block.bottom_set) {
-            yoff = -rect.y + rect.height - block.height - block.bottom;
-        }
-        //Uu.p("xoff = " + xoff + " yoff = " + yoff);
-
-        c.translate(xoff, yoff);
-        c.getGraphics().translate(xoff, yoff);
-        paintNormal(c, block);
-        c.getGraphics().translate(-xoff, -yoff);
-        c.translate(-xoff, -yoff);
-    }
-
-
     /**
      * Description of the Method
      *
@@ -360,6 +242,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.57  2005/11/05 18:45:06  peterbrant
+ * General cleanup / Remove obsolete code
+ *
  * Revision 1.56  2005/11/05 03:30:02  peterbrant
  * Start work on painting order and improved positioning implementation
  *

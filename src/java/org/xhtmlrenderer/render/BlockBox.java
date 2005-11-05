@@ -64,9 +64,6 @@ public class BlockBox extends Box implements Renderable {
         if (getStyle().isFixed()) {
             sb.append(" position: fixed");
         }
-        if (this.right_set) {
-            sb.append(" right = " + this.right);
-        }
         return sb.toString();
     }
 
@@ -107,6 +104,9 @@ public class BlockBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/11/05 18:45:06  peterbrant
+ * General cleanup / Remove obsolete code
+ *
  * Revision 1.16  2005/10/27 00:09:02  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

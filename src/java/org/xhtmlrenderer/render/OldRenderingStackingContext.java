@@ -59,7 +59,7 @@ public class OldRenderingStackingContext extends StackingContext {
         synchronized (absolutes) {
             for (Iterator i = absolutes.iterator(); i.hasNext();) {
                 BlockBox box = (BlockBox) i.next();
-                BoxRendering.paintAbsoluteBox(c, box);
+                // BoxRendering.paintAbsoluteBox(c, box);
             }
         }
     }

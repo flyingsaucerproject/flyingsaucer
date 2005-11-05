@@ -136,10 +136,6 @@ public class Style {
         return calculatedStyle.isIdent(CSSName.Z_INDEX, IdentValue.AUTO);
     }
 
-    public boolean isOutsideNormalFlow() {
-        return isFixed() || isAbsolute() || isFloated();
-    }
-
     public void setCalculatedStyle(CalculatedStyle calculatedStyle) {
         this.calculatedStyle = calculatedStyle;
     }

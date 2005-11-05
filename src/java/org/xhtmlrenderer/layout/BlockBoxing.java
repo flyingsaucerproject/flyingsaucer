@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.layout.block.Fixed;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FirstLetterStyle;
 import org.xhtmlrenderer.layout.content.FirstLineStyle;
@@ -33,27 +32,9 @@ import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.List;
 
-
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class BlockBoxing {
-    /**
-     * Constructor for the BoxLayout object
-     */
     private BlockBoxing() {
     }
-
-    /**
-     * Description of the Method
-     *
-     * @param c           PARAM
-     * @param box         PARAM
-     * @param contentList PARAM
-     * @param block       PARAM
-     */
 
     public static void layoutContent(LayoutContext c, Box box, List contentList, Box block) {
         // prepare for the list items
@@ -100,30 +81,12 @@ public class BlockBoxing {
             Boxing.realLayout(c, child_box, currentContent);
             box.propagateChildProperties(child_box);
             
-            if (child_box.getStyle().isAbsolute()) {
-                throw new XRRuntimeException("(PMB) Bad assumption...");
-            }
-
             c.translate(0, -box.height);
 
             if (child_box.getStyle().isCleared()) {
                 int currentX = child_box.x;
                 c.getBlockFormattingContext().clear(c, child_box);
                 box.height += child_box.x - currentX;
-            }
-
-            //joshy fix the 'fixed' stuff later
-            // if fixed or abs then don't modify the final layout bounds
-            // because fixed elements are removed from normal flow
-            if (child_box.getStyle().isFixed()) {
-                // put fixed positioning in later
-                Fixed.positionFixedChild(c, child_box);
-            }
-
-            // skip adjusting the parent box if the child
-            // doesn't affect flow layout
-            if (child_box.getStyle().isOutsideNormalFlow()) {
-                continue;
             }
 
             // increase the final layout width if the child was greater
@@ -173,6 +136,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/11/05 18:45:05  peterbrant
+ * General cleanup / Remove obsolete code
+ *
  * Revision 1.26  2005/11/05 03:29:30  peterbrant
  * Start work on painting order and improved positioning implementation
  *

@@ -48,37 +48,5 @@ public class Absolute {
         
         c.setExtents(oe);
     }
-
-    public static void setupAbsolute(Box box, LayoutContext c) {
-        //Uu.p("setting up an abs for box: " +box);
-        CalculatedStyle style = c.getCurrentStyle();
-        if (style.isIdent(CSSName.POSITION, IdentValue.ABSOLUTE)) {
-            //Uu.p("is absolute pos");
-            if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-                box.right = (int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, c.getBlockFormattingContext().getWidth(), c);
-                box.right_set = true;
-            }
-            if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
-                box.left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, c.getBlockFormattingContext().getWidth(), c);
-                box.left_set = true;
-            }
-
-            if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-                box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, c.getBlockFormattingContext().getHeight(), c);
-                box.bottom_set = true;
-            }
-            if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-                box.top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, c.getBlockFormattingContext().getHeight(), c);
-                box.top_set = true;
-                //Uu.p("set top to: " + box.top + " " + box.top_set);
-            }
-            
-            // if right and left are set calculate width
-            if (box.right_set && box.left_set) {
-                //TODO: do this right
-                box.contentWidth = box.contentWidth - box.right - box.left;
-            }
-        }
-    }
 }
 

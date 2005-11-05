@@ -33,7 +33,6 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.block.Absolute;
-import org.xhtmlrenderer.layout.block.Fixed;
 import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.ContentUtil;
@@ -264,11 +263,6 @@ public class Boxing {
         //restore the extents
         c.setExtents(oe);
         
-        // account for special positioning
-        // need to add bfc/unbfc code for absolutes
-        Absolute.setupAbsolute(block, c);
-        Fixed.setupFixed(c, block);
-
         if (block.getStyle().isFloated()) {
             c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
         }
@@ -346,6 +340,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.56  2005/11/05 18:45:05  peterbrant
+ * General cleanup / Remove obsolete code
+ *
  * Revision 1.55  2005/11/05 03:29:31  peterbrant
  * Start work on painting order and improved positioning implementation
  *
