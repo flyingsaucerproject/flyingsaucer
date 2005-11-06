@@ -10,52 +10,24 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class SelectionMouseListener implements MouseListener, MouseMotionListener {
 
-    /**
-     * Description of the Field
-     */
     protected BasicPanel panel = null;
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
     public void mouseClicked(MouseEvent e) {
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
     public void mouseEntered(MouseEvent e) {
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
     public void mouseExited(MouseEvent e) {
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
     public void mousePressed(MouseEvent e) {
         if (e.getComponent() instanceof BasicPanel) {
             panel = (BasicPanel) e.getComponent();
             panel.getSharedContext().clearSelection();
-            Box box = BoxFinder.findBoxByCoords(panel, e.getX(), e.getY());
+            Box box = BoxFinder.findBox(panel.getRootLayer(), e.getX(), e.getY());
             if (box == null) {
                 return;
             }
@@ -69,26 +41,16 @@ public class SelectionMouseListener implements MouseListener, MouseMotionListene
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
     public void mouseReleased(MouseEvent e) {
         if (panel != null) {
             panel.repaint();
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
     public void mouseDragged(MouseEvent e) {
         if (e.getComponent() instanceof BasicPanel) {
             panel = (BasicPanel) e.getComponent();
-            Box box = BoxFinder.findBoxByCoords(panel, e.getX(), e.getY());
+            Box box = BoxFinder.findBox(panel.getRootLayer(), e.getX(), e.getY());
             if (box == null) {
                 return;
             }
@@ -101,11 +63,6 @@ public class SelectionMouseListener implements MouseListener, MouseMotionListene
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param e PARAM
-     */
     public void mouseMoved(MouseEvent e) {
     }
 
