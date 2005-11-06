@@ -21,6 +21,7 @@ package org.xhtmlrenderer.layout;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -222,5 +223,9 @@ public class Layer {
     
     public void setFixedBackground(boolean b) {
         this.fixedBackground = b;
+    }
+    
+    public List getChildren() {
+        return children == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(children);
     }
 }
