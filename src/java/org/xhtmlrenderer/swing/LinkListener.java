@@ -27,69 +27,31 @@ import javax.swing.event.MouseInputAdapter;
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 
-
-/**
- * Description of the Class
- *
- * @author Who?
- */
 public class LinkListener extends MouseInputAdapter {
 
-    /**
-     * Description of the Field
-     */
     protected BasicPanel panel;
-
-    /**
-     * Description of the Field
-     */
     private Box prev;
 
-    /**
-     * Constructor for the ClickMouseListener object
-     *
-     * @param panel PARAM
-     */
     public LinkListener(BasicPanel panel) {
         this.panel = panel;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param evt PARAM
-     */
     public void mouseEntered(MouseEvent evt) {
-        Box box = BoxFinder.findBoxByCoords(panel, evt.getX(), evt.getY());
+        Box box = BoxFinder.findBox(panel.getRootLayer(), evt.getX(), evt.getY());
         setCursor(box);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param evt PARAM
-     */
     public void mouseExited(MouseEvent evt) {
-        Box box = BoxFinder.findBoxByCoords(panel, evt.getX(), evt.getY());
+        Box box = BoxFinder.findBox(panel.getRootLayer(), evt.getX(), evt.getY());
         setCursor(box);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param evt PARAM
-     */
     public void mousePressed(MouseEvent evt) {
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param evt PARAM
-     */
     public void mouseReleased(MouseEvent evt) {
         //Box box = panel.findBox(evt.getX(), evt.getY());
-        Box box = BoxFinder.findElementBox2(panel.getRootBox(), evt.getX(), evt.getY(), null);
+        Box box = BoxFinder.findBox(panel.getRootLayer(), evt.getX(), evt.getY());
         //Uu.p("in link listener: box finder returned: " + box);
         if (box == null) {
             return;
@@ -115,24 +77,14 @@ public class LinkListener extends MouseInputAdapter {
         return uri;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param evt PARAM
-     */
     public void mouseMoved(MouseEvent evt) {
         //Box box = panel.findBox(evt.getX(), evt.getY());
-        Box box = BoxFinder.findElementBox2(panel.getRootBox(), evt.getX(), evt.getY(), null);
+        Box box = BoxFinder.findBox(panel.getRootLayer(), evt.getX(), evt.getY());
         setCursor(box);
     }
-
-    /**
-     * Description of the Method
-     *
-     * @param evt PARAM
-     */
+    
     public void mouseDragged(MouseEvent evt) {
-        Box box = BoxFinder.findBoxByCoords(panel, evt.getX(), evt.getY());
+        Box box = BoxFinder.findBox(panel.getRootLayer(), evt.getX(), evt.getY());
         setCursor(box);
     }
 
@@ -142,11 +94,6 @@ public class LinkListener extends MouseInputAdapter {
         panel.repaint();
     }
 
-    /**
-     * Sets the cursor attribute of the LinkListener object
-     *
-     * @param box The new cursor value
-     */
     private void setCursor(Box box) {
         if (prev == box || box == null || box.element == null) {
             return;
