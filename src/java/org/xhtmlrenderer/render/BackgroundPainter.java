@@ -27,25 +27,10 @@ import org.xhtmlrenderer.util.Configuration;
 
 import java.awt.*;
 
-
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class BackgroundPainter {
-    /**
-     * Description of the Field
-     */
+
     public final static Color transparent = new Color(0, 0, 0, 0);
 
-
-    /**
-     * Description of the Method
-     *
-     * @param c     PARAM
-     * @param block PARAM
-     */
     public static void paint(RenderingContext c, Box block) {
 
         // don't draw if the backgrounds are turned off
@@ -82,18 +67,18 @@ public class BackgroundPainter {
 
         int xoff = 0;
         int yoff = 0;
-
-        if (block.getStyle().getBackgroundAttachment() == IdentValue.FIXED) {
-            yoff = c.getCanvas().getLocation().y;
-            c.getGraphics().setClip(c.getCanvas().getVisibleRect());
-        }
-
+        
         if (block.background_image != null) {
             int left_insets = box.x;
             int top_insets = box.y;
             int back_width = box.width;
             int back_height = box.height;
             Shape oldclip = (Shape) c.getGraphics().getClip();
+            
+            if (block.getStyle().getBackgroundAttachment() == IdentValue.FIXED) {
+                yoff = c.getCanvas().getLocation().y;
+                c.getGraphics().setClip(c.getCanvas().getVisibleRect());
+            }
 
             Rectangle new_clip = new Rectangle(left_insets, top_insets, back_width, back_height);
             c.getGraphics().clip(new_clip);
@@ -124,18 +109,6 @@ public class BackgroundPainter {
         }
     }
 
-
-    /**
-     * Description of the Method
-     *
-     * @param g     PARAM
-     * @param img   PARAM
-     * @param rect  PARAM
-     * @param xoff  PARAM
-     * @param yoff  PARAM
-     * @param horiz PARAM
-     * @param vert  PARAM
-     */
     private static void tileFill(Graphics g, Image img, Rectangle rect, int xoff, int yoff, boolean horiz, boolean vert) {
         int iwidth = img.getWidth(null);
         int iheight = img.getHeight(null);
@@ -172,6 +145,9 @@ public class BackgroundPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2005/11/06 14:15:55  peterbrant
+ * Make sure any changes to clip region are undone
+ *
  * Revision 1.38  2005/10/27 00:09:02  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *
