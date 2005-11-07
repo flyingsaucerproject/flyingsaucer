@@ -23,7 +23,9 @@
 	  border-style: solid;
   
           }
-  
+
+      .relative { position: relative; left: 5px; top: 5px; }
+
       span.box1 { background-color: #00aa44; }
   
       span.box2 { background-color: #00dd66; }
@@ -43,13 +45,13 @@
       span.box14 { background-color: #00ffbb; border-color: green; border-width: 2px; }
   
       span.box15 { background-color: #00ffff; border-color: red; border-width: 1px; }
-  
+
       span.unpadded { background-color: #00ffff;
       		padding: 0;}
 
             div#fld {color: red;}
             div#fld:first-line {color: blue;}
-            span#ee {border-width: 2px; border-style: solid;}
+            span#ee {border-width: 2px; border-style: solid; text-decoration: underline;}
         </style>
     </head>
     <body>
@@ -92,6 +94,33 @@
                         <span class="box14">
 
                             <span class="box15">
+
+                        Should be 5 pieces of padding around text
+
+                            </span>
+
+                        </span>
+
+                    </span>
+
+                </span>
+
+            </span>
+    And ending with some more text to see the effect of vertical padding
+        </div>
+        <p></p>
+        <div>testing borders of relative inlines</div>
+        <div>
+    First some text
+            <span class="box11 relative">
+
+                <span class="box12 relative">
+
+                    <span class="box13 relative">
+
+                        <span class="box14 relative">
+
+                            <span class="box15 relative">
 
                         Should be 5 pieces of padding around text
 

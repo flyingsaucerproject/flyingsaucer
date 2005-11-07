@@ -26,7 +26,6 @@ import org.xhtmlrenderer.util.XRLog;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.font.LineMetrics;
-import java.util.LinkedList;
 import java.util.logging.Level;
 
 
@@ -119,7 +118,7 @@ public class LineBox extends Box implements Renderable {
     public void render(RenderingContext c, Graphics2D g2) {
         //HACK:
         g2.translate(absX - x, absY - y);
-        InlineRendering.paintLine(c, this, new LinkedList());
+        InlineRendering.paintLine(c, this);
         g2.translate(x - absX, y - absY);
     }
 
@@ -142,6 +141,9 @@ public class LineBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/11/07 00:07:35  tobega
+ * Got text-decoration and relative inlines kind-of working
+ *
  * Revision 1.25  2005/11/04 02:43:11  tobega
  * Inline borders and backgrounds are back!
  *

@@ -20,11 +20,8 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.layout.FontUtil;
-import org.xhtmlrenderer.layout.PersistentBFC;
 import org.xhtmlrenderer.layout.block.Relative;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.util.Configuration;
@@ -52,7 +49,7 @@ public class BoxRendering {
      */
     public static void paint(RenderingContext c, Box box) {
         Box block = (Box) box;
-        
+
         if (block instanceof AnonymousBlockBox) {
             InlineRendering.paintInlineContext(c, block);
         } else {
@@ -61,36 +58,11 @@ public class BoxRendering {
             // copy the bounds to we don't mess it up
             Rectangle oldBounds = new Rectangle(c.getExtents());
 
-//            if (block.getStyle().isFixed()) {
-//                paintFixed(c, block);
-//            } /*else if (block.getStyle().isAbsolute()) {
-//                paintAbsoluteBox(c, block);
-//            }*/
-//            else {
-                //text decoration?
-                //TODO: can't this apply to fixeds and absolutes?
-                IdentValue decoration = calculatedStyle.getIdent(CSSName.TEXT_DECORATION);
-                if (decoration != IdentValue.NONE) {
-                    c.getDecorations().addLast(new TextDecoration(decoration, 0, calculatedStyle.getColor(), FontUtil.getLineMetrics(c, null, c.getTextRenderer(), c.getGraphics())));
-                }
-                //special style for first line?
-                if (block.firstLineStyle != null) {
-                    c.addFirstLineStyle(block.firstLineStyle);
-                }
-                if (box.getStyle().isRelative()) {
-                    paintRelative(c, block);
-                } else {
-                    paintNormal(c, block);
-                }
-                //pop in case not used
-                if (block.firstLineStyle != null) {
-                    c.popFirstLineStyle();
-                }
-                //undo text decoration?
-                if (decoration != IdentValue.NONE) {
-                    c.getDecorations().removeLast();
-                }
-//            }
+            if (box.getStyle().isRelative()) {
+                paintRelative(c, block);
+            } else {
+                paintNormal(c, block);
+            }
 
             //Uu.p("here it's : " + c.getListCounter());
             if (ContentUtil.isListItem(calculatedStyle)) {
@@ -242,6 +214,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.58  2005/11/07 00:07:35  tobega
+ * Got text-decoration and relative inlines kind-of working
+ *
  * Revision 1.57  2005/11/05 18:45:06  peterbrant
  * General cleanup / Remove obsolete code
  *

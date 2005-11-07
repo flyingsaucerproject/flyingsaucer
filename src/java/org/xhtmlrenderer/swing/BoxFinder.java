@@ -44,7 +44,7 @@ public class BoxFinder {
         return null;
     }
 
-    private static Box findBoxByCoords(BasicPanel panel, int x, int y) {
+    public static Box findBoxByCoords(BasicPanel panel, int x, int y) {
         Box box = BoxFinder.findElementBox2(panel.getRootBox(), x, y, null);
         return box;
     }
@@ -70,52 +70,52 @@ public class BoxFinder {
         }
         return new Point(0, 0);
     }
-    
+
     public static Box findBox(Layer layer, int x, int y) {
         // XXX Will be wrong once z-index is implemented
         
         if (layer == null) {
             return null;
         }
-        
-        for (Iterator i = layer.getChildren().iterator(); i.hasNext(); ) {
-            Layer child = (Layer)i.next();
+
+        for (Iterator i = layer.getChildren().iterator(); i.hasNext();) {
+            Layer child = (Layer) i.next();
             Box result = findDeepestChild(child.getMaster(), x, y);
             if (result != null) {
                 return result;
             }
         }
-        
+
         return findDeepestChild(layer.getMaster(), x, y);
     }
-    
+
     private static Box findDeepestChild(Box container, int x, int y) {
         if (container == null) {
             return null;
         }
-        
+
         int dx = container.x + container.tx;
         int dy = container.y + container.ty;
-        
+
         int ttx = x - dx + container.tx;
         int tty = y - dy + container.ty;
-        
-        if (!container.contains(ttx, tty) && ! container.isChildrenExceedBounds()) {
+
+        if (!container.contains(ttx, tty) && !container.isChildrenExceedBounds()) {
             return null;
         }
-        
-        for (Iterator i = container.getChildIterator(); i.hasNext(); ) {
+
+        for (Iterator i = container.getChildIterator(); i.hasNext();) {
             Box bx = (Box) i.next();
             Box retbox = findDeepestChild(bx, x - dx, y - dy);
             if (retbox != null) {
                 return retbox;
             }
         }
-        
+
         if (container.contains(ttx, tty)) {
             return container;
         }
-        
+
         return null;
     }
 
@@ -243,12 +243,12 @@ public class BoxFinder {
         adjs[1] = dy;
         return adjs;
         */
-        return new int[] { 0, 0 };
+        return new int[]{0, 0};
     }
 
 
     private static Box findElementBox(Box box, int x, int y,
-                                     BlockFormattingContext bfc) {//TODO: why is this used?
+                                      BlockFormattingContext bfc) {//TODO: why is this used?
         //A better way? should be in a render util?
 
         //Uu.p("find element box: " + x + " " + y + " " + box + " " + bfc);
@@ -379,7 +379,7 @@ public class BoxFinder {
         adjs[1] = ty;
         return adjs;
         */
-        return new int[] { 0, 0 };
+        return new int[]{0, 0};
     }
 
 

@@ -20,6 +20,8 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.layout.block.Relative;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -38,6 +40,7 @@ class TextDecoration {
     private int end = -1;
     private Color color;
     private LineMetrics lm;
+    private CalculatedStyle style;
 
     TextDecoration(IdentValue decoration, int start, Color color, LineMetrics lm) {
         this.decoration = decoration;
@@ -52,6 +55,7 @@ class TextDecoration {
 
     void paint(RenderingContext c, LineBox line) {
         //NONEs are not added. if(decoration == IdentValue.NONE) return;
+        Relative.translateRelative(c, style, true);
         Graphics g = c.getGraphics();
         Color oldcolor = c.getGraphics().getColor();
         c.getGraphics().setColor(color);
@@ -84,6 +88,7 @@ class TextDecoration {
         c.getGraphics().setColor(oldcolor);
         //reset start to 0 for next line, in case not ended
         start = 0;
+        Relative.untranslateRelative(c, style, true);
     }
 
     public boolean isEnded() {

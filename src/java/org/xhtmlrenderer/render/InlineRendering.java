@@ -29,9 +29,7 @@ import org.xhtmlrenderer.util.GraphicsUtil;
 
 import java.awt.*;
 import java.awt.font.LineMetrics;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 
 /**
@@ -51,6 +49,7 @@ public class InlineRendering {
      * @param ly     PARAM
      * @param lm
      */
+    //TODO: fix this to take relative into account
     public static void paintSelection(RenderingContext c, InlineBox inline, int lx, int ly, LineMetrics lm) {
         if (c.inSelection(inline)) {
             int dw = inline.getWidth() - 2;
@@ -94,7 +93,6 @@ public class InlineRendering {
         g.setColor(inline.getStyle().getCalculatedStyle().getColor());
 
         //baseline is baseline! iy -= (int) lm.getDescent();
-
         //draw the line
         if (text != null && text.length() > 0) {
             c.getTextRenderer().drawString(c.getGraphics(), text, ix, iy);
@@ -121,11 +119,12 @@ public class InlineRendering {
      * @param inline PARAM
      */
     public static void paintBackground(RenderingContext c, LineBox line, InlineBox inline) {
-        if (inline.getInlineElement() != null)
+        if (inline.getInlineElement() != null) {
             inline.getInlineElement().paintBackground(c,
                     line,
                     inline,
                     BorderPainter.TOP + BorderPainter.BOTTOM);
+        }
     }
 
     /**
@@ -136,40 +135,26 @@ public class InlineRendering {
      * @param box PARAM
      */
     static void paintInlineContext(RenderingContext c, Box box) {
-        //dummy style to make sure that text nodes don't get extra padding and such
-        {
+        c.translate(box.x, box.y);
+        c.getGraphics().translate(box.x, box.y);
 
-            //Uu.p("painting box: " + box);
-            LinkedList decorations = c.getDecorations();
-            //doesn't work here because blocks may be inside inlines, losing inline styling:
-            // c.pushStyle(CascadedStyle.emptyCascadedStyle);
-
-            // translate into local coords
-            // account for the origin of the containing box
-            c.translate(box.x, box.y);
-            c.getGraphics().translate(box.x, box.y);
-
-            for (int i = 0; i < box.getChildCount(); i++) {
-                // get the line box
-                paintLine(c, (LineBox) box.getChild(i), decorations);
-            }
-
-            // translate back to parent coords
-            c.getGraphics().translate(-box.x, -box.y);
-            c.translate(-box.x, -box.y);
-            //pop dummy style, but no, see above
-            //c.popStyle();
+        for (int i = 0; i < box.getChildCount(); i++) {
+            // get the line box
+            paintLine(c, (LineBox) box.getChild(i));
         }
+
+        // translate back to parent coords
+        c.getGraphics().translate(-box.x, -box.y);
+        c.translate(-box.x, -box.y);
     }
 
     /**
      * paint all of the inlines on the specified line
      *
-     * @param c           PARAM
-     * @param line        PARAM
-     * @param decorations
+     * @param c    PARAM
+     * @param line PARAM
      */
-    static void paintLine(RenderingContext c, LineBox line, LinkedList decorations) {
+    static void paintLine(RenderingContext c, LineBox line) {
         //Uu.p("painting line: " + line);
         // get Xx and y
         if (!line.textAligned) {
@@ -177,47 +162,28 @@ public class InlineRendering {
             line.textAligned = true;
         }
         int lx = line.x;
-        //Uu.p("getting the text align for line: " + line);
-        //Uu.p("getTextAlign = " + getTextAlign(c,line));
-        //Uu.p("lx = " + lx);
         int ly = line.y + line.getBaseline();
 
         LinkedList pushedStyles = null;
 
         // for each inline box
-        InlineBox lastInline = null;
         int padX = 0;
         for (int j = 0; j < line.getChildCount(); j++) {
             Box child = line.getChild(j);
-            if (child.getStyle().isAbsolute() || child.getStyle().isFixed()) {
+            //TODO: there shouldn't be absolute and fixed children here. CHECK!
+            /*if (child.getStyle().isAbsolute() || child.getStyle().isFixed()) {
                 LinkedList unpropagated = (LinkedList) decorations.clone();
                 decorations.clear();
                 paintAbsolute(c, child);
                 decorations.addAll(unpropagated);
                 continue;
-            }
+            }*/
 
             InlineBox box = (InlineBox) child;
-            lastInline = box;
             padX = 0;
-//            if (c.hasFirstLineStyles() && pushedStyles == null) {
-//                //Uu.p("doing first line styles");
-//                pushedStyles = new LinkedList();
-//                for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext();) {
-//                    CascadedStyle firstLineStyle = (CascadedStyle) i.next();
-//                    padX = handleInlineElementStart(c, firstLineStyle, line, box, padX, decorations);
-//                }
-//            }
-            padX = paintInline(c, box, lx, ly, line, pushedStyles, decorations, padX);
+            padX = paintInline(c, box, lx, ly, line, padX);
         }
 
-        //do text decorations, all are still active
-        ListIterator li = decorations.listIterator(0);
-        while (li.hasNext()) {
-            TextDecoration decoration = (TextDecoration) li.next();
-            //Uu.p("painting a decoration");
-            decoration.paint(c, line);
-        }
         if (c.debugDrawLineBoxes()) {
             c.getGraphics().translate(lx, ly - line.getBaseline());
             GraphicsUtil.drawBox(c.getGraphics(), line, Color.blue);
@@ -252,34 +218,18 @@ public class InlineRendering {
      * horizontally (Xx) relative to the origin of the containing line box
      * though
      *
-     * @param c           PARAM
-     * @param ib          PARAM
-     * @param lx          PARAM
-     * @param ly          PARAM
-     * @param line        PARAM
-     * @param decorations
+     * @param c    PARAM
+     * @param ib   PARAM
+     * @param lx   PARAM
+     * @param ly   PARAM
+     * @param line PARAM
      * @param padX
      */
-    static int paintInline(RenderingContext c, InlineBox ib, int lx, int ly, LineBox line, LinkedList pushedStyles, LinkedList decorations, int padX) {
+    static int paintInline(RenderingContext c, InlineBox ib, int lx, int ly, LineBox line, int padX) {
         if (ib.pushstyles > 0)
-            padX = ib.getInlineElement().handleStart(c, line, ib, padX, decorations, ib.pushstyles);
+            padX = ib.getInlineElement().handleStart(c, line, ib, padX, ib.pushstyles);
 
         if (ib instanceof InlineBlockBox) {
-            //no text-decorations on inline-block
-            LinkedList restarted = new LinkedList();
-            for (Iterator i = decorations.iterator(); i.hasNext();) {
-                TextDecoration td = (TextDecoration) i.next();
-                td.setEnd(ib.x);
-                //Uu.p("painting decoration");
-                td.paint(c, line);
-                i.remove();
-                restarted.addLast(td.getRestarted(ib.x + ib.getWidth()));
-            }
-            decorations.clear();
-            // c.pushStyle(c.getCss().getCascadedStyle(ib.element, restyle));
-            //int textAlign = getTextAlign(c, line);
-            //Uu.p("line.x = " + line.x + " text align = " + textAlign);
-            //Uu.p("ib.x .y = " + ib.x + " " + ib.y);
             c.translate(line.x,
                     line.y +
                     (line.getBaseline() -
@@ -306,8 +256,6 @@ public class InlineRendering {
                     VerticalAlign.getBaselineOffset(c, line, ib, c.getTextRenderer(), c.getGraphics(), c.getBlockFormattingContext()) -
                     ib.height)));
             debugInlines(c, ib, lx, ly);
-            // c.popStyle();
-            decorations.addAll(restarted);
         } else {
 
             InlineTextBox inline = (InlineTextBox) ib;
@@ -331,11 +279,18 @@ public class InlineRendering {
             //int padding_xoff = inline.totalLeftPadding(c.getCurrentStyle());
             c.translate(padX, 0);
             c.getGraphics().translate(padX, 0);
-            LineMetrics lm = FontUtil.getLineMetrics(c, inline, c.getTextRenderer(), c.getGraphics());
+            LineMetrics lm = FontUtil.getLineMetrics(inline.getStyle().getFont(c), inline, c.getTextRenderer(), c.getGraphics());
             paintBackground(c, line, inline);
 
+            if (inline.getInlineElement() != null) inline.getInlineElement().translateRelative(c, line.isFirstLine);
             paintSelection(c, inline, lx, ly, lm);
             paintText(c, ix, iy, inline, lm);
+            if (inline.getInlineElement() != null) inline.getInlineElement().untranslateRelative(c, line.isFirstLine);
+            //TODO: handle Block element text decorations
+            if (inline.getInlineElement() != null) {
+                inline.getInlineElement().paintTextDecoration(c, line, inline);
+                inline.getInlineElement().untranslateRelative(c, line.isFirstLine);
+            }
             c.getGraphics().translate(-padX, 0);
             c.translate(-padX, 0);
             debugInlines(c, inline, lx, ly);
@@ -344,14 +299,7 @@ public class InlineRendering {
         padX = ib.getWidth() - ib.rightPadding;
 
         if (ib.popstyles > 0)
-            padX = ib.getInlineElement().handleEnd(c, line, ib, padX, decorations, ib.popstyles);
-        /* Come back to this */
-//        if (ib.popstyles != 0) {
-//            for (int i = 0; i < ib.popstyles; i++) {
-//                padX = handleInlineElementEnd(c, decorations, ib, padX, line, pushedStyles);
-//            }
-//        }
-
+            padX = ib.getInlineElement().handleEnd(c, line, ib, padX, ib.popstyles);
         return padX;
     }
 

@@ -83,17 +83,17 @@ public class FontUtil {
     /**
      * Gets the lineMetrics attribute of the FontUtil class
      *
-     * @param c   PARAM
-     * @param box PARAM
+     * @param font
+     * @param box  PARAM
      * @return The lineMetrics value
      */
-    public static LineMetrics getLineMetrics(CssContext c, InlineBox box, TextRenderer tr, Graphics2D g2) {
+    public static LineMetrics getLineMetrics(Font font, InlineBox box, TextRenderer tr, Graphics2D g2) {
         String sample = "Test";
         if ((box instanceof InlineTextBox) && !((InlineTextBox) box).getSubstring().equals("")) {
             sample = ((InlineTextBox) box).getSubstring();
         }
         return tr.getLineMetrics(g2,
-                box.getStyle().getFont(c), sample);
+                font, sample);
     }
 
     /**
@@ -113,6 +113,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2005/11/07 00:07:34  tobega
+ * Got text-decoration and relative inlines kind-of working
+ *
  * Revision 1.41  2005/10/27 00:08:59  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

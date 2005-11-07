@@ -37,7 +37,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.LinkedList;
 import java.util.Stack;
 import java.util.logging.Level;
 
@@ -256,6 +255,7 @@ public class RenderingContext implements CssContext {
         yoff += y;
     }
 
+    /* should not be used any more
     private LinkedList decorations = new LinkedList();
     private LinkedList inlineBorders = new LinkedList();
     private LinkedList firstLineStyles = new LinkedList();
@@ -280,21 +280,21 @@ public class RenderingContext implements CssContext {
 
     public boolean hasFirstLineStyles() {
         return firstLineStyles.size() != 0;
-    }
+    }*/
 
     /**
      * NB, clone list first if you want to keep the contents!
      */
-    public void clearFirstLineStyles() {
+    /*public void clearFirstLineStyles() {
         firstLineStyles.clear();
-    }
+    }*/
 
     /**
      * NB, you are getting a reference! Call clearFirstLineStyles at own risk!
      */
-    public LinkedList getFirstLineStyles() {
+    /*public LinkedList getFirstLineStyles() {
         return firstLineStyles;
-    }
+    }*/
 
     public boolean debugDrawBoxes() {
         return sharedContext.debugDrawBoxes();

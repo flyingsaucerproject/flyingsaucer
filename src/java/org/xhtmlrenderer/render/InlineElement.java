@@ -30,6 +30,7 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.block.Relative;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.font.LineMetrics;
 import java.util.LinkedList;
@@ -39,7 +40,7 @@ import java.util.LinkedList;
  * Date: 2005-nov-02
  * Time: 23:08:21
  */
-public class InlineElement {
+public class InlineElement /*implements ElementBox*/ {
     private InlineElement parent;
     private Style startStyle;
     private Style endStyle;
@@ -95,33 +96,39 @@ public class InlineElement {
                                 LineBox line,
                                 InlineBox inline,
                                 int sides) {
-        paint(c, line, inline, inline.x, inline.contentWidth, sides);
+        if (inline.contentWidth == 0) return;
+        paint(c, line, inline, inline.x, inline.contentWidth, sides, false);
+        untranslateRelative(c, line.isFirstLine);
     }
 
+    /**
+     * Will translate relative recursively, so call untranslateRelative afterwards
+     */
     private void paint(RenderingContext c,
                        LineBox line,
                        InlineBox inline,
                        int start,
                        int width,
-                       int sides) {
-        if (width <= 0) return;
-        CalculatedStyle cs;
-        if (line.isFirstLine) {
-            cs = startStyle.getCalculatedStyle();
+                       int sides, boolean doTextDecorations) {
+        Style style;
+        if (line.isFirstLine || endStyle == null) {//endStyle can be null if layout is not complete
+            style = startStyle;
         } else {
-            cs = endStyle.getCalculatedStyle();
+            style = endStyle;
         }
+        CalculatedStyle cs = style.getCalculatedStyle();
+        //recurse for TOP and BOTTOM only!
         if (parent != null) {
-            Relative.untranslateRelative(c, cs, true);
-            parent.paint(c, line, inline, start, width, sides);
-            Relative.translateRelative(c, cs, true);
+            //these will all do the relevant translates
+            parent.paint(c, line, inline, start, width, BorderPainter.BOTTOM + BorderPainter.TOP, doTextDecorations);
         }
+        Relative.translateRelative(c, cs, true);
         Color background_color = cs.getBackgroundColor();
         int parent_width = line.getParent().getWidth();
         RectPropertySet margin = cs.getMarginRect(parent_width, parent_width, c);
         BorderPropertySet border = cs.getBorder(c);
         RectPropertySet padding = cs.getPaddingRect(parent_width, parent_width, c);
-        LineMetrics lm = FontUtil.getLineMetrics(c, inline, c.getTextRenderer(), c.getGraphics());
+        LineMetrics lm = FontUtil.getLineMetrics(inline.getStyle().getFont(c), inline, c.getTextRenderer(), c.getGraphics());
         int ty = line.getBaseline() - inline.y - inline.height - (int) margin.top() - (int) border.top() - (int) padding.top() + line.y;
         ty += (int) lm.getDescent();
         c.translate(0, ty);
@@ -143,14 +150,26 @@ public class InlineElement {
 
         //then the border
         BorderPainter.paint(bounds, sides, cs, c.getGraphics(), c, xOffset);
+        //and text decorations
+        if (doTextDecorations) paintTextDecoration(style, c, line, start, width);
         c.getGraphics().translate(0, -ty);
         c.translate(0, -ty);
         xOffset += inline.contentWidth;
     }
 
-    public int handleStart(RenderingContext c, LineBox line, InlineBox ib, int padX, LinkedList decorations, int pushstyles) {
+    public void untranslateRelative(RenderingContext c, boolean isFirstLine) {
+        Relative.untranslateRelative(c, isFirstLine ? startStyle.getCalculatedStyle() : endStyle.getCalculatedStyle(), true);
+        if (parent != null) parent.untranslateRelative(c, isFirstLine);
+    }
+
+    public void translateRelative(RenderingContext c, boolean isFirstLine) {
+        if (parent != null) parent.translateRelative(c, isFirstLine);
+        Relative.translateRelative(c, isFirstLine ? startStyle.getCalculatedStyle() : endStyle.getCalculatedStyle(), true);
+    }
+
+    public int handleStart(RenderingContext c, LineBox line, InlineBox ib, int padX, int pushstyles) {
         pushstyles--;
-        if (pushstyles > 0) padX = parent.handleStart(c, line, ib, padX, decorations, pushstyles);
+        if (pushstyles > 0) padX = parent.handleStart(c, line, ib, padX, pushstyles);
         int parent_width = line.getParent().getWidth();
         //Now we know that an inline element started here, handle borders and such
         CalculatedStyle style = startStyle.getCalculatedStyle();
@@ -160,25 +179,20 @@ public class InlineElement {
         RectPropertySet padding = style.getPaddingRect(parent_width, parent_width, c);
         //left margin
         // CLEAN: cast to int
-        if (parent != null)
+        if (parent != null && margin.left() != 0) {
             parent.paint(c,
                     line,
                     ib,
                     padX + ib.x,
                     (int) margin.left(),
-                    BorderPainter.TOP + BorderPainter.BOTTOM);
+                    BorderPainter.TOP + BorderPainter.BOTTOM, true);
+            parent.untranslateRelative(c, line.isFirstLine);
+        }
         padX += margin.left();
-        Relative.translateRelative(c, startStyle.getCalculatedStyle(), true);
         //left padding for this inline element
         paintLeftPadding(c, line, ib, padX, border, padding);
         // CLEAN: cast to int
         padX += (int) border.left() + (int) padding.left();
-        //text decoration?
-        IdentValue decoration = c.getCurrentStyle().getIdent(CSSName.TEXT_DECORATION);
-        if (decoration != IdentValue.NONE) {
-            // CLEAN: cast to int
-            decorations.addLast(new TextDecoration(decoration, ib.x + (int) margin.left() + (int) border.left() + (int) padding.left(), c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null, c.getTextRenderer(), c.getGraphics())));
-        }
         return padX;
     }
 
@@ -189,22 +203,16 @@ public class InlineElement {
                                   BorderPropertySet border,
                                   RectPropertySet padding) {
 
+        float width = border.left() + padding.left();
+        if (width == 0) return;
         paint(c, line, inline,
                 inline.x + padX,
-                (int) border.left() + (int) padding.left(), BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM);
+                (int) width, BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM, true);
+        untranslateRelative(c, line.isFirstLine);
     }
 
-    public int handleEnd(RenderingContext c, LineBox line, InlineBox ib, int padX, LinkedList decorations, int popstyles) {
+    public int handleEnd(RenderingContext c, LineBox line, InlineBox ib, int padX, int popstyles) {
         CalculatedStyle style = endStyle.getCalculatedStyle();
-        //end text decoration?
-        IdentValue decoration = style.getIdent(CSSName.TEXT_DECORATION);
-        //TODO:fix decorations
-        /*if (decoration != IdentValue.NONE) {
-            TextDecoration td = (TextDecoration) decorations.getLast();
-            td.setEnd(ib.x + padX);
-            td.paint(c, line);
-            decorations.removeLast();
-        }*/
         //right padding for this inline element
         int parent_width = line.getParent().getWidth();
         BorderPropertySet border = style.getBorder(c);
@@ -215,12 +223,13 @@ public class InlineElement {
 
         // CLEAN: cast to int
         padX += (int) padding.right() + (int) border.right();
-        Relative.untranslateRelative(c, endStyle.getCalculatedStyle(), true);
-        if (parent != null)
-            parent.paint(c, line, ib, ib.x + padX, (int) margin.right(), BorderPainter.TOP + BorderPainter.BOTTOM);
+        if (parent != null && margin.right() != 0) {
+            parent.paint(c, line, ib, ib.x + padX, (int) margin.right(), BorderPainter.TOP + BorderPainter.BOTTOM, true);
+            parent.untranslateRelative(c, line.isFirstLine);
+        }
         padX += margin.right();
         popstyles--;
-        if (popstyles > 0) padX = parent.handleEnd(c, line, ib, padX, decorations, popstyles);
+        if (popstyles > 0) padX = parent.handleEnd(c, line, ib, padX, popstyles);
         return padX;
     }
 
@@ -230,15 +239,71 @@ public class InlineElement {
                                    int padX,
                                    BorderPropertySet border,
                                    RectPropertySet padding) {
-        if (parent != null)
-            parent.paint(c,
-                    line,
-                    inline,
-                    padX + inline.x,
-                    (int) padding.right() + (int) border.right(),
-                    BorderPainter.TOP + BorderPainter.BOTTOM);
+        float width = padding.right() + border.right();
+        if (width == 0) return;
+        paint(c, line, inline, padX + inline.x, (int) width, BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM, true);
+        untranslateRelative(c, line.isFirstLine);
+    }
 
-        paint(c, line, inline, padX + inline.x, (int) padding.right() + (int) border.right(), BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM);
+    /**
+     * Does relative translates recursively. Call untranslateRelative after.
+     *
+     * @param c
+     * @param line
+     * @param inline
+     */
+    public void paintTextDecoration(RenderingContext c,
+                                    LineBox line,
+                                    InlineBox inline) {
+        if (parent != null) {
+            //these will all do the relevant translates
+            parent.paintTextDecoration(c, line, inline);
+        }
+        Style style;
+        if (line.isFirstLine || endStyle == null) {//endStyle can be null if layout is not complete
+            style = startStyle;
+        } else {
+            style = endStyle;
+        }
+        CalculatedStyle cs = style.getCalculatedStyle();
+        Relative.translateRelative(c, cs, true);
+        paintTextDecoration(style, c, line, inline.x, inline.contentWidth);
+    }
+
+    private void paintTextDecoration(Style style, RenderingContext c, LineBox line, int x, int width) {
+        CalculatedStyle cs = style.getCalculatedStyle();
+        //text decoration?
+        IdentValue decoration = cs.getIdent(CSSName.TEXT_DECORATION);
+        if (decoration != IdentValue.NONE) {
+            // CLEAN: cast to int
+            //decorations.addLast(new TextDecoration(decoration, ib.x + (int) margin.left() + (int) border.left() + (int) padding.left(), c.getCurrentStyle().getColor(), FontUtil.getLineMetrics(c, null, c.getTextRenderer(), c.getGraphics())));
+            //}
+            //TODO: handle LineMetrics better
+            LineMetrics lm = FontUtil.getLineMetrics(style.getFont(c), null, c.getTextRenderer(), c.getGraphics());
+            Graphics g = c.getGraphics();
+            Color oldcolor = c.getGraphics().getColor();
+            c.getGraphics().setColor(cs.getColor());
+            int baseline = line.getBaseline();
+
+            if (decoration == IdentValue.UNDERLINE) {
+                float down = lm.getUnderlineOffset();
+                float thick = lm.getUnderlineThickness();
+
+                // correct the vertical pos of the underline by 2px, as without that
+                // the underline sticks right against the text.
+                g.fillRect(x, baseline - (int) down + 2, width, (int) thick);
+            } else if (decoration == IdentValue.LINE_THROUGH) {
+                float down = lm.getStrikethroughOffset();
+                float thick = lm.getStrikethroughThickness();
+                g.fillRect(x, baseline + (int) down, width, (int) thick);
+            } else if (decoration == IdentValue.OVERLINE) {
+                float down = lm.getAscent();
+                float thick = lm.getUnderlineThickness();
+                g.fillRect(x, baseline - (int) down, width, (int) thick);
+            }
+
+            c.getGraphics().setColor(oldcolor);
+        }
     }
 }
 

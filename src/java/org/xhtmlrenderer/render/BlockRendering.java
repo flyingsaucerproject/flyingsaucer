@@ -19,16 +19,15 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.LinkedList;
-import java.util.logging.Level;
-
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
+
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.util.logging.Level;
 
 /**
  * Description of the Class
@@ -79,17 +78,8 @@ public class BlockRendering {
                 }
             }
             for (int i = start; i <= end; i++) {
-                LinkedList inlineBorders = null;
                 Box child = (Box) box.getChild(i);
-                if (!(child instanceof AnonymousBlockBox)) {
-                    //save inline borders and reconstitute them
-                    inlineBorders = (LinkedList) c.getInlineBorders().clone();
-                    c.getInlineBorders().clear();
-                }
                 paintChild(c, child);
-                if (!(child instanceof AnonymousBlockBox)) {
-                    c.getInlineBorders().addAll(inlineBorders);
-                }
             }
         }
         if (box.getPersistentBFC() != null) {

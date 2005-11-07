@@ -434,7 +434,7 @@ public class InlineBoxing {
         int descent;
         if (new_inline instanceof InlineTextBox && !((InlineTextBox) new_inline).getSubstring().equals("")) {
             // should be the metrics of the font, actually is the metrics of the text
-            LineMetrics metrics = FontUtil.getLineMetrics(c, new_inline, c.getTextRenderer(), c.getGraphics());
+            LineMetrics metrics = FontUtil.getLineMetrics(new_inline.getStyle().getFont(c), new_inline, c.getTextRenderer(), c.getGraphics());
             lineHeight = FontUtil.lineHeight(new_inline, c.getTextRenderer(), c.getGraphics(), c, c.getBlockFormattingContext());//assume that current context is valid for new_inline
             ascent = (int) metrics.getAscent();
             descent = (int) metrics.getDescent();
@@ -555,7 +555,7 @@ public class InlineBoxing {
         inline.y = 0;
 
         inline.contentWidth = (int) FontUtil.getTextBounds(c, inline, c.getTextRenderer(), c.getGraphics()).getWidth();
-        inline.height = (int) FontUtil.getLineMetrics(c, inline, c.getTextRenderer(), c.getGraphics()).getHeight();
+        inline.height = (int) FontUtil.getLineMetrics(inline.getStyle().getFont(c), inline, c.getTextRenderer(), c.getGraphics()).getHeight();
     }
 
 
@@ -611,6 +611,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.61  2005/11/07 00:07:34  tobega
+ * Got text-decoration and relative inlines kind-of working
+ *
  * Revision 1.60  2005/11/05 03:29:30  peterbrant
  * Start work on painting order and improved positioning implementation
  *

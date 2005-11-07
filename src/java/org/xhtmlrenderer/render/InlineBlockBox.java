@@ -28,7 +28,9 @@ package org.xhtmlrenderer.render;
 public class InlineBlockBox extends InlineBox {
 
     /**
-     * Description of the Field
+     * This is used to contain the BlockBox, which is quite clever,
+     * since a lot of styling does not propagate to the sub-block,
+     * e.g. text decorations
      */
     public BlockBox sub_block = null;
 
