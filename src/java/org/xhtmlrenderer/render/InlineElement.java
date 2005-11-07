@@ -150,11 +150,11 @@ public class InlineElement /*implements ElementBox*/ {
 
         //then the border
         BorderPainter.paint(bounds, sides, cs, c.getGraphics(), c, xOffset);
-        //and text decorations
-        if (doTextDecorations) paintTextDecoration(style, c, line, start, width);
         c.getGraphics().translate(0, -ty);
         c.translate(0, -ty);
         xOffset += inline.contentWidth;
+        //and text decorations
+        if (doTextDecorations) paintTextDecoration(style, c, line, start, width);
     }
 
     public void untranslateRelative(RenderingContext c, boolean isFirstLine) {
@@ -283,7 +283,7 @@ public class InlineElement /*implements ElementBox*/ {
             Graphics g = c.getGraphics();
             Color oldcolor = c.getGraphics().getColor();
             c.getGraphics().setColor(cs.getColor());
-            int baseline = line.getBaseline();
+            int baseline = line.getBaseline() + line.y;
 
             if (decoration == IdentValue.UNDERLINE) {
                 float down = lm.getUnderlineOffset();
