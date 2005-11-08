@@ -39,7 +39,7 @@ public class Java2DTextRenderer implements TextRenderer {
     protected float scale = 1.0f;
 
     /** Description of the Field */
-    protected float threshold = -1;
+    protected float threshold = 25;
 
     /** Description of the Field */
     protected int level = HIGH;
