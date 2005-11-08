@@ -246,9 +246,9 @@ public class RenderingContext implements CssContext {
     private int yoff = 0;
 
     public void translate(int x, int y) {
-        //Uu.p("trans: " + x + "," + y);
-        //getGraphics().translate(x, y);//not thread-safe
-        if (bfc != null) { //is now thread-safe
+        getGraphics().translate(x, y);
+        // TODO remove / BFC shouldn't be used at render
+        if (bfc != null) {
             bfc.translate(x, y);
         }
         xoff += x;

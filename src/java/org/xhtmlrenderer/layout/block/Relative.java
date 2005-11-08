@@ -39,7 +39,7 @@ public class Relative {
      *
      * @param c PARAM
      */
-    public static void translateRelative(RenderingContext c, CalculatedStyle activeStyle, boolean rendering) {
+    public static void translateRelative(RenderingContext c, CalculatedStyle activeStyle) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;
@@ -48,9 +48,6 @@ public class Relative {
             top = topLeft[0];
             left = topLeft[1];
             c.translate(left, top);
-            if (rendering) {
-                c.getGraphics().translate(left, top);
-            }
         }
     }
 
@@ -59,7 +56,7 @@ public class Relative {
      *
      * @param c PARAM
      */
-    public static void translateRelative(LayoutContext c, CalculatedStyle activeStyle, boolean rendering) {
+    public static void translateRelative(LayoutContext c, CalculatedStyle activeStyle) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;
@@ -68,9 +65,6 @@ public class Relative {
             top = topLeft[0];
             left = topLeft[1];
             c.translate(left, top);
-            if (rendering) {
-                c.getGraphics().translate(left, top);
-            }
         }
     }
 
@@ -79,7 +73,7 @@ public class Relative {
      *
      * @param c PARAM
      */
-    public static void untranslateRelative(RenderingContext c, CalculatedStyle activeStyle, boolean rendering) {
+    public static void untranslateRelative(RenderingContext c, CalculatedStyle activeStyle) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;
@@ -88,9 +82,6 @@ public class Relative {
             top = topLeft[0];
             left = topLeft[1];
             c.translate(-left, -top);
-            if (rendering) {
-                c.getGraphics().translate(-left, -top);
-            }
         }
     }
 
@@ -99,7 +90,7 @@ public class Relative {
      *
      * @param c PARAM
      */
-    public static void untranslateRelative(LayoutContext c, CalculatedStyle activeStyle, boolean rendering) {
+    public static void untranslateRelative(LayoutContext c, CalculatedStyle activeStyle) {
         int top = 0;
         int left = 0;
         int topLeft[] = null;
@@ -108,9 +99,6 @@ public class Relative {
             top = topLeft[0];
             left = topLeft[1];
             c.translate(-left, -top);
-            if (rendering) {
-                c.getGraphics().translate(-left, -top);
-            }
         }
     }
 
@@ -126,16 +114,16 @@ public class Relative {
         int topLeft[] = null;
         if (style.isIdent(CSSName.POSITION, IdentValue.RELATIVE)) {
             if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-                left = -(int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, bfc.getWidth(), c);
+                left = -(int) style.getFloatPropertyProportionalWidth(CSSName.RIGHT, 0, c);
             }
             if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-                top = -(int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, bfc.getHeight(), c);
+                top = -(int) style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, 0, c);
             }
             if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-                top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, bfc.getHeight(), c);
+                top = (int) style.getFloatPropertyProportionalHeight(CSSName.TOP, 0, c);
             }
             if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
-                left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, bfc.getWidth(), c);
+                left = (int) style.getFloatPropertyProportionalWidth(CSSName.LEFT, 0, c);
             }
             topLeft = new int[]{top, left};
         }

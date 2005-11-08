@@ -46,7 +46,6 @@ public class BlockRendering {
     public static void paintBlockContext(RenderingContext c, Box box) {
         //if (box.getPersistentBFC() != null) c.pushBFC(box.getPersistentBFC());
         c.translate(box.x, box.y);
-        c.getGraphics().translate(box.x, box.y);
         if (box.getPersistentBFC() != null) {
             c.pushBFC(new BlockFormattingContext(box.getPersistentBFC()));
         }
@@ -86,7 +85,6 @@ public class BlockRendering {
             c.popBFC();
         }
         c.translate(-box.x, -box.y);
-        c.getGraphics().translate(-box.x, -box.y);
         //if (box.getPersistentBFC() != null) c.popBFC();
     }
 

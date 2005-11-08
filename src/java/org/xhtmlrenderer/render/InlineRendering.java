@@ -136,7 +136,6 @@ public class InlineRendering {
      */
     static void paintInlineContext(RenderingContext c, Box box) {
         c.translate(box.x, box.y);
-        c.getGraphics().translate(box.x, box.y);
 
         for (int i = 0; i < box.getChildCount(); i++) {
             // get the line box
@@ -144,7 +143,6 @@ public class InlineRendering {
         }
 
         // translate back to parent coords
-        c.getGraphics().translate(-box.x, -box.y);
         c.translate(-box.x, -box.y);
     }
 
@@ -154,7 +152,7 @@ public class InlineRendering {
      * @param c    PARAM
      * @param line PARAM
      */
-    static void paintLine(RenderingContext c, LineBox line) {
+    public static void paintLine(RenderingContext c, LineBox line) {
         //Uu.p("painting line: " + line);
         // get Xx and y
         if (!line.textAligned) {
@@ -235,21 +233,9 @@ public class InlineRendering {
                     (line.getBaseline() -
                     VerticalAlign.getBaselineOffset(c, line, ib, c.getTextRenderer(), c.getGraphics(), c.getBlockFormattingContext()) -
                     ib.height));
-            c.getGraphics().translate(line.x,
-                    line.y +
-                    (line.getBaseline() -
-                    VerticalAlign.getBaselineOffset(c, line, ib, c.getTextRenderer(), c.getGraphics(), c.getBlockFormattingContext()) -
-                    ib.height));
             c.translate(ib.x, ib.y);
-            c.getGraphics().translate(ib.x, ib.y);
             BoxRendering.paint(c, ((InlineBlockBox) ib).sub_block);
-            c.getGraphics().translate(-ib.x, -ib.y);
             c.translate(-ib.x, -ib.y);
-            c.getGraphics().translate(-line.x,
-                    -(line.y +
-                    (line.getBaseline() -
-                    VerticalAlign.getBaselineOffset(c, line, ib, c.getTextRenderer(), c.getGraphics(), c.getBlockFormattingContext()) -
-                    ib.height)));
             c.translate(-line.x,
                     -(line.y +
                     (line.getBaseline() -
@@ -278,7 +264,6 @@ public class InlineRendering {
             // JMM: new adjustments to move the text to account for horizontal insets
             //int padding_xoff = inline.totalLeftPadding(c.getCurrentStyle());
             c.translate(padX, 0);
-            c.getGraphics().translate(padX, 0);
             LineMetrics lm = FontUtil.getLineMetrics(inline.getStyle().getFont(c), inline, c.getTextRenderer(), c.getGraphics());
             paintBackground(c, line, inline);
 
@@ -291,7 +276,6 @@ public class InlineRendering {
                 inline.getInlineElement().paintTextDecoration(c, line, inline);
                 inline.getInlineElement().untranslateRelative(c, line.isFirstLine);
             }
-            c.getGraphics().translate(-padX, 0);
             c.translate(-padX, 0);
             debugInlines(c, inline, lx, ly);
         }

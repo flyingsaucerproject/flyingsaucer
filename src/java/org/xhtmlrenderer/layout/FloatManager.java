@@ -286,9 +286,7 @@ public class FloatManager {
         applyLineWidthHeightHack(line, lineBounds);
 
         for (int i = 0; i < floatsList.size(); i++) {
-            // get the current float
             BoxOffset floater = (BoxOffset) floatsList.get(i);
-            // create a rect from the box
             Rectangle fr = floater.getBox().getBounds(cssCtx, -floater.getX(), -floater.getY());
             if (lineBounds.intersects(fr)) {
                 int extraWidth = 0;
@@ -320,12 +318,13 @@ public class FloatManager {
         for (Iterator i = floats.iterator(); i.hasNext();) {
             BoxOffset boxOffset = (BoxOffset) i.next();
             Box box = boxOffset.getBox();
-
-            box.absX = startX - boxOffset.getX();
-            box.absY = startY - boxOffset.getY();
-
-            box.getPersistentBFC().getFloatManager().updateAbsoluteLocations(box.absX + box.x,
-                    box.absY + box.y);
+            
+            box.setAbsX(startX - boxOffset.getX());
+            box.setAbsY(startY - boxOffset.getY());
+            
+            box.getPersistentBFC().getFloatManager().updateAbsoluteLocations(
+                    box.getAbsX() + box.x,
+                    box.getAbsY() + box.y);
         }
     }
 

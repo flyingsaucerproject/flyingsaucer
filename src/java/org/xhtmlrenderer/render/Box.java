@@ -21,6 +21,7 @@ package org.xhtmlrenderer.render;
 
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -55,8 +56,8 @@ public abstract class Box {
      */
     public int y;
 
-    public int absY;
-    public int absX;
+    private int absY;
+    private int absX;
 
     /**
      * Box width.
@@ -361,7 +362,7 @@ public abstract class Box {
     }
 
     public boolean crossesPageBreak(PageContext c) {
-        double absTop = absY;
+        double absTop = getAbsY();
         double absBottom = absTop + height;
 
         double pageHeight = c.getPageInfo().getContentHeight();
@@ -370,7 +371,7 @@ public abstract class Box {
     }
 
     protected double getDistanceFromPageBreak(PageContext c, boolean considerTy) {
-        double absTop = absY;
+        double absTop = getAbsY();
 
         if (considerTy) {
             absTop -= ty;
@@ -418,9 +419,7 @@ public abstract class Box {
     
     public void paint(RenderingContext c, int tx, int ty) {
         c.translate(tx, ty);
-        c.getGraphics().translate(tx, ty);
         BoxRendering.paint(c, this);
-        c.getGraphics().translate(-tx, -ty);
         c.translate(-tx, -ty);
     }
     
@@ -431,10 +430,18 @@ public abstract class Box {
     public Rectangle getBounds(CssContext cssCtx, int tx, int ty) {
         // Looks unnecessarily convoluted, but necessary to get negative
         // margins right
-        Rectangle result = getBorderBox(cssCtx);
+        Rectangle result = getBorderEdge(this.x, this.y, cssCtx);
         addBackMargins(cssCtx, result);
         result.translate(tx, ty);
         return result;
+    }
+    
+    /**
+     * <B>NOTE</B>: This method does not consider any children of this box
+     */
+    public boolean intersects(CssContext cssCtx, Shape clip) {
+        return clip == null || clip.intersects(
+                getBorderEdge(getAbsX(), getAbsY(), cssCtx));
     }
     
     private void addBackMargins(CssContext cssCtx, Rectangle bounds) {
@@ -455,12 +462,22 @@ public abstract class Box {
         }
     }
     
-    private Rectangle getBorderBox(CssContext cssCtx) {
+    protected Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
         RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
-        Rectangle result = new Rectangle(this.x + (int) margin.left(),
-                this.y + (int) margin.top(),
+        Rectangle result = new Rectangle(left + (int) margin.left(),
+                top + (int) margin.top(),
                 getWidth() - (int) margin.left() - (int) margin.right() ,
                 getHeight() - (int) margin.top() - (int) margin.bottom());
+        return result;
+    }
+    
+    protected Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
+        RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
+        RectPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
+        Rectangle result = new Rectangle(left + (int) margin.left() + (int)border.left(),
+                top + (int) margin.top() + (int) border.top(),
+                getWidth() - (int) margin.width() - (int)border.width() ,
+                getHeight() - (int) margin.height() - (int) border.height());
         return result;
     }
 
@@ -488,7 +505,7 @@ public abstract class Box {
     // Is the best place for it?
     // TODO If absolute and absolute containing block is block-level, use padding box
     // TODO Finish this!
-    // TODO Handle left: auto, right: auto for absolute blocks
+    // TODO Handle top: auto, bottom: auto for absolute blocks
     public void positionPositionedBox(CssContext cssCtx) {
         CalculatedStyle style = getStyle().getCalculatedStyle();
         
@@ -513,12 +530,31 @@ public abstract class Box {
                     CSSName.BOTTOM, getContainingBlock().getHeight(), cssCtx) - getHeight();
         }        
     }
+    
+    public void setAbsY(int absY) {
+        this.absY = absY;
+    }
+
+    public int getAbsY() {
+        return absY;
+    }
+
+    public void setAbsX(int absX) {
+        this.absX = absX;
+    }
+
+    public int getAbsX() {
+        return absX;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.74  2005/11/08 20:03:57  peterbrant
+ * Further progress on painting order / improved positioning implementation
+ *
  * Revision 1.73  2005/11/05 23:19:07  peterbrant
  * Always add fixed layers to root layer / If element has fixed background just
  * note this on the root layer instead of property in Box

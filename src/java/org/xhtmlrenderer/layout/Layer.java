@@ -19,213 +19,257 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.render.*;
-
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.FloatedBlockBox;
+import org.xhtmlrenderer.render.InlineRendering;
+import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.render.ViewportBox;
+
 public class Layer {
     private Layer parent;
     private boolean stackingContext;
     private List children;
     private Box master;
-
+    
     private int x = 0;
     private int y = 0;
-
+    
     private List floats;
-
+    
     private boolean fixedBackground;
-
+    
     public Layer(Box master) {
         this(null, master);
         setStackingContext(true);
     }
-
+    
     public Layer(Layer parent, Box master) {
         this.parent = parent;
         this.master = master;
-        setStackingContext(!master.getStyle().isAutoZIndex());
+        setStackingContext(! master.getStyle().isAutoZIndex());
         master.setLayer(this);
     }
-
+    
     public Layer getParent() {
         return parent;
     }
-
+    
     public boolean isStackingContext() {
         return stackingContext;
     }
-
+    
     public void setStackingContext(boolean stackingContext) {
         this.stackingContext = stackingContext;
     }
-
+    
     public int getZIndex() {
-        return (int) master.getStyle().getCalculatedStyle().asFloat(CSSName.Z_INDEX);
+        return (int)master.getStyle().getCalculatedStyle().asFloat(CSSName.Z_INDEX);
     }
 
     public Box getMaster() {
         return master;
     }
-
-    public void addChild(Layer layer) {
+    
+    public synchronized void addChild(Layer layer) {
         if (children == null) {
             children = new ArrayList();
         }
         children.add(layer);
     }
-
+    
     public int getX() {
         return x;
     }
-
+    
     public int getY() {
         return y;
     }
-
+    
     public void translate(int x, int y) {
         this.x -= x;
         this.y -= y;
     }
-
+    
     public void addFloat(FloatedBlockBox floater) {
         if (floats == null) {
             floats = new ArrayList();
         }
-
+        
         floats.add(floater);
     }
-
+    
     public void removeFloat(FloatedBlockBox floater) {
         if (floats != null) {
             floats.remove(floater);
         }
     }
-
+    
     private void paintFloats(RenderingContext c) {
         if (floats != null) {
             for (int i = floats.size() - 1; i >= 0; i--) {
-                FloatedBlockBox floater = (FloatedBlockBox) floats.get(i);
-                floater.paint(c, (int) floater.absX, (int) floater.absY);
+                FloatedBlockBox floater = (FloatedBlockBox)floats.get(i);
+                floater.paint(c, (int)floater.getAbsX(), (int)floater.getAbsY());
             }
         }
     }
-
-    private void paintLayers(RenderingContext c, int tx, int ty) {
-        if (children != null) {
-            for (int i = children.size() - 1; i >= 0; i--) {
-                Layer layer = (Layer) children.get(i);
-                layer.paint(c, tx, ty);
-            }
+    
+    private void paintLayers(RenderingContext c) {
+        List children = getChildren();
+        for (int i = children.size() - 1; i >= 0; i--) {
+            Layer layer = (Layer)children.get(i);
+            layer.paint(c);
         }
     }
-
-    public void paint(RenderingContext c, int tx, int ty) {
-        updateAbsoluteLocations(tx, ty);
-
-        c.translate(tx, ty);
-        c.getGraphics().translate(tx, ty);
+    
+    private void paintBackgroundsAndBorders(RenderingContext c, List blocks) {
+        for (Iterator i = blocks.iterator(); i.hasNext(); ) {
+            BlockBox box = (BlockBox)i.next();
+            box.paintBackground(c);
+            box.paintBorder(c);
+        }
+    }
+    
+    private void paintInlineContent(RenderingContext c, List lines) {
+        for (Iterator i = lines.iterator(); i.hasNext(); ) {
+            LineBox line = (LineBox)i.next();
+            Point before = c.getOriginOffset();
+            c.translate(line.getAbsX() - line.x, line.getAbsY() - line.y);
+            InlineRendering.paintLine(c, line);
+            Point after = c.getOriginOffset();
+            c.translate(before.x - after.x, before.y - after.y);
+        }
+    }
+    
+    public void paint(RenderingContext c) {
+        if (getMaster().getStyle().isFixed()) {
+            positionFixedLayer(c);
+        }
         
-        // HACK
-        Rectangle fixed = c.getFixedRectangle();
-        fixed.translate(-1, -1);
-        if (getMaster().getStyle().isFixed()) {
-            repositionFixed(c, getMaster(), fixed);
-            c.translate(0, -fixed.y);
-            c.getGraphics().translate(0, -fixed.y);
-        }
+        updateAbsoluteLocations();
+        
+        List blocks = new ArrayList();
+        List lines = new ArrayList();
 
-        BoxRendering.paint(c, getMaster());
+        collectBoxes(c, getMaster(), blocks, lines);
+        
+        paintLayerBackgroundAndBorder(c);
+        
+        paintBackgroundsAndBorders(c, blocks);
         paintFloats(c);
-
-        if (getMaster().getStyle().isFixed()) {
-            c.translate(0, fixed.y);
-            c.getGraphics().translate(0, fixed.y);
-        }
-
-        c.getGraphics().translate(-tx, -ty);
-        c.translate(-tx, -ty);
-
-        paintLayers(c, tx, ty);
+        paintInlineContent(c, lines);
+        
+        paintLayers(c);
     }
-
-    private void repositionFixed(RenderingContext c, Box fixed, Rectangle rect) {
+    
+    private void positionFixedLayer(RenderingContext c) {
+        Rectangle rect = c.getFixedRectangle();
+        rect.translate(-1, -1);
+        
+        Box fixed = getMaster();
+        
         fixed.x = 0;
-        fixed.y = 0;
-        fixed.absX = 0;
-        fixed.absY = 0;
-
+        fixed.y = -rect.y;
+        fixed.setAbsX(0);
+        fixed.setAbsY(0);
+        
         fixed.setContainingBlock(new ViewportBox(rect));
         fixed.positionPositionedBox(c);
     }
 
-
+    private void paintLayerBackgroundAndBorder(RenderingContext c) {
+        if (getMaster() instanceof BlockBox) {
+            BlockBox box = (BlockBox)getMaster();
+            box.paintBackground(c);
+            box.paintBorder(c);
+        }
+    }
+    
     // TODO Inline borders and padding can slide an inline box around at render
     // TODO block.renderIndex = c.getNewRenderIndex();
     // TODO Don't do this every time 
-    private void updateAbsoluteLocations(int tx, int ty) {
-        updateAbsoluteLocationsHelper(getMaster(), tx, ty);
+    private void updateAbsoluteLocations() {
+        updateAbsoluteLocationsHelper(getMaster(), 0, 0);
     }
 
     private void updateAbsoluteLocationsHelper(Box box, int x, int y) {
-        box.absX = box.x + x;
-        box.absY = box.y + y;
-
-        int nextX = (int) box.absX + box.tx;
-        int nextY = (int) box.absY + box.ty;
-
+        box.setAbsX(box.x + x);
+        box.setAbsY(box.y + y);
+        
+        int nextX = (int)box.getAbsX() + box.tx;
+        int nextY = (int)box.getAbsY() + box.ty;
+        
         if (box.getPersistentBFC() != null) {
             box.getPersistentBFC().getFloatManager().updateAbsoluteLocations(nextX, nextY);
         }
         
-        /*for (Iterator i = box.getChildIterator(); i.hasNext(); ) {
-            Box child = (Box)i.next();
-            updateAbsoluteLocationsHelper(child, nextX, nextY);
-        }*/
-        for (int i = 0; i < box.getChildCount(); i++) {
-            Box child = box.getChild(i);
-            updateAbsoluteLocationsHelper(child, nextX, nextY);
-        }
-    }
-
-    public void positionChildren(CssContext cssCtx) {
-        if (children != null) {
-            for (Iterator i = children.iterator(); i.hasNext();) {
-                Layer child = (Layer) i.next();
-
-                child.getMaster().positionPositionedBox(cssCtx);
+        if (! (box instanceof LineBox)) {
+            for (int i = 0; i < box.getChildCount(); i++) {
+                Box child = (Box)box.getChild(i);
+                updateAbsoluteLocationsHelper(child, nextX, nextY);
             }
         }
     }
-
+    
+    public void positionChildren(CssContext cssCtx) {
+        for (Iterator i = getChildren().iterator(); i.hasNext(); ) {
+            Layer child = (Layer)i.next();
+         
+            child.getMaster().positionPositionedBox(cssCtx);
+        }
+    }
+    
     private boolean containsFixedLayer() {
-        if (children != null) {
-            for (Iterator i = children.iterator(); i.hasNext();) {
-                Layer child = (Layer) i.next();
-
-                if (child.getMaster().getStyle().isFixed()) {
-                    return true;
-                }
+        for (Iterator i = getChildren().iterator(); i.hasNext(); ) {
+            Layer child = (Layer)i.next();
+            
+            if (child.getMaster().getStyle().isFixed()) {
+                return true;
             }
         }
         return false;
     }
-
+    
     public boolean containsFixedContent() {
         return fixedBackground || containsFixedLayer();
     }
-
+    
     public void setFixedBackground(boolean b) {
         this.fixedBackground = b;
     }
-
-    public List getChildren() {
+    
+    public synchronized List getChildren() {
         return children == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(children);
+    }
+    
+    protected void collectBoxes(RenderingContext c, Box container, List blockContent, List inlineContent) {
+        if (container instanceof LineBox) {
+            if (container.intersects(c, c.getGraphics().getClip())) {
+                inlineContent.add(container);
+            }
+        } else {
+            if (container.getLayer() == null || ! (container instanceof BlockBox)) {
+                if (container.intersects(c, c.getGraphics().getClip())) {
+                    blockContent.add(container);
+                }
+            }
+            
+            if (container.getLayer() == null || container == getMaster()) {
+                for (int i = 0; i < container.getChildCount(); i++) {
+                    Box child = container.getChild(i);
+                    collectBoxes(c, child, blockContent, inlineContent);
+                }
+            }
+        }
     }
 }

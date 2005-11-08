@@ -51,9 +51,9 @@ public class OldRenderingStackingContext extends StackingContext {
         synchronized (floats) {
             for (Iterator i = floats.iterator(); i.hasNext();) {
                 BlockBox box = (BlockBox) i.next();
-                g2.translate(box.absX - box.x, box.absY - box.y);
+                g2.translate(box.getAbsX() - box.x, box.getAbsY() - box.y);
                 BoxRendering.paint(c, box);
-                g2.translate(box.x - box.absX, box.y - box.absY);
+                g2.translate(box.x - box.getAbsX(), box.y - box.getAbsY());
             }
         }
         synchronized (absolutes) {

@@ -59,6 +59,10 @@ public class Style {
     public IdentValue getBackgroundAttachment() {
         return calculatedStyle.getIdent(CSSName.BACKGROUND_ATTACHMENT);
     }
+    
+    public boolean isFixedBackground() {
+        return calculatedStyle.getIdent(CSSName.BACKGROUND_ATTACHMENT) == IdentValue.FIXED;
+    }
 
     public boolean isAbsolute() {
         return calculatedStyle.isIdent(CSSName.POSITION, IdentValue.ABSOLUTE);
@@ -156,4 +160,14 @@ public class Style {
         return position == IdentValue.ABSOLUTE || position == IdentValue.RELATIVE ||
         position == IdentValue.FIXED;
     }
+    
+    public boolean isHorizontalBackgroundRepeat() {
+        IdentValue value = calculatedStyle.getIdent(CSSName.BACKGROUND_REPEAT);
+        return value == IdentValue.REPEAT_X || value == IdentValue.REPEAT;
+    }
+    
+    public boolean isVerticalBackgroundRepeat() {
+        IdentValue value = calculatedStyle.getIdent(CSSName.BACKGROUND_REPEAT);
+        return value == IdentValue.REPEAT_Y || value == IdentValue.REPEAT;
+    }    
 }

@@ -122,7 +122,7 @@ public class InlineElement /*implements ElementBox*/ {
             //these will all do the relevant translates
             parent.paint(c, line, inline, start, width, BorderPainter.BOTTOM + BorderPainter.TOP, doTextDecorations);
         }
-        Relative.translateRelative(c, cs, true);
+        Relative.translateRelative(c, cs);
         Color background_color = cs.getBackgroundColor();
         int parent_width = line.getParent().getWidth();
         RectPropertySet margin = cs.getMarginRect(parent_width, parent_width, c);
@@ -132,7 +132,6 @@ public class InlineElement /*implements ElementBox*/ {
         int ty = line.getBaseline() - inline.y - inline.height - (int) margin.top() - (int) border.top() - (int) padding.top() + line.y;
         ty += (int) lm.getDescent();
         c.translate(0, ty);
-        c.getGraphics().translate(0, ty);
         // CLEAN: cast to int
         Rectangle bounds = new Rectangle(start,
                 inline.y + (int) margin.top(),
@@ -150,7 +149,6 @@ public class InlineElement /*implements ElementBox*/ {
 
         //then the border
         BorderPainter.paint(bounds, sides, cs, c.getGraphics(), c, xOffset);
-        c.getGraphics().translate(0, -ty);
         c.translate(0, -ty);
         xOffset += inline.contentWidth;
         //and text decorations
@@ -158,13 +156,13 @@ public class InlineElement /*implements ElementBox*/ {
     }
 
     public void untranslateRelative(RenderingContext c, boolean isFirstLine) {
-        Relative.untranslateRelative(c, isFirstLine ? startStyle.getCalculatedStyle() : endStyle.getCalculatedStyle(), true);
+        Relative.untranslateRelative(c, isFirstLine ? startStyle.getCalculatedStyle() : endStyle.getCalculatedStyle());
         if (parent != null) parent.untranslateRelative(c, isFirstLine);
     }
 
     public void translateRelative(RenderingContext c, boolean isFirstLine) {
         if (parent != null) parent.translateRelative(c, isFirstLine);
-        Relative.translateRelative(c, isFirstLine ? startStyle.getCalculatedStyle() : endStyle.getCalculatedStyle(), true);
+        Relative.translateRelative(c, isFirstLine ? startStyle.getCalculatedStyle() : endStyle.getCalculatedStyle());
     }
 
     public int handleStart(RenderingContext c, LineBox line, InlineBox ib, int padX, int pushstyles) {
@@ -266,7 +264,7 @@ public class InlineElement /*implements ElementBox*/ {
             style = endStyle;
         }
         CalculatedStyle cs = style.getCalculatedStyle();
-        Relative.translateRelative(c, cs, true);
+        Relative.translateRelative(c, cs);
         paintTextDecoration(style, c, line, line.x + inline.x, inline.contentWidth);
     }
 

@@ -119,12 +119,19 @@ public abstract class InlineBox extends Box {
     public InlineElement getInlineElement() {
         return inlineElement;
     }
+    
+    public void paintBackground(RenderingContext c) {
+        throw new UnsupportedOperationException();
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2005/11/08 20:03:55  peterbrant
+ * Further progress on painting order / improved positioning implementation
+ *
  * Revision 1.43  2005/11/02 23:36:45  tobega
  * InlineElement in place
  *

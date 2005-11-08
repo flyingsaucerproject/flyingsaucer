@@ -34,19 +34,11 @@ import java.awt.Rectangle;
 
 
 /**
- * Description of the Class
- *
  * @author Joshua Marinacci
  * @author Torbjörn Gannholm
  */
 public class BoxRendering {
 
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
     public static void paint(RenderingContext c, Box box) {
         Box block = (Box) box;
 
@@ -107,7 +99,6 @@ public class BoxRendering {
 
         //c.translateInsets(block);
         c.translate(block.tx, block.ty);
-        c.getGraphics().translate(block.tx, block.ty);
         /* Q&D for now if (block instanceof TableBox) {
             TableRendering.paintTable(c, (TableBox) block, restyle);
         } else */ if (isInlineLayedOut(block)) {
@@ -115,7 +106,6 @@ public class BoxRendering {
         } else {
             BlockRendering.paintBlockContext(c, block);
         }
-        c.getGraphics().translate(-block.tx, -block.ty);
         c.translate(-block.tx, -block.ty);
         //c.untranslateInsets(block);
 
@@ -132,9 +122,9 @@ public class BoxRendering {
      * @param block PARAM
      */
     public static void paintRelative(RenderingContext ctx, Box block) {
-        Relative.translateRelative(ctx, block.getStyle().getCalculatedStyle(), true);
+        Relative.translateRelative(ctx, block.getStyle().getCalculatedStyle());
         paintNormal(ctx, block);
-        Relative.untranslateRelative(ctx, block.getStyle().getCalculatedStyle(), true);
+        Relative.untranslateRelative(ctx, block.getStyle().getCalculatedStyle());
     }
 
     /**
@@ -214,6 +204,9 @@ public class BoxRendering {
  * $Id$
  *
  * $Log$
+ * Revision 1.59  2005/11/08 20:03:54  peterbrant
+ * Further progress on painting order / improved positioning implementation
+ *
  * Revision 1.58  2005/11/07 00:07:35  tobega
  * Got text-decoration and relative inlines kind-of working
  *

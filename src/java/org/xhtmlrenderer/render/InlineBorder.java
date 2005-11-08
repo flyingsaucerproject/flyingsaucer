@@ -72,7 +72,6 @@ public class InlineBorder {
         int ty = line.getBaseline() - y - height - (int) margin.top() - (int) border.top() - (int) padding.top() + line.y;
         ty += (int) lm.getDescent();
         c.translate(0, ty);
-        c.getGraphics().translate(0, ty);
         // CLEAN: cast to int
         Rectangle bounds = new Rectangle(start,
                 y + (int) margin.top(),
@@ -90,7 +89,6 @@ public class InlineBorder {
 
         //then the border
         BorderPainter.paint(bounds, sides, style, c.getGraphics(), c, xOffset);
-        c.getGraphics().translate(0, -ty);
         c.translate(0, -ty);
         xOffset += width;
     }

@@ -21,9 +21,6 @@ package org.xhtmlrenderer.layout.block;
 
 import java.awt.Rectangle;
 
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.Content;

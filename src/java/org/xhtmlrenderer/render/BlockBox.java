@@ -19,24 +19,26 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.Uu;
 
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class BlockBox extends Box implements Renderable {
+    
+    private final static Color TRANSPARENT = new Color(0, 0, 0, 0);
+    
     public int renderIndex;
-
-
-    /**
-     * Constructor for the BlockBox object
-     */
+    
     public BlockBox() {
         super();
     }
@@ -50,12 +52,6 @@ public class BlockBox extends Box implements Renderable {
         }
     }
 
-
-    /**
-     * Converts to a String representation of the object.
-     *
-     * @return A string representation of the object.
-     */
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("BlockBox:");
@@ -74,7 +70,7 @@ public class BlockBox extends Box implements Renderable {
     //HACK: Context should not be necessary
     public void render(RenderingContext c, Graphics2D g2) {
         //HACK:
-        g2.translate(absX - x, absY - y);
+        g2.translate(getAbsX() - x, getAbsY() - y);
         int width = getWidth();
         int height = getHeight();
         if (getState() != Box.DONE) {
@@ -88,22 +84,125 @@ public class BlockBox extends Box implements Renderable {
                 width - (int) margin.left() - (int) margin.right(),
                 height - (int) margin.top() - (int) margin.bottom());
         BoxRendering.paintBackground(c, this, bounds);
-        g2.translate(x - absX, y - absY);
+        g2.translate(x - getAbsX(), y - getAbsY());
     }
 
     public double getAbsTop() {
-        return absY;
+        return getAbsY();
     }
 
     public double getAbsBottom() {
-        return absY + height;
+        return getAbsY() + height;
     }
+    
+
+    public void paintBorder(RenderingContext c) {
+        Rectangle borderBounds = getBorderEdge(getAbsX(), getAbsY(), c);
+        if (getState() != Box.DONE) {
+            borderBounds.height += c.getCanvas().getHeight();
+        }
+        
+        BorderPainter.paint(borderBounds, BorderPainter.ALL,
+                getStyle().getCalculatedStyle(), c.getGraphics(), c, 0);
+    }
+        
+    private Image getBackgroundImage(RenderingContext c) {
+        String uri = getStyle().getCalculatedStyle().getStringProperty(CSSName.BACKGROUND_IMAGE);
+        if (! uri.equals("none")) {
+            try {
+                return c.getUac().getImageResource(uri).getImage();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Uu.p(ex);
+            }
+        }
+        return null;
+    }
+
+    public void paintBackground(RenderingContext c) {
+        if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
+            return;
+        }
+        
+        Rectangle backgroundBounds = getBorderEdge(getAbsX(), getAbsY(), c);
+        if (getState() != Box.DONE) {
+            backgroundBounds.height += c.getCanvas().getHeight();
+        }
+        
+        Color backgroundColor = getStyle().getCalculatedStyle().getBackgroundColor();
+        if (backgroundColor != null && ! backgroundColor.equals(TRANSPARENT)) {
+            c.getGraphics().setColor(backgroundColor);
+            c.getGraphics().fillRect(backgroundBounds.x, backgroundBounds.y, backgroundBounds.width, backgroundBounds.height);
+        }
+
+        int xoff = 0;
+        int yoff = 0;
+        
+        Image backgroundImage = getBackgroundImage(c);
+        if (backgroundImage != null) {
+            Shape oldclip = (Shape) c.getGraphics().getClip();
+            
+            if (getStyle().isFixedBackground()) {
+                yoff = c.getCanvas().getLocation().y;
+                c.getGraphics().setClip(c.getCanvas().getVisibleRect());
+            }
+
+            c.getGraphics().clip(backgroundBounds);
+
+            int imageWidth = backgroundImage.getWidth(null);
+            int imageHeight = backgroundImage.getHeight(null);
+            
+            Point bgOffset = getStyle().getCalculatedStyle().getBackgroundPosition(
+                    backgroundBounds.width - imageWidth, 
+                    backgroundBounds.height - imageHeight, c);
+            xoff += bgOffset.x;
+            yoff -= bgOffset.y;
+
+            tileFill(c.getGraphics(), backgroundImage,
+                    backgroundBounds,
+                    xoff, -yoff, 
+                    getStyle().isHorizontalBackgroundRepeat(),
+                    getStyle().isVerticalBackgroundRepeat());
+            c.getGraphics().setClip(oldclip);
+        }
+    }
+
+    private static void tileFill(Graphics g, Image img, Rectangle rect, int xoff, int yoff, boolean horiz, boolean vert) {
+        int iwidth = img.getWidth(null);
+        int iheight = img.getHeight(null);
+        int rwidth = rect.width;
+        int rheight = rect.height;
+        
+        if (horiz) {
+            xoff = xoff % iwidth - iwidth;
+            rwidth += iwidth;
+        } else {
+            rwidth = iwidth;
+        }
+        
+        if (vert) {
+            yoff = yoff % iheight - iheight;
+            rheight += iheight;
+        } else {
+            rheight = iheight;
+        }
+
+        for (int i = 0; i < rwidth; i += iwidth) {
+            for (int j = 0; j < rheight; j += iheight) {
+                g.drawImage(img, i + rect.x + xoff, j + rect.y + yoff, null);
+            }
+        }
+
+    }    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/11/08 20:03:57  peterbrant
+ * Further progress on painting order / improved positioning implementation
+ *
  * Revision 1.17  2005/11/05 18:45:06  peterbrant
  * General cleanup / Remove obsolete code
  *
