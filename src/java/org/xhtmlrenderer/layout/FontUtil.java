@@ -74,7 +74,7 @@ public class FontUtil {
         int val = (int) Math.ceil(textRenderer.getLogicalBounds(g2,
                 box.getStyle().getFont(c), "Test").getHeight());
         if (!style.isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL)) {
-            val = (int) style.getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, bfc.getHeight(), c);
+            val = (int) style.getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, 0, c);
         }
         return val;
     }
@@ -113,6 +113,9 @@ public class FontUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2005/11/08 19:54:15  peterbrant
+ * line-height proportional values are calculated internally now
+ *
  * Revision 1.42  2005/11/07 00:07:34  tobega
  * Got text-decoration and relative inlines kind-of working
  *
