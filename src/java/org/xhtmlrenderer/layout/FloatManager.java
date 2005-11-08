@@ -298,7 +298,7 @@ public class FloatManager {
                     extraWidth = (bfc.getWidth() - fr.x) - xoff;
                 }
                 lineBounds.translate(direction == LEFT ? extraWidth : -extraWidth, 0);
-                xoff += extraWidth;
+                if (extraWidth > 0) xoff += extraWidth;
             }
         }
 
