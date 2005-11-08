@@ -281,7 +281,7 @@ public class TableBoxing {
                 int col = 0;
                 for (Iterator cbi = row.getChildIterator(); cbi.hasNext();) {
                     while (tableBox.columnRows[col] != 0) {
-                        if (tableBox.columnCell != null) {
+                        if (tableBox.columnCell != null && tableBox.columnCell[col] != null) {
                             tableBox.columnCell[col].height += borderSpacingVertical + row.height;
                         }
                         col = col + 1;
@@ -298,7 +298,7 @@ public class TableBoxing {
                     col += cb.colspan;
                 }
                 while (col < tableBox.columnRows.length && tableBox.columnRows[col] != 0) {
-                    if (tableBox.columnCell != null) {
+                    if (tableBox.columnCell != null && tableBox.columnCell[col] != null) {
                         tableBox.columnCell[col].height += borderSpacingVertical + row.height;
                     }
                     col = col + 1;
@@ -634,6 +634,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.44  2005/11/08 14:59:34  tobega
+   Fix from Eric Neuhauser
+
    Revision 1.43  2005/11/05 03:30:03  peterbrant
    Start work on painting order and improved positioning implementation
 
