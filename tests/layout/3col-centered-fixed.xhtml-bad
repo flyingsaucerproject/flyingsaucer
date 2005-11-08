@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>
+        Flying Saucer: 3 Column Centered Fixed Layout
+    </title>
+    <link rel="stylesheet" type="text/css" href="general.css" title="Style"/>
+    <style type="text/css" media="screen">
+        html {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        body {
+  background-color: #e1ddd9;
+  font-size: 12px;
+  font-family: Verdana, Arial, SunSans-Regular, Sans-Serif;
+  color:#564b47;
+  text-align:center;
+	margin:0px;
+	padding:0px;
+        }
+
+        p, h1, h3, pre {
+            padding: 5px 15px;
+            margin: 0px;
+        }
+
+        #box {
+            width: 750px;
+            margin: 0px;
+            margin-right: auto;
+            margin-bottom: auto;
+            padding: 0px;
+            text-align: left;
+        }
+
+        #left {
+            width: 175px;
+            padding: 0px;
+            float: left;
+        }
+
+        #content {
+            width: 400px;
+            padding: 0px;
+            float: left;
+            background-color: #fff;
+            overflow: auto;
+        }
+
+        #right {
+            width: 175px;
+            padding: 0px;
+            float: left;
+        }
+
+        h1 {
+            font-size: 11px;
+            text-transform: uppercase;
+            text-align: right;
+            color: #564b47;
+            background-color: #90897a;
+            padding: 5px 15px;
+            margin: 0px
+        }
+
+        /* push content below the banner header*/
+        #left, #right {
+            top: 25px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="box">
+<h1>Flying Saucer: Layouts</h1>
+
+<div id="left">
+    <h3>
+        Menu (Left)
+    </h3>
+    <ul>
+        <li>
+            Item 1
+        </li>
+        <li>
+            Item 2
+        </li>
+        <li>
+            Item 3
+        </li>
+        <li>
+            Item 4
+        </li>
+        <li>
+            Item 5
+        </li>
+    </ul>
+    <br/>
+    <br/>
+</div>
+
+<div id="content">
+    <h3>
+        3 Column Centered Fixed Layout
+    </h3>
+
+    <p>
+        Uses ideas from <b>Intensiv Station
+        Templates http://www.intensivstation.ch</b>
+    </p>
+
+    <p>
+        A 3 column layout where the center takes up available space;
+        menus on both sides are fixed at a pixel size. As menus are not vertically
+        sized, again uses the trick of setting menu and bg color the same; the right
+        menu in this case shows that you can set a bg color if you want--you just
+        can't control the height in this case.
+    </p>
+
+    <pre>
+        #left {
+        position: absolute;
+        left: 0px;
+        width: 190px;
+        color: #564b47;
+        margin: 0px;
+        padding: 0px;
+        }
+
+        #content {
+        margin: 0px 190px 0px 190px;
+        border-left: 2px solid #564b47;
+        border-right: 2px solid #564b47;
+        border-bottom: 2px solid #564b47;
+        padding: 0px;
+        background-color: #ffffff;
+        }
+
+        #right {
+        position: absolute;
+        right: 0px;
+        width: 190px;
+        color: #564b47;
+        background-color: #ff99cc;
+        margin: 0px;
+        padding: 0px;
+        }
+    </pre>
+    <br/>
+    <br/>
+</div>
+
+<div id="right">
+    <h3>
+        Menu (right)
+    </h3>
+    <ul>
+        <li>
+            Item 1
+        </li>
+        <li>
+            Item 2
+        </li>
+        <li>
+            Item 3
+        </li>
+        <li>
+            Item 4
+        </li>
+        <li>
+            Item 5
+        </li>
+    </ul>
+    <br/>
+    <br/>
+</div>
+</div>
+
+</body>
+</html>
+
