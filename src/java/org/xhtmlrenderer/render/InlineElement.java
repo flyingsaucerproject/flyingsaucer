@@ -285,22 +285,23 @@ public class InlineElement /*implements ElementBox*/ {
             c.getGraphics().setColor(cs.getColor());
             int baseline = line.getBaseline() + line.y;
 
+            float up = 0;
+            float thick = 0;
             if (decoration == IdentValue.UNDERLINE) {
-                float down = lm.getUnderlineOffset();
-                float thick = lm.getUnderlineThickness();
-
+                up = lm.getUnderlineOffset();
+                thick = lm.getUnderlineThickness();
                 // correct the vertical pos of the underline by 2px, as without that
                 // the underline sticks right against the text.
-                g.fillRect(x, baseline - (int) down + 2, width, (int) thick);
+                up -= 2;
             } else if (decoration == IdentValue.LINE_THROUGH) {
-                float down = lm.getStrikethroughOffset();
-                float thick = lm.getStrikethroughThickness();
-                g.fillRect(x, baseline + (int) down, width, (int) thick);
+                up = -lm.getStrikethroughOffset();
+                thick = lm.getStrikethroughThickness();
+                up += thick;
             } else if (decoration == IdentValue.OVERLINE) {
-                float down = lm.getAscent();
-                float thick = lm.getUnderlineThickness();
-                g.fillRect(x, baseline - (int) down, width, (int) thick);
+                up = lm.getAscent();
+                thick = lm.getUnderlineThickness();
             }
+            g.fillRect(x, baseline - (int) up, width, (int) thick);
 
             c.getGraphics().setColor(oldcolor);
         }

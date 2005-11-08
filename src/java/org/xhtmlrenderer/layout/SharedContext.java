@@ -33,6 +33,7 @@ import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.*;
+import java.awt.font.LineMetrics;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -523,8 +524,9 @@ public class SharedContext {
     //and it is defined even for fonts without 'x'!
     public float getXHeight(FontSpecification fs, Graphics2D g2) {
         Font f = getFontResolver().resolveFont(this, fs.families, fs.size, fs.fontWeight, fs.fontStyle, fs.variant);
-        float sto = getTextRenderer().getLineMetrics(g2, f, " ").getStrikethroughOffset();
-        return 2 * Math.abs(sto);
+        LineMetrics lm = getTextRenderer().getLineMetrics(g2, f, " ");
+        float sto = lm.getStrikethroughOffset();
+        return 2 * Math.abs(sto) + lm.getStrikethroughThickness();
     }
 
     public float getFontSize2D(FontSpecification font) {
@@ -643,6 +645,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/11/08 01:53:49  tobega
+ * Corrected x-height and line-through by taking StrikethroughThickness into account.
+ *
  * Revision 1.18  2005/10/27 00:09:01  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *
