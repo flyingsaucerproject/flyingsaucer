@@ -318,12 +318,11 @@ public class FloatManager {
         for (Iterator i = floats.iterator(); i.hasNext();) {
             BoxOffset boxOffset = (BoxOffset) i.next();
             Box box = boxOffset.getBox();
-            
+
             box.setAbsX(startX - boxOffset.getX());
             box.setAbsY(startY - boxOffset.getY());
-            
-            box.getPersistentBFC().getFloatManager().updateAbsoluteLocations(
-                    box.getAbsX() + box.x,
+
+            box.getPersistentBFC().getFloatManager().updateAbsoluteLocations(box.getAbsX() + box.x,
                     box.getAbsY() + box.y);
         }
     }
@@ -357,3 +356,7 @@ public class FloatManager {
         }
     }
 }
+
+/*
+ * $Id$
+ */

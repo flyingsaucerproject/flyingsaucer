@@ -23,7 +23,8 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -57,7 +58,7 @@ public class IdentValue implements FSDerivedValue {
      * Description of the Field
      */
     private final String ident;
-    
+
     /**
      * Description of the Field
      */
@@ -240,6 +241,10 @@ public class IdentValue implements FSDerivedValue {
      * Description of the Field
      */
     public final static IdentValue INSET = addValue("inset");
+    /**
+     * Used for list-style-position
+     */
+    public final static IdentValue INSIDE = addValue("inside");
     /**
      * Description of the Field
      */
@@ -556,7 +561,7 @@ public class IdentValue implements FSDerivedValue {
     /* 
      * METHODS USED TO SUPPORT IdentValue as an FSDerivedValue, used in CalculatedStyle.
      * Most of these throw exceptions--makes use of the interface easier in CS (avoids casting)
-     */    
+     */
     public FSDerivedValue copyOf(CSSName cssName) {
         return this;
     }
@@ -576,31 +581,36 @@ public class IdentValue implements FSDerivedValue {
     public Color asColor() {
         throw new XRRuntimeException("Ident value is never a color; wrong class used for derived value.");
     }
-    public Point asPoint(
-            CSSName cssName,
-            float parentWidth,
-            float parentHeight,
-            CssContext ctx
-    ) {
-            throw new XRRuntimeException("Ident value is never a point; wrong class used for derived value.");
+
+    public Point asPoint(CSSName cssName,
+                         float parentWidth,
+                         float parentHeight,
+                         CssContext ctx) {
+        throw new XRRuntimeException("Ident value is never a point; wrong class used for derived value.");
     }
-    public float getFloatProportionalTo(
-            CSSName cssName,
-            float baseValue,
-            CssContext ctx
-    ) {
+
+    public float getFloatProportionalTo(CSSName cssName,
+                                        float baseValue,
+                                        CssContext ctx) {
         throw new XRRuntimeException("Ident value (" + toString() + ") is never a length; wrong class used for derived value.");
     }
+
     public String asString() {
         return toString();
     }
+
     public String[] asStringArray() {
         throw new XRRuntimeException("Ident value is never a string array; wrong class used for derived value.");
     }
-    public IdentValue asIdentValue() { return this; }
+
+    public IdentValue asIdentValue() {
+        return this;
+    }
+
     public boolean hasAbsoluteUnit() {
         throw new XRRuntimeException("Ident value is never an absolute unit; wrong class used for derived value.");
     }
+
     public boolean isIdent() {
         return true;
     }
@@ -610,6 +620,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/11/08 22:53:44  tobega
+ * added getLineHeight method to CalculatedStyle and hacked in some list-item support
+ *
  * Revision 1.16  2005/10/29 14:36:26  pdoubleya
  * isDeclaredInherit() was not implemented correctly, always returning false.
  *

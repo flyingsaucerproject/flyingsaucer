@@ -57,13 +57,16 @@ public class ListItemPainter {
             listStyle = IdentValue.DECIMAL;
         }
 
+        int rad = (int) style.getFont(c).size;
+
         String image = style.getStringProperty(CSSName.LIST_STYLE_IMAGE);
         Image img = null;
         if (!image.equals("none")) {
             img = c.getUac().getImageResource(image).getImage();
             if (img != null) {
                 int baseline = box.height;
-                c.getGraphics().drawImage(img, box.x - img.getWidth(null) - 2, box.y + baseline / 2 - img.getHeight(null) / 2 + 2, null);
+                img = img.getScaledInstance(-1, (int) Math.round(rad / 12.0 * img.getHeight(null)), Image.SCALE_FAST);
+                c.getGraphics().drawImage(img, box.getAbsX() - img.getWidth(null) - 2, (int) (box.getAbsY() + baseline / 2.0 - img.getHeight(null) / 2.0), null);
                 return;
             }
         }
@@ -77,11 +80,11 @@ public class ListItemPainter {
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
         // calculations for bullets
-        int rad = 8;// change this to use the glyph height
-        int h = FontUtil.lineHeight(box, c.getTextRenderer(), c.getGraphics(), c, c.getBlockFormattingContext());
+        //int rad = 8;// change this to use the glyph height
+        int h = (int) Math.round(style.getLineHeight(c));
         rad = h / 3;
-        int x = box.x - rad - rad / 2;
-        int y = box.y + (h - rad / 2) / 2;
+        int x = box.getAbsX() - rad - rad / 2;
+        int y = box.getAbsY() + (h - rad / 2) / 2;
         if (listStyle == IdentValue.DISC) {
             c.getGraphics().fillOval(x, y, rad, rad);
             return;
@@ -193,9 +196,9 @@ public class ListItemPainter {
         Font font = box.getStyle().getFont(c);
         LineMetrics lm = font.getLineMetrics(text, ((Graphics2D) c.getGraphics()).getFontRenderContext());
         int w = FontUtil.len(text, font, c.getTextRenderer(), c.getGraphics());
-        int h = FontUtil.lineHeight(box, c.getTextRenderer(), c.getGraphics(), c, c.getBlockFormattingContext());
-        int x = box.x - w - 2;
-        int y = box.y + h;
+        int h = (int) Math.round(box.getStyle().getCalculatedStyle().getLineHeight(c));
+        int x = box.getAbsX() - w - 2;
+        int y = box.getAbsY() + h;
         y -= (int) lm.getDescent();
         c.getGraphics().setFont(font);
         c.getGraphics().drawString(text, x, y);
@@ -206,6 +209,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/11/08 22:53:46  tobega
+ * added getLineHeight method to CalculatedStyle and hacked in some list-item support
+ *
  * Revision 1.22  2005/10/27 00:09:04  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

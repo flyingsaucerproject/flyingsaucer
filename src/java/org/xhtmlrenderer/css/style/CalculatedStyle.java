@@ -291,6 +291,18 @@ public class CalculatedStyle {
         return valueByName(cssName).getFloatProportionalTo(cssName, parentHeight, ctx);
     }
 
+    public float getLineHeight(CssContext ctx) {
+        if (isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL)) {
+            return getFont(ctx).size * 1.1f;//css recommends something between 1.0 and 1.2
+        } else if (isLengthValue(CSSName.LINE_HEIGHT)) {
+            //could be more elegant, I suppose
+            return getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, 0, ctx);
+        } else {
+            //must be a number
+            return getFont(ctx).size * valueByName(CSSName.LINE_HEIGHT).asFloat();
+        }
+    }
+
     /**
      * Convenience property accessor; returns a Border initialized with the
      * four-sided margin width. Uses the actual value (computed actual value)
@@ -551,6 +563,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.53  2005/11/08 22:53:44  tobega
+ * added getLineHeight method to CalculatedStyle and hacked in some list-item support
+ *
  * Revision 1.52  2005/10/31 22:43:15  tobega
  * Some memory optimization of the Matcher. Probably cleaner code, too.
  *

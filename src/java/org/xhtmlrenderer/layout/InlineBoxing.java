@@ -69,7 +69,7 @@ public class InlineBoxing {
         //doesn't work here because blocks may be inside inlines, losing inline styling:
         //c.pushStyle(CascadedStyle.emptyCascadedStyle);
 
-        int blockLineHeight = FontUtil.lineHeight(box, c.getTextRenderer(), c.getGraphics(), c, c.getBlockFormattingContext());
+        int blockLineHeight = (int) Math.round(box.getStyle().getCalculatedStyle().getLineHeight(c));
         LineMetrics blockLineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(),
                 box.getStyle().getFont(c), "thequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG");
 
@@ -435,7 +435,7 @@ public class InlineBoxing {
         if (new_inline instanceof InlineTextBox && !((InlineTextBox) new_inline).getSubstring().equals("")) {
             // should be the metrics of the font, actually is the metrics of the text
             LineMetrics metrics = FontUtil.getLineMetrics(new_inline.getStyle().getFont(c), new_inline, c.getTextRenderer(), c.getGraphics());
-            lineHeight = FontUtil.lineHeight(new_inline, c.getTextRenderer(), c.getGraphics(), c, c.getBlockFormattingContext());//assume that current context is valid for new_inline
+            lineHeight = (int) Math.round(new_inline.getStyle().getCalculatedStyle().getLineHeight(c));
             ascent = (int) metrics.getAscent();
             descent = (int) metrics.getDescent();
         } else {
@@ -611,6 +611,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.62  2005/11/08 22:53:46  tobega
+ * added getLineHeight method to CalculatedStyle and hacked in some list-item support
+ *
  * Revision 1.61  2005/11/07 00:07:34  tobega
  * Got text-decoration and relative inlines kind-of working
  *

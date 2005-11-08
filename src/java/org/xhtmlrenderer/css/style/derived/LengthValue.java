@@ -59,7 +59,9 @@ public class LengthValue extends DerivedValue {
      */
     private short _lengthPrimitiveType;
 
-    protected LengthValue() { super(); }
+    protected LengthValue() {
+        super();
+    }
 
     public LengthValue(CalculatedStyle style,
                        CSSName name,
@@ -88,11 +90,9 @@ public class LengthValue extends DerivedValue {
      * @param ctx
      * @return the absolute value or computed absolute value
      */
-    public float getFloatProportionalTo(
-            CSSName cssName,
-            float baseValue,
-            CssContext ctx
-    ) {
+    public float getFloatProportionalTo(CSSName cssName,
+                                        float baseValue,
+                                        CssContext ctx) {
         return calcFloatProportionalValue(getStyle(),
                 cssName,
                 getStringValue(),
@@ -201,8 +201,8 @@ public class LengthValue extends DerivedValue {
                 break;
             case CSSPrimitiveValue.CSS_PERCENTAGE:
                 // percentage depends on the property this value belongs to
-                if (cssName == CSSName.VERTICAL_ALIGN ) {
-                    relVal = style.getParent().getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, baseValue, ctx);
+                if (cssName == CSSName.VERTICAL_ALIGN) {
+                    relVal = style.getParent().getLineHeight(ctx);
                 } else if (cssName == CSSName.FONT_SIZE) {
                     // same as with EM
                     FontSpecification parentFont = style.getParent().getFont(ctx);
@@ -249,6 +249,7 @@ public class LengthValue extends DerivedValue {
         // ASK: why don't we just use the style's getFont()? we're already caching these values
         // e.g.
         // return ctx.getFontSizeForXHeight(style.getParent().getFont(ctx), style.getFont(ctx), xHeight);
+        //ANSWER: when the font is already cached, this method never gets called
         f.fontWeight = style.getIdent(CSSName.FONT_WEIGHT);
         f.families = style.asStringArray(CSSName.FONT_FAMILY);
 
@@ -258,3 +259,7 @@ public class LengthValue extends DerivedValue {
         return ctx.getFontSizeForXHeight(style.getParent().getFont(ctx), f, xHeight);
     }
 }
+
+/*
+ * $Id$
+ */

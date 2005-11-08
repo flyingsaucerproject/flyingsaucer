@@ -387,7 +387,7 @@ public final class Idents {
         COLOR_MAP.put("white", "#ffffff");
         COLOR_MAP.put("yellow", "#ffff00");
 
-
+        //TODO: FONT_SIZES should be determined by the User Interface!
         FONT_SIZES = new HashMap();
         FONT_SIZES.put("xx-small", "6.9pt");
         FONT_SIZES.put("x-small", "8.3pt");
@@ -510,6 +510,9 @@ public final class Idents {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/11/08 22:53:44  tobega
+ * added getLineHeight method to CalculatedStyle and hacked in some list-item support
+ *
  * Revision 1.10  2005/10/31 16:19:58  pdoubleya
  * Orange is a CSS 2.1 color; double-checked list of color constants.
  *

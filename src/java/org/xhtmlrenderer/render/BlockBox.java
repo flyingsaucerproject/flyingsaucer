@@ -19,26 +19,20 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-
 import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
+import java.awt.*;
+
 public class BlockBox extends Box implements Renderable {
-    
+
     private final static Color TRANSPARENT = new Color(0, 0, 0, 0);
-    
+
     public int renderIndex;
-    
+
     public BlockBox() {
         super();
     }
@@ -94,21 +88,21 @@ public class BlockBox extends Box implements Renderable {
     public double getAbsBottom() {
         return getAbsY() + height;
     }
-    
+
 
     public void paintBorder(RenderingContext c) {
         Rectangle borderBounds = getBorderEdge(getAbsX(), getAbsY(), c);
         if (getState() != Box.DONE) {
             borderBounds.height += c.getCanvas().getHeight();
         }
-        
+
         BorderPainter.paint(borderBounds, BorderPainter.ALL,
                 getStyle().getCalculatedStyle(), c.getGraphics(), c, 0);
     }
-        
+
     private Image getBackgroundImage(RenderingContext c) {
         String uri = getStyle().getCalculatedStyle().getStringProperty(CSSName.BACKGROUND_IMAGE);
-        if (! uri.equals("none")) {
+        if (!uri.equals("none")) {
             try {
                 return c.getUac().getImageResource(uri).getImage();
             } catch (Exception ex) {
@@ -123,25 +117,25 @@ public class BlockBox extends Box implements Renderable {
         if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
             return;
         }
-        
+
         Rectangle backgroundBounds = getBorderEdge(getAbsX(), getAbsY(), c);
         if (getState() != Box.DONE) {
             backgroundBounds.height += c.getCanvas().getHeight();
         }
-        
+
         Color backgroundColor = getStyle().getCalculatedStyle().getBackgroundColor();
-        if (backgroundColor != null && ! backgroundColor.equals(TRANSPARENT)) {
+        if (backgroundColor != null && !backgroundColor.equals(TRANSPARENT)) {
             c.getGraphics().setColor(backgroundColor);
             c.getGraphics().fillRect(backgroundBounds.x, backgroundBounds.y, backgroundBounds.width, backgroundBounds.height);
         }
 
         int xoff = 0;
         int yoff = 0;
-        
+
         Image backgroundImage = getBackgroundImage(c);
         if (backgroundImage != null) {
             Shape oldclip = (Shape) c.getGraphics().getClip();
-            
+
             if (getStyle().isFixedBackground()) {
                 yoff = c.getCanvas().getLocation().y;
                 c.getGraphics().setClip(c.getCanvas().getVisibleRect());
@@ -151,16 +145,15 @@ public class BlockBox extends Box implements Renderable {
 
             int imageWidth = backgroundImage.getWidth(null);
             int imageHeight = backgroundImage.getHeight(null);
-            
-            Point bgOffset = getStyle().getCalculatedStyle().getBackgroundPosition(
-                    backgroundBounds.width - imageWidth, 
+
+            Point bgOffset = getStyle().getCalculatedStyle().getBackgroundPosition(backgroundBounds.width - imageWidth,
                     backgroundBounds.height - imageHeight, c);
             xoff += bgOffset.x;
             yoff -= bgOffset.y;
 
             tileFill(c.getGraphics(), backgroundImage,
                     backgroundBounds,
-                    xoff, -yoff, 
+                    xoff, -yoff,
                     getStyle().isHorizontalBackgroundRepeat(),
                     getStyle().isVerticalBackgroundRepeat());
             c.getGraphics().setClip(oldclip);
@@ -172,14 +165,14 @@ public class BlockBox extends Box implements Renderable {
         int iheight = img.getHeight(null);
         int rwidth = rect.width;
         int rheight = rect.height;
-        
+
         if (horiz) {
             xoff = xoff % iwidth - iwidth;
             rwidth += iwidth;
         } else {
             rwidth = iwidth;
         }
-        
+
         if (vert) {
             yoff = yoff % iheight - iheight;
             rheight += iheight;
@@ -193,13 +186,23 @@ public class BlockBox extends Box implements Renderable {
             }
         }
 
-    }    
+    }
+
+    public void paintListStyles(RenderingContext c) {
+        //HACK:
+        if (ContentUtil.isListItem(getStyle().getCalculatedStyle())) {
+            ListItemPainter.paint(c, this);
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/11/08 22:53:46  tobega
+ * added getLineHeight method to CalculatedStyle and hacked in some list-item support
+ *
  * Revision 1.18  2005/11/08 20:03:57  peterbrant
  * Further progress on painting order / improved positioning implementation
  *
