@@ -207,6 +207,9 @@ public class LengthValue extends DerivedValue {
                     // same as with EM
                     FontSpecification parentFont = style.getParent().getFont(ctx);
                     baseValue = ctx.getFontSize2D(parentFont);
+                } else if (cssName == CSSName.LINE_HEIGHT) {
+                    FontSpecification font = style.getFont(ctx);
+                    baseValue = ctx.getFontSize2D(font);
                 }
                 absVal = (relVal / 100F) * baseValue;
 
