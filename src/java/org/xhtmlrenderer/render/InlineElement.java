@@ -97,7 +97,7 @@ public class InlineElement /*implements ElementBox*/ {
                                 InlineBox inline,
                                 int sides) {
         if (inline.contentWidth == 0) return;
-        paint(c, line, inline, inline.x, inline.contentWidth, sides, false);
+        paint(c, line, inline, line.x + inline.x, inline.contentWidth, sides, false);
         untranslateRelative(c, line.isFirstLine);
     }
 
@@ -183,7 +183,7 @@ public class InlineElement /*implements ElementBox*/ {
             parent.paint(c,
                     line,
                     ib,
-                    padX + ib.x,
+                    line.x + padX + ib.x,
                     (int) margin.left(),
                     BorderPainter.TOP + BorderPainter.BOTTOM, true);
             parent.untranslateRelative(c, line.isFirstLine);
@@ -206,7 +206,7 @@ public class InlineElement /*implements ElementBox*/ {
         float width = border.left() + padding.left();
         if (width == 0) return;
         paint(c, line, inline,
-                inline.x + padX,
+                line.x + inline.x + padX,
                 (int) width, BorderPainter.LEFT + BorderPainter.TOP + BorderPainter.BOTTOM, true);
         untranslateRelative(c, line.isFirstLine);
     }
@@ -224,7 +224,7 @@ public class InlineElement /*implements ElementBox*/ {
         // CLEAN: cast to int
         padX += (int) padding.right() + (int) border.right();
         if (parent != null && margin.right() != 0) {
-            parent.paint(c, line, ib, ib.x + padX, (int) margin.right(), BorderPainter.TOP + BorderPainter.BOTTOM, true);
+            parent.paint(c, line, ib, line.x + ib.x + padX, (int) margin.right(), BorderPainter.TOP + BorderPainter.BOTTOM, true);
             parent.untranslateRelative(c, line.isFirstLine);
         }
         padX += margin.right();
@@ -241,7 +241,7 @@ public class InlineElement /*implements ElementBox*/ {
                                    RectPropertySet padding) {
         float width = padding.right() + border.right();
         if (width == 0) return;
-        paint(c, line, inline, padX + inline.x, (int) width, BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM, true);
+        paint(c, line, inline, line.x + padX + inline.x, (int) width, BorderPainter.RIGHT + BorderPainter.TOP + BorderPainter.BOTTOM, true);
         untranslateRelative(c, line.isFirstLine);
     }
 
@@ -267,7 +267,7 @@ public class InlineElement /*implements ElementBox*/ {
         }
         CalculatedStyle cs = style.getCalculatedStyle();
         Relative.translateRelative(c, cs, true);
-        paintTextDecoration(style, c, line, inline.x, inline.contentWidth);
+        paintTextDecoration(style, c, line, line.x + inline.x, inline.contentWidth);
     }
 
     private void paintTextDecoration(Style style, RenderingContext c, LineBox line, int x, int width) {
