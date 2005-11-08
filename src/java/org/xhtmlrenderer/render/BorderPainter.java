@@ -25,65 +25,29 @@ import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 
 import java.awt.*;
 
-
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class BorderPainter {
-    /**
-     * Description of the Field
-     */
     public static int TOP = 1;
-    /**
-     * Description of the Field
-     */
     public static int LEFT = 2;
-    /**
-     * Description of the Field
-     */
     public static int BOTTOM = 4;
-    /**
-     * Description of the Field
-     */
     public static int RIGHT = 8;
-    /**
-     * Description of the Field
-     */
     public static int ALL = TOP + LEFT + BOTTOM + RIGHT;
 
     /**
-     * Description of the Method
-     *
-     * @param bounds  PARAM
-     * @param sides   PARAM
-     * @param style
-     * @param g
-     * @param ctx
      * @param xOffset for determining starting point for patterns
      */
     public static void paint(Rectangle bounds, int sides, CalculatedStyle style, Graphics g, RenderingContext ctx, int xOffset) {
         BorderPropertySet border = style.getBorder(ctx);
-        if ((sides & TOP) == TOP) {
-            if (border.noTop()) {
-                sides -= TOP;
-            }
+        if ((sides & TOP) == TOP && border.noTop()) {
+            sides -= TOP;
         }
-        if ((sides & LEFT) == LEFT) {
-            if (border.noLeft()) {
-                sides -= LEFT;
-            }
+        if ((sides & LEFT) == LEFT && border.noLeft()) {
+            sides -= LEFT;
         }
-        if ((sides & BOTTOM) == BOTTOM) {
-            if (border.noBottom()) {
-                sides -= BOTTOM;
-            }
+        if ((sides & BOTTOM) == BOTTOM && border.noBottom()) {
+            sides -= BOTTOM;
         }
-        if ((sides & RIGHT) == RIGHT) {
-            if (border.noRight()) {
-                sides -= RIGHT;
-            }
+        if ((sides & RIGHT) == RIGHT && border.noRight()) {
+            sides -= RIGHT;
         }
 
         //Now paint!
@@ -101,16 +65,7 @@ public class BorderPainter {
         }
     }
 
-
-    /**
-     * Description of the Method
-     *
-     * @param rect   PARAM
-     * @param border PARAM
-     * @param sides
-     * @return Returns
-     */
-    public static Rectangle shrinkRect(final Rectangle rect, final BorderPropertySet border, int sides) {
+    private static Rectangle shrinkRect(final Rectangle rect, final BorderPropertySet border, int sides) {
         Rectangle r2 = new Rectangle();
         r2.x = rect.x + ((sides & LEFT) == 0 ? 0 : (int) border.left());
         r2.width = rect.width - ((sides & LEFT) == 0 ? 0 : (int) border.left()) - ((sides & RIGHT) == 0 ? 0 : (int) border.right());
@@ -119,17 +74,6 @@ public class BorderPainter {
         return r2;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param border          PARAM
-     * @param g               PARAM
-     * @param bounds          PARAM
-     * @param sides           PARAM
-     * @param currentSide
-     * @param borderSideStyle PARAM
-     * @param xOffset
-     */
     private static void paintBorderSide(final BorderPropertySet border, final Graphics g, final Rectangle bounds, final int sides, int currentSide, final IdentValue borderSideStyle, int xOffset) {
         Graphics2D g2 = (Graphics2D) g;
         if (borderSideStyle == IdentValue.RIDGE || borderSideStyle == IdentValue.GROOVE) {
@@ -243,18 +187,12 @@ public class BorderPainter {
 
     /**
      * Gets the polygon to be filled for the border
-     *
-     * @param bounds       PARAM
-     * @param border       PARAM
-     * @param sides        PARAM
-     * @param currentSide
-     * @param isClipRegion
      */
     private static Polygon getBevelledPolygon(final Rectangle bounds, final BorderPropertySet border, final int sides, int currentSide, boolean isClipRegion) {
         //adjust for bug in polygon filling
-        final int adjust;
+        int adjust;
         //adjust inside corners to make sides fit snugly
-        final int snuggle;
+        int snuggle;
         if (isClipRegion) {
             adjust = 0;
             snuggle = 1;
@@ -262,6 +200,10 @@ public class BorderPainter {
             adjust = 1;
             snuggle = 0;
         }
+        
+        // Undo for now
+        adjust = 0;
+        snuggle = 0;
 
         int rightCorner = (((sides & RIGHT) == RIGHT) ? (int) border.right() : adjust);
         int leftCorner = (((sides & LEFT) == LEFT) ? (int) border.left() - adjust : 0);
@@ -310,15 +252,6 @@ public class BorderPainter {
     }
 
     /**
-     * Description of the Method
-     *
-     * @param g2          PARAM
-     * @param bounds      PARAM
-     * @param border      PARAM
-     * @param color       PARAM
-     * @param pattern     PARAM
-     * @param sides
-     * @param currentSide
      * @param xOffset     for inline borders, to determine dash_phase of top and bottom
      */
     private static void paintPatternedRect(final Graphics2D g2, final Rectangle bounds, final BorderPropertySet border, final BorderPropertySet color, final float[] pattern, final int sides, final int currentSide, int xOffset) {
@@ -334,37 +267,33 @@ public class BorderPainter {
         if (currentSide == TOP) {
             g2.setColor(color.topColor());
             g2.setStroke(new BasicStroke((int) border.top(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, xOffset));
-            g2.drawLine(x, y + (int) (border.top() / 2), x + w - 1, y + (int) (border.top() / 2));
+            g2.drawLine(x, y + (int) (border.top() / 2), x + w, y + (int) (border.top() / 2));
         } else if (currentSide == LEFT) {
             g2.setColor(color.leftColor());
             g2.setStroke(new BasicStroke((int) border.left(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0));
-            g2.drawLine(x + (int) (border.left() / 2), y, x + (int) (border.left() / 2), y + h - 1);
+            g2.drawLine(x + (int) (border.left() / 2), y, x + (int) (border.left() / 2), y + h);
         } else if (currentSide == RIGHT) {
             g2.setColor(color.rightColor());
             g2.setStroke(new BasicStroke((int) border.right(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, 0));
-            g2.drawLine(x + w - (int) (border.right() / 2), y, x + w - (int) (border.right() / 2), y + h);
+            int offset = (int)(border.right() / 2);
+            if (border.right() % 2 == 1) {
+                offset += 1;
+            }
+            g2.drawLine(x + w - offset, y, x + w - offset, y + h);
         } else if (currentSide == BOTTOM) {
             g2.setColor(color.bottomColor());
             g2.setStroke(new BasicStroke((int) border.bottom(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, pattern, xOffset));
-            g2.drawLine(x, y + h - (int) (border.bottom() / 2), x + w, y + h - (int) (border.bottom() / 2));
+            int offset = (int)(border.bottom() / 2);
+            if (border.bottom() % 2 == 1) {
+                offset += 1;
+            }
+            g2.drawLine(x, y + h - offset, x + w, y + h - offset);
         }
 
         g2.setStroke(old_stroke);
         g2.setClip(old_clip);
     }
 
-
-    /**
-     * Description of the Method
-     *
-     * @param g2          PARAM
-     * @param bounds      PARAM
-     * @param border      PARAM
-     * @param high        PARAM
-     * @param low         PARAM
-     * @param sides       PARAM
-     * @param currentSide
-     */
     private static void paintGoodBevel(final Graphics2D g2, final Rectangle bounds, final BorderPropertySet border, final BorderPropertySet high, final BorderPropertySet low, final int sides, int currentSide) {
         if (currentSide == TOP) {
             paintSolid(g2, bounds, border, high, sides, currentSide);
@@ -377,22 +306,9 @@ public class BorderPainter {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param g2          PARAM
-     * @param bounds      PARAM
-     * @param border      PARAM
-     * @param bcolor      PARAM
-     * @param sides       PARAM
-     * @param currentSide
-     */
     private static void paintSolid(final Graphics2D g2, final Rectangle bounds, final BorderPropertySet border, final BorderPropertySet bcolor, final int sides, int currentSide) {
-        //Bug in polygon painting paints an extra pixel to the right and bottom
-        //But clipping works fine!
-        Polygon poly = getBevelledPolygon(bounds, border, sides, currentSide, false);
-        //Shape old_clip = g2.getClip();
-        //if (poly != null) g2.clip(poly);
+        Polygon poly = getBevelledPolygon(bounds, border, sides, currentSide, true);
+
         if (currentSide == TOP) {
             g2.setColor(bcolor.topColor());
 
@@ -435,6 +351,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2005/11/08 20:02:14  peterbrant
+ * Fix off by one errors for borders with an odd width
+ *
  * Revision 1.38  2005/10/27 00:09:02  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *
