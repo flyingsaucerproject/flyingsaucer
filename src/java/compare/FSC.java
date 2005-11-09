@@ -141,6 +141,12 @@ public class FSC {
                                 }
 
                                 public void downloadCompleted(WebBrowserEvent event) {
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        public void run() {
+                                            cbFrame.requestFocus();
+                                            System.out.println("Focus requested");
+                                        }
+                                    });
                                 }
 
                                 public void downloadProgress(WebBrowserEvent event) {
@@ -255,7 +261,7 @@ public class FSC {
                 html.setDocument(file.toURL().toExternalForm());
                 geckoBrowser.setURL(file.toURI().toURL());
             }
-            XRLog.load("LOADED " + file.toURI().toURL() );
+            XRLog.load("LOADED " + file.toURI().toURL());
             currentDisplayed = file;
             changeTitle(file.toURL().toString());
         } catch (Exception ex) {
