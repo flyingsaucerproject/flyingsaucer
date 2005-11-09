@@ -27,6 +27,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -118,14 +119,48 @@ public class Layer {
         }
     }
 
-    private void paintLayers(RenderingContext c) {
-        List children = getChildren();
-        for (int i = children.size() - 1; i >= 0; i--) {
-            Layer layer = (Layer) children.get(i);
+    private void paintLayers(RenderingContext c, List layers) {
+        for (int i = 0; i < layers.size(); i++) {
+            Layer layer = (Layer) layers.get(i);
             layer.paint(c);
         }
     }
+    
+    private static final int POSITIVE = 1;
+    private static final int AUTO_AND_ZERO = 2;
+    private static final int NEGATIVE = 3;
+    
+    private List getSortedLayers(int which) {
+        List result = new ArrayList();
+        
+        List children = getChildren();
+        for (int i = 0; i < children.size(); i++) {
+            Layer child = (Layer)children.get(i);
 
+            if (which == NEGATIVE && child.isStackingContext() && child.getZIndex() < 0) {
+                result.add(child);
+            } else if (which == POSITIVE && child.isStackingContext() && child.getZIndex() > 0) {
+                result.add(child);
+            } else if (which == AUTO_AND_ZERO) {
+                result.add(child);
+            }
+        }
+        
+        if (which == NEGATIVE || which == POSITIVE) {
+            Collections.sort(result, new ZIndexComparator());
+        }
+        
+        return result;
+    }
+    
+    private static class ZIndexComparator implements Comparator {
+        public int compare(Object o1, Object o2) {
+            Layer l1 = (Layer)o1;
+            Layer l2 = (Layer)o2;
+            return l1.getZIndex() - l2.getZIndex();
+        }
+    }
+    
     private void paintBackgroundsAndBorders(RenderingContext c, List blocks) {
         for (Iterator i = blocks.iterator(); i.hasNext();) {
             BlockBox box = (BlockBox) i.next();
@@ -157,7 +192,10 @@ public class Layer {
 
         collectBoxes(c, getMaster(), blocks, lines);
 
+        // TODO root layer needs to be handled correctly
         paintLayerBackgroundAndBorder(c);
+        
+        paintLayers(c, getSortedLayers(NEGATIVE));
 
         paintBackgroundsAndBorders(c, blocks);
         paintFloats(c);
@@ -165,7 +203,9 @@ public class Layer {
         //without great thought, just doing this as close to what it was as possible
         paintListStyles(c, blocks);
 
-        paintLayers(c);
+        // TODO z-index: 0 layers should be painted atomically
+        paintLayers(c, getSortedLayers(AUTO_AND_ZERO));
+        paintLayers(c, getSortedLayers(POSITIVE));
     }
 
     private void paintListStyles(RenderingContext c, List blocks) {
