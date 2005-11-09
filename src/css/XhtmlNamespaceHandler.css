@@ -85,7 +85,7 @@ BDO[DIR="rtl"]  { direction: rtl; unicode-bidi: bidi-override }
 /* font stuff should rather be controlled by rendering context or user agent, hmmm */
 html { font-size: 12pt; }
 body {
-    font-family: sans-serif;
+    font-family: serif;
 }
 
 /* don't handle all replaced things yet, besides xml should do this via entities!*/
@@ -94,12 +94,6 @@ img {
     border-width: 1px 1px 1px 1px;
     margin: 0px;
     padding: 0px;
-}
-
-/* we don't collapse margins yet */
-p {
-  padding: 3px;
-  margin: 0px;
 }
 
 /* don't know why */
