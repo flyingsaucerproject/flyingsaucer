@@ -86,19 +86,17 @@ public class InlineBoxing {
         
         // prepare remaining width and first linebox
         int remaining_width = bounds.width;
-        
-        if (! box.getStyle().isCleared()) {
-            remaining_width -= c.getBlockFormattingContext().getFloatDistance(
-                    c, prev_line, bounds.width);
+
+        if (!box.getStyle().isCleared()) {
+            remaining_width -= c.getBlockFormattingContext().getFloatDistance(c, prev_line, bounds.width);
         }
-        
+
         LineBox curr_line = newLine(box, bounds, null, blockLineMetrics, c);
         List pushedOnFirstLine = null;
 
         // account for text-indent
         CalculatedStyle parentStyle = c.getCurrentStyle();
-        float indent = parentStyle.getFloatPropertyProportionalWidth(
-                CSSName.TEXT_INDENT, bounds.width, c);
+        float indent = parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, bounds.width, c);
         remaining_width -= (int) indent;
         curr_line.x = curr_line.x + (int) indent;
 
@@ -121,6 +119,15 @@ public class InlineBoxing {
                 box.firstLetterStyle = ((FirstLetterStyle) o).getStyle();
                 continue;
             }
+
+            //first-line pseudo-element
+            if (pushedOnFirstLine == null && c.hasFirstLineStyles()) {
+                pushedOnFirstLine = new ArrayList();
+                for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext();) {
+                    c.pushStyle((CascadedStyle) i.next());
+                }
+            }
+
             if (o instanceof StylePush) {
                 CascadedStyle cascaded;
                 StylePush sp = (StylePush) o;
@@ -134,12 +141,6 @@ public class InlineBoxing {
                 }
                 //first push first-line styles
                 if (c.hasFirstLineStyles()) {
-                    if (pushedOnFirstLine == null) {
-                        pushedOnFirstLine = new ArrayList();
-                        for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext();) {
-                            c.pushStyle((CascadedStyle) i.next());
-                        }
-                    }
                     pushedOnFirstLine.add(cascaded);
                 }
                 c.pushStyle(cascaded);
@@ -215,12 +216,6 @@ public class InlineBoxing {
             if (currentContent.getStyle() != null) {
                 //first push first-line styles
                 if (c.hasFirstLineStyles()) {
-                    if (pushedOnFirstLine == null) {
-                        pushedOnFirstLine = new ArrayList();
-                        for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext();) {
-                            c.pushStyle((CascadedStyle) i.next());
-                        }
-                    }
                     pushedOnFirstLine.add(currentContent.getStyle());
                 }
                 c.pushStyle(currentContent.getStyle());
@@ -277,8 +272,7 @@ public class InlineBoxing {
                     curr_line = newLine(box, bounds, prev_line, blockLineMetrics, c);
                     // skip adjusting for tabs if this box is cleared
                     if (!box.getStyle().isCleared()) {
-                        remaining_width -= c.getBlockFormattingContext().getFloatDistance(
-                                c, curr_line, remaining_width);
+                        remaining_width -= c.getBlockFormattingContext().getFloatDistance(c, curr_line, remaining_width);
                     }
                     
                     //have to discard it and recalculate, particularly if this was the first line
@@ -330,8 +324,7 @@ public class InlineBoxing {
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line, blockLineMetrics, c);
                     if (!box.getStyle().isCleared()) {
-                        remaining_width -= c.getBlockFormattingContext().getFloatDistance(
-                                c, curr_line, remaining_width);
+                        remaining_width -= c.getBlockFormattingContext().getFloatDistance(c, curr_line, remaining_width);
                     }
                 }
 
@@ -570,6 +563,11 @@ public class InlineBoxing {
         if (c.hasFirstLineStyles()) {
             //first pop element styles pushed on first line
             for (int i = 0; i < pushedOnFirstLine.size(); i++) c.popStyle();
+            //Now save the first-line style
+            line_to_save.firstLinePseudo = new InlineElement(null, "first-line", null);
+            Style fls = new Style(c.getCurrentStyle(), bounds.width);
+            line_to_save.firstLinePseudo.setStartStyle(fls);
+            line_to_save.firstLinePseudo.setEndStyle(fls);
             //then pop first-line styles
             for (int i = 0; i < c.getFirstLineStyles().size(); i++) c.popStyle();
             //reinstate element styles
@@ -599,9 +597,8 @@ public class InlineBoxing {
         }
         
         // new float code
-        if (! block.getStyle().isClearLeft()) {
-            line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(
-                    c, line_to_save, bounds.width);
+        if (!block.getStyle().isClearLeft()) {
+            line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(c, line_to_save, bounds.width);
         }
 
         if (c.isPrint() && line_to_save.crossesPageBreak(c)) {
@@ -615,6 +612,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.65  2005/11/09 22:33:17  tobega
+ * fixed handling of first-line-style
+ *
  * Revision 1.64  2005/11/09 14:12:59  peterbrant
  * Undo change which broke line breaking in tables
  *

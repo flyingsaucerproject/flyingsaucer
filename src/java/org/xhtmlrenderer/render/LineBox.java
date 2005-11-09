@@ -49,6 +49,7 @@ public class LineBox extends Box implements Renderable {
     public boolean textAligned = false;
     public int renderIndex;
     public boolean isFirstLine = false;
+    public InlineElement firstLinePseudo;
 
     /**
      * Constructor for the LineBox object
@@ -141,6 +142,9 @@ public class LineBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/11/09 22:33:18  tobega
+ * fixed handling of first-line-style
+ *
  * Revision 1.27  2005/11/08 20:03:56  peterbrant
  * Further progress on painting order / improved positioning implementation
  *

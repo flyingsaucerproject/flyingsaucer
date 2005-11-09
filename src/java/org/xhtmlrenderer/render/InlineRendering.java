@@ -91,6 +91,12 @@ public class InlineRendering {
     }
 
     public static void paintBackground(RenderingContext c, LineBox line, InlineBox inline) {
+        if (line.firstLinePseudo != null) {
+            line.firstLinePseudo.paintBackground(c,
+                    line,
+                    inline,
+                    BorderPainter.TOP + BorderPainter.BOTTOM);
+        }
         if (inline.getInlineElement() != null) {
             inline.getInlineElement().paintBackground(c,
                     line,
@@ -221,6 +227,10 @@ public class InlineRendering {
             paintText(c, ix, iy, inline, lm);
             if (inline.getInlineElement() != null) inline.getInlineElement().untranslateRelative(c, line.isFirstLine);
             //TODO: handle Block element text decorations
+            if (line.firstLinePseudo != null) {
+                line.firstLinePseudo.paintTextDecoration(c, line, inline);
+                line.firstLinePseudo.untranslateRelative(c, line.isFirstLine);
+            }
             if (inline.getInlineElement() != null) {
                 inline.getInlineElement().paintTextDecoration(c, line, inline);
                 inline.getInlineElement().untranslateRelative(c, line.isFirstLine);
