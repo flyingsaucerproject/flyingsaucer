@@ -85,11 +85,11 @@ public class InlineBoxing {
         InlineBox prev_align_inline = null;
         
         // prepare remaining width and first linebox
-        int remaining_width = box.getContentWidth();
+        int remaining_width = bounds.width;
         
         if (! box.getStyle().isCleared()) {
             remaining_width -= c.getBlockFormattingContext().getFloatDistance(
-                    c, prev_line, box.getContentWidth());
+                    c, prev_line, bounds.width);
         }
         
         LineBox curr_line = newLine(box, bounds, null, blockLineMetrics, c);
@@ -98,7 +98,7 @@ public class InlineBoxing {
         // account for text-indent
         CalculatedStyle parentStyle = c.getCurrentStyle();
         float indent = parentStyle.getFloatPropertyProportionalWidth(
-                CSSName.TEXT_INDENT, box.getWidth(), c);
+                CSSName.TEXT_INDENT, bounds.width, c);
         remaining_width -= (int) indent;
         curr_line.x = curr_line.x + (int) indent;
 
@@ -270,7 +270,7 @@ public class InlineBoxing {
                 // if this inline needs to be on a new line
                 if (prev_align_inline != null && new_inline.break_before) {
                     // Uu.p("break before");
-                    remaining_width = box.getContentWidth();
+                    remaining_width = bounds.width;
                     saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine, pendingFloats);
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
@@ -322,7 +322,7 @@ public class InlineBoxing {
                 if (new_inline.break_after) {
                     // Uu.p("break after");
                     // then remaining_width = max_width
-                    remaining_width = box.getContentWidth();
+                    remaining_width = bounds.width;
                     // save the line
                     saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine, pendingFloats);
                     // increase bounds height to account for the new line
@@ -601,7 +601,7 @@ public class InlineBoxing {
         // new float code
         if (! block.getStyle().isClearLeft()) {
             line_to_save.x += c.getBlockFormattingContext().getLeftFloatDistance(
-                    c, line_to_save, block.getContentWidth());
+                    c, line_to_save, bounds.width);
         }
 
         if (c.isPrint() && line_to_save.crossesPageBreak(c)) {
@@ -615,6 +615,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.64  2005/11/09 14:12:59  peterbrant
+ * Undo change which broke line breaking in tables
+ *
  * Revision 1.63  2005/11/09 00:42:49  peterbrant
  * Tweak algorithm for calculating how much of a line is being occupied by floats
  *
