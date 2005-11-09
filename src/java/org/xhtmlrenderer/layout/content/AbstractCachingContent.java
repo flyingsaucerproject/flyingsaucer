@@ -55,7 +55,7 @@ public abstract class AbstractCachingContent implements CachingContent {
                 }
             }
         }
-        throw new XRRuntimeException("Could not find sibling to: " + which);
+        return null;
     }
 
     public Content getNextInFlowSibling(LayoutContext c, Content which) {
@@ -72,7 +72,7 @@ public abstract class AbstractCachingContent implements CachingContent {
                 return null;
             }
         }
-        throw new XRRuntimeException("Could not find sibling to: " + which);
+        return null;
     }
 
     public List getChildContent(LayoutContext c) {

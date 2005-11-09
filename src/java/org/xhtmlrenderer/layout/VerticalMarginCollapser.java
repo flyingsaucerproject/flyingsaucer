@@ -293,7 +293,7 @@ public class VerticalMarginCollapser {
                         throw new IllegalArgumentException();
                     }
 
-                    if (potentialTarget instanceof CollapsableContent) {
+                    if (potentialTarget != null && potentialTarget instanceof CollapsableContent) {
                         currentTarget = (CollapsableContent) potentialTarget;
                     } else {
                         return null;
@@ -348,14 +348,36 @@ public class VerticalMarginCollapser {
         CachingContent parent = (CachingContent) c.getParentContent();
         CollapsingMargin which = (CollapsingMargin) collapsed.get(collapsed.size() - 1);
 
-        Content sibling = parent.getNextInFlowSibling(c, which.content);
+        Content inFlowSibling = parent.getNextInFlowSibling(c, which.content);
+        
+        CollapsedMarginPair pair = calculateCollapsedMargin(null, collapsed);
 
-        if (sibling instanceof CollapsableContent) {
-            ((CollapsableContent) sibling).setMarginToCollapse(calculateCollapsedMargin(null, collapsed));
+        if (inFlowSibling instanceof CollapsableContent) {
+            ((CollapsableContent) inFlowSibling).setMarginToCollapse(pair);
             ((CollapsableContent) which.content).setBottomMarginCollapsed(true);
+            
+            Content sibling = parent.getNextSibling(c, which.content);
+            if (sibling instanceof AnonymousBlockContent) {
+                provideCollapsedMarginToFloats((AnonymousBlockContent)sibling, pair);
+            }
+            
             return new Float(0f);
         } else {
-            return new Float(calculateCollapsedMargin(null, collapsed).getValue());
+            return new Float(pair.getValue());
+        }
+    }
+    
+    private static void provideCollapsedMarginToFloats(
+            AnonymousBlockContent content, CollapsedMarginPair pair) {
+        for (Iterator i = content.getChildContent(null).iterator(); i.hasNext(); ) {
+            Object obj = i.next();
+            if (obj instanceof AbsolutelyPositionedContent) {
+                continue;
+            } else if (obj instanceof FloatedBlockContent) {
+                ((FloatedBlockContent)obj).setMarginFromPrevious((int)pair.getValue());
+            } else {
+                break;
+            }
         }
     }
 

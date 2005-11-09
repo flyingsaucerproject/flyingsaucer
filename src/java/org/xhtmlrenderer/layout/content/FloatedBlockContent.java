@@ -32,55 +32,44 @@ import java.util.List;
  * @author Torbjörn Gannholm
  */
 public class FloatedBlockContent extends AbstractCachingContent implements Content {
-    /**
-     * Description of the Field
-     */
-    private Element _elem;
-    /**
-     * Description of the Field
-     */
-    private CascadedStyle _style;
 
+    private Element _elem;
+    private CascadedStyle _style;
+    
     /**
-     * Constructor for the FloatedBlockContent object
-     *
-     * @param e     PARAM
-     * @param style PARAM
+     * Additional space which should be added to the y-position of the float when
+     * calculating final position.  It is the collapsed through margin of a previous
+     * block level element (which doesn't collapse with the float).
      */
+    private int _marginFromPrevious;
+
     FloatedBlockContent(Element e, CascadedStyle style) {
         _elem = e;
         _style = style;
     }
 
-    /**
-     * Converts to a String representation of the object.
-     *
-     * @return A string representation of the object.
-     */
     public String toString() {
         return "FloatedBlock: " + _elem.getNodeName();
     }
 
-    /**
-     * Gets the element attribute of the FloatedBlockContent object
-     *
-     * @return The element value
-     */
     public Element getElement() {
         return _elem;
     }
 
-    /**
-     * Gets the style attribute of the FloatedBlockContent object
-     *
-     * @return The style value
-     */
     public CascadedStyle getStyle() {
         return _style;
     }
 
     protected List makeChildContent(LayoutContext c) {
         return ContentUtil.getChildContentList(c, this);
+    }
+
+    public int getMarginFromPrevious() {
+        return _marginFromPrevious;
+    }
+
+    public void setMarginFromPrevious(int marginFromPrevious) {
+        _marginFromPrevious = marginFromPrevious;
     }
 }
 

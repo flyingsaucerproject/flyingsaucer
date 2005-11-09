@@ -229,7 +229,7 @@ public abstract class BasicPanel extends RootPanel {
 
         g.clipRect(0, (int) (info.getContentHeight() * (page - 1)), (int) info.getContentWidth(), (int) info.getContentHeight());
 
-        root.paint(c);
+        root.paint(c, 0, 0);
 
         g.translate(-margins.left, -margins.top);
         g.translate(0, info.getContentHeight() * (page - 1));
@@ -322,7 +322,7 @@ public abstract class BasicPanel extends RootPanel {
 
         long start = System.currentTimeMillis();
         if (!c.isPrint()) {
-            root.paint(c);
+            root.paint(c, 0, 0);
         } else {
             renderPagedView(c, root);
         }
@@ -378,7 +378,7 @@ public abstract class BasicPanel extends RootPanel {
                     (int) (i * info.getContentHeight() + i * margins.top + i * margins.bottom + margins.top),
                     (int) info.getContentWidth(), (int) info.getContentHeight()));
             g.translate(margins.left, i * margins.top + i * margins.bottom + margins.top);
-            root.paint(c);
+            root.paint(c, 0, 0);
             g.translate(-margins.left, -(i * margins.top + i * margins.bottom) + -margins.top);
 
             Stroke oldStroke = g.getStroke();
@@ -1091,6 +1091,10 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.85  2005/11/09 18:41:28  peterbrant
+ * Fixes to vertical margin collapsing in the presence of floats / Paint floats as
+ * layers
+ *
  * Revision 1.84  2005/11/08 20:03:59  peterbrant
  * Further progress on painting order / improved positioning implementation
  *

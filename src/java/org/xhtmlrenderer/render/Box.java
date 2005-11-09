@@ -417,12 +417,6 @@ public abstract class Box {
         this.containingBlock = containingBlock;
     }
     
-    public void paint(RenderingContext c, int tx, int ty) {
-        c.translate(tx, ty);
-        BoxRendering.paint(c, this);
-        c.translate(-tx, -ty);
-    }
-    
     public Rectangle getBounds(CssContext cssCtx) {
         return getBounds(cssCtx, 0, 0);
     }
@@ -552,6 +546,10 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.75  2005/11/09 18:41:28  peterbrant
+ * Fixes to vertical margin collapsing in the presence of floats / Paint floats as
+ * layers
+ *
  * Revision 1.74  2005/11/08 20:03:57  peterbrant
  * Further progress on painting order / improved positioning implementation
  *

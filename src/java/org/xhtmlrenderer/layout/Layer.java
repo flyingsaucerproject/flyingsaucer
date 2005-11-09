@@ -43,6 +43,17 @@ public class Layer {
     private List floats;
 
     private boolean fixedBackground;
+    
+    public Layer(Box master, boolean pseudoLayer) {
+        this(null, master);
+        setStackingContext(false);
+    }
+    
+    public static Layer makePseudoLayer(Box master) {
+        Layer result = new Layer(master);
+        result.setStackingContext(false);
+        return result;
+    }
 
     public Layer(Box master) {
         this(null, master);
@@ -114,7 +125,7 @@ public class Layer {
         if (floats != null) {
             for (int i = floats.size() - 1; i >= 0; i--) {
                 FloatedBlockBox floater = (FloatedBlockBox) floats.get(i);
-                floater.paint(c, (int) floater.getAbsX(), (int) floater.getAbsY());
+                makePseudoLayer(floater).paint(c, floater.getAbsX(), floater.getAbsY());
             }
         }
     }
@@ -122,7 +133,7 @@ public class Layer {
     private void paintLayers(RenderingContext c, List layers) {
         for (int i = 0; i < layers.size(); i++) {
             Layer layer = (Layer) layers.get(i);
-            layer.paint(c);
+            layer.paint(c, 0, 0);
         }
     }
     
@@ -180,12 +191,12 @@ public class Layer {
         }
     }
 
-    public void paint(RenderingContext c) {
+    public void paint(RenderingContext c, int originX, int originY) {
         if (getMaster().getStyle().isFixed()) {
             positionFixedLayer(c);
         }
 
-        updateAbsoluteLocations();
+        updateAbsoluteLocations(originX, originY);
 
         List blocks = new ArrayList();
         List lines = new ArrayList();
@@ -241,8 +252,8 @@ public class Layer {
     // TODO Inline borders and padding can slide an inline box around at render
     // TODO block.renderIndex = c.getNewRenderIndex();
     // TODO Don't do this every time 
-    private void updateAbsoluteLocations() {
-        updateAbsoluteLocationsHelper(getMaster(), 0, 0);
+    private void updateAbsoluteLocations(int originX, int originY) {
+        updateAbsoluteLocationsHelper(getMaster(), originX, originY);
     }
 
     private void updateAbsoluteLocationsHelper(Box box, int x, int y) {

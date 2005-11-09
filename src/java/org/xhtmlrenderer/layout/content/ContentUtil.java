@@ -510,8 +510,21 @@ public class ContentUtil {
         return textContent;
     }
 
-    public static boolean isNotInFlow(Object target) {
-        return target instanceof AbsolutelyPositionedContent || target instanceof FloatedBlockContent;
+    
+    public static boolean isNotInFlow(Object current) {
+        if (current instanceof AnonymousBlockContent) {
+            AnonymousBlockContent anon = (AnonymousBlockContent)current;
+            for (Iterator i = anon.getChildContent(null).iterator(); i.hasNext(); ) {
+                Object content = (Object)i.next();
+                if ( ! (content instanceof FloatedBlockContent || 
+                            content instanceof AbsolutelyPositionedContent)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
@@ -520,6 +533,10 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2005/11/09 18:41:26  peterbrant
+ * Fixes to vertical margin collapsing in the presence of floats / Paint floats as
+ * layers
+ *
  * Revision 1.43  2005/10/30 00:02:35  peterbrant
  * - Minor cleanup to get rid of unused CssContext in Style constructor
  * - Switch to ArrayList from LinkedList in a few places (saves several MBs of memory on Hamlet)

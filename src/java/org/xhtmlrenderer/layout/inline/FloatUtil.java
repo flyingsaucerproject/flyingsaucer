@@ -25,6 +25,7 @@ import java.util.List;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.layout.content.FloatedBlockContent;
 import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -41,7 +42,7 @@ public class FloatUtil {
         Rectangle oe = c.getExtents();// copy the extents for safety
         c.setExtents(new Rectangle(oe));
 
-        c.setFloatingY(curr_line.y);
+        c.setFloatingY(curr_line.y + ((FloatedBlockContent)content).getMarginFromPrevious());
         FloatedBlockBox block = new FloatedBlockBox();
         block.setContainingBlock(curr_line.getParent());
         block.element = content.getElement();

@@ -23,28 +23,22 @@ import org.xhtmlrenderer.layout.VerticalMarginCollapser;
 
 public interface CollapsableContent extends CachingContent {
     public void setTopMarginCollapsed(boolean b);
-
     public boolean isTopMarginCollapsed();
 
     public void setBottomMarginCollapsed(boolean b);
-
     public boolean isBottomMarginCollapsed();
 
     public boolean mayCollapseInto();
 
     public VerticalMarginCollapser.CollapsedMarginPair getMarginToCollapse();
-
     public void setMarginToCollapse(VerticalMarginCollapser.CollapsedMarginPair marginToCollapse);
 
     public void setMarginsAdjoiningCalculated(boolean b);
-
     public boolean isMarginsAdjoiningCalculated();
 
     public void setMarginsAdjoining(boolean b);
-
     public boolean isMarginsAdjoining();
 
     public void setCollapsed(boolean b);
-
     public boolean isCollapsed();
 }
