@@ -29,26 +29,13 @@ import org.xhtmlrenderer.util.GraphicsUtil;
 
 import java.awt.*;
 import java.awt.font.LineMetrics;
-import java.util.LinkedList;
-
 
 /**
- * Description of the Class
- *
  * @author Joshua Marinacci
  * @author Torbjörn Gannholm
  */
 public class InlineRendering {
 
-    /**
-     * Description of the Method
-     *
-     * @param c      PARAM
-     * @param inline PARAM
-     * @param lx     PARAM
-     * @param ly     PARAM
-     * @param lm
-     */
     //TODO: fix this to take relative into account
     public static void paintSelection(RenderingContext c, InlineBox inline, int lx, int ly, LineMetrics lm) {
         if (c.inSelection(inline)) {
@@ -73,16 +60,6 @@ public class InlineRendering {
         }
     }
 
-
-    /**
-     * Description of the Method
-     *
-     * @param c      PARAM
-     * @param ix     PARAM
-     * @param iy     PARAM
-     * @param inline PARAM
-     * @param lm
-     */
     public static void paintText(RenderingContext c, int ix, int iy, InlineTextBox inline, LineMetrics lm) {
         String text = inline.getSubstring();
         Graphics2D g = (Graphics2D) c.getGraphics();
@@ -113,11 +90,6 @@ public class InlineRendering {
         g.setFont(oldfont);
     }
 
-    /**
-     * @param c      PARAM
-     * @param line   PARAM
-     * @param inline PARAM
-     */
     public static void paintBackground(RenderingContext c, LineBox line, InlineBox inline) {
         if (inline.getInlineElement() != null) {
             inline.getInlineElement().paintBackground(c,
@@ -130,9 +102,6 @@ public class InlineRendering {
     /**
      * Paint all of the inlines in this box. It recurses through each line, and
      * then each inline in each line, and paints them individually.
-     *
-     * @param c   PARAM
-     * @param box PARAM
      */
     static void paintInlineContext(RenderingContext c, Box box) {
         c.translate(box.x, box.y);
@@ -148,9 +117,6 @@ public class InlineRendering {
 
     /**
      * paint all of the inlines on the specified line
-     *
-     * @param c    PARAM
-     * @param line PARAM
      */
     public static void paintLine(RenderingContext c, LineBox line) {
         //Uu.p("painting line: " + line);
@@ -162,20 +128,10 @@ public class InlineRendering {
         int lx = line.x;
         int ly = line.y + line.getBaseline();
 
-        LinkedList pushedStyles = null;
-
         // for each inline box
         int padX = 0;
         for (int j = 0; j < line.getChildCount(); j++) {
             Box child = line.getChild(j);
-            //TODO: there shouldn't be absolute and fixed children here. CHECK!
-            /*if (child.getStyle().isAbsolute() || child.getStyle().isFixed()) {
-                LinkedList unpropagated = (LinkedList) decorations.clone();
-                decorations.clear();
-                paintAbsolute(c, child);
-                decorations.addAll(unpropagated);
-                continue;
-            }*/
 
             InlineBox box = (InlineBox) child;
             padX = 0;
@@ -215,13 +171,6 @@ public class InlineRendering {
      * line box, not relative to the origin of the line. They *are* drawn
      * horizontally (Xx) relative to the origin of the containing line box
      * though
-     *
-     * @param c    PARAM
-     * @param ib   PARAM
-     * @param lx   PARAM
-     * @param ly   PARAM
-     * @param line PARAM
-     * @param padX
      */
     static int paintInline(RenderingContext c, InlineBox ib, int lx, int ly, LineBox line, int padX) {
         if (ib.pushstyles > 0)
@@ -287,30 +236,11 @@ public class InlineRendering {
         return padX;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c      PARAM
-     * @param inline PARAM
-     * @param lx     PARAM
-     * @param ly     PARAM
-     */
     static void debugInlines(RenderingContext c, InlineBox inline, int lx, int ly) {
         if (c.debugDrawInlineBoxes()) {
             GraphicsUtil.draw(c.getGraphics(), new Rectangle(lx + inline.x + 1, ly + inline.y + 1 - inline.height,
                     inline.getWidth() - 2, inline.height - 2), Color.green);
         }
-    }
-
-
-    /**
-     * Description of the Method
-     *
-     * @param c      PARAM
-     * @param inline PARAM
-     */
-    static void paintAbsolute(RenderingContext c, Box inline) {
-        BoxRendering.paint(c, inline);
     }
 }
 
