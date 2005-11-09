@@ -316,13 +316,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         if (c.shouldStop()) {//interrupted layout
             return;
         }
-
-        XRLog.layout(Level.FINEST, "is a fixed child: " + root.isChildrenExceedBounds());
-        
 // if there is a fixed child then we need to set opaque to false
 // so that the entire viewport will be repainted. this is slower
 // but that's the hit you get from using fixed layout
-        if (root.isChildrenExceedBounds()) {
+        if (root.getLayer().containsFixedContent()) {
             super.setOpaque(false);
         } else {
             super.setOpaque(true);

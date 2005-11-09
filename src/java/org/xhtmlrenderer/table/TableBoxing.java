@@ -63,12 +63,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
-
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class TableBoxing {
 
 
@@ -83,13 +77,6 @@ public class TableBoxing {
         return outerBox;
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c       PARAM
-     * @param content PARAM
-     * @return Returns
-     */
     public static Box layout(LayoutContext c, BlockBox outerBox, Content content) {
         boolean set_bfc = false;
 
@@ -515,14 +502,6 @@ public class TableBoxing {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c       PARAM
-     * @param cell    PARAM
-     * @param content PARAM
-     * @return Returns
-     */
     private static CellBox layoutCell(LayoutContext c, CellBox cell, Content content, boolean fixed, TableBox table, int col) {
         //OK, first set up the current style. All depends on this...
         CascadedStyle pushed = content.getStyle();
@@ -531,7 +510,7 @@ public class TableBoxing {
         }
 
         if (c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
-            cell.setChildrenExceedBounds(true);
+            c.getRootLayer().setFixedBackground(true);
         }
 
         // a cell defines a new bfc
@@ -634,6 +613,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.45  2005/11/09 14:12:37  peterbrant
+   Adapt to new way of indicating we need to do slow repaints
+
    Revision 1.44  2005/11/08 14:59:34  tobega
    Fix from Eric Neuhauser
 
