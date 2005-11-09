@@ -68,12 +68,17 @@ public class BlockFormattingContext {
         return persistentBFC.getFloatManager();
     }
     
-    public int getLeftFloatDistance(CssContext cssCtx, LineBox line) {
-        return getFloatManager().getLeftFloatDistance(cssCtx, this, line);
+    public int getLeftFloatDistance(CssContext cssCtx, LineBox line, int containingBlockWidth) {
+        return getFloatManager().getLeftFloatDistance(cssCtx, this, line, containingBlockWidth);
     }
     
-    public int getRightFloatDistance(CssContext cssCtx, LineBox line) {
-        return getFloatManager().getRightFloatDistance(cssCtx, this, line);
+    public int getRightFloatDistance(CssContext cssCtx, LineBox line, int containingBlockWidth) {
+        return getFloatManager().getRightFloatDistance(cssCtx, this, line, containingBlockWidth);
+    }
+    
+    public int getFloatDistance(CssContext cssCtx, LineBox line, int containingBlockWidth) {
+        return getLeftFloatDistance(cssCtx, line, containingBlockWidth) +
+                    getRightFloatDistance(cssCtx, line, containingBlockWidth);
     }
     
     public void floatBox(LayoutContext c, FloatedBlockBox floated) {

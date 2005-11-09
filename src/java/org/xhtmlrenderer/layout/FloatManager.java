@@ -252,55 +252,57 @@ public class FloatManager {
         }
     }
 
-    private void applyLineWidthHeightHack(Box line, Rectangle bounds) {
+    private void applyLineHeightHack(Box line, Rectangle bounds) {
         // this is a hack to deal with lines w/o width or height. is this valid?
         // possibly, since the line doesn't know how long it should be until it's already
         // done float adjustments
-        if (line.contentWidth == 0) {
-            bounds.width = 10;
-        }
         if (line.height == 0) {
             bounds.height = 10;
         }
     }
 
-    public int getLeftFloatDistance(CssContext cssCtx, BlockFormattingContext bfc, LineBox line) {
-        return getFloatDistance(cssCtx, bfc, line, leftFloats, LEFT);
+    public int getLeftFloatDistance(CssContext cssCtx, BlockFormattingContext bfc, 
+            LineBox line, int containingBlockContentWidth) {
+        return getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, leftFloats, LEFT);
     }
 
-    public int getRightFloatDistance(CssContext cssCtx, BlockFormattingContext bfc, LineBox line) {
-        return getFloatDistance(cssCtx, bfc, line, rightFloats, RIGHT);
+    public int getRightFloatDistance(CssContext cssCtx, BlockFormattingContext bfc, 
+            LineBox line, int containingBlockContentWidth) {
+        return getFloatDistance(cssCtx, bfc, line, containingBlockContentWidth, rightFloats, RIGHT);
     }
 
     private int getFloatDistance(CssContext cssCtx, BlockFormattingContext bfc,
-                                 LineBox line, List floatsList, int direction) {
+                                 LineBox line, int containingBlockContentWidth,
+                                 List floatsList, int direction) {
         if (floatsList.size() == 0) {
             return 0;
         }
 
-        int xoff = 0;
-
         Point offset = bfc.getOffset();
         Rectangle lineBounds = line.getBounds(cssCtx, -offset.x, -offset.y);
+        lineBounds.width = containingBlockContentWidth;
+        
+        int farthestOver = direction == LEFT ? lineBounds.x : lineBounds.x + lineBounds.width;
 
-        applyLineWidthHeightHack(line, lineBounds);
+        applyLineHeightHack(line, lineBounds);
 
         for (int i = 0; i < floatsList.size(); i++) {
             BoxOffset floater = (BoxOffset) floatsList.get(i);
             Rectangle fr = floater.getBox().getBounds(cssCtx, -floater.getX(), -floater.getY());
             if (lineBounds.intersects(fr)) {
-                int extraWidth = 0;
-                if (direction == LEFT) {
-                    extraWidth = fr.x + fr.width - xoff;
-                } else {
-                    extraWidth = (bfc.getWidth() - fr.x) - xoff;
+                if (direction == LEFT && fr.x + fr.width > farthestOver) {
+                    farthestOver = fr.x + fr.width;
+                } else if (direction == RIGHT && fr.x < farthestOver) {
+                    farthestOver = fr.x;
                 }
-                lineBounds.translate(direction == LEFT ? extraWidth : -extraWidth, 0);
-                if (extraWidth > 0) xoff += extraWidth;
             }
         }
-
-        return xoff;
+        
+        if (direction == LEFT) {
+            return farthestOver - lineBounds.x;
+        } else {
+            return lineBounds.x + lineBounds.width - farthestOver;
+        }
     }
 
     public void setMaster(Box owner) {
