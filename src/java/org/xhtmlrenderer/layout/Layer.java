@@ -41,11 +41,6 @@ public class Layer {
 
     private boolean fixedBackground;
     
-    public Layer(Box master, boolean pseudoLayer) {
-        this(null, master);
-        setStackingContext(false);
-    }
-    
     public static void paintAsLayer(RenderingContext c, Box master, int originX, int originY) {
         Layer layer = new Layer(master);
         layer.setStackingContext(false);
