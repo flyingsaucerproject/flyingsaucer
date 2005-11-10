@@ -314,7 +314,6 @@ public class LayoutContext implements CssContext, PageContext {
 
     public void translate(int x, int y) {
         bfc.translate(x, y);
-        layer.translate(x, y);
         xoff += x;
         yoff += y;
     }
