@@ -19,4 +19,8 @@ public class ViewportBox extends BlockBox {
     public int getHeight() {
         return viewport.height;
     }
+    
+    public int getContentWidth() {
+        return viewport.height;
+    }
 }

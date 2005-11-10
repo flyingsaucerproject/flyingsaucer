@@ -506,23 +506,42 @@ public abstract class Box {
         // getContainingBlock().getWidth() and getContainingBlock().getHeight() is 
         // wrong / use padding box
         
+        boolean usePaddingBox = false;
+        Rectangle paddingBox = null;
+        
+        int width = getContainingBlock().getContentWidth();
+        int height = getContainingBlock().getHeight();
+        
+        if (getStyle().isAbsolute() && getContainingBlock().isStyled() &&
+                getContainingBlock().getStyle().isAbsolute()) {
+            usePaddingBox = true;
+            paddingBox = getContainingBlock().getPaddingEdge(0, 0, cssCtx);
+            width = paddingBox.width;
+            height = paddingBox.height;
+        }
+        
         if (! style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
             this.x += style.getFloatPropertyProportionalWidth(
-                    CSSName.LEFT, getContainingBlock().getWidth(), cssCtx);
+                    CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
         } else if (! style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-            this.x += getContainingBlock().getWidth() - 
+            this.x += width - 
                 style.getFloatPropertyProportionalWidth(
-                    CSSName.RIGHT, getContainingBlock().getWidth(), cssCtx) - getWidth();
+                    CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth();
         }
         
         if (! style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
             this.y += style.getFloatPropertyProportionalHeight(
                     CSSName.TOP, getContainingBlock().getHeight(), cssCtx);
         } else if (! style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-            this.y += getContainingBlock().getHeight() -
+            this.y += height -
                 style.getFloatPropertyProportionalWidth(
                     CSSName.BOTTOM, getContainingBlock().getHeight(), cssCtx) - getHeight();
-        }        
+        }
+        
+        if (usePaddingBox) {
+            this.x += paddingBox.x;
+            this.y += paddingBox.y;
+        }
     }
     
     public void setAbsY(int absY) {
@@ -540,12 +559,23 @@ public abstract class Box {
     public int getAbsX() {
         return absX;
     }
+    
+    public boolean isReplaced() {
+        return component != null;
+    }
+    
+    public boolean isStyled() {
+        return style != null;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.76  2005/11/10 01:55:16  peterbrant
+ * Further progress on layer work
+ *
  * Revision 1.75  2005/11/09 18:41:28  peterbrant
  * Fixes to vertical margin collapsing in the presence of floats / Paint floats as
  * layers

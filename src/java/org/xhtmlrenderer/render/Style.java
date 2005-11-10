@@ -158,7 +158,7 @@ public class Style {
         IdentValue position = calculatedStyle.getIdent(CSSName.POSITION);
         
         return position == IdentValue.ABSOLUTE || position == IdentValue.RELATIVE ||
-        position == IdentValue.FIXED;
+            position == IdentValue.FIXED;
     }
     
     public boolean isHorizontalBackgroundRepeat() {

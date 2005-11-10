@@ -23,6 +23,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.FontUtil;
+import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.inline.TextAlignJustify;
 import org.xhtmlrenderer.layout.inline.VerticalAlign;
 import org.xhtmlrenderer.util.GraphicsUtil;
@@ -189,7 +190,10 @@ public class InlineRendering {
                     VerticalAlign.getBaselineOffset(c, line, ib, c.getTextRenderer(), c.getGraphics(), c.getBlockFormattingContext()) -
                     ib.height));
             c.translate(ib.x, ib.y);
-            BoxRendering.paint(c, ((InlineBlockBox) ib).sub_block);
+            Point before = c.getOriginOffset();
+            c.translate(-before.x, -before.y);
+            Layer.paintAsLayer(c, ((InlineBlockBox)ib).sub_block, before.x, before.y);
+            c.translate(before.x, before.y);
             c.translate(-ib.x, -ib.y);
             c.translate(-line.x,
                     -(line.y +

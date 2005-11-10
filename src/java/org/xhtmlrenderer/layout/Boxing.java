@@ -142,7 +142,6 @@ public class Boxing {
         block.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth()));
 
         if (c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
-            block.setChildrenExceedBounds(true);
             c.getRootLayer().setFixedBackground(true);
         }
         
@@ -340,6 +339,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.58  2005/11/10 01:55:18  peterbrant
+ * Further progress on layer work
+ *
  * Revision 1.57  2005/11/05 23:19:08  peterbrant
  * Always add fixed layers to root layer / If element has fixed background just
  * note this on the root layer instead of property in Box

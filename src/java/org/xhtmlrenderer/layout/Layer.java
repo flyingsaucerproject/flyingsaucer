@@ -49,10 +49,10 @@ public class Layer {
         setStackingContext(false);
     }
     
-    public static Layer makePseudoLayer(Box master) {
-        Layer result = new Layer(master);
-        result.setStackingContext(false);
-        return result;
+    public static void paintAsLayer(RenderingContext c, Box master, int originX, int originY) {
+        Layer layer = new Layer(master);
+        layer.setStackingContext(false);
+        layer.paint(c, originX, originY, true);
     }
 
     public Layer(Box master) {
@@ -108,16 +108,24 @@ public class Layer {
     }
 
     public void addFloat(FloatedBlockBox floater) {
-        if (floats == null) {
-            floats = new ArrayList();
+        if (isStackingContext()) {
+            if (floats == null) {
+                floats = new ArrayList();
+            }
+    
+            floats.add(floater);
+        } else {
+            getParent().addFloat(floater);
         }
-
-        floats.add(floater);
     }
 
     public void removeFloat(FloatedBlockBox floater) {
-        if (floats != null) {
-            floats.remove(floater);
+        if (isStackingContext()) {
+            if (floats != null) {
+                floats.remove(floater);
+            }
+        } else {
+            getParent().removeFloat(floater);
         }
     }
 
@@ -125,7 +133,7 @@ public class Layer {
         if (floats != null) {
             for (int i = floats.size() - 1; i >= 0; i--) {
                 FloatedBlockBox floater = (FloatedBlockBox) floats.get(i);
-                makePseudoLayer(floater).paint(c, floater.getAbsX(), floater.getAbsY());
+                paintAsLayer(c, floater, floater.getAbsX(), floater.getAbsY());
             }
         }
     }
@@ -133,12 +141,27 @@ public class Layer {
     private void paintLayers(RenderingContext c, List layers) {
         for (int i = 0; i < layers.size(); i++) {
             Layer layer = (Layer) layers.get(i);
-            layer.paint(c, 0, 0);
+            layer.paint(c, getMaster().getAbsX(), getMaster().getAbsY());
         }
     }
     
+    private List collectZIndexAutoLayers() {
+        List result = new ArrayList();
+        
+        List children = getChildren();
+        for (int i = 0; i < children.size(); i++) {
+            Layer child = (Layer)children.get(i);
+            if (! child.isStackingContext()) {
+                result.add(child);
+                result.addAll(child.collectZIndexAutoLayers());
+            }
+        }
+        
+        return result;
+    }
+    
     private static final int POSITIVE = 1;
-    private static final int AUTO_AND_ZERO = 2;
+    private static final int ZERO = 2;
     private static final int NEGATIVE = 3;
     
     private List getSortedLayers(int which) {
@@ -146,14 +169,16 @@ public class Layer {
         
         List children = getChildren();
         for (int i = 0; i < children.size(); i++) {
-            Layer child = (Layer)children.get(i);
+            Layer target = (Layer)children.get(i);
 
-            if (which == NEGATIVE && child.isStackingContext() && child.getZIndex() < 0) {
-                result.add(child);
-            } else if (which == POSITIVE && child.isStackingContext() && child.getZIndex() > 0) {
-                result.add(child);
-            } else if (which == AUTO_AND_ZERO) {
-                result.add(child);
+            if (target.isStackingContext()) {
+                if (which == NEGATIVE && target.getZIndex() < 0) {
+                    result.add(target);
+                } else if (which == POSITIVE && target.getZIndex() > 0) {
+                    result.add(target);
+                } else if (which == ZERO) {
+                    result.add(target);
+                }
             }
         }
         
@@ -190,39 +215,60 @@ public class Layer {
             c.translate(before.x - after.x, before.y - after.y);
         }
     }
-
+    
     public void paint(RenderingContext c, int originX, int originY) {
+        paint(c, originX, originY, isRootLayer());
+    }
+
+    private void paint(RenderingContext c, int originX, int originY, 
+            boolean updateAbsoluteLocations) {
         if (getMaster().getStyle().isFixed()) {
             positionFixedLayer(c);
         }
 
-        updateAbsoluteLocations(originX, originY);
+        if (updateAbsoluteLocations || getMaster().getStyle().isFixed()) {
+            updateAllAbsoluteLocations(originX, originY, true);
+        }
 
-        List blocks = new ArrayList();
-        List lines = new ArrayList();
-
-        collectBoxes(c, getMaster(), blocks, lines);
-
-        // TODO root layer needs to be handled correctly
-        paintLayerBackgroundAndBorder(c);
-        
-        paintLayers(c, getSortedLayers(NEGATIVE));
-
-        paintBackgroundsAndBorders(c, blocks);
-        paintFloats(c);
-        paintInlineContent(c, lines);
-        //without great thought, just doing this as close to what it was as possible
-        paintListStyles(c, blocks);
-
-        // TODO z-index: 0 layers should be painted atomically
-        paintLayers(c, getSortedLayers(AUTO_AND_ZERO));
-        paintLayers(c, getSortedLayers(POSITIVE));
+        if (getMaster().isReplaced()) {
+            paintReplacedElement(c, getMaster());
+        } else {
+            List blocks = new ArrayList();
+            List lines = new ArrayList();
+    
+            collectBoxes(c, getMaster(), blocks, lines);
+    
+            // TODO root layer needs to be handled correctly (paint over entire canvas)
+            paintLayerBackgroundAndBorder(c);
+            
+            paintLayers(c, getSortedLayers(NEGATIVE));
+    
+            paintBackgroundsAndBorders(c, blocks);
+            paintFloats(c);
+            paintInlineContent(c, lines);
+            paintListStyles(c, blocks);
+            paintReplacedElements(c, blocks);
+    
+            paintLayers(c, collectZIndexAutoLayers());
+            // TODO z-index: 0 layers should be painted atomically
+            paintLayers(c, getSortedLayers(ZERO));
+            paintLayers(c, getSortedLayers(POSITIVE));
+        }
     }
 
     private void paintListStyles(RenderingContext c, List blocks) {
         for (Iterator i = blocks.iterator(); i.hasNext();) {
             BlockBox box = (BlockBox) i.next();
             box.paintListStyles(c);
+        }
+    }
+    
+    private void paintReplacedElements(RenderingContext c, List blocks) {
+        for (Iterator i = blocks.iterator(); i.hasNext();) {
+            BlockBox box = (BlockBox) i.next();
+            if (box.isReplaced()) {
+                paintReplacedElement(c, box);
+            }
         }
     }
 
@@ -246,6 +292,37 @@ public class Layer {
             BlockBox box = (BlockBox) getMaster();
             box.paintBackground(c);
             box.paintBorder(c);
+        }
+    }
+    
+    private void paintReplacedElement(RenderingContext c, Box replaced) {
+        replaced.component.setLocation(replaced.getAbsX(), (int)replaced.getAbsY());
+        if (! c.isInteractive()) {
+            replaced.component.paint(c.getGraphics());
+        }
+    }
+    
+    private boolean isRootLayer() {
+        return getParent() == null && isStackingContext();
+    }
+    
+    private void updateAllAbsoluteLocations(int originX, int originY, boolean updateSelf) {
+        if (updateSelf) {
+            updateAbsoluteLocations(originX, originY);
+        }
+        
+        List children = getChildren();
+        for (int i = 0; i < children.size(); i++) {
+            Layer child = (Layer)children.get(i);
+            
+            if (child.getMaster().getStyle().isFixed()) {
+                continue;
+            } else if (child.getMaster().getStyle().isAbsolute()) {
+                child.updateAllAbsoluteLocations(
+                        getMaster().getAbsX(), getMaster().getAbsY(), true);
+            } else if (child.getMaster().getStyle().isRelative()) {
+                child.updateAllAbsoluteLocations(0, 0, false);
+            }
         }
     }
 
