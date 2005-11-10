@@ -37,9 +37,6 @@ public class Layer {
     private List children;
     private Box master;
 
-    private int x = 0;
-    private int y = 0;
-
     private List floats;
 
     private boolean fixedBackground;
@@ -92,19 +89,6 @@ public class Layer {
             children = new ArrayList();
         }
         children.add(layer);
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void translate(int x, int y) {
-        this.x -= x;
-        this.y -= y;
     }
 
     public void addFloat(FloatedBlockBox floater) {
