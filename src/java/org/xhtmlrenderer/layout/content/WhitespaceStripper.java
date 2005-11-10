@@ -124,7 +124,7 @@ public class WhitespaceStripper {
                 continue;
             }
             //Here we have some other object, just add it with preceding styles
-            if (!(o instanceof FloatedBlockContent)) {
+            if (! canCollapseThrough(o)) {
                 allWhitespace = false;
             }
             //there may be relevant StylePushes pending, e.g. if this is content of AnonymousBlock
@@ -139,7 +139,7 @@ public class WhitespaceStripper {
             pendingStylePushes.clear();
             stripped.add(o);
             
-            if (!(o instanceof FloatedBlockContent)) {
+            if (! canCollapseThrough(o)) {
                 collapse = false;//no collapsing of the next one
             }
         }
@@ -160,6 +160,10 @@ public class WhitespaceStripper {
             stripTextContent(stripped);
         }
         return stripped;
+    }
+    
+    private static boolean canCollapseThrough(Object obj) {
+        return obj instanceof FloatedBlockContent || obj instanceof AbsolutelyPositionedContent;
     }
 
     private static void stripTextContent(LinkedList stripped) {
