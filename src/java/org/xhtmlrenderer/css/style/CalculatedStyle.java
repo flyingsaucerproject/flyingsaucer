@@ -436,12 +436,19 @@ public class CalculatedStyle {
         // Start assuming our computed value is the same as the specified value
         RGBColor rgb = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_RGBCOLOR ? value.getRGBColorValue() : null);
         String s = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_STRING ? value.getStringValue() : null);
+        String cssText = value.getCssText();
+        
+        String converted = Idents.convertIdent(cssName, value.getCssText());
+        if (! converted.equals(value.getCssText())) {
+            cssText = converted;
+            s = converted;
+        }
 
         // derive the value, will also handle "inherit"
         FSDerivedValue dval = DerivedValueFactory.newDerivedValue(this,
                 cssName,
                 value.getPrimitiveType(),
-                value.getCssText(),
+                cssText,
                 s,
                 rgb);
         return dval;
@@ -563,6 +570,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.54  2005/11/10 22:15:41  peterbrant
+ * Fix (hopefully) exception on identifiers which are converted by the CSS layer (e.g. thick becomes 3px)
+ *
  * Revision 1.53  2005/11/08 22:53:44  tobega
  * added getLineHeight method to CalculatedStyle and hacked in some list-item support
  *

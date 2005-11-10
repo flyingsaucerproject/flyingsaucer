@@ -35,10 +35,6 @@ public abstract class DerivedValue implements FSDerivedValue {
         this._cssSacUnitType = cssSACUnitType;
 
         String orgText = cssText;
-        String converted = Idents.convertIdent(name, cssText);
-        if (!converted.equals(cssText)) {
-            cssText = converted;
-        }
         if ( cssText == null ) {
             throw new XRRuntimeException(
                     "CSSValue for '" + name + "' is null after " +
