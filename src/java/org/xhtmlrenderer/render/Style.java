@@ -169,5 +169,14 @@ public class Style {
     public boolean isVerticalBackgroundRepeat() {
         IdentValue value = calculatedStyle.getIdent(CSSName.BACKGROUND_REPEAT);
         return value == IdentValue.REPEAT_Y || value == IdentValue.REPEAT;
-    }    
+    }
+    
+    public boolean isTopAuto() {
+        return calculatedStyle.isIdent(CSSName.TOP, IdentValue.AUTO);
+        
+    }
+    
+    public boolean isBottomAuto() {
+        return calculatedStyle.isIdent(CSSName.BOTTOM, IdentValue.AUTO);   
+    }
 }

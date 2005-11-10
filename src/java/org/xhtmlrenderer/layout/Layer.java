@@ -268,7 +268,7 @@ public class Layer {
         fixed.setAbsY(0);
 
         fixed.setContainingBlock(new ViewportBox(rect));
-        fixed.positionPositionedBox(c);
+        fixed.positionPositioned(c);
     }
 
     private void paintLayerBackgroundAndBorder(RenderingContext c) {
@@ -320,6 +320,11 @@ public class Layer {
     private void updateAbsoluteLocationsHelper(Box box, int x, int y) {
         box.setAbsX(box.x + x);
         box.setAbsY(box.y + y);
+        
+        if (box.getStyle().isAbsolute() && box.getStyle().isTopAuto() &&
+                box.getStyle().isBottomAuto()) {
+            box.alignToStaticEquivalent();
+        }
 
         int nextX = (int) box.getAbsX() + box.tx;
         int nextY = (int) box.getAbsY() + box.ty;
@@ -340,7 +345,7 @@ public class Layer {
         for (Iterator i = getChildren().iterator(); i.hasNext();) {
             Layer child = (Layer) i.next();
 
-            child.getMaster().positionPositionedBox(cssCtx);
+            child.getMaster().positionPositioned(cssCtx);
         }
     }
 

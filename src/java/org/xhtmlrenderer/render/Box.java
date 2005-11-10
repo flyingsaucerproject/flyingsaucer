@@ -125,7 +125,7 @@ public abstract class Box {
 
     private Style style;
     private Box containingBlock;
-    private Box staticParent;
+    private Box staticEquivalent;
 
     public Box() {
     }
@@ -483,28 +483,29 @@ public abstract class Box {
         this.layer = layer;
     }
 
-    public Box getStaticParent() {
-        return staticParent;
+    public Box getStaticEquivalent() {
+        return staticEquivalent;
     }
 
-    public void setStaticParent(Box staticParent) {
-        this.staticParent = staticParent;
+    public void setStaticEquivalent(Box staticEquivalent) {
+        this.staticEquivalent = staticEquivalent;
     }
     
     public int getContentWidth() {
         return contentWidth;
     }
     
+    public void alignToStaticEquivalent() {
+        this.y = staticEquivalent.getAbsY() - getAbsY();
+        setAbsY(staticEquivalent.getAbsY());
+    }
+    
     // Common code for placing absolute and relative boxes in the right place 
     // Is the best place for it?
-    // TODO If absolute and absolute containing block is block-level, use padding box
     // TODO Finish this!
     // TODO Handle top: auto, bottom: auto for absolute blocks
-    public void positionPositionedBox(CssContext cssCtx) {
+    public void positionPositioned(CssContext cssCtx) {
         CalculatedStyle style = getStyle().getCalculatedStyle();
-        
-        // getContainingBlock().getWidth() and getContainingBlock().getHeight() is 
-        // wrong / use padding box
         
         boolean usePaddingBox = false;
         Rectangle paddingBox = null;
@@ -573,6 +574,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.77  2005/11/10 18:27:28  peterbrant
+ * Position absolute box correctly when top: auto and bottom: auto.
+ *
  * Revision 1.76  2005/11/10 01:55:16  peterbrant
  * Further progress on layer work
  *

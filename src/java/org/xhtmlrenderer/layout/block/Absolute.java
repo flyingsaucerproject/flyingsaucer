@@ -36,7 +36,7 @@ public class Absolute {
         c.setExtents(new Rectangle(oe));
         Box box = Boxing.layout(c, content);
         box.setContainingBlock(c.getLayer().getMaster());
-        box.setStaticParent(currentLine);
+        box.setStaticEquivalent(currentLine);
         
         c.setExtents(oe);
     }
