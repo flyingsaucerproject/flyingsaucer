@@ -39,11 +39,11 @@ public class LineBox extends Box implements Renderable {
     /**
      * Description of the Field
      */
-    public int ascent;
+    public int inlineTop;
     /**
      * Description of the Field
      */
-    public int descent;
+    public int inlineBottom;
 
     public LineMetrics blockLineMetrics;
     public boolean textAligned = false;
@@ -94,11 +94,11 @@ public class LineBox extends Box implements Renderable {
      * @return The baseline value
      */
     public int getBaseline() {
-        int leading = height - ascent - descent;
+        int leading = height - inlineTop - inlineBottom;
         if (leading < 0) {
             XRLog.layout(Level.SEVERE, "negative leading in line box");
         }
-        return ascent + leading / 2;
+        return inlineTop + leading / 2;
     }
 
     public void moveToNextPage(PageContext c, Rectangle bounds) {
@@ -142,6 +142,9 @@ public class LineBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/11/11 16:45:29  tobega
+ * Fixed vertical align calculations to use line-height properly
+ *
  * Revision 1.28  2005/11/09 22:33:18  tobega
  * fixed handling of first-line-style
  *

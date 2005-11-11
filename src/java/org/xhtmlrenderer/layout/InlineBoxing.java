@@ -438,17 +438,16 @@ public class InlineBoxing {
      * @param new_inline PARAM
      */
     static void adjustLineHeight(LayoutContext c, LineBox curr_line, InlineBox new_inline) {
-        int lineHeight;
+        int lineHeight = new_inline.height;//assume height for empty InlineTextBox is 0
         int ascent;
         int descent;
         if (new_inline instanceof InlineTextBox && !((InlineTextBox) new_inline).getSubstring().equals("")) {
             // should be the metrics of the font, actually is the metrics of the text
             LineMetrics metrics = FontUtil.getLineMetrics(new_inline.getStyle().getFont(c), new_inline, c.getTextRenderer(), c.getGraphics());
-            lineHeight = (int) Math.round(new_inline.getStyle().getCalculatedStyle().getLineHeight(c));
+            //lineHeight = (int) Math.round(new_inline.getStyle().getCalculatedStyle().getLineHeight(c));
             ascent = (int) metrics.getAscent();
             descent = (int) metrics.getDescent();
         } else {
-            lineHeight = new_inline.height;//assume height for empty InlineTextBox is 0
             ascent = lineHeight;
             descent = 0;
         }
@@ -458,16 +457,19 @@ public class InlineBoxing {
         }
 
         int raised = VerticalAlign.getBaselineOffset(c, curr_line, new_inline, c.getTextRenderer(), c.getGraphics(), c.getBlockFormattingContext());
+        int halfLeading = (int) Math.round((lineHeight - (ascent + descent)) / 2.0);
+        int bottom = descent + halfLeading;
+        int top = ascent + halfLeading;
 
-        if (ascent + raised > curr_line.ascent) {
-            curr_line.ascent = ascent + raised;
+        if (top + raised > curr_line.inlineTop) {
+            curr_line.inlineTop = top + raised;
         }
-        if (descent - raised > curr_line.descent) {
-            curr_line.descent = descent - raised;
+        if (bottom - raised > curr_line.inlineBottom) {
+            curr_line.inlineBottom = bottom - raised;
         }
 
-        if (curr_line.height < curr_line.ascent + curr_line.descent) {
-            curr_line.height = curr_line.ascent + curr_line.descent;
+        if (curr_line.height < curr_line.inlineTop + curr_line.inlineBottom) {
+            curr_line.height = curr_line.inlineTop + curr_line.inlineBottom;
         }
     }
 
@@ -543,6 +545,7 @@ public class InlineBoxing {
             } else {
                 inline.setSubstring(start, end);
                 inline.whitespace = WhitespaceStripper.getWhitespace(c.getCurrentStyle());
+                inline.height = (int) inline.getStyle().getCalculatedStyle().getLineHeight(c);
                 //adjust the line height already here, to better take care of floats
                 adjustLineHeight(c, curr_line, inline);
                 int avail = max_width - taken - c.getBlockFormattingContext().getFloatDistance(c, curr_line, max_width);
@@ -570,7 +573,7 @@ public class InlineBoxing {
         inline.y = 0;
 
         inline.contentWidth = (int) FontUtil.getTextBounds(c, inline, c.getTextRenderer(), c.getGraphics()).getWidth();
-        inline.height = (int) FontUtil.getLineMetrics(inline.getStyle().getFont(c), inline, c.getTextRenderer(), c.getGraphics()).getHeight();
+        //inline.height = (int) FontUtil.getLineMetrics(inline.getStyle().getFont(c), inline, c.getTextRenderer(), c.getGraphics()).getHeight();
     }
 
 
@@ -640,6 +643,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.67  2005/11/11 16:45:29  tobega
+ * Fixed vertical align calculations to use line-height properly
+ *
  * Revision 1.66  2005/11/11 11:37:48  tobega
  * Take height and v-align of inlines into account before laying them out (to find interfering floats better)
  *

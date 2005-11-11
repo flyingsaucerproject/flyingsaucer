@@ -21,6 +21,7 @@ package org.xhtmlrenderer.layout.inline;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
@@ -29,6 +30,7 @@ import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineTextBox;
 import org.xhtmlrenderer.render.LineBox;
 
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.font.LineMetrics;
 
@@ -49,6 +51,7 @@ public class VerticalAlign {
      * @return The baselineOffset value
      */
     public static int getBaselineOffset(CssContext c, LineBox curr_line, InlineBox new_inline, TextRenderer tr, Graphics2D g2, BlockFormattingContext bfc) {
+        CalculatedStyle style = new_inline.getStyle().getCalculatedStyle();
         int lineHeight;
         int ascent;
         int descent;
@@ -56,57 +59,71 @@ public class VerticalAlign {
         //int xheight;
         int baselineOffset;
         if (new_inline instanceof InlineTextBox) {
-            // should be the metrics of the font, actually is the metrics of the text
-            LineMetrics metrics = FontUtil.getLineMetrics(new_inline.getStyle().getFont(c), new_inline, tr, g2);
-            lineHeight = (int) Math.round(new_inline.getStyle().getCalculatedStyle().getLineHeight(c));
+            Font font = c.getFont(style.getFont(c));
+            LineMetrics metrics = FontUtil.getLineMetrics(font, null, tr, g2);
+            lineHeight = (int) style.getLineHeight(c);
             ascent = (int) metrics.getAscent();
             descent = (int) metrics.getDescent();
-            leading = (int) metrics.getLeading();
-            //xheight = (int)(-metrics.getStrikethroughOffset()*2.0);
+            leading = lineHeight - (ascent + descent);
         } else {
             lineHeight = new_inline.height;
             ascent = lineHeight;
             descent = 0;
             leading = 0;
-            //xheight = lineHeight/2;
         }
-        LineMetrics blockLineMetrics = curr_line.blockLineMetrics;
+        return getBaselineOffset(style, c, tr, g2, ascent, descent, lineHeight, leading, curr_line, bfc);
+
+    }
+
+    private static int getBaselineOffset(CalculatedStyle style, CssContext c, TextRenderer tr, Graphics2D g2, int ascent, int descent, int lineHeight, int leading, LineBox curr_line, BlockFormattingContext bfc) {
+        int baselineOffset;
+        CalculatedStyle parentStyle = style.getParent();
+        Font parentFont = c.getFont(parentStyle.getFont(c));
+        LineMetrics parentLineMetrics = FontUtil.getLineMetrics(parentFont, null, tr, g2);
+        int parentLineHeight = (int) style.getLineHeight(c);
+        int parentAscent = (int) parentLineMetrics.getAscent();
+        int parentDescent = (int) parentLineMetrics.getDescent();
+        int parentLeading = lineHeight - (ascent + descent);
 
         //Assumption: our baseline is aligned with parent baseline
-        IdentValue vertical_align = new_inline.getStyle().getCalculatedStyle().getIdent(CSSName.VERTICAL_ALIGN);
+        //Logic: the baselineOffset is calculated as up being positive, down negative
+        IdentValue vertical_align = style.getIdent(CSSName.VERTICAL_ALIGN);
         if (vertical_align == IdentValue.BASELINE) {
             baselineOffset = 0;
         } else if (vertical_align == IdentValue.SUPER) {
             // works okay i think
-            baselineOffset = (int) Math.round(-blockLineMetrics.getStrikethroughOffset() * 1.5);//up is negative in Java!
+            //strikeThroughOffset has negative values for up.
+            baselineOffset = (int) Math.round(-parentLineMetrics.getStrikethroughOffset() * 1.5);
             //XRLog.render("baseline offset for super "+baselineOffset);
         } else if (vertical_align == IdentValue.SUB) {
             // works okay i think
-            baselineOffset = (int) blockLineMetrics.getStrikethroughOffset();//up is negative in Java!
+            //strikeThroughOffset has negative values for up.
+            baselineOffset = (int) parentLineMetrics.getStrikethroughOffset();
             //XRLog.render("baseline offset for sub "+baselineOffset);
         } else if (vertical_align == IdentValue.TEXT_TOP) {
-            // the top of this text is equal to the top of the parent's text
-            // so we take the parent's height above the baseline and subtract our
-            // height above the baseline
-            baselineOffset = (int) (blockLineMetrics.getAscent() - ascent);
-            //XRLog.render("baseline offset for text-top"+baselineOffset);
+            int top = ascent + leading / 2;
+            int parentTop = parentAscent + parentLeading / 2;
+            baselineOffset = parentTop - top;
         } else if (vertical_align == IdentValue.TEXT_BOTTOM) {
-            baselineOffset = -(int) (blockLineMetrics.getDescent() - descent);
-            //XRLog.render("baseline offset for text-bottom"+baselineOffset);
+            int bottom = descent + leading / 2;
+            int parentBottom = parentDescent + parentLeading / 2;
+            baselineOffset = -(parentBottom - bottom);
         } else if (vertical_align == IdentValue.MIDDLE) {
-            // just like firefox!
-            int halfxheight = -(int) (blockLineMetrics.getStrikethroughOffset());
-            int boxmiddle = (int) Math.round(new_inline.height / 2.0);
+            // just like firefox! Works because the middle of the box must always be the same as the middle of the text!
+            int halfxheight = -(int) (parentLineMetrics.getStrikethroughOffset());
+            int boxmiddle = (int) Math.round(lineHeight / 2.0);
             int boxbase = (int) Math.round(ascent + leading / 2.0);
             int boxalign = boxbase - boxmiddle;
             baselineOffset = halfxheight - boxalign;
         } else if (vertical_align == IdentValue.TOP) {
             // like firefox, so I suppose it's correct...
+            //TODO: this is basically correct for simple cases, but we really need to check the whole subtree
             baselineOffset = curr_line.getBaseline() - lineHeight;
         } else if (vertical_align == IdentValue.BOTTOM) {
+            //TODO: this is basically correct for simple cases, but we really need to check the whole subtree
             baselineOffset = descent - (curr_line.height - curr_line.getBaseline());
         } else {
-            baselineOffset = (int) new_inline.getStyle().getCalculatedStyle().getFloatPropertyProportionalHeight(CSSName.VERTICAL_ALIGN, bfc.getHeight(), c);
+            baselineOffset = (int) style.getFloatPropertyProportionalHeight(CSSName.VERTICAL_ALIGN, bfc.getHeight(), c);
         }
         return baselineOffset;
     }
