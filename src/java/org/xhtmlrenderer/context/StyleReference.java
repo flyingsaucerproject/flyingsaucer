@@ -186,6 +186,10 @@ public class StyleReference {
 
         }
     }
+    
+    public void flushAllStyleSheets() {
+        _stylesheetFactory.flushCachedStylesheets();
+    }
 
     /**
      * Gets StylesheetInfos for all stylesheets and inline styles associated
@@ -252,6 +256,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2005/11/11 01:33:15  peterbrant
+ * Add ability to clear all cached stylesheets
+ *
  * Revision 1.5  2005/10/27 00:08:51  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

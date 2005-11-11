@@ -239,6 +239,10 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
     public synchronized Object removeCachedStylesheet(Object key) {
         return _cache.remove(key);
     }
+    
+    public synchronized void flushCachedStylesheets() {
+        _cache.clear();
+    }
 
     /**
      * Returns a cached sheet by its key; loads and caches it if not in cache;
