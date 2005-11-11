@@ -198,6 +198,10 @@ public class Layer {
     public void paint(RenderingContext c, int originX, int originY) {
         paint(c, originX, originY, isRootLayer());
     }
+    
+    public Point calculateMaxOffset(int originX, int originY) {
+        return updateAllAbsoluteLocations(originX, originY, true);
+    }
 
     private void paint(RenderingContext c, int originX, int originY, 
             boolean updateAbsoluteLocations) {
@@ -285,9 +289,21 @@ public class Layer {
         return getParent() == null && isStackingContext();
     }
     
-    private void updateAllAbsoluteLocations(int originX, int originY, boolean updateSelf) {
+    private void moveIfGreater(Point result, Point test) {
+        if (test.x > result.x) {
+            result.x = test.x;
+        }
+        if (test.y > result.y) {
+            result.y = test.y;
+        }
+    }
+    
+    private Point updateAllAbsoluteLocations(int originX, int originY, boolean updateSelf) {
+        Point result = new Point(originX, originY);
+        
         if (updateSelf) {
-            updateAbsoluteLocations(originX, originY);
+            Point pt = updateAbsoluteLocations(originX, originY);
+            moveIfGreater(result, pt);
         }
         
         List children = getChildren();
@@ -297,24 +313,34 @@ public class Layer {
             if (child.getMaster().getStyle().isFixed()) {
                 continue;
             } else if (child.getMaster().getStyle().isAbsolute()) {
-                child.updateAllAbsoluteLocations(
+                Point pt = child.updateAllAbsoluteLocations(
                         getMaster().getAbsX(), getMaster().getAbsY(), true);
+                moveIfGreater(result, pt);
             } else if (child.getMaster().getStyle().isRelative()) {
-                child.updateAllAbsoluteLocations(0, 0, false);
+                Point pt = child.updateAllAbsoluteLocations(0, 0, false);
+                moveIfGreater(result, pt);
             }
         }
+        
+        return result;
     }
 
     // TODO Inline borders and padding can slide an inline box around at render
     // TODO block.renderIndex = c.getNewRenderIndex();
     // TODO Don't do this every time 
-    private void updateAbsoluteLocations(int originX, int originY) {
-        updateAbsoluteLocationsHelper(getMaster(), originX, originY);
+    private Point updateAbsoluteLocations(int originX, int originY) {
+        return updateAbsoluteLocationsHelper(getMaster(), originX, originY);
     }
 
-    private void updateAbsoluteLocationsHelper(Box box, int x, int y) {
+    private Point updateAbsoluteLocationsHelper(Box box, int x, int y) {
+        int maxX;
+        int maxY;
+        
         box.setAbsX(box.x + x);
         box.setAbsY(box.y + y);
+        
+        maxX = box.getAbsX() + box.getWidth();
+        maxY = box.getAbsY() + box.getHeight();
         
         if (box.getStyle().isAbsolute() && box.getStyle().isTopAuto() &&
                 box.getStyle().isBottomAuto()) {
@@ -331,9 +357,17 @@ public class Layer {
         if (!(box instanceof LineBox)) {
             for (int i = 0; i < box.getChildCount(); i++) {
                 Box child = (Box) box.getChild(i);
-                updateAbsoluteLocationsHelper(child, nextX, nextY);
+                Point offset = updateAbsoluteLocationsHelper(child, nextX, nextY);
+                if (offset.x > maxX) {
+                    maxX = offset.x;
+                }
+                if (offset.y > maxY) {
+                    maxY = offset.y;
+                }
             }
         }
+        
+        return new Point(maxX, maxY);
     }
 
     public void positionChildren(CssContext cssCtx) {
@@ -367,7 +401,7 @@ public class Layer {
         return children == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(children);
     }
 
-    protected void collectBoxes(RenderingContext c, Box container, List blockContent, List inlineContent) {
+    private void collectBoxes(RenderingContext c, Box container, List blockContent, List inlineContent) {
         if (container instanceof LineBox) {
             if (container.intersects(c, c.getGraphics().getClip())) {
                 inlineContent.add(container);

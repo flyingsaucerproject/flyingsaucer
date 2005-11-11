@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -78,7 +79,11 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         this.doc = doc;
 
         //have to do this first
-        getSharedContext().getCss().flushStyleSheets();
+        if (Configuration.isTrue("xr.cache.stylesheets", true)) {
+            getSharedContext().getCss().flushStyleSheets();
+        } else {
+            getSharedContext().getCss().flushAllStyleSheets();
+        }
         getSharedContext().setBaseURL(url);
         getSharedContext().setNamespaceHandler(nsh);
         getSharedContext().setMedia(pageInfo == null ? "screen" : "print");
@@ -324,10 +329,12 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         } else {
             super.setOpaque(true);
         }
-
+        
         XRLog.layout(Level.FINEST, "after layout: " + root);
-
-        intrinsic_size = new Dimension(getSharedContext().getMaxWidth(), root.height);
+        
+        Point maxOffset = root.getLayer().calculateMaxOffset(0, 0);
+        intrinsic_size = new Dimension(maxOffset.x, maxOffset.y);
+        
         //Uu.p("intrinsic size = " + intrinsic_size);
         if (intrinsic_size.width != this.getWidth()) {
             //Uu.p("intrisic and this widths don't match: " + this.getSize() + " "  + intrinsic_size);
@@ -342,6 +349,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         if (enclosingScrollPane != null) {
             if (intrinsic_size.height < enclosingScrollPane.getViewport().getHeight()) {
                 //Uu.p("int height is less than viewport height");
+                // XXX Not threadsafe
                 if (enclosingScrollPane.getViewport().getHeight() != this.getHeight()) {
                     this.setPreferredSize(new Dimension(getWidth(), enclosingScrollPane.getViewport().getHeight()));
                     this.revalidate();
