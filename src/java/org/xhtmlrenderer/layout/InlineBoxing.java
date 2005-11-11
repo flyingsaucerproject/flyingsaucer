@@ -85,11 +85,13 @@ public class InlineBoxing {
         InlineBox prev_align_inline = null;
         
         // prepare remaining width and first linebox
-        int remaining_width = bounds.width;
+        //int remaining_width = bounds.width;
+        int taken = 0;
 
+        /* do later
         if (!box.getStyle().isCleared()) {
             remaining_width -= c.getBlockFormattingContext().getFloatDistance(c, prev_line, bounds.width);
-        }
+        }*/
 
         LineBox curr_line = newLine(box, bounds, null, blockLineMetrics, c);
         List pushedOnFirstLine = null;
@@ -97,7 +99,8 @@ public class InlineBoxing {
         // account for text-indent
         CalculatedStyle parentStyle = c.getCurrentStyle();
         float indent = parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, bounds.width, c);
-        remaining_width -= (int) indent;
+        //remaining_width -= (int) indent;
+        taken += (int) indent;
         curr_line.x = curr_line.x + (int) indent;
 
         boolean isFirstLetter = true;
@@ -202,7 +205,8 @@ public class InlineBoxing {
                     prev_inline.rightPadding += rp;
 
                     pendingRightPadding -= rp;
-                    remaining_width -= rp;
+                    //remaining_width -= rp;
+                    taken += rp;
                 }
                 if (c.hasFirstLineStyles()) {
                     pushedOnFirstLine.remove(pushedOnFirstLine.size() - 1);
@@ -232,9 +236,12 @@ public class InlineBoxing {
                     break;
                 } else if (currentContent instanceof FloatedBlockContent) {
                     //Uu.p("calcinline: is floated block");
-                    FloatedBlockBox floater = FloatUtil.generateFloatedBlock(c, currentContent, remaining_width, curr_line, pendingFloats);
+                    FloatedBlockBox floater = FloatUtil.generateFloatedBlock(c, currentContent,
+                            /*remaining_width*/ bounds.width - taken - c.getBlockFormattingContext().getFloatDistance(c, prev_line, bounds.width),
+                            curr_line, pendingFloats);
                     if (!floater.isPending()) {
-                        remaining_width -= floater.getWidth();
+                        //remaining_width -= floater.getWidth();
+                        taken += floater.getWidth();
                     }
                     break;
                 }
@@ -256,7 +263,7 @@ public class InlineBoxing {
                 int fit = pendingRightPadding;//Note: this is not necessarily entirely correct
                 if (start == 0) fit += pendingLeftPadding;
                 start = trimLeadingSpace(c.getCurrentStyle(), prev_inline, currentContent, start);
-                new_inline = calculateInline(c, currentContent, remaining_width - fit, bounds.width,
+                new_inline = calculateInline(c, currentContent, /*remaining_width - fit*/ taken + fit, bounds.width,
                         prev_align_inline, isFirstLetter, box.firstLetterStyle,
                         curr_line, start, pendingBlockBox, pendingFloats);
 
@@ -265,15 +272,17 @@ public class InlineBoxing {
                 // if this inline needs to be on a new line
                 if (prev_align_inline != null && new_inline.break_before) {
                     // Uu.p("break before");
-                    remaining_width = bounds.width;
+                    //remaining_width = bounds.width;
+                    taken = 0;
                     saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine, pendingFloats);
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line, blockLineMetrics, c);
                     // skip adjusting for tabs if this box is cleared
-                    if (!box.getStyle().isCleared()) {
+                    //Do this later!
+                    /*if (!box.getStyle().isCleared()) {
                         remaining_width -= c.getBlockFormattingContext().getFloatDistance(c, curr_line, remaining_width);
-                    }
+                    }*/
                     
                     //have to discard it and recalculate, particularly if this was the first line
                     prev_align_inline.break_after = true;
@@ -303,29 +312,33 @@ public class InlineBoxing {
 
                 // calc new height of the line
                 // don't count floats and absolutes
-                if (!new_inline.getStyle().isFloated() && !new_inline.getStyle().isAbsolute()) {
+                //already done!
+                /*if (!new_inline.getStyle().isFloated() && !new_inline.getStyle().isAbsolute()) {
                     adjustLineHeight(c, curr_line, new_inline);
-                }
+                }*/
 
                 // calc new width of the line
                 curr_line.contentWidth += new_inline.getWidth();
                 // reduce the available width
-                remaining_width = remaining_width - new_inline.getWidth();
+                //remaining_width = remaining_width - new_inline.getWidth();
+                taken += new_inline.getWidth();
 
                 // if the last inline was at the end of a line, then go to next line
                 if (new_inline.break_after) {
                     // Uu.p("break after");
                     // then remaining_width = max_width
-                    remaining_width = bounds.width;
+                    //remaining_width = bounds.width;
+                    taken = 0;
                     // save the line
                     saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine, pendingFloats);
                     // increase bounds height to account for the new line
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
                     curr_line = newLine(box, bounds, prev_line, blockLineMetrics, c);
-                    if (!box.getStyle().isCleared()) {
+                    //do later!
+                    /*if (!box.getStyle().isCleared()) {
                         remaining_width -= c.getBlockFormattingContext().getFloatDistance(c, curr_line, remaining_width);
-                    }
+                    }*/
                 }
 
                 // set the inline to use for left alignment
@@ -424,7 +437,7 @@ public class InlineBoxing {
      * @param curr_line  PARAM
      * @param new_inline PARAM
      */
-    private static void adjustLineHeight(LayoutContext c, LineBox curr_line, InlineBox new_inline) {
+    static void adjustLineHeight(LayoutContext c, LineBox curr_line, InlineBox new_inline) {
         int lineHeight;
         int ascent;
         int descent;
@@ -461,7 +474,7 @@ public class InlineBoxing {
     /**
      * Get the longest inline possible.
      */
-    private static InlineBox calculateInline(LayoutContext c, Content content, int avail, int max_width,
+    private static InlineBox calculateInline(LayoutContext c, Content content, int taken, int max_width,
                                              InlineBox prev_align, boolean isFirstLetter, CascadedStyle firstLetterStyle,
                                              LineBox curr_line, int start, InlineBlockBox pendingBlockBox,
                                              List pendingFloats) {
@@ -469,7 +482,9 @@ public class InlineBoxing {
 
         // handle each case
         if (content instanceof InlineBlockContent) {
-            result = LineBreaker.generateReplacedInlineBox(c, content, avail, prev_align, curr_line, pendingBlockBox);
+            result = LineBreaker.generateReplacedInlineBox(c, content,
+                    taken,
+                    prev_align, curr_line, pendingBlockBox, max_width);
         } else {
 
             //OK, now we should have only TextContent left, fail fast if not
@@ -528,6 +543,10 @@ public class InlineBoxing {
             } else {
                 inline.setSubstring(start, end);
                 inline.whitespace = WhitespaceStripper.getWhitespace(c.getCurrentStyle());
+                //adjust the line height already here, to better take care of floats
+                adjustLineHeight(c, curr_line, inline);
+                int avail = max_width - taken - c.getBlockFormattingContext().getFloatDistance(c, curr_line, max_width);
+
                 Breaker.breakText(c, inline, prev_align, avail, inline.getStyle().getFont(c));
                 prepareBox(prev_align, inline, c);
             }
@@ -584,7 +603,16 @@ public class InlineBoxing {
         // set the y
         line_to_save.y = prev_line.y + prev_line.height;
 
-        if (line_to_save.height != 0) {//would like to discard it otherwise, but that loses floats
+        //re-adjust the line height, in case something big fell off the end
+        line_to_save.height = 0;
+        for (Iterator i = line_to_save.getChildIterator(); i.hasNext();) {
+            InlineBox child = (InlineBox) i.next();
+            if (child instanceof InlineTextBox && ((InlineTextBox) child).getSubstring().equals(""))
+                continue;
+            adjustLineHeight(c, line_to_save, child);
+        }
+
+        if (line_to_save.height != 0) {//would like to discard it otherwise, but that could lose inline elements
             if (line_to_save.height < minHeight) {
                 line_to_save.height = minHeight;
             }
@@ -612,6 +640,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.66  2005/11/11 11:37:48  tobega
+ * Take height and v-align of inlines into account before laying them out (to find interfering floats better)
+ *
  * Revision 1.65  2005/11/09 22:33:17  tobega
  * fixed handling of first-line-style
  *

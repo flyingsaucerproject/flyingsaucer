@@ -39,13 +39,13 @@ public class LineBreaker {
      *
      * @param c               PARAM
      * @param content         PARAM
-     * @param avail           PARAM
      * @param prev_align      PARAM
      * @param curr_line       PARAM
      * @param pendingBlockBox
+     * @param max_width
      * @return Returns
      */
-    public static InlineBox generateReplacedInlineBox(LayoutContext c, Content content, int avail, InlineBox prev_align, LineBox curr_line, InlineBlockBox pendingBlockBox) {
+    public static InlineBox generateReplacedInlineBox(LayoutContext c, Content content, int taken, InlineBox prev_align, LineBox curr_line, InlineBlockBox pendingBlockBox, int max_width) {
         InlineBlockBox box = new InlineBlockBox();
         box.element = content.getElement();
         // use the prev_align to calculate the x
@@ -76,6 +76,9 @@ public class LineBreaker {
 
         // if it won't fit on this line, then put it on the next one
         // the box will be discarded and recalculated
+        //adjust the line height already here, to better take care of floats
+        InlineBoxing.adjustLineHeight(c, curr_line, box);
+        int avail = max_width - taken - c.getBlockFormattingContext().getFloatDistance(c, curr_line, max_width);
         if (box.getWidth() > avail && prev_align != null && !prev_align.break_after) {
             box.break_before = true;
             box.x = 0;
@@ -96,6 +99,9 @@ public class LineBreaker {
  * $Id$
  *
  * $Log$
+ * Revision 1.64  2005/11/11 11:37:48  tobega
+ * Take height and v-align of inlines into account before laying them out (to find interfering floats better)
+ *
  * Revision 1.63  2005/10/27 00:09:00  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *
