@@ -438,10 +438,14 @@ public class InlineBoxing {
      * @param new_inline PARAM
      */
     static void adjustLineHeight(LayoutContext c, LineBox curr_line, InlineBox new_inline) {
-        int lineHeight = new_inline.height;//assume height for empty InlineTextBox is 0
+        int lineHeight = new_inline.height;
         int ascent;
         int descent;
-        if (new_inline instanceof InlineTextBox && !((InlineTextBox) new_inline).getSubstring().equals("")) {
+        if (new_inline instanceof InlineTextBox) {
+            if ( ((InlineTextBox)new_inline).getSubstring().equals("")) {
+                return;
+            }
+            
             // should be the metrics of the font, actually is the metrics of the text
             LineMetrics metrics = FontUtil.getLineMetrics(new_inline.getStyle().getFont(c), new_inline, c.getTextRenderer(), c.getGraphics());
             //lineHeight = (int) Math.round(new_inline.getStyle().getCalculatedStyle().getLineHeight(c));
@@ -643,6 +647,10 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.68  2005/11/12 01:44:04  peterbrant
+ * Empty inline text boxes now have a height so just ignore them entirely
+ * in adjustLineHeight()
+ *
  * Revision 1.67  2005/11/11 16:45:29  tobega
  * Fixed vertical align calculations to use line-height properly
  *
