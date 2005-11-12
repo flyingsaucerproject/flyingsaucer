@@ -9,8 +9,8 @@ import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,21 +36,19 @@ public class DerivedValueFactory {
      */
     private static final List IDENT_PROPERTIES;
 
-    public static FSDerivedValue newDerivedValue(
-            CalculatedStyle style,
-            CSSName cssName,
-            short cssSACUnitType,
-            String cssText,
-            String cssStringValue,
-            RGBColor rgbColor
-    ) {
+    public static FSDerivedValue newDerivedValue(CalculatedStyle style,
+                                                 CSSName cssName,
+                                                 short cssSACUnitType,
+                                                 String cssText,
+                                                 String cssStringValue,
+                                                 RGBColor rgbColor) {
         FSDerivedValue val = null;
 
         // default to copy of parent if inherited; may be overridden in some cases
         boolean declaredInherit = cssText.equals("inherit");
         if (declaredInherit) {
             if (style.getParent().isLengthValue(cssName)) {
-                val = new InheritedLength((LengthValue)style.getParent().valueByName(cssName));
+                val = new InheritedLength((LengthValue) style.getParent().valueByName(cssName));
             } else {
                 // not as bad as it looks; all IdentValues return their
                 // own instance in copyOf, so they are really singletons
@@ -69,26 +67,26 @@ public class DerivedValueFactory {
                 val = new LengthValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
             } else if (IDENT_PROPERTIES.contains(cssName) || IdentValue.looksLikeIdent(cssText)) {
                 val = IdentValue.getByIdentString(cssText);
+            } else if (Idents.looksLikeANumber(cssText)) {
+                val = new NumberValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
             } else {
-                throw new XRRuntimeException(
-                        "Can't determine the dervived value type to use for property " +
-                                "named '" + cssName + "' with value " + cssText
-                );
+                throw new XRRuntimeException("Can't determine the dervived value type to use for property " +
+                        "named '" + cssName + "' with value " + cssText);
             }
         }
 
         return val;
     }
 
-    /** Returns the ColorValue, possibly from local cache by cssText value; RGB colors are not cached (guessing
+    /**
+     * Returns the ColorValue, possibly from local cache by cssText value; RGB colors are not cached (guessing
      * these will be custom anyway).
-     *
      */
     private static FSDerivedValue newColor(CalculatedStyle style, CSSName cssName, short cssSACUnitType, String cssText, String cssStringValue, RGBColor rgbColor) {
         FSDerivedValue val;
-        if ( rgbColor == null ) {
-            val = (FSDerivedValue)CACHED_COLORS.get(cssText);
-            if ( val == null ) {
+        if (rgbColor == null) {
+            val = (FSDerivedValue) CACHED_COLORS.get(cssText);
+            if (val == null) {
                 val = new ColorValue(style, cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
                 CACHED_COLORS.put(cssText, val);
             }

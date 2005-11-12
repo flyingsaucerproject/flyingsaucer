@@ -136,12 +136,23 @@ public class LineBox extends Box implements Renderable {
         result.translate(tx, ty);
         return result;
     }
+
+    public void paintTextDecoration(RenderingContext c, InlineBox inline) {
+        ((BlockBox) getParent()).paintTextDecoration(c, this, inline);
+        if (firstLinePseudo != null) {
+            firstLinePseudo.paintTextDecoration(c, this, inline);
+            firstLinePseudo.untranslateRelative(c, isFirstLine);
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/11/12 21:55:27  tobega
+ * Inline enhancements: block box text decorations, correct line-height when it is a number, better first-letter handling
+ *
  * Revision 1.29  2005/11/11 16:45:29  tobega
  * Fixed vertical align calculations to use line-height properly
  *

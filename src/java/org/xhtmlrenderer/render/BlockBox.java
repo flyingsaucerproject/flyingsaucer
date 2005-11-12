@@ -194,12 +194,24 @@ public class BlockBox extends Box implements Renderable {
             ListItemPainter.paint(c, this);
         }
     }
+
+    public void paintTextDecoration(RenderingContext c, LineBox line, InlineBox inline) {
+        if (getParent() != null) {
+            //these will all do the relevant translates
+            ((BlockBox) getParent()).paintTextDecoration(c, line, inline);
+        }
+        Style style = getStyle();
+        InlineElement.paintTextDecoration(style, c, line, line.x + inline.x, inline.contentWidth);
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/11/12 21:55:27  tobega
+ * Inline enhancements: block box text decorations, correct line-height when it is a number, better first-letter handling
+ *
  * Revision 1.19  2005/11/08 22:53:46  tobega
  * added getLineHeight method to CalculatedStyle and hacked in some list-item support
  *

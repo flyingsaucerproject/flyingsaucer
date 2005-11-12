@@ -268,7 +268,7 @@ public class InlineElement /*implements ElementBox*/ {
         paintTextDecoration(style, c, line, line.x + inline.x, inline.contentWidth);
     }
 
-    private void paintTextDecoration(Style style, RenderingContext c, LineBox line, int x, int width) {
+    public static void paintTextDecoration(Style style, RenderingContext c, LineBox line, int x, int width) {
         CalculatedStyle cs = style.getCalculatedStyle();
         //text decoration?
         IdentValue decoration = cs.getIdent(CSSName.TEXT_DECORATION);

@@ -56,9 +56,9 @@ public final class Idents {
      */
     private final static String RCSS_NUMBER = "(-)?((\\d){1,10}((\\.)(\\d){1,10})?)";
     /**
-     * Regex pattern, CSS lengths
+     * Regex pattern, CSS lengths, a length must have a unit, unless it is zero
      */
-    private final static String RCSS_LENGTH = "(" + RCSS_NUMBER + ")+" + "((em)|(ex)|(px)|(cm)|(mm)|(in)|(pt)|(pc)|(%))?";
+    private final static String RCSS_LENGTH = "((0$)|((" + RCSS_NUMBER + ")+" + "((em)|(ex)|(px)|(cm)|(mm)|(in)|(pt)|(pc)|(%))))";
 
     /**
      * Pattern instance, for CSS lengths
@@ -318,7 +318,11 @@ public final class Idents {
      * @return Returns
      */
     public static boolean looksLikeALineHeight(String val) {
-        return "normal".equals(val) || looksLikeALength(val);
+        return "normal".equals(val) || looksLikeALength(val) || looksLikeANumber(val);
+    }
+
+    public static boolean looksLikeANumber(String val) {
+        return CSS_NUMBER_PATTERN.matcher(val).matches();
     }
 
     /**
@@ -510,6 +514,9 @@ public final class Idents {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/11/12 21:55:25  tobega
+ * Inline enhancements: block box text decorations, correct line-height when it is a number, better first-letter handling
+ *
  * Revision 1.11  2005/11/08 22:53:44  tobega
  * added getLineHeight method to CalculatedStyle and hacked in some list-item support
  *

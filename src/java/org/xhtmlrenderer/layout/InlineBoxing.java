@@ -25,6 +25,7 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.extend.LanguageHandler;
 import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.layout.inline.Breaker;
@@ -442,7 +443,7 @@ public class InlineBoxing {
         int ascent;
         int descent;
         if (new_inline instanceof InlineTextBox) {
-            if ( ((InlineTextBox)new_inline).getSubstring().equals("")) {
+            if (((InlineTextBox) new_inline).getSubstring().equals("")) {
                 return;
             }
             
@@ -529,8 +530,8 @@ public class InlineBoxing {
             // Uu.p("avail space = " + avail + " max = " + max_width + "   setStartStyle index = " + setStartStyle);
 
             if (isFirstLetter && firstLetterStyle != null) {
-                //TODO: what if first letter is whitespace?
-                end = start + 1;
+                //end = start + 1;
+                end = start + LanguageHandler.getFirstLetterLength(text, "en");
                 inline.setSubstring(start, end);
                 c.pushStyle(firstLetterStyle);
                 inline.setStyle(new Style(c.getCurrentStyle(), max_width));
@@ -647,6 +648,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.69  2005/11/12 21:55:26  tobega
+ * Inline enhancements: block box text decorations, correct line-height when it is a number, better first-letter handling
+ *
  * Revision 1.68  2005/11/12 01:44:04  peterbrant
  * Empty inline text boxes now have a height so just ignore them entirely
  * in adjustLineHeight()

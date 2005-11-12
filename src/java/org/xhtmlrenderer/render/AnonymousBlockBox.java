@@ -22,7 +22,7 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.layout.content.Content;
 
 public class AnonymousBlockBox extends BlockBox {
-    public AnonymousBlockBox( Content content ) {
+    public AnonymousBlockBox(Content content) {
         super();
         this.element = content.getElement();
 
@@ -32,15 +32,19 @@ public class AnonymousBlockBox extends BlockBox {
 
         StringBuffer sb = new StringBuffer();
 
-        sb.append( "AnonymousBlockBox:" );
+        sb.append("AnonymousBlockBox:");
 
-        sb.append( super.toString() );
+        sb.append(super.toString());
 
         return sb.toString();
     }
-    
+
     public int getContentWidth() {
         return getContainingBlock().getContentWidth();
+    }
+
+    public void paintTextDecoration(RenderingContext c, LineBox line, InlineBox inline) {
+        ((BlockBox) getParent()).paintTextDecoration(c, line, inline);
     }
 }
 
@@ -48,6 +52,9 @@ public class AnonymousBlockBox extends BlockBox {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2005/11/12 21:55:27  tobega
+ * Inline enhancements: block box text decorations, correct line-height when it is a number, better first-letter handling
+ *
  * Revision 1.13  2005/11/05 03:29:59  peterbrant
  * Start work on painting order and improved positioning implementation
  *

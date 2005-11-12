@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2005 Patrick Wright
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ */
 package org.xhtmlrenderer.css.style.derived;
 
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -29,6 +47,7 @@ public class LengthValue extends DerivedValue {
      * input string, <code>group(1)</code> returns the number (may be a float),
      * and <code>group(2)</code> returns the suffix. Suffix is optional in the
      * pattern, so check if <code>group(2)</code> is null before using.
+     * Only values that are identically zero may leave out the unit (suffix).
      */
     private final static Pattern CSS_LENGTH_PATTERN = Pattern.compile("(-?\\d{1,10}(\\.?\\d{0,10})?)((em)|(ex)|(px)|(%)|(in)|(cm)|(mm)|(pt)|(pc))?");
 
@@ -177,9 +196,10 @@ public class LengthValue extends DerivedValue {
                 // http://www.w3.org/TR/CSS21/fonts.html#font-size-props
                 if (cssName == CSSName.FONT_SIZE) {
                     FontSpecification parentFont = style.getParent().getFont(ctx);
-                    absVal = relVal * ctx.getFontSize2D(parentFont);
+                    //font size and FontSize2D should be identical
+                    absVal = relVal * parentFont.size;//ctx.getFontSize2D(parentFont);
                 } else {
-                    absVal = relVal * ctx.getFontSize2D(style.getFont(ctx));
+                    absVal = relVal * style.getFont(ctx).size;//ctx.getFontSize2D(style.getFont(ctx));
                 }
 
                 break;

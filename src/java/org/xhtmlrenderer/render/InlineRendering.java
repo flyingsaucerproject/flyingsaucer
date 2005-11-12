@@ -192,7 +192,7 @@ public class InlineRendering {
             c.translate(ib.x, ib.y);
             Point before = c.getOriginOffset();
             c.translate(-before.x, -before.y);
-            Layer.paintAsLayer(c, ((InlineBlockBox)ib).sub_block, before.x, before.y);
+            Layer.paintAsLayer(c, ((InlineBlockBox) ib).sub_block, before.x, before.y);
             c.translate(before.x, before.y);
             c.translate(-ib.x, -ib.y);
             c.translate(-line.x,
@@ -230,11 +230,9 @@ public class InlineRendering {
             paintSelection(c, inline, lx, ly, lm);
             paintText(c, ix, iy, inline, lm);
             if (inline.getInlineElement() != null) inline.getInlineElement().untranslateRelative(c, line.isFirstLine);
-            //TODO: handle Block element text decorations
-            if (line.firstLinePseudo != null) {
-                line.firstLinePseudo.paintTextDecoration(c, line, inline);
-                line.firstLinePseudo.untranslateRelative(c, line.isFirstLine);
-            }
+            //handle block and first-line decorations first
+            line.paintTextDecoration(c, inline);
+            //now inline element decorations
             if (inline.getInlineElement() != null) {
                 inline.getInlineElement().paintTextDecoration(c, line, inline);
                 inline.getInlineElement().untranslateRelative(c, line.isFirstLine);
