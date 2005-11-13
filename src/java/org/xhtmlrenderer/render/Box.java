@@ -19,16 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.JComponent;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -38,6 +28,15 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.PersistentBFC;
+
+import javax.swing.*;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 public abstract class Box {
 
@@ -104,7 +103,7 @@ public abstract class Box {
     public CascadedStyle firstLetterStyle;
 
     protected PersistentBFC persistentBFC = null;
-    
+
     private Layer layer = null;
 
     private Box parent;
@@ -164,7 +163,7 @@ public abstract class Box {
     }
 
     public void addChild(Box child) {
-        if (boxes == null) { 
+        if (boxes == null) {
             boxes = new ArrayList();
         }
         if (child == null) {
@@ -185,6 +184,10 @@ public abstract class Box {
         if (boxes != null) {
             boxes.clear();
         }
+    }
+
+    public void removeChild(Box child) {
+        boxes.remove(child);
     }
 
     public void reset() {
@@ -416,11 +419,11 @@ public abstract class Box {
     public void setContainingBlock(Box containingBlock) {
         this.containingBlock = containingBlock;
     }
-    
+
     public Rectangle getBounds(CssContext cssCtx) {
         return getBounds(cssCtx, 0, 0);
     }
-    
+
     public Rectangle getBounds(CssContext cssCtx, int tx, int ty) {
         // Looks unnecessarily convoluted, but necessary to get negative
         // margins right
@@ -429,15 +432,14 @@ public abstract class Box {
         result.translate(tx, ty);
         return result;
     }
-    
+
     /**
      * <B>NOTE</B>: This method does not consider any children of this box
      */
     public boolean intersects(CssContext cssCtx, Shape clip) {
-        return clip == null || clip.intersects(
-                getBorderEdge(getAbsX(), getAbsY(), cssCtx));
+        return clip == null || clip.intersects(getBorderEdge(getAbsX(), getAbsY(), cssCtx));
     }
-    
+
     private void addBackMargins(CssContext cssCtx, Rectangle bounds) {
         RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
         if (margin.top() > 0) {
@@ -455,22 +457,22 @@ public abstract class Box {
             bounds.width += margin.left();
         }
     }
-    
+
     protected Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
         RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
         Rectangle result = new Rectangle(left + (int) margin.left(),
                 top + (int) margin.top(),
-                getWidth() - (int) margin.left() - (int) margin.right() ,
+                getWidth() - (int) margin.left() - (int) margin.right(),
                 getHeight() - (int) margin.top() - (int) margin.bottom());
         return result;
     }
-    
+
     protected Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
         RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
         RectPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
-        Rectangle result = new Rectangle(left + (int) margin.left() + (int)border.left(),
+        Rectangle result = new Rectangle(left + (int) margin.left() + (int) border.left(),
                 top + (int) margin.top() + (int) border.top(),
-                getWidth() - (int) margin.width() - (int)border.width() ,
+                getWidth() - (int) margin.width() - (int) border.width(),
                 getHeight() - (int) margin.height() - (int) border.height());
         return result;
     }
@@ -490,29 +492,29 @@ public abstract class Box {
     public void setStaticEquivalent(Box staticEquivalent) {
         this.staticEquivalent = staticEquivalent;
     }
-    
+
     public int getContentWidth() {
         return contentWidth;
     }
-    
+
     public void alignToStaticEquivalent() {
         this.y = staticEquivalent.getAbsY() - getAbsY();
         setAbsY(staticEquivalent.getAbsY());
     }
-    
-    // Common code for placing absolute and relative boxes in the right place 
+
+    // Common code for placing absolute and relative boxes in the right place
     // Is the best place for it?
     // TODO Finish this!
     // TODO Handle top: auto, bottom: auto for absolute blocks
     public void positionPositioned(CssContext cssCtx) {
         CalculatedStyle style = getStyle().getCalculatedStyle();
-        
+
         boolean usePaddingBox = false;
         Rectangle paddingBox = null;
-        
+
         int width = getContainingBlock().getContentWidth();
         int height = getContainingBlock().getHeight();
-        
+
         if (getStyle().isAbsolute() && getContainingBlock().isStyled() &&
                 getContainingBlock().getStyle().isAbsolute()) {
             usePaddingBox = true;
@@ -520,31 +522,27 @@ public abstract class Box {
             width = paddingBox.width;
             height = paddingBox.height;
         }
-        
-        if (! style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
-            this.x += style.getFloatPropertyProportionalWidth(
-                    CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
-        } else if (! style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-            this.x += width - 
-                style.getFloatPropertyProportionalWidth(
-                    CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth();
+
+        if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
+            this.x += style.getFloatPropertyProportionalWidth(CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
+        } else if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
+            this.x += width -
+                    style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth();
         }
-        
-        if (! style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-            this.y += style.getFloatPropertyProportionalHeight(
-                    CSSName.TOP, getContainingBlock().getHeight(), cssCtx);
-        } else if (! style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
+
+        if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
+            this.y += style.getFloatPropertyProportionalHeight(CSSName.TOP, getContainingBlock().getHeight(), cssCtx);
+        } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
             this.y += height -
-                style.getFloatPropertyProportionalWidth(
-                    CSSName.BOTTOM, getContainingBlock().getHeight(), cssCtx) - getHeight();
+                    style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, getContainingBlock().getHeight(), cssCtx) - getHeight();
         }
-        
+
         if (usePaddingBox) {
             this.x += paddingBox.x;
             this.y += paddingBox.y;
         }
     }
-    
+
     public void setAbsY(int absY) {
         this.absY = absY;
     }
@@ -560,11 +558,11 @@ public abstract class Box {
     public int getAbsX() {
         return absX;
     }
-    
+
     public boolean isReplaced() {
         return component != null;
     }
-    
+
     public boolean isStyled() {
         return style != null;
     }
@@ -574,6 +572,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.78  2005/11/13 01:14:16  tobega
+ * Take into account the height of a first-letter. Also attempt to line-break better with inline padding.
+ *
  * Revision 1.77  2005/11/10 18:27:28  peterbrant
  * Position absolute box correctly when top: auto and bottom: auto.
  *

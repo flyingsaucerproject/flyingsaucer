@@ -208,6 +208,28 @@ public class InlineBoxing {
                     pendingRightPadding -= rp;
                     //remaining_width -= rp;
                     taken += rp;
+                    /* not working as expected, leave for now
+                    if(taken + pendingRightPadding > bounds.width - c.getBlockFormattingContext().getFloatDistance(c,curr_line,bounds.width)) {
+                        //We don't want to paint padding outside the bounds
+                        //so we try to split the box
+                        InlineBox new_box = splitInline(c,prev_inline);
+                        if(new_box == null && curr_line.getChildCount() > 1) {
+                            new_box = prev_inline;
+                            curr_line.removeChild(prev_inline);
+                        }
+                        if(new_box != null) {
+                            saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine, pendingFloats);
+                            bounds.height += curr_line.height;
+                            prev_line = curr_line;
+                            curr_line = newLine(box, bounds, prev_line, blockLineMetrics, c);
+                            new_box.x = 0;
+                            adjustLineHeight(c, curr_line, new_box);
+                            curr_line.addChild(new_box);
+                            prev_align_inline = new_box;
+                            prev_inline = new_box;
+                            taken = new_box.getWidth();
+                        }
+                    }*/
                 }
                 if (c.hasFirstLineStyles()) {
                     pushedOnFirstLine.remove(pushedOnFirstLine.size() - 1);
@@ -261,7 +283,7 @@ public class InlineBoxing {
 
                 // look at current inline
                 // break off the longest section that will fit
-                int fit = pendingRightPadding;//Note: this is not necessarily entirely correct
+                int fit = 0;//pendingRightPadding;//Note: this is not necessarily entirely correct
                 if (start == 0) fit += pendingLeftPadding;
                 start = trimLeadingSpace(c.getCurrentStyle(), prev_inline, currentContent, start);
                 new_inline = calculateInline(c, currentContent, /*remaining_width - fit*/ taken + fit, bounds.width,
@@ -368,6 +390,37 @@ public class InlineBoxing {
         // Uu.p("- InlineLayout.layoutContent(): " + box);
         //pop the dummy style, but no, see above
         //c.popStyle();
+    }
+
+    private static InlineBox splitInline(LayoutContext c, InlineBox prev_inline) {
+        if (!(prev_inline instanceof InlineTextBox)) return null;//can't break it
+        InlineTextBox inline = (InlineTextBox) prev_inline;
+        // ====== handle nowrap
+        if (inline.whitespace == IdentValue.NOWRAP) {
+            return null;
+        }
+
+        //check if we may wrap
+        if (inline.whitespace == IdentValue.PRE) {
+            return null;
+        }
+
+        String currentString = inline.getSubstring();
+        int lastWrap = currentString.lastIndexOf(WhitespaceStripper.SPACE, currentString.length() - 2);
+        if (lastWrap > 0) {//found a place to wrap
+            InlineTextBox new_inline = (InlineTextBox) prev_inline.copy();
+            new_inline.setSubstring(inline.start_index + lastWrap + 1, inline.end_index);
+            new_inline.contentWidth = FontUtil.len(c, new_inline, c.getTextRenderer(), c.getGraphics());
+            inline.setSubstring(inline.start_index, inline.start_index + lastWrap);
+            inline.contentWidth = FontUtil.len(c, inline, c.getTextRenderer(), c.getGraphics());
+            new_inline.popstyles = inline.popstyles;
+            inline.popstyles = 0;
+            new_inline.rightPadding = inline.rightPadding;
+            inline.rightPadding = 0;
+            new_inline.break_after = false;
+            return new_inline;
+        } else
+            return null;
     }
 
 
@@ -535,6 +588,10 @@ public class InlineBoxing {
                 inline.setSubstring(start, end);
                 c.pushStyle(firstLetterStyle);
                 inline.setStyle(new Style(c.getCurrentStyle(), max_width));
+                inline.whitespace = WhitespaceStripper.getWhitespace(c.getCurrentStyle());
+                inline.height = (int) inline.getStyle().getCalculatedStyle().getLineHeight(c);
+                //adjust the line height already here, to better take care of floats
+                adjustLineHeight(c, curr_line, inline);
                 prepareBox(prev_align, inline, c);
                 BorderPropertySet border = c.getCurrentStyle().getBorder(c);
                 //first letter is a pseudo-element, so has borders, etc.
@@ -648,6 +705,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.70  2005/11/13 01:14:16  tobega
+ * Take into account the height of a first-letter. Also attempt to line-break better with inline padding.
+ *
  * Revision 1.69  2005/11/12 21:55:26  tobega
  * Inline enhancements: block box text decorations, correct line-height when it is a number, better first-letter handling
  *

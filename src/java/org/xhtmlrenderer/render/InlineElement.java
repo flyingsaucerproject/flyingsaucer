@@ -156,7 +156,7 @@ public class InlineElement /*implements ElementBox*/ {
     }
 
     public void untranslateRelative(RenderingContext c, boolean isFirstLine) {
-        Relative.untranslateRelative(c, isFirstLine ? startStyle.getCalculatedStyle() : endStyle.getCalculatedStyle());
+        Relative.untranslateRelative(c, isFirstLine || endStyle == null ? startStyle.getCalculatedStyle() : endStyle.getCalculatedStyle());
         if (parent != null) parent.untranslateRelative(c, isFirstLine);
     }
 

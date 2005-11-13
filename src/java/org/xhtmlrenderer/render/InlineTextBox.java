@@ -69,6 +69,7 @@ public class InlineTextBox extends InlineBox {
         newBox.element = box.element;
         newBox.master = box.master;
         newBox.pseudoElement = box.pseudoElement;
+        newBox.setInlineElement(box.getInlineElement());
         return newBox;
     }
 
