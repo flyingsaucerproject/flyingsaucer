@@ -20,8 +20,11 @@ package org.xhtmlrenderer.css.style.derived;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.DerivedValue;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
+
+import sun.security.action.GetPropertyAction;
 
 /**
  * User: tobe
@@ -42,6 +45,14 @@ public class NumberValue extends DerivedValue {
 
     public float asFloat() {
         return _floatValue;
+    }
+    
+    public float getFloatProportionalTo(CSSName cssName, float baseValue, CssContext ctx) {
+        return _floatValue;
+    }
+    
+    public boolean hasAbsoluteUnit() {
+        return true;
     }
 }
 
