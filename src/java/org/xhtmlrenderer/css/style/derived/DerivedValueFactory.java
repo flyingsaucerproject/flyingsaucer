@@ -63,12 +63,12 @@ public class DerivedValueFactory {
                 val = newColor(style, cssName, cssSACUnitType, cssText, cssStringValue, rgbColor);
             } else if (STRING_PROPERTIES.contains(cssName)) {
                 val = new StringValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
-            } else if (Idents.looksLikeALength(cssText) && !(cssName == CSSName.FONT_WEIGHT)) {
+            } else if (!(cssName == CSSName.FONT_WEIGHT) && Idents.looksLikeALength(cssText)) {
                 val = new LengthValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
+            } else if (!(cssName == CSSName.FONT_WEIGHT) && Idents.looksLikeANumber(cssText)) {
+                val = new NumberValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
             } else if (IDENT_PROPERTIES.contains(cssName) || IdentValue.looksLikeIdent(cssText)) {
                 val = IdentValue.getByIdentString(cssText);
-            } else if (Idents.looksLikeANumber(cssText)) {
-                val = new NumberValue(style, cssName, cssSACUnitType, cssText, cssStringValue);
             } else {
                 throw new XRRuntimeException("Can't determine the dervived value type to use for property " +
                         "named '" + cssName + "' with value " + cssText);
