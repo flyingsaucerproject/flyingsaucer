@@ -7,7 +7,6 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Point;
@@ -44,7 +43,8 @@ public class BoxFinder {
         return null;
     }
 
-    public static Box findBoxByCoords(BasicPanel panel, int x, int y) {
+    /*
+    private static Box findBoxByCoords(BasicPanel panel, int x, int y) {
         Box box = BoxFinder.findElementBox2(panel.getRootBox(), x, y, null);
         return box;
     }
@@ -52,6 +52,7 @@ public class BoxFinder {
     private static Element findElementByCoords(int x, int y) {
         return null;
     }
+    */
 
     private static Box findBoxByID(String id, SharedContext ctx) {
         return ctx.getIDBox(id);
@@ -119,6 +120,7 @@ public class BoxFinder {
         return null;
     }
 
+    /*
     private static Box findElementBox2(Box box, int x, int y, BlockFormattingContext bfc) {
         //Uu.p("find element box: " + x + " " + y + " " + box + " " + bfc);
         //if(box.element != null) { Uu.p("elem : " + box.element.getNodeName()); }
@@ -213,8 +215,6 @@ public class BoxFinder {
 
 
     private static int[] adjustForAbsolute2(Box bx, int tx, int ty, BlockFormattingContext bfc) {
-        // TODO Make layer aware
-        /*
         int dx = 0;
         int dy = 0;
         if (bfc != null) {
@@ -242,10 +242,8 @@ public class BoxFinder {
         adjs[0] = dx;
         adjs[1] = dy;
         return adjs;
-        */
         return new int[]{0, 0};
     }
-
 
     private static Box findElementBox(Box box, int x, int y,
                                       BlockFormattingContext bfc) {//TODO: why is this used?
@@ -343,6 +341,7 @@ public class BoxFinder {
 
         return null;
     }
+    */
 
     private static int[] adjustForAbsolute(Box bx, int tx, int ty, BlockFormattingContext bfc) {
         // TODO make layer aware
