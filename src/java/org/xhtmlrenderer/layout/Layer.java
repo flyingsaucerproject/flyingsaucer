@@ -199,8 +199,8 @@ public class Layer {
         paint(c, originX, originY, isRootLayer());
     }
     
-    public Point calculateMaxOffset(int originX, int originY) {
-        return updateAllAbsoluteLocations(originX, originY, true);
+    public Point getMaxOffset() {
+        return updateAllAbsoluteLocations(0, 0, true);
     }
 
     private void paint(RenderingContext c, int originX, int originY, 

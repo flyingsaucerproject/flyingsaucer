@@ -332,7 +332,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         
         XRLog.layout(Level.FINEST, "after layout: " + root);
         
-        Point maxOffset = root.getLayer().calculateMaxOffset(0, 0);
+        Point maxOffset = root.getLayer().getMaxOffset();
         intrinsic_size = new Dimension(maxOffset.x, maxOffset.y);
         
         //Uu.p("intrinsic size = " + intrinsic_size);
