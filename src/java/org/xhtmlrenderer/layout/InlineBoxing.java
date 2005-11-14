@@ -41,21 +41,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class InlineBoxing {
 
-    /**
-     * Description of the Method
-     *
-     * @param c           PARAM
-     * @param box         PARAM
-     * @param contentList PARAM
-     */
     public static void layoutContent(LayoutContext c, Box box, List contentList) {
         //Here we should always be inside something that corresponds to a block-level element
         //for formatting purposes
@@ -66,13 +53,7 @@ public class InlineBoxing {
         bounds.y = 0;
         bounds.height = 0;
 
-        //dummy style to make sure that text nodes don't get extra padding and such
-        //doesn't work here because blocks may be inside inlines, losing inline styling:
-        //c.pushStyle(CascadedStyle.emptyCascadedStyle);
-
         int blockLineHeight = (int) Math.round(box.getStyle().getCalculatedStyle().getLineHeight(c));
-        LineMetrics blockLineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(),
-                box.getStyle().getFont(c), "thequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG");
 
         // more setup
         LineBox prev_line = new LineBox();
@@ -94,7 +75,7 @@ public class InlineBoxing {
             remaining_width -= c.getBlockFormattingContext().getFloatDistance(c, prev_line, bounds.width);
         }*/
 
-        LineBox curr_line = newLine(box, bounds, null, blockLineMetrics, c);
+        LineBox curr_line = newLine(box, bounds, null, c);
         List pushedOnFirstLine = null;
 
         // account for text-indent
@@ -300,7 +281,7 @@ public class InlineBoxing {
                     saveLine(curr_line, prev_line, bounds, c, box, blockLineHeight, pushedOnFirstLine, pendingFloats);
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
-                    curr_line = newLine(box, bounds, prev_line, blockLineMetrics, c);
+                    curr_line = newLine(box, bounds, prev_line, c);
                     // skip adjusting for tabs if this box is cleared
                     //Do this later!
                     /*if (!box.getStyle().isCleared()) {
@@ -357,7 +338,7 @@ public class InlineBoxing {
                     // increase bounds height to account for the new line
                     bounds.height += curr_line.height;
                     prev_line = curr_line;
-                    curr_line = newLine(box, bounds, prev_line, blockLineMetrics, c);
+                    curr_line = newLine(box, bounds, prev_line, c);
                     //do later!
                     /*if (!box.getStyle().isCleared()) {
                         remaining_width -= c.getBlockFormattingContext().getFloatDistance(c, curr_line, remaining_width);
@@ -365,9 +346,7 @@ public class InlineBoxing {
                 }
 
                 // set the inline to use for left alignment
-                if (!isOutsideFlow(currentContent)) {//is this necessary now?
-                    prev_align_inline = new_inline;
-                }
+                prev_align_inline = new_inline;
 
                 prev_inline = new_inline;
             } while (!c.shouldStop() && (new_inline == null || !new_inline.isEndOfParentContent()));
@@ -385,11 +364,6 @@ public class InlineBoxing {
         bounds.height += curr_line.height;
         if (!c.shrinkWrap()) box.contentWidth = bounds.width;
         box.height = bounds.height;
-        //box.x = 0;
-        //box.y = 0;
-        // Uu.p("- InlineLayout.layoutContent(): " + box);
-        //pop the dummy style, but no, see above
-        //c.popStyle();
     }
 
     private static InlineBox splitInline(LayoutContext c, InlineBox prev_inline) {
@@ -438,17 +412,7 @@ public class InlineBoxing {
         return start;
     }
 
-    public static boolean isOutsideFlow(Content currentContent) {
-        if (currentContent instanceof FloatedBlockContent) {
-            return true;
-        }
-        if (currentContent instanceof AbsolutelyPositionedContent) {
-            return true;
-        }
-        return false;
-    }
-
-    private static LineBox newLine(Box box, Rectangle bounds, LineBox prev_line, LineMetrics blockLineMetrics, LayoutContext c) {
+    private static LineBox newLine(Box box, Rectangle bounds, LineBox prev_line, LayoutContext c) {
         LineBox curr_line = new LineBox();
         c.pushStyle(CascadedStyle.emptyCascadedStyle);
         curr_line.setStyle(new Style(c.getCurrentStyle(), 0));
@@ -466,16 +430,9 @@ public class InlineBoxing {
         if (prev_line != null) {
             curr_line.y = prev_line.y + prev_line.height;
         }
-        curr_line.blockLineMetrics = blockLineMetrics;
         return curr_line;
     }
 
-
-    /**
-     * Description of the Method
-     *
-     * @param bounds PARAM
-     */
     private static void validateBounds(Rectangle bounds) {
         if (bounds.width <= 0) {
             bounds.width = 1;
@@ -483,14 +440,6 @@ public class InlineBoxing {
         }
     }
 
-
-    /**
-     * Description of the Method
-     *
-     * @param c          PARAM
-     * @param curr_line  PARAM
-     * @param new_inline PARAM
-     */
     static void adjustLineHeight(LayoutContext c, LineBox curr_line, InlineBox new_inline) {
         int lineHeight = new_inline.height;
         int ascent;
@@ -705,6 +654,9 @@ public class InlineBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.71  2005/11/14 23:48:29  peterbrant
+ * Light cleanup in preparation of greater things to come
+ *
  * Revision 1.70  2005/11/13 01:14:16  tobega
  * Take into account the height of a first-letter. Also attempt to line-break better with inline padding.
  *
