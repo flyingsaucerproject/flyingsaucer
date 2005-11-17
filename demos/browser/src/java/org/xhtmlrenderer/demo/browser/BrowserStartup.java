@@ -54,6 +54,10 @@ public class BrowserStartup {
      * Description of the Field
      */
     protected BrowserActions actions;
+    /**
+     * Page to view at startup
+     */
+    protected String startPage;
 
     /**
      * Description of the Field
@@ -68,9 +72,19 @@ public class BrowserStartup {
      * Constructor for the BrowserStartup object
      */
     public BrowserStartup() {
-        logger.info("starting up");
+        this("demo:demos/splash/splash.html");
+        //this("demo:demos/paragraph.xhtml");
+        //this("demo:demos/layout/multicol/glish/nested-float.xhtml");
     }
 
+    /**
+     * Constructor for the BrowserStartup object
+     */
+    public BrowserStartup(String startPage) {
+        logger.info("starting up");
+        this.startPage = startPage;
+    }
+    
     /**
      * Description of the Method
      */
@@ -90,9 +104,7 @@ public class BrowserStartup {
         menu.createActions();
 
         try {
-            panel.loadPage("demo:demos/splash/splash.html");
-            //panel.loadPage("demo:demos/paragraph.xhtml");
-            //panel.loadPage("demo:demos/layout/multicol/glish/nested-float.xhtml");
+            panel.loadPage(startPage);
         } catch (Exception ex) {
             Uu.p(ex);
         }
@@ -164,6 +176,9 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/11/17 21:41:21  peterbrant
+ * Allow custom start page
+ *
  * Revision 1.16  2005/09/08 03:37:57  joshy
  * final R5 release
  *
@@ -229,4 +244,3 @@ public class BrowserStartup {
  *
  *
  */
-
