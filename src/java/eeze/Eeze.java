@@ -20,9 +20,11 @@
 package eeze;
 
 import org.xhtmlrenderer.simple.FSScrollPane;
+import org.xhtmlrenderer.simple.Graphics2DRenderer;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.XRLog;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -51,6 +53,7 @@ public class Eeze {
      * Description of the Field
      */
     JFrame eezeFrame;
+
     /**
      * Description of the Field
      */
@@ -73,12 +76,20 @@ public class Eeze {
     /**
      * Description of the Field
      */
-    Action increase_font, reset_font, decrease_font, showHelp, showGrid;
+    Action increase_font, reset_font, decrease_font, showHelp, showGrid, saveAsImg, overlayImage;
 
     /**
      * Description of the Field
      */
     private XHTMLPanel html;
+
+    private FSScrollPane scroll;
+
+    private JSplitPane split;
+
+    private ImagePanel imagePanel;
+
+    private boolean comparingWithImage;
 
     /**
      * Description of the Field
@@ -177,7 +188,8 @@ public class Eeze {
                 public void run() {
                     html = new XHTMLPanel();
                     html.setLayoutInProgressMsg("");
-                    frame.getContentPane().add(new FSScrollPane(html));
+                    scroll = new FSScrollPane(html);
+                    frame.getContentPane().add(scroll);
                     frame.pack();
                     frame.setSize(1024, 768);
                     frame.setVisible(true);
@@ -201,6 +213,8 @@ public class Eeze {
                     reloadFileList = new ReloadFileListAction();
                     showGrid = new ShowGridAction();
                     showHelp = new ShowHelpAction();
+                    saveAsImg = new SaveAsImageAction();
+                    overlayImage = new CompareImageAction();
 
                     frame.setJMenuBar(new JMenuBar());
                     JMenu doMenu = new JMenu("Do");
@@ -213,6 +227,8 @@ public class Eeze {
                     doMenu.add(reset_font);
                     doMenu.add(decrease_font);
                     doMenu.add(showGrid);
+                    doMenu.add(saveAsImg);
+                    doMenu.add(overlayImage);
                     doMenu.add(reloadFileList);
                     doMenu.add(showHelp);
                     doMenu.setVisible(false);
@@ -242,6 +258,12 @@ public class Eeze {
             }
             currentDisplayed = file;
             changeTitle(file.toURL().toString());
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    imagePanel.imageWasLoaded();
+                    imagePanel.repaint();
+                }
+            });
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
@@ -335,6 +357,100 @@ public class Eeze {
                 .append(" shortcuts.\n")
                 .append(" \n");
         System.out.println(sb.toString());
+    }
+
+    /**
+     * Description of the Class
+     *
+     * @author Who?
+     */
+    class ImagePanel extends JPanel {
+        Image currentPageImg;
+
+        /**
+         * Constructor for the GridGlassPane object
+         */
+        public ImagePanel() {
+            // intercept mouse and keyboard events and do nothing
+            this.addMouseListener(new MouseAdapter() {
+            });
+            this.addMouseMotionListener(new MouseMotionAdapter() {
+            });
+            this.addKeyListener(new KeyAdapter() {
+            });
+            this.setOpaque(false);
+        }
+
+        public void setImage(Image i) {
+            currentPageImg = i;
+            repaint();
+        }
+
+        public boolean imageWasLoaded() {
+            currentPageImg = loadImageForPage();
+            if ( currentPageImg != null ) {
+                this.setPreferredSize(new Dimension(currentPageImg.getWidth(null), currentPageImg.getHeight(null)));
+            }
+            return (currentPageImg != null);
+        }
+
+        private Image loadImageForPage() {
+            Image img = null;
+            try {
+                File file = currentDisplayed;
+                File parent = file.getParentFile();
+                File imgDir = new File(parent.getAbsolutePath() + File.separator + "ref-img");
+                String name = file.getName().substring(0, file.getName().lastIndexOf(".")) + ".png";
+                File target = new File(imgDir.getAbsolutePath() + File.separator + name);
+                if (target.exists()) {
+                    img = new ImageIcon(target.toURI().toURL()).getImage();
+                } else {
+                    JOptionPane.showMessageDialog(
+                            Eeze.this.eezeFrame,
+                            "No stored reference image, use Ctrl-S to create one.",
+                            "Overlay Reference Image",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(
+                        Eeze.this.eezeFrame,
+                        "Error on trying to save image, check stack trace on console.",
+                        "Save As Image",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            return img;
+        }
+
+        /**
+         * Description of the Method
+         *
+         * @param g PARAM
+         */
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+            if (currentPageImg == null) {
+                g2d.setColor(Color.WHITE);
+                g2d.fillRect(0, 0, (int)this.getPreferredSize().getWidth(), (int)this.getPreferredSize().getHeight());
+            } else {
+                g2d.drawImage(currentPageImg, 0, 0, currentPageImg.getWidth(null), currentPageImg.getHeight(null), null);
+
+                /* Code if you want to use as a glasspane--with transparency
+                Composite oldComp = g2d.getComposite();
+                float alpha = 1F;
+                Composite alphaComp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+                g2d.setComposite(alphaComp);
+
+                g2d.draw....
+
+                g2d.setComposite(oldComp);
+                Toolkit.getDefaultToolkit().beep();
+                */
+            }
+        }
     }
 
     /**
@@ -500,6 +616,62 @@ public class Eeze {
     }
 
     /**
+     * Action to show a grid over the current page
+     *
+     * @author Who?
+     */
+    class CompareImageAction extends AbstractAction {
+
+        /**
+         * Constructor for the ShowGridAction object
+         */
+        public CompareImageAction() {
+            super("Compare to Reference Image");
+            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_C));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK));
+            imagePanel = new ImagePanel();
+        }
+
+        /**
+         * Invoked when an action occurs.
+         *
+         * @param e PARAM
+         */
+        public void actionPerformed(ActionEvent e) {
+            comparingWithImage = !comparingWithImage;
+
+            if (comparingWithImage) {
+                if (! imagePanel.imageWasLoaded()) {
+                    comparingWithImage = false;
+                    System.out.println("   but have no image to load");
+                    return;
+                }
+                if (split == null) split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+
+                split.setLeftComponent(scroll);
+                split.setRightComponent(new JScrollPane(imagePanel));
+                split.setDividerLocation(eezeFrame.getHeight() / 2);
+                eezeFrame.getContentPane().remove(scroll);
+                eezeFrame.getContentPane().add(split);
+
+                // HACK: content pane is not repainting unless frame is resized once
+                // split is added. This workaround causes a flicker, but only when image
+                // is first loaded
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        Dimension d = eezeFrame.getSize();
+                        eezeFrame.setSize((int) d.getWidth(), (int) d.getHeight() + 1);
+                        eezeFrame.setSize(d);
+                    }
+                });
+            } else {
+                eezeFrame.getContentPane().remove(split);
+                eezeFrame.getContentPane().add(scroll);
+            }
+        }
+    }
+
+    /**
      * Action to trigger frame to shrink in size.
      *
      * @author Who?
@@ -597,6 +769,70 @@ public class Eeze {
                 switchPage(nextPage, false);
             } catch (Exception ex) {
                 ex.printStackTrace();
+            }
+        }
+    }
+
+    class SaveAsImageAction extends AbstractAction {
+
+        /**
+         * Constructor for the SaveAsImageAction object
+         */
+        public SaveAsImageAction() {
+            super("Save Page as PNG Image");
+            putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_S));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
+        }
+
+        /**
+         * Invoked when an action occurs.
+         *
+         * @param e PARAM
+         */
+        public void actionPerformed(ActionEvent e) {
+            try {
+                File file = currentDisplayed;
+                File parent = file.getParentFile();
+                File imgDir = new File(parent.getAbsolutePath() + File.separator + "ref-img");
+                if (! imgDir.exists()) {
+                    if (! imgDir.mkdir()) {
+                        JOptionPane.showMessageDialog(
+                                Eeze.this.eezeFrame,
+                                "Can't create dir to store images: \n" + imgDir,
+                                "Save As Image",
+                                JOptionPane.ERROR_MESSAGE
+                        );
+                        return;
+                    }
+                }
+                String name = file.getName().substring(0, file.getName().lastIndexOf(".")) + ".png";
+                File target = new File(imgDir.getAbsolutePath() + File.separator + name);
+                if (target.exists() && JOptionPane.showConfirmDialog(
+                        Eeze.this.eezeFrame,
+                        "Stored image exists (" + name + "), overwrite?",
+                        "Overwrite existing image file?",
+                        JOptionPane.YES_NO_OPTION
+                ) == JOptionPane.NO_OPTION) return;
+
+                // TODO: our *frame* is sized to 1024 x 768 by default, but when scrollbars are on, we have a smaller
+                // area. this becomes an issue when comparing a saved image with one rendered by FS, as fluid layouts
+                // may expand to fill the size we pass in to the renderer on the next line; need to figure out the right
+                // sizes to use...or maybe resize the frame when the image is loaded.
+                BufferedImage image = Graphics2DRenderer.renderToImage(file.toURI().toURL().toExternalForm(), 1024, 768);
+                ImageIO.write(image, "png", target);
+                Toolkit.getDefaultToolkit().beep();
+
+                if (comparingWithImage) {
+                    imagePanel.setImage(image);
+                }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(
+                        Eeze.this.eezeFrame,
+                        "Error on trying to save image, check stack trace on console.",
+                        "Save As Image",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
     }
