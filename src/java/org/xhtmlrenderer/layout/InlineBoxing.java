@@ -43,6 +43,7 @@ import org.xhtmlrenderer.layout.content.WhitespaceStripper;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.FloatDistances;
 import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineText;
@@ -466,36 +467,10 @@ public class InlineBoxing {
         }
     }
     
-    private static void alignLine(LayoutContext c, Box block, LineBox current, 
-            int maxAvailableWidth) {
-        IdentValue align = block.getStyle().getCalculatedStyle().getIdent(CSSName.TEXT_ALIGN);
-        
-        // TODO implement text-align: justify
-        
-        if (align == IdentValue.LEFT || align == IdentValue.JUSTIFY) {
-            int floatDistance = 
-                c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth);
-            current.x = floatDistance;
-        } else if (align == IdentValue.CENTER) {
-            int leftFloatDistance =
-                c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth);
-            int rightFloatDistance =
-                c.getBlockFormattingContext().getRightFloatDistance(c, current, maxAvailableWidth);
-            
-            int midpoint = leftFloatDistance +
-                (maxAvailableWidth - leftFloatDistance - rightFloatDistance) / 2;
-            
-            current.x = midpoint - current.getContentWidth() / 2;
-        } else if (align == IdentValue.RIGHT) {
-            int floatDistance = 
-                c.getBlockFormattingContext().getRightFloatDistance(c, current, maxAvailableWidth);
-            current.x = maxAvailableWidth - floatDistance - current.getContentWidth();
-        }
-    }
     
-    private static void saveLine(LineBox current, LineBox previous, 
-            LayoutContext c, Box block, int minHeight, 
-            int maxAvailableWidth, List elementStack, List pendingFloats) {
+    private static void saveLine(final LineBox current, LineBox previous, 
+            final LayoutContext c, Box block, int minHeight, 
+            final int maxAvailableWidth, List elementStack, List pendingFloats) {
         current.prunePendingInlineBoxes();
         
         int totalLineWidth = positionHorizontally(c, current, 0);
@@ -503,7 +478,30 @@ public class InlineBoxing {
         
         positionVertically(c, block, current);
         
-        alignLine(c, block, current, maxAvailableWidth);
+        if (! c.shrinkWrap()) {
+        	current.setFloatDistances(new FloatDistances() {
+        		public int getLeftFloatDistance() {
+        			return c.getBlockFormattingContext().getLeftFloatDistance(
+        					c, current, maxAvailableWidth);
+        		}
+        		
+        		public int getRightFloatDistance() {
+        			return c.getBlockFormattingContext().getRightFloatDistance(
+        					c, current, maxAvailableWidth);
+        		}
+        	});
+        	current.align();
+        	current.setFloatDistances(null);
+        } else {
+        	// FIXME Not right, but can't calculated float distance yet
+        	// because we don't know how wide the line is.  Should save
+        	// BFC and BFC offset and use that to calculate float distance
+        	// correctly when we're ready to align the line.
+        	FloatDistances distances = new FloatDistances();
+        	distances.setLeftFloatDistance(0);
+        	distances.setRightFloatDistance(0);
+        	current.setFloatDistances(distances);
+        }
         
         /*
         if (c.hasFirstLineStyles()) {
@@ -598,7 +596,7 @@ public class InlineBoxing {
             LineBreakContext lbContext) {
         if (! line.isContainsContent() && lbContext.getStartSubstring().startsWith(WhitespaceStripper.SPACE)) {
             IdentValue whitespace = style.getWhitespace();
-            if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE) {
+            if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
                 return true;
             }
         }

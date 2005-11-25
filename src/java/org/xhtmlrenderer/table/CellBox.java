@@ -19,8 +19,11 @@
  */
 package org.xhtmlrenderer.table;
 
+import java.util.Iterator;
+
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.LineBox;
 
 
 /**
@@ -75,12 +78,35 @@ public class CellBox extends BlockBox {
 
         return real_box;
     }
+    
+    public void alignLines() {
+    	// FIXME Should recurse into inline-block content, but don't
+    	// bother for now.  shrinkWrap property on LayoutContext should
+    	// be a stack (or implicitly treated that way)
+    	
+    	alignAllLinesHelper(this);
+    }
+    
+    private void alignAllLinesHelper(Box b) {
+    	for (Iterator i = b.getChildIterator(); i.hasNext(); ) {
+    		Box box = (Box)i.next();
+    		if (box instanceof LineBox) {
+    			((LineBox)box).align();
+    			((LineBox)box).setFloatDistances(null);
+    		} else {
+    			alignAllLinesHelper(box);
+    		}
+    	}
+    }
 
 }
 
 /*
  * $Id$
  * $Log$
+ * Revision 1.10  2005/11/25 22:42:07  peterbrant
+ * Wait until table has completed layout before doing line alignment
+ *
  * Revision 1.9  2005/10/06 03:20:24  tobega
  * Prettier incremental rendering. Ran into more trouble than expected and some creepy crawlies and a few pages don't look right (forms.xhtml, splash.xhtml)
  *

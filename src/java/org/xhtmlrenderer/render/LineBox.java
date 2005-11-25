@@ -19,9 +19,12 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Layer;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Graphics2D;
@@ -40,6 +43,8 @@ public class LineBox extends Box implements Renderable {
     public int renderIndex;
     
     private boolean containsContent;
+    
+    private FloatDistances floatDistances;
 
     /**
      * Constructor for the LineBox object
@@ -126,12 +131,51 @@ public class LineBox extends Box implements Renderable {
     public void setContainsContent(boolean containsContent) {
         this.containsContent = containsContent;
     }
+    
+    public void align() {
+    	if (getFloatDistances() == null) {
+    		// Shouldn't happen (but currently can with nested tables)
+    		XRLog.layout(Level.WARNING, "Float distances not available. Cannot align.");
+    		return;
+    	}
+    	
+        IdentValue align = getParent().getStyle().getCalculatedStyle().getIdent(CSSName.TEXT_ALIGN);
+        
+        // TODO implement text-align: justify
+        
+        if (align == IdentValue.LEFT || align == IdentValue.JUSTIFY) {
+            int floatDistance = getFloatDistances().getLeftFloatDistance();
+            this.x = floatDistance;
+        } else if (align == IdentValue.CENTER) {
+            int leftFloatDistance = getFloatDistances().getLeftFloatDistance();
+            int rightFloatDistance = getFloatDistances().getRightFloatDistance();
+            
+            int midpoint = leftFloatDistance +
+                (getParent().getContentWidth() - leftFloatDistance - rightFloatDistance) / 2;
+            
+            this.x = midpoint - getContentWidth() / 2;
+        } else if (align == IdentValue.RIGHT) {
+            int floatDistance = getFloatDistances().getRightFloatDistance();
+            this.x = getParent().getContentWidth() - floatDistance - getContentWidth();
+        }
+    }
+    
+	public FloatDistances getFloatDistances() {
+		return floatDistances;
+	}
+
+	public void setFloatDistances(FloatDistances floatDistances) {
+		this.floatDistances = floatDistances;
+	}    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2005/11/25 22:42:05  peterbrant
+ * Wait until table has completed layout before doing line alignment
+ *
  * Revision 1.31  2005/11/25 16:57:17  peterbrant
  * Initial commit of inline content refactoring
  *

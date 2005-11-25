@@ -183,6 +183,8 @@ public class TableBoxing {
             }
         }
         fixHeights(tableBox, borderSpacingVertical);
+        
+        alignCellLines(tableBox);
 
         //TODO: margins go on the outer box
         tableBox.leftPadding = (int) border.left() + (int) padding.left();
@@ -211,6 +213,18 @@ public class TableBoxing {
         outerBox.propagateChildProperties(tableBox);
         outerBox.setState(Box.DONE);
         return outerBox;
+    }
+    
+    private static void alignCellLines(TableBox box) {
+    	for (int i = 0; i < box.getChildCount(); i++) {
+    		RowBox row = (RowBox)box.getChild(i);
+    		
+    		for (int j = 0; j < row.getChildCount(); j++) {
+    			CellBox cell = (CellBox)row.getChild(j);
+    			
+    			cell.alignLines();
+    		}
+    	}
     }
 
     /**
@@ -611,6 +625,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.47  2005/11/25 22:42:07  peterbrant
+   Wait until table has completed layout before doing line alignment
+
    Revision 1.46  2005/11/25 16:57:53  peterbrant
    Initial commit of inline content refactoring
 
