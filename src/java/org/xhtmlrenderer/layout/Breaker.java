@@ -35,6 +35,9 @@ public class Breaker {
             LineBreakContext context, int avail, IdentValue whitespace, Font font) {
         // ====== handle nowrap
         if (whitespace == IdentValue.NOWRAP) {
+        	context.setEnd(context.getLast());
+        	context.setWidth(FontUtil.len(context.getCalculatedSubstring(), font,
+        			c.getTextRenderer(), c.getGraphics()));
             return;
         }
 
@@ -48,6 +51,10 @@ public class Breaker {
                 context.setWidth(FontUtil.len(context.getCalculatedSubstring(), font, 
                         c.getTextRenderer(), c.getGraphics()));                
                 context.setNeedsNewLine(true);
+            } else if (whitespace == IdentValue.PRE) {
+            	context.setEnd(context.getLast());
+                context.setWidth(FontUtil.len(context.getCalculatedSubstring(), font, 
+                        c.getTextRenderer(), c.getGraphics()));   
             }
         }
 

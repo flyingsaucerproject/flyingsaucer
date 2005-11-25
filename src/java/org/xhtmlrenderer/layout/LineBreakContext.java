@@ -28,6 +28,10 @@ public class LineBreakContext {
     
     private int width;
     
+    public int getLast() {
+    	return master.length();
+    }
+    
     public void reset() {
         this.width = 0;
         this.unbreakable = false;
