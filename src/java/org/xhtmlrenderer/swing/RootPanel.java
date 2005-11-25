@@ -333,6 +333,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         XRLog.layout(Level.FINEST, "after layout: " + root);
         
         Point maxOffset = root.getLayer().getMaxOffset();
+        root.getLayer().setPositionsFinalized(true);
         intrinsic_size = new Dimension(maxOffset.x, maxOffset.y);
         
         //Uu.p("intrinsic size = " + intrinsic_size);
@@ -377,6 +378,9 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                 // Uu.p("is not fixed");
                 enclosingScrollPane.getViewport().setScrollMode(default_scroll_mode);
             }
+        } else {
+            setPreferredSize(intrinsic_size);
+            revalidate();
         }
 
 

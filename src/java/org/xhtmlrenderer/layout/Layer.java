@@ -41,10 +41,13 @@ public class Layer {
 
     private boolean fixedBackground;
     
-    public static void paintAsLayer(RenderingContext c, Box master, int originX, int originY) {
+    private boolean positionsFinalized;
+    
+    public static void paintAsLayer(RenderingContext c, Box master) {
         Layer layer = new Layer(master);
         layer.setStackingContext(false);
-        layer.paint(c, originX, originY, true);
+        layer.paint(c, 0, 0);
+        master.setLayer(null);
     }
 
     public Layer(Box master) {
@@ -112,7 +115,7 @@ public class Layer {
         if (floats != null) {
             for (int i = floats.size() - 1; i >= 0; i--) {
                 FloatedBlockBox floater = (FloatedBlockBox) floats.get(i);
-                paintAsLayer(c, floater, floater.getAbsX(), floater.getAbsY());
+                paintAsLayer(c, floater);
             }
         }
     }
@@ -187,29 +190,23 @@ public class Layer {
     private void paintInlineContent(RenderingContext c, List lines) {
         for (Iterator i = lines.iterator(); i.hasNext();) {
             LineBox line = (LineBox) i.next();
-            Point before = c.getOriginOffset();
-            c.translate(line.getAbsX() - line.x, line.getAbsY() - line.y);
-            InlineRendering.paintLine(c, line);
-            Point after = c.getOriginOffset();
-            c.translate(before.x - after.x, before.y - after.y);
+            c.translate(line.getAbsX(), line.getAbsY());
+            line.paint(c);
+            c.translate(-line.getAbsX(), -line.getAbsY());
         }
-    }
-    
-    public void paint(RenderingContext c, int originX, int originY) {
-        paint(c, originX, originY, isRootLayer());
     }
     
     public Point getMaxOffset() {
         return updateAllAbsoluteLocations(0, 0, true);
     }
 
-    private void paint(RenderingContext c, int originX, int originY, 
-            boolean updateAbsoluteLocations) {
+    public void paint(RenderingContext c, int originX, int originY) {
         if (getMaster().getStyle().isFixed()) {
             positionFixedLayer(c);
         }
 
-        if (updateAbsoluteLocations || getMaster().getStyle().isFixed()) {
+        if ((isRootLayer() && ! isPositionsFinalized()) || 
+                getMaster().getStyle().isFixed()) {
             updateAllAbsoluteLocations(originX, originY, true);
         }
 
@@ -279,7 +276,6 @@ public class Layer {
     }
     
     private void paintReplacedElement(RenderingContext c, Box replaced) {
-        replaced.component.setLocation(replaced.getAbsX(), (int)replaced.getAbsY());
         if (! c.isInteractive()) {
             replaced.component.paint(c.getGraphics());
         }
@@ -331,43 +327,66 @@ public class Layer {
     private Point updateAbsoluteLocations(int originX, int originY) {
         return updateAbsoluteLocationsHelper(getMaster(), originX, originY);
     }
-
+    
+    private void positionReplacedElement(Box box) {
+        Point location = box.component.getLocation();
+        if (location.x != box.getAbsX() || location.y != box.getAbsY()) {
+            box.component.setLocation(box.getAbsX(), (int)box.getAbsY());    
+        }
+    }
+    
     private Point updateAbsoluteLocationsHelper(Box box, int x, int y) {
-        int maxX;
-        int maxY;
+        return updateAbsoluteLocationsHelper(box, x, y, true);
+    }
+
+    private Point updateAbsoluteLocationsHelper(Box box, int x, int y, boolean updateSelf) {
+        if (updateSelf) {
+            box.setAbsX(box.x + x);
+            box.setAbsY(box.y + y);
+        }
         
-        box.setAbsX(box.x + x);
-        box.setAbsY(box.y + y);
-        
-        maxX = box.getAbsX() + box.getWidth();
-        maxY = box.getAbsY() + box.getHeight();
+        final Point result = new Point(box.getAbsX() + box.getWidth(), box.getAbsY() + box.getHeight());
         
         if (box.getStyle().isAbsolute() && box.getStyle().isTopAuto() &&
                 box.getStyle().isBottomAuto()) {
             box.alignToStaticEquivalent();
+        }
+        
+        if (box.isReplaced()) {
+            positionReplacedElement(box);
         }
 
         int nextX = (int) box.getAbsX() + box.tx;
         int nextY = (int) box.getAbsY() + box.ty;
 
         if (box.getPersistentBFC() != null) {
-            box.getPersistentBFC().getFloatManager().updateAbsoluteLocations(nextX, nextY);
+            box.getPersistentBFC().getFloatManager().updateAbsoluteLocations(
+                    new FloatManager.FloatUpdater() {
+                        public void update(Box floater) {
+                            Point offset = updateAbsoluteLocationsHelper(floater, 0, 0, false);
+                            moveIfGreater(result, offset);
+                        }
+                    });
         }
 
-        if (!(box instanceof LineBox)) {
+        if (! (box instanceof InlineBox)) {
             for (int i = 0; i < box.getChildCount(); i++) {
                 Box child = (Box) box.getChild(i);
                 Point offset = updateAbsoluteLocationsHelper(child, nextX, nextY);
-                if (offset.x > maxX) {
-                    maxX = offset.x;
-                }
-                if (offset.y > maxY) {
-                    maxY = offset.y;
+                moveIfGreater(result, offset);
+            }
+        } else {
+            InlineBox iB = (InlineBox)box;
+            for (int i = 0; i < iB.getInlineChildCount(); i++) {
+                Object obj = iB.getInlineChild(i);
+                if (obj instanceof Box) {
+                    Point offset = updateAbsoluteLocationsHelper((Box)obj, nextX, nextY);
+                    moveIfGreater(result, offset);
                 }
             }
         }
         
-        return new Point(maxX, maxY);
+        return result;
     }
 
     public void positionChildren(CssContext cssCtx) {
@@ -420,5 +439,13 @@ public class Layer {
                 }
             }
         }
+    }
+
+    public boolean isPositionsFinalized() {
+        return positionsFinalized;
+    }
+
+    public void setPositionsFinalized(boolean positionsFinalized) {
+        this.positionsFinalized = positionsFinalized;
     }
 }

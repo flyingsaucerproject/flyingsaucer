@@ -564,12 +564,45 @@ public class CalculatedStyle {
         }
         return style._border;
     }
+    
+    private static final int LEFT = 1;
+    private static final int RIGHT = 2;
+    
+    public int getLeftMarginBorderPadding(CssContext cssCtx, int containingBlockWidth) {
+        return getMarginBorderPadding(cssCtx, containingBlockWidth, LEFT);
+    }
+    
+    public int getRightMarginBorderPadding(CssContext cssCtx, int containingBlockWidth) {
+        return getMarginBorderPadding(cssCtx, containingBlockWidth, RIGHT);
+    }
+    
+    private int getMarginBorderPadding(CssContext cssCtx, int containingBlockWidth, int which) {
+        BorderPropertySet border = getBorder(cssCtx);
+        RectPropertySet margin = getMarginRect(containingBlockWidth, containingBlockWidth, cssCtx);
+        RectPropertySet padding = getPaddingRect(containingBlockWidth, containingBlockWidth, cssCtx);
+        
+        switch (which) {
+            case LEFT:
+                return (int)(margin.left() + border.left() + padding.left());
+            case RIGHT:
+                return (int)(margin.right() + border.right() + padding.right());
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+    
+    public IdentValue getWhitespace() {
+        return getIdent(CSSName.WHITE_SPACE);
+    }
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.55  2005/11/25 16:57:26  peterbrant
+ * Initial commit of inline content refactoring
+ *
  * Revision 1.54  2005/11/10 22:15:41  peterbrant
  * Fix (hopefully) exception on identifiers which are converted by the CSS layer (e.g. thick becomes 3px)
  *

@@ -1,6 +1,6 @@
 /*
- * FloatUtil.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * {{{ header & license
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjörn Gannholm, Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -9,39 +9,43 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
+ * }}}
  */
-package org.xhtmlrenderer.layout.inline;
+package org.xhtmlrenderer.layout;
 
 import java.awt.Rectangle;
 import java.util.List;
 
-import org.xhtmlrenderer.layout.Boxing;
-import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FloatedBlockContent;
+import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
+public class LayoutUtil {
 
-/**
- * @author Torbjörn Gannholm
- */
-public class FloatUtil {
-    public static FloatedBlockBox generateFloatedBlock(
-            LayoutContext c, Content content, int avail, LineBox curr_line, List pendingFloats) {
-        //Uu.p("generate floated block inline box: avail = " + avail);
-        //Uu.p("generate floated block inline box");
+    public static void generateAbsolute(LayoutContext c, Content content, LineBox currentLine) {
         Rectangle oe = c.getExtents();// copy the extents for safety
         c.setExtents(new Rectangle(oe));
+        Box box = Boxing.layout(c, content);
+        box.setContainingBlock(c.getLayer().getMaster());
+        box.setStaticEquivalent(currentLine);
+        
+        c.setExtents(oe);
+    }
 
+    public static FloatedBlockBox generateFloated(
+            LayoutContext c, Content content, int avail, LineBox curr_line, List pendingFloats) {
+        Rectangle oe = c.getExtents();
+        c.setExtents(new Rectangle(oe));
+    
         c.setFloatingY(curr_line.y + ((FloatedBlockContent)content).getMarginFromPrevious());
         FloatedBlockBox block = new FloatedBlockBox();
         block.setContainingBlock(curr_line.getParent());
@@ -51,7 +55,7 @@ public class FloatUtil {
         if (! block.getStyle().isFloated()) {
             throw new XRRuntimeException("Invalid call to generateFloatedBlock(); where float: none ");
         }
-
+    
         c.setExtents(oe);
         
         if (pendingFloats.size() > 0 || block.getWidth() > avail) {
@@ -64,4 +68,3 @@ public class FloatUtil {
         return block;
     }
 }
-

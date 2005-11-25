@@ -21,6 +21,7 @@ package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.layout.Boxing;
+import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Graphics2D;
@@ -36,46 +37,14 @@ import java.util.logging.Level;
  */
 public class LineBox extends Box implements Renderable {
 
-    /**
-     * Description of the Field
-     */
-    public int inlineTop;
-    /**
-     * Description of the Field
-     */
-    public int inlineBottom;
-
-    public LineMetrics blockLineMetrics;
-    public boolean textAligned = false;
     public int renderIndex;
-    public boolean isFirstLine = false;
-    public InlineElement firstLinePseudo;
+    
+    private boolean containsContent;
 
     /**
      * Constructor for the LineBox object
      */
     public LineBox() {
-    }
-
-    /**
-     * Adds a feature to the InlineChild attribute of the LineBox object
-     *
-     * @param ib The feature to be added to the InlineChild attribute
-     */
-    public void addInlineChild(InlineBox ib) {
-        if (ib == null) {
-            throw new NullPointerException("trying to add null child");
-        }
-        if (getChildCount() == 0 && ib instanceof InlineTextBox) {//first box on line
-            InlineTextBox child = (InlineTextBox) ib;
-            if (child.getSubstring().equals("")) {
-                child.contentWidth = 0;
-                child.height = 0;
-            }
-        }
-        addChild(ib);
-        Boxing.checkExceeds(ib);
-        propagateChildProperties(ib);
     }
 
     /**
@@ -85,20 +54,7 @@ public class LineBox extends Box implements Renderable {
      */
     public String toString() {
 
-        return "Line: (" + x + "," + y + ")x(" + getWidth() + "," + height + ")" + "  baseline = " + getBaseline();
-    }
-
-    /**
-     * Gets the baseline attribute of the LineBox object
-     *
-     * @return The baseline value
-     */
-    public int getBaseline() {
-        int leading = height - inlineTop - inlineBottom;
-        if (leading < 0) {
-            XRLog.layout(Level.SEVERE, "negative leading in line box");
-        }
-        return inlineTop + leading / 2;
+        return "Line: (" + x + "," + y + ")x(" + getWidth() + "," + height + ")";
     }
 
     public void moveToNextPage(PageContext c, Rectangle bounds) {
@@ -116,13 +72,6 @@ public class LineBox extends Box implements Renderable {
         return renderIndex;
     }
 
-    public void render(RenderingContext c, Graphics2D g2) {
-        //HACK:
-        g2.translate(getAbsX() - x, getAbsY() - y);
-        InlineRendering.paintLine(c, this);
-        g2.translate(x - getAbsX(), y - getAbsY());
-    }
-
     public double getAbsTop() {
         return getAbsY();
     }
@@ -136,13 +85,46 @@ public class LineBox extends Box implements Renderable {
         result.translate(tx, ty);
         return result;
     }
-
-    public void paintTextDecoration(RenderingContext c, InlineBox inline) {
-        ((BlockBox) getParent()).paintTextDecoration(c, this, inline);
-        if (firstLinePseudo != null) {
-            firstLinePseudo.paintTextDecoration(c, this, inline);
-            firstLinePseudo.untranslateRelative(c, isFirstLine);
+    
+    public void paint(RenderingContext c) {
+        for (int i = 0; i < getChildCount(); i++) {
+            Box child = (Box)getChild(i);
+            if (child instanceof InlineBox) {
+                InlineBox iB = (InlineBox)child;
+                iB.paint(c);
+            } else if (child.getLayer() == null) {
+                Layer.paintAsLayer(c, child);
+            }
         }
+    }
+    
+    public boolean isFirstLine() {
+        Box parent = getParent();
+        return parent != null && parent.getChildCount() > 0 && parent.getChild(0) == this;
+    }
+    
+    public void prunePendingInlineBoxes() {
+        if (getChildCount() > 0) {
+            for (int i = getChildCount() - 1; i >= 0; i--) {
+                Box b = (Box)getChild(i);
+                if (! (b instanceof InlineBox)) {
+                    break;
+                }
+                InlineBox iB = (InlineBox)b;
+                iB.prunePending();
+                if (iB.isPending()) {
+                    removeChild(i);
+                }
+            }
+        }
+    }
+
+    public boolean isContainsContent() {
+        return containsContent;
+    }
+
+    public void setContainsContent(boolean containsContent) {
+        this.containsContent = containsContent;
     }
 }
 
@@ -150,6 +132,9 @@ public class LineBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/11/25 16:57:17  peterbrant
+ * Initial commit of inline content refactoring
+ *
  * Revision 1.30  2005/11/12 21:55:27  tobega
  * Inline enhancements: block box text decorations, correct line-height when it is a number, better first-letter handling
  *

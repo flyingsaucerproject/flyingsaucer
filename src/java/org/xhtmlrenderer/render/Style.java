@@ -5,8 +5,10 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.layout.LayoutContext;
 
 import java.awt.Font;
+import java.awt.font.LineMetrics;
 
 /**
  * Encapuslates anything style related in a Box. A separate bean is used to
@@ -23,11 +25,28 @@ public class Style {
 
     private boolean marginBottomOverrideSet = false;
 
-    private float parentWidth;
+    private float containingBlockWidth;
 
-    public Style(CalculatedStyle calculatedStyle, float parentWidth) {
+    public Style(CalculatedStyle calculatedStyle, float containingBlockWidth) {
         this.calculatedStyle = calculatedStyle;
-        this.parentWidth = parentWidth;
+        this.containingBlockWidth = containingBlockWidth;
+    }
+    
+    /**
+     * A note on this method: What we really want is a FontMetrics2D object (i.e.
+     * font metrics with float precision).  Unfortunately, it doesn't seem
+     * the JDK provides this.  However, looking at the JDK code, it appears the
+     * metrics contained in the LineMetrics are actually the metrics of the font, not
+     * the metrics of the line (and empirically strings of "X" and "j" return the same 
+     * value for getAscent()).  So... for now we use LineMetrics for font metrics.
+     */
+    public LineMetrics getLineMetrics(LayoutContext c) {
+        Font f = getFont(c);
+        return c.getTextRenderer().getLineMetrics(c.getGraphics(), f, "");
+    }
+    
+    public int getContainingBlockWidth() {
+        return (int)containingBlockWidth;
     }
 
     public Font getFont(CssContext cssContext) {
@@ -113,7 +132,7 @@ public class Style {
 
     public RectPropertySet getMarginWidth(CssContext cssContext) {
         RectPropertySet rect = 
-            calculatedStyle.getMarginRect(parentWidth, parentWidth, cssContext).copyOf();
+            calculatedStyle.getMarginRect(containingBlockWidth, containingBlockWidth, cssContext).copyOf();
 
         // TODO: this is bad for cached rects...
         if (this.marginTopOverrideSet) {
@@ -123,6 +142,10 @@ public class Style {
             rect.setBottom((int) this.marginBottomOverride);
         }
         return rect;
+    }
+    
+    public RectPropertySet getPaddingWidth(CssContext cssCtx) {
+        return calculatedStyle.getPaddingRect(containingBlockWidth, containingBlockWidth, cssCtx);
     }
 
     public boolean isAutoWidth() {
@@ -179,4 +202,12 @@ public class Style {
     public boolean isBottomAuto() {
         return calculatedStyle.isIdent(CSSName.BOTTOM, IdentValue.AUTO);   
     }
+    
+    public int getLeftMarginBorderPadding(CssContext cssCtx) {
+        return getCalculatedStyle().getLeftMarginBorderPadding(cssCtx, (int)containingBlockWidth);
+    }
+    
+    public int getRightMarginBorderPadding(CssContext cssCtx) {
+        return getCalculatedStyle().getRightMarginBorderPadding(cssCtx, (int)containingBlockWidth);
+    }    
 }

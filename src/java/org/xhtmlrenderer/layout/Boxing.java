@@ -32,7 +32,6 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.layout.block.Absolute;
 import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.ContentUtil;
@@ -140,6 +139,10 @@ public class Boxing {
         Rectangle oe = c.getExtents();
 
         block.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth()));
+        
+        if (block.getStyle().isCleared()) {
+            c.getBlockFormattingContext().clear(c, block);
+        }         
 
         if (c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
             c.getRootLayer().setFixedBackground(true);
@@ -339,6 +342,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.59  2005/11/25 16:57:14  peterbrant
+ * Initial commit of inline content refactoring
+ *
  * Revision 1.58  2005/11/10 01:55:18  peterbrant
  * Further progress on layer work
  *

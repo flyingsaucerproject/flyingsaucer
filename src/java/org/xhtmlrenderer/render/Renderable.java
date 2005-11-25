@@ -33,5 +33,7 @@ public interface Renderable extends VerticalExtent {
     int getIndex();
 
     //HACK: Context should not be necessary
+    /*
     void render(RenderingContext c, Graphics2D g2);
+    */
 }

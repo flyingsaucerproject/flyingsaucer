@@ -45,7 +45,6 @@ import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.Configuration;
@@ -663,13 +662,6 @@ public abstract class BasicPanel extends RootPanel {
             Box bx = (Box) it.next();
             printTree(bx, tab + " ");
         }
-
-        if (box instanceof InlineBlockBox) {
-            InlineBlockBox ib = (InlineBlockBox) box;
-            if (ib.sub_block != null) {
-                printTree(ib.sub_block, tab + " ");
-            }
-        }
     }
 
 
@@ -1091,6 +1083,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.86  2005/11/25 16:57:23  peterbrant
+ * Initial commit of inline content refactoring
+ *
  * Revision 1.85  2005/11/09 18:41:28  peterbrant
  * Fixes to vertical margin collapsing in the presence of floats / Paint floats as
  * layers

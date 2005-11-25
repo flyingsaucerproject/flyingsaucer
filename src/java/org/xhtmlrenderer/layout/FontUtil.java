@@ -25,8 +25,6 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.render.InlineTextBox;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -55,17 +53,6 @@ public class FontUtil {
     /**
      * Description of the Method
      *
-     * @param c   PARAM
-     * @param box PARAM
-     * @return Returns
-     */
-    public static int len(CssContext c, InlineTextBox box, TextRenderer tr, Graphics2D g2) {
-        return len(box.getSubstring(), box.getStyle().getFont(c), tr, g2);
-    }
-
-    /**
-     * Description of the Method
-     *
      * @param c PARAM
      * @return Returns
      */
@@ -87,6 +74,7 @@ public class FontUtil {
      * @param box  PARAM
      * @return The lineMetrics value
      */
+    /*
     public static LineMetrics getLineMetrics(Font font, InlineBox box, TextRenderer tr, Graphics2D g2) {
         String sample = "Test";
         if ((box instanceof InlineTextBox) && !((InlineTextBox) box).getSubstring().equals("")) {
@@ -95,6 +83,7 @@ public class FontUtil {
         return tr.getLineMetrics(g2,
                 font, sample);
     }
+    */
 
     /**
      * Gets the textBounds attribute of the FontUtil class
@@ -103,16 +92,21 @@ public class FontUtil {
      * @param box PARAM
      * @return The textBounds value
      */
+    /*
     public static Rectangle2D getTextBounds(CssContext c, InlineTextBox box, TextRenderer tr, Graphics2D g2) {
         return tr.getLogicalBounds(g2,
                 box.getStyle().getFont(c), box.getSubstring());
     }
+    */
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2005/11/25 16:57:14  peterbrant
+ * Initial commit of inline content refactoring
+ *
  * Revision 1.43  2005/11/08 19:54:15  peterbrant
  * line-height proportional values are calculated internally now
  *

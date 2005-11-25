@@ -42,16 +42,15 @@ public class AnonymousBlockBox extends BlockBox {
     public int getContentWidth() {
         return getContainingBlock().getContentWidth();
     }
-
-    public void paintTextDecoration(RenderingContext c, LineBox line, InlineBox inline) {
-        ((BlockBox) getParent()).paintTextDecoration(c, line, inline);
-    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/11/25 16:57:19  peterbrant
+ * Initial commit of inline content refactoring
+ *
  * Revision 1.14  2005/11/12 21:55:27  tobega
  * Inline enhancements: block box text decorations, correct line-height when it is a number, better first-letter handling
  *

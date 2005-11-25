@@ -19,19 +19,18 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.css.constants.CSSName;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.util.List;
+
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.content.ContentUtil;
-import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
-
-import java.awt.*;
 
 public class BlockBox extends Box implements Renderable {
 
-    private final static Color TRANSPARENT = new Color(0, 0, 0, 0);
-
     public int renderIndex;
+    
+    private List pendingInlineElements;
 
     public BlockBox() {
         super();
@@ -61,26 +60,6 @@ public class BlockBox extends Box implements Renderable {
         return renderIndex;
     }
 
-    //HACK: Context should not be necessary
-    public void render(RenderingContext c, Graphics2D g2) {
-        //HACK:
-        g2.translate(getAbsX() - x, getAbsY() - y);
-        int width = getWidth();
-        int height = getHeight();
-        if (getState() != Box.DONE) {
-            height += c.getCanvas().getHeight();
-        }
-        RectPropertySet margin = getStyle().getMarginWidth(c);
-
-        // CLEAN: cast to int
-        Rectangle bounds = new Rectangle(x + (int) margin.left(),
-                y + (int) margin.top(),
-                width - (int) margin.left() - (int) margin.right(),
-                height - (int) margin.top() - (int) margin.bottom());
-        BoxRendering.paintBackground(c, this, bounds);
-        g2.translate(x - getAbsX(), y - getAbsY());
-    }
-
     public double getAbsTop() {
         return getAbsY();
     }
@@ -90,104 +69,6 @@ public class BlockBox extends Box implements Renderable {
     }
 
 
-    public void paintBorder(RenderingContext c) {
-        Rectangle borderBounds = getBorderEdge(getAbsX(), getAbsY(), c);
-        if (getState() != Box.DONE) {
-            borderBounds.height += c.getCanvas().getHeight();
-        }
-
-        BorderPainter.paint(borderBounds, BorderPainter.ALL,
-                getStyle().getCalculatedStyle(), c.getGraphics(), c, 0);
-    }
-
-    private Image getBackgroundImage(RenderingContext c) {
-        String uri = getStyle().getCalculatedStyle().getStringProperty(CSSName.BACKGROUND_IMAGE);
-        if (!uri.equals("none")) {
-            try {
-                return c.getUac().getImageResource(uri).getImage();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                Uu.p(ex);
-            }
-        }
-        return null;
-    }
-
-    public void paintBackground(RenderingContext c) {
-        if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
-            return;
-        }
-
-        Rectangle backgroundBounds = getBorderEdge(getAbsX(), getAbsY(), c);
-        if (getState() != Box.DONE) {
-            backgroundBounds.height += c.getCanvas().getHeight();
-        }
-
-        Color backgroundColor = getStyle().getCalculatedStyle().getBackgroundColor();
-        if (backgroundColor != null && !backgroundColor.equals(TRANSPARENT)) {
-            c.getGraphics().setColor(backgroundColor);
-            c.getGraphics().fillRect(backgroundBounds.x, backgroundBounds.y, backgroundBounds.width, backgroundBounds.height);
-        }
-
-        int xoff = 0;
-        int yoff = 0;
-
-        Image backgroundImage = getBackgroundImage(c);
-        if (backgroundImage != null) {
-            Shape oldclip = (Shape) c.getGraphics().getClip();
-
-            if (getStyle().isFixedBackground()) {
-                yoff = c.getCanvas().getLocation().y;
-                c.getGraphics().setClip(c.getCanvas().getVisibleRect());
-            }
-
-            c.getGraphics().clip(backgroundBounds);
-
-            int imageWidth = backgroundImage.getWidth(null);
-            int imageHeight = backgroundImage.getHeight(null);
-
-            Point bgOffset = getStyle().getCalculatedStyle().getBackgroundPosition(backgroundBounds.width - imageWidth,
-                    backgroundBounds.height - imageHeight, c);
-            xoff += bgOffset.x;
-            yoff -= bgOffset.y;
-
-            tileFill(c.getGraphics(), backgroundImage,
-                    backgroundBounds,
-                    xoff, -yoff,
-                    getStyle().isHorizontalBackgroundRepeat(),
-                    getStyle().isVerticalBackgroundRepeat());
-            c.getGraphics().setClip(oldclip);
-        }
-    }
-
-    private static void tileFill(Graphics g, Image img, Rectangle rect, int xoff, int yoff, boolean horiz, boolean vert) {
-        int iwidth = img.getWidth(null);
-        int iheight = img.getHeight(null);
-        int rwidth = rect.width;
-        int rheight = rect.height;
-
-        if (horiz) {
-            xoff = xoff % iwidth - iwidth;
-            rwidth += iwidth;
-        } else {
-            rwidth = iwidth;
-        }
-
-        if (vert) {
-            yoff = yoff % iheight - iheight;
-            rheight += iheight;
-        } else {
-            rheight = iheight;
-        }
-
-        for (int i = 0; i < rwidth; i += iwidth) {
-            for (int j = 0; j < rheight; j += iheight) {
-                g.drawImage(img, i + rect.x + xoff, j + rect.y + yoff, null);
-            }
-        }
-
-    }
-
     public void paintListStyles(RenderingContext c) {
         //HACK:
         if (ContentUtil.isListItem(getStyle().getCalculatedStyle())) {
@@ -195,13 +76,12 @@ public class BlockBox extends Box implements Renderable {
         }
     }
 
-    public void paintTextDecoration(RenderingContext c, LineBox line, InlineBox inline) {
-        if (getParent() != null) {
-            //these will all do the relevant translates
-            ((BlockBox) getParent()).paintTextDecoration(c, line, inline);
-        }
-        Style style = getStyle();
-        InlineElement.paintTextDecoration(style, c, line, line.x + inline.x, inline.contentWidth);
+    public List getPendingInlineElements() {
+        return pendingInlineElements;
+    }
+
+    public void setPendingInlineElements(List pendingInlineElements) {
+        this.pendingInlineElements = pendingInlineElements;
     }
 }
 
@@ -209,6 +89,9 @@ public class BlockBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/11/25 16:57:19  peterbrant
+ * Initial commit of inline content refactoring
+ *
  * Revision 1.20  2005/11/12 21:55:27  tobega
  * Inline enhancements: block box text decorations, correct line-height when it is a number, better first-letter handling
  *

@@ -103,9 +103,7 @@ public class TableBoxing {
         outerBox.contentWidth = c.getExtents().width;
         outerBox.height = c.getExtents().height;
 
-        c.pushStyle(CascadedStyle.emptyCascadedStyle);
-        outerBox.setStyle(new Style(c.getCurrentStyle(), 0));
-        c.popStyle();
+        outerBox.createDefaultStyle(c);
 
         TableBox tableBox = new TableBox();
         outerBox.addChild(tableBox);
@@ -613,6 +611,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.46  2005/11/25 16:57:53  peterbrant
+   Initial commit of inline content refactoring
+
    Revision 1.45  2005/11/09 14:12:37  peterbrant
    Adapt to new way of indicating we need to do slow repaints
 

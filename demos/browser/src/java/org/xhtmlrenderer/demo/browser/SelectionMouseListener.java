@@ -2,7 +2,6 @@ package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineBox;
-import org.xhtmlrenderer.render.InlineTextBox;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.BoxFinder;
 
@@ -55,11 +54,13 @@ public class SelectionMouseListener implements MouseListener, MouseMotionListene
                 return;
             }
             // if box is text node then start selection
+            /*
             if ((box instanceof InlineTextBox)) {
                 int x = BoxFinder.findBoxX(panel, e.getX(), e.getY());
                 panel.getSharedContext().setSelectionEnd(box, x);
                 panel.repaint();
             }
+            */
         }
     }
 

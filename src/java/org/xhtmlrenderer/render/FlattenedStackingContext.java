@@ -64,13 +64,13 @@ public class FlattenedStackingContext extends StackingContext {
         TreeSet blocks = new TreeSet(indexer);
         blockVerticalExtentList.getIntersectingChildSet(blocks, top, bottom);
         for (Iterator i = blocks.iterator(); i.hasNext();) {
-            ((Renderable) i.next()).render(c, g2);
+            // ((Renderable) i.next()).render(c, g2);
         }
         //render in-flow inlines
         TreeSet inlines = new TreeSet(indexer);
         inlineVerticalExtentList.getIntersectingChildSet(inlines, top, bottom);
         for (Iterator i = inlines.iterator(); i.hasNext();) {
-            ((Renderable) i.next()).render(c, g2);
+            // ((Renderable) i.next()).render(c, g2);
         }
     }
 

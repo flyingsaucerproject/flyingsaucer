@@ -23,7 +23,9 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 import java.util.logging.Level;
 
@@ -37,7 +39,6 @@ import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.InlineElement;
 import org.xhtmlrenderer.render.PageContext;
 import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.swing.RootPanel;
@@ -46,15 +47,17 @@ import org.xhtmlrenderer.util.XRLog;
 public class LayoutContext implements CssContext, PageContext {
     private SharedContext sharedContext;
     private LinkedList firstLineStyles = new LinkedList();
+    private LinkedList firstLetterStyles = new LinkedList();
     private boolean shrinkWrap = false;
     private RenderQueue renderQueue;
     private boolean pendingPageBreak;
     private double floatingY;
     private Layer rootLayer;
-
+    
     private Graphics2D graphics;
 
-    private InlineElement currentInlineElement;
+    private StyleTracker firstLines = new StyleTracker();
+    private StyleTracker firstLetters = new StyleTracker();
 
     public boolean isFirstLine() {
         return firstLine;
@@ -130,14 +133,22 @@ public class LayoutContext implements CssContext, PageContext {
     public void clearFirstLineStyles() {
         firstLineStyles.clear();
     }
+    
+    public void pushFirstLineStyles() {
+        if (hasFirstLineStyles()) {
+            for (Iterator i = getFirstLineStyles().iterator(); i.hasNext();) {
+                pushStyle((CascadedStyle) i.next());
+            }
+        }
+    }    
 
     /**
      * NB, you are getting a reference! Call clearFirstLineStyles at own risk!
      */
-    public LinkedList getFirstLineStyles() {
+    public List getFirstLineStyles() {
         return firstLineStyles;
     }
-
+    
     public boolean shrinkWrap() {
         return shrinkWrap;
     }
@@ -443,11 +454,11 @@ public class LayoutContext implements CssContext, PageContext {
         this.floatingY = floatingY;
     }
 
-    public InlineElement getCurrentInlineElement() {
-        return currentInlineElement;
+    public StyleTracker getFirstLinesTracker() {
+        return firstLines;
     }
-
-    public void setCurrentInlineElement(InlineElement currentInlineElement) {
-        this.currentInlineElement = currentInlineElement;
+    
+    public StyleTracker getFirstLettersTracker() {
+        return firstLetters;
     }
 }

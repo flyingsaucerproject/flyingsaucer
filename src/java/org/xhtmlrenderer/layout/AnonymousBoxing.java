@@ -81,9 +81,7 @@ public class AnonymousBoxing {
 
     public static Box createBox(LayoutContext c, Content content) {
         Box block = new AnonymousBlockBox(content);
-        c.pushStyle(CascadedStyle.emptyCascadedStyle);
-        block.setStyle(new Style(c.getCurrentStyle(), 0));
-        c.popStyle();
+        block.createDefaultStyle(c);
         return block;
     }
 }
@@ -92,6 +90,9 @@ public class AnonymousBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2005/11/25 16:57:13  peterbrant
+ * Initial commit of inline content refactoring
+ *
  * Revision 1.7  2005/10/30 00:02:35  peterbrant
  * - Minor cleanup to get rid of unused CssContext in Style constructor
  * - Switch to ArrayList from LinkedList in a few places (saves several MBs of memory on Hamlet)

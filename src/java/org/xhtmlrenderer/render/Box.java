@@ -27,10 +27,17 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.Layer;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PersistentBFC;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
+
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;
@@ -79,33 +86,13 @@ public abstract class Box {
 
     // position stuff
 
-    /**
-     * The Image shown as the Box's background.
-     */
-    public Image background_image;
-
-    /**
-     * The URI for a background image; used in debugging (so we know which bg is
-     * being painted)
-     */
-    public String background_uri;
-
-    public int background_position_vertical = 0;
-
-    public int background_position_horizontal = 0;
-
     // list stuff
     public int list_count = -1;
 
     // printing stuff
-    public CascadedStyle firstLineStyle;
 
-    public CascadedStyle firstLetterStyle;
-
-    protected PersistentBFC persistentBFC = null;
-
+    private PersistentBFC persistentBFC = null;
     private Layer layer = null;
-
     private Box parent;
 
     // children stuff
@@ -188,6 +175,10 @@ public abstract class Box {
 
     public void removeChild(Box child) {
         boxes.remove(child);
+    }
+    
+    public void removeChild(int i) {
+        boxes.remove(i);
     }
 
     public void reset() {
@@ -316,14 +307,6 @@ public abstract class Box {
         sb.append("-pad(" + this.padding.top + "," + this.padding.left + "," + this.padding.bottom + "," + this.padding.right + ")");
         sb.append(")"); */
 		
-		
-        // background images
-        sb.append("-backimg(" + background_image);
-        sb.append("-" + style.getBackgroundRepeat());
-        sb.append("-" + style.getBackgroundAttachment());
-        sb.append("-" + background_position_vertical);
-        sb.append("-" + background_position_horizontal + ")");
-
         sb.append("-value:");
         if (element != null) {
             sb.append(element.getNodeValue());
@@ -339,6 +322,8 @@ public abstract class Box {
     public static final int FLUX = 1;
     public static final int CHILDREN_FLUX = 2;
     public static final int DONE = 3;
+
+    private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
     private int state = NOTHING;
 
     public synchronized int getState() {
@@ -362,6 +347,34 @@ public abstract class Box {
             default:
                 return "unknown";
         }
+    }
+
+    private static void tileFill(Graphics g, Image img, Rectangle rect, int xoff, int yoff, boolean horiz, boolean vert) {
+        int iwidth = img.getWidth(null);
+        int iheight = img.getHeight(null);
+        int rwidth = rect.width;
+        int rheight = rect.height;
+    
+        if (horiz) {
+            xoff = xoff % iwidth - iwidth;
+            rwidth += iwidth;
+        } else {
+            rwidth = iwidth;
+        }
+    
+        if (vert) {
+            yoff = yoff % iheight - iheight;
+            rheight += iheight;
+        } else {
+            rheight = iheight;
+        }
+    
+        for (int i = 0; i < rwidth; i += iwidth) {
+            for (int j = 0; j < rheight; j += iheight) {
+                g.drawImage(img, i + rect.x + xoff, j + rect.y + yoff, null);
+            }
+        }
+    
     }
 
     public boolean crossesPageBreak(PageContext c) {
@@ -431,6 +444,10 @@ public abstract class Box {
         addBackMargins(cssCtx, result);
         result.translate(tx, ty);
         return result;
+    }
+    
+    protected Rectangle getPaintingBorderEdge(CssContext cssCtx) {
+        return getBorderEdge(getAbsX(), getAbsY(), cssCtx);
     }
 
     /**
@@ -542,6 +559,15 @@ public abstract class Box {
             this.y += paddingBox.y;
         }
     }
+    
+    // HACK If a box doesn't have a Style object, NPEs are the likely result
+    // However, it begs the question if a Style object is being used in places
+    // it doesn't make sense (e.g. line boxes, table rows)
+    public void createDefaultStyle(LayoutContext c) {
+        c.pushStyle(CascadedStyle.emptyCascadedStyle);
+        setStyle(new Style(c.getCurrentStyle(), 0));
+        c.popStyle();
+    }
 
     public void setAbsY(int absY) {
         this.absY = absY;
@@ -566,12 +592,99 @@ public abstract class Box {
     public boolean isStyled() {
         return style != null;
     }
+    
+    protected int getBorderSides() {
+        return BorderPainter.ALL;
+    }
+    
+    public void paintBorder(RenderingContext c) {
+        Rectangle borderBounds = getPaintingBorderEdge(c);
+        if (getState() != Box.DONE) {
+            borderBounds.height += c.getCanvas().getHeight();
+        }
+    
+        BorderPainter.paint(borderBounds, getBorderSides(),
+                getStyle().getCalculatedStyle(), c.getGraphics(), c, 0);
+    }
+
+    private Image getBackgroundImage(RenderingContext c) {
+        String uri = getStyle().getCalculatedStyle().getStringProperty(CSSName.BACKGROUND_IMAGE);
+        if (! uri.equals("none")) {
+            try {
+                return c.getUac().getImageResource(uri).getImage();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Uu.p(ex);
+            }
+        }
+        return null;
+    }
+
+    public void paintBackground(RenderingContext c) {
+        if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
+            return;
+        }
+        
+        Color backgroundColor = getStyle().getCalculatedStyle().getBackgroundColor();
+        Image backgroundImage = getBackgroundImage(c);
+        
+        if ( (backgroundColor == null || backgroundColor.equals(TRANSPARENT)) &&
+                backgroundImage == null) {
+            return;
+        }
+    
+        Rectangle backgroundBounds = getPaintingBorderEdge(c);
+        if (getState() != Box.DONE) {
+            backgroundBounds.height += c.getCanvas().getHeight();
+        }
+        
+        if (backgroundColor != null && ! backgroundColor.equals(TRANSPARENT)) {
+            c.getGraphics().setColor(backgroundColor);
+            c.getGraphics().fillRect(backgroundBounds.x, backgroundBounds.y, backgroundBounds.width, backgroundBounds.height);
+        }
+    
+        int xoff = 0;
+        int yoff = 0;
+        
+        if (backgroundImage != null) {
+            Shape oldclip = (Shape) c.getGraphics().getClip();
+    
+            if (getStyle().isFixedBackground()) {
+                yoff = c.getCanvas().getLocation().y;
+                c.getGraphics().setClip(c.getCanvas().getVisibleRect());
+            }
+    
+            c.getGraphics().clip(backgroundBounds);
+    
+            int imageWidth = backgroundImage.getWidth(null);
+            int imageHeight = backgroundImage.getHeight(null);
+    
+            Point bgOffset = getStyle().getCalculatedStyle().getBackgroundPosition(backgroundBounds.width - imageWidth,
+                    backgroundBounds.height - imageHeight, c);
+            xoff += bgOffset.x;
+            yoff -= bgOffset.y;
+    
+            tileFill(c.getGraphics(), backgroundImage,
+                    backgroundBounds,
+                    xoff, -yoff,
+                    getStyle().isHorizontalBackgroundRepeat(),
+                    getStyle().isVerticalBackgroundRepeat());
+            c.getGraphics().setClip(oldclip);
+        }
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.79  2005/11/25 16:57:20  peterbrant
+ * Initial commit of inline content refactoring
+ *
  * Revision 1.78  2005/11/13 01:14:16  tobega
  * Take into account the height of a first-letter. Also attempt to line-break better with inline padding.
  *

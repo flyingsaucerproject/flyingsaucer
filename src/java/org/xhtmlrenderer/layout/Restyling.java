@@ -35,13 +35,16 @@ import java.util.LinkedList;
  */
 public class Restyling {
     public static void restyle(LayoutContext c, BlockBox box) {
+        /*
         if (box.element != null) {
             CalculatedStyle parentStyle = box.getStyle().getCalculatedStyle().getParent();
             c.initializeStyles(parentStyle);
         }//else root box, already initialized
         restyleBox(c, box);
+        */
     }
 
+    /*
     private static void restyleBox(LayoutContext c, Box box) {
         if (box instanceof AnonymousBlockBox) {
             //InlineRendering.paintInlineContext(c, block, restyle);
@@ -148,6 +151,7 @@ public class Restyling {
         }
 
     }
+    */
 }
 
 /*

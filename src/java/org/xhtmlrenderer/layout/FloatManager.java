@@ -313,25 +313,23 @@ public class FloatManager {
         return master;
     }
 
-    private void update(int tx, int ty, List floats) {
-        int startX = tx;
-        int startY = ty;
-
+    private void update(FloatUpdater updater, List floats) {
         for (Iterator i = floats.iterator(); i.hasNext();) {
             BoxOffset boxOffset = (BoxOffset) i.next();
             Box box = boxOffset.getBox();
 
-            box.setAbsX(startX - boxOffset.getX());
-            box.setAbsY(startY - boxOffset.getY());
+            box.setAbsX(box.x + getMaster().getAbsX() - boxOffset.getX());
+            box.setAbsY(box.y + getMaster().getAbsY() - boxOffset.getY());
+            
+            updater.update(box);
 
-            box.getPersistentBFC().getFloatManager().updateAbsoluteLocations(box.getAbsX() + box.x,
-                    box.getAbsY() + box.y);
+            box.getPersistentBFC().getFloatManager().updateAbsoluteLocations(updater);
         }
     }
 
-    public void updateAbsoluteLocations(int tx, int ty) {
-        update(tx, ty, leftFloats);
-        update(tx, ty, rightFloats);
+    public void updateAbsoluteLocations(FloatUpdater updater) {
+        update(updater, leftFloats);
+        update(updater, rightFloats);
     }
 
     private static class BoxOffset {
@@ -356,6 +354,10 @@ public class FloatManager {
         public int getY() {
             return y;
         }
+    }
+    
+    public interface FloatUpdater {
+        public void update(Box floater);
     }
 }
 

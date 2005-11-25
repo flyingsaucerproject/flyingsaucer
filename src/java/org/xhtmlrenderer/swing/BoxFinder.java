@@ -416,7 +416,8 @@ public class BoxFinder {
                 XRLog.layout(Level.FINEST, "inline y = " + ibx.y);
                 XRLog.layout(Level.FINEST, "inline height = " + ibx.height);
                 XRLog.layout(Level.FINEST, "line = " + lbx);
-                int off = lbx.getBaseline() + ibx.y - ibx.height;//not really correct
+                // int off = lbx.getBaseline() + ibx.y - ibx.height;//not really correct
+                int off = 0;
                 XRLog.layout(Level.FINEST, "off = " + off);
                 tty -= off;
             }

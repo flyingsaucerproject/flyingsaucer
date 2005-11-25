@@ -44,13 +44,11 @@ public class BlockBoxing {
         while (contentIterator.hasNext()) {
             Object o = contentIterator.next();
             if (o instanceof FirstLineStyle) {//can actually only be the first object in list
-                block.firstLineStyle = ((FirstLineStyle) o).getStyle();
-                //put it into the Context so it gets used on the first line
-                c.addFirstLineStyle(block.firstLineStyle);
+                c.getFirstLinesTracker().addStyle(((FirstLineStyle) o).getStyle());
                 continue;
             }
             if (o instanceof FirstLetterStyle) {//can actually only be the first or second object in list
-                block.firstLetterStyle = ((FirstLetterStyle) o).getStyle();
+                c.getFirstLettersTracker().addStyle(((FirstLetterStyle) o).getStyle());
                 continue;
             }
             Content currentContent = (Content) o;
@@ -74,7 +72,7 @@ public class BlockBoxing {
             child_box.x = 0;
 
             double initialY = box.height;
-            child_box.y = (int) initialY;
+            child_box.y = (int) initialY;           
             
             //Uu.p("set child box y to: " + child_box);
             box.addChild(child_box);
@@ -82,12 +80,6 @@ public class BlockBoxing {
             box.propagateChildProperties(child_box);
             
             c.translate(0, -box.height);
-
-            if (child_box.getStyle().isCleared()) {
-                int currentX = child_box.x;
-                c.getBlockFormattingContext().clear(c, child_box);
-                box.height += child_box.x - currentX;
-            }
 
             // increase the final layout width if the child was greater
             box.adjustWidthForChild(child_box.getWidth());
@@ -122,12 +114,6 @@ public class BlockBoxing {
         c.addMaxWidth(box.getWidth());
 
         c.setListCounter(old_counter);
-
-        if (block.firstLineStyle != null) {
-            //pop it in case it wasn't used
-            c.popFirstLineStyle();
-        }
-
     }
 
 }
@@ -136,6 +122,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/11/25 16:57:14  peterbrant
+ * Initial commit of inline content refactoring
+ *
  * Revision 1.27  2005/11/05 18:45:05  peterbrant
  * General cleanup / Remove obsolete code
  *
