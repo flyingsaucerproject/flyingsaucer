@@ -46,8 +46,6 @@ import org.xhtmlrenderer.util.XRLog;
 
 public class LayoutContext implements CssContext, PageContext {
     private SharedContext sharedContext;
-    private LinkedList firstLineStyles = new LinkedList();
-    private LinkedList firstLetterStyles = new LinkedList();
     private boolean shrinkWrap = false;
     private RenderQueue renderQueue;
     private boolean pendingPageBreak;
@@ -113,41 +111,6 @@ public class LayoutContext implements CssContext, PageContext {
         return sharedContext.getNamespaceHandler();
     }
 
-    public void addFirstLineStyle(CascadedStyle firstLineStyle) {
-        firstLineStyles.addLast(firstLineStyle);
-    }
-
-    public void popFirstLineStyle() {
-        if (firstLineStyles.size() != 0) {//there was no formatted first line
-            firstLineStyles.removeLast();
-        }
-    }
-
-    public boolean hasFirstLineStyles() {
-        return firstLineStyles.size() != 0;
-    }
-
-    /**
-     * NB, clone list first if you want to keep the contents!
-     */
-    public void clearFirstLineStyles() {
-        firstLineStyles.clear();
-    }
-    
-    public void pushFirstLineStyles() {
-        if (hasFirstLineStyles()) {
-            for (Iterator i = getFirstLineStyles().iterator(); i.hasNext();) {
-                pushStyle((CascadedStyle) i.next());
-            }
-        }
-    }    
-
-    /**
-     * NB, you are getting a reference! Call clearFirstLineStyles at own risk!
-     */
-    public List getFirstLineStyles() {
-        return firstLineStyles;
-    }
     
     public boolean shrinkWrap() {
         return shrinkWrap;
