@@ -19,11 +19,8 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.util.List;
 
-import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 
 public class BlockBox extends Box implements Renderable {
@@ -89,6 +86,9 @@ public class BlockBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/11/25 22:38:39  peterbrant
+ * Clean imports
+ *
  * Revision 1.21  2005/11/25 16:57:19  peterbrant
  * Initial commit of inline content refactoring
  *
