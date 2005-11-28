@@ -599,7 +599,7 @@ public class TableBoxing {
 
         // restore height incase fixed height
         if (!cell.getStyle().isAutoHeight()) {
-            Uu.p("restoring original height");
+            // Uu.p("restoring original height");
             cell.height = original_height;
         }
 
@@ -625,6 +625,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.48  2005/11/28 22:26:29  peterbrant
+   Comment out noisy debug logging
+
    Revision 1.47  2005/11/25 22:42:07  peterbrant
    Wait until table has completed layout before doing line alignment
 

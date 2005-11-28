@@ -244,7 +244,7 @@ public class Boxing {
 
         // restore height incase fixed height
         if (!block.getStyle().isAutoHeight()) {
-            Uu.p("restoring original height");
+            // Uu.p("restoring original height");
             block.height = original_height;
         }
 
@@ -342,6 +342,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.60  2005/11/28 22:26:04  peterbrant
+ * Comment out noisy debug logging
+ *
  * Revision 1.59  2005/11/25 16:57:14  peterbrant
  * Initial commit of inline content refactoring
  *

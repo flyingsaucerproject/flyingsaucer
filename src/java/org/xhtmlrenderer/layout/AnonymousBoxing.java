@@ -69,7 +69,7 @@ public class AnonymousBoxing {
 
         // restore height incase fixed height
         if (!block.getStyle().isAutoHeight()) {
-            Uu.p("restoring original height");
+            // Uu.p("restoring original height");
             block.height = original_height;
         }
 
@@ -90,6 +90,9 @@ public class AnonymousBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2005/11/28 22:26:04  peterbrant
+ * Comment out noisy debug logging
+ *
  * Revision 1.8  2005/11/25 16:57:13  peterbrant
  * Initial commit of inline content refactoring
  *
