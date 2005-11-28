@@ -221,7 +221,9 @@ public class Layer {
             // TODO root layer needs to be handled correctly (paint over entire canvas)
             paintLayerBackgroundAndBorder(c);
             
-            paintLayers(c, getSortedLayers(NEGATIVE));
+            if (isRootLayer() || isStackingContext()) {
+                paintLayers(c, getSortedLayers(NEGATIVE));
+            }
     
             paintBackgroundsAndBorders(c, blocks);
             paintFloats(c);
@@ -229,10 +231,12 @@ public class Layer {
             paintListStyles(c, blocks);
             paintReplacedElements(c, blocks);
     
-            paintLayers(c, collectZIndexAutoLayers());
-            // TODO z-index: 0 layers should be painted atomically
-            paintLayers(c, getSortedLayers(ZERO));
-            paintLayers(c, getSortedLayers(POSITIVE));
+            if (isRootLayer() || isStackingContext()) {
+                paintLayers(c, collectZIndexAutoLayers());
+                // TODO z-index: 0 layers should be painted atomically
+                paintLayers(c, getSortedLayers(ZERO));
+                paintLayers(c, getSortedLayers(POSITIVE));
+            }
         }
     }
 
@@ -321,9 +325,7 @@ public class Layer {
         return result;
     }
 
-    // TODO Inline borders and padding can slide an inline box around at render
     // TODO block.renderIndex = c.getNewRenderIndex();
-    // TODO Don't do this every time 
     private Point updateAbsoluteLocations(int originX, int originY) {
         return updateAbsoluteLocationsHelper(getMaster(), originX, originY);
     }
@@ -447,5 +449,30 @@ public class Layer {
 
     public void setPositionsFinalized(boolean positionsFinalized) {
         this.positionsFinalized = positionsFinalized;
+    }
+    
+    public void remove(Layer layer) {
+        boolean removed = false;
+        
+        if (children != null) {
+            for (Iterator i = children.iterator(); i.hasNext(); ) {
+                Layer child = (Layer)i.next();
+                if (child == layer) {
+                    removed = true;
+                    i.remove();
+                    break;
+                }
+            }
+        }
+        
+        if (! removed) {
+            throw new RuntimeException("Could not find layer to remove");
+        }
+    }
+    
+    public void detach() {
+        if (getParent() != null) {
+            getParent().remove(this);
+        }
     }
 }

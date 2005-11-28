@@ -151,21 +151,25 @@ public class InlineBoxing {
             if (mustBeTakenOutOfFlow(content)) {
                 processOutOfFlowContent(c, content, currentLine, remainingWidth, pendingFloats);
             } else if (isInlineBlock(content)) {
-                Box inlineBlock = Boxing.layout(c, content);
+                Box inlineBlock = layoutInlineBlock(c, box, content);
 
                 if (inlineBlock.getWidth() > remainingWidth && currentLine.isContainsContent()) {
                     saveLine(currentLine, previousLine, c, box, minimumLineHeight,
                             maxAvailableWidth, elementStack, pendingFloats);
-                    inlineBlock = Boxing.layout(c, content);
                     previousLine = currentLine;
                     currentLine = newLine(c, previousLine, box);
                     currentIB = addNestedInlineBoxes(currentLine, elementStack, maxAvailableWidth);
-                    previousIB = currentIB.getParent() instanceof LineBox ?
+                    previousIB = currentIB == null || currentIB.getParent() instanceof LineBox ?
                             null : (InlineBox) currentIB.getParent();
                     remainingWidth = maxAvailableWidth;
                     if (!box.getStyle().isCleared()) {
                         remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
                     }
+                    
+                    if (inlineBlock.getLayer() != null) {
+                        inlineBlock.getLayer().detach();
+                    }
+                    inlineBlock = layoutInlineBlock(c, box, content);
                 }
 
                 if (currentIB == null) {
@@ -232,6 +236,14 @@ public class InlineBoxing {
         if (!c.shrinkWrap()) box.contentWidth = maxAvailableWidth;
 
         box.setHeight(currentLine.y + currentLine.getHeight());
+    }
+
+    private static Box layoutInlineBlock(LayoutContext c, 
+            Box containingBlock, Content content) {
+        Box inlineBlock = Boxing.preLayout(c, content);
+        inlineBlock.setContainingBlock(containingBlock);
+        Boxing.realLayout(c, inlineBlock, content);
+        return inlineBlock;
     }
 
     private static int positionHorizontally(LayoutContext c, Box current, int start) {
