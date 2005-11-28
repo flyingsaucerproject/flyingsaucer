@@ -135,6 +135,9 @@ public class BrowserStartup {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         final BrowserStartup bs = new BrowserStartup();
         bs.frame = frame;
+        if (args.length > 0) {
+            bs.startPage = args[0];
+        }        
         bs.init();
         frame.setJMenuBar(bs.menu);
         frame.getContentPane().add(bs.panel);
@@ -147,9 +150,6 @@ public class BrowserStartup {
         });
 
         frame.show();
-        if (args.length > 0) {
-            bs.panel.loadPage(args[0]);
-        }
     }
 
     /**
@@ -176,6 +176,9 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/11/28 17:02:33  peterbrant
+ * Add ability to launch browser with URL provided on the command line (from Andrew Goodnough)
+ *
  * Revision 1.17  2005/11/17 21:41:21  peterbrant
  * Allow custom start page
  *
