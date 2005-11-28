@@ -34,9 +34,11 @@ public class LayoutUtil {
     public static void generateAbsolute(LayoutContext c, Content content, LineBox currentLine) {
         Rectangle oe = c.getExtents();// copy the extents for safety
         c.setExtents(new Rectangle(oe));
-        Box box = Boxing.layout(c, content);
+        
+        Box box = Boxing.preLayout(c, content);
         box.setContainingBlock(c.getLayer().getMaster());
         box.setStaticEquivalent(currentLine);
+        Boxing.realLayout(c, box, content);
         
         c.setExtents(oe);
     }
