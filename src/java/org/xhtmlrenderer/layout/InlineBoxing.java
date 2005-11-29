@@ -408,22 +408,22 @@ public class InlineBoxing {
             IdentValue vAlign = style.getIdent(CSSName.VERTICAL_ALIGN);
 
             if (vAlign == IdentValue.BASELINE) {
-                box.y = (int) (measurements.getBaseline() - ascent);
+                box.y = Math.round(measurements.getBaseline() - ascent);
             } else if (vAlign == IdentValue.TEXT_TOP) {
                 box.y = measurements.getTextTop();
             } else if (vAlign == IdentValue.TEXT_BOTTOM) {
-                box.y = (int) (measurements.getTextBottom() - descent - ascent);
+                box.y = Math.round(measurements.getTextBottom() - descent - ascent);
             } else if (vAlign == IdentValue.MIDDLE) {
-                box.y = (int) ((measurements.getTextTop() - measurements.getBaseline()) / 2
+                box.y = Math.round((measurements.getTextTop() - measurements.getBaseline()) / 2
                         - ascent / 2);
             } else if (vAlign == IdentValue.SUPER) {
-                box.y = (int) ((measurements.getTextTop() - measurements.getBaseline()) / 2
+                box.y = Math.round((measurements.getTextTop() - measurements.getBaseline()) / 2
                         - ascent);
             } else if (vAlign == IdentValue.SUB) {
-                box.y = (int) (measurements.getBaseline() + ascent / 2);
+                box.y = Math.round(measurements.getBaseline() + ascent / 2);
             } else {
                 // TODO implement vertical-align: top/bottom, for now just treat as baseline
-                box.y = (int) (measurements.getBaseline() - ascent);
+                box.y = Math.round(measurements.getBaseline() - ascent);
             }
         }
     }
@@ -434,7 +434,7 @@ public class InlineBoxing {
         float lineHeight = style.getCalculatedStyle().getLineHeight(c);
         FontSpecification fontSpec = style.getCalculatedStyle().getFont(c);
 
-        float halfLeading = (lineHeight - fontSpec.size) / 2;
+        int halfLeading = Math.round((lineHeight - fontSpec.size) / 2);
 
         InlineBoxMeasurements measurements = new InlineBoxMeasurements();
         measurements.setBaseline((int) (halfLeading + strutLM.getAscent()));

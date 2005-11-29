@@ -190,9 +190,7 @@ public class Layer {
     private void paintInlineContent(RenderingContext c, List lines) {
         for (Iterator i = lines.iterator(); i.hasNext();) {
             LineBox line = (LineBox) i.next();
-            c.translate(line.getAbsX(), line.getAbsY());
             line.paint(c);
-            c.translate(-line.getAbsX(), -line.getAbsY());
         }
     }
     
@@ -216,7 +214,8 @@ public class Layer {
             List blocks = new ArrayList();
             List lines = new ArrayList();
     
-            collectBoxes(c, getMaster(), blocks, lines);
+            BoxCollector collector = new BoxCollector();
+            collector.collect(c, c.getGraphics().getClip(), getMaster(), blocks, lines);
     
             // TODO root layer needs to be handled correctly (paint over entire canvas)
             paintLayerBackgroundAndBorder(c);
@@ -384,7 +383,7 @@ public class Layer {
                 if (obj instanceof Box) {
                     Point offset = updateAbsoluteLocationsHelper((Box)obj, nextX, nextY);
                     moveIfGreater(result, offset);
-                }
+                } 
             }
         }
         
@@ -420,27 +419,6 @@ public class Layer {
 
     public synchronized List getChildren() {
         return children == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(children);
-    }
-
-    private void collectBoxes(RenderingContext c, Box container, List blockContent, List inlineContent) {
-        if (container instanceof LineBox) {
-            if (container.intersects(c, c.getGraphics().getClip())) {
-                inlineContent.add(container);
-            }
-        } else {
-            if (container.getLayer() == null || !(container instanceof BlockBox)) {
-                if (container.intersects(c, c.getGraphics().getClip())) {
-                    blockContent.add(container);
-                }
-            }
-
-            if (container.getLayer() == null || container == getMaster()) {
-                for (int i = 0; i < container.getChildCount(); i++) {
-                    Box child = container.getChild(i);
-                    collectBoxes(c, child, blockContent, inlineContent);
-                }
-            }
-        }
     }
 
     public boolean isPositionsFinalized() {

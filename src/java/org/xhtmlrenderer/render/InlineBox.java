@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.render;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.font.LineMetrics;
 import java.util.ArrayList;
@@ -189,7 +190,10 @@ public class InlineBox extends Box {
             } else if (child instanceof Box) {
                 Box b = (Box)child;
                 if (b.getLayer() == null) {
+                    Point offset = c.getOriginOffset();
+                    c.translate(-offset.x, -offset.y);
                     Layer.paintAsLayer(c, b);
+                    c.translate(offset.x, offset.y);
                 }
             }
         }

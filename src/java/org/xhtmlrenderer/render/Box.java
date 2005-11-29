@@ -73,8 +73,6 @@ public abstract class Box {
     public int rightPadding = 0;
     public int leftPadding = 0;
 
-    public double paginationTranslation = 0;
-
     public int getWidth() {
         return contentWidth + leftPadding + rightPadding;
     }
@@ -106,8 +104,6 @@ public abstract class Box {
      */
     public int tx;
     public int ty;
-
-    private boolean movedPastPageBreak;
 
     private Style style;
     private Box containingBlock;
@@ -399,24 +395,6 @@ public abstract class Box {
         return delta;
     }
 
-    public void moveToNextPage(PageContext c, boolean considerTy) {
-        double delta = getDistanceFromPageBreak(c, considerTy);
-        y += delta;
-        paginationTranslation = delta;
-        if (considerTy) {
-            //TODO: fix: c.translate(0, (int) delta);
-        }
-        this.movedPastPageBreak = true;
-    }
-
-    public boolean isMovedPastPageBreak() {
-        return movedPastPageBreak;
-    }
-
-    public void setMovedPastPageBreak(boolean movedPastPageBreak) {
-        this.movedPastPageBreak = movedPastPageBreak;
-    }
-
     public final Style getStyle() {
         return this.style;
     }
@@ -682,6 +660,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.80  2005/11/29 02:37:24  peterbrant
+ * Make clear work again / Rip out old pagination code
+ *
  * Revision 1.79  2005/11/25 16:57:20  peterbrant
  * Initial commit of inline content refactoring
  *

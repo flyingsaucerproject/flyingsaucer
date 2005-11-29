@@ -26,7 +26,6 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.awt.Dimension;
 import java.util.Iterator;
@@ -36,11 +35,23 @@ public class BlockBoxing {
     private BlockBoxing() {
     }
 
-    public static void layoutContent(LayoutContext c, Box box, List contentList, Box block) {
+    public static void layoutContent(final LayoutContext c, final Box box, 
+            List contentList, Box block) {
         // prepare for the list items
         int old_counter = c.getListCounter();
         c.setListCounter(0);
         Iterator contentIterator = contentList.iterator();
+        
+        Boxing.StyleSetListener styleSetListener = new Boxing.StyleSetListener() {
+            public void onStyleSet(Box child) {
+                if (child.getStyle().isCleared()) {
+                    c.translate(0, -box.height);
+                    c.getBlockFormattingContext().clear(c, child);
+                    c.translate(0, child.y);
+                }
+            }
+        };
+        
         while (contentIterator.hasNext()) {
             Object o = contentIterator.next();
             if (o instanceof FirstLineStyle) {//can actually only be the first object in list
@@ -59,27 +70,20 @@ public class BlockBoxing {
             //TODO:handle counters correctly
             c.setListCounter(c.getListCounter() + 1);
 
-            // execute the layout and get the return bounds
-            //c.parent_box = box;
-            //c.placement_point = new Point(0, box.height);
-            c.translate(0, box.height);
-            //child_box = Boxing.layout(c, currentContent);
             child_box = Boxing.preLayout(c, currentContent);
-            //Uu.p("did pre layout on : " + child_box);
-            //Uu.p("adding the child: " + child_box);
             child_box.list_count = c.getListCounter();
-            // set the child_box location
             child_box.x = 0;
 
-            double initialY = box.height;
-            child_box.y = (int) initialY;           
+            int initialY = box.height;
             
+            child_box.y = initialY;           
             //Uu.p("set child box y to: " + child_box);
             box.addChild(child_box);
-            Boxing.realLayout(c, child_box, currentContent);
-            box.propagateChildProperties(child_box);
             
-            c.translate(0, -box.height);
+            c.translate(0, box.height);
+            Boxing.realLayout(c, child_box, currentContent, styleSetListener);
+            box.propagateChildProperties(child_box);
+            c.translate(0, -child_box.y);
 
             // increase the final layout width if the child was greater
             box.adjustWidthForChild(child_box.getWidth());
@@ -122,6 +126,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/11/29 02:37:25  peterbrant
+ * Make clear work again / Rip out old pagination code
+ *
  * Revision 1.28  2005/11/25 16:57:14  peterbrant
  * Initial commit of inline content refactoring
  *

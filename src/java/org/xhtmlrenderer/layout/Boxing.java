@@ -43,26 +43,10 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.table.TableBoxing;
-import org.xhtmlrenderer.util.Uu;
 
 
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class Boxing {
-
-    /**
-     * Constructor for the BoxLayout object
-     */
     private Boxing() {
-    }
-
-    public static Box layout(LayoutContext c, Content content) {
-        Box block = preLayout(c, content);
-        if (c.shouldStop()) return block;
-        return realLayout(c, block, content);
     }
 
     public static Box preLayout(LayoutContext c, Content content) {
@@ -86,47 +70,22 @@ public class Boxing {
         }
         return block;
     }
-
+    
     public static Box realLayout(LayoutContext c, Box block, Content content) {
+        return realLayout(c, block, content, null);
+    }
+
+    public static Box realLayout(LayoutContext c, Box block, Content content, 
+            StyleSetListener listener) {
         if (content instanceof AnonymousBlockContent) {
             return AnonymousBoxing.layout(c, block, content);
         } else if (content instanceof TableContent) {
-            return TableBoxing.layout(c, (BlockBox) block, content);
+            return TableBoxing.layout(c, (BlockBox) block, content, listener);
         } else
-            return layout(c, block, content);
+            return layout(c, block, content, listener);
     }
 
-    private static void checkPageBreakBefore(LayoutContext c, Box block) {
-        if (c.isPrint()) {
-            if ((c.isPendingPageBreak() ||
-                    c.getCurrentStyle().isIdent(CSSName.PAGE_BREAK_BEFORE, IdentValue.ALWAYS))) {
-                block.moveToNextPage(c, false);
-                block.getStyle().setMarginTopOverride(0f);
-            }
-            c.setPendingPageBreak(false);
-        }
-    }
-
-    private static void checkPageBreakAfter(LayoutContext c, Box block) {
-        if (c.isPrint() && c.getCurrentStyle().isIdent(CSSName.PAGE_BREAK_AFTER, IdentValue.ALWAYS)) {
-            c.setPendingPageBreak(true);
-        }
-    }
-
-    /**
-     * @return if true block should be layouted again
-     */
-    private static boolean checkPageBreakInside(LayoutContext c, Box block) {
-        boolean relayout = c.isPrint() && c.getCurrentStyle().isIdent(CSSName.PAGE_BREAK_INSIDE, IdentValue.AVOID) &&
-                !block.isMovedPastPageBreak() &&
-                block.crossesPageBreak(c);
-        if (relayout) {
-            c.setPendingPageBreak(true);
-        }
-        return relayout;
-    }
-    
-    public static Box layout(LayoutContext c, Box block, Content content) {
+    private static Box layout(LayoutContext c, Box block, Content content, StyleSetListener listener) {
         //OK, first set up the current style. All depends on this...
         CascadedStyle pushed = content.getStyle();
         if (pushed != null) {
@@ -140,9 +99,9 @@ public class Boxing {
 
         block.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth()));
         
-        if (block.getStyle().isCleared()) {
-            c.getBlockFormattingContext().clear(c, block);
-        }         
+        if (listener != null ) {
+            listener.onStyleSet(block);
+        }
 
         if (c.getCurrentStyle().isIdent(CSSName.BACKGROUND_ATTACHMENT, IdentValue.FIXED)) {
             c.getRootLayer().setFixedBackground(true);
@@ -161,8 +120,6 @@ public class Boxing {
         c.setExtents(new Rectangle(oe));
 
         VerticalMarginCollapser.collapseVerticalMargins(c, block, content, (float) oe.getWidth());
-
-        checkPageBreakBefore(c, block);
 
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //note: percentages here refer to width of containing block
@@ -223,7 +180,7 @@ public class Boxing {
         int ty = (int) margin.top() + (int) border.top() + (int) padding.top();
         block.tx = tx;
         block.ty = ty;
-        c.translate(tx, ty + (int) block.paginationTranslation);
+        c.translate(tx, ty);
         // CLEAN: cast to int
         c.shrinkExtents(tx + (int) margin.right() + (int) border.right() + (int) padding.right(), ty + (int) margin.bottom() + (int) border.bottom() + (int) padding.bottom());
         if (block.component == null)
@@ -237,10 +194,8 @@ public class Boxing {
             block.setState(Box.DONE);
         }
         c.unshrinkExtents();
-        c.translate(-tx, -ty - (int) block.paginationTranslation);
+        c.translate(-tx, -ty);
         c.setSubBlock(old_sub);
-
-        checkPageBreakAfter(c, block);
 
         // restore height incase fixed height
         if (!block.getStyle().isAutoHeight()) {
@@ -271,19 +226,12 @@ public class Boxing {
 
         checkExceeds(block);
 
-        boolean relayout = checkPageBreakInside(c, block);
-
         //and now, back to previous style
         if (pushed != null) {
             c.popStyle();
         }
 
         c.setFirstLine(oldFirstLine);
-
-        if (relayout) {
-            block.reset();
-            layout(c, block, content);
-        }
 
         // Uu.p("BoxLayout: finished with block: " + block);
         return block;
@@ -308,13 +256,6 @@ public class Boxing {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     * @return Returns
-     */
     public static Box layoutChildren(LayoutContext c, Box box, Content content) {
         List contentList = content.getChildContent(c);
         box.setState(Box.CHILDREN_FLUX);
@@ -332,6 +273,18 @@ public class Boxing {
         box.setState(Box.DONE);
         return box;
     }
+    
+    /**
+     * HACK If a class implementing this interface is passed to {@link Boxing#realLayout(LayoutContext, Box, Content)}
+     * {@link #onStyleSet(Box)} is invoked once the {@link Style} object has been set on 
+     * the box.  It's basically a chance for the caller to manipulate the box after this
+     * has occurred.  Ugly, but seems better than the obvious alternatives (e.g. 
+     * pushing the style in {@link Boxing#preLayout(LayoutContext, Content)} [who
+     * does the pop then?])
+     */ 
+    public interface StyleSetListener {
+        public void onStyleSet(Box box);
+    }
 
     // calculate the width based on css and available space
 
@@ -342,6 +295,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.61  2005/11/29 02:37:25  peterbrant
+ * Make clear work again / Rip out old pagination code
+ *
  * Revision 1.60  2005/11/28 22:26:04  peterbrant
  * Comment out noisy debug logging
  *

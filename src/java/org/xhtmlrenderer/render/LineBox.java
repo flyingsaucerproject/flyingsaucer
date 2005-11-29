@@ -22,14 +22,11 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Layer;
-import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.font.LineMetrics;
 import java.util.logging.Level;
 
 
@@ -62,17 +59,6 @@ public class LineBox extends Box implements Renderable {
         return "Line: (" + x + "," + y + ")x(" + getWidth() + "," + height + ")";
     }
 
-    public void moveToNextPage(PageContext c, Rectangle bounds) {
-        if (getParent().getChildCount() == 1 && getParent().getChild(0) == this) {
-            getParent().moveToNextPage(c, true);
-        } else {
-            double delta = getDistanceFromPageBreak(c, false);
-
-            y += delta;
-            bounds.height += delta;
-        }
-    }
-
     public int getIndex() {
         return renderIndex;
     }
@@ -92,15 +78,20 @@ public class LineBox extends Box implements Renderable {
     }
     
     public void paint(RenderingContext c) {
+        c.translate(getAbsX(), getAbsY());
         for (int i = 0; i < getChildCount(); i++) {
             Box child = (Box)getChild(i);
             if (child instanceof InlineBox) {
                 InlineBox iB = (InlineBox)child;
                 iB.paint(c);
             } else if (child.getLayer() == null) {
+                Point offset = c.getOriginOffset();
+                c.translate(-offset.x, -offset.y);
                 Layer.paintAsLayer(c, child);
+                c.translate(offset.x, offset.y);
             }
         }
+        c.translate(-getAbsX(), -getAbsY());
     }
     
     public boolean isFirstLine() {
@@ -173,6 +164,9 @@ public class LineBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/11/29 02:37:23  peterbrant
+ * Make clear work again / Rip out old pagination code
+ *
  * Revision 1.32  2005/11/25 22:42:05  peterbrant
  * Wait until table has completed layout before doing line alignment
  *

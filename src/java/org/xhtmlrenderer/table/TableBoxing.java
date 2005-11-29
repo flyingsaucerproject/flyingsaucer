@@ -53,7 +53,6 @@ import org.xhtmlrenderer.layout.content.TableRowContent;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Style;
-import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
@@ -77,7 +76,8 @@ public class TableBoxing {
         return outerBox;
     }
 
-    public static Box layout(LayoutContext c, BlockBox outerBox, Content content) {
+    public static Box layout(LayoutContext c, BlockBox outerBox, Content content, 
+            Boxing.StyleSetListener listener) {
         boolean set_bfc = false;
 
         if (content instanceof TableContent) {
@@ -117,6 +117,10 @@ public class TableBoxing {
         }
 
         tableBox.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth()));
+        
+        if (listener != null) {
+            listener.onStyleSet(tableBox);
+        }
 
         VerticalMarginCollapser.collapseVerticalMargins(c, tableBox, content, (float) oe.getWidth());
 
@@ -625,6 +629,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.49  2005/11/29 02:37:26  peterbrant
+   Make clear work again / Rip out old pagination code
+
    Revision 1.48  2005/11/28 22:26:29  peterbrant
    Comment out noisy debug logging
 
