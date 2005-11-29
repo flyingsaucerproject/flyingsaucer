@@ -26,6 +26,8 @@ import org.xhtmlrenderer.layout.BoxCollector;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -45,6 +47,8 @@ public class LineBox extends Box implements Renderable {
     private boolean containsBlockLevelContent;
     
     private FloatDistances floatDistances;
+    
+    private TextDecoration textDecoration;
 
     /**
      * Constructor for the LineBox object
@@ -80,8 +84,24 @@ public class LineBox extends Box implements Renderable {
         return result;
     }
     
+    private void paintTextDecoration(RenderingContext c) {
+        Graphics graphics = c.getGraphics();
+        
+        Color oldColor = graphics.getColor();
+        
+        graphics.setColor(getStyle().getCalculatedStyle().getColor());
+        c.getGraphics().fillRect(
+                0, textDecoration.getOffset(),
+                getContentWidth(), textDecoration.getThickness());
+        
+        graphics.setColor(oldColor);
+    }
+    
     public void paint(RenderingContext c) {
         c.translate(getAbsX(), getAbsY());
+        if (textDecoration != null) {
+            paintTextDecoration(c);
+        }
         for (int i = 0; i < getChildCount(); i++) {
             Box child = (Box)getChild(i);
             if (child instanceof InlineBox) {
@@ -194,12 +214,23 @@ public class LineBox extends Box implements Renderable {
         
         return false;
     }
+
+    public TextDecoration getTextDecoration() {
+        return textDecoration;
+    }
+
+    public void setTextDecoration(TextDecoration textDecoration) {
+        this.textDecoration = textDecoration;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/11/29 15:26:16  peterbrant
+ * Implement text-decoration
+ *
  * Revision 1.34  2005/11/29 03:12:25  peterbrant
  * Fix clip region checking when a line contains an inline-block
  *

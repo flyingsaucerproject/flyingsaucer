@@ -1,5 +1,26 @@
+/*
+ * {{{ header & license
+ * Copyright (c) 2005 Joshua Marinacci, Wisconsin Court System
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * }}}
+ */
 package org.xhtmlrenderer.render;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -9,6 +30,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
@@ -28,6 +51,8 @@ public class InlineBox extends Box {
     private boolean pending;
     
     private int inlineWidth;
+    
+    private TextDecoration textDecoration;
     
     public InlineBox(Element elem, CalculatedStyle style, int cbWidth) {
         this();
@@ -169,20 +194,46 @@ public class InlineBox extends Box {
         setPending(pending, false);
     }
     
+    private void paintTextDecoration(RenderingContext c) {
+        Graphics graphics = c.getGraphics();
+        
+        Color oldColor = graphics.getColor();
+        
+        graphics.setColor(getStyle().getCalculatedStyle().getColor());
+        Rectangle edge = getContentAreaEdge(c);
+        c.getGraphics().fillRect(
+                edge.x, this.y + textDecoration.getOffset(),
+                edge.width, textDecoration.getThickness());
+        
+        graphics.setColor(oldColor);
+    }
+    
     public void paint(RenderingContext c) {
         paintBackground(c);
         paintBorder(c);
         
-        // paint order (???)
-        // text-decoration
+        if (textDecoration != null) {
+            IdentValue val = 
+                getStyle().getCalculatedStyle().getIdent(CSSName.TEXT_DECORATION);
+            if (val == IdentValue.UNDERLINE || val == IdentValue.OVERLINE) {
+                paintTextDecoration(c);
+            }
+        }
         
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object child = getInlineChild(i);
-            
             if (child instanceof InlineText) {
                 ((InlineText)child).paint(c);
             }
-        }        
+        }
+        
+        if (textDecoration != null) {
+            IdentValue val = 
+                getStyle().getCalculatedStyle().getIdent(CSSName.TEXT_DECORATION);
+            if (val == IdentValue.LINE_THROUGH) {
+                paintTextDecoration(c);
+            }
+        }
         
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object child = getInlineChild(i);
@@ -218,23 +269,61 @@ public class InlineBox extends Box {
         // x, y pins the content area of the box so subtract off top border and padding
         // too
         
-        int marginLeft = 0;
-        int marginRight = 0;
+        float marginLeft = 0;
+        float marginRight = 0;
         if (startsHere || endsHere) {
             RectPropertySet margin = (RectPropertySet)getStyle().getMarginWidth(cssCtx);
             if (startsHere) {
-                marginLeft = (int)margin.left();
+                marginLeft = margin.left();
             } 
             if (endsHere) {
-                marginRight = (int)margin.right();
+                marginRight = margin.right();
             }
         }
         BorderPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
         RectPropertySet padding = getStyle().getPaddingWidth(cssCtx);
         
         Rectangle result = new Rectangle(
-                this.x + marginLeft, this.y - (int)border.top() - (int)padding.top(), 
-                getInlineWidth(cssCtx) - marginLeft - marginRight, getHeight());
+                (int)(this.x + marginLeft), 
+                (int)(this.y - border.top() - padding.top()), 
+                (int)(getInlineWidth(cssCtx) - marginLeft - marginRight), 
+                getHeight());
+        return result;
+    }
+    
+    private Rectangle getContentAreaEdge(CssContext cssCtx) {
+        BorderPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
+        RectPropertySet padding = getStyle().getPaddingWidth(cssCtx);
+        
+        float marginLeft = 0;
+        float marginRight = 0;
+        
+        float borderLeft = 0;
+        float borderRight = 0;
+        
+        float paddingLeft = 0;
+        float paddingRight = 0;
+        
+        if (startsHere || endsHere) {
+            RectPropertySet margin = (RectPropertySet)getStyle().getMarginWidth(cssCtx);
+            if (startsHere) {
+                marginLeft = margin.left();
+                borderLeft = border.left();
+                paddingLeft = padding.left();
+            } 
+            if (endsHere) {
+                marginRight = margin.right();
+                borderRight = border.right();
+                paddingRight = padding.right();
+            }
+        }
+        
+        Rectangle result = new Rectangle(
+                (int)(this.x + marginLeft + borderLeft + paddingLeft), 
+                (int)(this.y - border.top() - padding.top()), 
+                (int)(getInlineWidth(cssCtx) - marginLeft - borderLeft - paddingLeft
+                    - paddingRight - borderRight - marginRight),
+                getHeight());
         return result;
     }
     
@@ -302,5 +391,13 @@ public class InlineBox extends Box {
         }
         
         return false;
-    }    
+    }
+
+    public TextDecoration getTextDecoration() {
+        return textDecoration;
+    }
+
+    public void setTextDecoration(TextDecoration textDecoration) {
+        this.textDecoration = textDecoration;
+    }
 }

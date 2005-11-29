@@ -313,9 +313,17 @@ public class InlineBoxing {
         if (current.getChildCount() == 0) {
             current.height = 0;
         } else {
+            LineMetrics strutLM = container.getStyle().getLineMetrics(c);
             VerticalAlignContext vaContext = new VerticalAlignContext();
-            vaContext.pushMeasurements(getInitialMeasurements(c, container));
-
+            InlineBoxMeasurements measurements = getInitialMeasurements(c, container, strutLM);
+            vaContext.pushMeasurements(measurements);
+            
+            TextDecoration lBDecoration = calculateTextDecoration(
+                    container, measurements.getBaseline(), strutLM);
+            if (lBDecoration != null) {
+                current.setTextDecoration(lBDecoration);
+            }
+            
             for (int i = 0; i < current.getChildCount(); i++) {
                 Object child = (Box) current.getChild(i);
                 if (child instanceof InlineBox) {
@@ -330,6 +338,9 @@ public class InlineBoxing {
 
             if (vaContext.getInlineTop() < 0) {
                 moveLineContents(current, -vaContext.getInlineTop());
+                if (lBDecoration != null) {
+                    lBDecoration.setOffset(lBDecoration.getOffset() - vaContext.getInlineTop());
+                }
             }
         }
     }
@@ -385,6 +396,10 @@ public class InlineBoxing {
         iB.setBaseline((int) lm.getAscent());
 
         alignInlineContent(c, iB, lm.getAscent(), lm.getDescent(), vaContext);
+        TextDecoration decoration = calculateTextDecoration(iB, iB.getBaseline(), lm);
+        if (decoration != null) {
+            iB.setTextDecoration(decoration);
+        }
 
         InlineBoxMeasurements result = new InlineBoxMeasurements();
         result.setBaseline(iB.y + iB.getBaseline());
@@ -396,6 +411,31 @@ public class InlineBoxing {
         result.setContainsContent(iB.containsContent());
 
         return result;
+    }
+    
+    private static TextDecoration calculateTextDecoration(Box box, int baseline, 
+            LineMetrics lm) {
+        CalculatedStyle style = box.getStyle().getCalculatedStyle();
+        
+        IdentValue val = style.getIdent(CSSName.TEXT_DECORATION);
+        
+        TextDecoration decoration = null;
+        if (val == IdentValue.UNDERLINE) {
+            decoration = new TextDecoration();
+            decoration.setOffset((int)(baseline + 
+                    lm.getUnderlineOffset() + lm.getUnderlineThickness()));
+            decoration.setThickness((int)lm.getUnderlineThickness());
+        } else if (val == IdentValue.LINE_THROUGH) {
+            decoration = new TextDecoration();
+            decoration.setOffset(Math.round(baseline + lm.getStrikethroughOffset()));
+            decoration.setThickness((int)lm.getStrikethroughThickness());
+        } else if (val == IdentValue.OVERLINE) {
+            decoration = new TextDecoration();
+            decoration.setOffset(0);
+            decoration.setThickness((int)lm.getUnderlineThickness());
+        }
+        
+        return decoration;
     }
 
     // XXX vertical-align: top/bottom are unimplemented, vertical-align: super/middle/sub could be improved
@@ -432,9 +472,9 @@ public class InlineBoxing {
         }
     }
 
-    private static InlineBoxMeasurements getInitialMeasurements(LayoutContext c, Box container) {
+    private static InlineBoxMeasurements getInitialMeasurements(
+            LayoutContext c, Box container, LineMetrics strutLM) {
         Style style = container.getStyle();
-        LineMetrics strutLM = style.getLineMetrics(c);
         float lineHeight = style.getCalculatedStyle().getLineHeight(c);
         FontSpecification fontSpec = style.getCalculatedStyle().getFont(c);
 
