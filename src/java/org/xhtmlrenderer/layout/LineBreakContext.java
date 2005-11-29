@@ -23,6 +23,7 @@ public class LineBreakContext {
     private String master;
     private int start;
     private int end;
+    private int savedEnd;
     private boolean unbreakable;;
     private boolean needsNewLine;
     
@@ -96,5 +97,13 @@ public class LineBreakContext {
     
     public boolean isFinished() {
         return this.end == getMaster().length();
+    }
+
+    public void resetEnd() {
+        this.end = this.savedEnd;
+    }
+    
+    public void saveEnd() {
+        this.savedEnd = this.end;
     }
 }

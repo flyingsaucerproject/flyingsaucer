@@ -110,6 +110,8 @@ public class Breaker {
             if (left == 0) {
                 context.setWidth(FontUtil.len(context.getCalculatedSubstring(), font, 
                         c.getTextRenderer(), c.getGraphics()));
+            } else {
+                context.setWidth(graphicsLength);
             }
         }
         return;

@@ -199,14 +199,18 @@ public class InlineBoxing {
                         lbContext.setStart(lbContext.getStart() + 1);
                     }
 
+                    lbContext.saveEnd();
+                    
                     InlineText inlineText = layoutText(c, remainingWidth - fit, lbContext);
 
                     if (!lbContext.isUnbreakable() ||
-                            (lbContext.isUnbreakable() && currentLine.isContainsContent())) {
+                            (lbContext.isUnbreakable() && ! currentLine.isContainsContent())) {
                         currentIB.addInlineChild(inlineText);
                         currentLine.setContainsContent(true);
                         lbContext.setStart(lbContext.getEnd());
                         remainingWidth -= inlineText.getWidth();
+                    } else {
+                        lbContext.resetEnd();
                     }
 
                     if (lbContext.isNeedsNewLine()) {
@@ -233,9 +237,8 @@ public class InlineBoxing {
             ((BlockBox) box.getParent()).setPendingInlineElements(elementStack.size() == 0 ? null : elementStack);
         }
         
-        // XXX what does this do?
         if (!c.shrinkWrap()) box.contentWidth = maxAvailableWidth;
-
+        
         box.setHeight(currentLine.y + currentLine.getHeight());
     }
 
@@ -514,7 +517,7 @@ public class InlineBoxing {
         */
         
         if (c.shrinkWrap()) {
-            block.adjustWidthForChild(current.contentWidth);
+        	block.adjustWidthForChild(current.contentWidth);
         }
 
         current.y = previous == null ? 0 : previous.y + previous.height;
