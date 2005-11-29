@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Graphics2D;
-
 /**
  * Created by IntelliJ IDEA.
  * User: tobe

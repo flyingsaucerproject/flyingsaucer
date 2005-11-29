@@ -28,34 +28,17 @@ import org.xhtmlrenderer.render.Box;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.font.LineMetrics;
-import java.awt.geom.Rectangle2D;
 
 
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class FontUtil {
 
     /**
-     * Description of the Method
-     *
-     * @param str  PARAM
-     * @param font PARAM
      * @return Returns the length of the string in graphics units
      */
     public static int len(String str, Font font, TextRenderer tr, Graphics2D g2) {
         return (int) Math.ceil(tr.getLogicalBounds(g2, font, str).getWidth());
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c PARAM
-     * @return Returns
-     */
     public static int lineHeight(Box box, TextRenderer textRenderer, Graphics2D g2, CssContext c, BlockFormattingContext bfc) {
         CalculatedStyle style = box.getStyle().getCalculatedStyle();
         int val = (int) Math.ceil(textRenderer.getLogicalBounds(g2,
@@ -65,45 +48,15 @@ public class FontUtil {
         }
         return val;
     }
-
-    //TODO: this is usually not interesting unless it is an InlineTextBox!
-    /**
-     * Gets the lineMetrics attribute of the FontUtil class
-     *
-     * @param font
-     * @param box  PARAM
-     * @return The lineMetrics value
-     */
-    /*
-    public static LineMetrics getLineMetrics(Font font, InlineBox box, TextRenderer tr, Graphics2D g2) {
-        String sample = "Test";
-        if ((box instanceof InlineTextBox) && !((InlineTextBox) box).getSubstring().equals("")) {
-            sample = ((InlineTextBox) box).getSubstring();
-        }
-        return tr.getLineMetrics(g2,
-                font, sample);
-    }
-    */
-
-    /**
-     * Gets the textBounds attribute of the FontUtil class
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     * @return The textBounds value
-     */
-    /*
-    public static Rectangle2D getTextBounds(CssContext c, InlineTextBox box, TextRenderer tr, Graphics2D g2) {
-        return tr.getLogicalBounds(g2,
-                box.getStyle().getFont(c), box.getSubstring());
-    }
-    */
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2005/11/29 02:29:20  peterbrant
+ * Remove unused imports
+ *
  * Revision 1.44  2005/11/25 16:57:14  peterbrant
  * Initial commit of inline content refactoring
  *

@@ -19,12 +19,9 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.Style;
-import org.xhtmlrenderer.util.Uu;
 
 import java.awt.Rectangle;
 import java.util.List;
@@ -90,6 +87,9 @@ public class AnonymousBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2005/11/29 02:29:11  peterbrant
+ * Remove unused imports
+ *
  * Revision 1.9  2005/11/28 22:26:04  peterbrant
  * Comment out noisy debug logging
  *

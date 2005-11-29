@@ -23,9 +23,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Stack;
 import java.util.logging.Level;
 
