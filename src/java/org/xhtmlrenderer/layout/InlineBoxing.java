@@ -96,9 +96,11 @@ public class InlineBoxing {
 
         int start = pushPseudoClasses(c, contentList);
 
+        /*
         if (c.getFirstLinesTracker().hasStyles()) {
             c.getFirstLinesTracker().pushStyles(c);
         }
+        */
 
         for (int i = start; i < contentList.size(); i++) {
             Object o = contentList.get(i);
