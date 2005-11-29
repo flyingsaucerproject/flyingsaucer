@@ -179,6 +179,7 @@ public class InlineBoxing {
                 }
 
                 currentLine.setContainsContent(true);
+                currentLine.setContainsBlockLevelContent(true);
 
                 remainingWidth -= inlineBlock.getWidth();
             } else {

@@ -22,11 +22,13 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.layout.BoxCollector;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.logging.Level;
 
 
@@ -40,6 +42,7 @@ public class LineBox extends Box implements Renderable {
     public int renderIndex;
     
     private boolean containsContent;
+    private boolean containsBlockLevelContent;
     
     private FloatDistances floatDistances;
 
@@ -157,13 +160,49 @@ public class LineBox extends Box implements Renderable {
 
 	public void setFloatDistances(FloatDistances floatDistances) {
 		this.floatDistances = floatDistances;
-	}    
+	}
+
+    public boolean isContainsBlockLevelContent() {
+        return containsBlockLevelContent;
+    }
+
+    public void setContainsBlockLevelContent(boolean containsBlockLevelContent) {
+        this.containsBlockLevelContent = containsBlockLevelContent;
+    }
+    
+    public boolean intersects(CssContext cssCtx, Shape clip) {
+        return super.intersects(cssCtx, clip) || 
+            (isContainsBlockLevelContent() && intersectsInlineBlocks(cssCtx, clip));
+    }
+    
+    private boolean intersectsInlineBlocks(CssContext cssCtx, Shape clip) {
+        for (int i = 0; i < getChildCount(); i++) {
+            Box child = (Box)getChild(i);
+            if (child instanceof InlineBox) {
+                boolean possibleResult = ((InlineBox)child).intersectsInlineBlocks(
+                        cssCtx, clip);
+                if (possibleResult) {
+                    return true;
+                }
+            } else {
+                BoxCollector collector = new BoxCollector();
+                if (collector.intersectsAny(cssCtx, clip, child)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/11/29 03:12:25  peterbrant
+ * Fix clip region checking when a line contains an inline-block
+ *
  * Revision 1.33  2005/11/29 02:37:23  peterbrant
  * Make clear work again / Rip out old pagination code
  *

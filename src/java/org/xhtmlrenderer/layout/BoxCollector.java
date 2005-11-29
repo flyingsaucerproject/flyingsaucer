@@ -22,20 +22,25 @@ package org.xhtmlrenderer.layout;
 import java.awt.Shape;
 import java.util.List;
 
+import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
-import org.xhtmlrenderer.render.RenderingContext;
 
 public class BoxCollector {
     public void collect(
-            RenderingContext c, Shape clip, Box master, 
+            CssContext c, Shape clip, Box master, 
             List blockContent, List inlineContent) {
         collect(c, clip, master, master, blockContent, inlineContent);
     }
     
+    public boolean intersectsAny(
+            CssContext c, Shape clip, Box master) {
+        return intersectsAny(c, clip, master, master);
+    }    
+    
     private void collect(
-            RenderingContext c, Shape clip, 
+            CssContext c, Shape clip, 
             Box master, Box container, 
             List blockContent, List inlineContent) {
         if (container instanceof LineBox) {
@@ -57,4 +62,32 @@ public class BoxCollector {
             }
         }
     }
+    
+    private boolean intersectsAny(
+            CssContext c, Shape clip, 
+            Box master, Box container) {
+        if (container instanceof LineBox) {
+            if (container.intersects(c, clip)) {
+                return true;
+            }
+        } else {
+            if (container.getLayer() == null || !(container instanceof BlockBox)) {
+                if (container.intersects(c, clip)) {
+                    return true;
+                }
+            }
+
+            if (container.getLayer() == null || container == master) {
+                for (int i = 0; i < container.getChildCount(); i++) {
+                    Box child = container.getChild(i);
+                    boolean possibleResult = intersectsAny(c, clip, master, child);
+                    if (possibleResult) {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
+    }    
 }

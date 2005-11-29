@@ -2,6 +2,7 @@ package org.xhtmlrenderer.render;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.font.LineMetrics;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.layout.BoxCollector;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
 
@@ -280,4 +282,25 @@ public class InlineBox extends Box {
         }
         return false;
     }
+    
+    public boolean intersectsInlineBlocks(CssContext cssCtx, Shape clip) {
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object obj = getInlineChild(i);
+            
+            if (obj instanceof InlineBox) {
+                boolean possibleResult = 
+                    ((InlineBox)obj).intersectsInlineBlocks(cssCtx, clip);
+                if (possibleResult) {
+                    return true;
+                }
+            } else if (obj instanceof Box) {
+                BoxCollector collector = new BoxCollector();
+                if (collector.intersectsAny(cssCtx, clip, (Box)obj)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }    
 }
