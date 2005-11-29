@@ -127,26 +127,33 @@ public class Layer {
         }
     }
     
-    private List collectZIndexAutoLayers() {
+    private static final int POSITIVE = 1;
+    private static final int ZERO = 2;
+    private static final int NEGATIVE = 3;
+    private static final int AUTO = 4;
+    
+    private List collectLayers(int which) {
         List result = new ArrayList();
+        
+        if (which != AUTO) {
+            result.addAll(getStackingContextLayers(which));
+        }
         
         List children = getChildren();
         for (int i = 0; i < children.size(); i++) {
             Layer child = (Layer)children.get(i);
             if (! child.isStackingContext()) {
-                result.add(child);
-                result.addAll(child.collectZIndexAutoLayers());
+                if (which == AUTO) {
+                    result.add(child);
+                } 
+                result.addAll(child.collectLayers(which));
             }
         }
         
         return result;
     }
     
-    private static final int POSITIVE = 1;
-    private static final int ZERO = 2;
-    private static final int NEGATIVE = 3;
-    
-    private List getSortedLayers(int which) {
+    private List getStackingContextLayers(int which) {
         List result = new ArrayList();
         
         List children = getChildren();
@@ -164,9 +171,13 @@ public class Layer {
             }
         }
         
-        if (which == NEGATIVE || which == POSITIVE) {
-            Collections.sort(result, new ZIndexComparator());
-        }
+        return result;
+    }
+    
+    private List getSortedLayers(int which) {
+        List result = collectLayers(which);
+        
+        Collections.sort(result, new ZIndexComparator());
         
         return result;
     }
@@ -231,7 +242,7 @@ public class Layer {
             paintReplacedElements(c, blocks);
     
             if (isRootLayer() || isStackingContext()) {
-                paintLayers(c, collectZIndexAutoLayers());
+                paintLayers(c, collectLayers(AUTO));
                 // TODO z-index: 0 layers should be painted atomically
                 paintLayers(c, getSortedLayers(ZERO));
                 paintLayers(c, getSortedLayers(POSITIVE));
