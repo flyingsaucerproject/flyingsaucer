@@ -26,6 +26,9 @@ public class InlineBoxMeasurements {
     private int inlineTop;
     private int inlineBottom;
     
+    private int paintingTop;
+    private int paintingBottom;
+    
     private boolean containsContent;
     
     public InlineBoxMeasurements() {
@@ -78,5 +81,21 @@ public class InlineBoxMeasurements {
 
     public void setContainsContent(boolean containsContent) {
         this.containsContent = containsContent;
+    }
+
+    public int getPaintingBottom() {
+        return paintingBottom;
+    }
+
+    public void setPaintingBottom(int paintingBottom) {
+        this.paintingBottom = paintingBottom;
+    }
+
+    public int getPaintingTop() {
+        return paintingTop;
+    }
+
+    public void setPaintingTop(int paintingTop) {
+        this.paintingTop = paintingTop;
     }
 }

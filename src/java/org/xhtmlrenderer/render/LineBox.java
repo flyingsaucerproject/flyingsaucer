@@ -49,6 +49,9 @@ public class LineBox extends Box implements Renderable {
     private FloatDistances floatDistances;
     
     private TextDecoration textDecoration;
+    
+    private int paintingTop;
+    private int paintingHeight;
 
     /**
      * Constructor for the LineBox object
@@ -191,8 +194,14 @@ public class LineBox extends Box implements Renderable {
     }
     
     public boolean intersects(CssContext cssCtx, Shape clip) {
-        return super.intersects(cssCtx, clip) || 
+        return intersectsLine(cssCtx, clip) || 
             (isContainsBlockLevelContent() && intersectsInlineBlocks(cssCtx, clip));
+    }
+    
+    private boolean intersectsLine(CssContext cssCtx, Shape clip) {
+        Rectangle result = new Rectangle(
+                getAbsX(), getAbsY() + paintingTop, contentWidth, paintingHeight);
+        return clip.intersects(result);
     }
     
     private boolean intersectsInlineBlocks(CssContext cssCtx, Shape clip) {
@@ -222,12 +231,31 @@ public class LineBox extends Box implements Renderable {
     public void setTextDecoration(TextDecoration textDecoration) {
         this.textDecoration = textDecoration;
     }
+
+    public int getPaintingHeight() {
+        return paintingHeight;
+    }
+
+    public void setPaintingHeight(int paintingHeight) {
+        this.paintingHeight = paintingHeight;
+    }
+
+    public int getPaintingTop() {
+        return paintingTop;
+    }
+
+    public void setPaintingTop(int paintingTop) {
+        this.paintingTop = paintingTop;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2005/11/29 16:39:04  peterbrant
+ * Complete line box clip region checking
+ *
  * Revision 1.35  2005/11/29 15:26:16  peterbrant
  * Implement text-decoration
  *

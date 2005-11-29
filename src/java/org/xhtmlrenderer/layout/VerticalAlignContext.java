@@ -31,6 +31,12 @@ public class VerticalAlignContext {
     private int inlineBottom;
     private boolean inlineBottomSet = false;
     
+    private int paintingTop;
+    private boolean paintingTopSet = false;
+    
+    private int paintingBottom;
+    private boolean paintingBottomSet = false;
+    
     public int getInlineBottom() {
         return inlineBottom;
     }
@@ -46,12 +52,26 @@ public class VerticalAlignContext {
         }
     }
     
+    public void updatePaintingTop(int paintingTop) {
+        if (! paintingTopSet || paintingTop < this.paintingTop) {
+            this.paintingTop = paintingTop;
+            paintingTopSet = true;
+        }
+    }
+    
     public void updateInlineBottom(int inlineBottom) {
         if (! inlineBottomSet || inlineBottom > this.inlineBottom) {
             this.inlineBottom = inlineBottom;
             inlineBottomSet = true;
         }
     }
+    
+    public void updatePaintingBottom(int paintingBottom) {
+        if (! paintingBottomSet || paintingBottom > this.paintingBottom) {
+            this.paintingBottom = paintingBottom;
+            paintingBottomSet = true;
+        }
+    }    
     
     public int getLineBoxHeight() {
         return this.inlineBottom - this.inlineTop;
@@ -63,6 +83,9 @@ public class VerticalAlignContext {
         if (measurements.isContainsContent()) {
             updateInlineTop(measurements.getInlineTop());
             updateInlineBottom(measurements.getInlineBottom());
+            
+            updatePaintingTop(measurements.getPaintingTop());
+            updatePaintingBottom(measurements.getPaintingBottom());
         }
     }
     
@@ -72,5 +95,13 @@ public class VerticalAlignContext {
     
     public void popMeasurements() {
         this.measurements.remove(this.measurements.size()-1);
+    }
+
+    public int getPaintingBottom() {
+        return paintingBottom;
+    }
+
+    public int getPaintingTop() {
+        return paintingTop;
     }
 }

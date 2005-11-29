@@ -23,6 +23,8 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.layout.content.*;
 import org.xhtmlrenderer.render.*;
@@ -335,13 +337,21 @@ public class InlineBoxing {
             }
 
             current.setHeight(vaContext.getLineBoxHeight());
+            
+            int paintingTop = vaContext.getPaintingTop();
+            int paintingBottom = vaContext.getPaintingBottom();
 
             if (vaContext.getInlineTop() < 0) {
                 moveLineContents(current, -vaContext.getInlineTop());
                 if (lBDecoration != null) {
                     lBDecoration.setOffset(lBDecoration.getOffset() - vaContext.getInlineTop());
                 }
+                paintingTop -= vaContext.getInlineTop();
+                paintingBottom -= vaContext.getInlineTop();
             }
+            
+            current.setPaintingTop(paintingTop);
+            current.setPaintingHeight(paintingBottom - paintingTop);
         }
     }
 
@@ -357,7 +367,10 @@ public class InlineBoxing {
         alignInlineContent(c, inlineBlock, inlineBlock.getHeight(), 0, vaContext);
 
         vaContext.updateInlineTop(inlineBlock.y);
+        vaContext.updatePaintingTop(inlineBlock.y);
+        
         vaContext.updateInlineBottom(inlineBlock.y + inlineBlock.getHeight());
+        vaContext.updatePaintingBottom(inlineBlock.y + inlineBlock.getHeight());
     }
 
     private static void moveLineContents(LineBox current, int ty) {
@@ -407,6 +420,13 @@ public class InlineBoxing {
         result.setInlineBottom(Math.round(result.getInlineTop() + lineHeight));
         result.setTextTop(iB.y);
         result.setTextBottom((int) (result.getBaseline() + lm.getDescent()));
+        
+        RectPropertySet padding = iB.getStyle().getPaddingWidth(c);
+        BorderPropertySet border = style.getBorder(c);
+        
+        result.setPaintingTop((int)(result.getTextTop() - border.top() - padding.top()));
+        result.setPaintingBottom((int)(result.getTextBottom() + 
+                border.bottom() + padding.bottom()));
 
         result.setContainsContent(iB.containsContent());
 
