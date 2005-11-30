@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.TreeResolver;
 
@@ -267,7 +270,7 @@ abstract class Condition {
             if (val == null) {
                 return false;
             }
-            String[] ca = val.split(" ");
+            String[] ca = split(val, ' ');
             boolean matched = false;
             for (int j = 0; j < ca.length; j++) {
                 if (_value.equals(ca[j])) {
@@ -319,7 +322,7 @@ abstract class Condition {
             if (val == null) {
                 return false;
             }
-            String[] ca = val.split("-");
+            String[] ca = split(val, '-');
             if (_value.equals(ca[0])) {
                 return true;
             }
@@ -362,7 +365,7 @@ abstract class Condition {
             if (c == null) {
                 return false;
             }
-            String[] ca = c.split(" ");
+            String[] ca = split(c, ' ');
             boolean matched = false;
             for (int j = 0; j < ca.length; j++) {
                 if (_className.equals(ca[j])) {
@@ -448,7 +451,7 @@ abstract class Condition {
             if (lang == null) {
                 return false;
             }
-            String[] ca = lang.split("-");
+            String[] ca = split(lang, '-');
             if (_lang.equals(ca[0])) {
                 return true;
             }
@@ -531,6 +534,29 @@ abstract class Condition {
         }
 
     }
-
+    
+    private static String[] split(String s, char ch) {
+        if (s.indexOf(ch) == -1) {
+            return new String[] { s };
+        } else {
+            List result = new ArrayList();
+            
+            int last = 0;
+            int next = 0;
+            
+            while ((next = s.indexOf(ch, last)) != -1) {
+                if (next != last) {
+                    result.add(s.substring(last, next));
+                }
+                last = next + 1;
+            }
+            
+            if (last != s.length()) {
+                result.add(s.substring(last));
+            }
+            
+            return (String[])result.toArray(new String[result.size()]);
+        }
+    }    
 }
 
