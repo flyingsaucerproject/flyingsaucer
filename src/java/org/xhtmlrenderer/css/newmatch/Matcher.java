@@ -697,13 +697,13 @@ public class Matcher {
                 }
             }
             if (children == null) children = new HashMap();
-            Mapper childMapper = (Mapper) children.get(key);
+            Mapper childMapper = (Mapper) children.get(key.toString());
             if (childMapper == null) {
                 childMapper = new Mapper();
                 childMapper.axes = childAxes;
                 childMapper.pseudoSelectors = pseudoSelectors;
                 childMapper.mappedSelectors = mappedSelectors;
-                children.put(key, childMapper);
+                children.put(key.toString(), childMapper);
             }
             link(e, childMapper);
             return childMapper;
