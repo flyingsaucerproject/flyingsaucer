@@ -174,20 +174,6 @@ public class ContentUtil {
     }
 
     /**
-     * Gets the listItem attribute of the ContentUtil class
-     *
-     * @param style PARAM
-     * @return The listItem value
-     */
-    public static boolean isListItem(CalculatedStyle style) {
-        if (style == null) {
-            return false;
-        }
-        IdentValue display = style.getIdent(CSSName.DISPLAY);
-        return display != null && display == IdentValue.LIST_ITEM;
-    }
-
-    /**
      * Gets the absoluteOrFixed attribute of the ContentUtil class
      *
      * @param style PARAM
@@ -533,6 +519,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2005/12/05 00:07:54  peterbrant
+ * Remove unused method
+ *
  * Revision 1.44  2005/11/09 18:41:26  peterbrant
  * Fixes to vertical margin collapsing in the presence of floats / Paint floats as
  * layers
