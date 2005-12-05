@@ -18,15 +18,14 @@ public class Style {
     private CalculatedStyle calculatedStyle;
 
     private float marginTopOverride;
-
     private boolean marginTopOverrideSet = false;
-
     private float marginBottomOverride;
-
     private boolean marginBottomOverrideSet = false;
 
     private float containingBlockWidth;
-
+    
+    private LineMetrics lineMetrics;
+    
     public Style(CalculatedStyle calculatedStyle, float containingBlockWidth) {
         this.calculatedStyle = calculatedStyle;
         this.containingBlockWidth = containingBlockWidth;
@@ -41,8 +40,11 @@ public class Style {
      * value for getAscent()).  So... for now we use LineMetrics for font metrics.
      */
     public LineMetrics getLineMetrics(LayoutContext c) {
-        Font f = getFont(c);
-        return c.getTextRenderer().getLineMetrics(c.getGraphics(), f, "");
+        if (lineMetrics == null) {
+            Font f = getFont(c);
+            lineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(), f, "");
+        }
+        return lineMetrics;
     }
     
     public int getContainingBlockWidth() {
@@ -209,5 +211,9 @@ public class Style {
     
     public int getRightMarginBorderPadding(CssContext cssCtx) {
         return getCalculatedStyle().getRightMarginBorderPadding(cssCtx, (int)containingBlockWidth);
+    }  
+    
+    public boolean isListItem() {
+        return getCalculatedStyle().isIdent(CSSName.DISPLAY, IdentValue.LIST_ITEM);
     }    
 }

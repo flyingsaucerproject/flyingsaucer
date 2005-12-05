@@ -80,6 +80,9 @@ public class CalculatedStyle {
     private BorderPropertySet _border;
     private RectPropertySet _margin;
     private RectPropertySet _padding;
+    
+    private float _lineHeight;
+    private boolean _lineHeightResolved;
 
     /**
      * Cache child styles of this style that have the same cascaded properties
@@ -146,10 +149,6 @@ public class CalculatedStyle {
             _childCache.put(fingerprint, cs);
         }
         return cs;
-    }
-
-    public synchronized CalculatedStyle deriveNewStyle(CascadedStyle matched) {
-        return new CalculatedStyle(this, matched);
     }
 
     public int countAssigned() {
@@ -292,15 +291,19 @@ public class CalculatedStyle {
     }
 
     public float getLineHeight(CssContext ctx) {
-        if (isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL)) {
-            return getFont(ctx).size * 1.1f;//css recommends something between 1.0 and 1.2
-        } else if (isLengthValue(CSSName.LINE_HEIGHT)) {
-            //could be more elegant, I suppose
-            return getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, 0, ctx);
-        } else {
-            //must be a number
-            return getFont(ctx).size * valueByName(CSSName.LINE_HEIGHT).asFloat();
+        if (! _lineHeightResolved) {
+            if (isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL)) {
+                _lineHeight = getFont(ctx).size * 1.1f;//css recommends something between 1.0 and 1.2
+            } else if (isLengthValue(CSSName.LINE_HEIGHT)) {
+                //could be more elegant, I suppose
+                _lineHeight = getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, 0, ctx);
+            } else {
+                //must be a number
+                _lineHeight = getFont(ctx).size * valueByName(CSSName.LINE_HEIGHT).asFloat();
+            }
+            _lineHeightResolved = true;
         }
+        return _lineHeight;
     }
 
     /**
@@ -600,6 +603,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.56  2005/12/05 00:09:04  peterbrant
+ * Couple of optimizations which improve layout speed by about 10%
+ *
  * Revision 1.55  2005/11/25 16:57:26  peterbrant
  * Initial commit of inline content refactoring
  *
