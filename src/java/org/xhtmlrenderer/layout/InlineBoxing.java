@@ -76,7 +76,8 @@ public class InlineBoxing {
         if (box instanceof AnonymousBlockBox) {
             List pending = ((BlockBox) box.getParent()).getPendingInlineElements();
             if (pending != null) {
-                currentIB = addNestedInlineBoxes(currentLine, pending, maxAvailableWidth);
+                currentIB = addNestedInlineBoxes(c, currentLine, pending, 
+                        maxAvailableWidth);
                 elementStack = pending;
             }
         }
@@ -120,9 +121,9 @@ public class InlineBoxing {
                 elementStack.add(new InlineBoxInfo(cascaded, currentIB));
 
                 if (previousIB == null) {
-                    currentLine.addChild(currentIB);
+                    currentLine.addChild(c, currentIB);
                 } else {
-                    previousIB.addInlineChild(currentIB);
+                    previousIB.addInlineChild(c, currentIB);
                 }
                 
                 //To break the line well, assume we don't just want to paint padding on next line
@@ -141,6 +142,15 @@ public class InlineBoxing {
                 elementStack.remove(elementStack.size() - 1);
 
                 currentIB.setEndsHere(true);
+                
+                if (currentIB.getStyle().requiresLayer()) {
+                    if (currentIB.element == null || 
+                            currentIB.element != c.getLayer().getMaster().element) {
+                        throw new RuntimeException("Check this...");
+                    }
+                    c.getLayer().setEnd(currentIB);
+                    c.popLayer();
+                }
 
                 previousIB = currentIB;
                 currentIB = currentIB.getParent() instanceof LineBox ?
@@ -162,7 +172,8 @@ public class InlineBoxing {
                             maxAvailableWidth, elementStack, pendingFloats);
                     previousLine = currentLine;
                     currentLine = newLine(c, previousLine, box);
-                    currentIB = addNestedInlineBoxes(currentLine, elementStack, maxAvailableWidth);
+                    currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
+                            maxAvailableWidth);
                     previousIB = currentIB == null || currentIB.getParent() instanceof LineBox ?
                             null : (InlineBox) currentIB.getParent();
                     remainingWidth = maxAvailableWidth;
@@ -177,9 +188,9 @@ public class InlineBoxing {
                 }
 
                 if (currentIB == null) {
-                    currentLine.addChild(inlineBlock);
+                    currentLine.addChild(c, inlineBlock);
                 } else {
-                    currentIB.addInlineChild(inlineBlock);
+                    currentIB.addInlineChild(c, inlineBlock);
                 }
 
                 currentLine.setContainsContent(true);
@@ -209,7 +220,7 @@ public class InlineBoxing {
 
                     if (!lbContext.isUnbreakable() ||
                             (lbContext.isUnbreakable() && ! currentLine.isContainsContent())) {
-                        currentIB.addInlineChild(inlineText);
+                        currentIB.addInlineChild(c, inlineText);
                         currentLine.setContainsContent(true);
                         lbContext.setStart(lbContext.getEnd());
                         remainingWidth -= inlineText.getWidth();
@@ -222,7 +233,8 @@ public class InlineBoxing {
                                 maxAvailableWidth, elementStack, pendingFloats);
                         previousLine = currentLine;
                         currentLine = newLine(c, previousLine, box);
-                        currentIB = addNestedInlineBoxes(currentLine, elementStack, maxAvailableWidth);
+                        currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
+                                maxAvailableWidth);
                         previousIB = currentIB.getParent() instanceof LineBox ?
                                 null : (InlineBox) currentIB.getParent();
                         remainingWidth = maxAvailableWidth;
@@ -312,6 +324,27 @@ public class InlineBoxing {
 
         return x - start;
     }
+    
+    private static StrutMetrics maybeSaveStrutMetrics(LayoutContext c, Box container,
+            LineMetrics strutLM, InlineBoxMeasurements measurements) {
+        if (container.getChildCount() == 0 &&
+                container.getStyle().isListItem() && container instanceof BlockBox) {
+            StrutMetrics metrics = new StrutMetrics(
+                    strutLM.getAscent(), measurements.getBaseline(), strutLM.getDescent());
+            ((BlockBox)container).setStructMetrics(metrics);
+            return metrics;
+        }
+        
+        return null;
+    }
+    
+    public static StrutMetrics createDefaultStrutMetrics(LayoutContext c, Box container) {
+        LineMetrics strutLM = container.getStyle().getLineMetrics(c);
+        InlineBoxMeasurements measurements = getInitialMeasurements(c, container, strutLM);
+        
+        return new StrutMetrics(
+                strutLM.getAscent(), measurements.getBaseline(), strutLM.getDescent());
+    }
 
     private static void positionVertically(LayoutContext c, Box container, LineBox current) {
         if (current.getChildCount() == 0) {
@@ -321,6 +354,9 @@ public class InlineBoxing {
             VerticalAlignContext vaContext = new VerticalAlignContext();
             InlineBoxMeasurements measurements = getInitialMeasurements(c, container, strutLM);
             vaContext.pushMeasurements(measurements);
+            
+            StrutMetrics strutMetrics = 
+                maybeSaveStrutMetrics(c, container, strutLM, measurements);
             
             TextDecoration lBDecoration = calculateTextDecoration(
                     container, measurements.getBaseline(), strutLM);
@@ -350,6 +386,9 @@ public class InlineBoxing {
                 }
                 paintingTop -= vaContext.getInlineTop();
                 paintingBottom -= vaContext.getInlineTop();
+                if (strutMetrics != null) {
+                    strutMetrics.setBaseline(strutMetrics.getBaseline() - vaContext.getInlineTop());
+                }
             }
             
             current.setPaintingTop(paintingTop);
@@ -408,7 +447,7 @@ public class InlineBoxing {
 
         int halfLeading = Math.round((lineHeight - fontSpec.size) / 2);
 
-        iB.setBaseline((int) lm.getAscent());
+        iB.setBaseline(Math.round(lm.getAscent()));
 
         alignInlineContent(c, iB, lm.getAscent(), lm.getDescent(), vaContext);
         TextDecoration decoration = calculateTextDecoration(iB, iB.getBaseline(), lm);
@@ -426,8 +465,9 @@ public class InlineBoxing {
         RectPropertySet padding = iB.getStyle().getPaddingWidth(c);
         BorderPropertySet border = style.getBorder(c);
         
-        result.setPaintingTop((int)(result.getTextTop() - border.top() - padding.top()));
-        result.setPaintingBottom((int)(result.getTextBottom() + 
+        result.setPaintingTop((int)Math.floor(iB.y - border.top() - padding.top()));
+        result.setPaintingBottom((int)Math.ceil(iB.y +
+                lm.getAscent() + lm.getDescent() + 
                 border.bottom() + padding.bottom()));
 
         result.setContainsContent(iB.containsContent());
@@ -525,7 +565,6 @@ public class InlineBoxing {
         }
     }
 
-
     private static void saveLine(final LineBox current, LineBox previous,
                                  final LayoutContext c, Box block, int minHeight,
                                  final int maxAvailableWidth, List elementStack, List pendingFloats) {
@@ -587,7 +626,7 @@ public class InlineBoxing {
         if (current.height != 0 && current.height < minHeight) {//would like to discard it otherwise, but that could lose inline elements
             current.height = minHeight;
         }
-        block.addChild(current);
+        block.addChild(c, current);
 
         if (pendingFloats.size() > 0) {
             c.setFloatingY(c.getFloatingY() + current.height);
@@ -668,7 +707,8 @@ public class InlineBoxing {
         return result;
     }
 
-    private static InlineBox addNestedInlineBoxes(LineBox line, List elementStack, int cbWidth) {
+    private static InlineBox addNestedInlineBoxes(LayoutContext c, LineBox line, 
+            List elementStack, int cbWidth) {
         InlineBox currentIB = null;
         InlineBox previousIB = null;
 
@@ -677,10 +717,10 @@ public class InlineBoxing {
             InlineBoxInfo info = (InlineBoxInfo) i.next();
             currentIB = info.getInlineBox().copyOf();
             if (first) {
-                line.addChild(currentIB);
+                line.addChild(c, currentIB);
                 first = false;
             } else {
-                previousIB.addInlineChild(currentIB);
+                previousIB.addInlineChild(c, currentIB, false);
             }
             previousIB = currentIB;
         }

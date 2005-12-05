@@ -60,7 +60,7 @@ public class InlineBox extends Box {
         setStyle(new Style(style, cbWidth));
         getStyle().setMarginTopOverride(0.0f);
         getStyle().setMarginBottomOverride(0.0f);
-        setPending(true);
+        markPending();
     }
     
     private InlineBox() {
@@ -75,7 +75,9 @@ public class InlineBox extends Box {
         result.setStyle(getStyle());
         result.setHeight(getHeight());
         
-        result.setPending(isPending(), true);
+        result.pending = this.pending;
+        
+        result.setContainingInlineLayer(getContainingInlineLayer());
         
         return result;
     }
@@ -102,23 +104,31 @@ public class InlineBox extends Box {
         return inlineChildren == null ? 0 : inlineChildren.size();
     }
     
-    public void addInlineChild(Object child) {
+    public void addInlineChild(LayoutContext c, Object child) {
+        addInlineChild(c, child, true);
+    }
+    
+    public void addInlineChild(LayoutContext c, Object child, boolean callUnmarkPending) {
         if (inlineChildren == null) {
             inlineChildren = new ArrayList();
         }
         
         inlineChildren.add(child);
         
+        if (callUnmarkPending && isPending()) {
+            unmarkPending(c);
+        }
+        
         if (child instanceof Box) {
-            ((Box)child).setParent(this);
+            Box b = (Box)child;
+            b.setParent(this);
+            if (c.getLayer().isInline()) {
+                b.setContainingInlineLayer(c.getLayer());
+            }
         } else if (child instanceof InlineText) {
             ((InlineText)child).setParent(this);
         } else {
             throw new IllegalArgumentException();
-        }
-        
-        if (isPending()) {
-            setPending(false);
         }
     }
     
@@ -178,22 +188,38 @@ public class InlineBox extends Box {
         return pending;
     }
     
-    private void setPending(boolean pending, boolean copying) {
-        this.pending = pending;
+    public void markPending() {
+        this.pending = true;
+    }
+    
+    private void unmarkPending(LayoutContext c) {
+        this.pending = false;
         
-        if (! copying && ! pending) {
-            if (getParent() instanceof InlineBox) {
-                ((InlineBox)getParent()).setPending(false);
+        if (getParent() instanceof InlineBox) {
+            ((InlineBox)getParent()).unmarkPending(c);
+        }
+        
+        setStartsHere(true);
+        
+        if (getStyle().requiresLayer()) {
+            c.pushLayer(this);
+            getLayer().setInline(true);
+            setContainingInlineLayer(getLayer());
+            connectChildrenToCurrentLayer(c);
+        }
+    }
+    
+    public void connectChildrenToCurrentLayer(LayoutContext c) {
+        for (int i = 0; i < inlineChildren.size(); i++) {
+            Object obj = inlineChildren.get(i);
+            if (obj instanceof Box) {
+                Box box = (Box)obj;
+                box.setContainingInlineLayer(c.getLayer());
+                box.connectChildrenToCurrentLayer(c);
             }
-            
-            setStartsHere(true);
         }
     }
 
-    public void setPending(boolean pending) {
-        setPending(pending, false);
-    }
-    
     private void paintTextDecoration(RenderingContext c) {
         Graphics graphics = c.getGraphics();
         

@@ -90,7 +90,10 @@ public abstract class Box {
     // printing stuff
 
     private PersistentBFC persistentBFC = null;
+    
     private Layer layer = null;
+    private Layer containingInlineLayer;
+    
     private Box parent;
 
     // children stuff
@@ -145,7 +148,7 @@ public abstract class Box {
         return sb.toString();
     }
 
-    public void addChild(Box child) {
+    public void addChild(LayoutContext c, Box child) {
         if (boxes == null) {
             boxes = new ArrayList();
         }
@@ -154,6 +157,11 @@ public abstract class Box {
         }
         child.setParent(this);
         boxes.add(child);
+        
+        if (c.getLayer().isInline()) {
+            child.setContainingInlineLayer(c.getLayer());
+        }
+        
         propagateChildProperties(child);
     }
 
@@ -500,7 +508,6 @@ public abstract class Box {
     // Common code for placing absolute and relative boxes in the right place
     // Is the best place for it?
     // TODO Finish this!
-    // TODO Handle top: auto, bottom: auto for absolute blocks
     public void positionPositioned(CssContext cssCtx) {
         CalculatedStyle style = getStyle().getCalculatedStyle();
 
@@ -654,12 +661,32 @@ public abstract class Box {
     public void setHeight(int height) {
         this.height = height;
     }
+
+    public Layer getContainingInlineLayer() {
+        return containingInlineLayer;
+    }
+
+    public void setContainingInlineLayer(Layer containingInlineLayer) {
+        this.containingInlineLayer = containingInlineLayer;
+    }
+    
+    public void connectChildrenToCurrentLayer(LayoutContext c) {
+        
+        for (int i = 0; i < getChildCount(); i++) {
+            Box box = getChild(i);
+            box.setContainingInlineLayer(c.getLayer());
+            box.connectChildrenToCurrentLayer(c);
+        }
+    }    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.81  2005/12/05 00:13:53  peterbrant
+ * Improve list-item support (marker positioning is now correct) / Start support for relative inline layers
+ *
  * Revision 1.80  2005/11/29 02:37:24  peterbrant
  * Make clear work again / Rip out old pagination code
  *

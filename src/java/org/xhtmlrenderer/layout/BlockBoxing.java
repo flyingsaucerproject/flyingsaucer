@@ -22,6 +22,7 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FirstLetterStyle;
 import org.xhtmlrenderer.layout.content.FirstLineStyle;
+import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.util.Configuration;
@@ -66,11 +67,16 @@ public class BlockBoxing {
 
             Box child_box = null;
             //TODO:handle run-ins. For now, treat them as blocks
-            // update the counter for printing OL list items
-            //TODO:handle counters correctly
-            c.setListCounter(c.getListCounter() + 1);
+
 
             child_box = Boxing.preLayout(c, currentContent);
+            
+            // update the counter for printing OL list items
+            //TODO:handle counters correctly
+            if (! (child_box instanceof AnonymousBlockBox)) {
+                c.setListCounter(c.getListCounter() + 1);
+            }
+            
             child_box.list_count = c.getListCounter();
             child_box.x = 0;
 
@@ -78,7 +84,7 @@ public class BlockBoxing {
             
             child_box.y = initialY;           
             //Uu.p("set child box y to: " + child_box);
-            box.addChild(child_box);
+            box.addChild(c, child_box);
             
             c.translate(0, box.height);
             Boxing.realLayout(c, child_box, currentContent, styleSetListener);
@@ -126,6 +132,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/12/05 00:13:54  peterbrant
+ * Improve list-item support (marker positioning is now correct) / Start support for relative inline layers
+ *
  * Revision 1.29  2005/11/29 02:37:25  peterbrant
  * Make clear work again / Rip out old pagination code
  *

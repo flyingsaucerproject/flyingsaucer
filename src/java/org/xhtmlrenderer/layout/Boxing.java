@@ -41,6 +41,7 @@ import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBlockBox;
+import org.xhtmlrenderer.render.StrutMetrics;
 import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.table.TableBoxing;
 
@@ -223,6 +224,12 @@ public class Boxing {
         if (block.getStyle().isFloated()) {
             c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
         }
+        
+        if (block instanceof BlockBox && block.getStyle().isListItem() &&
+                ((BlockBox)block).getStructMetrics() == null) {
+            StrutMetrics strutMetrics = InlineBoxing.createDefaultStrutMetrics(c, block);
+            ((BlockBox)block).setStructMetrics(strutMetrics);
+        }
 
         checkExceeds(block);
 
@@ -295,6 +302,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.62  2005/12/05 00:13:54  peterbrant
+ * Improve list-item support (marker positioning is now correct) / Start support for relative inline layers
+ *
  * Revision 1.61  2005/11/29 02:37:25  peterbrant
  * Make clear work again / Rip out old pagination code
  *

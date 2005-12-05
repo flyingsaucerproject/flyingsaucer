@@ -36,12 +36,16 @@ public class Layer {
     private boolean stackingContext;
     private List children;
     private Box master;
+    
+    private Box end;
 
     private List floats;
 
     private boolean fixedBackground;
     
     private boolean positionsFinalized;
+    
+    private boolean inline;
     
     public static void paintAsLayer(RenderingContext c, Box master) {
         Layer layer = new Layer(master);
@@ -340,13 +344,6 @@ public class Layer {
         return updateAbsoluteLocationsHelper(getMaster(), originX, originY);
     }
     
-    private void positionReplacedElement(Box box) {
-        Point location = box.component.getLocation();
-        if (location.x != box.getAbsX() || location.y != box.getAbsY()) {
-            box.component.setLocation(box.getAbsX(), (int)box.getAbsY());    
-        }
-    }
-    
     private Point updateAbsoluteLocationsHelper(Box box, int x, int y) {
         return updateAbsoluteLocationsHelper(box, x, y, true);
     }
@@ -400,12 +397,22 @@ public class Layer {
         
         return result;
     }
+    
+    private void positionReplacedElement(Box box) {
+        Point location = box.component.getLocation();
+        if (location.x != box.getAbsX() || location.y != box.getAbsY()) {
+            box.component.setLocation(box.getAbsX(), (int)box.getAbsY());    
+        }
+    }    
 
     public void positionChildren(CssContext cssCtx) {
         for (Iterator i = getChildren().iterator(); i.hasNext();) {
             Layer child = (Layer) i.next();
 
-            child.getMaster().positionPositioned(cssCtx);
+            // TODO Pending finished implementation of relative inline layers
+            if (! child.isInline()) {
+                child.getMaster().positionPositioned(cssCtx);
+            }
         }
     }
 
@@ -463,5 +470,21 @@ public class Layer {
         if (getParent() != null) {
             getParent().remove(this);
         }
+    }
+
+    public boolean isInline() {
+        return inline;
+    }
+
+    public void setInline(boolean inline) {
+        this.inline = inline;
+    }
+
+    public Box getEnd() {
+        return end;
+    }
+
+    public void setEnd(Box end) {
+        this.end = end;
     }
 }

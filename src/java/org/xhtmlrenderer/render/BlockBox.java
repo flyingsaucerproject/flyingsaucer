@@ -19,15 +19,18 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.List;
 
-import org.xhtmlrenderer.layout.content.ContentUtil;
+import org.xhtmlrenderer.css.style.CssContext;
 
 public class BlockBox extends Box implements Renderable {
 
     public int renderIndex;
     
     private List pendingInlineElements;
+    private StrutMetrics structMetrics;
 
     public BlockBox() {
         super();
@@ -65,10 +68,8 @@ public class BlockBox extends Box implements Renderable {
         return getAbsY() + height;
     }
 
-
     public void paintListStyles(RenderingContext c) {
-        //HACK:
-        if (ContentUtil.isListItem(getStyle().getCalculatedStyle())) {
+        if (getStyle().isListItem()) {
             ListItemPainter.paint(c, this);
         }
     }
@@ -80,12 +81,43 @@ public class BlockBox extends Box implements Renderable {
     public void setPendingInlineElements(List pendingInlineElements) {
         this.pendingInlineElements = pendingInlineElements;
     }
+
+    public StrutMetrics getStructMetrics() {
+        return structMetrics;
+    }
+
+    public void setStructMetrics(StrutMetrics structMetrics) {
+        this.structMetrics = structMetrics;
+    }
+    
+    public boolean intersects(CssContext cssCtx, Shape clip) {
+        if (! getStyle().isListItem()) {
+            return super.intersects(cssCtx, clip);
+        } else {
+            // HACK Don't know how wide the list marker is (or even where it is)
+            // so extend the bounding box all the way over to the left edge of
+            // the canvas
+            if (clip == null) {
+                return true;
+            }
+            
+            Rectangle borderEdge = getBorderEdge(getAbsX(), getAbsY(), cssCtx);
+            int delta = borderEdge.x;
+            borderEdge.x = 0;
+            borderEdge.width += delta;
+            
+            return clip.intersects(borderEdge);
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2005/12/05 00:13:53  peterbrant
+ * Improve list-item support (marker positioning is now correct) / Start support for relative inline layers
+ *
  * Revision 1.22  2005/11/25 22:38:39  peterbrant
  * Clean imports
  *

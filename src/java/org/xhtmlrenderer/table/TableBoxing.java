@@ -106,7 +106,7 @@ public class TableBoxing {
         outerBox.createDefaultStyle(c);
 
         TableBox tableBox = new TableBox();
-        outerBox.addChild(tableBox);
+        outerBox.addChild(c, tableBox);
         tableBox.element = content.getElement();
         //OK, first set up the current style. All depends on this...
         CascadedStyle pushed = content.getStyle();
@@ -359,7 +359,7 @@ public class TableBoxing {
                 RowBox row = layoutRow(c, (TableRowContent) o, tableBox, fixed, borderSpacingHorizontal, borderSpacingVertical);
                 c.translate(0, -tableBox.height);
 
-                tableBox.addChild(row);
+                tableBox.addChild(c, row);
                 row.setParent(tableBox);
                 row.element = ((TableRowContent) o).getElement();
                 // set the child_box location
@@ -467,7 +467,7 @@ public class TableBoxing {
             cellBox.height = 0;
             //have to do this late in the game
             if (cellBox.rowspan > 1) row.setChildrenExceedBounds(true);
-            row.addChild(cellBox);
+            row.addChild(c, cellBox);
         }
         for (int j = 0; j < table.columns.length; j++) {
             // increase the final layout height if the child was greater
@@ -629,6 +629,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.50  2005/12/05 00:13:55  peterbrant
+   Improve list-item support (marker positioning is now correct) / Start support for relative inline layers
+
    Revision 1.49  2005/11/29 02:37:26  peterbrant
    Make clear work again / Rip out old pagination code
 

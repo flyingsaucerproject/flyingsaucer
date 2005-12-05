@@ -1,6 +1,7 @@
 /*
  * {{{ header & license
  * Copyright (c) 2004, 2005 Joshua Marinacci
+ * Copyright (c) 2005 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -25,117 +26,71 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.FontUtil;
 
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.font.LineMetrics;
 
-
-/**
- * Description of the Class
- *
- * @author empty
- */
 public class ListItemPainter {
-    /**
-     * Description of the Method
-     *
-     * @param c   PARAM
-     * @param box PARAM
-     */
-    public static void paint(RenderingContext c, Box box) {
+    public static void paint(RenderingContext c, BlockBox box) {
         CalculatedStyle style = box.getStyle().getCalculatedStyle();
         IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
 
         if (listStyle == IdentValue.NONE) {
             return;
         }
-        if (listStyle == IdentValue.LOWER_GREEK) {
-            listStyle = IdentValue.DECIMAL;
-        }
-        if (listStyle == IdentValue.DECIMAL_LEADING_ZERO) {
-            listStyle = IdentValue.DECIMAL;
-        }
-
-        int rad = (int) style.getFont(c).size;
 
         String image = style.getStringProperty(CSSName.LIST_STYLE_IMAGE);
         Image img = null;
-        if (!image.equals("none")) {
+        if (! image.equals("none")) {
             img = c.getUac().getImageResource(image).getImage();
             if (img != null) {
-                int baseline = box.height;
-                img = img.getScaledInstance(-1, (int) Math.round(rad / 12.0 * img.getHeight(null)), Image.SCALE_FAST);
-                c.getGraphics().drawImage(img, box.getAbsX() - img.getWidth(null) - 2, (int) (box.getAbsY() + baseline / 2.0 - img.getHeight(null) / 2.0), null);
-                return;
+                StrutMetrics strutMetrics = box.getStructMetrics();
+                if (img.getHeight(null) > strutMetrics.getAscent()) {
+                    img = img.getScaledInstance(-1, (int)strutMetrics.getAscent(), Image.SCALE_FAST);
+                }
+                c.getGraphics().drawImage(img, 
+                        box.getAbsX() - img.getWidth(null) * 5/4, 
+                        (int)(box.getAbsY() + box.ty + strutMetrics.getBaseline()
+                            - strutMetrics.getAscent() / 2 - img.getHeight(null) / 2),
+                        null);
+            }
+        } else {
+            // prep the color
+            c.getGraphics().setColor(style.getColor());
+    
+            if (listStyle == IdentValue.DISC || listStyle == IdentValue.SQUARE ||
+                    listStyle == IdentValue.CIRCLE) {
+                drawGlyph(c, box, style, listStyle);
+            } else {
+                drawText(c, box, listStyle);
             }
         }
+    }
 
-        // prep the color
-        c.getGraphics().setColor(style.getColor());
-
+    private static void drawGlyph(RenderingContext c, BlockBox box, CalculatedStyle style, IdentValue listStyle) {
         // save the old AntiAliasing setting, then force it on
         Object aa_key = c.getGraphics().getRenderingHint(RenderingHints.KEY_ANTIALIASING);
         c.getGraphics().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
         // calculations for bullets
-        //int rad = 8;// change this to use the glyph height
-        int h = (int) Math.round(style.getLineHeight(c));
-        rad = h / 3;
+        StrutMetrics strutMetrics = box.getStructMetrics();
+        int h = (int) Math.round(strutMetrics.getAscent());
+        int rad = (int)((strutMetrics.getAscent() + strutMetrics.getDescent()) / 3);
         int x = box.getAbsX() - rad - rad / 2;
-        int y = box.getAbsY() + (h - rad / 2) / 2;
+        int y = box.getAbsY() + box.ty + strutMetrics.getBaseline() - h / 2 - rad / 2;
         if (listStyle == IdentValue.DISC) {
             c.getGraphics().fillOval(x, y, rad, rad);
-            return;
-        }
-        if (listStyle == IdentValue.SQUARE) {
+        } else if (listStyle == IdentValue.SQUARE) {
             c.getGraphics().fillRect(x, y, rad, rad);
-            return;
-        }
-        if (listStyle == IdentValue.CIRCLE) {
+        } else if (listStyle == IdentValue.CIRCLE) {
             c.getGraphics().drawOval(x, y, rad, rad);
-            return;
         }
 
         // restore the old AntiAliasing setting
         c.getGraphics().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 aa_key);
-
-
-        // calculations for text
-        if (listStyle == IdentValue.DECIMAL) {
-            drawText(c, box, listStyle);
-            return;
-        }
-
-        if (listStyle == IdentValue.LOWER_LATIN) {
-            drawText(c, box, listStyle);
-            return;
-        }
-
-        if (listStyle == IdentValue.UPPER_LATIN) {
-            drawText(c, box, listStyle);
-            return;
-        }
-
-        if (listStyle == IdentValue.LOWER_ROMAN) {
-            drawText(c, box, listStyle);
-            return;
-        }
-
-        if (listStyle == IdentValue.UPPER_ROMAN) {
-            drawText(c, box, listStyle);
-            return;
-        }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     protected static String toLatin(int val) {
         if (val > 26) {
             int val1 = val % 26;
@@ -145,15 +100,9 @@ public class ListItemPainter {
         return ((char) (val + 64)) + "";
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param val PARAM
-     * @return Returns
-     */
     protected static String toRoman(int val) {
         int[] ints = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
-        String[] nums = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "Xx", "IX", "V", "IV", "I"};
+        String[] nums = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < ints.length; i++) {
             int count = (int) (val / ints[i]);
@@ -165,41 +114,31 @@ public class ListItemPainter {
         return sb.toString();
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param c         PARAM
-     * @param box       PARAM
-     * @param listStyle PARAM
-     */
-    private static void drawText(RenderingContext c, Box box, IdentValue listStyle) {
+    private static void drawText(RenderingContext c, BlockBox box, IdentValue listStyle) {
         String text = "";
-        if (listStyle == IdentValue.DECIMAL) {
+
+        if (listStyle == IdentValue.LOWER_LATIN || listStyle == IdentValue.LOWER_ALPHA) {
+            text = toLatin(box.list_count).toLowerCase() + ".";
+        } else if (listStyle == IdentValue.UPPER_LATIN || listStyle == IdentValue.UPPER_ALPHA) {
+            text = toLatin(box.list_count).toUpperCase() + ".";
+        } else if (listStyle == IdentValue.LOWER_ROMAN) {
+            text = toRoman(box.list_count).toLowerCase() + ".";
+        } else if (listStyle == IdentValue.UPPER_ROMAN) {
+            text = toRoman(box.list_count).toUpperCase() + ".";
+        } else if (listStyle == IdentValue.DECIMAL) {
             text = box.list_count + ".";
         }
-        if (listStyle == IdentValue.LOWER_LATIN) {
-            text = toLatin(box.list_count).toLowerCase() + ".";
-        }
-
-        if (listStyle == IdentValue.UPPER_LATIN) {
-            text = toLatin(box.list_count).toUpperCase() + ".";
-        }
-
-        if (listStyle == IdentValue.LOWER_ROMAN) {
-            text = toRoman(box.list_count).toLowerCase() + ".";
-        }
-
-        if (listStyle == IdentValue.UPPER_ROMAN) {
-            text = toRoman(box.list_count).toUpperCase() + ".";
-        }
+        
+        text += " ";
 
         Font font = box.getStyle().getFont(c);
-        LineMetrics lm = font.getLineMetrics(text, ((Graphics2D) c.getGraphics()).getFontRenderContext());
+        StrutMetrics strutMetrics = box.getStructMetrics();
+        
         int w = FontUtil.len(text, font, c.getTextRenderer(), c.getGraphics());
-        int h = (int) Math.round(box.getStyle().getCalculatedStyle().getLineHeight(c));
-        int x = box.getAbsX() - w - 2;
-        int y = box.getAbsY() + h;
-        y -= (int) lm.getDescent();
+        
+        int x = box.getAbsX() - w;
+        int y = box.getAbsY() + box.ty + strutMetrics.getBaseline();
+        
         c.getGraphics().setFont(font);
         c.getGraphics().drawString(text, x, y);
     }
@@ -209,6 +148,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/12/05 00:13:53  peterbrant
+ * Improve list-item support (marker positioning is now correct) / Start support for relative inline layers
+ *
  * Revision 1.23  2005/11/08 22:53:46  tobega
  * added getLineHeight method to CalculatedStyle and hacked in some list-item support
  *
