@@ -309,10 +309,16 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         setRenderWidth((int) c.getExtents().getWidth());
         getSharedContext().getTextRenderer().setupGraphics(c.getGraphics());
         
+        long start = System.currentTimeMillis();
+        
         Box root = Boxing.preLayout(c, new DomToplevelNode(doc));
         setRootBox(root);
         
         Boxing.realLayout(c, root, new DomToplevelNode(doc));
+        
+        long end = System.currentTimeMillis();
+        
+        XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
         
         if (!c.isStylesAllPopped()) {
             XRLog.layout(Level.SEVERE, "mismatch in style popping and pushing");
@@ -336,14 +342,9 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         root.getLayer().setPositionsFinalized(true);
         intrinsic_size = new Dimension(maxOffset.x, maxOffset.y);
         
-        //Uu.p("intrinsic size = " + intrinsic_size);
-        if (intrinsic_size.width != this.getWidth()) {
-            //Uu.p("intrisic and this widths don't match: " + this.getSize() + " "  + intrinsic_size);
-            this.setPreferredSize(new Dimension(intrinsic_size.width, this.getHeight()));
-            //this.setPreferredSize(intrinsic_size);
-            this.revalidate();
-        }
-
+        setPreferredSize(intrinsic_size);
+        revalidate();
+        
         // if doc is shorter than viewport
         // then stretch canvas to fill viewport exactly
         // then adjust the body element accordingly
@@ -352,7 +353,8 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                 //Uu.p("int height is less than viewport height");
                 // XXX Not threadsafe
                 if (enclosingScrollPane.getViewport().getHeight() != this.getHeight()) {
-                    this.setPreferredSize(new Dimension(getWidth(), enclosingScrollPane.getViewport().getHeight()));
+                    this.setPreferredSize(new Dimension(
+                            intrinsic_size.width, enclosingScrollPane.getViewport().getHeight()));
                     this.revalidate();
                 }
                 //Uu.p("need to do the body hack");
@@ -361,14 +363,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                     bodyExpandHack(root, root.height);
                     intrinsic_size.height = root.height;
                 }
-            } else {  // if doc is taller than viewport
-                if (this.getHeight() != intrinsic_size.height) {
-                    this.setPreferredSize(new Dimension(getWidth(), intrinsic_size.height));
-                    this.revalidate();
-                }
-
-            }
-            
+            } 
             
             // turn on simple scrolling mode if there's any fixed elements
             if (root.getLayer().containsFixedContent()) {
@@ -378,11 +373,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                 // Uu.p("is not fixed");
                 enclosingScrollPane.getViewport().setScrollMode(default_scroll_mode);
             }
-        } else {
-            setPreferredSize(intrinsic_size);
-            revalidate();
-        }
-
+        } 
 
         if (isUseThreads()) {
             queue.dispatchRepaintEvent(new ReflowEvent(ReflowEvent.LAYOUT_COMPLETE));
@@ -461,6 +452,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                         enclosingScrollPane.getViewport().getSize()));
             } else {
                 setRootBox(null);
+                repaint();
             }
         }
     }
