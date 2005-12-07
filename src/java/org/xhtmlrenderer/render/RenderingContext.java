@@ -20,26 +20,17 @@
 package org.xhtmlrenderer.render;
 
 import org.xhtmlrenderer.context.FontResolver;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.swing.RootPanel;
-import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.Stack;
-import java.util.logging.Level;
-
 
 /**
  * Supplies information about the context in which rendering will take place
@@ -57,14 +48,11 @@ public class RenderingContext implements CssContext {
     private Graphics2D graphics;
 
     /**
-     * Constructor for the RenderingContext object
      * <p/>
      * needs a new instance every run
      */
-    public RenderingContext(SharedContext sharedContext, Rectangle extents) {
+    public RenderingContext(SharedContext sharedContext) {
         this.sharedContext = sharedContext;
-        bfc_stack = new Stack();
-        setExtents(extents);
     }
 
     public void setContext(SharedContext sharedContext) {
@@ -168,68 +156,6 @@ public class RenderingContext implements CssContext {
         return sharedContext.getFontResolver();
     }
 
-    private Rectangle extents;
-
-    public void setExtents(Rectangle rect) {
-        this.extents = rect;
-        if (extents.width < 1) {
-            XRLog.exception("width < 1");
-            extents.width = 1;
-        }
-    }
-
-    public Rectangle getExtents() {
-        return this.extents;
-    }
-
-    //Style-handling stuff
-    private Stack styleStack;
-
-    public void initializeStyles(EmptyStyle c) {
-        styleStack = new Stack();
-        styleStack.push(c);
-    }
-
-    public void pushStyle(CascadedStyle s) {
-        CalculatedStyle parent = (CalculatedStyle) styleStack.peek();
-        CalculatedStyle derived = parent.deriveStyle(s);
-        styleStack.push(derived);
-    }
-
-    public void popStyle() {
-        if (isStylesAllPopped()) {
-            XRLog.general(Level.SEVERE, "Trying to pop base empty style");
-        } else
-            styleStack.pop();
-    }
-
-    public CalculatedStyle getCurrentStyle() {
-        return (CalculatedStyle) styleStack.peek();
-    }
-
-    public boolean isStylesAllPopped() {
-        return styleStack.size() == 1;//Is primed with an EmptyStyle to start off with
-    }
-
-    /**
-     * the current block formatting context
-     */
-    private BlockFormattingContext bfc;
-    protected Stack bfc_stack;
-
-    public BlockFormattingContext getBlockFormattingContext() {
-        return bfc;
-    }
-
-    public void pushBFC(BlockFormattingContext bfc) {
-        bfc_stack.push(this.bfc);
-        this.bfc = bfc;
-    }
-
-    public void popBFC() {
-        bfc = (BlockFormattingContext) bfc_stack.pop();
-    }
-
     public Font getFont(FontSpecification font) {
         return sharedContext.getFont(font);
     }
@@ -241,60 +167,6 @@ public class RenderingContext implements CssContext {
     public Rectangle getFixedRectangle() {
         return sharedContext.getFixedRectangle();
     }
-
-    private int xoff = 0;
-    private int yoff = 0;
-
-    public void translate(int x, int y) {
-        getGraphics().translate(x, y);
-        // TODO remove / BFC shouldn't be used at render
-        if (bfc != null) {
-            bfc.translate(x, y);
-        }
-        xoff += x;
-        yoff += y;
-    }
-
-    /* should not be used any more
-    private LinkedList decorations = new LinkedList();
-    private LinkedList inlineBorders = new LinkedList();
-    private LinkedList firstLineStyles = new LinkedList();
-
-    public LinkedList getDecorations() {
-        return decorations;
-    }
-
-    public LinkedList getInlineBorders() {
-        return inlineBorders;
-    }
-
-    public void addFirstLineStyle(CascadedStyle firstLineStyle) {
-        firstLineStyles.addLast(firstLineStyle);
-    }
-
-    public void popFirstLineStyle() {
-        if (firstLineStyles.size() != 0) {//there was no formatted first line
-            firstLineStyles.removeLast();
-        }
-    }
-
-    public boolean hasFirstLineStyles() {
-        return firstLineStyles.size() != 0;
-    }*/
-
-    /**
-     * NB, clone list first if you want to keep the contents!
-     */
-    /*public void clearFirstLineStyles() {
-        firstLineStyles.clear();
-    }*/
-
-    /**
-     * NB, you are getting a reference! Call clearFirstLineStyles at own risk!
-     */
-    /*public LinkedList getFirstLineStyles() {
-        return firstLineStyles;
-    }*/
 
     public boolean debugDrawBoxes() {
         return sharedContext.debugDrawBoxes();
@@ -342,10 +214,6 @@ public class RenderingContext implements CssContext {
 
     public void updateSelection(Box box) {
         sharedContext.updateSelection(box);
-    }
-
-    public Point getOriginOffset() {
-        return new Point(xoff, yoff);
     }
 
     public PageInfo getPageInfo() {

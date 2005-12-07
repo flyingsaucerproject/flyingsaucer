@@ -96,8 +96,7 @@ public class SharedContext {
     }
 
     public RenderingContext newRenderingContextInstance(Rectangle extents) {
-        RenderingContext c = new RenderingContext(this, extents);
-        c.initializeStyles(new EmptyStyle());
+        RenderingContext c = new RenderingContext(this);
         return c;
     }
 
@@ -645,6 +644,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2005/12/07 20:34:46  peterbrant
+ * Remove unused fields/methods from RenderingContext / Paint line content using absolute coords (preparation for relative inline layers)
+ *
  * Revision 1.19  2005/11/08 01:53:49  tobega
  * Corrected x-height and line-through by taking StrikethroughThickness into account.
  *

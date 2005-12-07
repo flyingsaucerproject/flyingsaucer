@@ -21,7 +21,6 @@ package org.xhtmlrenderer.render;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.font.LineMetrics;
@@ -228,7 +227,7 @@ public class InlineBox extends Box {
         graphics.setColor(getStyle().getCalculatedStyle().getColor());
         Rectangle edge = getContentAreaEdge(c);
         c.getGraphics().fillRect(
-                edge.x, this.y + textDecoration.getOffset(),
+                edge.x, getAbsY() + textDecoration.getOffset(),
                 edge.width, textDecoration.getThickness());
         
         graphics.setColor(oldColor);
@@ -269,10 +268,7 @@ public class InlineBox extends Box {
             } else if (child instanceof Box) {
                 Box b = (Box)child;
                 if (b.getLayer() == null) {
-                    Point offset = c.getOriginOffset();
-                    c.translate(-offset.x, -offset.y);
                     Layer.paintAsLayer(c, b);
-                    c.translate(offset.x, offset.y);
                 }
             }
         }
@@ -310,8 +306,8 @@ public class InlineBox extends Box {
         RectPropertySet padding = getStyle().getPaddingWidth(cssCtx);
         
         Rectangle result = new Rectangle(
-                (int)(this.x + marginLeft), 
-                (int)(this.y - border.top() - padding.top()), 
+                (int)(getAbsX() + marginLeft), 
+                (int)(getAbsY() - border.top() - padding.top()), 
                 (int)(getInlineWidth(cssCtx) - marginLeft - marginRight), 
                 getHeight());
         return result;
@@ -345,8 +341,8 @@ public class InlineBox extends Box {
         }
         
         Rectangle result = new Rectangle(
-                (int)(this.x + marginLeft + borderLeft + paddingLeft), 
-                (int)(this.y - border.top() - padding.top()), 
+                (int)(getAbsX() + marginLeft + borderLeft + paddingLeft), 
+                (int)(getAbsY() - border.top() - padding.top()), 
                 (int)(getInlineWidth(cssCtx) - marginLeft - borderLeft - paddingLeft
                     - paddingRight - borderRight - marginRight),
                 getHeight());

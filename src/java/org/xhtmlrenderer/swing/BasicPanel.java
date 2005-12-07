@@ -330,10 +330,6 @@ public abstract class BasicPanel extends RootPanel {
             Uu.p("repaint took ms: " + (after - start));
         }
 
-        if (!c.isStylesAllPopped()) {
-            XRLog.render(Level.SEVERE, "mismatch in style popping and pushing");
-        }
-
         last_event = null;
 
     }
@@ -1083,6 +1079,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.87  2005/12/07 20:34:47  peterbrant
+ * Remove unused fields/methods from RenderingContext / Paint line content using absolute coords (preparation for relative inline layers)
+ *
  * Revision 1.86  2005/11/25 16:57:23  peterbrant
  * Initial commit of inline content refactoring
  *

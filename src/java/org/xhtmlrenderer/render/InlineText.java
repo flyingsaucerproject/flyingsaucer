@@ -89,8 +89,16 @@ public class InlineText {
         this.width = width;
     }
     
+    private LineBox getLineBox() {
+        Box b = getParent().getParent();
+        while (! (b instanceof LineBox)) {
+            b = b.getParent();
+        }
+        return (LineBox)b;
+    }
+    
     public void paint(RenderingContext c) {
-        InlineBox iB = (InlineBox)getParent();
+        InlineBox iB = getParent();
         
         String text = getSubstring();
         Graphics2D g = (Graphics2D) c.getGraphics();
@@ -104,7 +112,7 @@ public class InlineText {
         //draw the line
         if (text != null && text.length() > 0) {
             c.getTextRenderer().drawString(c.getGraphics(), text, 
-                    getX(), iB.y + iB.getBaseline());
+                    getLineBox().getAbsX() + getX(), iB.getAbsY() + iB.getBaseline());
         }
 
         g.setColor(oldcolor);

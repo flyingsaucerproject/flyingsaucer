@@ -28,7 +28,6 @@ import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.logging.Level;
@@ -94,14 +93,13 @@ public class LineBox extends Box implements Renderable {
         
         graphics.setColor(getStyle().getCalculatedStyle().getColor());
         c.getGraphics().fillRect(
-                0, textDecoration.getOffset(),
+                getAbsX(), getAbsY() + textDecoration.getOffset(),
                 getContentWidth(), textDecoration.getThickness());
         
         graphics.setColor(oldColor);
     }
     
     public void paint(RenderingContext c) {
-        c.translate(getAbsX(), getAbsY());
         if (textDecoration != null) {
             paintTextDecoration(c);
         }
@@ -111,13 +109,9 @@ public class LineBox extends Box implements Renderable {
                 InlineBox iB = (InlineBox)child;
                 iB.paint(c);
             } else if (child.getLayer() == null) {
-                Point offset = c.getOriginOffset();
-                c.translate(-offset.x, -offset.y);
                 Layer.paintAsLayer(c, child);
-                c.translate(offset.x, offset.y);
             }
         }
-        c.translate(-getAbsX(), -getAbsY());
     }
     
     public boolean isFirstLine() {
@@ -253,6 +247,9 @@ public class LineBox extends Box implements Renderable {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2005/12/07 20:34:45  peterbrant
+ * Remove unused fields/methods from RenderingContext / Paint line content using absolute coords (preparation for relative inline layers)
+ *
  * Revision 1.36  2005/11/29 16:39:04  peterbrant
  * Complete line box clip region checking
  *
