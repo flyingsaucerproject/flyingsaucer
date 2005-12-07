@@ -222,6 +222,10 @@ public class InlineBoxing {
                     if (lbContext.isNeedsNewLine()) {
                         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
                                 maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePCs);
+                        if (currentLine.isFirstLine() && hasFirstLinePCs) {
+                            lbContext.setMaster(TextUtil.transformText(
+                                    text.getText(), c.getCurrentStyle()));
+                        }
                         previousLine = currentLine;
                         currentLine = newLine(c, previousLine, box);
                         currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
@@ -734,6 +738,7 @@ public class InlineBoxing {
                 currentIB.setStyle(new Style(info.getCalculatedStyle(), cbWidth));
                 currentIB.calculateHeight(c);
                 info.setCalculatedStyle(null);
+                info.setInlineBox(currentIB);
             }
             
             if (first) {
