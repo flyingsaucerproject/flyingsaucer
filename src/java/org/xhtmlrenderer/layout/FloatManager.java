@@ -76,7 +76,7 @@ public class FloatManager {
     private void save(FloatedBlockBox current, Layer layer, BlockFormattingContext bfc, int direction) {
         Point p = bfc.getOffset();
         getFloats(direction).add(new BoxOffset(current, p.x, p.y));
-        layer.addFloat(current);
+        layer.addFloat(current, bfc);
     }
 
     private void position(CssContext cssCtx, BlockFormattingContext bfc,
@@ -205,6 +205,15 @@ public class FloatManager {
         }
 
         return result;
+    }
+    
+    public int getClearDelta(CssContext cssCtx, int bfcRelativeY) {
+        int lowestLeftY = findLowestAbsoluteY(cssCtx, getFloats(LEFT));
+        int lowestRightY = findLowestAbsoluteY(cssCtx, getFloats(RIGHT));
+        
+        int lowestY = Math.max(lowestLeftY, lowestRightY);
+        
+        return lowestY - bfcRelativeY;
     }
 
     private boolean overlaps(CssContext cssCtx, BlockFormattingContext bfc,

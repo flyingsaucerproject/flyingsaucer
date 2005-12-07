@@ -110,13 +110,13 @@ public class Boxing {
             c.getRootLayer().setFixedBackground(true);
         }
         
+        if (content instanceof DomToplevelNode || block.getStyle().requiresLayer()) {
+            c.pushLayer(block);
+        }
+
         if (content instanceof DomToplevelNode || block.getStyle().establishesBFC()) {
             BlockFormattingContext bfc = new BlockFormattingContext(block, c);
             c.pushBFC(bfc);
-        } 
-        
-        if (content instanceof DomToplevelNode || block.getStyle().requiresLayer()) {
-            c.pushLayer(block);
         }
         
         // copy the extents
@@ -207,6 +207,14 @@ public class Boxing {
         }
 
         if (content instanceof DomToplevelNode || block.getStyle().establishesBFC()) {
+            if (block.getStyle().isAutoHeight()) {
+                int delta = 
+                    c.getBlockFormattingContext().getFloatManager().getClearDelta(
+                            c, (int) margin.top() + (int) border.top() + (int) padding.top() + block.height);
+                if (delta > 0) {
+                    block.height += delta ;
+                }
+            }
             c.popBFC();
         }
         
@@ -351,6 +359,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.64  2005/12/07 03:14:21  peterbrant
+ * Fixes to final float position when float BFC is not contained in the layer being positioned / Implement 10.6.7 of the spec
+ *
  * Revision 1.63  2005/12/07 00:33:12  peterbrant
  * :first-letter and :first-line works again
  *

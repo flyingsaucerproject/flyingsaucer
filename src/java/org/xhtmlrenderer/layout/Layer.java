@@ -29,8 +29,10 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class Layer {
     private Layer parent;
@@ -41,6 +43,7 @@ public class Layer {
     private Box end;
 
     private List floats;
+    private Map moveWithLayerFloats;
 
     private boolean fixedBackground;
     
@@ -94,21 +97,38 @@ public class Layer {
         children.add(layer);
     }
 
-    public void addFloat(FloatedBlockBox floater) {
+    public void addFloat(FloatedBlockBox floater, BlockFormattingContext bfc) {
         if (floats == null) {
             floats = new ArrayList();
         }
 
         floats.add(floater);
+        
+        maybeAddMoveWithLayerFloat(floater, bfc);
     }
 
     public void removeFloat(FloatedBlockBox floater) {
-        if (isStackingContext()) {
-            if (floats != null) {
-                floats.remove(floater);
+        if (floats != null) {
+            floats.remove(floater);
+        }
+        
+        removeMoveWithLayerFloat(floater);
+    }
+    
+    private void maybeAddMoveWithLayerFloat(FloatedBlockBox floater, 
+            BlockFormattingContext bfc) {
+        if (getMaster().getStyle().isRelative() && 
+                ! bfc.getFloatManager().getMaster().containedIn(this)) {
+            if (moveWithLayerFloats == null) {
+                moveWithLayerFloats = new HashMap();
             }
-        } else {
-            getParent().removeFloat(floater);
+            moveWithLayerFloats.put(floater, Boolean.TRUE);
+        }
+    }
+    
+    private void removeMoveWithLayerFloat(FloatedBlockBox floater) {
+        if (moveWithLayerFloats != null) {
+            moveWithLayerFloats.remove(floater);
         }
     }
 
@@ -296,7 +316,7 @@ public class Layer {
         }
     }
     
-    private boolean isRootLayer() {
+    public boolean isRootLayer() {
         return getParent() == null && isStackingContext();
     }
     
@@ -413,7 +433,7 @@ public class Layer {
         }
     }
     
-    public void finalizePosition(CssContext cssCtx) {
+    private void finalizePosition(CssContext cssCtx) {
         Dimension delta = getMaster().positionPositioned(cssCtx);
         
         if (getMaster().getStyle().isRelative()) {
@@ -422,8 +442,8 @@ public class Layer {
     }
     
     private void moveFloats(Dimension distance) {
-        if (floats != null) {
-            for (Iterator i = floats.iterator(); i.hasNext(); ) {
+        if (moveWithLayerFloats != null) {
+            for (Iterator i = moveWithLayerFloats.keySet().iterator(); i.hasNext(); ) {
                 FloatedBlockBox floater = (FloatedBlockBox)i.next();
                 floater.x += distance.width;
                 floater.y += distance.height;

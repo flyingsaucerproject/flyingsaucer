@@ -31,9 +31,15 @@ import org.xhtmlrenderer.render.LineBox;
 public class BlockFormattingContext {
     protected int x, y = 0;
     private final PersistentBFC persistentBFC;
+    private final Layer layer;
 
     public BlockFormattingContext(Box block, LayoutContext c) {
         persistentBFC = new PersistentBFC(block, c);
+        layer = c.getLayer();
+    }
+    
+    public Layer getLayer() {
+        return this.layer;
     }
 
     /* ====== positioning stuff ======== */

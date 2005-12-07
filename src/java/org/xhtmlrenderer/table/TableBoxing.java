@@ -382,6 +382,7 @@ public class TableBoxing {
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
         RowBox row = new RowBox();
+        row.setContainingBlock(table);
 
         CascadedStyle pushed = tableRowContent.getStyle();
         if (pushed != null) {
@@ -417,6 +418,8 @@ public class TableBoxing {
         //restore the extents
         c.setExtents(oe);
         row.setState(Box.DONE);
+        
+        row.setContainingBlock(null);
         return row;
     }
 
@@ -431,11 +434,13 @@ public class TableBoxing {
             }
             TableCellContent tcc = (TableCellContent) i.next();
             CellBox cellBox = new CellBox();
+            cellBox.setContainingBlock(row);
             c.translate(row.contentWidth, 0);
             c.setShrinkWrap();
             cellBox = (CellBox) layoutCell(c, cellBox, tcc, fixed, table, col);
             c.unsetShrinkWrap();
             c.translate(-row.contentWidth, 0);
+            cellBox.setContainingBlock(null);
 
             cellBox.setParent(row);
             cellBox.element = tcc.getElement();
@@ -605,6 +610,13 @@ public class TableBoxing {
         if (!cell.getStyle().isAutoHeight()) {
             // Uu.p("restoring original height");
             cell.height = original_height;
+        } else {
+            int delta = 
+                c.getBlockFormattingContext().getFloatManager().getClearDelta(
+                        c, (int) border.top() + (int) padding.top() + cell.height);
+            if (delta > 0) {
+                cell.height += delta;
+            }
         }
 
         cell.height = (int) border.top() + (int) padding.top() + cell.height + (int) padding.bottom() + (int) border.bottom();
@@ -629,6 +641,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.51  2005/12/07 03:14:23  peterbrant
+   Fixes to final float position when float BFC is not contained in the layer being positioned / Implement 10.6.7 of the spec
+
    Revision 1.50  2005/12/05 00:13:55  peterbrant
    Improve list-item support (marker positioning is now correct) / Start support for relative inline layers
 

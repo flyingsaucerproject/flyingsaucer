@@ -683,13 +683,32 @@ public abstract class Box {
             box.setContainingInlineLayer(c.getLayer());
             box.connectChildrenToCurrentLayer(c);
         }
-    }    
+    }
+    
+    public boolean containedIn(Layer target) {
+        if (layer != null && layer == target) {
+            return true;
+        } else {
+            Box cb = getContainingBlock();
+            if (cb == null) {
+                if (layer == null || ! layer.isRootLayer()) {
+                    throw new RuntimeException("internal error");
+                }
+                return false;
+            } else {
+                return getContainingBlock().containedIn(target);
+            }
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.83  2005/12/07 03:14:20  peterbrant
+ * Fixes to final float position when float BFC is not contained in the layer being positioned / Implement 10.6.7 of the spec
+ *
  * Revision 1.82  2005/12/07 00:33:12  peterbrant
  * :first-letter and :first-line works again
  *
