@@ -1,6 +1,7 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjörn Gannholm, Wisconsin Court System
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjörn Gannholm
+ * Copyright (c) 2005 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
