@@ -99,6 +99,11 @@ public class FloatManager {
         }
 
         if (current.getStyle().isCleared()) {
+            if (current.getStyle().isClearLeft() && direction == LEFT) {
+                moveAllTheWayOver(current, LEFT);
+            } else if (current.getStyle().isClearRight() && direction == RIGHT) {
+                moveAllTheWayOver(current, RIGHT);
+            }
             clear(cssCtx, bfc, current);
         }
     }
@@ -252,12 +257,12 @@ public class FloatManager {
         }
     }
 
-    private void applyLineHeightHack(Box line, Rectangle bounds) {
+    private void applyLineHeightHack(CssContext cssCtx, Box line, Rectangle bounds) {
         // this is a hack to deal with lines w/o width or height. is this valid?
         // possibly, since the line doesn't know how long it should be until it's already
         // done float adjustments
         if (line.height == 0) {
-            bounds.height = 10;
+            bounds.height = (int)line.getStyle().getCalculatedStyle().getLineHeight(cssCtx);
         }
     }
 
@@ -284,7 +289,7 @@ public class FloatManager {
         
         int farthestOver = direction == LEFT ? lineBounds.x : lineBounds.x + lineBounds.width;
 
-        applyLineHeightHack(line, lineBounds);
+        applyLineHeightHack(cssCtx, line, lineBounds);
 
         for (int i = 0; i < floatsList.size(); i++) {
             BoxOffset floater = (BoxOffset) floatsList.get(i);
