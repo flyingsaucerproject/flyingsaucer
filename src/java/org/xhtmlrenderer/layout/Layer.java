@@ -23,6 +23,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.render.*;
 
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -94,15 +95,11 @@ public class Layer {
     }
 
     public void addFloat(FloatedBlockBox floater) {
-        if (isStackingContext()) {
-            if (floats == null) {
-                floats = new ArrayList();
-            }
-    
-            floats.add(floater);
-        } else {
-            getParent().addFloat(floater);
+        if (floats == null) {
+            floats = new ArrayList();
         }
+
+        floats.add(floater);
     }
 
     public void removeFloat(FloatedBlockBox floater) {
@@ -411,7 +408,25 @@ public class Layer {
 
             // TODO Pending finished implementation of relative inline layers
             if (! child.isInline()) {
-                child.getMaster().positionPositioned(cssCtx);
+                child.finalizePosition(cssCtx);
+            }
+        }
+    }
+    
+    public void finalizePosition(CssContext cssCtx) {
+        Dimension delta = getMaster().positionPositioned(cssCtx);
+        
+        if (getMaster().getStyle().isRelative()) {
+            moveFloats(delta);
+        }
+    }
+    
+    private void moveFloats(Dimension distance) {
+        if (floats != null) {
+            for (Iterator i = floats.iterator(); i.hasNext(); ) {
+                FloatedBlockBox floater = (FloatedBlockBox)i.next();
+                floater.x += distance.width;
+                floater.y += distance.height;
             }
         }
     }

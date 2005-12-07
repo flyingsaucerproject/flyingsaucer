@@ -36,6 +36,8 @@ import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.ContentUtil;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
+import org.xhtmlrenderer.layout.content.FirstLetterStyle;
+import org.xhtmlrenderer.layout.content.FirstLineStyle;
 import org.xhtmlrenderer.layout.content.TableContent;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
@@ -269,10 +271,17 @@ public class Boxing {
 
         if (contentList != null && contentList.size() > 0) {
             c.pushParentContent(content);
+            PseudoClassPushStatus status = pushPseudoClasses(c, contentList);
             if (ContentUtil.hasBlockContent(contentList)) {//this should be block layed out
                 BlockBoxing.layoutContent(c, box, contentList, box);
             } else {
                 InlineBoxing.layoutContent(c, box, contentList);
+            }
+            if (status.isPushedFirstLine()) {
+                c.getFirstLinesTracker().removeLast();
+            }
+            if (status.isPushedFirstLetter()) {
+                c.getFirstLettersTracker().removeLast();
             }
             c.popParentContent();
         }
@@ -280,6 +289,28 @@ public class Boxing {
         box.setState(Box.DONE);
         return box;
     }
+    
+
+    private static PseudoClassPushStatus pushPseudoClasses(LayoutContext c, List contentList) {
+        PseudoClassPushStatus status = new PseudoClassPushStatus();
+        
+        Object first = contentList.get(0);
+        Object second = contentList.size() > 1 ? contentList.get(1) : null;
+
+        if (first instanceof FirstLineStyle) {
+            c.getFirstLinesTracker().addStyle(((FirstLineStyle) first).getStyle());
+            status.setPushedFirstLine(true);
+            if (second instanceof FirstLetterStyle) {
+                c.getFirstLettersTracker().addStyle(((FirstLetterStyle) second).getStyle());
+                status.setPushedFirstLetter(true);
+            }
+        } else if (first instanceof FirstLetterStyle) {
+            c.getFirstLettersTracker().addStyle(((FirstLetterStyle) first).getStyle());
+            status.setPushedFirstLetter(true);
+        }
+
+        return status;
+    }    
     
     /**
      * HACK If a class implementing this interface is passed to {@link Boxing#realLayout(LayoutContext, Box, Content)}
@@ -292,6 +323,24 @@ public class Boxing {
     public interface StyleSetListener {
         public void onStyleSet(Box box);
     }
+    
+    private static class PseudoClassPushStatus {
+        private boolean pushedFirstLine;
+        private boolean pushedFirstLetter;
+        
+        public boolean isPushedFirstLetter() {
+            return pushedFirstLetter;
+        }
+        public void setPushedFirstLetter(boolean pushedFirstLetter) {
+            this.pushedFirstLetter = pushedFirstLetter;
+        }
+        public boolean isPushedFirstLine() {
+            return pushedFirstLine;
+        }
+        public void setPushedFirstLine(boolean pushedFirstLine) {
+            this.pushedFirstLine = pushedFirstLine;
+        }
+    }
 
     // calculate the width based on css and available space
 
@@ -302,6 +351,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.63  2005/12/07 00:33:12  peterbrant
+ * :first-letter and :first-line works again
+ *
  * Revision 1.62  2005/12/05 00:13:54  peterbrant
  * Improve list-item support (marker positioning is now correct) / Start support for relative inline layers
  *

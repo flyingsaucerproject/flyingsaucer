@@ -35,6 +35,7 @@ import org.xhtmlrenderer.util.Uu;
 import javax.swing.*;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
@@ -508,7 +509,10 @@ public abstract class Box {
     // Common code for placing absolute and relative boxes in the right place
     // Is the best place for it?
     // TODO Finish this!
-    public void positionPositioned(CssContext cssCtx) {
+    public Dimension positionPositioned(CssContext cssCtx) {
+        int initialX = this.x;
+        int initialY = this.y;
+        
         CalculatedStyle style = getStyle().getCalculatedStyle();
 
         boolean usePaddingBox = false;
@@ -543,6 +547,8 @@ public abstract class Box {
             this.x += paddingBox.x;
             this.y += paddingBox.y;
         }
+        
+        return new Dimension(this.x - initialX, this.y - initialY);
     }
     
     // HACK If a box doesn't have a Style object, NPEs are the likely result
@@ -684,6 +690,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.82  2005/12/07 00:33:12  peterbrant
+ * :first-letter and :first-line works again
+ *
  * Revision 1.81  2005/12/05 00:13:53  peterbrant
  * Improve list-item support (marker positioning is now correct) / Start support for relative inline layers
  *

@@ -31,6 +31,39 @@ import java.awt.Font;
  */
 public class Breaker {
 
+    public static void breakFirstLetter(LayoutContext c, LineBreakContext context,
+            int avail, Font font) {
+        context.setEnd(getFirstLetterEnd(context.getMaster(), context.getStart()));
+        context.setWidth(FontUtil.len(context.getCalculatedSubstring(), font,
+                c.getTextRenderer(), c.getGraphics()));
+        
+        if (context.getWidth() > avail) {
+            context.setNeedsNewLine(true);
+            context.setUnbreakable(true);
+        }
+    }
+    
+    private static int getFirstLetterEnd(String text, int start) {
+        int i = start;
+        while (i < text.length()) {
+            char c = text.charAt(i);
+            int type = Character.getType(c);
+            if (type == Character.START_PUNCTUATION || 
+                    type == Character.END_PUNCTUATION ||
+                    type == Character.INITIAL_QUOTE_PUNCTUATION ||
+                    type == Character.FINAL_QUOTE_PUNCTUATION ||
+                    type == Character.OTHER_PUNCTUATION) {
+                i++;
+            } else {
+                break;
+            }
+        }
+        if (i < text.length()) {
+            i++;
+        }
+        return i;
+    }    
+    
     public static void breakText(LayoutContext c, 
             LineBreakContext context, int avail, IdentValue whitespace, Font font) {
         // ====== handle nowrap

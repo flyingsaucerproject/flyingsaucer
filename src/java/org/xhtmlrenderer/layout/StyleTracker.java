@@ -32,9 +32,15 @@ public class StyleTracker {
         styles.add(style);
     }
 
-    public void popStyle() {
+    public void removeLast() {
         if (styles.size() != 0) {
             styles.remove(styles.size()-1);
+        }
+    }
+    
+    public void popStyles(LayoutContext c) {
+        for (int i = 0; i < styles.size(); i++) {
+            c.popStyle();
         }
     }
 

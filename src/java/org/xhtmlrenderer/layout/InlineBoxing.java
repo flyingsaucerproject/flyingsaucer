@@ -1,6 +1,7 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjoern Gannholm, Wisconsin Court System
+ * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjoern Gannholm 
+ * Copyright (c) 2005 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -35,30 +36,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-// XXX make sure unused first line styles are popped (first letters too?)
-
 public class InlineBoxing {
-
-    private static int pushPseudoClasses(LayoutContext c, List contentList) {
-        int result = 0;
-
-        Object first = contentList.size() > 0 ? contentList.get(0) : null;
-        Object second = contentList.size() > 1 ? contentList.get(1) : null;
-
-        if (first instanceof FirstLineStyle) {
-            c.getFirstLinesTracker().addStyle(((FirstLineStyle) first).getStyle());
-            result++;
-            if (second instanceof FirstLetterStyle) {
-                c.getFirstLettersTracker().addStyle(((FirstLetterStyle) second).getStyle());
-                result++;
-            }
-        } else if (first instanceof FirstLetterStyle) {
-            c.getFirstLettersTracker().addStyle(((FirstLetterStyle) first).getStyle());
-            result++;
-        }
-
-        return result;
-    }
 
     public static void layoutContent(LayoutContext c, Box box, List contentList) {
         int maxAvailableWidth = c.getExtents().width;
@@ -95,16 +73,20 @@ public class InlineBoxing {
         int pendingLeftMBP = 0;
         int pendingRightMBP = 0;
 
-        int start = pushPseudoClasses(c, contentList);
-
-        /*
+        boolean hasFirstLinePCs = false;
         if (c.getFirstLinesTracker().hasStyles()) {
             c.getFirstLinesTracker().pushStyles(c);
+            hasFirstLinePCs = true;
         }
-        */
 
-        for (int i = start; i < contentList.size(); i++) {
+        boolean needFirstLetter = c.getFirstLettersTracker().hasStyles();
+        
+        for (int i = 0; i < contentList.size(); i++) {
             Object o = contentList.get(i);
+            
+            if (o instanceof FirstLineStyle || o instanceof FirstLetterStyle) {
+                continue;
+            }
 
             if (o instanceof StylePush) {
                 StylePush sp = (StylePush) o;
@@ -169,7 +151,7 @@ public class InlineBoxing {
 
                 if (inlineBlock.getWidth() > remainingWidth && currentLine.isContainsContent()) {
                     saveLine(currentLine, previousLine, c, box, minimumLineHeight,
-                            maxAvailableWidth, elementStack, pendingFloats);
+                            maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePCs);
                     previousLine = currentLine;
                     currentLine = newLine(c, previousLine, box);
                     currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
@@ -197,6 +179,8 @@ public class InlineBoxing {
                 currentLine.setContainsBlockLevelContent(true);
 
                 remainingWidth -= inlineBlock.getWidth();
+                
+                needFirstLetter = false;
             } else {
                 TextContent text = (TextContent) content;
                 LineBreakContext lbContext = new LineBreakContext();
@@ -214,23 +198,30 @@ public class InlineBoxing {
                         lbContext.setStart(lbContext.getStart() + 1);
                     }
 
-                    lbContext.saveEnd();
-                    
-                    InlineText inlineText = layoutText(c, remainingWidth - fit, lbContext);
-
-                    if (!lbContext.isUnbreakable() ||
-                            (lbContext.isUnbreakable() && ! currentLine.isContainsContent())) {
-                        currentIB.addInlineChild(c, inlineText);
-                        currentLine.setContainsContent(true);
-                        lbContext.setStart(lbContext.getEnd());
-                        remainingWidth -= inlineText.getWidth();
+                    if (needFirstLetter && !lbContext.isFinished()) {
+                        InlineBox firstLetter =
+                            addFirstLetterBox(c, currentLine, currentIB, lbContext, 
+                                    maxAvailableWidth, remainingWidth);
+                        remainingWidth -= firstLetter.getInlineWidth();
+                        needFirstLetter = false;
                     } else {
-                        lbContext.resetEnd();
+                        lbContext.saveEnd();
+                        InlineText inlineText = layoutText(
+                                c, remainingWidth - fit, lbContext, false);
+                        if (!lbContext.isUnbreakable() ||
+                                (lbContext.isUnbreakable() && ! currentLine.isContainsContent())) {
+                            currentIB.addInlineChild(c, inlineText);
+                            currentLine.setContainsContent(true);
+                            lbContext.setStart(lbContext.getEnd());
+                            remainingWidth -= inlineText.getWidth();
+                        } else {
+                            lbContext.resetEnd();
+                        }
                     }
 
                     if (lbContext.isNeedsNewLine()) {
                         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
-                                maxAvailableWidth, elementStack, pendingFloats);
+                                maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePCs);
                         previousLine = currentLine;
                         currentLine = newLine(c, previousLine, box);
                         currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
@@ -247,7 +238,7 @@ public class InlineBoxing {
         }
 
         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
-                maxAvailableWidth, elementStack, pendingFloats);
+                maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePCs);
 
         if (box instanceof AnonymousBlockBox) {
             ((BlockBox) box.getParent()).setPendingInlineElements(elementStack.size() == 0 ? null : elementStack);
@@ -256,6 +247,30 @@ public class InlineBoxing {
         if (!c.shrinkWrap()) box.contentWidth = maxAvailableWidth;
         
         box.setHeight(currentLine.y + currentLine.getHeight());
+    }
+    
+    private static InlineBox addFirstLetterBox(LayoutContext c, LineBox current, 
+            InlineBox currentIB, LineBreakContext lbContext, int maxAvailableWidth, 
+            int remainingWidth) {
+        c.getFirstLettersTracker().pushStyles(c);
+        
+        InlineBox iB = new InlineBox(null, c.getCurrentStyle(), maxAvailableWidth);
+        iB.calculateHeight(c);
+        iB.setStartsHere(true);
+        iB.setEndsHere(true);
+        
+        currentIB.addInlineChild(c, iB);
+        current.setContainsContent(true);
+        
+        InlineText text = layoutText(c, remainingWidth, lbContext, true);
+        iB.addInlineChild(c, text);
+        
+        lbContext.setStart(lbContext.getEnd());
+        
+        c.getFirstLettersTracker().popStyles(c);
+        c.getFirstLettersTracker().clearStyles();
+        
+        return iB;
     }
 
     private static Box layoutInlineBlock(LayoutContext c, 
@@ -567,7 +582,8 @@ public class InlineBoxing {
 
     private static void saveLine(final LineBox current, LineBox previous,
                                  final LayoutContext c, Box block, int minHeight,
-                                 final int maxAvailableWidth, List elementStack, List pendingFloats) {
+                                 final int maxAvailableWidth, List elementStack, 
+                                 List pendingFloats, boolean hasFirstLinePCs) {
         current.prunePendingInlineBoxes();
 
         int totalLineWidth = positionHorizontally(c, current, 0);
@@ -598,25 +614,6 @@ public class InlineBoxing {
             current.setFloatDistances(distances);
         }
         
-        /*
-        if (c.hasFirstLineStyles()) {
-//          first pop element styles pushed on first line
-            for (int i = 0; i < pushedOnFirstLine.size(); i++) c.popStyle();
-//          Now save the first-line style
-            current.firstLinePseudo = new InlineElement(null, "first-line", null);
-            Style fls = new Style(c.getCurrentStyle(), bounds.width);
-            current.firstLinePseudo.setStartStyle(fls);
-            current.firstLinePseudo.setEndStyle(fls);
-//          then pop first-line styles
-            for (int i = 0; i < c.getFirstLineStyles().size(); i++) c.popStyle();
-//          reinstate element styles
-            for (Iterator i = pushedOnFirstLine.iterator(); i.hasNext();) {
-                c.pushStyle((CascadedStyle) i.next());
-            }
-            c.clearFirstLineStyles();
-        }
-        */
-        
         if (c.shrinkWrap()) {
         	block.adjustWidthForChild(current.contentWidth);
         }
@@ -637,12 +634,23 @@ public class InlineBoxing {
         if (!block.getStyle().isClearLeft()) {
             current.x += c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth);
         }
+        
+        if (hasFirstLinePCs && current.isFirstLine()) {
+            for (int i = 0; i < elementStack.size(); i++) {
+                c.popStyle();
+            }
+            c.getFirstLinesTracker().popStyles(c);
+            c.getFirstLinesTracker().clearStyles();
+            for (Iterator i = elementStack.iterator(); i.hasNext(); ) {
+                InlineBoxInfo iBInfo = (InlineBoxInfo)i.next();
+                c.pushStyle(iBInfo.getCascadedStyle());
+                iBInfo.setCalculatedStyle(c.getCurrentStyle());
+            }
+        }
     }
 
     private static InlineText layoutText(LayoutContext c, int remainingWidth,
-                                         LineBreakContext lbContext) {
-        // TODO handle first-letter
-        
+                                         LineBreakContext lbContext, boolean needFirstLetter) {
         InlineText result = null;
 
         result = new InlineText();
@@ -650,8 +658,12 @@ public class InlineBoxing {
 
         Font font = c.getFont(c.getCurrentStyle().getFont(c));
 
-        Breaker.breakText(c, lbContext, remainingWidth,
-                c.getCurrentStyle().getWhitespace(), font);
+        if (needFirstLetter) {
+            Breaker.breakFirstLetter(c, lbContext, remainingWidth, font);
+        } else {
+            Breaker.breakText(c, lbContext, remainingWidth,
+                    c.getCurrentStyle().getWhitespace(), font);
+        }
 
         result.setSubstring(lbContext.getStart(), lbContext.getEnd());
         result.setWidth(lbContext.getWidth());
@@ -716,6 +728,14 @@ public class InlineBoxing {
         for (Iterator i = elementStack.iterator(); i.hasNext();) {
             InlineBoxInfo info = (InlineBoxInfo) i.next();
             currentIB = info.getInlineBox().copyOf();
+            
+            // :first-line transition
+            if (info.getCalculatedStyle() != null) {
+                currentIB.setStyle(new Style(info.getCalculatedStyle(), cbWidth));
+                currentIB.calculateHeight(c);
+                info.setCalculatedStyle(null);
+            }
+            
             if (first) {
                 line.addChild(c, currentIB);
                 first = false;
@@ -729,6 +749,7 @@ public class InlineBoxing {
 
     private static class InlineBoxInfo {
         private CascadedStyle cascadedStyle;
+        private CalculatedStyle calculatedStyle;
         private InlineBox inlineBox;
 
         public InlineBoxInfo(CascadedStyle cascadedStyle, InlineBox inlineBox) {
@@ -753,6 +774,14 @@ public class InlineBoxing {
 
         public void setInlineBox(InlineBox inlineBox) {
             this.inlineBox = inlineBox;
+        }
+
+        public CalculatedStyle getCalculatedStyle() {
+            return calculatedStyle;
+        }
+
+        public void setCalculatedStyle(CalculatedStyle calculatedStyle) {
+            this.calculatedStyle = calculatedStyle;
         }
     }
 }

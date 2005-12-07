@@ -55,19 +55,15 @@ public class BlockBoxing {
         
         while (contentIterator.hasNext()) {
             Object o = contentIterator.next();
-            if (o instanceof FirstLineStyle) {//can actually only be the first object in list
-                c.getFirstLinesTracker().addStyle(((FirstLineStyle) o).getStyle());
+            
+            if (o instanceof FirstLineStyle || o instanceof FirstLetterStyle) {
                 continue;
             }
-            if (o instanceof FirstLetterStyle) {//can actually only be the first or second object in list
-                c.getFirstLettersTracker().addStyle(((FirstLetterStyle) o).getStyle());
-                continue;
-            }
+
             Content currentContent = (Content) o;
 
             Box child_box = null;
             //TODO:handle run-ins. For now, treat them as blocks
-
 
             child_box = Boxing.preLayout(c, currentContent);
             
@@ -132,6 +128,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/12/07 00:33:12  peterbrant
+ * :first-letter and :first-line works again
+ *
  * Revision 1.30  2005/12/05 00:13:54  peterbrant
  * Improve list-item support (marker positioning is now correct) / Start support for relative inline layers
  *
