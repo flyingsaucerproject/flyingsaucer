@@ -480,6 +480,19 @@ public abstract class Box {
                 getHeight() - (int) margin.height() - (int) border.height());
         return result;
     }
+    
+    protected Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
+        RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
+        RectPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
+        RectPropertySet padding = getStyle().getPaddingWidth(cssCtx);
+        
+        Rectangle result = new Rectangle(
+                left + (int)margin.left() + (int)border.left() + (int)padding.left(),
+                top + (int)margin.top() + (int)border.top() + (int)padding.top(),
+                getWidth() - (int)margin.width() - (int)border.width() - (int)padding.width(),
+                getHeight() - (int) margin.height() - (int) border.height() - (int) padding.height());
+        return result;
+    }
 
     public Layer getLayer() {
         return layer;
@@ -515,37 +528,42 @@ public abstract class Box {
         
         CalculatedStyle style = getStyle().getCalculatedStyle();
 
-        boolean usePaddingBox = false;
-        Rectangle paddingBox = null;
-
-        int width = getContainingBlock().getContentWidth();
-        int height = getContainingBlock().getHeight();
+        Rectangle boundingBox = null;
+        
+        int cbContentHeight = getContainingBlock().getContentAreaEdge(0, 0, cssCtx).height;
 
         if (getStyle().isAbsolute() && getContainingBlock().isStyled() &&
                 getContainingBlock().getStyle().isAbsolute()) {
-            usePaddingBox = true;
-            paddingBox = getContainingBlock().getPaddingEdge(0, 0, cssCtx);
-            width = paddingBox.width;
-            height = paddingBox.height;
+            boundingBox = getContainingBlock().getPaddingEdge(0, 0, cssCtx);
+        } else {
+            boundingBox = getContainingBlock().getContentAreaEdge(0, 0, cssCtx);
         }
 
         if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
             this.x += style.getFloatPropertyProportionalWidth(CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
         } else if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-            this.x += width -
-                    style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth();
+            if (getStyle().isAbsolute()) {
+                this.x += boundingBox.width -
+                        style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth();
+            } else {
+                this.x += style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx);
+            }
         }
 
         if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-            this.y += style.getFloatPropertyProportionalHeight(CSSName.TOP, getContainingBlock().getHeight(), cssCtx);
+            this.y += style.getFloatPropertyProportionalHeight(CSSName.TOP, cbContentHeight, cssCtx);
         } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-            this.y += height -
-                    style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, getContainingBlock().getHeight(), cssCtx) - getHeight();
+            if (getStyle().isAbsolute()) {
+                this.y += boundingBox.height -
+                        style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, cbContentHeight, cssCtx) - getHeight();
+            } else {
+                this.y += style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, cbContentHeight, cssCtx);
+            }
         }
 
-        if (usePaddingBox) {
-            this.x += paddingBox.x;
-            this.y += paddingBox.y;
+        if (getStyle().isAbsolute()) {
+            this.x += boundingBox.x;
+            this.y += boundingBox.y;
         }
         
         return new Dimension(this.x - initialX, this.y - initialY);
@@ -706,6 +724,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.84  2005/12/08 02:21:26  peterbrant
+ * Fix positioning bug when CB of absolute block is a relative block
+ *
  * Revision 1.83  2005/12/07 03:14:20  peterbrant
  * Fixes to final float position when float BFC is not contained in the layer being positioned / Implement 10.6.7 of the spec
  *
