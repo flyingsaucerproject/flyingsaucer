@@ -503,10 +503,10 @@ public class CalculatedStyle {
                 style._padding = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
                 return style._padding;
             } else {
-                style._padding = (RectPropertySet) _cachedRects.get(key);
+                style._padding = (RectPropertySet) getCachedRect(key);
                 if (style._padding == null) {
                     style._padding = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
-                    _cachedRects.put(key, style._padding);
+                    putCachedRect(key, style._padding);
                 }
             }
         }
@@ -528,10 +528,10 @@ public class CalculatedStyle {
                 style._margin = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
                 return style._margin;
             } else {
-                style._margin = (RectPropertySet) _cachedRects.get(key);
+                style._margin = (RectPropertySet) getCachedRect(key);
                 if (style._margin == null) {
                     style._margin = newRectInstance(style, shorthandProp, sides, parentHeight, parentWidth, ctx);
-                    _cachedRects.put(key, style._margin);
+                    putCachedRect(key, style._margin);
                 }
             }
         }
@@ -559,10 +559,10 @@ public class CalculatedStyle {
                                                        CssContext ctx) {
         if (style._border == null) {
             String key = BorderPropertySet.deriveKey(style);
-            style._border = (BorderPropertySet) _cachedRects.get(key);
+            style._border = (BorderPropertySet) getCachedRect(key);
             if (style._border == null) {
                 style._border = BorderPropertySet.newInstance(style, ctx);
-                _cachedRects.put(key, style._border);
+                putCachedRect(key, style._border);
             }
         }
         return style._border;
@@ -597,12 +597,24 @@ public class CalculatedStyle {
     public IdentValue getWhitespace() {
         return getIdent(CSSName.WHITE_SPACE);
     }
+    
+    private static final synchronized Object getCachedRect(String key) {
+        return _cachedRects.get(key);
+    }
+    
+    private static final synchronized void putCachedRect(String key, Object value) {
+        _cachedRects.put(key, value);
+    }
+    
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.57  2005/12/08 02:16:11  peterbrant
+ * Thread safety fix
+ *
  * Revision 1.56  2005/12/05 00:09:04  peterbrant
  * Couple of optimizations which improve layout speed by about 10%
  *
