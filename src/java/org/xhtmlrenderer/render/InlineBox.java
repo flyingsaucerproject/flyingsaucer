@@ -225,7 +225,7 @@ public class InlineBox extends Box {
         Color oldColor = graphics.getColor();
         
         graphics.setColor(getStyle().getCalculatedStyle().getColor());
-        Rectangle edge = getContentAreaEdge(c);
+        Rectangle edge = getContentAreaEdge(getAbsX(), getAbsY(), c);
         c.getGraphics().fillRect(
                 edge.x, getAbsY() + textDecoration.getOffset(),
                 edge.width, textDecoration.getThickness());
@@ -313,7 +313,7 @@ public class InlineBox extends Box {
         return result;
     }
     
-    private Rectangle getContentAreaEdge(CssContext cssCtx) {
+    protected Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
         BorderPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
         RectPropertySet padding = getStyle().getPaddingWidth(cssCtx);
         
@@ -341,8 +341,8 @@ public class InlineBox extends Box {
         }
         
         Rectangle result = new Rectangle(
-                (int)(getAbsX() + marginLeft + borderLeft + paddingLeft), 
-                (int)(getAbsY() - border.top() - padding.top()), 
+                (int)(left + marginLeft + borderLeft + paddingLeft), 
+                (int)(top - border.top() - padding.top()), 
                 (int)(getInlineWidth(cssCtx) - marginLeft - borderLeft - paddingLeft
                     - paddingRight - borderRight - marginRight),
                 getHeight());
