@@ -134,15 +134,18 @@ public class Style {
 
     public RectPropertySet getMarginWidth(CssContext cssContext) {
         RectPropertySet rect = 
-            calculatedStyle.getMarginRect(containingBlockWidth, containingBlockWidth, cssContext).copyOf();
+            calculatedStyle.getMarginRect(containingBlockWidth, containingBlockWidth, cssContext);
 
-        // TODO: this is bad for cached rects...
-        if (this.marginTopOverrideSet) {
-            rect.setTop((int) this.marginTopOverride);
+        if (marginTopOverrideSet || marginBottomOverrideSet) {
+            rect = rect.copyOf();
+            if (marginTopOverrideSet) {
+                rect.setTop((int)marginTopOverride);
+            }
+            if (marginBottomOverrideSet) {
+                rect.setBottom((int)marginBottomOverride);
+            }
         }
-        if (this.marginBottomOverrideSet) {
-            rect.setBottom((int) this.marginBottomOverride);
-        }
+
         return rect;
     }
     
