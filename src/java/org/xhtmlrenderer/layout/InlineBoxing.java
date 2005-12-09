@@ -65,9 +65,7 @@ public class InlineBoxing {
         remainingWidth -= indent;
         currentLine.x = indent;
 
-        if (!box.getStyle().isCleared()) {
-            remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
-        }
+        remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
 
         List pendingFloats = new ArrayList();
         int pendingLeftMBP = 0;
@@ -147,7 +145,8 @@ public class InlineBoxing {
             Content content = (Content) o;
 
             if (mustBeTakenOutOfFlow(content)) {
-                processOutOfFlowContent(c, content, currentLine, remainingWidth, pendingFloats);
+                remainingWidth -= processOutOfFlowContent(c, content, currentLine, 
+                        remainingWidth, pendingFloats);
             } else if (isInlineBlock(content)) {
                 Box inlineBlock = layoutInlineBlock(c, box, content);
 
@@ -163,9 +162,7 @@ public class InlineBoxing {
                     previousIB = currentIB == null || currentIB.getParent() instanceof LineBox ?
                             null : (InlineBox) currentIB.getParent();
                     remainingWidth = maxAvailableWidth;
-                    if (!box.getStyle().isCleared()) {
-                        remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
-                    }
+                    remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
                     
                     if (inlineBlock.getLayer() != null) {
                         inlineBlock.getLayer().detach();
@@ -239,9 +236,7 @@ public class InlineBoxing {
                         previousIB = currentIB.getParent() instanceof LineBox ?
                                 null : (InlineBox) currentIB.getParent();
                         remainingWidth = maxAvailableWidth;
-                        if (!box.getStyle().isCleared()) {
-                            remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
-                        }
+                        remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
                     }
                 } while (!lbContext.isFinished());
             }
