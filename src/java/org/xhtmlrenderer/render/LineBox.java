@@ -23,13 +23,16 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.layout.BoxCollector;
+import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.Layer;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.util.List;
 import java.util.logging.Level;
 
 
@@ -38,7 +41,7 @@ import java.util.logging.Level;
  *
  * @author empty
  */
-public class LineBox extends Box implements Renderable {
+public class LineBox extends Box implements Renderable, InlinePaintable {
 
     public int renderIndex;
     
@@ -99,18 +102,9 @@ public class LineBox extends Box implements Renderable {
         graphics.setColor(oldColor);
     }
     
-    public void paint(RenderingContext c) {
+    public void paintInline(RenderingContext c) {
         if (textDecoration != null) {
             paintTextDecoration(c);
-        }
-        for (int i = 0; i < getChildCount(); i++) {
-            Box child = (Box)getChild(i);
-            if (child instanceof InlineBox) {
-                InlineBox iB = (InlineBox)child;
-                iB.paint(c);
-            } else if (child.getLayer() == null) {
-                Layer.paintAsLayer(c, child);
-            }
         }
     }
     
@@ -156,7 +150,7 @@ public class LineBox extends Box implements Renderable {
         
         if (align == IdentValue.LEFT || align == IdentValue.JUSTIFY) {
             int floatDistance = getFloatDistances().getLeftFloatDistance();
-            this.x = floatDistance;
+            this.x += floatDistance;
         } else if (align == IdentValue.CENTER) {
             int leftFloatDistance = getFloatDistances().getLeftFloatDistance();
             int rightFloatDistance = getFloatDistances().getRightFloatDistance();
@@ -164,10 +158,10 @@ public class LineBox extends Box implements Renderable {
             int midpoint = leftFloatDistance +
                 (getParent().getContentWidth() - leftFloatDistance - rightFloatDistance) / 2;
             
-            this.x = midpoint - getContentWidth() / 2;
+            this.x += midpoint - getContentWidth() / 2;
         } else if (align == IdentValue.RIGHT) {
             int floatDistance = getFloatDistances().getRightFloatDistance();
-            this.x = getParent().getContentWidth() - floatDistance - getContentWidth();
+            this.x += getParent().getContentWidth() - floatDistance - getContentWidth();
         }
     }
     
@@ -241,12 +235,35 @@ public class LineBox extends Box implements Renderable {
     public void setPaintingTop(int paintingTop) {
         this.paintingTop = paintingTop;
     }
+    
+    
+    public void addAllChildren(List list, Layer layer) {
+        for (int i = 0; i < getChildCount(); i++) {
+            Box child = getChild(i);
+            if (getContainingLayer() == layer) {
+                list.add(child);
+                if (child instanceof InlineBox) {
+                    ((InlineBox)child).addAllChildren(list, layer);
+                }
+            }
+        }
+    }
+    
+    public void initContainingLayer(LayoutContext c) {
+        if (getParent().getContainingLayer() == null) {
+            getParent().initContainingLayer(c);
+        }
+        setContainingLayer(getParent().getContainingLayer());
+    }    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2005/12/09 01:24:55  peterbrant
+ * Initial commit of relative inline layers
+ *
  * Revision 1.37  2005/12/07 20:34:45  peterbrant
  * Remove unused fields/methods from RenderingContext / Paint line content using absolute coords (preparation for relative inline layers)
  *

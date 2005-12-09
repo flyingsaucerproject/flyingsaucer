@@ -207,7 +207,9 @@ public class LayoutContext implements CssContext, PageContext {
     }
     
     public void popLayer() {
-        layer.positionChildren(this);
+        if (! layer.isInline()) {
+            layer.positionChildren(this);
+        }
         layer = (Layer)layer_stack.pop();
     }
     

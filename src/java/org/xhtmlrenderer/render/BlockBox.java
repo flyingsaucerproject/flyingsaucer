@@ -24,8 +24,9 @@ import java.awt.Shape;
 import java.util.List;
 
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.layout.InlinePaintable;
 
-public class BlockBox extends Box implements Renderable {
+public class BlockBox extends Box implements Renderable, InlinePaintable {
 
     public int renderIndex;
     
@@ -109,12 +110,19 @@ public class BlockBox extends Box implements Renderable {
             return clip.intersects(borderEdge);
         }
     }
+    
+    public void paintInline(RenderingContext c) {
+        getContainingLayer().paintAsLayer(c, this);
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2005/12/09 01:24:56  peterbrant
+ * Initial commit of relative inline layers
+ *
  * Revision 1.23  2005/12/05 00:13:53  peterbrant
  * Improve list-item support (marker positioning is now correct) / Start support for relative inline layers
  *

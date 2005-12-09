@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -36,10 +37,11 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.BoxCollector;
+import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
 
-public class InlineBox extends Box {
+public class InlineBox extends Box implements InlinePaintable {
     private int baseline;
     
     private boolean startsHere;
@@ -70,13 +72,12 @@ public class InlineBox extends Box {
         InlineBox result = new InlineBox();
         result.element = this.element;
         
-        // XXX not right when first-line transition is happening
         result.setStyle(getStyle());
         result.setHeight(getHeight());
         
         result.pending = this.pending;
         
-        result.setContainingInlineLayer(getContainingInlineLayer());
+        result.setContainingLayer(getContainingLayer());
         
         return result;
     }
@@ -121,9 +122,7 @@ public class InlineBox extends Box {
         if (child instanceof Box) {
             Box b = (Box)child;
             b.setParent(this);
-            if (c.getLayer().isInline()) {
-                b.setContainingInlineLayer(c.getLayer());
-            }
+            b.initContainingLayer(c);
         } else if (child instanceof InlineText) {
             ((InlineText)child).setParent(this);
         } else {
@@ -195,7 +194,10 @@ public class InlineBox extends Box {
         this.pending = false;
         
         if (getParent() instanceof InlineBox) {
-            ((InlineBox)getParent()).unmarkPending(c);
+            InlineBox iB = (InlineBox)getParent();
+            if (iB.isPending()) {
+                iB.unmarkPending(c);
+            }
         }
         
         setStartsHere(true);
@@ -203,18 +205,19 @@ public class InlineBox extends Box {
         if (getStyle().requiresLayer()) {
             c.pushLayer(this);
             getLayer().setInline(true);
-            setContainingInlineLayer(getLayer());
             connectChildrenToCurrentLayer(c);
         }
     }
     
     public void connectChildrenToCurrentLayer(LayoutContext c) {
-        for (int i = 0; i < inlineChildren.size(); i++) {
-            Object obj = inlineChildren.get(i);
-            if (obj instanceof Box) {
-                Box box = (Box)obj;
-                box.setContainingInlineLayer(c.getLayer());
-                box.connectChildrenToCurrentLayer(c);
+        if (getInlineChildCount() > 0) {
+            for (int i = 0; i < getInlineChildCount(); i++) {
+                Object obj = getInlineChild(i);
+                if (obj instanceof Box) {
+                    Box box = (Box)obj;
+                    box.setContainingLayer(c.getLayer());
+                    box.connectChildrenToCurrentLayer(c);
+                }
             }
         }
     }
@@ -233,7 +236,7 @@ public class InlineBox extends Box {
         graphics.setColor(oldColor);
     }
     
-    public void paint(RenderingContext c) {
+    public void paintInline(RenderingContext c) {
         paintBackground(c);
         paintBorder(c);
         
@@ -259,19 +262,6 @@ public class InlineBox extends Box {
                 paintTextDecoration(c);
             }
         }
-        
-        for (int i = 0; i < getInlineChildCount(); i++) {
-            Object child = getInlineChild(i);
-            
-            if (child instanceof InlineBox) {
-                ((InlineBox)child).paint(c);
-            } else if (child instanceof Box) {
-                Box b = (Box)child;
-                if (b.getLayer() == null) {
-                    Layer.paintAsLayer(c, b);
-                }
-            }
-        }
     }
     
     protected int getBorderSides() {
@@ -287,7 +277,7 @@ public class InlineBox extends Box {
         return result;
     }
     
-    protected Rectangle getPaintingBorderEdge(CssContext cssCtx) {
+    protected Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
         // x, y pins the content area of the box so subtract off top border and padding
         // too
         
@@ -306,8 +296,8 @@ public class InlineBox extends Box {
         RectPropertySet padding = getStyle().getPaddingWidth(cssCtx);
         
         Rectangle result = new Rectangle(
-                (int)(getAbsX() + marginLeft), 
-                (int)(getAbsY() - border.top() - padding.top()), 
+                (int)(left + marginLeft), 
+                (int)(top - border.top() - padding.top()), 
                 (int)(getInlineWidth(cssCtx) - marginLeft - marginRight), 
                 getHeight());
         return result;
@@ -421,5 +411,84 @@ public class InlineBox extends Box {
 
     public void setTextDecoration(TextDecoration textDecoration) {
         this.textDecoration = textDecoration;
+    }
+    
+    private void addToContentList(List list) {
+        list.add(this);
+        
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object child = (Object)getInlineChild(i);
+            if (child instanceof InlineBox) {
+                ((InlineBox)child).addToContentList(list);
+            } else if (child instanceof Box) {
+                list.add(child);
+            }
+        }
+    }
+    
+    public LineBox getLineBox() {
+        Box b = getParent();
+        while (! (b instanceof LineBox)) {
+            b = b.getParent();
+        }
+        return (LineBox)b;
+    }
+    
+    public List getElementWithContent() {
+        List result = new ArrayList();
+        List elementBoxes = getLineBox().getParent().getElementBoxes(this.element);
+        
+        for (int i = 0; i < elementBoxes.size(); i++) {
+            InlineBox iB = (InlineBox)elementBoxes.get(i);
+            iB.addToContentList(result);
+        }
+        
+        return result;
+    }
+    
+    public List getElementBoxes(Element elem) {
+        List result = new ArrayList();
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object child = getInlineChild(i);
+            if (child instanceof Box) {
+                Box b = (Box)child;
+                if (b.element == elem) {
+                    result.add(b);
+                }
+                result.addAll(b.getElementBoxes(elem));
+            }
+        }
+        return result;
+    }
+    
+    public Dimension positionPositioned(CssContext cssCtx) {
+        Dimension delta = super.positionPositioned(cssCtx);
+        
+        this.x -= delta.width;
+        this.y -= delta.height;
+        
+        List toTranslate = getElementWithContent();
+        
+        for (int i = 0; i < toTranslate.size(); i++) {
+            Box b = (Box)toTranslate.get(i);
+            b.x += delta.width;
+            b.y += delta.height;
+        }
+        
+        return delta;
+    }
+    
+    public void addAllChildren(List list, Layer layer) {
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object child = getInlineChild(i);
+            if (child instanceof Box) {
+                if (((Box)child).getContainingLayer() == layer) {
+                    list.add(child);
+                    if (child instanceof InlineBox) {
+                        ((InlineBox)child).addAllChildren(list, layer);
+                    }
+                }
+            }
+        }
     }
 }

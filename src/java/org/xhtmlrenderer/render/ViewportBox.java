@@ -2,6 +2,8 @@ package org.xhtmlrenderer.render;
 
 import java.awt.Rectangle;
 
+import org.xhtmlrenderer.css.style.CssContext;
+
 /**
  * A dummy box representing the viewport
  */
@@ -22,5 +24,9 @@ public class ViewportBox extends BlockBox {
     
     public int getContentWidth() {
         return viewport.height;
+    }
+    
+    protected Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
+        return new Rectangle(left, top, viewport.width, viewport.height);
     }
 }

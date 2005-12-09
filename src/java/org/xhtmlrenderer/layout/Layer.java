@@ -51,13 +51,6 @@ public class Layer {
     
     private boolean inline;
     
-    public static void paintAsLayer(RenderingContext c, Box master) {
-        Layer layer = new Layer(master);
-        layer.setStackingContext(false);
-        layer.paint(c, 0, 0);
-        master.setLayer(null);
-    }
-
     public Layer(Box master) {
         this(null, master);
         setStackingContext(true);
@@ -68,6 +61,7 @@ public class Layer {
         this.master = master;
         setStackingContext(!master.getStyle().isAutoZIndex());
         master.setLayer(this);
+        master.setContainingLayer(this);
     }
 
     public Layer getParent() {
@@ -102,6 +96,7 @@ public class Layer {
             floats = new ArrayList();
         }
 
+        floater.setContainingLayer(this);
         floats.add(floater);
         
         maybeAddMoveWithLayerFloat(floater, bfc);
@@ -221,8 +216,8 @@ public class Layer {
 
     private void paintInlineContent(RenderingContext c, List lines) {
         for (Iterator i = lines.iterator(); i.hasNext();) {
-            LineBox line = (LineBox) i.next();
-            line.paint(c);
+            InlinePaintable paintable = (InlinePaintable) i.next();
+            paintable.paintInline(c);
         }
     }
     
@@ -247,10 +242,12 @@ public class Layer {
             List lines = new ArrayList();
     
             BoxCollector collector = new BoxCollector();
-            collector.collect(c, c.getGraphics().getClip(), getMaster(), blocks, lines);
+            collector.collect(c, c.getGraphics().getClip(), this, blocks, lines);
     
             // TODO root layer needs to be handled correctly (paint over entire canvas)
-            paintLayerBackgroundAndBorder(c);
+            if (! isInline()) {
+                paintLayerBackgroundAndBorder(c);
+            }
             
             if (isRootLayer() || isStackingContext()) {
                 paintLayers(c, getSortedLayers(NEGATIVE));
@@ -270,6 +267,26 @@ public class Layer {
             }
         }
     }
+    
+    public void paintAsLayer(RenderingContext c, Box startingPoint) {
+        if (startingPoint.isReplaced()) {
+            paintReplacedElement(c, startingPoint);
+        } else {
+            List blocks = new ArrayList();
+            List lines = new ArrayList();
+    
+            BoxCollector collector = new BoxCollector();
+            collector.collect(c, c.getGraphics().getClip(), 
+                    this, startingPoint, blocks, lines);
+    
+            paintLayerBackgroundAndBorder(c);
+            
+            paintBackgroundsAndBorders(c, blocks);
+            paintInlineContent(c, lines);
+            paintListStyles(c, blocks);
+            paintReplacedElements(c, blocks);
+        }
+    }    
 
     private void paintListStyles(RenderingContext c, List blocks) {
         for (Iterator i = blocks.iterator(); i.hasNext();) {
@@ -366,9 +383,20 @@ public class Layer {
     }
 
     private Point updateAbsoluteLocationsHelper(Box box, int x, int y, boolean updateSelf) {
+        LineBox lineBox = null;
+        
+        if (box instanceof InlineBox) {
+            lineBox = ((InlineBox)box).getLineBox();
+        }
+        
         if (updateSelf) {
-            box.setAbsX(box.x + x);
-            box.setAbsY(box.y + y);
+            if (lineBox == null) {
+                box.setAbsX(box.x + x);
+                box.setAbsY(box.y + y);
+            } else {
+                box.setAbsX(box.x + lineBox.getAbsX());
+                box.setAbsY(box.y + lineBox.getAbsY());
+            }
         }
         
         final Point result = new Point(box.getAbsX() + box.getWidth(), box.getAbsY() + box.getHeight());
@@ -382,9 +410,6 @@ public class Layer {
             positionReplacedElement(box);
         }
 
-        int nextX = (int) box.getAbsX() + box.tx;
-        int nextY = (int) box.getAbsY() + box.ty;
-
         if (box.getPersistentBFC() != null) {
             box.getPersistentBFC().getFloatManager().updateAbsoluteLocations(
                     new FloatManager.FloatUpdater() {
@@ -396,6 +421,8 @@ public class Layer {
         }
 
         if (! (box instanceof InlineBox)) {
+            int nextX = box.getAbsX() + box.tx;
+            int nextY = box.getAbsY() + box.ty;
             for (int i = 0; i < box.getChildCount(); i++) {
                 Box child = (Box) box.getChild(i);
                 Point offset = updateAbsoluteLocationsHelper(child, nextX, nextY);
@@ -406,7 +433,8 @@ public class Layer {
             for (int i = 0; i < iB.getInlineChildCount(); i++) {
                 Object obj = iB.getInlineChild(i);
                 if (obj instanceof Box) {
-                    Point offset = updateAbsoluteLocationsHelper((Box)obj, nextX, nextY);
+                    Point offset = updateAbsoluteLocationsHelper(
+                            (Box)obj, lineBox.getAbsX(), lineBox.getAbsY());
                     moveIfGreater(result, offset);
                 } 
             }
@@ -426,10 +454,7 @@ public class Layer {
         for (Iterator i = getChildren().iterator(); i.hasNext();) {
             Layer child = (Layer) i.next();
 
-            // TODO Pending finished implementation of relative inline layers
-            if (! child.isInline()) {
-                child.finalizePosition(cssCtx);
-            }
+            child.finalizePosition(cssCtx);
         }
     }
     

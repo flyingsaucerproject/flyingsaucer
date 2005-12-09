@@ -74,6 +74,7 @@ public class InlineBoxing {
         int pendingRightMBP = 0;
 
         boolean hasFirstLinePCs = false;
+        boolean hasPendingInlineLayers = false;
         if (c.getFirstLinesTracker().hasStyles()) {
             c.getFirstLinesTracker().pushStyles(c);
             hasFirstLinePCs = true;
@@ -128,10 +129,11 @@ public class InlineBoxing {
                 if (currentIB.getStyle().requiresLayer()) {
                     if (currentIB.element == null || 
                             currentIB.element != c.getLayer().getMaster().element) {
-                        throw new RuntimeException("Check this...");
+                        throw new RuntimeException("internal error");
                     }
                     c.getLayer().setEnd(currentIB);
                     c.popLayer();
+                    hasPendingInlineLayers = true;
                 }
 
                 previousIB = currentIB;
@@ -151,7 +153,9 @@ public class InlineBoxing {
 
                 if (inlineBlock.getWidth() > remainingWidth && currentLine.isContainsContent()) {
                     saveLine(currentLine, previousLine, c, box, minimumLineHeight,
-                            maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePCs);
+                            maxAvailableWidth, elementStack, pendingFloats, 
+                            hasFirstLinePCs, hasPendingInlineLayers);
+                    hasPendingInlineLayers = false;
                     previousLine = currentLine;
                     currentLine = newLine(c, previousLine, box);
                     currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
@@ -221,7 +225,9 @@ public class InlineBoxing {
 
                     if (lbContext.isNeedsNewLine()) {
                         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
-                                maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePCs);
+                                maxAvailableWidth, elementStack, pendingFloats, 
+                                hasFirstLinePCs, hasPendingInlineLayers);
+                        hasPendingInlineLayers = false;
                         if (currentLine.isFirstLine() && hasFirstLinePCs) {
                             lbContext.setMaster(TextUtil.transformText(
                                     text.getText(), c.getCurrentStyle()));
@@ -242,7 +248,9 @@ public class InlineBoxing {
         }
 
         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
-                maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePCs);
+                maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePCs,
+                hasPendingInlineLayers);
+        hasPendingInlineLayers = false;
 
         if (box instanceof AnonymousBlockBox) {
             ((BlockBox) box.getParent()).setPendingInlineElements(elementStack.size() == 0 ? null : elementStack);
@@ -328,7 +336,7 @@ public class InlineBoxing {
                 x += positionHorizontally(c, iB, x);
             } else if (child instanceof InlineText) {
                 InlineText iT = (InlineText) child;
-                iT.setX(x);
+                iT.setX(x - start);
                 x += iT.getWidth();
             } else if (child instanceof Box) {
                 Box b = (Box) child;
@@ -587,7 +595,8 @@ public class InlineBoxing {
     private static void saveLine(final LineBox current, LineBox previous,
                                  final LayoutContext c, Box block, int minHeight,
                                  final int maxAvailableWidth, List elementStack, 
-                                 List pendingFloats, boolean hasFirstLinePCs) {
+                                 List pendingFloats, boolean hasFirstLinePCs,
+                                 boolean hasPendingInlineLayers) {
         current.prunePendingInlineBoxes();
 
         int totalLineWidth = positionHorizontally(c, current, 0);
@@ -639,6 +648,10 @@ public class InlineBoxing {
             current.x += c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth);
         }
         
+        if (hasPendingInlineLayers) {
+            finishPendingInlineLayers(c, current);
+        }
+        
         if (hasFirstLinePCs && current.isFirstLine()) {
             for (int i = 0; i < elementStack.size(); i++) {
                 c.popStyle();
@@ -649,6 +662,34 @@ public class InlineBoxing {
                 InlineBoxInfo iBInfo = (InlineBoxInfo)i.next();
                 c.pushStyle(iBInfo.getCascadedStyle());
                 iBInfo.setCalculatedStyle(c.getCurrentStyle());
+            }
+        }
+    }
+    
+    private static void finishPendingInlineLayers(LayoutContext c, LineBox current) {
+        for (int i = 0; i < current.getChildCount(); i++) {
+            Box box = (Box)current.getChild(i);
+            
+            if (box instanceof InlineBox) {
+                InlineBox iB = (InlineBox)box;
+                finishPendingInlineLayers(c, iB);
+                if (iB.isEndsHere() && iB.getStyle().requiresLayer()) {
+                    iB.getContainingLayer().positionChildren(c);
+                }
+            }
+        }
+    }
+    
+    private static void finishPendingInlineLayers(LayoutContext c, InlineBox current) {
+        for (int i = 0; i < current.getInlineChildCount(); i++) {
+            Object obj = current.getInlineChild(i);
+            
+            if (obj instanceof InlineBox) {
+                InlineBox iB = (InlineBox)obj;
+                finishPendingInlineLayers(c, iB);
+                if (iB.isEndsHere() && iB.getStyle().requiresLayer()) {
+                    iB.getLayer().positionChildren(c);
+                }
             }
         }
     }

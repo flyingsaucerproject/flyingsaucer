@@ -25,27 +25,55 @@ import java.util.List;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.LineBox;
 
 public class BoxCollector {
     public void collect(
-            CssContext c, Shape clip, Box master, 
+            CssContext c, Shape clip, Layer layer, 
             List blockContent, List inlineContent) {
-        collect(c, clip, master, master, blockContent, inlineContent);
+        if (layer.isInline()) {
+            collectInlineLayer(c, clip, layer, blockContent, inlineContent);
+        } else {
+            collect(c, clip, layer, layer.getMaster(), blockContent, inlineContent);
+        }
     }
     
     public boolean intersectsAny(
             CssContext c, Shape clip, Box master) {
         return intersectsAny(c, clip, master, master);
-    }    
+    }
     
-    private void collect(
+    private void collectInlineLayer(
+            CssContext c, Shape clip, Layer layer, List blockContent, List inlineContent) {
+        InlineBox iB = (InlineBox)layer.getMaster();
+        List content = iB.getElementWithContent();
+        
+        for (int i = 0; i < content.size(); i++) {
+            Box b = (Box)content.get(i);
+            
+            if (b.intersects(c, clip)) {
+                if (b instanceof InlineBox) {
+                    inlineContent.add(b);
+                } else if (intersectsAny(c, clip, b)) {
+                    inlineContent.add(b);
+                }
+            }
+        }
+    }
+    
+    public void collect(
             CssContext c, Shape clip, 
-            Box master, Box container, 
+            Layer layer, Box container, 
             List blockContent, List inlineContent) {
+        if (layer != container.getContainingLayer()) {
+            return;
+        }
+        
         if (container instanceof LineBox) {
             if (container.intersects(c, clip)) {
                 inlineContent.add(container);
+                ((LineBox)container).addAllChildren(inlineContent, layer);
             }
         } else {
             if (container.getLayer() == null || !(container instanceof BlockBox)) {
@@ -54,10 +82,10 @@ public class BoxCollector {
                 }
             }
 
-            if (container.getLayer() == null || container == master) {
+            if (container.getLayer() == null || container == layer.getMaster()) {
                 for (int i = 0; i < container.getChildCount(); i++) {
                     Box child = container.getChild(i);
-                    collect(c, clip, master, child, blockContent, inlineContent);
+                    collect(c, clip, layer, child, blockContent, inlineContent);
                 }
             }
         }

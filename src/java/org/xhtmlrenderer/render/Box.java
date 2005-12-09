@@ -93,7 +93,7 @@ public abstract class Box {
     private PersistentBFC persistentBFC = null;
     
     private Layer layer = null;
-    private Layer containingInlineLayer;
+    private Layer containingLayer;
     
     private Box parent;
 
@@ -159,9 +159,7 @@ public abstract class Box {
         child.setParent(this);
         boxes.add(child);
         
-        if (c.getLayer().isInline()) {
-            child.setContainingInlineLayer(c.getLayer());
-        }
+        child.initContainingLayer(c);
         
         propagateChildProperties(child);
     }
@@ -542,7 +540,7 @@ public abstract class Box {
         if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
             this.x += style.getFloatPropertyProportionalWidth(CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
         } else if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-            if (getStyle().isAbsolute()) {
+            if (getStyle().isAbsolute() || getStyle().isFixed()) {
                 this.x += boundingBox.width -
                         style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth();
             } else {
@@ -553,7 +551,7 @@ public abstract class Box {
         if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
             this.y += style.getFloatPropertyProportionalHeight(CSSName.TOP, cbContentHeight, cssCtx);
         } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-            if (getStyle().isAbsolute()) {
+            if (getStyle().isAbsolute() || getStyle().isFixed()) {
                 this.y += boundingBox.height -
                         style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, cbContentHeight, cssCtx) - getHeight();
             } else {
@@ -686,19 +684,27 @@ public abstract class Box {
         this.height = height;
     }
 
-    public Layer getContainingInlineLayer() {
-        return containingInlineLayer;
+    public Layer getContainingLayer() {
+        return containingLayer;
     }
 
-    public void setContainingInlineLayer(Layer containingInlineLayer) {
-        this.containingInlineLayer = containingInlineLayer;
+    public void setContainingLayer(Layer containingLayer) {
+        this.containingLayer = containingLayer;
+    }
+    
+    public void initContainingLayer(LayoutContext c) {
+        if (getLayer() != null) {
+            setContainingLayer(getLayer());
+        } else {
+            setContainingLayer(c.getLayer());
+        }
     }
     
     public void connectChildrenToCurrentLayer(LayoutContext c) {
         
         for (int i = 0; i < getChildCount(); i++) {
             Box box = getChild(i);
-            box.setContainingInlineLayer(c.getLayer());
+            box.setContainingLayer(c.getLayer());
             box.connectChildrenToCurrentLayer(c);
         }
     }
@@ -718,12 +724,45 @@ public abstract class Box {
             }
         }
     }
+    
+    public List getElementBoxes(Element elem) {
+        List result = new ArrayList();
+        for (int i = 0; i < getChildCount(); i++) {
+            Box child = getChild(i);
+            if (child.element == elem) {
+                result.add(child);
+            }
+            result.addAll(child.getElementBoxes(elem));
+        }
+        return result;
+    }
+    
+    public boolean existsInParent() {
+        if (getParent() == null) {
+            return false;
+        } else {
+            return getParent().childExists(this);
+        }
+    }
+    
+    private boolean childExists(Box test) {
+        for (int i = 0; i < getChildCount(); i++) {
+            Box child = (Box)getChild(i);
+            if (child.equals(test)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.85  2005/12/09 01:24:56  peterbrant
+ * Initial commit of relative inline layers
+ *
  * Revision 1.84  2005/12/08 02:21:26  peterbrant
  * Fix positioning bug when CB of absolute block is a relative block
  *
