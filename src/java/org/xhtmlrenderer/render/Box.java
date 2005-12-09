@@ -695,8 +695,23 @@ public abstract class Box {
     public void initContainingLayer(LayoutContext c) {
         if (getLayer() != null) {
             setContainingLayer(getLayer());
-        } else {
-            setContainingLayer(c.getLayer());
+        } else if (getContainingLayer() == null) {
+            if (getParent() == null || getParent().getContainingLayer() == null) {
+                throw new RuntimeException("internal error");
+            }
+            setContainingLayer(getParent().getContainingLayer());
+            
+            // FIXME Will be glacially slow for large inline relative layers.  Could 
+            // be much more efficient.  We're just looking for block boxes which are
+            // directly wrapped by an inline relative layer (i.e. block boxes sandwiched
+            // between anonymous block boxes)
+            if (c.getLayer().isInline()) {
+                List content = 
+                    ((InlineBox)c.getLayer().getMaster()).getElementWithContent();
+                if (content.contains(this)) {
+                    setContainingLayer(c.getLayer());
+                }
+            }
         }
     }
     
@@ -710,19 +725,14 @@ public abstract class Box {
     }
     
     public boolean containedIn(Layer target) {
-        if (layer != null && layer == target) {
-            return true;
-        } else {
-            Box cb = getContainingBlock();
-            if (cb == null) {
-                if (layer == null || ! layer.isRootLayer()) {
-                    throw new RuntimeException("internal error");
-                }
-                return false;
-            } else {
-                return getContainingBlock().containedIn(target);
-            }
+        Layer current = getContainingLayer();
+        while (current != null) {
+            if (current == target) {
+                return true;
+            } 
+            current = current.getParent();
         }
+        return false;
     }
     
     public List getElementBoxes(Element elem) {
@@ -760,6 +770,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.86  2005/12/09 21:41:19  peterbrant
+ * Finish support for relative inline layers
+ *
  * Revision 1.85  2005/12/09 01:24:56  peterbrant
  * Initial commit of relative inline layers
  *

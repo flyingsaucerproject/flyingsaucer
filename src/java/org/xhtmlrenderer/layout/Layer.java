@@ -96,7 +96,6 @@ public class Layer {
             floats = new ArrayList();
         }
 
-        floater.setContainingLayer(this);
         floats.add(floater);
         
         maybeAddMoveWithLayerFloat(floater, bfc);

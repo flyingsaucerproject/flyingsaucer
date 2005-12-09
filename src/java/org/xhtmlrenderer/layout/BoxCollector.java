@@ -55,8 +55,15 @@ public class BoxCollector {
             if (b.intersects(c, clip)) {
                 if (b instanceof InlineBox) {
                     inlineContent.add(b);
-                } else if (intersectsAny(c, clip, b)) {
-                    inlineContent.add(b);
+                } else { 
+                    BlockBox bb = (BlockBox)b;
+                    if (bb.isInline()) {
+                        if (intersectsAny(c, clip, b)) {
+                            inlineContent.add(b);
+                        }
+                    } else {
+                        collect(c, clip, layer, bb, blockContent, inlineContent);
+                    }
                 }
             }
         }

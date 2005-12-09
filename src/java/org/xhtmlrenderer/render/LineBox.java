@@ -248,19 +248,15 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
             }
         }
     }
-    
-    public void initContainingLayer(LayoutContext c) {
-        if (getParent().getContainingLayer() == null) {
-            getParent().initContainingLayer(c);
-        }
-        setContainingLayer(getParent().getContainingLayer());
-    }    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2005/12/09 21:41:18  peterbrant
+ * Finish support for relative inline layers
+ *
  * Revision 1.38  2005/12/09 01:24:55  peterbrant
  * Initial commit of relative inline layers
  *

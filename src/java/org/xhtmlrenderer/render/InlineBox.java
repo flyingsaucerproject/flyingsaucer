@@ -435,15 +435,67 @@ public class InlineBox extends Box implements InlinePaintable {
     }
     
     public List getElementWithContent() {
-        List result = new ArrayList();
-        List elementBoxes = getLineBox().getParent().getElementBoxes(this.element);
+        // inefficient, but the lists in question shouldn't be very long
         
-        for (int i = 0; i < elementBoxes.size(); i++) {
-            InlineBox iB = (InlineBox)elementBoxes.get(i);
-            iB.addToContentList(result);
+        List result = new ArrayList();
+        
+        BlockBox container = (BlockBox)getLineBox().getParent();
+        while (true) {
+            List elementBoxes = container.getElementBoxes(this.element);
+            for (int i = 0; i < elementBoxes.size(); i++) {
+                InlineBox iB = (InlineBox)elementBoxes.get(i);
+                iB.addToContentList(result);
+            }
+            
+            if ( ! (container instanceof AnonymousBlockBox) ||
+                    containsEnd(result)) {
+                break;
+            }
+            
+            container = addFollowingBlockBoxes(container, result);
+            
+            if (container == null) {
+                break;
+            }
         }
         
         return result;
+    }
+    
+    private AnonymousBlockBox addFollowingBlockBoxes(BlockBox container, List result) {
+        Box parent = container.getParent();
+        int current = 0;
+        for (; current < parent.getChildCount(); current++) {
+            if (parent.getChild(current) == container) {
+                current++;
+                break;
+            }
+        }
+        
+        for (; current < parent.getChildCount(); current++) {
+            if (parent.getChild(current) instanceof AnonymousBlockBox) {
+                break;
+            } else {
+                result.add(parent.getChild(current));
+            }
+        }
+        
+        return current == parent.getChildCount() ? null : 
+            (AnonymousBlockBox)parent.getChild(current);
+    }
+    
+    private boolean containsEnd(List result) {
+        
+        for (int i = 0; i < result.size(); i++) {
+            Box b = (Box)result.get(i);
+            if (b instanceof InlineBox) {
+                InlineBox iB = (InlineBox)b;
+                if (this.element == iB.element && iB.isEndsHere()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     public List getElementBoxes(Element elem) {

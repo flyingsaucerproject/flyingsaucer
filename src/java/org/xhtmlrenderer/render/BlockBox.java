@@ -114,12 +114,20 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public void paintInline(RenderingContext c) {
         getContainingLayer().paintAsLayer(c, this);
     }
+    
+    public boolean isInline() {
+        Box parent = getParent();
+        return parent instanceof LineBox || parent instanceof InlineBox;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/12/09 21:41:20  peterbrant
+ * Finish support for relative inline layers
+ *
  * Revision 1.24  2005/12/09 01:24:56  peterbrant
  * Initial commit of relative inline layers
  *

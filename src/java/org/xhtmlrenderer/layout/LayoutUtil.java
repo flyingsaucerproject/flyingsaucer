@@ -52,6 +52,7 @@ public class LayoutUtil {
         c.setFloatingY(curr_line.y + ((FloatedBlockContent)content).getMarginFromPrevious());
         FloatedBlockBox block = new FloatedBlockBox();
         block.setContainingBlock(curr_line.getParent());
+        block.setContainingLayer(curr_line.getContainingLayer());
         block.element = content.getElement();
         Boxing.realLayout(c, block, content);
         

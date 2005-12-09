@@ -435,6 +435,7 @@ public class TableBoxing {
             TableCellContent tcc = (TableCellContent) i.next();
             CellBox cellBox = new CellBox();
             cellBox.setContainingBlock(row);
+            cellBox.setContainingLayer(c.getLayer());
             c.translate(row.contentWidth, 0);
             c.setShrinkWrap();
             cellBox = (CellBox) layoutCell(c, cellBox, tcc, fixed, table, col);
@@ -641,6 +642,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.52  2005/12/09 21:41:22  peterbrant
+   Finish support for relative inline layers
+
    Revision 1.51  2005/12/07 03:14:23  peterbrant
    Fixes to final float position when float BFC is not contained in the layer being positioned / Implement 10.6.7 of the spec
 
