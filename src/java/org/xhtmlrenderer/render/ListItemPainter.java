@@ -76,7 +76,7 @@ public class ListItemPainter {
         StrutMetrics strutMetrics = box.getStructMetrics();
         int h = (int) Math.round(strutMetrics.getAscent());
         int rad = (int)((strutMetrics.getAscent() + strutMetrics.getDescent()) / 3);
-        int x = box.getAbsX() - rad - rad / 2;
+        int x = box.getAbsX() - rad * 5 / 2;
         int y = box.getAbsY() + box.ty + strutMetrics.getBaseline() - h / 2 - rad / 2;
         if (listStyle == IdentValue.DISC) {
             c.getGraphics().fillOval(x, y, rad, rad);
@@ -129,7 +129,7 @@ public class ListItemPainter {
             text = box.list_count + ".";
         }
         
-        text += " ";
+        text += "  ";
 
         Font font = box.getStyle().getFont(c);
         StrutMetrics strutMetrics = box.getStructMetrics();
@@ -148,6 +148,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2005/12/09 17:59:29  peterbrant
+ * Make text and glyph positioning closer to Firefox
+ *
  * Revision 1.24  2005/12/05 00:13:53  peterbrant
  * Improve list-item support (marker positioning is now correct) / Start support for relative inline layers
  *
