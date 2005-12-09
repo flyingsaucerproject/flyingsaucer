@@ -279,8 +279,6 @@ public class Layer {
             collector.collect(c, c.getGraphics().getClip(), 
                     this, startingPoint, blocks, lines);
     
-            paintLayerBackgroundAndBorder(c);
-            
             paintBackgroundsAndBorders(c, blocks);
             paintInlineContent(c, lines);
             paintListStyles(c, blocks);
