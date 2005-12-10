@@ -534,7 +534,7 @@ public abstract class Box {
                 getContainingBlock().getStyle().isAbsolute()) {
             boundingBox = getContainingBlock().getPaddingEdge(0, 0, cssCtx);
         } else {
-            boundingBox = getContainingBlock().getContentAreaEdge(0, 0, cssCtx);
+            boundingBox = getContainingBlock().getBounds(cssCtx, 0, 0);
         }
 
         if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
@@ -770,6 +770,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.87  2005/12/10 03:11:43  peterbrant
+ * Use margin edge not content edge
+ *
  * Revision 1.86  2005/12/09 21:41:19  peterbrant
  * Finish support for relative inline layers
  *
