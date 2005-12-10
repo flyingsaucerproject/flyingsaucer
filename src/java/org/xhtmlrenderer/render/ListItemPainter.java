@@ -48,7 +48,8 @@ public class ListItemPainter {
                     img = img.getScaledInstance(-1, (int)strutMetrics.getAscent(), Image.SCALE_FAST);
                 }
                 c.getGraphics().drawImage(img, 
-                        box.getAbsX() - img.getWidth(null) * 5/4, 
+                        box.getAbsX() + (int)box.getStyle().getMarginWidth(c).left()
+                            - img.getWidth(null) * 5/4, 
                         (int)(box.getAbsY() + box.ty + strutMetrics.getBaseline()
                             - strutMetrics.getAscent() / 2 - img.getHeight(null) / 2),
                         null);
@@ -76,7 +77,7 @@ public class ListItemPainter {
         StrutMetrics strutMetrics = box.getStructMetrics();
         int h = (int) Math.round(strutMetrics.getAscent());
         int rad = (int)((strutMetrics.getAscent() + strutMetrics.getDescent()) / 3);
-        int x = box.getAbsX() - rad * 5 / 2;
+        int x = box.getAbsX() + (int)box.getStyle().getMarginWidth(c).left() - rad * 5 / 2;
         int y = box.getAbsY() + box.ty + strutMetrics.getBaseline() - h / 2 - rad / 2;
         if (listStyle == IdentValue.DISC) {
             c.getGraphics().fillOval(x, y, rad, rad);
@@ -131,12 +132,12 @@ public class ListItemPainter {
         
         text += "  ";
 
-        Font font = box.getStyle().getFont(c);
+        Font font = box.getStyle().getCalculatedStyle().getAWTFont(c);
         StrutMetrics strutMetrics = box.getStructMetrics();
         
         int w = FontUtil.len(text, font, c.getTextRenderer(), c.getGraphics());
         
-        int x = box.getAbsX() - w;
+        int x = box.getAbsX() + (int)box.getStyle().getMarginWidth(c).left() - w;
         int y = box.getAbsY() + box.ty + strutMetrics.getBaseline();
         
         c.getGraphics().setFont(font);
@@ -148,6 +149,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/12/10 00:58:48  peterbrant
+ * Marker position should take left margin into account
+ *
  * Revision 1.25  2005/12/09 17:59:29  peterbrant
  * Make text and glyph positioning closer to Firefox
  *
