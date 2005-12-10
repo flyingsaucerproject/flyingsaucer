@@ -132,7 +132,7 @@ public class ListItemPainter {
         
         text += "  ";
 
-        Font font = box.getStyle().getCalculatedStyle().getAWTFont(c);
+        Font font = box.getStyle().getFont(c);
         StrutMetrics strutMetrics = box.getStructMetrics();
         
         int w = FontUtil.len(text, font, c.getTextRenderer(), c.getGraphics());
@@ -149,6 +149,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/12/10 00:59:38  peterbrant
+ * Fix compile error
+ *
  * Revision 1.26  2005/12/10 00:58:48  peterbrant
  * Marker position should take left margin into account
  *
