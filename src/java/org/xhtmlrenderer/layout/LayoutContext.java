@@ -45,7 +45,6 @@ public class LayoutContext implements CssContext, PageContext {
     private SharedContext sharedContext;
     private boolean shrinkWrap = false;
     private RenderQueue renderQueue;
-    private boolean pendingPageBreak;
     private double floatingY;
     private Layer rootLayer;
     
@@ -53,16 +52,6 @@ public class LayoutContext implements CssContext, PageContext {
 
     private StyleTracker firstLines = new StyleTracker();
     private StyleTracker firstLetters = new StyleTracker();
-
-    public boolean isFirstLine() {
-        return firstLine;
-    }
-
-    public void setFirstLine(boolean firstLine) {
-        this.firstLine = firstLine;
-    }
-
-    private boolean firstLine;
 
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
@@ -350,18 +339,10 @@ public class LayoutContext implements CssContext, PageContext {
         return this.renderQueue != null;
     }
 
-    public boolean isPendingPageBreak() {
-        return pendingPageBreak;
-    }
-
     int renderIndex = 0;
 
     public int getNewRenderIndex() {
         return renderIndex++;
-    }
-
-    public void setPendingPageBreak(boolean pendingPageBreak) {
-        this.pendingPageBreak = pendingPageBreak;
     }
 
     public float getMmPerPx() {
