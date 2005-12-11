@@ -530,11 +530,10 @@ public abstract class Box {
         
         int cbContentHeight = getContainingBlock().getContentAreaEdge(0, 0, cssCtx).height;
 
-        if (getStyle().isAbsolute() && getContainingBlock().isStyled() &&
-                getContainingBlock().getStyle().isAbsolute()) {
+        if (getStyle().isAbsolute() && getContainingBlock() instanceof BlockBox) {
             boundingBox = getContainingBlock().getPaddingEdge(0, 0, cssCtx);
         } else {
-            boundingBox = getContainingBlock().getBounds(cssCtx, 0, 0);
+            boundingBox = getContainingBlock().getContentAreaEdge(0, 0, cssCtx);
         }
 
         if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
@@ -770,6 +769,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.88  2005/12/11 02:51:18  peterbrant
+ * Minor tweak (misread spec)
+ *
  * Revision 1.87  2005/12/10 03:11:43  peterbrant
  * Use margin edge not content edge
  *
