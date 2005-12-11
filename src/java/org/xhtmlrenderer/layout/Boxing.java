@@ -95,9 +95,6 @@ public class Boxing {
             c.pushStyle(pushed);
         }
 
-        boolean oldFirstLine = c.isFirstLine();
-        c.setFirstLine(true);
-
         Rectangle oe = c.getExtents();
 
         block.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth()));
@@ -217,16 +214,16 @@ public class Boxing {
             }
             c.popBFC();
         }
-        
-        if (content instanceof DomToplevelNode  || block.getStyle().requiresLayer()) {
-            c.popLayer();
-        }
 
         // calculate the total outer width
         //block.contentWidth = block.getWidth();
         //block.width = margin.left + border.left + padding.left + block.contentWidth + padding.right + border.right + margin.right;
         // CLEAN: cast to int
         block.height = (int) margin.top() + (int) border.top() + (int) padding.top() + block.height + (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom();
+        
+        if (content instanceof DomToplevelNode  || block.getStyle().requiresLayer()) {
+            c.popLayer();
+        }
 
         //restore the extents
         c.setExtents(oe);
@@ -247,8 +244,6 @@ public class Boxing {
         if (pushed != null) {
             c.popStyle();
         }
-
-        c.setFirstLine(oldFirstLine);
 
         // Uu.p("BoxLayout: finished with block: " + block);
         return block;
@@ -359,6 +354,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.65  2005/12/11 02:50:24  peterbrant
+ * Minor cleanup / Don't pop layer before Box.height is set
+ *
  * Revision 1.64  2005/12/07 03:14:21  peterbrant
  * Fixes to final float position when float BFC is not contained in the layer being positioned / Implement 10.6.7 of the spec
  *
