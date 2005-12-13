@@ -183,6 +183,7 @@ public class InlineBoxing {
                     saveLine(currentLine, previousLine, c, box, minimumLineHeight,
                             maxAvailableWidth, elementStack, pendingFloats, 
                             hasFirstLinePCs, pendingInlineLayers, markerData);
+                    markerData = null;
                     previousLine = currentLine;
                     currentLine = newLine(c, previousLine, box);
                     currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
@@ -252,6 +253,7 @@ public class InlineBoxing {
                         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
                                 maxAvailableWidth, elementStack, pendingFloats, 
                                 hasFirstLinePCs, pendingInlineLayers, markerData);
+                        markerData = null;
                         if (currentLine.isFirstLine() && hasFirstLinePCs) {
                             lbContext.setMaster(TextUtil.transformText(
                                     text.getText(), c.getCurrentStyle()));
@@ -272,6 +274,7 @@ public class InlineBoxing {
         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
                 maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePCs,
                 pendingInlineLayers, markerData);
+        markerData = null;
 
         if (box instanceof AnonymousBlockBox) {
             ((BlockBox) box.getParent()).setPendingInlineElements(elementStack.size() == 0 ? null : elementStack);
