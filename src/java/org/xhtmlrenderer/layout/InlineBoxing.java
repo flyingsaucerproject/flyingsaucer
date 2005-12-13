@@ -20,21 +20,39 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.awt.Font;
+import java.awt.font.LineMetrics;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.css.value.FontSpecification;
-import org.xhtmlrenderer.layout.content.*;
-import org.xhtmlrenderer.render.*;
-
-import java.awt.Font;
-import java.awt.font.LineMetrics;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
+import org.xhtmlrenderer.layout.content.Content;
+import org.xhtmlrenderer.layout.content.FirstLetterStyle;
+import org.xhtmlrenderer.layout.content.FirstLineStyle;
+import org.xhtmlrenderer.layout.content.FloatedBlockContent;
+import org.xhtmlrenderer.layout.content.InlineBlockContent;
+import org.xhtmlrenderer.layout.content.StylePop;
+import org.xhtmlrenderer.layout.content.StylePush;
+import org.xhtmlrenderer.layout.content.TextContent;
+import org.xhtmlrenderer.layout.content.WhitespaceStripper;
+import org.xhtmlrenderer.render.AnonymousBlockBox;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.FloatDistances;
+import org.xhtmlrenderer.render.FloatedBlockBox;
+import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.InlineText;
+import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.render.StrutMetrics;
+import org.xhtmlrenderer.render.Style;
+import org.xhtmlrenderer.render.TextDecoration;
 
 public class InlineBoxing {
 
@@ -462,9 +480,9 @@ public class InlineBoxing {
 
         CalculatedStyle style = iB.getStyle().getCalculatedStyle();
         float lineHeight = style.getLineHeight(c);
-        FontSpecification fontSpec = style.getFont(c);
 
-        int halfLeading = Math.round((lineHeight - fontSpec.size) / 2);
+        int halfLeading = Math.round((lineHeight - 
+                (lm.getAscent() + lm.getDescent())) / 2);
 
         iB.setBaseline(Math.round(lm.getAscent()));
 
@@ -556,9 +574,9 @@ public class InlineBoxing {
             LayoutContext c, Box container, LineMetrics strutLM) {
         Style style = container.getStyle();
         float lineHeight = style.getCalculatedStyle().getLineHeight(c);
-        FontSpecification fontSpec = style.getCalculatedStyle().getFont(c);
 
-        int halfLeading = Math.round((lineHeight - fontSpec.size) / 2);
+        int halfLeading = Math.round((lineHeight - 
+                (strutLM.getAscent() + strutLM.getDescent())) / 2);
 
         InlineBoxMeasurements measurements = new InlineBoxMeasurements();
         measurements.setBaseline((int) (halfLeading + strutLM.getAscent()));
