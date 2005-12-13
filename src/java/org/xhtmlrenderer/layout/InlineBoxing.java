@@ -91,6 +91,7 @@ public class InlineBoxing {
             remainingWidth -= markerData.getLayoutWidth();
             currentLine.x += markerData.getLayoutWidth();
         }
+        c.setCurrentMarkerData(null);
 
         remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
 
@@ -181,7 +182,7 @@ public class InlineBoxing {
                 if (inlineBlock.getWidth() > remainingWidth && currentLine.isContainsContent()) {
                     saveLine(currentLine, previousLine, c, box, minimumLineHeight,
                             maxAvailableWidth, elementStack, pendingFloats, 
-                            hasFirstLinePCs, pendingInlineLayers);
+                            hasFirstLinePCs, pendingInlineLayers, markerData);
                     previousLine = currentLine;
                     currentLine = newLine(c, previousLine, box);
                     currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
@@ -250,7 +251,7 @@ public class InlineBoxing {
                     if (lbContext.isNeedsNewLine()) {
                         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
                                 maxAvailableWidth, elementStack, pendingFloats, 
-                                hasFirstLinePCs, pendingInlineLayers);
+                                hasFirstLinePCs, pendingInlineLayers, markerData);
                         if (currentLine.isFirstLine() && hasFirstLinePCs) {
                             lbContext.setMaster(TextUtil.transformText(
                                     text.getText(), c.getCurrentStyle()));
@@ -270,7 +271,7 @@ public class InlineBoxing {
 
         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
                 maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePCs,
-                pendingInlineLayers);
+                pendingInlineLayers, markerData);
 
         if (box instanceof AnonymousBlockBox) {
             ((BlockBox) box.getParent()).setPendingInlineElements(elementStack.size() == 0 ? null : elementStack);
@@ -381,7 +382,8 @@ public class InlineBoxing {
                 strutLM.getAscent(), measurements.getBaseline(), strutLM.getDescent());
     }
 
-    private static void positionVertically(LayoutContext c, Box container, LineBox current) {
+    private static void positionVertically(
+            LayoutContext c, Box container, LineBox current, MarkerData markerData) {
         if (current.getChildCount() == 0) {
             current.height = 0;
         } else {
@@ -417,11 +419,10 @@ public class InlineBoxing {
                 paintingBottom -= vaContext.getInlineTop();
             }
             
-            if (c.getCurrentMarkerData() != null) {
-                StrutMetrics strutMetrics = c.getCurrentMarkerData().getStructMetrics();
+            if (markerData != null) {
+                StrutMetrics strutMetrics = markerData.getStructMetrics();
                 strutMetrics.setBaseline(measurements.getBaseline() - vaContext.getInlineTop());
-                c.getCurrentMarkerData().setReferenceLine(current);
-                c.setCurrentMarkerData(null);
+                markerData.setReferenceLine(current);
             }
             
             current.setPaintingTop(paintingTop);
@@ -615,13 +616,13 @@ public class InlineBoxing {
                                  final LayoutContext c, Box block, int minHeight,
                                  final int maxAvailableWidth, List elementStack, 
                                  List pendingFloats, boolean hasFirstLinePCs,
-                                 List pendingInlineLayers) {
+                                 List pendingInlineLayers, MarkerData markerData) {
         current.prunePendingInlineBoxes();
 
         int totalLineWidth = positionHorizontally(c, current, 0);
         current.contentWidth = totalLineWidth;
 
-        positionVertically(c, block, current);
+        positionVertically(c, block, current, markerData);
 
         if (!c.shrinkWrap()) {
             current.setFloatDistances(new FloatDistances() {
