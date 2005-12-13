@@ -386,14 +386,11 @@ public class InlineBoxing {
             }
             
             for (int i = 0; i < current.getChildCount(); i++) {
-                Object child = (Box) current.getChild(i);
-                if (child instanceof InlineBox) {
-                    InlineBox iB = (InlineBox) child;
-                    positionInlineVertically(c, vaContext, iB);
-                } else if (child instanceof Box) {
-                    positionInlineBlockVertically(c, vaContext, (Box) child);
-                }
+                Box child = current.getChild(i);
+                positionInlineContentVertically(c, vaContext, child);
             }
+            
+            vaContext.alignChildren();
 
             current.setHeight(vaContext.getLineBoxHeight());
             
@@ -417,10 +414,11 @@ public class InlineBoxing {
         }
     }
 
-    private static void positionInlineVertically(LayoutContext c, VerticalAlignContext vaContext, InlineBox iB) {
+    private static void positionInlineVertically(LayoutContext c, 
+            VerticalAlignContext vaContext, InlineBox iB) {
         InlineBoxMeasurements iBMeasurements = calculateInlineMeasurements(c, iB, vaContext);
         vaContext.pushMeasurements(iBMeasurements);
-        positionInlineChildren(c, iB, vaContext);
+        positionInlineChildrenVertically(c, iB, vaContext);
         vaContext.popMeasurements();
     }
 
@@ -521,7 +519,7 @@ public class InlineBoxing {
         return decoration;
     }
 
-    // XXX vertical-align: top/bottom are unimplemented, vertical-align: super/middle/sub could be improved
+    // XXX vertical-align: super/middle/sub could be improved
     private static void alignInlineContent(LayoutContext c, Box box,
                                            float ascent, float descent, VerticalAlignContext vaContext) {
         InlineBoxMeasurements measurements = vaContext.getParentMeasurements();
@@ -549,7 +547,6 @@ public class InlineBoxing {
             } else if (vAlign == IdentValue.SUB) {
                 box.y = Math.round(measurements.getBaseline() + ascent / 2);
             } else {
-                // TODO implement vertical-align: top/bottom, for now just treat as baseline
                 box.y = Math.round(measurements.getBaseline() - ascent);
             }
         }
@@ -573,16 +570,29 @@ public class InlineBoxing {
         return measurements;
     }
 
-    private static void positionInlineChildren(LayoutContext c, InlineBox current,
+    private static void positionInlineChildrenVertically(LayoutContext c, InlineBox current,
                                                VerticalAlignContext vaContext) {
         for (int i = 0; i < current.getInlineChildCount(); i++) {
             Object child = current.getInlineChild(i);
-            if (child instanceof InlineBox) {
-                InlineBox iB = (InlineBox) child;
-                positionInlineVertically(c, vaContext, iB);
-            } else if (child instanceof Box) {
-                positionInlineBlockVertically(c, vaContext, (Box) child);
+            if (child instanceof Box) {
+                positionInlineContentVertically(c, vaContext, (Box)child);
             }
+        }
+    }
+
+    private static void positionInlineContentVertically(LayoutContext c, 
+            VerticalAlignContext vaContext, Box child) {
+        VerticalAlignContext vaTarget = vaContext;
+        IdentValue vAlign = child.getStyle().getCalculatedStyle().getIdent(
+                CSSName.VERTICAL_ALIGN);
+        if (vAlign == IdentValue.TOP || vAlign == IdentValue.BOTTOM) {
+            vaTarget = vaContext.createChild(child);
+        }
+        if (child instanceof InlineBox) {
+            InlineBox iB = (InlineBox) child;
+            positionInlineVertically(c, vaTarget, iB);
+        } else if (child instanceof Box) {
+            positionInlineBlockVertically(c, vaTarget, (Box) child);
         }
     }
 
@@ -675,7 +685,7 @@ public class InlineBoxing {
         result = new InlineText();
         result.setMasterText(lbContext.getMaster());
 
-        Font font = c.getFont(c.getCurrentStyle().getFont(c));
+        Font font = c.getCurrentStyle().getAWTFont(c);
 
         if (needFirstLetter) {
             Breaker.breakFirstLetter(c, lbContext, remainingWidth, font);

@@ -240,6 +240,10 @@ public class InlineBox extends Box implements InlinePaintable {
         paintBackground(c);
         paintBorder(c);
         
+        if (c.debugDrawInlineBoxes()) {
+            paintDebugOutline(c);
+        }
+        
         if (textDecoration != null) {
             IdentValue val = 
                 getStyle().getCalculatedStyle().getIdent(CSSName.TEXT_DECORATION);
@@ -302,6 +306,30 @@ public class InlineBox extends Box implements InlinePaintable {
                 getHeight());
         return result;
     }
+    
+    public Rectangle getBounds(int left, int top, CssContext cssCtx, int tx, int ty) {
+        Rectangle result = getBorderEdge(left, top, cssCtx);
+        float marginLeft = 0;
+        float marginRight = 0;
+        if (startsHere || endsHere) {
+            RectPropertySet margin = (RectPropertySet)getStyle().getMarginWidth(cssCtx);
+            if (startsHere) {
+                marginLeft = margin.left();
+            } 
+            if (endsHere) {
+                marginRight = margin.right();
+            }
+        }
+        if (marginRight > 0) {
+            result.width += marginRight;
+        }
+        if (marginLeft > 0) {
+            result.x -= marginLeft;
+            result.width += marginLeft;
+        }
+        result.translate(tx, ty);
+        return result;
+    }    
     
     protected Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
         BorderPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
@@ -543,4 +571,8 @@ public class InlineBox extends Box implements InlinePaintable {
             }
         }
     }
+    
+    public void paintDebugOutline(RenderingContext c) {
+        paintDebugOutline(c, Color.BLUE);
+    }    
 }

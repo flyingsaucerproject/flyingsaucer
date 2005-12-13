@@ -7,7 +7,6 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
 
-import java.awt.Font;
 import java.awt.font.LineMetrics;
 
 /**
@@ -24,35 +23,17 @@ public class Style {
 
     private float containingBlockWidth;
     
-    private LineMetrics lineMetrics;
-    
     public Style(CalculatedStyle calculatedStyle, float containingBlockWidth) {
         this.calculatedStyle = calculatedStyle;
         this.containingBlockWidth = containingBlockWidth;
     }
     
-    /**
-     * A note on this method: What we really want is a FontMetrics2D object (i.e.
-     * font metrics with float precision).  Unfortunately, it doesn't seem
-     * the JDK provides this.  However, looking at the JDK code, it appears the
-     * metrics contained in the LineMetrics are actually the metrics of the font, not
-     * the metrics of the line (and empirically strings of "X" and "j" return the same 
-     * value for getAscent()).  So... for now we use LineMetrics for font metrics.
-     */
     public LineMetrics getLineMetrics(LayoutContext c) {
-        if (lineMetrics == null) {
-            Font f = getFont(c);
-            lineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(), f, "");
-        }
-        return lineMetrics;
+        return calculatedStyle.getLineMetrics(c);
     }
     
     public int getContainingBlockWidth() {
         return (int)containingBlockWidth;
-    }
-
-    public Font getFont(CssContext cssContext) {
-        return cssContext.getFont(calculatedStyle.getFont(cssContext));
     }
 
     public boolean isClearLeft() {

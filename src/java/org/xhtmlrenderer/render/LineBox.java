@@ -25,7 +25,6 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.layout.BoxCollector;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.Layer;
-import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Color;
@@ -105,6 +104,13 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     public void paintInline(RenderingContext c) {
         if (textDecoration != null) {
             paintTextDecoration(c);
+        }
+        
+        if (c.debugDrawLineBoxes()) {
+            Color oldColor = c.getGraphics().getColor();
+            c.getGraphics().setColor(Color.GREEN);
+            c.getGraphics().drawRect(getAbsX(), getAbsY(), getWidth(), getHeight());
+            c.getGraphics().setColor(oldColor);
         }
     }
     
@@ -254,6 +260,9 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2005/12/13 02:41:32  peterbrant
+ * Initial implementation of vertical-align: top/bottom (not done yet) / Minor cleanup and optimization
+ *
  * Revision 1.39  2005/12/09 21:41:18  peterbrant
  * Finish support for relative inline layers
  *

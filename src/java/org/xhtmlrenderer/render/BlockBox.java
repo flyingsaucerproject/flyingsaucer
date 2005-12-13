@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.List;
@@ -119,12 +120,19 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
         Box parent = getParent();
         return parent instanceof LineBox || parent instanceof InlineBox;
     }
+    
+    public void paintDebugOutline(RenderingContext c) {
+        paintDebugOutline(c, Color.RED);
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2005/12/13 02:41:33  peterbrant
+ * Initial implementation of vertical-align: top/bottom (not done yet) / Minor cleanup and optimization
+ *
  * Revision 1.25  2005/12/09 21:41:20  peterbrant
  * Finish support for relative inline layers
  *

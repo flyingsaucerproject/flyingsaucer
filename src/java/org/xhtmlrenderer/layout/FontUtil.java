@@ -19,16 +19,10 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.extend.TextRenderer;
-import org.xhtmlrenderer.render.Box;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
-
 
 public class FontUtil {
 
@@ -38,22 +32,15 @@ public class FontUtil {
     public static int len(String str, Font font, TextRenderer tr, Graphics2D g2) {
         return (int) Math.ceil(tr.getLogicalBounds(g2, font, str).getWidth());
     }
-
-    public static int lineHeight(Box box, TextRenderer textRenderer, Graphics2D g2, CssContext c, BlockFormattingContext bfc) {
-        CalculatedStyle style = box.getStyle().getCalculatedStyle();
-        int val = (int) Math.ceil(textRenderer.getLogicalBounds(g2,
-                box.getStyle().getFont(c), "Test").getHeight());
-        if (!style.isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL)) {
-            val = (int) style.getFloatPropertyProportionalHeight(CSSName.LINE_HEIGHT, 0, c);
-        }
-        return val;
-    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.46  2005/12/13 02:41:35  peterbrant
+ * Initial implementation of vertical-align: top/bottom (not done yet) / Minor cleanup and optimization
+ *
  * Revision 1.45  2005/11/29 02:29:20  peterbrant
  * Remove unused imports
  *

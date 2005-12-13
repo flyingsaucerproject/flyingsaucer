@@ -32,10 +32,13 @@ import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.css.value.FontSpecification;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Point;
+import java.awt.font.LineMetrics;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -83,6 +86,9 @@ public class CalculatedStyle {
     
     private float _lineHeight;
     private boolean _lineHeightResolved;
+    
+    private Font _AWTFont;
+    private LineMetrics _lineMetrics;    
 
     /**
      * Cache child styles of this style that have the same cascaded properties
@@ -606,12 +612,38 @@ public class CalculatedStyle {
         _cachedRects.put(key, value);
     }
     
+    public Font getAWTFont(CssContext cssContext) {
+        if (_AWTFont == null) {
+            _AWTFont = cssContext.getFont(getFont(cssContext));
+        }
+        return _AWTFont;
+    }    
+    
+    /**
+     * A note on this method: What we really want is a FontMetrics2D object (i.e.
+     * font metrics with float precision).  Unfortunately, it doesn't seem
+     * the JDK provides this.  However, looking at the JDK code, it appears the
+     * metrics contained in the LineMetrics are actually the metrics of the font, not
+     * the metrics of the line (and empirically strings of "X" and "j" return the same 
+     * value for getAscent()).  So... for now we use LineMetrics for font metrics.
+     */
+    public LineMetrics getLineMetrics(LayoutContext c) {
+        if (_lineMetrics == null) {
+            Font f = getAWTFont(c);
+            _lineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(), f, "");
+        }
+        return _lineMetrics;
+    }    
+    
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.58  2005/12/13 02:41:36  peterbrant
+ * Initial implementation of vertical-align: top/bottom (not done yet) / Minor cleanup and optimization
+ *
  * Revision 1.57  2005/12/08 02:16:11  peterbrant
  * Thread safety fix
  *

@@ -132,7 +132,7 @@ public class ListItemPainter {
         
         text += "  ";
 
-        Font font = box.getStyle().getFont(c);
+        Font font = box.getStyle().getCalculatedStyle().getAWTFont(c);
         StrutMetrics strutMetrics = box.getStructMetrics();
         
         int w = FontUtil.len(text, font, c.getTextRenderer(), c.getGraphics());
@@ -149,6 +149,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/12/13 02:41:33  peterbrant
+ * Initial implementation of vertical-align: top/bottom (not done yet) / Minor cleanup and optimization
+ *
  * Revision 1.27  2005/12/10 00:59:38  peterbrant
  * Fix compile error
  *

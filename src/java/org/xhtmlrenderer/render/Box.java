@@ -417,18 +417,18 @@ public abstract class Box {
     public void setContainingBlock(Box containingBlock) {
         this.containingBlock = containingBlock;
     }
-
-    public Rectangle getBounds(CssContext cssCtx) {
-        return getBounds(cssCtx, 0, 0);
-    }
-
-    public Rectangle getBounds(CssContext cssCtx, int tx, int ty) {
+    
+    public Rectangle getBounds(int left, int top, CssContext cssCtx, int tx, int ty) {
         // Looks unnecessarily convoluted, but necessary to get negative
         // margins right
-        Rectangle result = getBorderEdge(this.x, this.y, cssCtx);
+        Rectangle result = getBorderEdge(left, top, cssCtx);
         addBackMargins(cssCtx, result);
         result.translate(tx, ty);
         return result;
+    }
+
+    public Rectangle getBounds(CssContext cssCtx, int tx, int ty) {
+        return getBounds(this.x, this.y, cssCtx, tx, ty);
     }
     
     protected Rectangle getPaintingBorderEdge(CssContext cssCtx) {
@@ -763,12 +763,24 @@ public abstract class Box {
         }
         return false;
     }
+    
+    protected void paintDebugOutline(RenderingContext c, Color color) {
+        Color oldColor = c.getGraphics().getColor();
+        
+        c.getGraphics().setColor(color);
+        Rectangle rect = getBounds(getAbsX(), getAbsY(), c, 0, 0);
+        c.getGraphics().drawRect(rect.x, rect.y, rect.width, rect.height);
+        c.getGraphics().setColor(oldColor);
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.89  2005/12/13 02:41:33  peterbrant
+ * Initial implementation of vertical-align: top/bottom (not done yet) / Minor cleanup and optimization
+ *
  * Revision 1.88  2005/12/11 02:51:18  peterbrant
  * Minor tweak (misread spec)
  *

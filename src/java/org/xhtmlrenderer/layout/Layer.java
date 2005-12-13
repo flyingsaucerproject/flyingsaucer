@@ -210,6 +210,9 @@ public class Layer {
             BlockBox box = (BlockBox) i.next();
             box.paintBackground(c);
             box.paintBorder(c);
+            if (c.debugDrawBoxes()) {
+                box.paintDebugOutline(c);
+            }
         }
     }
 
@@ -246,6 +249,9 @@ public class Layer {
             // TODO root layer needs to be handled correctly (paint over entire canvas)
             if (! isInline()) {
                 paintLayerBackgroundAndBorder(c);
+                if (c.debugDrawBoxes()) {
+                    ((BlockBox)getMaster()).paintDebugOutline(c);
+                }
             }
             
             if (isRootLayer() || isStackingContext()) {
