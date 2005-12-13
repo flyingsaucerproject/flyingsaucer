@@ -229,9 +229,27 @@ public class InlineBox extends Box implements InlinePaintable {
         
         graphics.setColor(getStyle().getCalculatedStyle().getColor());
         Rectangle edge = getContentAreaEdge(getAbsX(), getAbsY(), c);
-        c.getGraphics().fillRect(
-                edge.x, getAbsY() + textDecoration.getOffset(),
-                edge.width, textDecoration.getThickness());
+        
+        if (getStyle().getCalculatedStyle().isIdent(
+                CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
+            Box last = getLineBox().getLast();
+            if (last == this) {
+                Box container = getLineBox().getParent();
+                c.getGraphics().fillRect(
+                        edge.x, getAbsY() + textDecoration.getOffset(),
+                        container.getAbsX() + container.tx + container.getContentWidth() 
+                            - edge.x,
+                        textDecoration.getThickness());
+            } else {
+                c.getGraphics().fillRect(
+                        edge.x, getAbsY() + textDecoration.getOffset(),
+                        edge.width, textDecoration.getThickness());
+            }
+        } else {
+            c.getGraphics().fillRect(
+                    edge.x, getAbsY() + textDecoration.getOffset(),
+                    edge.width, textDecoration.getThickness());
+        }
         
         graphics.setColor(oldColor);
     }
@@ -574,5 +592,21 @@ public class InlineBox extends Box implements InlinePaintable {
     
     public void paintDebugOutline(RenderingContext c) {
         paintDebugOutline(c, Color.BLUE);
-    }    
+    }
+    
+    public Box getLast() {
+        for (int i = getInlineChildCount() - 1; i >= 0; i--) {
+            Object child = getInlineChild(i);
+            if (child instanceof InlineBox) {
+                Box possibleResult = ((InlineBox)child).getLast();
+                if (possibleResult != null) {
+                    return possibleResult;
+                }
+            }
+            if (child instanceof Box) {
+                return (Box)child;
+            }
+        }
+        return null;
+    }
 }

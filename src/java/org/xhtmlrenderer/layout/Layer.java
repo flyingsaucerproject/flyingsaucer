@@ -260,8 +260,8 @@ public class Layer {
     
             paintBackgroundsAndBorders(c, blocks);
             paintFloats(c);
+            paintListMarkers(c, blocks);
             paintInlineContent(c, lines);
-            paintListStyles(c, blocks);
             paintReplacedElements(c, blocks);
     
             if (isRootLayer() || isStackingContext()) {
@@ -285,16 +285,16 @@ public class Layer {
                     this, startingPoint, blocks, lines);
     
             paintBackgroundsAndBorders(c, blocks);
+            paintListMarkers(c, blocks);
             paintInlineContent(c, lines);
-            paintListStyles(c, blocks);
             paintReplacedElements(c, blocks);
         }
     }    
 
-    private void paintListStyles(RenderingContext c, List blocks) {
+    private void paintListMarkers(RenderingContext c, List blocks) {
         for (Iterator i = blocks.iterator(); i.hasNext();) {
             BlockBox box = (BlockBox) i.next();
-            box.paintListStyles(c);
+            box.paintListMarker(c);
         }
     }
     

@@ -196,6 +196,17 @@ public final class CSSName {
                     "0",
                     NOT_INHERITED
             );
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_TEXT_DECORATION_EXTENT =
+            addProperty(
+                    "-fs-text-decoration-extent",
+                    PRIMITIVE,
+                    "line",
+                    NOT_INHERITED
+            );    
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1436,6 +1447,9 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/12/13 20:46:10  peterbrant
+ * Improve list support (implement list-style-position: inside, marker "sticks" to first line box even if there are other block boxes in between, plus other minor fixes) / Experimental support for optionally extending text decorations to box edge vs line edge
+ *
  * Revision 1.20  2005/10/25 15:07:05  pdoubleya
  * Reviewed all initial values, cleaned code to remove use of unnecessary maps and lists. Reformatted for readability.
  *

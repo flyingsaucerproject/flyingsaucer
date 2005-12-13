@@ -50,6 +50,7 @@ import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.LineBox;
+import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.StrutMetrics;
 import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.render.TextDecoration;
@@ -82,6 +83,14 @@ public class InlineBoxing {
         int indent = (int) parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, maxAvailableWidth, c);
         remainingWidth -= indent;
         currentLine.x = indent;
+        
+        MarkerData markerData = c.getCurrentMarkerData();
+        if (markerData != null && 
+                box.getStyle().getCalculatedStyle().isIdent(
+                        CSSName.LIST_STYLE_POSITION, IdentValue.INSIDE)) {
+            remainingWidth -= markerData.getLayoutWidth();
+            currentLine.x += markerData.getLayoutWidth();
+        }
 
         remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
 
@@ -364,19 +373,6 @@ public class InlineBoxing {
         return x - start;
     }
     
-    private static StrutMetrics maybeSaveStrutMetrics(LayoutContext c, Box container,
-            LineMetrics strutLM, InlineBoxMeasurements measurements) {
-        if (container.getChildCount() == 0 &&
-                container.getStyle().isListItem() && container instanceof BlockBox) {
-            StrutMetrics metrics = new StrutMetrics(
-                    strutLM.getAscent(), measurements.getBaseline(), strutLM.getDescent());
-            ((BlockBox)container).setStructMetrics(metrics);
-            return metrics;
-        }
-        
-        return null;
-    }
-    
     public static StrutMetrics createDefaultStrutMetrics(LayoutContext c, Box container) {
         LineMetrics strutLM = container.getStyle().getLineMetrics(c);
         InlineBoxMeasurements measurements = getInitialMeasurements(c, container, strutLM);
@@ -393,9 +389,6 @@ public class InlineBoxing {
             VerticalAlignContext vaContext = new VerticalAlignContext();
             InlineBoxMeasurements measurements = getInitialMeasurements(c, container, strutLM);
             vaContext.pushMeasurements(measurements);
-            
-            StrutMetrics strutMetrics = 
-                maybeSaveStrutMetrics(c, container, strutLM, measurements);
             
             TextDecoration lBDecoration = calculateTextDecoration(
                     container, measurements.getBaseline(), strutLM);
@@ -422,9 +415,13 @@ public class InlineBoxing {
                 }
                 paintingTop -= vaContext.getInlineTop();
                 paintingBottom -= vaContext.getInlineTop();
-                if (strutMetrics != null) {
-                    strutMetrics.setBaseline(strutMetrics.getBaseline() - vaContext.getInlineTop());
-                }
+            }
+            
+            if (c.getCurrentMarkerData() != null) {
+                StrutMetrics strutMetrics = c.getCurrentMarkerData().getStructMetrics();
+                strutMetrics.setBaseline(measurements.getBaseline() - vaContext.getInlineTop());
+                c.getCurrentMarkerData().setReferenceLine(current);
+                c.setCurrentMarkerData(null);
             }
             
             current.setPaintingTop(paintingTop);

@@ -20,19 +20,26 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.List;
 
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.InlinePaintable;
+import org.xhtmlrenderer.layout.LayoutContext;
 
 public class BlockBox extends Box implements Renderable, InlinePaintable {
 
     public int renderIndex;
     
     private List pendingInlineElements;
-    private StrutMetrics structMetrics;
+    private MarkerData markerData;
 
     public BlockBox() {
         super();
@@ -70,7 +77,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
         return getAbsY() + height;
     }
 
-    public void paintListStyles(RenderingContext c) {
+    public void paintListMarker(RenderingContext c) {
         if (getStyle().isListItem()) {
             ListItemPainter.paint(c, this);
         }
@@ -82,14 +89,6 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
 
     public void setPendingInlineElements(List pendingInlineElements) {
         this.pendingInlineElements = pendingInlineElements;
-    }
-
-    public StrutMetrics getStructMetrics() {
-        return structMetrics;
-    }
-
-    public void setStructMetrics(StrutMetrics structMetrics) {
-        this.structMetrics = structMetrics;
     }
     
     public boolean intersects(CssContext cssCtx, Shape clip) {
@@ -124,12 +123,127 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public void paintDebugOutline(RenderingContext c) {
         paintDebugOutline(c, Color.RED);
     }
+
+    public MarkerData getMarkerData() {
+        return markerData;
+    }
+
+    public void setMarkerData(MarkerData markerData) {
+        this.markerData = markerData;
+    }
+    
+    public void createMarkerData(LayoutContext c, StrutMetrics strutMetrics) {
+        MarkerData result = new MarkerData();
+        result.setStructMetrics(strutMetrics);
+        
+        CalculatedStyle style = getStyle().getCalculatedStyle();
+        IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
+        
+        String image = style.getStringProperty(CSSName.LIST_STYLE_IMAGE);
+        if (! image.equals("none")) {
+            result.setImageMarker(makeImageMarker(c, strutMetrics, image));
+        } else {
+            if (listStyle == IdentValue.CIRCLE || listStyle == IdentValue.SQUARE ||
+                    listStyle == IdentValue.DISC) {
+                result.setGlyphMarker(makeGlyphMarker(strutMetrics));
+            } else {
+                result.setTextMarker(makeTextMarker(c, listStyle));
+            }
+        }
+        
+        setMarkerData(result);
+    }
+    
+    private MarkerData.GlyphMarker makeGlyphMarker(StrutMetrics strutMetrics) {
+        int diameter = (int)((strutMetrics.getAscent() + strutMetrics.getDescent()) / 3);
+        
+        MarkerData.GlyphMarker result = new MarkerData.GlyphMarker();
+        result.setDiameter(diameter);
+        result.setLayoutWidth(diameter * 3);
+       
+       return result;
+    }
+    
+    
+    private MarkerData.ImageMarker makeImageMarker(
+            LayoutContext c, StrutMetrics structMetrics, String image) {
+        Image img = null;
+        if (! image.equals("none")) {
+            img = c.getUac().getImageResource(image).getImage();
+            if (img != null) {
+                StrutMetrics strutMetrics = structMetrics;
+                if (img.getHeight(null) > strutMetrics.getAscent()) {
+                    img = img.getScaledInstance(-1, (int)strutMetrics.getAscent(), Image.SCALE_FAST);
+                }
+                MarkerData.ImageMarker result = new MarkerData.ImageMarker();
+                result.setImage(img);
+                result.setLayoutWidth(img.getWidth(null) * 2);
+                return result;
+            }
+        }
+        return null;
+    }
+    
+    private MarkerData.TextMarker makeTextMarker(LayoutContext c, IdentValue listStyle) {
+        String text = "";
+
+        if (listStyle == IdentValue.LOWER_LATIN || listStyle == IdentValue.LOWER_ALPHA) {
+            text = toLatin(this.list_count).toLowerCase() + ".";
+        } else if (listStyle == IdentValue.UPPER_LATIN || listStyle == IdentValue.UPPER_ALPHA) {
+            text = toLatin(this.list_count).toUpperCase() + ".";
+        } else if (listStyle == IdentValue.LOWER_ROMAN) {
+            text = toRoman(this.list_count).toLowerCase() + ".";
+        } else if (listStyle == IdentValue.UPPER_ROMAN) {
+            text = toRoman(this.list_count).toUpperCase() + ".";
+        } else if (listStyle == IdentValue.DECIMAL) {
+            text = this.list_count + ".";
+        }
+        
+        text += "  ";
+
+        Font font = this.getStyle().getCalculatedStyle().getAWTFont(c);
+        
+        int w = FontUtil.len(text, font, c.getTextRenderer(), c.getGraphics());
+        
+        MarkerData.TextMarker result = new MarkerData.TextMarker();
+        result.setText(text);
+        result.setLayoutWidth(w);
+        result.setFont(font);
+        
+        return result;
+    } 
+
+    private static String toLatin(int val) {
+        if (val > 26) {
+            int val1 = val % 26;
+            int val2 = val / 26;
+            return toLatin(val2) + toLatin(val1);
+        }
+        return ((char) (val + 64)) + "";
+    }
+
+    private static String toRoman(int val) {
+        int[] ints = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] nums = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < ints.length; i++) {
+            int count = (int) (val / ints[i]);
+            for (int j = 0; j < count; j++) {
+                sb.append(nums[i]);
+            }
+            val -= ints[i] * count;
+        }
+        return sb.toString();
+    }    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2005/12/13 20:46:06  peterbrant
+ * Improve list support (implement list-style-position: inside, marker "sticks" to first line box even if there are other block boxes in between, plus other minor fixes) / Experimental support for optionally extending text decorations to box edge vs line edge
+ *
  * Revision 1.26  2005/12/13 02:41:33  peterbrant
  * Initial implementation of vertical-align: top/bottom (not done yet) / Minor cleanup and optimization
  *

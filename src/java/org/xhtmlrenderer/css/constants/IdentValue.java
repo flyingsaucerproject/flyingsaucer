@@ -272,6 +272,10 @@ public class IdentValue implements FSDerivedValue {
     /**
      * Description of the Field
      */
+    public final static IdentValue LINE = addValue("line");
+    /**
+     * Description of the Field
+     */
     public final static IdentValue LINE_THROUGH = addValue("line-through");
     /**
      * Description of the Field
@@ -620,6 +624,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2005/12/13 20:46:09  peterbrant
+ * Improve list support (implement list-style-position: inside, marker "sticks" to first line box even if there are other block boxes in between, plus other minor fixes) / Experimental support for optionally extending text decorations to box edge vs line edge
+ *
  * Revision 1.17  2005/11/08 22:53:44  tobega
  * added getLineHeight method to CalculatedStyle and hacked in some list-item support
  *

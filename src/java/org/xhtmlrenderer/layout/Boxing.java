@@ -170,6 +170,14 @@ public class Boxing {
         if (block.component == null) {
             block.height = 0;
         }
+        
+        boolean didSetMarkerData = false;
+        if (block instanceof BlockBox && block.getStyle().isListItem()) {
+            StrutMetrics strutMetrics = InlineBoxing.createDefaultStrutMetrics(c, block);
+            ((BlockBox)block).createMarkerData(c, strutMetrics);
+            c.setCurrentMarkerData(((BlockBox)block).getMarkerData());
+            didSetMarkerData = true;
+        }        
 
         // do children's layout
         boolean old_sub = c.isSubBlock();
@@ -214,6 +222,10 @@ public class Boxing {
             }
             c.popBFC();
         }
+        
+        if (didSetMarkerData) {
+            c.setCurrentMarkerData(null);
+        }
 
         // calculate the total outer width
         //block.contentWidth = block.getWidth();
@@ -230,12 +242,6 @@ public class Boxing {
         
         if (block.getStyle().isFloated()) {
             c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
-        }
-        
-        if (block instanceof BlockBox && block.getStyle().isListItem() &&
-                ((BlockBox)block).getStructMetrics() == null) {
-            StrutMetrics strutMetrics = InlineBoxing.createDefaultStrutMetrics(c, block);
-            ((BlockBox)block).setStructMetrics(strutMetrics);
         }
 
         checkExceeds(block);
@@ -354,6 +360,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.66  2005/12/13 20:46:08  peterbrant
+ * Improve list support (implement list-style-position: inside, marker "sticks" to first line box even if there are other block boxes in between, plus other minor fixes) / Experimental support for optionally extending text decorations to box edge vs line edge
+ *
  * Revision 1.65  2005/12/11 02:50:24  peterbrant
  * Minor cleanup / Don't pop layer before Box.height is set
  *

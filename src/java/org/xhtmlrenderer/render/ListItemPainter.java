@@ -23,68 +23,101 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.layout.FontUtil;
 
-import java.awt.Font;
 import java.awt.Image;
 import java.awt.RenderingHints;
 
 public class ListItemPainter {
     public static void paint(RenderingContext c, BlockBox box) {
-        CalculatedStyle style = box.getStyle().getCalculatedStyle();
-        IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
-
-        if (listStyle == IdentValue.NONE) {
+        if (box.getMarkerData() == null) {
             return;
         }
-
-        String image = style.getStringProperty(CSSName.LIST_STYLE_IMAGE);
-        Image img = null;
-        if (! image.equals("none")) {
-            img = c.getUac().getImageResource(image).getImage();
-            if (img != null) {
-                StrutMetrics strutMetrics = box.getStructMetrics();
-                if (img.getHeight(null) > strutMetrics.getAscent()) {
-                    img = img.getScaledInstance(-1, (int)strutMetrics.getAscent(), Image.SCALE_FAST);
-                }
-                c.getGraphics().drawImage(img, 
-                        box.getAbsX() + (int)box.getStyle().getMarginWidth(c).left()
-                            - img.getWidth(null) * 5/4, 
-                        (int)(box.getAbsY() + box.ty + strutMetrics.getBaseline()
-                            - strutMetrics.getAscent() / 2 - img.getHeight(null) / 2),
-                        null);
-            }
+        
+        MarkerData markerData = box.getMarkerData();
+        
+        if (markerData.getImageMarker() != null) {
+            drawImage(c, box, markerData);
         } else {
-            // prep the color
+            CalculatedStyle style = box.getStyle().getCalculatedStyle();
+            IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
+            
             c.getGraphics().setColor(style.getColor());
     
-            if (listStyle == IdentValue.DISC || listStyle == IdentValue.SQUARE ||
-                    listStyle == IdentValue.CIRCLE) {
+            if (markerData.getGlyphMarker() != null) {
                 drawGlyph(c, box, style, listStyle);
-            } else {
+            } else if (markerData.getTextMarker() != null){
                 drawText(c, box, listStyle);
             }
         }
     }
 
-    private static void drawGlyph(RenderingContext c, BlockBox box, CalculatedStyle style, IdentValue listStyle) {
+    private static void drawImage(RenderingContext c, BlockBox box, MarkerData markerData) {
+        Image img = null;
+        MarkerData.ImageMarker marker = markerData.getImageMarker();
+        img = marker.getImage();
+        if (img != null) {
+            StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
+            int x = getReferenceX(c, box);
+            if (box.getStyle().getCalculatedStyle().isIdent(CSSName.LIST_STYLE_POSITION, IdentValue.INSIDE)) {
+                x += marker.getLayoutWidth() / 2 - img.getWidth(null) / 2;
+            } else {
+                x += -marker.getLayoutWidth() + 
+                        (marker.getLayoutWidth() / 2 - img.getWidth(null) / 2);
+            }
+            c.getGraphics().drawImage(img, 
+                    x,
+                    (int)(getReferenceBaseline(c, box)
+                        - strutMetrics.getAscent() / 2 - img.getHeight(null) / 2),
+                    null);
+        }
+    }
+    
+    private static int getReferenceX(RenderingContext c, BlockBox box) {
+        MarkerData markerData = box.getMarkerData();
+        
+        if (markerData.getReferenceLine() != null) {
+            return markerData.getReferenceLine().getAbsX();
+        } else {
+            return box.getAbsX() + (int)box.getStyle().getMarginWidth(c).left();
+        }
+    }
+    
+    private static int getReferenceBaseline(RenderingContext c, BlockBox box) {
+        MarkerData markerData = box.getMarkerData();
+        StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
+        
+        if (markerData.getReferenceLine() != null) {
+            return markerData.getReferenceLine().getAbsY() + strutMetrics.getBaseline();
+        } else {
+            return box.getAbsY() + box.ty + strutMetrics.getBaseline();
+        }
+    }
+
+    private static void drawGlyph(RenderingContext c, BlockBox box, 
+            CalculatedStyle style, IdentValue listStyle) {
         // save the old AntiAliasing setting, then force it on
         Object aa_key = c.getGraphics().getRenderingHint(RenderingHints.KEY_ANTIALIASING);
         c.getGraphics().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
         // calculations for bullets
-        StrutMetrics strutMetrics = box.getStructMetrics();
-        int h = (int) Math.round(strutMetrics.getAscent());
-        int rad = (int)((strutMetrics.getAscent() + strutMetrics.getDescent()) / 3);
-        int x = box.getAbsX() + (int)box.getStyle().getMarginWidth(c).left() - rad * 5 / 2;
-        int y = box.getAbsY() + box.ty + strutMetrics.getBaseline() - h / 2 - rad / 2;
+        StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
+        MarkerData.GlyphMarker marker = box.getMarkerData().getGlyphMarker();
+        int x = getReferenceX(c, box);
+        if (box.getStyle().getCalculatedStyle().isIdent(CSSName.LIST_STYLE_POSITION, IdentValue.INSIDE)) {
+            x += marker.getLayoutWidth() / 2 - marker.getDiameter() / 2;
+        } else {
+            x += -marker.getLayoutWidth() + 
+                    (marker.getLayoutWidth() / 2 - marker.getDiameter() / 2);
+        }
+        int y = getReferenceBaseline(c, box) 
+            - (int)strutMetrics.getAscent() / 2 - marker.getDiameter() / 2;
         if (listStyle == IdentValue.DISC) {
-            c.getGraphics().fillOval(x, y, rad, rad);
+            c.getGraphics().fillOval(x, y, marker.getDiameter(), marker.getDiameter());
         } else if (listStyle == IdentValue.SQUARE) {
-            c.getGraphics().fillRect(x, y, rad, rad);
+            c.getGraphics().fillRect(x, y, marker.getDiameter(), marker.getDiameter());
         } else if (listStyle == IdentValue.CIRCLE) {
-            c.getGraphics().drawOval(x, y, rad, rad);
+            c.getGraphics().drawOval(x, y, marker.getDiameter(), marker.getDiameter());
         }
 
         // restore the old AntiAliasing setting
@@ -92,56 +125,17 @@ public class ListItemPainter {
                 aa_key);
     }
 
-    protected static String toLatin(int val) {
-        if (val > 26) {
-            int val1 = val % 26;
-            int val2 = val / 26;
-            return toLatin(val2) + toLatin(val1);
-        }
-        return ((char) (val + 64)) + "";
-    }
-
-    protected static String toRoman(int val) {
-        int[] ints = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
-        String[] nums = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < ints.length; i++) {
-            int count = (int) (val / ints[i]);
-            for (int j = 0; j < count; j++) {
-                sb.append(nums[i]);
-            }
-            val -= ints[i] * count;
-        }
-        return sb.toString();
-    }
-
     private static void drawText(RenderingContext c, BlockBox box, IdentValue listStyle) {
-        String text = "";
-
-        if (listStyle == IdentValue.LOWER_LATIN || listStyle == IdentValue.LOWER_ALPHA) {
-            text = toLatin(box.list_count).toLowerCase() + ".";
-        } else if (listStyle == IdentValue.UPPER_LATIN || listStyle == IdentValue.UPPER_ALPHA) {
-            text = toLatin(box.list_count).toUpperCase() + ".";
-        } else if (listStyle == IdentValue.LOWER_ROMAN) {
-            text = toRoman(box.list_count).toLowerCase() + ".";
-        } else if (listStyle == IdentValue.UPPER_ROMAN) {
-            text = toRoman(box.list_count).toUpperCase() + ".";
-        } else if (listStyle == IdentValue.DECIMAL) {
-            text = box.list_count + ".";
+        MarkerData.TextMarker text = box.getMarkerData().getTextMarker();
+        
+        int x = getReferenceX(c, box);
+        if (! box.getStyle().getCalculatedStyle().isIdent(CSSName.LIST_STYLE_POSITION, IdentValue.INSIDE)) {
+            x += -text.getLayoutWidth();
         }
+        int y = getReferenceBaseline(c, box);
         
-        text += "  ";
-
-        Font font = box.getStyle().getCalculatedStyle().getAWTFont(c);
-        StrutMetrics strutMetrics = box.getStructMetrics();
-        
-        int w = FontUtil.len(text, font, c.getTextRenderer(), c.getGraphics());
-        
-        int x = box.getAbsX() + (int)box.getStyle().getMarginWidth(c).left() - w;
-        int y = box.getAbsY() + box.ty + strutMetrics.getBaseline();
-        
-        c.getGraphics().setFont(font);
-        c.getGraphics().drawString(text, x, y);
+        c.getGraphics().setFont(text.getFont());
+        c.getGraphics().drawString(text.getText(), x, y);
     }
 }
 
@@ -149,6 +143,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/12/13 20:46:06  peterbrant
+ * Improve list support (implement list-style-position: inside, marker "sticks" to first line box even if there are other block boxes in between, plus other minor fixes) / Experimental support for optionally extending text decorations to box edge vs line edge
+ *
  * Revision 1.28  2005/12/13 02:41:33  peterbrant
  * Initial implementation of vertical-align: top/bottom (not done yet) / Minor cleanup and optimization
  *

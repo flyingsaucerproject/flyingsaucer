@@ -94,9 +94,18 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         Color oldColor = graphics.getColor();
         
         graphics.setColor(getStyle().getCalculatedStyle().getColor());
-        c.getGraphics().fillRect(
-                getAbsX(), getAbsY() + textDecoration.getOffset(),
-                getContentWidth(), textDecoration.getThickness());
+        Box parent = getParent();
+        if (parent.getStyle().getCalculatedStyle().isIdent(
+                CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
+            c.getGraphics().fillRect(
+                    parent.getAbsX() + parent.tx, getAbsY() + textDecoration.getOffset(),
+                    parent.getContentWidth(), textDecoration.getThickness());
+        } else {
+            c.getGraphics().fillRect(
+                    parent.getAbsX() + parent.tx, getAbsY() + textDecoration.getOffset(),
+                    getContentWidth() + (getAbsX() - (parent.getAbsX() + parent.tx)),
+                    textDecoration.getThickness());
+        }
         
         graphics.setColor(oldColor);
     }
@@ -254,12 +263,29 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
             }
         }
     }
+    
+    public Box getLast() {
+        for (int i = getChildCount() - 1; i >= 0; i--) {
+            Box child = getChild(i);
+            if (child instanceof InlineBox) {
+                Box possibleResult = ((InlineBox)child).getLast();
+                if (possibleResult != null) {
+                    return possibleResult;
+                }
+            }
+            return child;
+        }
+        return null;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2005/12/13 20:46:04  peterbrant
+ * Improve list support (implement list-style-position: inside, marker "sticks" to first line box even if there are other block boxes in between, plus other minor fixes) / Experimental support for optionally extending text decorations to box edge vs line edge
+ *
  * Revision 1.40  2005/12/13 02:41:32  peterbrant
  * Initial implementation of vertical-align: top/bottom (not done yet) / Minor cleanup and optimization
  *

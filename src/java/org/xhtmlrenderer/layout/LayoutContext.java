@@ -36,6 +36,7 @@ import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.PageContext;
 import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.swing.RootPanel;
@@ -52,6 +53,8 @@ public class LayoutContext implements CssContext, PageContext {
 
     private StyleTracker firstLines = new StyleTracker();
     private StyleTracker firstLetters = new StyleTracker();
+    
+    private MarkerData currentMarkerData;
 
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
@@ -403,5 +406,13 @@ public class LayoutContext implements CssContext, PageContext {
     
     public StyleTracker getFirstLettersTracker() {
         return firstLetters;
+    }
+
+    public MarkerData getCurrentMarkerData() {
+        return currentMarkerData;
+    }
+
+    public void setCurrentMarkerData(MarkerData currentMarkerData) {
+        this.currentMarkerData = currentMarkerData;
     }
 }
