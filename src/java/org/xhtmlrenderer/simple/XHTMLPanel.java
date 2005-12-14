@@ -171,7 +171,7 @@ public class XHTMLPanel extends BasicPanel {
     public void relayout() {
         //super.calcLayout();
         sharedContext.flushFonts();
-        Uu.p("WARNING: the relayout() method may not work!");
+        relayout(null);
     }
 
     /**
@@ -327,6 +327,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/12/14 22:08:02  peterbrant
+ * Make relayout() work again
+ *
  * Revision 1.29  2005/10/27 00:09:07  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *
