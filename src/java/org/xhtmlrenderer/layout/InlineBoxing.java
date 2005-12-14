@@ -522,17 +522,33 @@ public class InlineBoxing {
         TextDecoration decoration = null;
         if (val == IdentValue.UNDERLINE) {
             decoration = new TextDecoration();
-            decoration.setOffset((int)(baseline + 
-                    lm.getUnderlineOffset() + lm.getUnderlineThickness()));
-            decoration.setThickness((int)lm.getUnderlineThickness());
+            decoration.setOffset(Math.round((baseline + 
+                    lm.getUnderlineOffset() + lm.getUnderlineThickness())));
+            decoration.setThickness(Math.round(lm.getUnderlineThickness()));
+            
+            // JDK on Linux returns some goofy values for 
+            // LineMetrics.getUnderlineOffset(). Compensate by always
+            // making sure underline fits inside the descender
+            int maxOffset = 
+                baseline + (int)lm.getDescent() - decoration.getThickness();
+            if (decoration.getOffset() > maxOffset) {
+                decoration.setOffset(maxOffset);
+            }
+            
         } else if (val == IdentValue.LINE_THROUGH) {
             decoration = new TextDecoration();
             decoration.setOffset(Math.round(baseline + lm.getStrikethroughOffset()));
-            decoration.setThickness((int)lm.getStrikethroughThickness());
+            decoration.setThickness(Math.round(lm.getStrikethroughThickness()));
         } else if (val == IdentValue.OVERLINE) {
             decoration = new TextDecoration();
             decoration.setOffset(0);
-            decoration.setThickness((int)lm.getUnderlineThickness());
+            decoration.setThickness(Math.round(lm.getUnderlineThickness()));
+        }
+        
+        if (decoration != null) {
+            if (decoration.getThickness() == 0) {
+                decoration.setThickness(1);
+            }
         }
         
         return decoration;
