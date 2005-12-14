@@ -98,12 +98,14 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         if (parent.getStyle().getCalculatedStyle().isIdent(
                 CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
             c.getGraphics().fillRect(
-                    parent.getAbsX() + parent.tx, getAbsY() + textDecoration.getOffset(),
-                    parent.getContentWidth(), textDecoration.getThickness());
+                    getAbsX(), 
+                    getAbsY() + textDecoration.getOffset(),
+                    parent.getAbsX() + parent.tx + parent.getContentWidth() - getAbsX(), 
+                    textDecoration.getThickness());
         } else {
             c.getGraphics().fillRect(
-                    parent.getAbsX() + parent.tx, getAbsY() + textDecoration.getOffset(),
-                    getContentWidth() + (getAbsX() - (parent.getAbsX() + parent.tx)),
+                    getAbsX(), getAbsY() + textDecoration.getOffset(),
+                    getContentWidth(),
                     textDecoration.getThickness());
         }
         
@@ -283,6 +285,9 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2005/12/14 15:03:12  peterbrant
+ * Revert ill-advised text-decoration change
+ *
  * Revision 1.41  2005/12/13 20:46:04  peterbrant
  * Improve list support (implement list-style-position: inside, marker "sticks" to first line box even if there are other block boxes in between, plus other minor fixes) / Experimental support for optionally extending text decorations to box edge vs line edge
  *

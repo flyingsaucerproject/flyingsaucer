@@ -230,6 +230,7 @@ public class InlineBox extends Box implements InlinePaintable {
         graphics.setColor(getStyle().getCalculatedStyle().getColor());
         Rectangle edge = getContentAreaEdge(getAbsX(), getAbsY(), c);
         
+        /*
         if (getStyle().getCalculatedStyle().isIdent(
                 CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
             Box last = getLineBox().getLast();
@@ -246,10 +247,13 @@ public class InlineBox extends Box implements InlinePaintable {
                         edge.width, textDecoration.getThickness());
             }
         } else {
+        */
             c.getGraphics().fillRect(
                     edge.x, getAbsY() + textDecoration.getOffset(),
                     edge.width, textDecoration.getThickness());
+        /*
         }
+        */
         
         graphics.setColor(oldColor);
     }
