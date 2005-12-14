@@ -177,11 +177,15 @@ public abstract class Box {
     }
 
     public void removeChild(Box child) {
-        boxes.remove(child);
+        if (boxes != null) {
+            boxes.remove(child);
+        }
     }
     
     public void removeChild(int i) {
-        boxes.remove(i);
+        if (boxes != null) {
+            boxes.remove(i);
+        }
     }
 
     public void reset() {
@@ -778,6 +782,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.90  2005/12/14 22:06:47  peterbrant
+ * Fix NPE
+ *
  * Revision 1.89  2005/12/13 02:41:33  peterbrant
  * Initial implementation of vertical-align: top/bottom (not done yet) / Minor cleanup and optimization
  *
