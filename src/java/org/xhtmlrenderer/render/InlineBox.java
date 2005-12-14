@@ -88,8 +88,8 @@ public class InlineBox extends Box implements InlinePaintable {
         
         LineMetrics metrics = getStyle().getLineMetrics(c);
         
-        setHeight((int)(border.top() + padding.top() + metrics.getAscent() + metrics.getDescent() +
-                padding.bottom() + border.bottom()));
+        setHeight((int)Math.ceil(border.top() + padding.top() + metrics.getAscent() + 
+                metrics.getDescent() + padding.bottom() + border.bottom()));
     }
 
     public int getBaseline() {
@@ -230,30 +230,9 @@ public class InlineBox extends Box implements InlinePaintable {
         graphics.setColor(getStyle().getCalculatedStyle().getColor());
         Rectangle edge = getContentAreaEdge(getAbsX(), getAbsY(), c);
         
-        /*
-        if (getStyle().getCalculatedStyle().isIdent(
-                CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
-            Box last = getLineBox().getLast();
-            if (last == this) {
-                Box container = getLineBox().getParent();
-                c.getGraphics().fillRect(
-                        edge.x, getAbsY() + textDecoration.getOffset(),
-                        container.getAbsX() + container.tx + container.getContentWidth() 
-                            - edge.x,
-                        textDecoration.getThickness());
-            } else {
-                c.getGraphics().fillRect(
-                        edge.x, getAbsY() + textDecoration.getOffset(),
-                        edge.width, textDecoration.getThickness());
-            }
-        } else {
-        */
-            c.getGraphics().fillRect(
-                    edge.x, getAbsY() + textDecoration.getOffset(),
-                    edge.width, textDecoration.getThickness());
-        /*
-        }
-        */
+        c.getGraphics().fillRect(
+                edge.x, getAbsY() + textDecoration.getOffset(),
+                edge.width, textDecoration.getThickness());
         
         graphics.setColor(oldColor);
     }
