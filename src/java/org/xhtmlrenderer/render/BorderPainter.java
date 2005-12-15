@@ -26,6 +26,8 @@ import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import java.awt.*;
 
 public class BorderPainter {
+    private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
+    
     public static int TOP = 1;
     public static int LEFT = 2;
     public static int BOTTOM = 4;
@@ -51,16 +53,16 @@ public class BorderPainter {
         }
 
         //Now paint!
-        if ((sides & TOP) == TOP) {
+        if ((sides & TOP) == TOP && ! border.topColor().equals(TRANSPARENT)) {
             paintBorderSide(border, g, bounds, sides, TOP, border.topStyle(), xOffset);
         }
-        if ((sides & LEFT) == LEFT) {
+        if ((sides & LEFT) == LEFT && ! border.leftColor().equals(TRANSPARENT)) {
             paintBorderSide(border, g, bounds, sides, LEFT, border.leftStyle(), xOffset);
         }
-        if ((sides & BOTTOM) == BOTTOM) {
+        if ((sides & BOTTOM) == BOTTOM && ! border.bottomColor().equals(TRANSPARENT)) {
             paintBorderSide(border, g, bounds, sides, BOTTOM, border.bottomStyle(), xOffset);
         }
-        if ((sides & RIGHT) == RIGHT) {
+        if ((sides & RIGHT) == RIGHT && ! border.rightColor().equals(TRANSPARENT)) {
             paintBorderSide(border, g, bounds, sides, RIGHT, border.rightStyle(), xOffset);
         }
     }
@@ -351,6 +353,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2005/12/15 20:04:13  peterbrant
+ * Don't paint transparent borders
+ *
  * Revision 1.39  2005/11/08 20:02:14  peterbrant
  * Fix off by one errors for borders with an odd width
  *
