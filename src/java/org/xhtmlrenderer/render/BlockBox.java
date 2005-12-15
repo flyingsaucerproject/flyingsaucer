@@ -78,6 +78,10 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
 
     public void paintListMarker(RenderingContext c) {
+        if (getStyle().isHidden()) {
+            return;
+        }
+        
         if (getStyle().isListItem()) {
             ListItemPainter.paint(c, this);
         }
@@ -112,6 +116,10 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
     
     public void paintInline(RenderingContext c) {
+        if (getStyle().isHidden()) {
+            return;
+        }
+        
         getContainingLayer().paintAsLayer(c, this);
     }
     
@@ -241,6 +249,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2005/12/15 20:04:48  peterbrant
+ * Implement visibility: hidden
+ *
  * Revision 1.27  2005/12/13 20:46:06  peterbrant
  * Improve list support (implement list-style-position: inside, marker "sticks" to first line box even if there are other block boxes in between, plus other minor fixes) / Experimental support for optionally extending text decorations to box edge vs line edge
  *

@@ -238,6 +238,10 @@ public class InlineBox extends Box implements InlinePaintable {
     }
     
     public void paintInline(RenderingContext c) {
+        if (getStyle().isHidden()) {
+            return;
+        }
+        
         paintBackground(c);
         paintBorder(c);
         

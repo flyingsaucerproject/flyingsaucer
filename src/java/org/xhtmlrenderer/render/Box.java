@@ -608,6 +608,10 @@ public abstract class Box {
     }
     
     public void paintBorder(RenderingContext c) {
+        if (getStyle().isHidden()) {
+            return;
+        }
+        
         Rectangle borderBounds = getPaintingBorderEdge(c);
         if (getState() != Box.DONE) {
             borderBounds.height += c.getCanvas().getHeight();
@@ -632,6 +636,10 @@ public abstract class Box {
 
     public void paintBackground(RenderingContext c) {
         if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
+            return;
+        }
+        
+        if (getStyle().isHidden()) {
             return;
         }
         
@@ -782,6 +790,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.91  2005/12/15 20:04:47  peterbrant
+ * Implement visibility: hidden
+ *
  * Revision 1.90  2005/12/14 22:06:47  peterbrant
  * Fix NPE
  *

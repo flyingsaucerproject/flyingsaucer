@@ -113,6 +113,10 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     }
     
     public void paintInline(RenderingContext c) {
+        if (getParent().getStyle().isHidden()) {
+            return;
+        }
+        
         if (textDecoration != null) {
             paintTextDecoration(c);
         }
@@ -285,6 +289,9 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2005/12/15 20:04:47  peterbrant
+ * Implement visibility: hidden
+ *
  * Revision 1.42  2005/12/14 15:03:12  peterbrant
  * Revert ill-advised text-decoration change
  *

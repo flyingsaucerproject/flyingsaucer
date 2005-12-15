@@ -199,5 +199,9 @@ public class Style {
     
     public boolean isListItem() {
         return getCalculatedStyle().isIdent(CSSName.DISPLAY, IdentValue.LIST_ITEM);
-    }    
+    } 
+    
+    public boolean isHidden() {
+        return getCalculatedStyle().isIdent(CSSName.VISIBILITY, IdentValue.HIDDEN);
+    }
 }
