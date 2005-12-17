@@ -21,6 +21,7 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 
 import java.awt.Rectangle;
@@ -76,8 +77,8 @@ public class AnonymousBoxing {
         return block;
     }
 
-    public static Box createBox(LayoutContext c, Content content) {
-        Box block = new AnonymousBlockBox(content);
+    public static BlockBox createBox(LayoutContext c, Content content) {
+        BlockBox block = new AnonymousBlockBox(content);
         block.createDefaultStyle(c);
         return block;
     }
@@ -87,6 +88,9 @@ public class AnonymousBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2005/12/17 02:24:08  peterbrant
+ * Remove last pieces of old (now non-working) clip region checking / Push down handful of fields from Box to BlockBox
+ *
  * Revision 1.10  2005/11/29 02:29:11  peterbrant
  * Remove unused imports
  *

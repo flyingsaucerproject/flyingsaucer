@@ -19,21 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.constants.IdentValue;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.layout.Layer;
-import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.layout.PersistentBFC;
-import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
-
-import javax.swing.*;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -46,11 +31,21 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.layout.Layer;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.Uu;
+
 public abstract class Box {
 
     public Element element;
-
-    public JComponent component = null;
 
     // dimensions stuff
     /**
@@ -71,26 +66,17 @@ public abstract class Box {
      */
     //public int width;
     public int contentWidth;
-    public int rightPadding = 0;
-    public int leftPadding = 0;
+    public int rightMBP = 0;
+    public int leftMBP = 0;
 
     public int getWidth() {
-        return contentWidth + leftPadding + rightPadding;
+        return contentWidth + leftMBP + rightMBP;
     }
 
     /**
      * Box height.
      */
     public int height;
-
-    // position stuff
-
-    // list stuff
-    public int list_count = -1;
-
-    // printing stuff
-
-    private PersistentBFC persistentBFC = null;
     
     private Layer layer = null;
     private Layer containingLayer;
@@ -99,8 +85,6 @@ public abstract class Box {
 
     // children stuff
     private List boxes;
-
-    private boolean children_exceeds;
 
     /**
      * Keep track of the start of childrens containing block.
@@ -111,7 +95,6 @@ public abstract class Box {
 
     private Style style;
     private Box containingBlock;
-    private Box staticEquivalent;
 
     public Box() {
     }
@@ -160,14 +143,6 @@ public abstract class Box {
         boxes.add(child);
         
         child.initContainingLayer(c);
-        
-        propagateChildProperties(child);
-    }
-
-    public void propagateChildProperties(Box child) {
-        if (child.isChildrenExceedBounds()) {
-            setChildrenExceedBounds(true);
-        }
     }
 
     public void removeAllChildren() {
@@ -193,21 +168,8 @@ public abstract class Box {
         height = tx = ty = 0;
     }
 
-    public void setPersistentBFC(PersistentBFC persistentBFC) {
-        this.persistentBFC = persistentBFC;
-    }
-
     public void setParent(Box box) {
         this.parent = box;
-    }
-
-
-    public void setChildrenExceedBounds(boolean children_exceeds) {
-        this.children_exceeds = children_exceeds;
-    }
-
-    public PersistentBFC getPersistentBFC() {
-        return persistentBFC;
     }
 
     public int getHeight() {
@@ -236,10 +198,6 @@ public abstract class Box {
         } else {
             return boxes.iterator();
         }
-    }
-
-    public boolean isChildrenExceedBounds() {
-        return children_exceeds;
     }
 
     /**
@@ -504,21 +462,8 @@ public abstract class Box {
         this.layer = layer;
     }
 
-    public Box getStaticEquivalent() {
-        return staticEquivalent;
-    }
-
-    public void setStaticEquivalent(Box staticEquivalent) {
-        this.staticEquivalent = staticEquivalent;
-    }
-
     public int getContentWidth() {
         return contentWidth;
-    }
-
-    public void alignToStaticEquivalent() {
-        this.y = staticEquivalent.getAbsY() - getAbsY();
-        setAbsY(staticEquivalent.getAbsY());
     }
 
     // Common code for placing absolute and relative boxes in the right place
@@ -593,10 +538,6 @@ public abstract class Box {
 
     public int getAbsX() {
         return absX;
-    }
-
-    public boolean isReplaced() {
-        return component != null;
     }
 
     public boolean isStyled() {
@@ -790,6 +731,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.92  2005/12/17 02:24:14  peterbrant
+ * Remove last pieces of old (now non-working) clip region checking / Push down handful of fields from Box to BlockBox
+ *
  * Revision 1.91  2005/12/15 20:04:47  peterbrant
  * Implement visibility: hidden
  *

@@ -26,6 +26,8 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.List;
 
+import javax.swing.JComponent;
+
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -33,6 +35,7 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.PersistentBFC;
 
 public class BlockBox extends Box implements Renderable, InlinePaintable {
 
@@ -40,6 +43,14 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     
     private List pendingInlineElements;
     private MarkerData markerData;
+    
+    private int listCounter;
+    
+    private PersistentBFC persistentBFC;
+    
+    private Box staticEquivalent;
+    
+    public JComponent component = null;
 
     public BlockBox() {
         super();
@@ -196,15 +207,15 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
         String text = "";
 
         if (listStyle == IdentValue.LOWER_LATIN || listStyle == IdentValue.LOWER_ALPHA) {
-            text = toLatin(this.list_count).toLowerCase() + ".";
+            text = toLatin(getListCounter()).toLowerCase() + ".";
         } else if (listStyle == IdentValue.UPPER_LATIN || listStyle == IdentValue.UPPER_ALPHA) {
-            text = toLatin(this.list_count).toUpperCase() + ".";
+            text = toLatin(getListCounter()).toUpperCase() + ".";
         } else if (listStyle == IdentValue.LOWER_ROMAN) {
-            text = toRoman(this.list_count).toLowerCase() + ".";
+            text = toRoman(getListCounter()).toLowerCase() + ".";
         } else if (listStyle == IdentValue.UPPER_ROMAN) {
-            text = toRoman(this.list_count).toUpperCase() + ".";
+            text = toRoman(getListCounter()).toUpperCase() + ".";
         } else if (listStyle == IdentValue.DECIMAL) {
-            text = this.list_count + ".";
+            text = getListCounter() + ".";
         }
         
         text += "  ";
@@ -242,13 +253,49 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
             val -= ints[i] * count;
         }
         return sb.toString();
-    }    
+    }
+
+    public int getListCounter() {
+        return listCounter;
+    }
+
+    public void setListCounter(int listCounter) {
+        this.listCounter = listCounter;
+    }
+
+    public PersistentBFC getPersistentBFC() {
+        return persistentBFC;
+    }
+
+    public void setPersistentBFC(PersistentBFC persistentBFC) {
+        this.persistentBFC = persistentBFC;
+    }
+    
+    public Box getStaticEquivalent() {
+        return staticEquivalent;
+    }
+
+    public void setStaticEquivalent(Box staticEquivalent) {
+        this.staticEquivalent = staticEquivalent;
+    }
+    
+    public void alignToStaticEquivalent() {
+        this.y = staticEquivalent.getAbsY() - getAbsY();
+        setAbsY(staticEquivalent.getAbsY());
+    }
+
+    public boolean isReplaced() {
+        return component != null;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2005/12/17 02:24:14  peterbrant
+ * Remove last pieces of old (now non-working) clip region checking / Push down handful of fields from Box to BlockBox
+ *
  * Revision 1.28  2005/12/15 20:04:48  peterbrant
  * Implement visibility: hidden
  *

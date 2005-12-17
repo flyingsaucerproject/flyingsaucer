@@ -65,7 +65,7 @@ import java.util.logging.Level;
 public class TableBoxing {
 
 
-    public static Box createBox(LayoutContext c, Content content) {
+    public static BlockBox createBox(LayoutContext c, Content content) {
         BlockBox outerBox;//the outer box may be block or inline block
         if (content instanceof TableContent) {
             outerBox = new BlockBox();
@@ -191,11 +191,11 @@ public class TableBoxing {
         alignCellLines(tableBox);
 
         //TODO: margins go on the outer box
-        tableBox.leftPadding = (int) border.left() + (int) padding.left();
+        tableBox.leftMBP = (int) border.left() + (int) padding.left();
         // CLEAN: cast to int
-        tableBox.leftPadding += (int) margin.left();
-        tableBox.rightPadding = (int) border.right() + (int) padding.right();
-        tableBox.rightPadding += (int) margin.right();
+        tableBox.leftMBP += (int) margin.left();
+        tableBox.rightMBP = (int) border.right() + (int) padding.right();
+        tableBox.rightMBP += (int) margin.right();
         tableBox.height = (int) margin.top() + (int) border.top() + (int) padding.top() + tableBox.height + (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom();
 
         c.popStyle();
@@ -214,7 +214,6 @@ public class TableBoxing {
             outerBox.adjustWidthForChild(child.getWidth());
         }
         tableBox.setState(Box.DONE);
-        outerBox.propagateChildProperties(tableBox);
         outerBox.setState(Box.DONE);
         return outerBox;
     }
@@ -259,7 +258,7 @@ public class TableBoxing {
                     cb.contentWidth = 0;
                     for (int i = 0; i < cb.colspan; i++) cb.contentWidth += tableBox.columns[col + i];
                     cb.contentWidth += borderSpacingHorizontal * (cb.colspan - 1);
-                    cb.contentWidth -= cb.leftPadding + cb.rightPadding;
+                    cb.contentWidth -= cb.leftMBP + cb.rightMBP;
                     cb.x = x;
                     x += cb.getWidth() + borderSpacingHorizontal;
                     for (int j = 0; j < cb.colspan; j++) {
@@ -395,8 +394,8 @@ public class TableBoxing {
 
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //rows have no margin or padding
-        row.leftPadding = (int) border.left();
-        row.rightPadding = (int) border.right();
+        row.leftMBP = (int) border.left();
+        row.rightMBP = (int) border.right();
         //TODO: check how borders should interact with cell borders
         int tx = (int) border.left();
         int ty = (int) border.top();
@@ -466,13 +465,13 @@ public class TableBoxing {
             cellBox.contentWidth = 0;
             for (int j = 0; j < cellBox.colspan; j++) cellBox.contentWidth += table.columns[col + j];
             cellBox.contentWidth += (cellBox.colspan - 1) * borderSpacingHorizontal;
-            cellBox.contentWidth -= cellBox.leftPadding + cellBox.rightPadding;
+            cellBox.contentWidth -= cellBox.leftMBP + cellBox.rightMBP;
             row.contentWidth = cellBox.x + cellBox.getWidth();
             col += cellBox.colspan;
             //this will be fixed again later!
             cellBox.height = 0;
             //have to do this late in the game
-            if (cellBox.rowspan > 1) row.setChildrenExceedBounds(true);
+            /* if (cellBox.rowspan > 1) row.setChildrenExceedBounds(true); */
             row.addChild(c, cellBox);
         }
         for (int j = 0; j < table.columns.length; j++) {
@@ -586,8 +585,8 @@ public class TableBoxing {
         // do children's layout
         boolean old_sub = c.isSubBlock();
         c.setSubBlock(false);
-        cell.leftPadding = (int) border.left() + (int) padding.left();
-        cell.rightPadding = (int) padding.right() + (int) border.right();
+        cell.leftMBP = (int) border.left() + (int) padding.left();
+        cell.rightMBP = (int) padding.right() + (int) border.right();
         int tx = (int) border.left() + (int) padding.left();
         int ty = (int) border.top() + (int) padding.top();
         cell.tx = tx;
@@ -642,6 +641,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.53  2005/12/17 02:24:12  peterbrant
+   Remove last pieces of old (now non-working) clip region checking / Push down handful of fields from Box to BlockBox
+
    Revision 1.52  2005/12/09 21:41:22  peterbrant
    Finish support for relative inline layers
 

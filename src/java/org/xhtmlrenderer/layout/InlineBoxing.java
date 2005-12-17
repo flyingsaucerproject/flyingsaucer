@@ -311,7 +311,7 @@ public class InlineBoxing {
 
     private static Box layoutInlineBlock(LayoutContext c, 
             Box containingBlock, Content content) {
-        Box inlineBlock = Boxing.preLayout(c, content);
+        BlockBox inlineBlock = Boxing.preLayout(c, content);
         inlineBlock.setContainingBlock(containingBlock);
         inlineBlock.setContainingLayer(c.getLayer());
         Boxing.realLayout(c, inlineBlock, content);

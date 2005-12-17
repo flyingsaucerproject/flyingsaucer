@@ -237,8 +237,8 @@ public class Layer {
             updateAllAbsoluteLocations(originX, originY, true);
         }
 
-        if (getMaster().isReplaced()) {
-            paintReplacedElement(c, getMaster());
+        if (! isInline() && ((BlockBox)getMaster()).isReplaced()) {
+            paintReplacedElement(c, (BlockBox)getMaster());
         } else {
             List blocks = new ArrayList();
             List lines = new ArrayList();
@@ -273,7 +273,7 @@ public class Layer {
         }
     }
     
-    public void paintAsLayer(RenderingContext c, Box startingPoint) {
+    public void paintAsLayer(RenderingContext c, BlockBox startingPoint) {
         if (startingPoint.isReplaced()) {
             paintReplacedElement(c, startingPoint);
         } else {
@@ -330,7 +330,7 @@ public class Layer {
         }
     }
     
-    private void paintReplacedElement(RenderingContext c, Box replaced) {
+    private void paintReplacedElement(RenderingContext c, BlockBox replaced) {
         if (! c.isInteractive()) {
             replaced.component.paint(c.getGraphics());
         }
@@ -406,15 +406,15 @@ public class Layer {
         
         if (box.getStyle().isAbsolute() && box.getStyle().isTopAuto() &&
                 box.getStyle().isBottomAuto()) {
-            box.alignToStaticEquivalent();
+            ((BlockBox)box).alignToStaticEquivalent();
         }
         
-        if (box.isReplaced()) {
-            positionReplacedElement(box);
+        if (box instanceof BlockBox && ((BlockBox)box).isReplaced()) {
+            positionReplacedElement((BlockBox)box);
         }
 
-        if (box.getPersistentBFC() != null) {
-            box.getPersistentBFC().getFloatManager().updateAbsoluteLocations(
+        if (box instanceof BlockBox && ((BlockBox)box).getPersistentBFC() != null) {
+            ((BlockBox)box).getPersistentBFC().getFloatManager().updateAbsoluteLocations(
                     new FloatManager.FloatUpdater() {
                         public void update(Box floater) {
                             Point offset = updateAbsoluteLocationsHelper(floater, 0, 0, false);
@@ -446,7 +446,7 @@ public class Layer {
         return result;
     }
     
-    private void positionReplacedElement(Box box) {
+    private void positionReplacedElement(BlockBox box) {
         Point location = box.component.getLocation();
         if (location.x != box.getAbsX() || location.y != box.getAbsY()) {
             box.component.setLocation(box.getAbsX(), (int)box.getAbsY());    

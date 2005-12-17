@@ -52,8 +52,8 @@ public class Boxing {
     private Boxing() {
     }
 
-    public static Box preLayout(LayoutContext c, Content content) {
-        Box block = null;
+    public static BlockBox preLayout(LayoutContext c, Content content) {
+        BlockBox block = null;
         if (content instanceof AnonymousBlockContent) {
             return AnonymousBoxing.createBox(c, content);
         } else if (content instanceof TableContent) {
@@ -74,11 +74,11 @@ public class Boxing {
         return block;
     }
     
-    public static Box realLayout(LayoutContext c, Box block, Content content) {
+    public static Box realLayout(LayoutContext c, BlockBox block, Content content) {
         return realLayout(c, block, content, null);
     }
 
-    public static Box realLayout(LayoutContext c, Box block, Content content, 
+    public static Box realLayout(LayoutContext c, BlockBox block, Content content, 
             StyleSetListener listener) {
         if (content instanceof AnonymousBlockContent) {
             return AnonymousBoxing.layout(c, block, content);
@@ -88,7 +88,7 @@ public class Boxing {
             return layout(c, block, content, listener);
     }
 
-    private static Box layout(LayoutContext c, Box block, Content content, StyleSetListener listener) {
+    private static Box layout(LayoutContext c, BlockBox block, Content content, StyleSetListener listener) {
         //OK, first set up the current style. All depends on this...
         CascadedStyle pushed = content.getStyle();
         if (pushed != null) {
@@ -126,9 +126,9 @@ public class Boxing {
         RectPropertySet margin = block.getStyle().getMarginWidth(c);
         RectPropertySet padding = c.getCurrentStyle().getPaddingRect((float) oe.getWidth(), (float) oe.getWidth(), c);
         // CLEAN: cast to int
-        block.leftPadding = (int) margin.left() + (int) border.left() + (int) padding.left();
-        block.rightPadding = (int) padding.right() + (int) border.right() + (int) margin.right();
-        block.contentWidth = (int) (c.getExtents().getWidth() - block.leftPadding - block.rightPadding);
+        block.leftMBP = (int) margin.left() + (int) border.left() + (int) padding.left();
+        block.rightMBP = (int) padding.right() + (int) border.right() + (int) margin.right();
+        block.contentWidth = (int) (c.getExtents().getWidth() - block.leftMBP - block.rightMBP);
 
         CalculatedStyle style = c.getCurrentStyle();
 
@@ -244,8 +244,6 @@ public class Boxing {
             c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
         }
 
-        checkExceeds(block);
-
         //and now, back to previous style
         if (pushed != null) {
             c.popStyle();
@@ -253,25 +251,6 @@ public class Boxing {
 
         // Uu.p("BoxLayout: finished with block: " + block);
         return block;
-    }
-
-    public static void checkExceeds(Box block) {
-        Box parent = block.getParent();
-        if (parent != null) {
-            // FIXME Not right, for example
-            // <div style="height: 3in; width: 1in;">
-            //   <div>
-            //     <div style="height 5in; width: 1in;">
-            //     </div>
-            //   </div>
-            // </div>
-            // but OK for most situations
-            if ((!block.getStyle().isAutoHeight() && !parent.getStyle().isAutoHeight()) ||
-                    (!block.getStyle().isAutoWidth() && !parent.getStyle().isAutoWidth()) ||
-                    (block.getStyle().isPostionedOrFloated())) {
-                parent.setChildrenExceedBounds(true);
-            }
-        }
     }
 
     public static Box layoutChildren(LayoutContext c, Box box, Content content) {
@@ -360,6 +339,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.67  2005/12/17 02:24:10  peterbrant
+ * Remove last pieces of old (now non-working) clip region checking / Push down handful of fields from Box to BlockBox
+ *
  * Revision 1.66  2005/12/13 20:46:08  peterbrant
  * Improve list support (implement list-style-position: inside, marker "sticks" to first line box even if there are other block boxes in between, plus other minor fixes) / Experimental support for optionally extending text decorations to box edge vs line edge
  *

@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FloatedBlockContent;
-import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.MarkerData;
@@ -40,7 +40,7 @@ public class LayoutUtil {
         MarkerData markerData = c.getCurrentMarkerData();
         c.setCurrentMarkerData(null);
         
-        Box box = Boxing.preLayout(c, content);
+        BlockBox box = Boxing.preLayout(c, content);
         box.setContainingBlock(c.getLayer().getMaster());
         box.setStaticEquivalent(currentLine);
         Boxing.realLayout(c, box, content);

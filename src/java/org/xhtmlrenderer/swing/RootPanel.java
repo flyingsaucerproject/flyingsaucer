@@ -29,6 +29,7 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.render.RenderQueue;
@@ -311,7 +312,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         
         long start = System.currentTimeMillis();
         
-        Box root = Boxing.preLayout(c, new DomToplevelNode(doc));
+        BlockBox root = Boxing.preLayout(c, new DomToplevelNode(doc));
         setRootBox(root);
         
         Boxing.realLayout(c, root, new DomToplevelNode(doc));

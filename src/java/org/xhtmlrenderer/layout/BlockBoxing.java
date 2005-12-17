@@ -23,6 +23,7 @@ import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FirstLetterStyle;
 import org.xhtmlrenderer.layout.content.FirstLineStyle;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.util.Configuration;
@@ -62,7 +63,7 @@ public class BlockBoxing {
 
             Content currentContent = (Content) o;
 
-            Box child_box = null;
+            BlockBox child_box = null;
             //TODO:handle run-ins. For now, treat them as blocks
 
             child_box = Boxing.preLayout(c, currentContent);
@@ -73,7 +74,7 @@ public class BlockBoxing {
                 c.setListCounter(c.getListCounter() + 1);
             }
             
-            child_box.list_count = c.getListCounter();
+            child_box.setListCounter(c.getListCounter());
             child_box.x = 0;
 
             int initialY = box.height;
@@ -84,7 +85,6 @@ public class BlockBoxing {
             
             c.translate(0, box.height);
             Boxing.realLayout(c, child_box, currentContent, styleSetListener);
-            box.propagateChildProperties(child_box);
             c.translate(0, -child_box.y);
 
             // increase the final layout width if the child was greater
@@ -128,6 +128,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2005/12/17 02:24:07  peterbrant
+ * Remove last pieces of old (now non-working) clip region checking / Push down handful of fields from Box to BlockBox
+ *
  * Revision 1.31  2005/12/07 00:33:12  peterbrant
  * :first-letter and :first-line works again
  *

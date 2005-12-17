@@ -101,7 +101,7 @@ public class BoxFinder {
         int ttx = x - dx + container.tx;
         int tty = y - dy + container.ty;
 
-        if (!container.contains(ttx, tty) && !container.isChildrenExceedBounds()) {
+        if (!container.contains(ttx, tty) /* && !container.isChildrenExceedBounds() */) {
             return null;
         }
 

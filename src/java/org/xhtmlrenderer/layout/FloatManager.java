@@ -330,7 +330,7 @@ public class FloatManager {
     private void update(FloatUpdater updater, List floats) {
         for (Iterator i = floats.iterator(); i.hasNext();) {
             BoxOffset boxOffset = (BoxOffset) i.next();
-            Box box = boxOffset.getBox();
+            FloatedBlockBox box = boxOffset.getBox();
 
             box.setAbsX(box.x + getMaster().getAbsX() - boxOffset.getX());
             box.setAbsY(box.y + getMaster().getAbsY() - boxOffset.getY());
@@ -347,17 +347,17 @@ public class FloatManager {
     }
 
     private static class BoxOffset {
-        private Box box;
+        private FloatedBlockBox box;
         private int x;
         private int y;
 
-        public BoxOffset(Box box, int x, int y) {
+        public BoxOffset(FloatedBlockBox box, int x, int y) {
             this.box = box;
             this.x = x;
             this.y = y;
         }
 
-        public Box getBox() {
+        public FloatedBlockBox getBox() {
             return box;
         }
 

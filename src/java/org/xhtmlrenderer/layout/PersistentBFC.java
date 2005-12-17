@@ -20,12 +20,12 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.BlockBox;
 
 public class PersistentBFC {
     private FloatManager floatManager = new FloatManager();
     
-    public PersistentBFC(Box master, LayoutContext c) {
+    public PersistentBFC(BlockBox master, LayoutContext c) {
         master.setPersistentBFC(this);
         floatManager.setMaster(master);
     }
