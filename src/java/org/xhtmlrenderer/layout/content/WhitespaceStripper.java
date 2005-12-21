@@ -267,7 +267,7 @@ public class WhitespaceStripper {
             text = tab_to_space.matcher(text).replaceAll(SPACE);
         }
 
-        if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE) {
+        if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
             // collapse first space against prev inline
             if (text.startsWith(SPACE) &&
                     collapseLeading) {
