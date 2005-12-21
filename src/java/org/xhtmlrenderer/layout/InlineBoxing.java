@@ -83,6 +83,7 @@ public class InlineBoxing {
         int indent = (int) parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, maxAvailableWidth, c);
         remainingWidth -= indent;
         currentLine.x = indent;
+        currentLine.calcCanvasLocation();
         
         MarkerData markerData = c.getCurrentMarkerData();
         if (markerData != null && 
@@ -90,6 +91,7 @@ public class InlineBoxing {
                         CSSName.LIST_STYLE_POSITION, IdentValue.INSIDE)) {
             remainingWidth -= markerData.getLayoutWidth();
             currentLine.x += markerData.getLayoutWidth();
+            currentLine.calcCanvasLocation();
         }
         c.setCurrentMarkerData(null);
 
