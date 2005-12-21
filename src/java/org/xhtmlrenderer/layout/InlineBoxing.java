@@ -193,9 +193,7 @@ public class InlineBoxing {
                     remainingWidth = maxAvailableWidth;
                     remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
                     
-                    if (inlineBlock.getLayer() != null) {
-                        inlineBlock.getLayer().detach();
-                    }
+                    inlineBlock.detach();
                     inlineBlock = layoutInlineBlock(c, box, content);
                 }
 
@@ -430,6 +428,8 @@ public class InlineBoxing {
             
             current.setPaintingTop(paintingTop);
             current.setPaintingHeight(paintingBottom - paintingTop);
+            
+            current.calcChildLocations();
         }
     }
 
@@ -678,7 +678,8 @@ public class InlineBoxing {
         block.addChild(c, current);
 
         if (pendingFloats.size() > 0) {
-            c.setFloatingY(c.getFloatingY() + current.height);
+            FloatedBlockBox pending0 = (FloatedBlockBox)pendingFloats.get(0);
+            pending0.y += current.height;
             c.getBlockFormattingContext().floatPending(c, pendingFloats);
         }
         
@@ -748,12 +749,15 @@ public class InlineBoxing {
         int result = 0;
         c.pushStyle(content.getStyle());
         if (content instanceof AbsolutelyPositionedContent) {
-            LayoutUtil.generateAbsolute(c, content, current);
+            BlockBox abs = LayoutUtil.generateAbsolute(c, content, current);
+            current.addNonFlowContent(abs);
         } else if (content instanceof FloatedBlockContent) {
-            FloatedBlockBox floater = LayoutUtil.generateFloated(c, content, available, current, pendingFloats);
+            FloatedBlockBox floater = LayoutUtil.generateFloated(
+                    c, (FloatedBlockContent)content, available, current, pendingFloats);
             if (!floater.isPending()) {
                 result = floater.getWidth();
             }
+            current.addNonFlowContent(floater);
         }
         c.popStyle();
 
@@ -780,6 +784,8 @@ public class InlineBoxing {
         if (previousLine != null) {
             result.y = previousLine.y + previousLine.getHeight();
         }
+        
+        result.calcCanvasLocation();
 
         return result;
     }

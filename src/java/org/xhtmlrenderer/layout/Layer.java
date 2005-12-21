@@ -23,8 +23,8 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.render.*;
 
+
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,8 +46,6 @@ public class Layer {
     private Map moveWithLayerFloats;
 
     private boolean fixedBackground;
-    
-    private boolean positionsFinalized;
     
     private boolean inline;
     
@@ -97,6 +95,8 @@ public class Layer {
         }
 
         floats.add(floater);
+        
+        floater.setDrawingLayer(this);
         
         maybeAddMoveWithLayerFloat(floater, bfc);
     }
@@ -223,18 +223,13 @@ public class Layer {
         }
     }
     
-    public Point getMaxOffset() {
-        return updateAllAbsoluteLocations(0, 0, true);
+    public Dimension getPaintingDimension(LayoutContext c) {
+        return calcPaintingDimension(c);
     }
 
     public void paint(RenderingContext c, int originX, int originY) {
         if (getMaster().getStyle().isFixed()) {
             positionFixedLayer(c);
-        }
-
-        if ((isRootLayer() && ! isPositionsFinalized()) || 
-                getMaster().getStyle().isFixed()) {
-            updateAllAbsoluteLocations(originX, originY, true);
         }
 
         if (! isInline() && ((BlockBox)getMaster()).isReplaced()) {
@@ -340,22 +335,17 @@ public class Layer {
         return getParent() == null && isStackingContext();
     }
     
-    private void moveIfGreater(Point result, Point test) {
-        if (test.x > result.x) {
-            result.x = test.x;
+    private void moveIfGreater(Dimension result, Dimension test) {
+        if (test.width > result.width) {
+            result.width = test.width;
         }
-        if (test.y > result.y) {
-            result.y = test.y;
+        if (test.height > result.height) {
+            result.height = test.height;
         }
     }
     
-    private Point updateAllAbsoluteLocations(int originX, int originY, boolean updateSelf) {
-        Point result = new Point(originX, originY);
-        
-        if (updateSelf) {
-            Point pt = updateAbsoluteLocations(originX, originY);
-            moveIfGreater(result, pt);
-        }
+    private Dimension calcPaintingDimension(LayoutContext c) {
+        Dimension result = scanLayer(c);
         
         List children = getChildren();
         for (int i = 0; i < children.size(); i++) {
@@ -364,71 +354,38 @@ public class Layer {
             if (child.getMaster().getStyle().isFixed()) {
                 continue;
             } else if (child.getMaster().getStyle().isAbsolute()) {
-                Point pt = child.updateAllAbsoluteLocations(
-                        getMaster().getAbsX(), getMaster().getAbsY(), true);
-                moveIfGreater(result, pt);
-            } else if (child.getMaster().getStyle().isRelative()) {
-                Point pt = child.updateAllAbsoluteLocations(0, 0, false);
-                moveIfGreater(result, pt);
-            }
+                Dimension dim = child.scanLayer(c);
+                moveIfGreater(result, dim);
+            } 
         }
         
         return result;
     }
 
     // TODO block.renderIndex = c.getNewRenderIndex();
-    private Point updateAbsoluteLocations(int originX, int originY) {
-        return updateAbsoluteLocationsHelper(getMaster(), originX, originY);
+    private Dimension scanLayer(LayoutContext c) {
+        return scanLayerHelper(c, getMaster());
     }
     
-    private Point updateAbsoluteLocationsHelper(Box box, int x, int y) {
-        return updateAbsoluteLocationsHelper(box, x, y, true);
-    }
-
-    private Point updateAbsoluteLocationsHelper(Box box, int x, int y, boolean updateSelf) {
-        LineBox lineBox = null;
+    private Dimension scanLayerHelper(final LayoutContext c, final Box box) {
+        Rectangle bounds = box.getPaintingBorderEdge(c);
+        final Dimension result = 
+            new Dimension(bounds.x + bounds.width, bounds.y + bounds.height);
         
-        if (box instanceof InlineBox) {
-            lineBox = ((InlineBox)box).getLineBox();
-        }
-        
-        if (updateSelf) {
-            if (lineBox == null) {
-                box.setAbsX(box.x + x);
-                box.setAbsY(box.y + y);
-            } else {
-                box.setAbsX(box.x + lineBox.getAbsX());
-                box.setAbsY(box.y + lineBox.getAbsY());
-            }
-        }
-        
-        final Point result = new Point(box.getAbsX() + box.getWidth(), box.getAbsY() + box.getHeight());
-        
-        if (box.getStyle().isAbsolute() && box.getStyle().isTopAuto() &&
-                box.getStyle().isBottomAuto()) {
-            ((BlockBox)box).alignToStaticEquivalent();
-        }
-        
-        if (box instanceof BlockBox && ((BlockBox)box).isReplaced()) {
-            positionReplacedElement((BlockBox)box);
-        }
-
-        if (box instanceof BlockBox && ((BlockBox)box).getPersistentBFC() != null) {
-            ((BlockBox)box).getPersistentBFC().getFloatManager().updateAbsoluteLocations(
-                    new FloatManager.FloatUpdater() {
-                        public void update(Box floater) {
-                            Point offset = updateAbsoluteLocationsHelper(floater, 0, 0, false);
-                            moveIfGreater(result, offset);
-                        }
-                    });
-        }
-
         if (! (box instanceof InlineBox)) {
-            int nextX = box.getAbsX() + box.tx;
-            int nextY = box.getAbsY() + box.ty;
+            if (box instanceof BlockBox && ((BlockBox)box).getPersistentBFC() != null) {
+                ((BlockBox)box).getPersistentBFC().getFloatManager().performFloatOperation(
+                        new FloatManager.FloatOperation() {
+                            public void operate(Box floater) {
+                                Dimension dim = scanLayerHelper(c, floater);
+                                moveIfGreater(result, dim);
+                            }
+                        });
+            }
+            
             for (int i = 0; i < box.getChildCount(); i++) {
                 Box child = (Box) box.getChild(i);
-                Point offset = updateAbsoluteLocationsHelper(child, nextX, nextY);
+                Dimension offset = scanLayerHelper(c, child);
                 moveIfGreater(result, offset);
             }
         } else {
@@ -436,8 +393,7 @@ public class Layer {
             for (int i = 0; i < iB.getInlineChildCount(); i++) {
                 Object obj = iB.getInlineChild(i);
                 if (obj instanceof Box) {
-                    Point offset = updateAbsoluteLocationsHelper(
-                            (Box)obj, lineBox.getAbsX(), lineBox.getAbsY());
+                    Dimension offset = scanLayerHelper(c, (Box)obj);
                     moveIfGreater(result, offset);
                 } 
             }
@@ -445,13 +401,6 @@ public class Layer {
         
         return result;
     }
-    
-    private void positionReplacedElement(BlockBox box) {
-        Point location = box.component.getLocation();
-        if (location.x != box.getAbsX() || location.y != box.getAbsY()) {
-            box.component.setLocation(box.getAbsX(), (int)box.getAbsY());    
-        }
-    }    
 
     public void positionChildren(CssContext cssCtx) {
         for (Iterator i = getChildren().iterator(); i.hasNext();) {
@@ -475,6 +424,8 @@ public class Layer {
                 FloatedBlockBox floater = (FloatedBlockBox)i.next();
                 floater.x += distance.width;
                 floater.y += distance.height;
+                floater.calcCanvasLocation();
+                floater.calcChildLocations();
             }
         }
     }
@@ -502,15 +453,7 @@ public class Layer {
         return children == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(children);
     }
 
-    public boolean isPositionsFinalized() {
-        return positionsFinalized;
-    }
-
-    public void setPositionsFinalized(boolean positionsFinalized) {
-        this.positionsFinalized = positionsFinalized;
-    }
-    
-    public void remove(Layer layer) {
+    private void remove(Layer layer) {
         boolean removed = false;
         
         if (children != null) {

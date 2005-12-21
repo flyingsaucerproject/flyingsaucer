@@ -22,6 +22,7 @@ package org.xhtmlrenderer.render;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.List;
@@ -89,7 +90,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
 
     public void paintListMarker(RenderingContext c) {
-        if (getStyle().isHidden()) {
+        if (! getStyle().isVisible()) {
             return;
         }
         
@@ -127,7 +128,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
     
     public void paintInline(RenderingContext c) {
-        if (getStyle().isHidden()) {
+        if (! getStyle().isVisible()) {
             return;
         }
         
@@ -137,6 +138,18 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public boolean isInline() {
         Box parent = getParent();
         return parent instanceof LineBox || parent instanceof InlineBox;
+    }
+    
+    public LineBox getLineBox() {
+        if (! isInline()) {
+            return null;
+        } else {
+            Box b = getParent();
+            while (! (b instanceof LineBox)) {
+                b = b.getParent();
+            }
+            return (LineBox)b;
+        }
     }
     
     public void paintDebugOutline(RenderingContext c) {
@@ -287,12 +300,58 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public boolean isReplaced() {
         return component != null;
     }
+    
+    public void calcCanvasLocation() {
+        LineBox lineBox = getLineBox();
+        if (lineBox == null) {
+            Box parent = getParent();
+            if (parent != null) {
+                setAbsX(parent.getAbsX() + parent.tx + this.x);
+                setAbsY(parent.getAbsY() + parent.ty + this.y);
+            } else if (isStyled() && (getStyle().isAbsolute() || getStyle().isFixed())) {
+                // Could be absolute try positioning relative to containing block
+                Box cb = getContainingBlock();
+                if (cb != null) {
+                    setAbsX(cb.getAbsX() + this.x);
+                    setAbsY(cb.getAbsY() + this.y);
+                }
+            }
+        } else {
+            setAbsX(lineBox.getAbsX() + this.x);
+            setAbsY(lineBox.getAbsY() + this.y);
+        }
+        
+        if (isReplaced()) {
+            Point location = component.getLocation();
+            if (location.x != getAbsX() || location.y != getAbsY()) {
+                component.setLocation(getAbsX(), getAbsY());    
+            }
+        }
+        
+        if (isStyled() && getStyle().isAbsolute() && getStyle().isTopAuto() &&
+                getStyle().isBottomAuto()) {
+            alignToStaticEquivalent();
+        }
+    }
+    
+    public void calcChildLocations() {
+        super.calcChildLocations();
+        
+        if (persistentBFC != null) {
+            persistentBFC.getFloatManager().calcFloatLocations();
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2005/12/21 02:36:29  peterbrant
+ * - Calculate absolute positions incrementally (prep work for pagination)
+ * - Light cleanup
+ * - Fix bug where floats nested in floats could cause the outer float to be positioned in the wrong place
+ *
  * Revision 1.29  2005/12/17 02:24:14  peterbrant
  * Remove last pieces of old (now non-working) clip region checking / Push down handful of fields from Box to BlockBox
  *

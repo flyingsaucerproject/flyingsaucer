@@ -215,6 +215,10 @@ public class TableBoxing {
         }
         tableBox.setState(Box.DONE);
         outerBox.setState(Box.DONE);
+        
+        outerBox.calcCanvasLocation();
+        outerBox.calcChildLocations();
+        
         return outerBox;
     }
     
@@ -641,6 +645,11 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.54  2005/12/21 02:36:29  peterbrant
+   - Calculate absolute positions incrementally (prep work for pagination)
+   - Light cleanup
+   - Fix bug where floats nested in floats could cause the outer float to be positioned in the wrong place
+
    Revision 1.53  2005/12/17 02:24:12  peterbrant
    Remove last pieces of old (now non-working) clip region checking / Push down handful of fields from Box to BlockBox
 

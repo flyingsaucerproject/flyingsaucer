@@ -161,9 +161,6 @@ public class Boxing {
             }
         }
         
-        //block.x = c.getExtents().x;
-        //block.y = c.getExtents().y;
-        
         // save height incase fixed height
         int original_height = block.height;
 
@@ -339,6 +336,11 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.68  2005/12/21 02:36:27  peterbrant
+ * - Calculate absolute positions incrementally (prep work for pagination)
+ * - Light cleanup
+ * - Fix bug where floats nested in floats could cause the outer float to be positioned in the wrong place
+ *
  * Revision 1.67  2005/12/17 02:24:10  peterbrant
  * Remove last pieces of old (now non-working) clip region checking / Push down handful of fields from Box to BlockBox
  *

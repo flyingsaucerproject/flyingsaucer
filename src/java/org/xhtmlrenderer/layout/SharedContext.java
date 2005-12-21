@@ -168,12 +168,6 @@ public class SharedContext {
      */
     protected boolean in_selection = false;
 
-    /**
-     * Description of the Field
-     */
-    protected int max_width;
-    protected int max_height;
-
     public TextRenderer getTextRenderer() {
         return text_renderer;
     }
@@ -225,24 +219,6 @@ public class SharedContext {
         this.debug_draw_font_metrics = debug_draw_font_metrics;
     }
 
-    /**
-     * Adds a feature to the MaxWidth attribute of the Context object
-     *
-     * @param max_width The feature to be added to the MaxWidth attribute
-     */
-    public void addMaxWidth(int max_width) {
-        if (max_width > this.max_width) {
-            this.max_width = max_width;
-        }
-    }
-
-    public void addMaxHeight(int max_height) {
-        if (max_height > this.max_height) {
-            //Uu.p("upping max height to : " + max_height);
-            this.max_height = max_height;
-        }
-    }
-
 
     /**
      * Description of the Method
@@ -287,31 +263,6 @@ public class SharedContext {
         return in_selection;
     }
 
-    /**
-     * Sets the maxWidth attribute of the Context object
-     *
-     * @param max_width The new maxWidth value
-     */
-    public void setMaxWidth(int max_width) {
-        this.max_width = max_width;
-    }
-
-
-    /**
-     * Gets the maxWidth attribute of the Context object
-     *
-     * @return The maxWidth value
-     */
-    public int getMaxWidth() {
-        return this.max_width;
-    }
-
-    public int getMaxHeight() {
-        return this.max_height;
-    }
-
-
-    
     
     /* =========== Selection Management ============== */
     
@@ -644,6 +595,11 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/12/21 02:36:26  peterbrant
+ * - Calculate absolute positions incrementally (prep work for pagination)
+ * - Light cleanup
+ * - Fix bug where floats nested in floats could cause the outer float to be positioned in the wrong place
+ *
  * Revision 1.20  2005/12/07 20:34:46  peterbrant
  * Remove unused fields/methods from RenderingContext / Paint line content using absolute coords (preparation for relative inline layers)
  *

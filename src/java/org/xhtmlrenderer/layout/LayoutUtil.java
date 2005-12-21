@@ -33,7 +33,7 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 
 public class LayoutUtil {
 
-    public static void generateAbsolute(LayoutContext c, Content content, LineBox currentLine) {
+    public static BlockBox generateAbsolute(LayoutContext c, Content content, LineBox currentLine) {
         Rectangle oe = c.getExtents();// copy the extents for safety
         c.setExtents(new Rectangle(oe));
         
@@ -48,20 +48,23 @@ public class LayoutUtil {
         c.setCurrentMarkerData(markerData);
         
         c.setExtents(oe);
+        
+        return box;
     }
 
     public static FloatedBlockBox generateFloated(
-            LayoutContext c, Content content, int avail, LineBox curr_line, List pendingFloats) {
+            LayoutContext c, FloatedBlockContent content, int avail, 
+            LineBox curr_line, List pendingFloats) {
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
         
         MarkerData markerData = c.getCurrentMarkerData();
         c.setCurrentMarkerData(null);
     
-        c.setFloatingY(curr_line.y + ((FloatedBlockContent)content).getMarginFromPrevious());
         FloatedBlockBox block = new FloatedBlockBox();
         block.setContainingBlock(curr_line.getParent());
         block.setContainingLayer(curr_line.getContainingLayer());
+        block.y = curr_line.y + content.getMarginFromPrevious();
         block.element = content.getElement();
         Boxing.realLayout(c, block, content);
         
@@ -74,6 +77,9 @@ public class LayoutUtil {
         c.setExtents(oe);
         
         if (pendingFloats.size() > 0 || block.getWidth() > avail) {
+            if (pendingFloats.size() > 0) {
+                block.y = 0;
+            }
             pendingFloats.add(block);
             c.getBlockFormattingContext().getFloatManager().removeFloat(block);
             c.getLayer().removeFloat(block);

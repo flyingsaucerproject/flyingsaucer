@@ -238,7 +238,7 @@ public class InlineBox extends Box implements InlinePaintable {
     }
     
     public void paintInline(RenderingContext c) {
-        if (getStyle().isHidden()) {
+        if (! getStyle().isVisible()) {
             return;
         }
         
@@ -558,6 +558,9 @@ public class InlineBox extends Box implements InlinePaintable {
             Box b = (Box)toTranslate.get(i);
             b.x += delta.width;
             b.y += delta.height;
+            
+            b.calcCanvasLocation();
+            b.calcChildLocations();
         }
         
         return delta;
@@ -581,19 +584,29 @@ public class InlineBox extends Box implements InlinePaintable {
         paintDebugOutline(c, Color.BLUE);
     }
     
-    public Box getLast() {
-        for (int i = getInlineChildCount() - 1; i >= 0; i--) {
-            Object child = getInlineChild(i);
-            if (child instanceof InlineBox) {
-                Box possibleResult = ((InlineBox)child).getLast();
-                if (possibleResult != null) {
-                    return possibleResult;
-                }
-            }
-            if (child instanceof Box) {
-                return (Box)child;
+    protected void detachChildren() {
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object object = getInlineChild(i);
+            if (object instanceof Box) {
+                ((Box)object).detach();
             }
         }
-        return null;
     }
+    
+    public void calcCanvasLocation() {
+        LineBox lineBox = getLineBox();
+        setAbsX(lineBox.getAbsX() + this.x);
+        setAbsY(lineBox.getAbsY() + this.y);
+    }
+    
+    public void calcChildLocations() {
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object obj = getInlineChild(i);
+            if (obj instanceof Box) {
+                Box child = (Box)obj;
+                child.calcCanvasLocation();
+                child.calcChildLocations();
+            }
+        }
+    } 
 }

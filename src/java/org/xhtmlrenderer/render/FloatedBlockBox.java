@@ -19,8 +19,16 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.awt.Point;
+
+import org.xhtmlrenderer.layout.FloatManager;
+import org.xhtmlrenderer.layout.Layer;
+
 public class FloatedBlockBox extends BlockBox {
     private boolean pending;
+    private Layer drawingLayer;
+    
+    private FloatManager manager;
     
     public FloatedBlockBox() {
     }
@@ -35,5 +43,37 @@ public class FloatedBlockBox extends BlockBox {
     
     public String toString() {
         return super.toString() + " (floated)";
+    }
+
+    public Layer getDrawingLayer() {
+        return drawingLayer;
+    }
+
+    public void setDrawingLayer(Layer drawingLayer) {
+        this.drawingLayer = drawingLayer;
+    }
+    
+    public void detach() {
+        super.detach();
+        drawingLayer.removeFloat(this);
+    }
+    
+    public void calcCanvasLocation() {
+        Point offset = manager.getOffset(this);
+        setAbsX(manager.getMaster().getAbsX() + this.x - offset.x);
+        setAbsY(manager.getMaster().getAbsY() + this.y - offset.y);
+        super.calcCanvasLocation();
+    }
+
+    public FloatManager getManager() {
+        return manager;
+    }
+
+    public void setManager(FloatManager manager) {
+        this.manager = manager;
+    }
+    
+    public void setAbsY(int y) {
+        super.setAbsY(y);
     }
 }

@@ -393,7 +393,7 @@ public abstract class Box {
         return getBounds(this.x, this.y, cssCtx, tx, ty);
     }
     
-    protected Rectangle getPaintingBorderEdge(CssContext cssCtx) {
+    public Rectangle getPaintingBorderEdge(CssContext cssCtx) {
         return getBorderEdge(getAbsX(), getAbsY(), cssCtx);
     }
 
@@ -512,6 +512,9 @@ public abstract class Box {
             this.y += boundingBox.y;
         }
         
+        calcCanvasLocation();
+        calcChildLocations();
+        
         return new Dimension(this.x - initialX, this.y - initialY);
     }
     
@@ -549,7 +552,7 @@ public abstract class Box {
     }
     
     public void paintBorder(RenderingContext c) {
-        if (getStyle().isHidden()) {
+        if (! getStyle().isVisible()) {
             return;
         }
         
@@ -580,7 +583,7 @@ public abstract class Box {
             return;
         }
         
-        if (getStyle().isHidden()) {
+        if (! getStyle().isVisible()) {
             return;
         }
         
@@ -725,12 +728,51 @@ public abstract class Box {
         c.getGraphics().drawRect(rect.x, rect.y, rect.width, rect.height);
         c.getGraphics().setColor(oldColor);
     }
+    
+    public void detach() {
+        detachChildren();
+        if (this.layer != null) {
+            this.layer.detach();
+        }
+    }
+    
+    protected void detachChildren() {
+        for (int i = 0; i < getChildCount(); i++) {
+            Box box = getChild(i);
+            box.detach();
+        }
+    }
+    
+    public abstract void calcCanvasLocation();
+    
+    public void calcChildLocations() {
+        for (int i = 0; i < getChildCount(); i++) {
+            Box child = getChild(i);
+            child.calcCanvasLocation();
+            child.calcChildLocations();
+        }
+    }
+    
+    public boolean establishesPaginationContext() {
+        Style style = getStyle();
+        return (this.layer != null && layer.isRootLayer()) ||
+            style.isFixed() ||
+            style.isFloated() ||
+            style.isAbsolute() ||
+            style.getCalculatedStyle().isIdent(CSSName.DISPLAY, IdentValue.INLINE_BLOCK) ||
+            style.getCalculatedStyle().isIdent(CSSName.DISPLAY, IdentValue.INLINE_TABLE);
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.93  2005/12/21 02:36:29  peterbrant
+ * - Calculate absolute positions incrementally (prep work for pagination)
+ * - Light cleanup
+ * - Fix bug where floats nested in floats could cause the outer float to be positioned in the wrong place
+ *
  * Revision 1.92  2005/12/17 02:24:14  peterbrant
  * Remove last pieces of old (now non-working) clip region checking / Push down handful of fields from Box to BlockBox
  *

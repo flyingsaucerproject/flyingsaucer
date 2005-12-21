@@ -46,7 +46,6 @@ public class LayoutContext implements CssContext, PageContext {
     private SharedContext sharedContext;
     private boolean shrinkWrap = false;
     private RenderQueue renderQueue;
-    private double floatingY;
     private Layer rootLayer;
     
     private Graphics2D graphics;
@@ -58,22 +57,6 @@ public class LayoutContext implements CssContext, PageContext {
 
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
-    }
-
-    public void addMaxWidth(int max_width) {
-        sharedContext.addMaxWidth(max_width);
-    }
-
-    public int getMaxWidth() {
-        return sharedContext.getMaxWidth();
-    }
-
-    public void addMaxHeight(int max_height) {
-        sharedContext.addMaxHeight(max_height);
-    }
-
-    public int getMaxHeight() {
-        return sharedContext.getMaxHeight();
     }
 
     public Graphics2D getGraphics() {
@@ -382,22 +365,6 @@ public class LayoutContext implements CssContext, PageContext {
 
     public boolean isPrint() {
         return sharedContext.isPrint();
-    }
-
-    /**
-     * A holder to provide the y-coordinate relative to the containing block
-     * for floats
-     */
-    public double getFloatingY() {
-        return floatingY;
-    }
-
-    /**
-     * @param floatingY
-     * @see {@link #getFloatingY()}
-     */
-    public void setFloatingY(double floatingY) {
-        this.floatingY = floatingY;
     }
 
     public StyleTracker getFirstLinesTracker() {

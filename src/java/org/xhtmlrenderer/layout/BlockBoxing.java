@@ -79,9 +79,9 @@ public class BlockBoxing {
 
             int initialY = box.height;
             
-            child_box.y = initialY;           
-            //Uu.p("set child box y to: " + child_box);
+            child_box.y = initialY;
             box.addChild(c, child_box);
+            child_box.calcCanvasLocation();
             
             c.translate(0, box.height);
             Boxing.realLayout(c, child_box, currentContent, styleSetListener);
@@ -89,19 +89,23 @@ public class BlockBoxing {
 
             // increase the final layout width if the child was greater
             box.adjustWidthForChild(child_box.getWidth());
-            c.addMaxWidth(box.getWidth());
 
             // increase the final layout height by the height of the child
             box.height += (child_box.y - initialY) + child_box.height;
-            c.addMaxHeight(box.height + box.y + (int) c.getOriginOffset().getY());
+            
+            if (child_box.y != initialY) {
+                child_box.calcCanvasLocation();
+                child_box.calcChildLocations();
+            }
+            
             if (c.shouldStop()) {
                 break;
             }
 
             //Uu.p("alerting that there is a box available");
-            Dimension max_size = new Dimension(c.getMaxWidth(), c.getMaxHeight());
             if (c.isInteractive() && !c.isPrint()) {
                 if (Configuration.isTrue("xr.incremental.enabled", false) && c.isRenderQueueAvailable()) {
+                    Dimension max_size = c.getRootLayer().getPaintingDimension(c);
                     c.getRenderQueue().dispatchRepaintEvent(new ReflowEvent(ReflowEvent.MORE_BOXES_AVAILABLE, box, max_size));
                 }
 
@@ -117,7 +121,6 @@ public class BlockBoxing {
             }
 
         }
-        c.addMaxWidth(box.getWidth());
 
         c.setListCounter(old_counter);
     }
@@ -128,6 +131,11 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2005/12/21 02:36:26  peterbrant
+ * - Calculate absolute positions incrementally (prep work for pagination)
+ * - Light cleanup
+ * - Fix bug where floats nested in floats could cause the outer float to be positioned in the wrong place
+ *
  * Revision 1.32  2005/12/17 02:24:07  peterbrant
  * Remove last pieces of old (now non-working) clip region checking / Push down handful of fields from Box to BlockBox
  *

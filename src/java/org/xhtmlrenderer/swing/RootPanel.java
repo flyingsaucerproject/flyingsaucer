@@ -5,7 +5,6 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -238,11 +237,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         extents = getBaseExtents(pageInfo);
 
 
-        //Uu.p("newContext() = extents = " + extents);
-        getSharedContext().setMaxWidth(0);
-        //getSharedContext().setMaxHeight(0);
         XRLog.layout(Level.FINEST, "new context end");
-        //Uu.p("new context with extents: " + extents);
         
         RenderingContext result = getSharedContext().newRenderingContextInstance(extents);
         result.setGraphics(g);
@@ -261,11 +256,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
         extents = getBaseExtents(pageInfo);
 
-        //Uu.p("newContext() = extents = " + extents);
-        getSharedContext().setMaxWidth(0);
-        //getSharedContext().setMaxHeight(0);
         XRLog.layout(Level.FINEST, "new context end");
-        //Uu.p("new context with extents: " + extents);
 
         LayoutContext result = getSharedContext().newLayoutContextInstance(extents);
         result.setGraphics(g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics());
@@ -339,9 +330,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         
         XRLog.layout(Level.FINEST, "after layout: " + root);
         
-        Point maxOffset = root.getLayer().getMaxOffset();
-        root.getLayer().setPositionsFinalized(true);
-        intrinsic_size = new Dimension(maxOffset.x, maxOffset.y);
+        Dimension intrinsic_size = root.getLayer().getPaintingDimension(c);
         
         setPreferredSize(intrinsic_size);
         revalidate();

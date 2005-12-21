@@ -341,6 +341,7 @@ public abstract class BasicPanel extends RootPanel {
     }
 
     private int getPageCount(SharedContext c) {
+        /*
         if (c == null || !c.isPrint() ||
                 c.getPageInfo() == null) {
             return -1;
@@ -348,15 +349,19 @@ public abstract class BasicPanel extends RootPanel {
             return (int) (c.getMaxHeight() /
                     c.getPageInfo().getContentHeight() + 1);
         }
+        */
+        return 0;
     }
 
     private void renderPagedView(RenderingContext c, Layer root) {
         int pageCount = getPageCount(sharedContext);
 
+        /*
         setPreferredSize(new Dimension(sharedContext.getMaxWidth(),
                 (int) (pageCount * c.getPageInfo().getContentHeight() +
                 pageCount * c.getPageInfo().getMargins().top +
                 pageCount + c.getPageInfo().getMargins().bottom)));
+        */
         revalidate();
 
         PageInfo info = c.getPageInfo();
@@ -1079,6 +1084,11 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.88  2005/12/21 02:36:30  peterbrant
+ * - Calculate absolute positions incrementally (prep work for pagination)
+ * - Light cleanup
+ * - Fix bug where floats nested in floats could cause the outer float to be positioned in the wrong place
+ *
  * Revision 1.87  2005/12/07 20:34:47  peterbrant
  * Remove unused fields/methods from RenderingContext / Paint line content using absolute coords (preparation for relative inline layers)
  *

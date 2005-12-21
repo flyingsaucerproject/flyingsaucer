@@ -40,7 +40,6 @@ public class FloatManager {
     private Box master;
 
     public void floatBox(LayoutContext c, Layer layer, BlockFormattingContext bfc, FloatedBlockBox box) {
-        box.y = (int) c.getFloatingY();
         if (box.getStyle().isFloatedLeft()) {
             position(c, bfc, box, LEFT);
             save(box, layer, bfc, LEFT);
@@ -62,9 +61,6 @@ public class FloatManager {
     public void floatPending(LayoutContext c, Layer layer, BlockFormattingContext bfc, List pendingFloats) {
         if (pendingFloats.size() > 0) {
             for (int i = 0; i < pendingFloats.size(); i++) {
-                if (i != 0) {
-                    c.setFloatingY(0d);
-                }
                 FloatedBlockBox block = (FloatedBlockBox) pendingFloats.get(i);
                 floatBox(c, layer, bfc, block);
                 block.setPending(false);
@@ -77,6 +73,10 @@ public class FloatManager {
         Point p = bfc.getOffset();
         getFloats(direction).add(new BoxOffset(current, p.x, p.y));
         layer.addFloat(current, bfc);
+        current.setManager(this);
+        
+        current.calcCanvasLocation();
+        current.calcChildLocations();
     }
 
     private void position(CssContext cssCtx, BlockFormattingContext bfc,
@@ -251,19 +251,31 @@ public class FloatManager {
     }
 
     public void removeFloat(FloatedBlockBox floater) {
-        for (Iterator i = leftFloats.iterator(); i.hasNext();) {
+        removeFloat(floater, getFloats(LEFT));
+        removeFloat(floater, getFloats(RIGHT));
+    }
+    
+    private void removeFloat(FloatedBlockBox floater, List floats) {
+        for (Iterator i = floats.iterator(); i.hasNext();) {
             BoxOffset boxOffset = (BoxOffset) i.next();
             if (boxOffset.getBox().equals(floater)) {
                 i.remove();
+                floater.setManager(null);
             }
         }
-
-        for (Iterator i = rightFloats.iterator(); i.hasNext();) {
+    }
+    
+    public void calcFloatLocations() {
+        calcFloatLocations(getFloats(LEFT));
+        calcFloatLocations(getFloats(RIGHT));
+    }
+    
+    private void calcFloatLocations(List floats) {
+        for (Iterator i = floats.iterator(); i.hasNext();) {
             BoxOffset boxOffset = (BoxOffset) i.next();
-            if (boxOffset.getBox().equals(floater)) {
-                i.remove();
-            }
-        }
+            boxOffset.getBox().calcCanvasLocation();
+            boxOffset.getBox().calcChildLocations();
+        } 
     }
 
     private void applyLineHeightHack(CssContext cssCtx, Box line, Rectangle bounds) {
@@ -326,8 +338,27 @@ public class FloatManager {
     public Box getMaster() {
         return master;
     }
+    
+    public Point getOffset(FloatedBlockBox floater) {
+        // FIXME inefficient (but probably doesn't matter)
+        return getOffset(floater,  
+                floater.getStyle().isFloatedLeft() ? getFloats(LEFT) : getFloats(RIGHT));
+    }
+    
+    private Point getOffset(FloatedBlockBox floater, List floats) {
+        for (Iterator i = floats.iterator(); i.hasNext();) {
+            BoxOffset boxOffset = (BoxOffset) i.next();
+            FloatedBlockBox box = boxOffset.getBox();
 
-    private void update(FloatUpdater updater, List floats) {
+            if (box.equals(floater)) {
+                return new Point(boxOffset.getX(), boxOffset.getY());
+            }
+        }
+        
+        return null;
+    }
+    
+    private void performFloatOperation(FloatOperation op, List floats) {
         for (Iterator i = floats.iterator(); i.hasNext();) {
             BoxOffset boxOffset = (BoxOffset) i.next();
             FloatedBlockBox box = boxOffset.getBox();
@@ -335,16 +366,14 @@ public class FloatManager {
             box.setAbsX(box.x + getMaster().getAbsX() - boxOffset.getX());
             box.setAbsY(box.y + getMaster().getAbsY() - boxOffset.getY());
             
-            updater.update(box);
-
-            box.getPersistentBFC().getFloatManager().updateAbsoluteLocations(updater);
+            op.operate(box);
         }
     }
 
-    public void updateAbsoluteLocations(FloatUpdater updater) {
-        update(updater, leftFloats);
-        update(updater, rightFloats);
-    }
+    public void performFloatOperation(FloatOperation op) {
+        performFloatOperation(op, getFloats(LEFT));
+        performFloatOperation(op, getFloats(RIGHT));
+    }    
 
     private static class BoxOffset {
         private FloatedBlockBox box;
@@ -370,8 +399,8 @@ public class FloatManager {
         }
     }
     
-    public interface FloatUpdater {
-        public void update(Box floater);
+    public interface FloatOperation {
+        public void operate(Box floater);
     }
 }
 

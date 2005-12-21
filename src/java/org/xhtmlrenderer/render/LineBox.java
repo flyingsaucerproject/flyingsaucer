@@ -31,6 +31,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -53,6 +55,8 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     
     private int paintingTop;
     private int paintingHeight;
+    
+    private List nonFlowContent;
 
     /**
      * Constructor for the LineBox object
@@ -113,7 +117,7 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     }
     
     public void paintInline(RenderingContext c) {
-        if (getParent().getStyle().isHidden()) {
+        if (! getParent().getStyle().isVisible()) {
             return;
         }
         
@@ -169,6 +173,8 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         
         // TODO implement text-align: justify
         
+        int current = this.x;
+        
         if (align == IdentValue.LEFT || align == IdentValue.JUSTIFY) {
             int floatDistance = getFloatDistances().getLeftFloatDistance();
             this.x += floatDistance;
@@ -183,6 +189,11 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         } else if (align == IdentValue.RIGHT) {
             int floatDistance = getFloatDistances().getRightFloatDistance();
             this.x += getParent().getContentWidth() - floatDistance - getContentWidth();
+        }
+        
+        if (current != this.x) {
+            calcCanvasLocation();
+            calcChildLocations();
         }
     }
     
@@ -270,18 +281,47 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         }
     }
     
-    public Box getLast() {
-        for (int i = getChildCount() - 1; i >= 0; i--) {
-            Box child = getChild(i);
-            if (child instanceof InlineBox) {
-                Box possibleResult = ((InlineBox)child).getLast();
-                if (possibleResult != null) {
-                    return possibleResult;
-                }
-            }
-            return child;
+    public List getNonFlowContent() {
+        return nonFlowContent == null ? Collections.EMPTY_LIST : nonFlowContent;
+    }
+    
+    public void addNonFlowContent(BlockBox box) {
+        if (nonFlowContent == null) {
+            nonFlowContent = new ArrayList();
         }
-        return null;
+        
+        nonFlowContent.add(box);
+    }
+    
+    public void detach() {
+        for (int i = 0; i < getNonFlowContent().size(); i++) {
+            Box content = (Box)getNonFlowContent().get(i);
+            content.detach();
+        }
+        super.detach();
+    }
+    
+    public void calcCanvasLocation() {
+        Box parent = getParent();
+        if (parent == null) {
+            XRLog.layout(Level.WARNING, "calcCanvasLocation() called with no parent");
+        }
+        setAbsX(parent.getAbsX() + parent.tx + this.x);
+        setAbsY(parent.getAbsY() + parent.ty + this.y);        
+    }
+    
+    public void calcChildLocations() {
+        super.calcChildLocations();
+        
+        // Update absolute boxes too.  Not necessary most of the time, but
+        // it doesn't hurt (revisit this)
+        for (int i = 0; i < getNonFlowContent().size(); i++) {
+            Box content = (Box)getNonFlowContent().get(i);
+            if (content.getStyle().isAbsolute()) {
+                content.calcCanvasLocation();
+                content.calcChildLocations();
+            }
+        }
     }
 }
 
@@ -289,6 +329,11 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2005/12/21 02:36:28  peterbrant
+ * - Calculate absolute positions incrementally (prep work for pagination)
+ * - Light cleanup
+ * - Fix bug where floats nested in floats could cause the outer float to be positioned in the wrong place
+ *
  * Revision 1.43  2005/12/15 20:04:47  peterbrant
  * Implement visibility: hidden
  *
