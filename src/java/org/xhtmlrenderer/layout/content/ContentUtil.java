@@ -290,6 +290,8 @@ public class ContentUtil {
             CascadedStyle before = c.getCss().getPseudoElementStyle(parentElement, "before");
             if (before != null && before.hasProperty(CSSName.CONTENT)) {
                 String content = ((CSSPrimitiveValue) before.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
+                // FIXME Don't think this test is right. Even empty inline content
+                // should force a line box to be created.  Leave for now though.
                 if (!content.equals("")) {
                     inlineList.add(new StylePush("before", parentElement));
                     c.pushStyle(before);
@@ -422,6 +424,8 @@ public class ContentUtil {
             CascadedStyle after = c.getCss().getPseudoElementStyle(parentElement, "after");
             if (after != null && after.hasProperty(CSSName.CONTENT)) {
                 String content = ((CSSPrimitiveValue) after.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
+                // FIXME Don't think this test is right. Even empty inline content
+                // should force a line box to be created.  Leave for now though.
                 if (!content.equals("")) {//a worthwhile reduncancy-check
                     textContent = saveTextContent(textContent, inlineList, parentElement, parent);
                     inlineList.add(new StylePush("after", parentElement));
@@ -519,6 +523,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.46  2005/12/22 23:18:42  peterbrant
+ * Add comment
+ *
  * Revision 1.45  2005/12/05 00:07:54  peterbrant
  * Remove unused method
  *
