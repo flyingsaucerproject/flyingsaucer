@@ -264,6 +264,7 @@ public class PropertyDeclaration {
         PROPERTY_FACTORIES[CSSName.MARGIN_SHORTHAND.FS_ID] = MarginPropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.OUTLINE_SHORTHAND.FS_ID] = OutlinePropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.PADDING_SHORTHAND.FS_ID] = PaddingPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.SIZE_SHORTHAND.FS_ID] = SizePropertyDeclarationFactory.instance();
     }
 }// end class
 
@@ -271,6 +272,9 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2005/12/28 00:50:53  peterbrant
+ * Continue ripping out first try at pagination / Minor method name refactoring
+ *
  * Revision 1.16  2005/10/24 10:19:40  pdoubleya
  * CSSName FS_ID is now public and final, allowing direct access to the id, bypassing getAssignedID(); micro-optimization :); getAssignedID() and setAssignedID() have been removed. IdentValue string property is also final (as should have been).
  *

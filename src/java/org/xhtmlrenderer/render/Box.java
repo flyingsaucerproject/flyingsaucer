@@ -342,28 +342,6 @@ public abstract class Box {
     
     }
 
-    public boolean crossesPageBreak(PageContext c) {
-        double absTop = getAbsY();
-        double absBottom = absTop + height;
-
-        double pageHeight = c.getPageInfo().getContentHeight();
-
-        return absBottom > absTop && (int) (absTop / pageHeight) != (int) (absBottom / pageHeight);
-    }
-
-    protected double getDistanceFromPageBreak(PageContext c, boolean considerTy) {
-        double absTop = getAbsY();
-
-        if (considerTy) {
-            absTop -= ty;
-        }
-
-        double pageHeight = c.getPageInfo().getContentHeight();
-        double delta = pageHeight - (absTop % pageHeight);
-
-        return delta;
-    }
-
     public final Style getStyle() {
         return this.style;
     }
@@ -768,6 +746,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.94  2005/12/28 00:50:52  peterbrant
+ * Continue ripping out first try at pagination / Minor method name refactoring
+ *
  * Revision 1.93  2005/12/21 02:36:29  peterbrant
  * - Calculate absolute positions incrementally (prep work for pagination)
  * - Light cleanup

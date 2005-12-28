@@ -37,12 +37,11 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.MarkerData;
-import org.xhtmlrenderer.render.PageContext;
 import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
-public class LayoutContext implements CssContext, PageContext {
+public class LayoutContext implements CssContext {
     private SharedContext sharedContext;
     private boolean shrinkWrap = false;
     private RenderQueue renderQueue;
@@ -54,6 +53,34 @@ public class LayoutContext implements CssContext, PageContext {
     private StyleTracker firstLetters = new StyleTracker();
     
     private MarkerData currentMarkerData;
+    
+    //Style-handling stuff
+    private Stack styleStack;
+
+    private Stack parentContentStack = new Stack();    
+    
+    /**
+     * The current block formatting context
+     */
+    private BlockFormattingContext bfc;
+    private Stack bfc_stack;
+    
+    private Layer layer;
+    private Stack layer_stack;
+    
+    private int xoff = 0;
+    private int yoff = 0;
+
+    private int list_counter;   
+    
+    private Stack extents_stack = new Stack();
+    private Rectangle extents;   
+    
+    int renderIndex = 0;
+    
+    private boolean sub_block = false;
+    
+    private boolean shouldStop = false;    
 
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
@@ -104,11 +131,6 @@ public class LayoutContext implements CssContext, PageContext {
         setExtents(extents);
     }
 
-    //Style-handling stuff
-    private Stack styleStack;
-
-    private Stack parentContentStack = new Stack();
-
     public void initializeStyles(CalculatedStyle c) {
         styleStack = new Stack();
         styleStack.push(c);
@@ -133,16 +155,7 @@ public class LayoutContext implements CssContext, PageContext {
 
     public boolean isStylesAllPopped() {
         return styleStack.size() == 1;//Is primed with an EmptyStyle to setStartStyle off with
-    }
-
-    /**
-     * The current block formatting context
-     */
-    private BlockFormattingContext bfc;
-    private Stack bfc_stack;
-    
-    private Layer layer;
-    private Stack layer_stack;    
+    }   
 
     public BlockFormattingContext getBlockFormattingContext() {
         return bfc;
@@ -196,9 +209,6 @@ public class LayoutContext implements CssContext, PageContext {
         return rootLayer;
     }
 
-    private Stack extents_stack = new Stack();
-    private Rectangle extents;
-
     public void setExtents(Rectangle rect) {
         this.extents = rect;
         if (extents.width < 1) {
@@ -230,13 +240,6 @@ public class LayoutContext implements CssContext, PageContext {
         setExtents((Rectangle) extents_stack.pop());
     }
 
-    private int xoff = 0;
-    private int yoff = 0;
-
-    /* =========== List stuff ============== */
-
-    protected int list_counter;
-
     public int getListCounter() {
         return list_counter;
     }
@@ -254,8 +257,6 @@ public class LayoutContext implements CssContext, PageContext {
         this.sub_block = sub_block;
     }
 
-    protected boolean sub_block = false;
-
     public boolean isSubBlock() {
         return sub_block;
     }
@@ -269,8 +270,6 @@ public class LayoutContext implements CssContext, PageContext {
     public Point getOriginOffset() {
         return new Point(xoff, yoff);
     }
-
-    private boolean shouldStop = false;
 
     public boolean shouldStop() {
         return shouldStop;
@@ -325,8 +324,6 @@ public class LayoutContext implements CssContext, PageContext {
         return this.renderQueue != null;
     }
 
-    int renderIndex = 0;
-
     public int getNewRenderIndex() {
         return renderIndex++;
     }
@@ -353,10 +350,6 @@ public class LayoutContext implements CssContext, PageContext {
 
     public UserAgentCallback getUac() {
         return sharedContext.getUac();
-    }
-
-    public PageInfo getPageInfo() {
-        return sharedContext.getPageInfo();
     }
 
     public void setPrint(boolean b) {

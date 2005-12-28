@@ -52,7 +52,7 @@ public class Boxing {
     private Boxing() {
     }
 
-    public static BlockBox preLayout(LayoutContext c, Content content) {
+    public static BlockBox constructBox(LayoutContext c, Content content) {
         BlockBox block = null;
         if (content instanceof AnonymousBlockContent) {
             return AnonymousBoxing.createBox(c, content);
@@ -74,21 +74,21 @@ public class Boxing {
         return block;
     }
     
-    public static Box realLayout(LayoutContext c, BlockBox block, Content content) {
-        return realLayout(c, block, content, null);
+    public static Box layout(LayoutContext c, BlockBox block, Content content) {
+        return layout(c, block, content, null);
     }
 
-    public static Box realLayout(LayoutContext c, BlockBox block, Content content, 
+    public static Box layout(LayoutContext c, BlockBox block, Content content, 
             StyleSetListener listener) {
         if (content instanceof AnonymousBlockContent) {
             return AnonymousBoxing.layout(c, block, content);
         } else if (content instanceof TableContent) {
             return TableBoxing.layout(c, (BlockBox) block, content, listener);
         } else
-            return layout(c, block, content, listener);
+            return layoutBlock(c, block, content, listener);
     }
 
-    private static Box layout(LayoutContext c, BlockBox block, Content content, StyleSetListener listener) {
+    private static Box layoutBlock(LayoutContext c, BlockBox block, Content content, StyleSetListener listener) {
         //OK, first set up the current style. All depends on this...
         CascadedStyle pushed = content.getStyle();
         if (pushed != null) {
@@ -298,11 +298,11 @@ public class Boxing {
     }    
     
     /**
-     * HACK If a class implementing this interface is passed to {@link Boxing#realLayout(LayoutContext, Box, Content)}
+     * HACK If a class implementing this interface is passed to {@link Boxing#layout(LayoutContext, Box, Content)}
      * {@link #onStyleSet(Box)} is invoked once the {@link Style} object has been set on 
      * the box.  It's basically a chance for the caller to manipulate the box after this
      * has occurred.  Ugly, but seems better than the obvious alternatives (e.g. 
-     * pushing the style in {@link Boxing#preLayout(LayoutContext, Content)} [who
+     * pushing the style in {@link Boxing#constructBox(LayoutContext, Content)} [who
      * does the pop then?])
      */ 
     public interface StyleSetListener {
@@ -336,6 +336,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.69  2005/12/28 00:50:51  peterbrant
+ * Continue ripping out first try at pagination / Minor method name refactoring
+ *
  * Revision 1.68  2005/12/21 02:36:27  peterbrant
  * - Calculate absolute positions incrementally (prep work for pagination)
  * - Light cleanup

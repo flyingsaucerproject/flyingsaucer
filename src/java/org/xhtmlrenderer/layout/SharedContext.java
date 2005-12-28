@@ -549,12 +549,6 @@ public class SharedContext {
         this.print = print;
     }
 
-    private PageInfo pageSize = PageInfo.LETTER;
-
-    public PageInfo getPageInfo() {
-        return pageSize;
-    }
-
     /**
      * <p/>
      * <p/>
@@ -595,6 +589,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/12/28 00:50:49  peterbrant
+ * Continue ripping out first try at pagination / Minor method name refactoring
+ *
  * Revision 1.21  2005/12/21 02:36:26  peterbrant
  * - Calculate absolute positions incrementally (prep work for pagination)
  * - Light cleanup

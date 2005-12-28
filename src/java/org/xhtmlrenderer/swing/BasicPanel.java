@@ -19,16 +19,12 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
 import java.awt.print.PrinterGraphics;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -37,12 +33,10 @@ import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.w3c.dom.Document;
-import org.xhtmlrenderer.css.value.Border;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Layer;
-import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.RenderingContext;
@@ -200,7 +194,7 @@ public abstract class BasicPanel extends RootPanel {
             //queue.dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, this.getSize()));
             XRLog.render(Level.FINE, "skipping the actual painting");
         } else {
-            RenderingContext c = newRenderingContext(getPageInfo(), (Graphics2D) g);
+            RenderingContext c = newRenderingContext((Graphics2D) g);
             long start = System.currentTimeMillis();
             executeRenderThread(c, root);
             long end = System.currentTimeMillis();
@@ -208,6 +202,7 @@ public abstract class BasicPanel extends RootPanel {
         }
     }
 
+    /*
     public void paintPage(Graphics2D g, int page) {
         Layer root = getRootLayer();
 
@@ -235,6 +230,7 @@ public abstract class BasicPanel extends RootPanel {
 
         g.setClip(working);
     }
+    */
 
     /**
      * Description of the Method
@@ -323,7 +319,7 @@ public abstract class BasicPanel extends RootPanel {
         if (!c.isPrint()) {
             root.paint(c, 0, 0);
         } else {
-            renderPagedView(c, root);
+            /* renderPagedView(c, root); */
         }
         long after = System.currentTimeMillis();
         if (Configuration.isTrue("xr.incremental.repaint.print-timing", false)) {
@@ -353,15 +349,14 @@ public abstract class BasicPanel extends RootPanel {
         return 0;
     }
 
+    /*
     private void renderPagedView(RenderingContext c, Layer root) {
         int pageCount = getPageCount(sharedContext);
 
-        /*
         setPreferredSize(new Dimension(sharedContext.getMaxWidth(),
                 (int) (pageCount * c.getPageInfo().getContentHeight() +
                 pageCount * c.getPageInfo().getMargins().top +
                 pageCount + c.getPageInfo().getMargins().bottom)));
-        */
         revalidate();
 
         PageInfo info = c.getPageInfo();
@@ -400,6 +395,7 @@ public abstract class BasicPanel extends RootPanel {
             }
         }
     }
+    */
 
     /**
      * Description of the Method
@@ -1084,6 +1080,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.89  2005/12/28 00:50:54  peterbrant
+ * Continue ripping out first try at pagination / Minor method name refactoring
+ *
  * Revision 1.88  2005/12/21 02:36:30  peterbrant
  * - Calculate absolute positions incrementally (prep work for pagination)
  * - Light cleanup

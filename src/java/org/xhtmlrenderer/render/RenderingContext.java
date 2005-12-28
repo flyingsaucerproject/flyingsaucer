@@ -24,7 +24,6 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
-import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.swing.RootPanel;
 
@@ -214,10 +213,6 @@ public class RenderingContext implements CssContext {
 
     public void updateSelection(Box box) {
         sharedContext.updateSelection(box);
-    }
-
-    public PageInfo getPageInfo() {
-        return sharedContext.getPageInfo();
     }
 
     public boolean isPrint() {

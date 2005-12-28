@@ -264,6 +264,10 @@ public class IdentValue implements FSDerivedValue {
     /**
      * Description of the Field
      */
+    public final static IdentValue LANDSCAPE = addValue("landscape");
+    /**
+     * Description of the Field
+     */
     public final static IdentValue LEFT = addValue("left");
     /**
      * Description of the Field
@@ -345,6 +349,10 @@ public class IdentValue implements FSDerivedValue {
      * Description of the Field
      */
     public final static IdentValue OVERLINE = addValue("overline");
+    /**
+     * Description of the Field
+     */
+    public final static IdentValue PORTRAIT = addValue("portrait");
     /**
      * Description of the Field
      */
@@ -624,6 +632,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/12/28 00:50:51  peterbrant
+ * Continue ripping out first try at pagination / Minor method name refactoring
+ *
  * Revision 1.18  2005/12/13 20:46:09  peterbrant
  * Improve list support (implement list-style-position: inside, marker "sticks" to first line box even if there are other block boxes in between, plus other minor fixes) / Experimental support for optionally extending text decorations to box edge vs line edge
  *

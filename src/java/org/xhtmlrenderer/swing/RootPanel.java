@@ -25,7 +25,6 @@ import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.BlockBox;
@@ -71,8 +70,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     private Thread layoutThread;
     private Thread renderThread;
 
-    private PageInfo pageInfo = null;
-
     public void setDocument(Document doc, String url, NamespaceHandler nsh) {
         resetScrollPosition();
         setRootBox(null);
@@ -86,7 +83,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
         getSharedContext().setBaseURL(url);
         getSharedContext().setNamespaceHandler(nsh);
-        getSharedContext().setMedia(pageInfo == null ? "screen" : "print");
         getSharedContext().getCss().setDocumentContext(getSharedContext(), getSharedContext().getNamespaceHandler(), doc, this);
 
         if (isUseThreads()) {
@@ -227,52 +223,49 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
     public ReflowEvent last_event = null;
 
-    protected RenderingContext newRenderingContext(PageInfo pageInfo, Graphics2D g) {
+    protected RenderingContext newRenderingContext(Graphics2D g) {
         XRLog.layout(Level.FINEST, "new context begin");
 
         getSharedContext().setCanvas(this);
 
         Rectangle extents;
 
-        extents = getBaseExtents(pageInfo);
+        extents = getBaseExtents();
 
 
         XRLog.layout(Level.FINEST, "new context end");
         
         RenderingContext result = getSharedContext().newRenderingContextInstance(extents);
         result.setGraphics(g);
-        result.setPrint(pageInfo != null);
-        result.setInteractive(pageInfo == null);
+        result.setPrint(false);
+        result.setInteractive(true);
 
         return result;
     }
 
-    protected LayoutContext newLayoutContext(PageInfo pageInfo, Graphics2D g) {
+    protected LayoutContext newLayoutContext(Graphics2D g) {
         XRLog.layout(Level.FINEST, "new context begin");
 
         getSharedContext().setCanvas(this);
 
         Rectangle extents;
 
-        extents = getBaseExtents(pageInfo);
+        extents = getBaseExtents();
 
         XRLog.layout(Level.FINEST, "new context end");
 
         LayoutContext result = getSharedContext().newLayoutContextInstance(extents);
         result.setGraphics(g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics());
 
-        result.setPrint(pageInfo != null);
-        result.setInteractive(pageInfo == null);
+        result.setPrint(false);
+        result.setInteractive(true);
 
         return result;
     }
 
-    public Rectangle getBaseExtents(PageInfo pageInfo) {
+    public Rectangle getBaseExtents() {
         Rectangle extents;
-        if (pageInfo != null) {
-            extents = new Rectangle(0, 0,
-                    (int) pageInfo.getContentWidth(), (int) pageInfo.getContentHeight());
-        } else if (enclosingScrollPane != null) {
+        if (enclosingScrollPane != null) {
             Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
             extents = new Rectangle(0, 0, bnds.width, bnds.height);
             //Uu.p("bnds = " + bnds);
@@ -292,7 +285,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
             return;
         }
         
-        LayoutContext c = newLayoutContext(pageInfo, (Graphics2D) g);
+        LayoutContext c = newLayoutContext((Graphics2D) g);
         synchronized (this) {
             if (this.layout_context != null) this.layout_context.stopRendering();
             this.layout_context = c;
@@ -303,10 +296,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         
         long start = System.currentTimeMillis();
         
-        BlockBox root = Boxing.preLayout(c, new DomToplevelNode(doc));
+        BlockBox root = Boxing.constructBox(c, new DomToplevelNode(doc));
         setRootBox(root);
         
-        Boxing.realLayout(c, root, new DomToplevelNode(doc));
+        Boxing.layout(c, root, new DomToplevelNode(doc));
         
         long end = System.currentTimeMillis();
         
@@ -462,16 +455,8 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
     }
 
-    public PageInfo getPageInfo() {
-        return pageInfo;
-    }
-
-    public void setPageInfo(PageInfo pageInfo) {
-        this.pageInfo = pageInfo;
-    }
-
     public boolean isPrintView() {
-        return this.pageInfo != null;
+        return false;
     }
 
     public boolean isUseThreads() {

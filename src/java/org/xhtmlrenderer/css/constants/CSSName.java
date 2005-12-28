@@ -200,6 +200,39 @@ public final class CSSName {
     /**
      * Unique CSSName instance for CSS2 property.
      */
+    public final static CSSName FS_PAGE_WIDTH =
+            addProperty(
+                    "-fs-page-width",
+                    PRIMITIVE,
+                    "auto",
+                    NOT_INHERITED
+            ); 
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_PAGE_HEIGHT =
+            addProperty(
+                    "-fs-page-height",
+                    PRIMITIVE,
+                    "auto",
+                    NOT_INHERITED
+            );
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_PAGE_ORIENTATION =
+            addProperty(
+                    "-fs-page-orientation",
+                    PRIMITIVE,
+                    "auto",
+                    NOT_INHERITED
+            );    
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
     public final static CSSName FS_TEXT_DECORATION_EXTENT =
             addProperty(
                     "-fs-text-decoration-extent",
@@ -717,18 +750,6 @@ public final class CSSName {
     public final static CSSName RIGHT =
             addProperty(
                     "right",
-                    PRIMITIVE,
-                    "auto",
-                    NOT_INHERITED
-            );
-
-    /**
-     * Unique CSSName instance for CSS2 property.
-     * CLEAN: not in spec
-     */
-    public final static CSSName SIZE =
-            addProperty(
-                    "size",
                     PRIMITIVE,
                     "auto",
                     NOT_INHERITED
@@ -1266,6 +1287,18 @@ public final class CSSName {
                     "0",
                     NOT_INHERITED
             );
+    
+
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName SIZE_SHORTHAND =
+            addProperty(
+                    "size",
+                    SHORTHAND,
+                    "auto",
+                    NOT_INHERITED
+            );    
 
     public final static CSSName[] MARGIN_SIDE_PROPERTIES =
             new CSSName[]{
@@ -1447,6 +1480,9 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2005/12/28 00:50:51  peterbrant
+ * Continue ripping out first try at pagination / Minor method name refactoring
+ *
  * Revision 1.21  2005/12/13 20:46:10  peterbrant
  * Improve list support (implement list-style-position: inside, marker "sticks" to first line box even if there are other block boxes in between, plus other minor fixes) / Experimental support for optionally extending text decorations to box edge vs line edge
  *

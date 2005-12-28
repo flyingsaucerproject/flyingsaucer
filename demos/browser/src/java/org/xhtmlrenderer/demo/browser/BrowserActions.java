@@ -23,7 +23,6 @@ import org.xhtmlrenderer.demo.browser.actions.CopySelectionAction;
 import org.xhtmlrenderer.demo.browser.actions.FontSizeAction;
 import org.xhtmlrenderer.demo.browser.actions.GenerateDiffAction;
 import org.xhtmlrenderer.demo.browser.actions.PrintAction;
-import org.xhtmlrenderer.layout.PageInfo;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
@@ -210,6 +209,7 @@ public class BrowserActions {
 
         print_preview = new EmptyAction("Print Preview") {
             public void actionPerformed(ActionEvent evt) {
+                /*
                 try {
                     root.panel.view.setPageInfo(root.panel.view.getPageInfo() == null ? PageInfo.LETTER : null);
                     print_preview.putValue(Action.NAME,
@@ -219,6 +219,7 @@ public class BrowserActions {
                 } catch (Exception ex) {
                     Uu.p(ex);
                 }
+                */
             }
         };
         print_preview.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_V));
@@ -298,6 +299,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.21  2005/12/28 00:50:55  peterbrant
+ * Continue ripping out first try at pagination / Minor method name refactoring
+ *
  * Revision 1.20  2005/10/15 23:39:13  tobega
  * patch from Peter Brant
  *

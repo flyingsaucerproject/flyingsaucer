@@ -40,10 +40,10 @@ public class LayoutUtil {
         MarkerData markerData = c.getCurrentMarkerData();
         c.setCurrentMarkerData(null);
         
-        BlockBox box = Boxing.preLayout(c, content);
+        BlockBox box = Boxing.constructBox(c, content);
         box.setContainingBlock(c.getLayer().getMaster());
         box.setStaticEquivalent(currentLine);
-        Boxing.realLayout(c, box, content);
+        Boxing.layout(c, box, content);
         
         c.setCurrentMarkerData(markerData);
         
@@ -66,7 +66,7 @@ public class LayoutUtil {
         block.setContainingLayer(curr_line.getContainingLayer());
         block.y = curr_line.y + content.getMarginFromPrevious();
         block.element = content.getElement();
-        Boxing.realLayout(c, block, content);
+        Boxing.layout(c, block, content);
         
         if (! block.getStyle().isFloated()) {
             throw new XRRuntimeException("Invalid call to generateFloatedBlock(); where float: none ");

@@ -66,7 +66,7 @@ public class BlockBoxing {
             BlockBox child_box = null;
             //TODO:handle run-ins. For now, treat them as blocks
 
-            child_box = Boxing.preLayout(c, currentContent);
+            child_box = Boxing.constructBox(c, currentContent);
             
             // update the counter for printing OL list items
             //TODO:handle counters correctly
@@ -84,7 +84,7 @@ public class BlockBoxing {
             child_box.calcCanvasLocation();
             
             c.translate(0, box.height);
-            Boxing.realLayout(c, child_box, currentContent, styleSetListener);
+            Boxing.layout(c, child_box, currentContent, styleSetListener);
             c.translate(0, -child_box.y);
 
             // increase the final layout width if the child was greater
@@ -131,6 +131,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2005/12/28 00:50:50  peterbrant
+ * Continue ripping out first try at pagination / Minor method name refactoring
+ *
  * Revision 1.33  2005/12/21 02:36:26  peterbrant
  * - Calculate absolute positions incrementally (prep work for pagination)
  * - Light cleanup

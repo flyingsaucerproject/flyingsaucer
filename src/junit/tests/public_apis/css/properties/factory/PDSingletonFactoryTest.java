@@ -174,6 +174,17 @@ public class PDSingletonFactoryTest extends TestCase {
                     inst,
                     PropertyDeclaration.newFactory( CSSName.PADDING_SHORTHAND ) );
     }
+    
+    public void testSizeSingletonLookup() {
+        PropertyDeclarationFactory inst = SizePropertyDeclarationFactory.instance();
+        assertEquals( "'size' property uses SizePropertyDeclarationFactory",
+                    SizePropertyDeclarationFactory.instance(),
+                    PropertyDeclaration.newFactory( CSSName.SIZE_SHORTHAND ) );
+
+        assertEquals( "SizePropertyDeclarationFactory.instance() should return a singleton",
+                    inst,
+                    PropertyDeclaration.newFactory( CSSName.SIZE_SHORTHAND ) );
+    }
 
     /** The teardown method for JUnit */
     protected void tearDown() { }
@@ -195,6 +206,9 @@ public class PDSingletonFactoryTest extends TestCase {
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2005/12/28 00:50:49  peterbrant
+ * Continue ripping out first try at pagination / Minor method name refactoring
+ *
  * Revision 1.3  2005/01/24 19:01:01  pdoubleya
  * Mass checkin. Changed to use references to CSSName, which now has a Singleton instance for each property, everywhere property names were being used before. Removed commented code. Cascaded and Calculated style now store properties in arrays rather than maps, for optimization.
  *
