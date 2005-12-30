@@ -23,6 +23,8 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import java.util.logging.Level;
 
@@ -30,6 +32,7 @@ import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.TextRenderer;
@@ -37,7 +40,9 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.MarkerData;
+import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderQueue;
+import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -57,7 +62,9 @@ public class LayoutContext implements CssContext {
     //Style-handling stuff
     private Stack styleStack;
 
-    private Stack parentContentStack = new Stack();    
+    private Stack parentContentStack = new Stack();  
+    
+    private List pages = new ArrayList();
     
     /**
      * The current block formatting context
@@ -374,5 +381,34 @@ public class LayoutContext implements CssContext {
 
     public void setCurrentMarkerData(MarkerData currentMarkerData) {
         this.currentMarkerData = currentMarkerData;
+    }
+    
+    public void addPage() {
+        PageBox pageBox = new PageBox();
+        String pseudoPage = null;
+        if (this.pages.size() == 0) {
+            pseudoPage = "first";
+        } else if (this.pages.size() % 2 == 0) {
+            pseudoPage = "left";
+        } else {
+            pseudoPage = "right";
+        }
+        CalculatedStyle cs = new EmptyStyle().deriveStyle(
+                getCss().getPageStyle(pseudoPage));
+        pageBox.setStyle(new Style(cs, 0));
+        pageBox.getStyle().setContainingBlockWidth(pageBox.getWidth(this));
+        if (this.pages.size() == 0) {
+            pageBox.setTopAndBottom(this, 0);
+        } else {
+            PageBox previous = (PageBox)this.pages.get(this.pages.size()-1);
+            pageBox.setTopAndBottom(this, previous.getBottom());
+        }
+        
+        this.pages.add(pageBox);
+    }
+    
+    public PageBox getCurrentPage() {
+        return this.pages.size() == 0 ? 
+                null : (PageBox)this.pages.get(this.pages.size()-1);
     }
 }

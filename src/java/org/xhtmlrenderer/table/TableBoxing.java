@@ -116,7 +116,7 @@ public class TableBoxing {
             c.pushStyle(CascadedStyle.emptyCascadedStyle);
         }
 
-        tableBox.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth()));
+        tableBox.setStyle(new Style(c.getCurrentStyle(), (int) oe.getWidth()));
         
         if (listener != null) {
             listener.onStyleSet(tableBox);
@@ -132,7 +132,7 @@ public class TableBoxing {
             tableBox.getStyle().setMarginBottomOverride(0f);
         }
 
-        tableBox.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth()));
+        tableBox.setStyle(new Style(c.getCurrentStyle(), (int) oe.getWidth()));
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //note: percentages here refer to width of containing block
         RectPropertySet margin = tableBox.getStyle().getMarginWidth(c);
@@ -394,7 +394,7 @@ public class TableBoxing {
             c.pushStyle(CascadedStyle.emptyCascadedStyle);
         }
 
-        row.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth()));
+        row.setStyle(new Style(c.getCurrentStyle(), (int) oe.getWidth()));
 
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //rows have no margin or padding
@@ -539,7 +539,7 @@ public class TableBoxing {
         }
 
         // a cell defines a new bfc
-        cell.setStyle(new Style(c.getCurrentStyle(), (float) c.getExtents().width));
+        cell.setStyle(new Style(c.getCurrentStyle(), (int) c.getExtents().width));
         BlockFormattingContext bfc = new BlockFormattingContext(cell, c);
         c.pushBFC(bfc);
 
@@ -645,6 +645,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.55  2005/12/30 01:32:41  peterbrant
+   First merge of parts of pagination work
+
    Revision 1.54  2005/12/21 02:36:29  peterbrant
    - Calculate absolute positions incrementally (prep work for pagination)
    - Light cleanup

@@ -67,6 +67,7 @@ public class LayoutUtil {
         block.y = curr_line.y + content.getMarginFromPrevious();
         block.element = content.getElement();
         Boxing.layout(c, block, content);
+        c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
         
         if (! block.getStyle().isFloated()) {
             throw new XRRuntimeException("Invalid call to generateFloatedBlock(); where float: none ");
@@ -83,6 +84,11 @@ public class LayoutUtil {
             pendingFloats.add(block);
             c.getBlockFormattingContext().getFloatManager().removeFloat(block);
             c.getLayer().removeFloat(block);
+            // FIXME Not yet, will also detach children.  
+            // Should be laying out again though anyway.
+            /*
+            block.detach();
+            */
             block.setPending(true);
         }
         

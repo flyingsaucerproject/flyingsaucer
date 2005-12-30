@@ -546,8 +546,8 @@ public class InlineBox extends Box implements InlinePaintable {
         return result;
     }
     
-    public Dimension positionPositioned(CssContext cssCtx) {
-        Dimension delta = super.positionPositioned(cssCtx);
+    public Dimension positionRelative(CssContext cssCtx) {
+        Dimension delta = super.positionRelative(cssCtx);
         
         this.x -= delta.width;
         this.y -= delta.height;

@@ -46,13 +46,30 @@ public class BlockBoxing {
         
         Boxing.StyleSetListener styleSetListener = new Boxing.StyleSetListener() {
             public void onStyleSet(Box child) {
+                boolean moved = false;
+                if (child.getStyle().isRelative()) {
+                    Dimension delta = child.positionRelative(c);
+                    c.translate(delta.width, delta.height);
+                    moved = true;
+                }
+                if (c.isPrint() && child.getStyle().isForcePageBreakBefore()) {
+                    int delta = child.moveToNextPage(c);
+                    c.translate(0, delta);
+                    moved = true;
+                }
                 if (child.getStyle().isCleared()) {
-                    c.translate(0, -box.height);
+                    c.translate(0, -child.y);
                     c.getBlockFormattingContext().clear(c, child);
                     c.translate(0, child.y);
+                    moved = true;
+                }
+                if (moved) {
+                    child.calcCanvasLocation();
                 }
             }
         };
+        
+        boolean resetMargins = false;
         
         while (contentIterator.hasNext()) {
             Object o = contentIterator.next();
@@ -67,6 +84,7 @@ public class BlockBoxing {
             //TODO:handle run-ins. For now, treat them as blocks
 
             child_box = Boxing.constructBox(c, currentContent);
+            child_box.setResetMargins(resetMargins);
             
             // update the counter for printing OL list items
             //TODO:handle counters correctly
@@ -75,54 +93,57 @@ public class BlockBoxing {
             }
             
             child_box.setListCounter(c.getListCounter());
-            child_box.x = 0;
-
-            int initialY = box.height;
             
-            child_box.y = initialY;
+            child_box.x = 0;
+            child_box.y = box.height;
+            
             box.addChild(c, child_box);
             child_box.calcCanvasLocation();
             
             c.translate(0, box.height);
             Boxing.layout(c, child_box, currentContent, styleSetListener);
-            c.translate(0, -child_box.y);
+            c.translate(-child_box.x, -child_box.y);
 
             // increase the final layout width if the child was greater
             box.adjustWidthForChild(child_box.getWidth());
 
             // increase the final layout height by the height of the child
-            box.height += (child_box.y - initialY) + child_box.height;
+            box.height = child_box.y + child_box.height;
             
-            if (child_box.y != initialY) {
-                child_box.calcCanvasLocation();
-                child_box.calcChildLocations();
+            if (c.isPrint() && child_box.getStyle().isForcePageBreakAfter()) {
+                box.expandToPageBottom(c);
             }
+            
+            resetMargins = c.isPrint() && child_box.getStyle().isForcePageBreakBefore();
             
             if (c.shouldStop()) {
                 break;
             }
 
-            //Uu.p("alerting that there is a box available");
-            if (c.isInteractive() && !c.isPrint()) {
-                if (Configuration.isTrue("xr.incremental.enabled", false) && c.isRenderQueueAvailable()) {
-                    Dimension max_size = c.getRootLayer().getPaintingDimension(c);
-                    c.getRenderQueue().dispatchRepaintEvent(new ReflowEvent(ReflowEvent.MORE_BOXES_AVAILABLE, box, max_size));
-                }
-
-                int delay = Configuration.valueAsInt("xr.incremental.debug.layoutdelay", 0);
-                if (delay > 0) {
-                    //Uu.p("sleeping for: " + delay);
-                    try {
-                        Uu.sleep(delay);
-                    } catch (Exception ex) {
-                        Uu.p("sleep was interrupted in BlockBoxing.layoutContent()!");
-                    }
-                }
-            }
+            dispatchRepaintEvent(c, box);
 
         }
 
         c.setListCounter(old_counter);
+    }
+
+    private static void dispatchRepaintEvent(final LayoutContext c, final Box box) {
+        if (c.isInteractive() && !c.isPrint()) {
+            if (Configuration.isTrue("xr.incremental.enabled", false) && c.isRenderQueueAvailable()) {
+                Dimension max_size = c.getRootLayer().getPaintingDimension(c);
+                c.getRenderQueue().dispatchRepaintEvent(new ReflowEvent(ReflowEvent.MORE_BOXES_AVAILABLE, box, max_size));
+            }
+
+            int delay = Configuration.valueAsInt("xr.incremental.debug.layoutdelay", 0);
+            if (delay > 0) {
+                //Uu.p("sleeping for: " + delay);
+                try {
+                    Uu.sleep(delay);
+                } catch (Exception ex) {
+                    Uu.p("sleep was interrupted in BlockBoxing.layoutContent()!");
+                }
+            }
+        }
     }
 
 }
@@ -131,6 +152,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2005/12/30 01:32:35  peterbrant
+ * First merge of parts of pagination work
+ *
  * Revision 1.34  2005/12/28 00:50:50  peterbrant
  * Continue ripping out first try at pagination / Minor method name refactoring
  *

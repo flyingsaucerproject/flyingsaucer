@@ -21,9 +21,9 @@ public class Style {
     private float marginBottomOverride;
     private boolean marginBottomOverrideSet = false;
 
-    private float containingBlockWidth;
+    private int containingBlockWidth;
     
-    public Style(CalculatedStyle calculatedStyle, float containingBlockWidth) {
+    public Style(CalculatedStyle calculatedStyle, int containingBlockWidth) {
         this.calculatedStyle = calculatedStyle;
         this.containingBlockWidth = containingBlockWidth;
     }
@@ -100,8 +100,10 @@ public class Style {
     }
 
     public void setMarginTopOverride(float marginTopOverride) {
-        this.marginTopOverride = marginTopOverride;
-        this.marginTopOverrideSet = true;
+        if (! this.marginTopOverrideSet) {
+            this.marginTopOverride = marginTopOverride;
+            this.marginTopOverrideSet = true;
+        }
     }
 
     public float getMarginBottomOverride() {
@@ -109,8 +111,10 @@ public class Style {
     }
 
     public void setMarginBottomOverride(float marginBottomOverride) {
-        this.marginBottomOverride = marginBottomOverride;
-        this.marginBottomOverrideSet = true;
+        if (! this.marginBottomOverrideSet) {
+            this.marginBottomOverride = marginBottomOverride;
+            this.marginBottomOverrideSet = true;
+        }
     }
 
     public RectPropertySet getMarginWidth(CssContext cssContext) {
@@ -203,5 +207,29 @@ public class Style {
     
     public boolean isVisible() {
         return getCalculatedStyle().isIdent(CSSName.VISIBILITY, IdentValue.VISIBLE);
+    }
+    
+    public boolean isForcePageBreakBefore() {
+        IdentValue val = getCalculatedStyle().getIdent(CSSName.PAGE_BREAK_BEFORE);
+        return val == IdentValue.ALWAYS || val == IdentValue.LEFT 
+            || val == IdentValue.RIGHT;
+    }
+    
+    public boolean isForcePageBreakAfter() {
+        IdentValue val = getCalculatedStyle().getIdent(CSSName.PAGE_BREAK_AFTER);
+        return val == IdentValue.ALWAYS || val == IdentValue.LEFT 
+            || val == IdentValue.RIGHT;
+    }
+
+    public void setContainingBlockWidth(int containingBlockWidth) {
+        this.containingBlockWidth = containingBlockWidth;
+    }
+    
+    public void resetCollapsedMargin() {
+        this.marginBottomOverride = 0.0f;
+        this.marginBottomOverrideSet = false;
+        
+        this.marginTopOverride = 0.0f;
+        this.marginTopOverrideSet = false;
     }
 }

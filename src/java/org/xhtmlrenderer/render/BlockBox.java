@@ -52,6 +52,8 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     private Box staticEquivalent;
     
     public JComponent component = null;
+    
+    private boolean resetMargins;
 
     public BlockBox() {
         super();
@@ -341,12 +343,23 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
             persistentBFC.getFloatManager().calcFloatLocations();
         }
     }
+
+    public boolean isResetMargins() {
+        return resetMargins;
+    }
+
+    public void setResetMargins(boolean resetMargins) {
+        this.resetMargins = resetMargins;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2005/12/30 01:32:39  peterbrant
+ * First merge of parts of pagination work
+ *
  * Revision 1.30  2005/12/21 02:36:29  peterbrant
  * - Calculate absolute positions incrementally (prep work for pagination)
  * - Light cleanup

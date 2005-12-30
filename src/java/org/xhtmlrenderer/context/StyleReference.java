@@ -101,7 +101,8 @@ public class StyleReference {
 
         List infos = getStylesheets();
         XRLog.match("media = " + _context.getMedia());
-        _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(new DOMTreeResolver(), attRes, _stylesheetFactory, infos.iterator(), _context.getMedia());
+        _matcher = new org.xhtmlrenderer.css.newmatch.Matcher(
+                new DOMTreeResolver(), attRes, _stylesheetFactory, infos, _context.getMedia());
     }
 
     /**
@@ -167,6 +168,14 @@ public class StyleReference {
     public CascadedStyle getCascadedStyle(Element e, boolean restyle) {
         if (e == null) return CascadedStyle.emptyCascadedStyle;
         return _matcher.getCascadedStyle(e, restyle);
+    }
+    
+    public CascadedStyle getPageStyle() {
+        return _matcher.getPageCascadedStyle();
+    }
+    
+    public CascadedStyle getPageStyle(String pseudoPage) {
+        return _matcher.getPageCascadedStyle(pseudoPage);
     }
 
     /**
@@ -256,6 +265,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2005/12/30 01:32:43  peterbrant
+ * First merge of parts of pagination work
+ *
  * Revision 1.6  2005/11/11 01:33:15  peterbrant
  * Add ability to clear all cached stylesheets
  *

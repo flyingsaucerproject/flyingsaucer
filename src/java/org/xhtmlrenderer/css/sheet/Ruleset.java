@@ -20,10 +20,13 @@
 package org.xhtmlrenderer.css.sheet;
 
 import com.steadystate.css.dom.CSSStyleRuleImpl;
+
+import org.xhtmlrenderer.context.CSSPageRuleAdapter;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xhtmlrenderer.util.XRLog;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,6 +51,8 @@ public class Ruleset {
      * initialize this Ruleset
      */
     private org.w3c.css.sac.SelectorList sacSelectorList;
+    
+    private String _selectorText;
 
     /**
      * Convenience parser for selector text
@@ -74,6 +79,7 @@ public class Ruleset {
      */
     public Ruleset(org.w3c.dom.css.CSSStyleRule rule, int orig) {
         this(orig);
+        this._selectorText = rule.getSelectorText();
         pullPropertiesFromDOMRule(rule);
         pullSelectorsFromDOMRule(rule);
     }
@@ -109,8 +115,8 @@ public class Ruleset {
      *
      * @return The propertyDeclarations value
      */
-    public java.util.Iterator getPropertyDeclarations() {
-        return _props.iterator();
+    public List getPropertyDeclarations() {
+        return Collections.unmodifiableList(_props);
     }
 
     /**
@@ -128,6 +134,9 @@ public class Ruleset {
      * @param sacRule PARAM
      */
     private void pullSelectorsFromDOMRule(org.w3c.dom.css.CSSStyleRule sacRule) {
+        if (sacRule instanceof CSSPageRuleAdapter) {
+            return;
+        }
         // HACK, but right now we already depend on Steady State classes
         sacSelectorList = ((CSSStyleRuleImpl) sacRule).getSelectorList();
         
@@ -171,6 +180,10 @@ public class Ruleset {
             }
         }
     }
+    
+    public String getSelectorText() {
+        return _selectorText;
+    }
 
 }// end class
 
@@ -178,6 +191,9 @@ public class Ruleset {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2005/12/30 01:32:41  peterbrant
+ * First merge of parts of pagination work
+ *
  * Revision 1.11  2005/10/20 20:48:05  pdoubleya
  * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
  *

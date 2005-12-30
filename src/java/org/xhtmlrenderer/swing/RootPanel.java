@@ -257,6 +257,12 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         LayoutContext result = getSharedContext().newLayoutContextInstance(extents);
         result.setGraphics(g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics());
 
+        /*
+        result.setPrint(true);
+        result.setInteractive(false);
+        getSharedContext().setMedia("print");
+        */
+        
         result.setPrint(false);
         result.setInteractive(true);
 
@@ -294,6 +300,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         setRenderWidth((int) c.getExtents().getWidth());
         getSharedContext().getTextRenderer().setupGraphics(c.getGraphics());
         
+        if (c.isPrint()) {
+            c.addPage();
+        }
+        
         long start = System.currentTimeMillis();
         
         BlockBox root = Boxing.constructBox(c, new DomToplevelNode(doc));
@@ -308,7 +318,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         if (!c.isStylesAllPopped()) {
             XRLog.layout(Level.SEVERE, "mismatch in style popping and pushing");
         }
-
+        
         if (c.shouldStop()) {//interrupted layout
             return;
         }

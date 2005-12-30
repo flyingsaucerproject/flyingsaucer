@@ -19,20 +19,22 @@
  */
 package org.xhtmlrenderer.layout;
 
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.render.*;
-
-
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.FloatedBlockBox;
+import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.render.ViewportBox;
 
 public class Layer {
     private Layer parent;
@@ -43,7 +45,6 @@ public class Layer {
     private Box end;
 
     private List floats;
-    private Map moveWithLayerFloats;
 
     private boolean fixedBackground;
     
@@ -97,32 +98,11 @@ public class Layer {
         floats.add(floater);
         
         floater.setDrawingLayer(this);
-        
-        maybeAddMoveWithLayerFloat(floater, bfc);
     }
 
     public void removeFloat(FloatedBlockBox floater) {
         if (floats != null) {
             floats.remove(floater);
-        }
-        
-        removeMoveWithLayerFloat(floater);
-    }
-    
-    private void maybeAddMoveWithLayerFloat(FloatedBlockBox floater, 
-            BlockFormattingContext bfc) {
-        if (getMaster().getStyle().isRelative() && 
-                ! bfc.getFloatManager().getMaster().containedIn(this)) {
-            if (moveWithLayerFloats == null) {
-                moveWithLayerFloats = new HashMap();
-            }
-            moveWithLayerFloats.put(floater, Boolean.TRUE);
-        }
-    }
-    
-    private void removeMoveWithLayerFloat(FloatedBlockBox floater) {
-        if (moveWithLayerFloats != null) {
-            moveWithLayerFloats.remove(floater);
         }
     }
 
@@ -314,7 +294,7 @@ public class Layer {
         fixed.setAbsY(0);
 
         fixed.setContainingBlock(new ViewportBox(rect));
-        fixed.positionPositioned(c);
+        fixed.positionAbsolute(c);
     }
 
     private void paintLayerBackgroundAndBorder(RenderingContext c) {
@@ -368,7 +348,7 @@ public class Layer {
     }
     
     private Dimension scanLayerHelper(final LayoutContext c, final Box box) {
-        Rectangle bounds = box.getPaintingBorderEdge(c);
+        Rectangle bounds = box.getBounds(box.getAbsX(), box.getAbsY(), c, 0, 0);
         final Dimension result = 
             new Dimension(bounds.x + bounds.width, bounds.y + bounds.height);
         
@@ -411,22 +391,10 @@ public class Layer {
     }
     
     private void finalizePosition(CssContext cssCtx) {
-        Dimension delta = getMaster().positionPositioned(cssCtx);
-        
-        if (getMaster().getStyle().isRelative()) {
-            moveFloats(delta);
-        }
-    }
-    
-    private void moveFloats(Dimension distance) {
-        if (moveWithLayerFloats != null) {
-            for (Iterator i = moveWithLayerFloats.keySet().iterator(); i.hasNext(); ) {
-                FloatedBlockBox floater = (FloatedBlockBox)i.next();
-                floater.x += distance.width;
-                floater.y += distance.height;
-                floater.calcCanvasLocation();
-                floater.calcChildLocations();
-            }
+        if (getMaster().getStyle().isAbsolute()) {
+            getMaster().positionAbsolute(cssCtx);
+        } else if (getMaster().getStyle().isRelative() && isInline()) {
+            getMaster().positionRelative(cssCtx);
         }
     }
 

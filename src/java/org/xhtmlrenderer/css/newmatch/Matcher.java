@@ -22,6 +22,7 @@ package org.xhtmlrenderer.css.newmatch;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.extend.TreeResolver;
+import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.util.XRLog;
@@ -73,6 +74,8 @@ public class Matcher {
      * Description of the Field
      */
     private Set _visitElements;
+    
+    private List _pageRules;
 
     /**
      * creates a new matcher for the combination of parameters
@@ -83,12 +86,15 @@ public class Matcher {
      * @param stylesheets PARAM
      * @param media       PARAM
      */
-    public Matcher(TreeResolver tr, AttributeResolver ar, StylesheetFactory factory, Iterator stylesheets, String media) {
+    public Matcher(TreeResolver tr, AttributeResolver ar, 
+            StylesheetFactory factory, List stylesheets, String media) {
         newMaps();
         _treeRes = tr;
         _attRes = ar;
         _styleFactory = factory;
-        docMapper = createDocumentMapper(stylesheets, media);
+        docMapper = createDocumentMapper(stylesheets.iterator(), media);
+        _pageRules = new ArrayList();
+        collectPageRules(stylesheets, _pageRules, media);
     }
 
     /**
@@ -122,6 +128,45 @@ public class Matcher {
         synchronized (e) {
             Mapper em = getMapper(e);
             return em.getPECascadedStyle(e, pseudoElement);
+        }
+    }
+    
+    public CascadedStyle getPageCascadedStyle() {
+        return getPageCascadedStyle(null);
+    }
+    
+    public CascadedStyle getPageCascadedStyle(String pseudoPage) {
+        List props = new ArrayList();
+
+        if (pseudoPage == null) {
+            addPageRules(props, null);
+        } else if (pseudoPage.equals("left") || pseudoPage.equals("right")) {
+            addPageRules(props, null);
+            addPageRules(props, pseudoPage);
+        } else if (pseudoPage.equals("first")) {
+            addPageRules(props, null);
+            // assume first page is a left page
+            addPageRules(props, "left");
+            addPageRules(props, "first");
+        }
+        
+        if (props.isEmpty()) {
+            return CascadedStyle.emptyCascadedStyle;
+        } else {
+            return new CascadedStyle(props.iterator());
+        }
+    }
+    
+    private void addPageRules(List props, String pseudoPage) {
+        for (Iterator i = _pageRules.iterator(); i.hasNext(); ) {
+            Ruleset r = (Ruleset)i.next();
+            boolean matches = 
+                (pseudoPage == null && 
+                    (r.getSelectorText() == null || r.getSelectorText().trim().equals("")) ) ||
+                (r.getSelectorText() != null && r.getSelectorText().trim().equals(":" + pseudoPage));
+            if (matches) {
+                props.addAll(r.getPropertyDeclarations());
+            }
         }
     }
 
@@ -221,6 +266,36 @@ public class Matcher {
         _activeElements = Collections.synchronizedSet(new java.util.HashSet());
         _focusElements = Collections.synchronizedSet(new java.util.HashSet());
         _visitElements = Collections.synchronizedSet(new java.util.HashSet());
+    }
+    
+    private void collectPageRules(List infos, List pageRulesets, String media) {
+        for (Iterator i = infos.iterator(); i.hasNext(); ) {
+            StylesheetInfo si = (StylesheetInfo)i.next();
+            collectPageRules(si, pageRulesets, media);
+        }
+    }
+    
+    private void collectPageRules(StylesheetInfo si, List pageRulesets, String media) {
+        if (! si.appliesToMedia(media)) {
+            return;
+        }
+        Stylesheet ss = si.getStylesheet();
+        if (ss == null) {
+            ss = _styleFactory.getStylesheet(si);
+            si.setStylesheet(ss);
+        }
+        if (ss == null) {
+            return;
+        }
+        
+        pageRulesets.addAll(ss.getPageRulesets());
+        
+        for (java.util.Iterator rulesets = ss.getRulesets(); rulesets.hasNext();) {
+            Object obj = rulesets.next();
+            if (obj instanceof StylesheetInfo) {
+                collectPageRules((StylesheetInfo)obj, pageRulesets, media);
+            }
+        }
     }
 
     /**
@@ -718,22 +793,16 @@ public class Matcher {
                 List propList = new LinkedList();
                 //specificity 0,0,0,0
                 if (nonCssStyling != null) {
-                    for (Iterator j = nonCssStyling.getPropertyDeclarations(); j.hasNext();) {
-                        propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
-                    }
+                    propList.addAll(nonCssStyling.getPropertyDeclarations());
                 }
                 //these should have been returned in order of specificity
                 for (Iterator i = getMatchedRulesets(mappedSelectors); i.hasNext();) {
                     org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
-                    for (Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
-                        propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
-                    }
+                    propList.addAll(rs.getPropertyDeclarations());
                 }
                 //specificity 1,0,0,0
                 if (elementStyling != null) {
-                    for (Iterator j = elementStyling.getPropertyDeclarations(); j.hasNext();) {
-                        propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
-                    }
+                    propList.addAll(elementStyling.getPropertyDeclarations());
                 }
                 if (propList.size() == 0)
                     cs = CascadedStyle.emptyCascadedStyle;
@@ -766,9 +835,7 @@ public class Matcher {
             java.util.List propList = new java.util.LinkedList();
             for (java.util.Iterator i = getSelectedRulesets(pe); i.hasNext();) {
                 org.xhtmlrenderer.css.sheet.Ruleset rs = (org.xhtmlrenderer.css.sheet.Ruleset) i.next();
-                for (java.util.Iterator j = rs.getPropertyDeclarations(); j.hasNext();) {
-                    propList.add((org.xhtmlrenderer.css.sheet.PropertyDeclaration) j.next());
-                }
+                propList.addAll(rs.getPropertyDeclarations());
             }
             if (propList.size() == 0)
                 cs = CascadedStyle.emptyCascadedStyle;//already internalized

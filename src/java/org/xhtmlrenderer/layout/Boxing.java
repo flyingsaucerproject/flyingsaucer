@@ -51,7 +51,7 @@ import org.xhtmlrenderer.table.TableBoxing;
 public class Boxing {
     private Boxing() {
     }
-
+    
     public static BlockBox constructBox(LayoutContext c, Content content) {
         BlockBox block = null;
         if (content instanceof AnonymousBlockContent) {
@@ -97,7 +97,7 @@ public class Boxing {
 
         Rectangle oe = c.getExtents();
 
-        block.setStyle(new Style(c.getCurrentStyle(), (float) oe.getWidth()));
+        block.setStyle(new Style(c.getCurrentStyle(), (int) oe.getWidth()));
         
         if (listener != null ) {
             listener.onStyleSet(block);
@@ -120,6 +120,10 @@ public class Boxing {
         c.setExtents(new Rectangle(oe));
 
         VerticalMarginCollapser.collapseVerticalMargins(c, block, content, (float) oe.getWidth());
+        
+        if (block.isResetMargins()) {
+            block.getStyle().resetCollapsedMargin();
+        }
 
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
         //note: percentages here refer to width of containing block
@@ -237,10 +241,6 @@ public class Boxing {
         //restore the extents
         c.setExtents(oe);
         
-        if (block.getStyle().isFloated()) {
-            c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
-        }
-
         //and now, back to previous style
         if (pushed != null) {
             c.popStyle();
@@ -336,6 +336,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.70  2005/12/30 01:32:36  peterbrant
+ * First merge of parts of pagination work
+ *
  * Revision 1.69  2005/12/28 00:50:51  peterbrant
  * Continue ripping out first try at pagination / Minor method name refactoring
  *

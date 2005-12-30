@@ -443,11 +443,40 @@ public abstract class Box {
     public int getContentWidth() {
         return contentWidth;
     }
+    
+    public Dimension positionRelative(CssContext cssCtx) {
+        int initialX = this.x;
+        int initialY = this.y;
+        
+        CalculatedStyle style = getStyle().getCalculatedStyle();
+        if (! style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
+            this.x += style.getFloatPropertyProportionalWidth(
+                    CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
+        } else if (! style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
+            this.x += style.getFloatPropertyProportionalWidth(
+                    CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
+        }
+        
+        int cbContentHeight = 0;
+        if (! getContainingBlock().getStyle().isAutoHeight()) {
+            CalculatedStyle cbStyle = getContainingBlock().getStyle().getCalculatedStyle();
+            cbContentHeight = (int)cbStyle.getFloatPropertyProportionalHeight(
+                    CSSName.HEIGHT, 0, cssCtx);
+        }
+        
+        if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
+            this.y += style.getFloatPropertyProportionalHeight(
+                    CSSName.TOP, cbContentHeight, cssCtx);
+        } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
+            this.y += style.getFloatPropertyProportionalHeight(
+                    CSSName.TOP, cbContentHeight, cssCtx);
+        }
+        
+        return new Dimension(this.x - initialX, this.y - initialY);
+    }
 
-    // Common code for placing absolute and relative boxes in the right place
-    // Is the best place for it?
     // TODO Finish this!
-    public Dimension positionPositioned(CssContext cssCtx) {
+    public Dimension positionAbsolute(CssContext cssCtx) {
         int initialX = this.x;
         int initialY = this.y;
         
@@ -457,7 +486,7 @@ public abstract class Box {
         
         int cbContentHeight = getContainingBlock().getContentAreaEdge(0, 0, cssCtx).height;
 
-        if (getStyle().isAbsolute() && getContainingBlock() instanceof BlockBox) {
+        if (getContainingBlock() instanceof BlockBox) {
             boundingBox = getContainingBlock().getPaddingEdge(0, 0, cssCtx);
         } else {
             boundingBox = getContainingBlock().getContentAreaEdge(0, 0, cssCtx);
@@ -469,8 +498,6 @@ public abstract class Box {
             if (getStyle().isAbsolute() || getStyle().isFixed()) {
                 this.x += boundingBox.width -
                         style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth();
-            } else {
-                this.x += style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx);
             }
         }
 
@@ -480,15 +507,11 @@ public abstract class Box {
             if (getStyle().isAbsolute() || getStyle().isFixed()) {
                 this.y += boundingBox.height -
                         style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, cbContentHeight, cssCtx) - getHeight();
-            } else {
-                this.y += style.getFloatPropertyProportionalHeight(CSSName.BOTTOM, cbContentHeight, cssCtx);
             }
         }
 
-        if (getStyle().isAbsolute()) {
-            this.x += boundingBox.x;
-            this.y += boundingBox.y;
-        }
+        this.x += boundingBox.x;
+        this.y += boundingBox.y;
         
         calcCanvasLocation();
         calcChildLocations();
@@ -498,7 +521,7 @@ public abstract class Box {
     
     // HACK If a box doesn't have a Style object, NPEs are the likely result
     // However, it begs the question if a Style object is being used in places
-    // it doesn't make sense (e.g. line boxes, table rows)
+    // it doesn't make sense (e.g. line boxes)
     public void createDefaultStyle(LayoutContext c) {
         c.pushStyle(CascadedStyle.emptyCascadedStyle);
         setStyle(new Style(c.getCurrentStyle(), 0));
@@ -657,17 +680,6 @@ public abstract class Box {
         }
     }
     
-    public boolean containedIn(Layer target) {
-        Layer current = getContainingLayer();
-        while (current != null) {
-            if (current == target) {
-                return true;
-            } 
-            current = current.getParent();
-        }
-        return false;
-    }
-    
     public List getElementBoxes(Element elem) {
         List result = new ArrayList();
         for (int i = 0; i < getChildCount(); i++) {
@@ -678,24 +690,6 @@ public abstract class Box {
             result.addAll(child.getElementBoxes(elem));
         }
         return result;
-    }
-    
-    public boolean existsInParent() {
-        if (getParent() == null) {
-            return false;
-        } else {
-            return getParent().childExists(this);
-        }
-    }
-    
-    private boolean childExists(Box test) {
-        for (int i = 0; i < getChildCount(); i++) {
-            Box child = (Box)getChild(i);
-            if (child.equals(test)) {
-                return true;
-            }
-        }
-        return false;
     }
     
     protected void paintDebugOutline(RenderingContext c, Color color) {
@@ -712,6 +706,12 @@ public abstract class Box {
         if (this.layer != null) {
             this.layer.detach();
         }
+        /*
+        if (getParent() != null) {
+            getParent().removeChild(this);
+        }
+        setParent(null);
+        */
     }
     
     protected void detachChildren() {
@@ -731,14 +731,18 @@ public abstract class Box {
         }
     }
     
-    public boolean establishesPaginationContext() {
-        Style style = getStyle();
-        return (this.layer != null && layer.isRootLayer()) ||
-            style.isFixed() ||
-            style.isFloated() ||
-            style.isAbsolute() ||
-            style.getCalculatedStyle().isIdent(CSSName.DISPLAY, IdentValue.INLINE_BLOCK) ||
-            style.getCalculatedStyle().isIdent(CSSName.DISPLAY, IdentValue.INLINE_TABLE);
+    public int moveToNextPage(LayoutContext c) {
+        // FIXME "current" page can (and will) be wrong.  Should search for applicable page.
+        int delta = c.getCurrentPage().getBottom() - getAbsY();
+        this.y += delta;
+        c.addPage();
+        return delta;
+    }
+
+    public void expandToPageBottom(LayoutContext c) {
+        int delta = c.getCurrentPage().getBottom() - (getAbsY() + this.height);
+        this.height += delta;
+        c.addPage();
     }
 }
 
@@ -746,6 +750,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.95  2005/12/30 01:32:39  peterbrant
+ * First merge of parts of pagination work
+ *
  * Revision 1.94  2005/12/28 00:50:52  peterbrant
  * Continue ripping out first try at pagination / Minor method name refactoring
  *

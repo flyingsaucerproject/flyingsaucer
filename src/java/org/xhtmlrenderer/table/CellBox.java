@@ -92,7 +92,6 @@ public class CellBox extends BlockBox {
     		Box box = (Box)i.next();
     		if (box instanceof LineBox) {
     			((LineBox)box).align();
-    			((LineBox)box).setFloatDistances(null);
     		} else {
     			alignAllLinesHelper(box);
     		}
@@ -104,6 +103,9 @@ public class CellBox extends BlockBox {
 /*
  * $Id$
  * $Log$
+ * Revision 1.11  2005/12/30 01:32:40  peterbrant
+ * First merge of parts of pagination work
+ *
  * Revision 1.10  2005/11/25 22:42:07  peterbrant
  * Wait until table has completed layout before doing line alignment
  *

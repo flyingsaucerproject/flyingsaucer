@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -61,6 +62,7 @@ public class Stylesheet {
         _uri = uri;
         _origin = origin;
         _rulesets = new java.util.LinkedList();
+        _pageRulesets = new ArrayList();
     }
 
     /**
@@ -115,8 +117,8 @@ public class Stylesheet {
         _pageRulesets.add(r);
     }
 
-    public Iterator getPageRulesets() {
-        return _pageRulesets.iterator();
+    public List getPageRulesets() {
+        return _pageRulesets;
     }
 
 }// end class
@@ -125,6 +127,9 @@ public class Stylesheet {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2005/12/30 01:32:41  peterbrant
+ * First merge of parts of pagination work
+ *
  * Revision 1.12  2005/10/08 17:40:18  tobega
  * Patch from Peter Brant
  *
