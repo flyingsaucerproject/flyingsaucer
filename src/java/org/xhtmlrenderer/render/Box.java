@@ -742,12 +742,24 @@ public abstract class Box {
         this.height += delta;
         c.getRootLayer().addPage(c);
     }
+    
+    public boolean crossesPageBreak(LayoutContext c) {
+        PageBox pageBox = c.getRootLayer().getFirstPage(c, this);
+        if (pageBox == null) {
+            return false;
+        } else {
+            return getAbsY() + getHeight() >= pageBox.getBottom();
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.97  2006/01/01 03:14:25  peterbrant
+ * Implement page-break-inside: avoid
+ *
  * Revision 1.96  2006/01/01 02:38:19  peterbrant
  * Merge more pagination work / Various minor cleanups
  *

@@ -88,13 +88,13 @@ public class BlockBoxing {
                     c, box, styleSetListener, listIndex, 
                     resetMargins, false, currentContent);
             
-            /*
-            if (child_box.getStyle().isAvoidPageBreakInside()) {
+            if (c.isPrint() && child_box.getStyle().isAvoidPageBreakInside() &&
+                    child_box.crossesPageBreak(c)) {
                 child_box.detach();
                 child_box = layoutBlockChild(
-                        c, box, styleSetListener, resetMargins, true, currentContent);
+                        c, box, styleSetListener, listIndex, resetMargins, 
+                        true, currentContent);
             }
-            */
             
             if (child_box instanceof AnonymousBlockBox) {
                 listIndex--;
@@ -174,6 +174,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2006/01/01 03:14:27  peterbrant
+ * Implement page-break-inside: avoid
+ *
  * Revision 1.36  2006/01/01 02:38:16  peterbrant
  * Merge more pagination work / Various minor cleanups
  *
