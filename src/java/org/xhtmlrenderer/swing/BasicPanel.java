@@ -364,8 +364,8 @@ public abstract class BasicPanel extends RootPanel {
                 
                 g.setColor(Color.BLACK);
                 overall.translate(PAGE_PAINTING_CLEARANCE - 1, PAGE_PAINTING_CLEARANCE - 1);
-                overall.width -= PAGE_PAINTING_CLEARANCE + 1;
-                overall.height -= PAGE_PAINTING_CLEARANCE + 1;
+                overall.width -= PAGE_PAINTING_CLEARANCE*2 - 1;
+                overall.height -= PAGE_PAINTING_CLEARANCE*2 - 1;
                 g.drawRect(overall.x, overall.y, overall.width, overall.height);
                 g.setColor(old);
                 
@@ -1070,6 +1070,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.91  2006/01/01 03:15:13  peterbrant
+ * Fix position of rectangle around page in paged view
+ *
  * Revision 1.90  2006/01/01 02:38:21  peterbrant
  * Merge more pagination work / Various minor cleanups
  *
