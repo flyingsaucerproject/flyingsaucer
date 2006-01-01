@@ -19,6 +19,7 @@ import javax.swing.JViewport;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserInterface;
@@ -29,6 +30,7 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.render.RenderingContext;
@@ -228,17 +230,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
         getSharedContext().setCanvas(this);
 
-        Rectangle extents;
-
-        extents = getBaseExtents();
-
-
         XRLog.layout(Level.FINEST, "new context end");
         
-        RenderingContext result = getSharedContext().newRenderingContextInstance(extents);
+        RenderingContext result = getSharedContext().newRenderingContextInstance();
         result.setGraphics(g);
-        result.setPrint(false);
-        result.setInteractive(true);
 
         return result;
     }
@@ -248,28 +243,24 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
         getSharedContext().setCanvas(this);
 
-        Rectangle extents;
-
-        extents = getBaseExtents();
+        Rectangle extents = getScreenExtents();
 
         XRLog.layout(Level.FINEST, "new context end");
 
         LayoutContext result = getSharedContext().newLayoutContextInstance(extents);
         result.setGraphics(g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics());
-
-        /*
-        result.setPrint(true);
-        result.setInteractive(false);
-        getSharedContext().setMedia("print");
-        */
         
-        result.setPrint(false);
-        result.setInteractive(true);
-
+        if (result.isPrint()) {
+            PageBox first = Layer.createPageBox(result, "first");
+            extents = new Rectangle(0, 0, 
+                    first.getContentWidth(result), first.getContentHeight(result));
+            result.setExtents(extents);
+        }
+        
         return result;
     }
 
-    public Rectangle getBaseExtents() {
+    public Rectangle getScreenExtents() {
         Rectangle extents;
         if (enclosingScrollPane != null) {
             Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
@@ -299,10 +290,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         c.setRenderQueue(queue);
         setRenderWidth((int) c.getExtents().getWidth());
         getSharedContext().getTextRenderer().setupGraphics(c.getGraphics());
-        
-        if (c.isPrint()) {
-            c.addPage();
-        }
         
         long start = System.currentTimeMillis();
         

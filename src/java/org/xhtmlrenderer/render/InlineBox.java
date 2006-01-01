@@ -374,7 +374,7 @@ public class InlineBox extends Box implements InlinePaintable {
     
     public int getLeftMarginBorderPadding(CssContext cssCtx) {
         if (startsHere) {
-            return getStyle().getLeftMarginBorderPadding(cssCtx);
+            return getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.LEFT);
         } else {
             return 0;
         }
@@ -382,7 +382,7 @@ public class InlineBox extends Box implements InlinePaintable {
     
     public int getRightMarginPaddingBorder(CssContext cssCtx) {
         if (endsHere) {
-            return getStyle().getRightMarginBorderPadding(cssCtx);
+            return getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.RIGHT);
         } else {
             return 0;
         }

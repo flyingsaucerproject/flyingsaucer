@@ -29,6 +29,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.MarkerData;
+import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 public class LayoutUtil {
@@ -43,7 +44,21 @@ public class LayoutUtil {
         BlockBox box = Boxing.constructBox(c, content);
         box.setContainingBlock(c.getLayer().getMaster());
         box.setStaticEquivalent(currentLine);
-        Boxing.layout(c, box, content);
+        
+        // If printing, don't layout until we know where its going
+        if (! c.isPrint()) {
+            Boxing.layout(c, box, content);
+        } else {
+            c.pushStyle(content.getStyle());
+            box.setStyle(new Style(c.getCurrentStyle(), 
+                    c.getLayer().getMaster().getContentWidth()));
+            c.pushLayer(box);
+            c.getLayer().setRequiresLayout(true);
+            c.getLayer().setLayoutData(
+                    new AbsoluteContentLayoutData(content, c.getCurrentStyle()));
+            c.popLayer();
+            c.popStyle();
+        }
         
         c.setCurrentMarkerData(markerData);
         

@@ -19,15 +19,20 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.awt.Rectangle;
+
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 
 public class PageBox {
     private Style _style;
     
     private int _top;
     private int _bottom;
+    
+    private int _paintingTop;
+    private int _paintingBottom;
     
     public int getWidth(CssContext cssCtx) {
         return (int)getStyle().getCalculatedStyle().getFloatPropertyProportionalTo(
@@ -40,23 +45,15 @@ public class PageBox {
     }
     
     public int getContentHeight(CssContext cssCtx) {
-        RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
-        RectPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
-        RectPropertySet padding = getStyle().getPaddingWidth(cssCtx);
-        
         return getHeight(cssCtx) 
-            - (int)margin.top() - (int)border.top() - (int)padding.top()
-            - (int)padding.bottom() - (int)border.bottom() - (int)margin.bottom();
+            - getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.TOP)
+            - getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.BOTTOM);
     }
     
     public int getContentWidth(CssContext cssCtx) {
-        RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
-        RectPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
-        RectPropertySet padding = getStyle().getPaddingWidth(cssCtx);
-        
         return getWidth(cssCtx) 
-            - (int)margin.left() - (int)border.left() - (int)padding.left()
-            - (int)padding.right() - (int)border.right() - (int)margin.right();
+            - getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.LEFT)
+            - getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.RIGHT);
     }
     
     public Style getStyle() {
@@ -78,5 +75,43 @@ public class PageBox {
     public void setTopAndBottom(CssContext cssCtx, int top) {
         _top = top;
         _bottom = top + getContentHeight(cssCtx);
+    }
+
+    public int getPaintingBottom() {
+        return _paintingBottom;
+    }
+
+    public void setPaintingBottom(int paintingBottom) {
+        _paintingBottom = paintingBottom;
+    }
+
+    public int getPaintingTop() {
+        return _paintingTop;
+    }
+
+    public void setPaintingTop(int paintingTop) {
+        _paintingTop = paintingTop;
+    }
+    
+    public Rectangle getOverallPaintingBounds(CssContext cssCtx, int additionalClearance) {
+        return new Rectangle(
+                0, getPaintingTop(),
+                getWidth(cssCtx) + additionalClearance*2, getPaintingBottom()-getPaintingTop());
+    }
+    
+    public Rectangle getContentClippingBounds(CssContext cssCtx, int additionalClearance) {
+        Rectangle result = new Rectangle(
+                additionalClearance + 
+                    getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.LEFT),
+                getPaintingTop() + additionalClearance +
+                    getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.TOP),
+                getContentWidth(cssCtx),
+                getContentHeight(cssCtx));
+
+        // HACK Work through why this is necessary
+        result.translate(-1, 0);
+        result.width += 1;
+        
+        return result;
     }
 }

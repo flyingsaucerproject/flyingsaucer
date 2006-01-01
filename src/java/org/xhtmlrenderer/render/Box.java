@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -42,6 +43,7 @@ import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
 
 public abstract class Box {
 
@@ -409,7 +411,7 @@ public abstract class Box {
         return result;
     }
 
-    protected Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
+    public Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
         RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
         RectPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
         Rectangle result = new Rectangle(left + (int) margin.left() + (int) border.left(),
@@ -476,10 +478,7 @@ public abstract class Box {
     }
 
     // TODO Finish this!
-    public Dimension positionAbsolute(CssContext cssCtx) {
-        int initialX = this.x;
-        int initialY = this.y;
-        
+    public void positionAbsolute(CssContext cssCtx) {
         CalculatedStyle style = getStyle().getCalculatedStyle();
 
         Rectangle boundingBox = null;
@@ -493,21 +492,17 @@ public abstract class Box {
         }
 
         if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
-            this.x += style.getFloatPropertyProportionalWidth(CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
+            this.x = (int)style.getFloatPropertyProportionalWidth(CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
         } else if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-            if (getStyle().isAbsolute() || getStyle().isFixed()) {
-                this.x += boundingBox.width -
-                        style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth();
-            }
+            this.x = boundingBox.width -
+                    (int)style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth();
         }
 
         if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-            this.y += style.getFloatPropertyProportionalHeight(CSSName.TOP, cbContentHeight, cssCtx);
+            this.y = (int)style.getFloatPropertyProportionalHeight(CSSName.TOP, cbContentHeight, cssCtx);
         } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-            if (getStyle().isAbsolute() || getStyle().isFixed()) {
-                this.y += boundingBox.height -
-                        style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, cbContentHeight, cssCtx) - getHeight();
-            }
+            this.y = boundingBox.height -
+                    (int)style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, cbContentHeight, cssCtx) - getHeight();
         }
 
         this.x += boundingBox.x;
@@ -515,8 +510,6 @@ public abstract class Box {
         
         calcCanvasLocation();
         calcChildLocations();
-        
-        return new Dimension(this.x - initialX, this.y - initialY);
     }
     
     // HACK If a box doesn't have a Style object, NPEs are the likely result
@@ -706,12 +699,10 @@ public abstract class Box {
         if (this.layer != null) {
             this.layer.detach();
         }
-        /*
         if (getParent() != null) {
             getParent().removeChild(this);
         }
         setParent(null);
-        */
     }
     
     protected void detachChildren() {
@@ -733,16 +724,23 @@ public abstract class Box {
     
     public int moveToNextPage(LayoutContext c) {
         // FIXME "current" page can (and will) be wrong.  Should search for applicable page.
-        int delta = c.getCurrentPage().getBottom() - getAbsY();
-        this.y += delta;
-        c.addPage();
-        return delta;
+        PageBox page = c.getRootLayer().getFirstPage(c, this);
+        if (page == null) {
+            XRLog.layout(Level.WARNING, "Box has no page");
+            return 0;
+        } else {
+            int delta = c.getRootLayer().getFirstPage(c, this).getBottom() - getAbsY();
+            this.y += delta;
+            c.getRootLayer().addPage(c);
+            return delta;
+        }
     }
 
     public void expandToPageBottom(LayoutContext c) {
-        int delta = c.getCurrentPage().getBottom() - (getAbsY() + this.height);
+        int delta = c.getRootLayer().getLastPage(c, this).getBottom() - 
+            (getAbsY() + this.height);
         this.height += delta;
-        c.addPage();
+        c.getRootLayer().addPage(c);
     }
 }
 
@@ -750,6 +748,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.96  2006/01/01 02:38:19  peterbrant
+ * Merge more pagination work / Various minor cleanups
+ *
  * Revision 1.95  2005/12/30 01:32:39  peterbrant
  * First merge of parts of pagination work
  *

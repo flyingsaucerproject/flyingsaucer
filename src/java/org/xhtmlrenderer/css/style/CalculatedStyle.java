@@ -574,18 +574,14 @@ public class CalculatedStyle {
         return style._border;
     }
     
-    private static final int LEFT = 1;
-    private static final int RIGHT = 2;
+    public static final int LEFT = 1;
+    public static final int RIGHT = 2;
     
-    public int getLeftMarginBorderPadding(CssContext cssCtx, int containingBlockWidth) {
-        return getMarginBorderPadding(cssCtx, containingBlockWidth, LEFT);
-    }
+    public static final int TOP = 3;
+    public static final int BOTTOM = 4;
     
-    public int getRightMarginBorderPadding(CssContext cssCtx, int containingBlockWidth) {
-        return getMarginBorderPadding(cssCtx, containingBlockWidth, RIGHT);
-    }
-    
-    private int getMarginBorderPadding(CssContext cssCtx, int containingBlockWidth, int which) {
+    public int getMarginBorderPadding(
+            CssContext cssCtx, int containingBlockWidth, int which) {
         BorderPropertySet border = getBorder(cssCtx);
         RectPropertySet margin = getMarginRect(containingBlockWidth, containingBlockWidth, cssCtx);
         RectPropertySet padding = getPaddingRect(containingBlockWidth, containingBlockWidth, cssCtx);
@@ -595,6 +591,10 @@ public class CalculatedStyle {
                 return (int)(margin.left() + border.left() + padding.left());
             case RIGHT:
                 return (int)(margin.right() + border.right() + padding.right());
+            case TOP:
+                return (int)(margin.top() + border.top() + padding.top());
+            case BOTTOM:
+                return (int)(margin.bottom() + border.bottom() + padding.bottom());
             default:
                 throw new IllegalArgumentException();
         }
@@ -641,6 +641,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.59  2006/01/01 02:38:22  peterbrant
+ * Merge more pagination work / Various minor cleanups
+ *
  * Revision 1.58  2005/12/13 02:41:36  peterbrant
  * Initial implementation of vertical-align: top/bottom (not done yet) / Minor cleanup and optimization
  *

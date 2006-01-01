@@ -39,23 +39,21 @@ public class BlockBoxing {
 
     public static void layoutContent(final LayoutContext c, final Box box, 
             List contentList, Box block) {
-        // prepare for the list items
-        int old_counter = c.getListCounter();
-        c.setListCounter(0);
-        Iterator contentIterator = contentList.iterator();
-        
         Boxing.StyleSetListener styleSetListener = new Boxing.StyleSetListener() {
-            public void onStyleSet(Box child) {
+            public void onStyleSet(BlockBox child) {
                 boolean moved = false;
                 if (child.getStyle().isRelative()) {
                     Dimension delta = child.positionRelative(c);
                     c.translate(delta.width, delta.height);
                     moved = true;
                 }
-                if (c.isPrint() && child.getStyle().isForcePageBreakBefore()) {
+                if (c.isPrint() && 
+                        (child.isNeedPageClear() || 
+                                child.getStyle().isForcePageBreakBefore())) {
                     int delta = child.moveToNextPage(c);
                     c.translate(0, delta);
                     moved = true;
+                    child.setNeedPageClear(false);
                 }
                 if (child.getStyle().isCleared()) {
                     c.translate(0, -child.y);
@@ -71,8 +69,11 @@ public class BlockBoxing {
         
         boolean resetMargins = false;
         
+        int listIndex = 0;
+        Iterator contentIterator = contentList.iterator();
         while (contentIterator.hasNext()) {
             Object o = contentIterator.next();
+            listIndex++;
             
             if (o instanceof FirstLineStyle || o instanceof FirstLetterStyle) {
                 continue;
@@ -83,26 +84,21 @@ public class BlockBoxing {
             BlockBox child_box = null;
             //TODO:handle run-ins. For now, treat them as blocks
 
-            child_box = Boxing.constructBox(c, currentContent);
-            child_box.setResetMargins(resetMargins);
+            child_box = layoutBlockChild(
+                    c, box, styleSetListener, listIndex, 
+                    resetMargins, false, currentContent);
             
-            // update the counter for printing OL list items
-            //TODO:handle counters correctly
-            if (! (child_box instanceof AnonymousBlockBox)) {
-                c.setListCounter(c.getListCounter() + 1);
+            /*
+            if (child_box.getStyle().isAvoidPageBreakInside()) {
+                child_box.detach();
+                child_box = layoutBlockChild(
+                        c, box, styleSetListener, resetMargins, true, currentContent);
             }
+            */
             
-            child_box.setListCounter(c.getListCounter());
-            
-            child_box.x = 0;
-            child_box.y = box.height;
-            
-            box.addChild(c, child_box);
-            child_box.calcCanvasLocation();
-            
-            c.translate(0, box.height);
-            Boxing.layout(c, child_box, currentContent, styleSetListener);
-            c.translate(-child_box.x, -child_box.y);
+            if (child_box instanceof AnonymousBlockBox) {
+                listIndex--;
+            }
 
             // increase the final layout width if the child was greater
             box.adjustWidthForChild(child_box.getWidth());
@@ -123,8 +119,34 @@ public class BlockBoxing {
             dispatchRepaintEvent(c, box);
 
         }
+    }
 
-        c.setListCounter(old_counter);
+    private static BlockBox layoutBlockChild(
+            LayoutContext c, Box box, 
+            Boxing.StyleSetListener styleSetListener,
+            int listIndex, boolean resetMargins, boolean needPageClear, 
+            Content currentContent) {
+        BlockBox child_box;
+        child_box = Boxing.constructBox(c, currentContent);
+        child_box.setResetMargins(resetMargins);
+        child_box.setNeedPageClear(needPageClear);
+        
+        // update the counter for printing OL list items
+        //TODO:handle counters correctly
+        
+        child_box.setListCounter(listIndex);
+        
+        child_box.x = 0;
+        child_box.y = box.height;
+        
+        box.addChild(c, child_box);
+        child_box.calcCanvasLocation();
+        
+        c.translate(0, box.height);
+        Boxing.layout(c, child_box, currentContent, styleSetListener);
+        c.translate(-child_box.x, -child_box.y);
+        
+        return child_box;
     }
 
     private static void dispatchRepaintEvent(final LayoutContext c, final Box box) {
@@ -152,6 +174,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2006/01/01 02:38:16  peterbrant
+ * Merge more pagination work / Various minor cleanups
+ *
  * Revision 1.35  2005/12/30 01:32:35  peterbrant
  * First merge of parts of pagination work
  *

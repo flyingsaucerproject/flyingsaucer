@@ -56,14 +56,11 @@ public class AnonymousBoxing {
         int original_height = block.height;
 
         // do children's layout
-        boolean old_sub = c.isSubBlock();
         c.setExtents(new Rectangle(c.getExtents()));
-        c.setSubBlock(false);
         List contentList = content.getChildContent(c);
         if (contentList != null && contentList.size() != 0) {
             InlineBoxing.layoutContent(c, block, content.getChildContent(c));//when this is really an anonymous, InlineLayout.layoutChildren is called
         }
-        c.setSubBlock(old_sub);
 
         // restore height incase fixed height
         if (!block.getStyle().isAutoHeight()) {
@@ -88,6 +85,9 @@ public class AnonymousBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2006/01/01 02:38:15  peterbrant
+ * Merge more pagination work / Various minor cleanups
+ *
  * Revision 1.11  2005/12/17 02:24:08  peterbrant
  * Remove last pieces of old (now non-working) clip region checking / Push down handful of fields from Box to BlockBox
  *

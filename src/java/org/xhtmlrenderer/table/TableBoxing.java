@@ -56,7 +56,6 @@ import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
@@ -143,13 +142,14 @@ public class TableBoxing {
         tableBox.tx = tx;
         tableBox.ty = ty;
         c.translate(tx, ty);
-        c.shrinkExtents(tx + (int) margin.right() + (int) border.right() + (int) padding.right(), ty + (int) margin.bottom() + (int) border.bottom() + (int) padding.bottom());
+        Rectangle extents = 
+            c.shrinkExtents(tx + (int) margin.right() + (int) border.right() + (int) padding.right(), ty + (int) margin.bottom() + (int) border.bottom() + (int) padding.bottom());
         IdentValue borderStyle = c.getCurrentStyle().getIdent(CSSName.BORDER_COLLAPSE);
         int borderSpacingHorizontal = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_HORIZONTAL, 0, c);
         int borderSpacingVertical = (int) c.getCurrentStyle().getFloatPropertyProportionalWidth(CSSName.FS_BORDER_SPACING_VERTICAL, 0, c);
         layoutChildren(c, tableBox, content, false, borderSpacingHorizontal, borderSpacingVertical);
         if (c.shouldStop()) return outerBox;
-        c.unshrinkExtents();
+        c.setExtents(extents);
         c.translate(-tx, -ty);
         //OK, now we basically have the maximum cell widths, is that a smart order?
         //TODO: percentages?
@@ -406,11 +406,12 @@ public class TableBoxing {
         row.tx = tx;
         row.ty = ty;
         c.translate(tx, ty);
-        c.shrinkExtents(tx + (int) border.right(), ty + (int) border.bottom());
+        Rectangle extents =
+            c.shrinkExtents(tx + (int) border.right(), ty + (int) border.bottom());
         List cells = tableRowContent.getChildContent(c);
         checkColumns(table, cells.size());
         layoutCells(cells, c, row, table, fixed, borderSpacingHorizontal, borderSpacingVertical);
-        c.unshrinkExtents();
+        c.setExtents(extents);
         c.translate(-tx, -ty);
         // calculate the total outer width
         row.contentWidth += borderSpacingHorizontal;
@@ -587,8 +588,6 @@ public class TableBoxing {
         int original_height = cell.height;
 
         // do children's layout
-        boolean old_sub = c.isSubBlock();
-        c.setSubBlock(false);
         cell.leftMBP = (int) border.left() + (int) padding.left();
         cell.rightMBP = (int) padding.right() + (int) border.right();
         int tx = (int) border.left() + (int) padding.left();
@@ -596,19 +595,18 @@ public class TableBoxing {
         cell.tx = tx;
         cell.ty = ty;
         c.translate(tx, ty);
-        c.shrinkExtents(tx + (int) border.right() + (int) padding.right(), ty + (int) border.bottom() + (int) padding.bottom());
+        
+        Rectangle extents =
+            c.shrinkExtents(tx + (int) border.right() + (int) padding.right(), ty + (int) border.bottom() + (int) padding.bottom());
         if (cell.component == null)
             Boxing.layoutChildren(c, cell, content);
         else {
-            Point origin = c.getOriginOffset();
-            cell.component.setLocation((int) origin.getX(), (int) origin.getY());
             if (c.isInteractive()) {
                 c.getCanvas().add(cell.component);
             }
         }
-        c.unshrinkExtents();
+        c.setExtents(extents);
         c.translate(-tx, -ty);
-        c.setSubBlock(old_sub);
 
         // restore height incase fixed height
         if (!cell.getStyle().isAutoHeight()) {
@@ -645,6 +643,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.56  2006/01/01 02:38:19  peterbrant
+   Merge more pagination work / Various minor cleanups
+
    Revision 1.55  2005/12/30 01:32:41  peterbrant
    First merge of parts of pagination work
 

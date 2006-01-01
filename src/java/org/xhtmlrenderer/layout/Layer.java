@@ -28,12 +28,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.render.ViewportBox;
 
 public class Layer {
@@ -49,6 +53,11 @@ public class Layer {
     private boolean fixedBackground;
     
     private boolean inline;
+    private boolean requiresLayout;
+    
+    private AbsoluteContentLayoutData layoutData;
+    
+    private List pages;
     
     public Layer(Box master) {
         this(null, master);
@@ -307,7 +316,9 @@ public class Layer {
     
     private void paintReplacedElement(RenderingContext c, BlockBox replaced) {
         if (! c.isInteractive()) {
+            c.getGraphics().translate(replaced.getAbsX(), replaced.getAbsY());
             replaced.component.paint(c.getGraphics());
+            c.getGraphics().translate(-replaced.getAbsX(), -replaced.getAbsY());
         }
     }
     
@@ -382,19 +393,19 @@ public class Layer {
         return result;
     }
 
-    public void positionChildren(CssContext cssCtx) {
+    public void positionChildren(LayoutContext c) {
         for (Iterator i = getChildren().iterator(); i.hasNext();) {
             Layer child = (Layer) i.next();
 
-            child.finalizePosition(cssCtx);
+            child.position(c);
         }
     }
     
-    private void finalizePosition(CssContext cssCtx) {
-        if (getMaster().getStyle().isAbsolute()) {
-            getMaster().positionAbsolute(cssCtx);
+    private void position(LayoutContext c) {
+        if (getMaster().getStyle().isAbsolute() && ! c.isPrint()) {
+            getMaster().positionAbsolute(c);
         } else if (getMaster().getStyle().isRelative() && isInline()) {
-            getMaster().positionRelative(cssCtx);
+            getMaster().positionRelative(c);
         }
     }
 
@@ -460,5 +471,198 @@ public class Layer {
 
     public void setEnd(Box end) {
         this.end = end;
+    }
+
+    public AbsoluteContentLayoutData getLayoutData() {
+        return layoutData;
+    }
+
+    public void setLayoutData(AbsoluteContentLayoutData layoutData) {
+        this.layoutData = layoutData;
+    }
+
+    public boolean isRequiresLayout() {
+        return requiresLayout;
+    }
+
+    public void setRequiresLayout(boolean requiresLayout) {
+        this.requiresLayout = requiresLayout;
+    }
+    
+    public void finish(LayoutContext c) {
+        if (c.isPrint()) {
+            layoutAbsoluteChildren(c);
+        }
+        if (! isInline()) {
+            positionChildren(c);
+        }
+    }
+    
+    private void layoutAbsoluteChildren(LayoutContext c) {
+        List children = getChildren();
+        if (children.size() > 0) {
+            LayoutState state = c.captureLayoutState();
+            for (int i = 0; i < children.size(); i++) {
+                Layer child = (Layer)children.get(i);
+                if (child.isRequiresLayout()) {
+                    if (child.getMaster().getStyle().isBottomAuto()) {
+                        // Set top, left
+                        child.getMaster().positionAbsolute(c);
+                        c.reInit(child.getLayoutData().getParentStyle());
+                        c.setExtents(getExtents(c));
+                        Boxing.layout(c, (BlockBox)child.getMaster(), 
+                                child.getLayoutData().getContent());
+                        // Set right
+                        child.getMaster().positionAbsolute(c);
+                    } else {
+                        // FIXME Not right in the face of pagination, but what
+                        // to do?  Not sure if just laying out and positioning
+                        // repeatedly will converge on the correct position,
+                        // so just guess for now
+                        c.reInit(child.getLayoutData().getParentStyle());
+                        c.setExtents(getExtents(c));
+                        Boxing.layout(c, (BlockBox)child.getMaster(), 
+                                child.getLayoutData().getContent());
+                        
+                        child.getMaster().detach();
+                        child.getMaster().positionAbsolute(c);
+                        
+                        c.reInit(child.getLayoutData().getParentStyle());
+                        c.setExtents(getExtents(c));
+                        Boxing.layout(c, (BlockBox)child.getMaster(), 
+                                child.getLayoutData().getContent());
+                    }
+                    child.setRequiresLayout(false);
+                    child.finish(c);
+                }
+            }
+            c.restoreLayoutState(state);
+        }
+    }
+    
+    private Rectangle getExtents(CssContext cssCtx) {
+        // FIXME Not right for inline layers
+        return getMaster().getPaddingEdge(getMaster().getAbsX(),
+                getMaster().getAbsY(), cssCtx);
+    }
+
+    public List getPages() {
+        return pages == null ? Collections.EMPTY_LIST : pages;
+    }
+
+    public void setPages(List pages) {
+        this.pages = pages;
+    }
+    
+    public boolean isLastPage(PageBox pageBox) {
+        return this.pages.get(this.pages.size()-1) == pageBox;
+    }
+    
+    public void addPage(LayoutContext c) {
+        String pseudoPage = null;
+        if (this.pages == null) {
+            this.pages = new ArrayList();
+        }
+        
+        List pages = getPages();
+        if (pages.size() == 0) {
+            pseudoPage = "first";
+        } else if (pages.size() % 2 == 0) {
+            pseudoPage = "left";
+        } else {
+            pseudoPage = "right";
+        }
+        PageBox pageBox = createPageBox(c, pseudoPage);
+        if (pages.size() == 0) {
+            pageBox.setTopAndBottom(c, 0);
+        } else {
+            PageBox previous = (PageBox)pages.get(pages.size()-1);
+            pageBox.setTopAndBottom(c, previous.getBottom());
+        }
+        
+        pages.add(pageBox);
+    }
+    
+    public static PageBox createPageBox(LayoutContext c, String pseudoPage) {
+        PageBox result = new PageBox();
+        CalculatedStyle cs = new EmptyStyle().deriveStyle(
+                c.getCss().getPageStyle(pseudoPage));
+        result.setStyle(new Style(cs, 0));
+        result.getStyle().setContainingBlockWidth(result.getWidth(c));
+        
+        return result;
+    }
+    
+    public PageBox getFirstPage(LayoutContext c, Box box) {
+        List pages = getPages();
+        for (int i = pages.size()-1; i >= 0; i--) {
+            PageBox pageBox = (PageBox)pages.get(i);
+            if (box.getAbsY() >= pageBox.getTop() && box.getAbsY() < pageBox.getBottom()) {
+                return pageBox;
+            }
+        }
+        if (box.getAbsY() < 0) {
+            return null;
+        } else {
+            addPagesUntilPosition(c, box.getAbsY());
+            return (PageBox) pages.get(pages.size()-1);
+        }
+    }
+    
+    public PageBox getLastPage(LayoutContext c, Box box) {
+        List pages = getPages();
+        int bottom = box.getAbsY() + box.getHeight();
+        for (int i = pages.size()-1; i >= 0; i--) {
+            PageBox pageBox = (PageBox)pages.get(i);
+            if (bottom >= pageBox.getTop() && bottom < pageBox.getBottom()) {
+                return pageBox;
+            }
+        }
+        if (bottom < 0) {
+            return null;
+        } else {
+            addPagesUntilPosition(c, bottom);
+            return (PageBox) pages.get(pages.size()-1);
+        }
+    }
+    
+    private void addPagesUntilPosition(LayoutContext c, int position) {
+        List pages = getPages();
+        PageBox last = (PageBox)pages.get(pages.size()-1);
+        while (position >= last.getBottom()) {
+            addPage(c);
+            last = (PageBox)pages.get(pages.size()-1);
+        }
+    }
+    
+    public void assignPagePaintingPositions(CssContext cssCtx, int additionalClearance) {
+        List pages = getPages();
+        int paintingTop = 0;
+        for (Iterator i = pages.iterator(); i.hasNext(); ) {
+            PageBox page = (PageBox)i.next();
+            page.setPaintingTop(paintingTop);
+            page.setPaintingBottom(
+                    paintingTop + page.getHeight(cssCtx) + additionalClearance*2);
+            paintingTop = page.getPaintingBottom();
+        }
+    }
+    
+    public int getMaxPageWidth(CssContext cssCtx, int additionalClearance) {
+        List pages = getPages();
+        int maxWidth = 0;
+        for (Iterator i = pages.iterator(); i.hasNext(); ) {
+            PageBox page = (PageBox)i.next();
+            int pageWidth = page.getWidth(cssCtx) + additionalClearance*2;
+            if (pageWidth > maxWidth) {
+                maxWidth = pageWidth;
+            }
+        }
+        
+        return maxWidth;
+    }
+    
+    public PageBox getLastPage() {
+        List pages = getPages();
+        return pages.size() == 0 ? null : (PageBox)pages.get(pages.size()-1);
     }
 }

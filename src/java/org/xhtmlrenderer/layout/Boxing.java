@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.List;
 
@@ -42,7 +41,6 @@ import org.xhtmlrenderer.layout.content.TableContent;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.StrutMetrics;
 import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.table.TableBoxing;
@@ -97,7 +95,9 @@ public class Boxing {
 
         Rectangle oe = c.getExtents();
 
-        block.setStyle(new Style(c.getCurrentStyle(), (int) oe.getWidth()));
+        if (block.getStyle() == null) {
+            block.setStyle(new Style(c.getCurrentStyle(), (int) oe.getWidth()));
+        }
         
         if (listener != null ) {
             listener.onStyleSet(block);
@@ -107,8 +107,14 @@ public class Boxing {
             c.getRootLayer().setFixedBackground(true);
         }
         
-        if (content instanceof DomToplevelNode || block.getStyle().requiresLayer()) {
+        boolean pushedLayer = false;
+        if ((content instanceof DomToplevelNode || block.getStyle().requiresLayer()) &&
+                block.getLayer() == null) {
+            pushedLayer = true;
             c.pushLayer(block);
+            if (c.isPrint() && content instanceof DomToplevelNode) {
+                c.getLayer().addPage(c);
+            }
         }
 
         if (content instanceof DomToplevelNode || block.getStyle().establishesBFC()) {
@@ -123,6 +129,7 @@ public class Boxing {
         
         if (block.isResetMargins()) {
             block.getStyle().resetCollapsedMargin();
+            block.setResetMargins(false);
         }
 
         BorderPropertySet border = c.getCurrentStyle().getBorder(c);
@@ -181,8 +188,6 @@ public class Boxing {
         }        
 
         // do children's layout
-        boolean old_sub = c.isSubBlock();
-        c.setSubBlock(false);
 
         // CLEAN: cast to int
         int tx = (int) margin.left() + (int) border.left() + (int) padding.left();
@@ -191,20 +196,18 @@ public class Boxing {
         block.ty = ty;
         c.translate(tx, ty);
         // CLEAN: cast to int
-        c.shrinkExtents(tx + (int) margin.right() + (int) border.right() + (int) padding.right(), ty + (int) margin.bottom() + (int) border.bottom() + (int) padding.bottom());
+        Rectangle extents = c.shrinkExtents(
+                tx + (int) margin.right() + (int) border.right() + (int) padding.right(), ty + (int) margin.bottom() + (int) border.bottom() + (int) padding.bottom());
         if (block.component == null)
             layoutChildren(c, block, content);//when this is really an anonymous, InlineLayout.layoutChildren is called
         else {
-            Point origin = c.getOriginOffset();
-            block.component.setLocation((int) origin.getX(), (int) origin.getY());
             if (c.isInteractive()) {
                 c.getCanvas().add(block.component);
             }
             block.setState(Box.DONE);
         }
-        c.unshrinkExtents();
+        c.setExtents(extents);
         c.translate(-tx, -ty);
-        c.setSubBlock(old_sub);
 
         // restore height incase fixed height
         if (!block.getStyle().isAutoHeight()) {
@@ -234,7 +237,7 @@ public class Boxing {
         // CLEAN: cast to int
         block.height = (int) margin.top() + (int) border.top() + (int) padding.top() + block.height + (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom();
         
-        if (content instanceof DomToplevelNode  || block.getStyle().requiresLayer()) {
+        if (pushedLayer) {
             c.popLayer();
         }
 
@@ -255,7 +258,8 @@ public class Boxing {
         box.setState(Box.CHILDREN_FLUX);
 
         if (contentList != null && contentList.size() > 0) {
-            c.pushParentContent(content);
+            Content parent = c.getParentContent();
+            c.setParentContent(content);
             PseudoClassPushStatus status = pushPseudoClasses(c, contentList);
             if (ContentUtil.hasBlockContent(contentList)) {//this should be block layed out
                 BlockBoxing.layoutContent(c, box, contentList, box);
@@ -268,7 +272,7 @@ public class Boxing {
             if (status.isPushedFirstLetter()) {
                 c.getFirstLettersTracker().removeLast();
             }
-            c.popParentContent();
+            c.setParentContent(parent);
         }
 
         box.setState(Box.DONE);
@@ -306,7 +310,7 @@ public class Boxing {
      * does the pop then?])
      */ 
     public interface StyleSetListener {
-        public void onStyleSet(Box box);
+        public void onStyleSet(BlockBox box);
     }
     
     private static class PseudoClassPushStatus {
@@ -336,6 +340,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.71  2006/01/01 02:38:15  peterbrant
+ * Merge more pagination work / Various minor cleanups
+ *
  * Revision 1.70  2005/12/30 01:32:36  peterbrant
  * First merge of parts of pagination work
  *

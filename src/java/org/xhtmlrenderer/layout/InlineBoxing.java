@@ -111,8 +111,9 @@ public class InlineBoxing {
 
         boolean needFirstLetter = c.getFirstLettersTracker().hasStyles();
         
-        for (int i = 0; i < contentList.size(); i++) {
-            Object o = contentList.get(i);
+        Iterator contentIterator = contentList.iterator();
+        while (contentIterator.hasNext()) {
+            Object o = contentIterator.next();
             
             if (o instanceof FirstLineStyle || o instanceof FirstLetterStyle) {
                 continue;
@@ -139,14 +140,17 @@ public class InlineBoxing {
                 }
                 
                 //To break the line well, assume we don't just want to paint padding on next line
-                pendingLeftMBP += style.getLeftMarginBorderPadding(c, maxAvailableWidth);
-                pendingRightMBP += style.getRightMarginBorderPadding(c, maxAvailableWidth);
+                pendingLeftMBP += style.getMarginBorderPadding(
+                        c, maxAvailableWidth, CalculatedStyle.LEFT);
+                pendingRightMBP += style.getMarginBorderPadding(
+                        c, maxAvailableWidth, CalculatedStyle.RIGHT);
                 continue;
             }
 
             if (o instanceof StylePop) {
                 CalculatedStyle style = c.getCurrentStyle();
-                int rightMBP = style.getRightMarginBorderPadding(c, maxAvailableWidth);
+                int rightMBP = style.getMarginBorderPadding(
+                        c, maxAvailableWidth, CalculatedStyle.RIGHT);
 
                 pendingRightMBP -= rightMBP;
                 remainingWidth -= rightMBP;
@@ -430,8 +434,6 @@ public class InlineBoxing {
             
             current.setPaintingTop(paintingTop);
             current.setPaintingHeight(paintingBottom - paintingTop);
-            
-            current.calcChildLocations();
         }
     }
 
@@ -677,6 +679,14 @@ public class InlineBoxing {
         if (current.height != 0 && current.height < minHeight) {//would like to discard it otherwise, but that could lose inline elements
             current.height = minHeight;
         }
+        
+        if (c.isPrint() && current.crossesPageBreak(c)) {
+            current.moveToNextPage(c);
+            current.calcCanvasLocation();
+        }
+        
+        current.calcChildLocations();
+        
         block.addChild(c, current);
 
         if (pendingFloats.size() > 0) {

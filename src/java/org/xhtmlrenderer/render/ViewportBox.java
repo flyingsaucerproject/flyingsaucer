@@ -30,7 +30,7 @@ public class ViewportBox extends BlockBox {
         return new Rectangle(left, top, viewport.width, viewport.height);
     }
     
-    protected Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
+    public Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
         return new Rectangle(left, top, viewport.width, viewport.height);
     }
 }

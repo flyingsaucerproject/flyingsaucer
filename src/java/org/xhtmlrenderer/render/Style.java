@@ -193,13 +193,10 @@ public class Style {
         return calculatedStyle.isIdent(CSSName.BOTTOM, IdentValue.AUTO);   
     }
     
-    public int getLeftMarginBorderPadding(CssContext cssCtx) {
-        return getCalculatedStyle().getLeftMarginBorderPadding(cssCtx, (int)containingBlockWidth);
+    public int getMarginBorderPadding(CssContext cssCtx, int which) {
+        return getCalculatedStyle().getMarginBorderPadding(
+                cssCtx, (int)containingBlockWidth, which);
     }
-    
-    public int getRightMarginBorderPadding(CssContext cssCtx) {
-        return getCalculatedStyle().getRightMarginBorderPadding(cssCtx, (int)containingBlockWidth);
-    }  
     
     public boolean isListItem() {
         return getCalculatedStyle().isIdent(CSSName.DISPLAY, IdentValue.LIST_ITEM);
@@ -219,6 +216,10 @@ public class Style {
         IdentValue val = getCalculatedStyle().getIdent(CSSName.PAGE_BREAK_AFTER);
         return val == IdentValue.ALWAYS || val == IdentValue.LEFT 
             || val == IdentValue.RIGHT;
+    }
+    
+    public boolean isAvoidPageBreakInside() {
+        return getCalculatedStyle().isIdent(CSSName.PAGE_BREAK_INSIDE, IdentValue.AVOID);
     }
 
     public void setContainingBlockWidth(int containingBlockWidth) {

@@ -76,20 +76,6 @@ public class RenderingContext implements CssContext {
         sharedContext.setDPI(dpi);
     }
 
-    /**
-     * <p/>
-     * <p/>
-     * Set the current media type. This is usually something like <i>screen</i>
-     * or <i>print</i> . See the <a href="http://www.w3.org/TR/CSS21/media.html">
-     * media section</a> of the CSS 2.1 spec for more information on media
-     * types.</p>
-     *
-     * @param media The new media value
-     */
-    public void setMedia(String media) {
-        sharedContext.setMedia(media);
-    }
-
     public UserAgentCallback getUac() {
         return sharedContext.getUac();
     }
@@ -187,10 +173,6 @@ public class RenderingContext implements CssContext {
         return sharedContext.isInteractive();
     }
 
-    public void setInteractive(boolean interactive) {
-        sharedContext.setInteractive(interactive);
-    }
-
     public boolean inSelection(Box box) {
         return sharedContext.inSelection(box);
     }
@@ -217,20 +199,6 @@ public class RenderingContext implements CssContext {
 
     public boolean isPrint() {
         return sharedContext.isPrint();
-    }
-
-    private int currentPage;
-
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
-    }
-
-    public void setPrint(boolean b) {
-        sharedContext.setPrint(b);
     }
 }
 

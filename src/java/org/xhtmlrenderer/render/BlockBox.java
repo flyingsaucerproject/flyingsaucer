@@ -54,6 +54,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public JComponent component = null;
     
     private boolean resetMargins;
+    private boolean needPageClear;
 
     public BlockBox() {
         super();
@@ -351,12 +352,23 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public void setResetMargins(boolean resetMargins) {
         this.resetMargins = resetMargins;
     }
+
+    public boolean isNeedPageClear() {
+        return needPageClear;
+    }
+
+    public void setNeedPageClear(boolean needPageClear) {
+        this.needPageClear = needPageClear;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2006/01/01 02:38:18  peterbrant
+ * Merge more pagination work / Various minor cleanups
+ *
  * Revision 1.31  2005/12/30 01:32:39  peterbrant
  * First merge of parts of pagination work
  *

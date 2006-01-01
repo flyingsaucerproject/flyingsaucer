@@ -25,6 +25,8 @@ import org.xhtmlrenderer.demo.browser.actions.GenerateDiffAction;
 import org.xhtmlrenderer.demo.browser.actions.PrintAction;
 import org.xhtmlrenderer.util.Uu;
 
+import org.xhtmlrenderer.layout.SharedContext;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -209,17 +211,22 @@ public class BrowserActions {
 
         print_preview = new EmptyAction("Print Preview") {
             public void actionPerformed(ActionEvent evt) {
-                /*
                 try {
-                    root.panel.view.setPageInfo(root.panel.view.getPageInfo() == null ? PageInfo.LETTER : null);
+                    SharedContext sharedContext = root.panel.view.getSharedContext();
+                    if (sharedContext.isPrint()) {
+                        sharedContext.setPrint(false);
+                        sharedContext.setInteractive(true);
+                    } else {
+                        sharedContext.setPrint(true);
+                        sharedContext.setInteractive(false);
+                    }
                     print_preview.putValue(Action.NAME,
-                            root.panel.view.getPageInfo() == null ? "Print Preview" : "Normal View");
+                            ! sharedContext.isPrint() ? "Print Preview" : "Normal View");
                     root.panel.reloadPage();
                     root.panel.view.repaint();
                 } catch (Exception ex) {
                     Uu.p(ex);
                 }
-                */
             }
         };
         print_preview.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_V));
@@ -299,6 +306,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2006/01/01 02:38:20  peterbrant
+ * Merge more pagination work / Various minor cleanups
+ *
  * Revision 1.21  2005/12/28 00:50:55  peterbrant
  * Continue ripping out first try at pagination / Minor method name refactoring
  *

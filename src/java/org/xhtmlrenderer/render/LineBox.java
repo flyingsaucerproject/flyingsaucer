@@ -25,6 +25,7 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.layout.BoxCollector;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.Layer;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Color;
@@ -323,12 +324,20 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
             }
         }
     }
+    
+    public boolean crossesPageBreak(LayoutContext c) {
+        PageBox pageBox = c.getRootLayer().getFirstPage(c, this);
+        return pageBox == null || getAbsY() + getHeight() >= pageBox.getBottom();
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2006/01/01 02:38:18  peterbrant
+ * Merge more pagination work / Various minor cleanups
+ *
  * Revision 1.44  2005/12/21 02:36:28  peterbrant
  * - Calculate absolute positions incrementally (prep work for pagination)
  * - Light cleanup

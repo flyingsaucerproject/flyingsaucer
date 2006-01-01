@@ -21,7 +21,6 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.context.FontResolver;
 import org.xhtmlrenderer.context.StyleReference;
-import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.TextRenderer;
@@ -91,11 +90,10 @@ public class SharedContext {
 
     public LayoutContext newLayoutContextInstance(Rectangle extents) {
         LayoutContext c = new LayoutContext(this, extents);
-        c.initializeStyles(new EmptyStyle());
         return c;
     }
 
-    public RenderingContext newRenderingContextInstance(Rectangle extents) {
+    public RenderingContext newRenderingContextInstance() {
         RenderingContext c = new RenderingContext(this);
         return c;
     }
@@ -406,7 +404,7 @@ public class SharedContext {
      *
      * @param media The new media value
      */
-    public void setMedia(String media) {
+    private void setMedia(String media) {
         this.media = media;
     }
 
@@ -547,6 +545,11 @@ public class SharedContext {
 
     public void setPrint(boolean print) {
         this.print = print;
+        if (print) {
+            setMedia("print");
+        } else {
+            setMedia("screen");
+        }
     }
 
     /**
@@ -589,6 +592,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2006/01/01 02:38:15  peterbrant
+ * Merge more pagination work / Various minor cleanups
+ *
  * Revision 1.22  2005/12/28 00:50:49  peterbrant
  * Continue ripping out first try at pagination / Minor method name refactoring
  *

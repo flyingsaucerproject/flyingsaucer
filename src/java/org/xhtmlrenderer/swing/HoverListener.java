@@ -83,7 +83,7 @@ public class HoverListener extends MouseInputAdapter {
                 p = p.getParent();
             }
             if (p == null) {//root box was not a block box! impossible at time of coding
-                Restyling.restyle(panel.getSharedContext().newLayoutContextInstance(panel.getBaseExtents()),
+                Restyling.restyle(panel.getSharedContext().newLayoutContextInstance(panel.getScreenExtents()),
                         (BlockBox) panel.getRootBox());
                 return;
             }
@@ -98,7 +98,7 @@ public class HoverListener extends MouseInputAdapter {
                 }
             }
             if (ie == pe) {
-                Restyling.restyle(panel.getSharedContext().newLayoutContextInstance(panel.getBaseExtents()),
+                Restyling.restyle(panel.getSharedContext().newLayoutContextInstance(panel.getScreenExtents()),
                         (BlockBox) p);
                 return;
             }

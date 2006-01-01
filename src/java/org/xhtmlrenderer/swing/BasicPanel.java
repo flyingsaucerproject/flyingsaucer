@@ -19,26 +19,31 @@
  */
 package org.xhtmlrenderer.swing;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.print.PrinterGraphics;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.w3c.dom.Document;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.Configuration;
@@ -202,35 +207,39 @@ public abstract class BasicPanel extends RootPanel {
         }
     }
 
-    /*
-    public void paintPage(Graphics2D g, int page) {
+    public void paintPage(Graphics2D g, int pageNo) {
         Layer root = getRootLayer();
 
         if (root == null) {
             throw new RuntimeException("Document needs layout");
         }
+        
+        if (pageNo < 1 || pageNo > root.getPages().size()) {
+            throw new IllegalArgumentException("Page " + pageNo + " is not between 1 " +
+                    "and " + root.getPages().size());
+        }
 
-        RenderingContext c = newRenderingContext(getPageInfo(), (Graphics2D) g);
+        RenderingContext c = newRenderingContext(g);
 
-        PageInfo info = c.getPageInfo();
-        Border margins = info.getMargins();
-
+        PageBox page = (PageBox)root.getPages().get(pageNo-1);
+        
         Shape working = g.getClip();
+        
+        int leftMBP = page.getStyle().getMarginBorderPadding(c, CalculatedStyle.LEFT);
+        int topMBP = page.getStyle().getMarginBorderPadding(c, CalculatedStyle.TOP);
 
-        g.translate(0, -(info.getContentHeight()) * (page - 1));
+        g.translate(0, -page.getTop());
+        g.translate(leftMBP, topMBP);
 
-        g.translate(margins.left, margins.top);
-
-        g.clipRect(0, (int) (info.getContentHeight() * (page - 1)), (int) info.getContentWidth(), (int) info.getContentHeight());
+        g.clipRect(0, page.getTop(), page.getContentWidth(c), page.getContentHeight(c));
 
         root.paint(c, 0, 0);
 
-        g.translate(-margins.left, -margins.top);
-        g.translate(0, info.getContentHeight() * (page - 1));
+        g.translate(-leftMBP, -topMBP);
+        g.translate(0, page.getTop());
 
         g.setClip(working);
     }
-    */
 
     /**
      * Description of the Method
@@ -319,7 +328,7 @@ public abstract class BasicPanel extends RootPanel {
         if (!c.isPrint()) {
             root.paint(c, 0, 0);
         } else {
-            /* renderPagedView(c, root); */
+            paintPagedView(c, root);
         }
         long after = System.currentTimeMillis();
         if (Configuration.isTrue("xr.incremental.repaint.print-timing", false)) {
@@ -329,73 +338,54 @@ public abstract class BasicPanel extends RootPanel {
         last_event = null;
 
     }
+    
+    private static final int PAGE_PAINTING_CLEARANCE = 10;
 
-    //TODO: CHECK: is layout_context really an appropriate place to store page count?
-    //layout_context should only be alive in the layout thread!
-    public int getPageCount() {
-        return getPageCount(sharedContext);
-    }
+    private void paintPagedView(RenderingContext c, Layer root) {
+        root.assignPagePaintingPositions(c, PAGE_PAINTING_CLEARANCE);
 
-    private int getPageCount(SharedContext c) {
-        /*
-        if (c == null || !c.isPrint() ||
-                c.getPageInfo() == null) {
-            return -1;
-        } else {
-            return (int) (c.getMaxHeight() /
-                    c.getPageInfo().getContentHeight() + 1);
-        }
-        */
-        return 0;
-    }
-
-    /*
-    private void renderPagedView(RenderingContext c, Layer root) {
-        int pageCount = getPageCount(sharedContext);
-
-        setPreferredSize(new Dimension(sharedContext.getMaxWidth(),
-                (int) (pageCount * c.getPageInfo().getContentHeight() +
-                pageCount * c.getPageInfo().getMargins().top +
-                pageCount + c.getPageInfo().getMargins().bottom)));
+        setPreferredSize(new Dimension(
+                root.getMaxPageWidth(c, PAGE_PAINTING_CLEARANCE),
+                root.getLastPage().getPaintingBottom() + PAGE_PAINTING_CLEARANCE));
         revalidate();
-
-        PageInfo info = c.getPageInfo();
-        Border margins = info.getMargins();
 
         Graphics2D g = c.getGraphics();
         Shape working = g.getClip();
 
-        for (int i = 0; i < pageCount; i++) {
-            c.setCurrentPage(i + 1);
+        List pages = root.getPages();
+        for (int i = 0; i < pages.size(); i++) {
+            PageBox page = (PageBox)pages.get(i);
 
             g.setClip(working);
-            g.clip(new Rectangle(margins.left,
-                    (int) (i * info.getContentHeight() + i * margins.top + i * margins.bottom + margins.top),
-                    (int) info.getContentWidth(), (int) info.getContentHeight()));
-            g.translate(margins.left, i * margins.top + i * margins.bottom + margins.top);
-            root.paint(c, 0, 0);
-            g.translate(-margins.left, -(i * margins.top + i * margins.bottom) + -margins.top);
-
-            Stroke oldStroke = g.getStroke();
-            Color oldColor = g.getColor();
-
-            if (i > 0) {
-                g.setClip(working);
-
-                g.setStroke(new BasicStroke(3));
+            
+            Rectangle overall = page.getOverallPaintingBounds(c, PAGE_PAINTING_CLEARANCE);
+            if (working.intersects(overall)) {
+                Color old = g.getColor();
+                
                 g.setColor(Color.BLACK);
-
-                g.drawLine(0,
-                        (int) (i * info.getContentHeight() + i * margins.top + i * margins.bottom),
-                        (int) info.getContentWidth() + margins.left + margins.right,
-                        (int) (i * info.getContentHeight() + i * margins.top + i * margins.bottom));
-
-                g.setColor(oldColor);
-                g.setStroke(oldStroke);
-            }
+                overall.translate(PAGE_PAINTING_CLEARANCE - 1, PAGE_PAINTING_CLEARANCE - 1);
+                overall.width -= PAGE_PAINTING_CLEARANCE + 1;
+                overall.height -= PAGE_PAINTING_CLEARANCE + 1;
+                g.drawRect(overall.x, overall.y, overall.width, overall.height);
+                g.setColor(old);
+                
+                Rectangle content = page.getContentClippingBounds(c, PAGE_PAINTING_CLEARANCE);
+                g.clip(content);
+                
+                int left = PAGE_PAINTING_CLEARANCE +
+                    page.getStyle().getMarginBorderPadding(c, CalculatedStyle.LEFT);
+                int top = page.getPaintingTop() + PAGE_PAINTING_CLEARANCE 
+                    + page.getStyle().getMarginBorderPadding(c, CalculatedStyle.TOP)
+                    - page.getTop();
+                
+                g.translate(left, top);
+                root.paint(c, 0, 0);
+                g.translate(-left, -top);
+            } 
         }
+        
+        g.setClip(working);
     }
-    */
 
     /**
      * Description of the Method
@@ -1080,6 +1070,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.90  2006/01/01 02:38:21  peterbrant
+ * Merge more pagination work / Various minor cleanups
+ *
  * Revision 1.89  2005/12/28 00:50:54  peterbrant
  * Continue ripping out first try at pagination / Minor method name refactoring
  *

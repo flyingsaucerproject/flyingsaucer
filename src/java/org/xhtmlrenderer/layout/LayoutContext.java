@@ -21,10 +21,7 @@ package org.xhtmlrenderer.layout;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 import java.util.logging.Level;
 
@@ -40,54 +37,36 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.MarkerData;
-import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderQueue;
-import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
 
 public class LayoutContext implements CssContext {
     private SharedContext sharedContext;
-    private boolean shrinkWrap = false;
     private RenderQueue renderQueue;
+    
+    private boolean shrinkWrap = false;
     private Layer rootLayer;
     
     private Graphics2D graphics;
 
-    private StyleTracker firstLines = new StyleTracker();
-    private StyleTracker firstLetters = new StyleTracker();
-    
+    private StyleTracker firstLines;
+    private StyleTracker firstLetters;
     private MarkerData currentMarkerData;
     
     //Style-handling stuff
     private Stack styleStack;
 
-    private Stack parentContentStack = new Stack();  
+    private Content parentContent;
     
-    private List pages = new ArrayList();
+    private Stack bfcs;
+    private Stack layers;
     
-    /**
-     * The current block formatting context
-     */
-    private BlockFormattingContext bfc;
-    private Stack bfc_stack;
-    
-    private Layer layer;
-    private Stack layer_stack;
-    
-    private int xoff = 0;
-    private int yoff = 0;
-
-    private int list_counter;   
-    
-    private Stack extents_stack = new Stack();
     private Rectangle extents;   
     
     int renderIndex = 0;
     
-    private boolean sub_block = false;
-    
-    private boolean shouldStop = false;    
+    private boolean shouldStop = false;
 
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
@@ -116,7 +95,6 @@ public class LayoutContext implements CssContext {
     public NamespaceHandler getNamespaceHandler() {
         return sharedContext.getNamespaceHandler();
     }
-
     
     public boolean shrinkWrap() {
         return shrinkWrap;
@@ -133,14 +111,60 @@ public class LayoutContext implements CssContext {
     //the stuff that needs to have a separate instance for each run.
     LayoutContext(SharedContext sharedContext, Rectangle extents) {
         this.sharedContext = sharedContext;
-        bfc_stack = new Stack();
-        layer_stack = new Stack();
+        this.bfcs = new Stack();
+        this.layers = new Stack();
+        this.styleStack = new Stack();
+        this.styleStack.push(new EmptyStyle());
         setExtents(extents);
+        
+        this.firstLines = new StyleTracker();
+        this.firstLetters = new StyleTracker();
     }
-
-    public void initializeStyles(CalculatedStyle c) {
-        styleStack = new Stack();
-        styleStack.push(c);
+    
+    public void reInit(CalculatedStyle currentStyle) {
+        this.firstLines = new StyleTracker();
+        this.firstLetters = new StyleTracker();
+        this.currentMarkerData = null;
+        
+        this.styleStack = new Stack();
+        this.styleStack.push(new EmptyStyle());
+        this.styleStack.push(currentStyle);
+        
+        this.parentContent = null;
+        this.bfcs = new Stack();
+        
+        this.extents = null;
+    }
+    
+    public LayoutState captureLayoutState() {
+        LayoutState result = new LayoutState();
+        
+        result.setFirstLines(this.firstLines);
+        result.setFirstLetters(this.firstLetters);
+        result.setCurrentMarkerData(this.currentMarkerData);
+        
+        result.setStyleStack(this.styleStack);
+        result.setParentContent(this.parentContent);
+        
+        result.setBFCs(this.bfcs);
+        
+        result.setExtents(this.extents);
+        
+        return result;
+    }
+    
+    public void restoreLayoutState(LayoutState layoutState) {
+        this.firstLines = layoutState.getFirstLines();
+        this.firstLetters = layoutState.getFirstLetters();
+        
+        this.currentMarkerData = layoutState.getCurrentMarkerData();
+        
+        this.styleStack = layoutState.getStyleStack();
+        this.parentContent = layoutState.getParentContent();
+        
+        this.bfcs = layoutState.getBFCs();
+        
+        this.extents = layoutState.getExtents();
     }
 
     public void pushStyle(CascadedStyle s) {
@@ -152,8 +176,9 @@ public class LayoutContext implements CssContext {
     public void popStyle() {
         if (isStylesAllPopped()) {
             XRLog.general(Level.SEVERE, "Trying to pop base empty style");
-        } else
+        } else {
             styleStack.pop();
+        }
     }
 
     public CalculatedStyle getCurrentStyle() {
@@ -165,16 +190,15 @@ public class LayoutContext implements CssContext {
     }   
 
     public BlockFormattingContext getBlockFormattingContext() {
-        return bfc;
+        return (BlockFormattingContext)bfcs.peek();
     }
 
     public void pushBFC(BlockFormattingContext bfc) {
-        bfc_stack.push(this.bfc);
-        this.bfc = bfc;
+        bfcs.push(bfc);
     }
 
     public void popBFC() {
-        bfc = (BlockFormattingContext) bfc_stack.pop();
+        bfcs.pop();
     }
     
     public void pushLayer(Box master) {
@@ -184,7 +208,7 @@ public class LayoutContext implements CssContext {
             layer = new Layer(master);
             rootLayer = layer;
         } else {
-            Layer parent = this.layer;
+            Layer parent = getLayer();
             
             if (master.getStyle().isFixed()) {
                 while (parent.getParent() != null) {
@@ -197,19 +221,19 @@ public class LayoutContext implements CssContext {
             parent.addChild(layer);
         }
         
-        layer_stack.push(this.layer);
-        this.layer = layer;
+        layers.push(layer);
     }
     
     public void popLayer() {
-        if (! layer.isInline()) {
-            layer.positionChildren(this);
-        }
-        layer = (Layer)layer_stack.pop();
+        Layer layer = getLayer();
+
+        layer.finish(this);
+        
+        layers.pop();
     }
     
     public Layer getLayer() {
-        return layer;
+        return (Layer)layers.peek();
     }
     
     public Layer getRootLayer() {
@@ -231,51 +255,22 @@ public class LayoutContext implements CssContext {
     /**
      * @param dw amount to shrink width by
      * @param dh amount to shrink height by
+     * @return the extents before shrinking
      */
-    public void shrinkExtents(int dw, int dh) {
-
-        extents_stack.push(getExtents());
+    public Rectangle shrinkExtents(int dw, int dh) {
+        Rectangle result = getExtents();
 
         Rectangle rect = new Rectangle(0, 0,
                 getExtents().width - dw,
                 getExtents().height - dh);
 
         setExtents(rect);
-    }
-
-    public void unshrinkExtents() {
-        setExtents((Rectangle) extents_stack.pop());
-    }
-
-    public int getListCounter() {
-        return list_counter;
-    }
-
-    public void setListCounter(int counter) {
-        list_counter = counter;
-    }
-
-    /* ================== Extra Utility Funtions ============== */
-
-    /*
-     * notes to help manage inline sub blocks (like table cells)
-     */
-    public void setSubBlock(boolean sub_block) {
-        this.sub_block = sub_block;
-    }
-
-    public boolean isSubBlock() {
-        return sub_block;
+        
+        return result;
     }
 
     public void translate(int x, int y) {
-        bfc.translate(x, y);
-        xoff += x;
-        yoff += y;
-    }
-
-    public Point getOriginOffset() {
-        return new Point(xoff, yoff);
+        getBlockFormattingContext().translate(x, y);
     }
 
     public boolean shouldStop() {
@@ -289,10 +284,8 @@ public class LayoutContext implements CssContext {
     public String toString() {
         return "Context: extents = " +
                 "(" + extents.x + "," + extents.y + ") -> (" + extents.width + "x" + extents.height + ")"
-                + " offset = " + xoff + "," + yoff
                 ;
     }
-
 
     /* code to keep track of all of the id'd boxes */
     public void addIDBox(String id, Box box) {
@@ -303,20 +296,12 @@ public class LayoutContext implements CssContext {
         return sharedContext.isInteractive();
     }
 
-    public void setInteractive(boolean interactive) {
-        sharedContext.setInteractive(interactive);
-    }
-
     public Content getParentContent() {
-        return (Content) (parentContentStack.size() == 0 ? null : parentContentStack.peek());
+        return this.parentContent;
     }
-
-    public void pushParentContent(Content content) {
-        parentContentStack.push(content);
-    }
-
-    public void popParentContent() {
-        parentContentStack.pop();
+    
+    public void setParentContent(Content parent) {
+        this.parentContent = parent;
     }
 
     public RenderQueue getRenderQueue() {
@@ -359,10 +344,6 @@ public class LayoutContext implements CssContext {
         return sharedContext.getUac();
     }
 
-    public void setPrint(boolean b) {
-        sharedContext.setPrint(b);
-    }
-
     public boolean isPrint() {
         return sharedContext.isPrint();
     }
@@ -381,34 +362,5 @@ public class LayoutContext implements CssContext {
 
     public void setCurrentMarkerData(MarkerData currentMarkerData) {
         this.currentMarkerData = currentMarkerData;
-    }
-    
-    public void addPage() {
-        PageBox pageBox = new PageBox();
-        String pseudoPage = null;
-        if (this.pages.size() == 0) {
-            pseudoPage = "first";
-        } else if (this.pages.size() % 2 == 0) {
-            pseudoPage = "left";
-        } else {
-            pseudoPage = "right";
-        }
-        CalculatedStyle cs = new EmptyStyle().deriveStyle(
-                getCss().getPageStyle(pseudoPage));
-        pageBox.setStyle(new Style(cs, 0));
-        pageBox.getStyle().setContainingBlockWidth(pageBox.getWidth(this));
-        if (this.pages.size() == 0) {
-            pageBox.setTopAndBottom(this, 0);
-        } else {
-            PageBox previous = (PageBox)this.pages.get(this.pages.size()-1);
-            pageBox.setTopAndBottom(this, previous.getBottom());
-        }
-        
-        this.pages.add(pageBox);
-    }
-    
-    public PageBox getCurrentPage() {
-        return this.pages.size() == 0 ? 
-                null : (PageBox)this.pages.get(this.pages.size()-1);
     }
 }
