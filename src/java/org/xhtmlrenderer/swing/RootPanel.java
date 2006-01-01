@@ -426,7 +426,9 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
     public void componentResized(ComponentEvent e) {
         Uu.p("componentResized() " + this.getSize());
         Uu.p("viewport = " + enclosingScrollPane.getViewport().getSize());
-        relayout(enclosingScrollPane.getViewport().getSize());
+        if (! getSharedContext().isPrint()) {
+            relayout(enclosingScrollPane.getViewport().getSize());
+        }
     }
     
     protected void relayout(Dimension viewportSize) {

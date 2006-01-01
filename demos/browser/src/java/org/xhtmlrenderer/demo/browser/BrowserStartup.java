@@ -143,11 +143,6 @@ public class BrowserStartup {
         frame.getContentPane().add(bs.panel);
         frame.pack();
         frame.setSize(700, 600);
-        frame.addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent e) {
-                bs.panel.view.relayout();
-            }
-        });
 
         frame.show();
     }
@@ -176,6 +171,9 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2006/01/01 04:01:07  peterbrant
+ * Avoid double layout on component resize / Don't relayout if print mode and window size changes
+ *
  * Revision 1.18  2005/11/28 17:02:33  peterbrant
  * Add ability to launch browser with URL provided on the command line (from Andrew Goodnough)
  *
