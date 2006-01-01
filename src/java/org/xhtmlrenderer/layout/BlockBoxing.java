@@ -96,6 +96,10 @@ public class BlockBoxing {
                         true, currentContent);
             }
             
+            if (c.isPrint()) {
+                c.getRootLayer().ensureHasPage(c, child_box);
+            }
+            
             if (child_box instanceof AnonymousBlockBox) {
                 listIndex--;
             }
@@ -174,6 +178,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2006/01/01 03:35:37  peterbrant
+ * In print mode, make sure block has a page on which to be drawn
+ *
  * Revision 1.37  2006/01/01 03:14:27  peterbrant
  * Implement page-break-inside: avoid
  *

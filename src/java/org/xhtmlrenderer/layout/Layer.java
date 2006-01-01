@@ -594,36 +594,37 @@ public class Layer {
     }
     
     public PageBox getFirstPage(LayoutContext c, Box box) {
-        List pages = getPages();
-        for (int i = pages.size()-1; i >= 0; i--) {
-            PageBox pageBox = (PageBox)pages.get(i);
-            if (box.getAbsY() >= pageBox.getTop() && box.getAbsY() < pageBox.getBottom()) {
-                return pageBox;
-            }
-        }
-        if (box.getAbsY() < 0) {
-            return null;
-        } else {
-            addPagesUntilPosition(c, box.getAbsY());
-            return (PageBox) pages.get(pages.size()-1);
-        }
+        return getPage(c, box, box.getAbsY());
     }
     
     public PageBox getLastPage(LayoutContext c, Box box) {
+        return getPage(c, box, box.getAbsY() + box.getHeight());
+    }
+    
+    public void ensureHasPage(LayoutContext c, Box box) {
+        getLastPage(c, box);
+    }
+    
+    private PageBox getPage(LayoutContext c, Box box, int yOffset) {
         List pages = getPages();
-        int bottom = box.getAbsY() + box.getHeight();
-        for (int i = pages.size()-1; i >= 0; i--) {
-            PageBox pageBox = (PageBox)pages.get(i);
-            if (bottom >= pageBox.getTop() && bottom < pageBox.getBottom()) {
-                return pageBox;
-            }
-        }
-        if (bottom < 0) {
+        if (yOffset < 0) {
             return null;
         } else {
-            addPagesUntilPosition(c, bottom);
-            return (PageBox) pages.get(pages.size()-1);
+            PageBox last = (PageBox) pages.get(pages.size()-1);
+            if (yOffset < last.getBottom()) {
+                for (int i = pages.size()-1; i >= 0; i--) {
+                    PageBox pageBox = (PageBox)pages.get(i);
+                    if (yOffset >= pageBox.getTop() && yOffset < pageBox.getBottom()) {
+                        return pageBox;
+                    }
+                }
+            } else {
+                addPagesUntilPosition(c, yOffset);
+                return (PageBox) pages.get(pages.size()-1);
+            }
         }
+        
+        throw new RuntimeException("internal error");
     }
     
     private void addPagesUntilPosition(LayoutContext c, int position) {
