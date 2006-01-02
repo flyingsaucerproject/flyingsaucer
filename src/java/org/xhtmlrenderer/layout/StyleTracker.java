@@ -63,4 +63,10 @@ public class StyleTracker {
     public List getStyles() {
         return styles;
     }
+    
+    public StyleTracker copyOf() {
+        StyleTracker result = new StyleTracker();
+        result.styles.addAll(this.styles);
+        return result;
+    }
 }

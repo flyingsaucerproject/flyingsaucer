@@ -166,6 +166,23 @@ public class LayoutContext implements CssContext {
         
         this.extents = layoutState.getExtents();
     }
+    
+    public LayoutState copyStateForRelayout() {
+        LayoutState result = new LayoutState();
+        
+        result.setFirstLetters(this.firstLetters.copyOf());
+        result.setFirstLines(this.firstLines.copyOf());
+        result.setCurrentMarkerData(this.currentMarkerData);
+        
+        return result;
+    }
+    
+    public void restoreStateForRelayout(LayoutState layoutState) {
+        this.firstLines = layoutState.getFirstLines();
+        this.firstLetters = layoutState.getFirstLetters();
+        
+        this.currentMarkerData = layoutState.getCurrentMarkerData();
+    }
 
     public void pushStyle(CascadedStyle s) {
         CalculatedStyle parent = (CalculatedStyle) styleStack.peek();

@@ -666,4 +666,18 @@ public class Layer {
         List pages = getPages();
         return pages.size() == 0 ? null : (PageBox)pages.get(pages.size()-1);
     }
+    
+    public boolean crossesPageBreak(LayoutContext c, int top, int bottom) {
+        if (top < 0) {
+            return false;
+        }
+        List pages = getPages();
+        for (Iterator i = pages.iterator(); i.hasNext(); ) {
+            PageBox page = (PageBox)i.next();
+            if (top >= page.getTop() && top < page.getBottom()) {
+                return bottom >= page.getBottom();
+            }
+        }
+        throw new RuntimeException("Could not find page");
+    }
 }

@@ -165,11 +165,6 @@ public abstract class Box {
         }
     }
 
-    public void reset() {
-        removeAllChildren();
-        height = tx = ty = 0;
-    }
-
     public void setParent(Box box) {
         this.parent = box;
     }
@@ -705,6 +700,13 @@ public abstract class Box {
         setParent(null);
     }
     
+    public void detachChildren(int start, int end) {
+        for (int i = start; i <= end; i++) {
+            Box box = getChild(start);
+            box.detach();
+        }
+    }
+    
     protected void detachChildren() {
         for (int i = 0; i < getChildCount(); i++) {
             Box box = getChild(i);
@@ -723,24 +725,31 @@ public abstract class Box {
     }
     
     public int moveToNextPage(LayoutContext c) {
-        // FIXME "current" page can (and will) be wrong.  Should search for applicable page.
         PageBox page = c.getRootLayer().getFirstPage(c, this);
         if (page == null) {
             XRLog.layout(Level.WARNING, "Box has no page");
             return 0;
         } else {
-            int delta = c.getRootLayer().getFirstPage(c, this).getBottom() - getAbsY();
-            this.y += delta;
-            c.getRootLayer().addPage(c);
-            return delta;
+            if (page.getTop() == getAbsY()) {
+                return 0;
+            } else {
+                int delta = page.getBottom() - getAbsY();
+                this.y += delta;
+                if (page == c.getRootLayer().getLastPage()) {
+                    c.getRootLayer().addPage(c);
+                }
+                return delta;
+            }
         }
     }
 
     public void expandToPageBottom(LayoutContext c) {
-        int delta = c.getRootLayer().getLastPage(c, this).getBottom() - 
-            (getAbsY() + this.height);
+        PageBox page = c.getRootLayer().getLastPage(c, this);
+        int delta = page.getBottom() - (getAbsY() + this.height);
         this.height += delta;
-        c.getRootLayer().addPage(c);
+        if (page == c.getRootLayer().getLastPage()) {   
+            c.getRootLayer().addPage(c);
+        }
     }
     
     public boolean crossesPageBreak(LayoutContext c) {
@@ -757,6 +766,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.98  2006/01/02 20:59:09  peterbrant
+ * Implement page-break-before/after: avoid
+ *
  * Revision 1.97  2006/01/01 03:14:25  peterbrant
  * Implement page-break-inside: avoid
  *

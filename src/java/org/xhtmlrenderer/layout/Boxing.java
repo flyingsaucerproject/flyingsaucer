@@ -262,7 +262,7 @@ public class Boxing {
             c.setParentContent(content);
             PseudoClassPushStatus status = pushPseudoClasses(c, contentList);
             if (ContentUtil.hasBlockContent(contentList)) {//this should be block layed out
-                BlockBoxing.layoutContent(c, box, contentList, box);
+                BlockBoxing.layoutContent(c, box, contentList);
             } else {
                 InlineBoxing.layoutContent(c, box, contentList);
             }
@@ -340,6 +340,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.72  2006/01/02 20:59:08  peterbrant
+ * Implement page-break-before/after: avoid
+ *
  * Revision 1.71  2006/01/01 02:38:15  peterbrant
  * Merge more pagination work / Various minor cleanups
  *
