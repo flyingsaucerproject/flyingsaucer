@@ -342,6 +342,10 @@ public abstract class BasicPanel extends RootPanel {
     private static final int PAGE_PAINTING_CLEARANCE = 10;
 
     private void paintPagedView(RenderingContext c, Layer root) {
+        if (root.getLastPage() == null) {
+            return;
+        }
+        
         root.assignPagePaintingPositions(c, PAGE_PAINTING_CLEARANCE);
 
         setPreferredSize(new Dimension(
@@ -1070,6 +1074,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.92  2006/01/02 20:58:22  peterbrant
+ * Fix NPE
+ *
  * Revision 1.91  2006/01/01 03:15:13  peterbrant
  * Fix position of rectangle around page in paged view
  *
