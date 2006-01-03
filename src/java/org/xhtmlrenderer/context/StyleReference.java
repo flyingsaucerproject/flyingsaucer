@@ -186,7 +186,6 @@ public class StyleReference {
         StylesheetInfo info = new StylesheetInfo();
         info.setUri(uri);
         info.setOrigin(StylesheetInfo.AUTHOR);
-        Stylesheet sheet = null;
         if (_stylesheetFactory.containsStylesheet(uri)) {
             _stylesheetFactory.removeCachedStylesheet(uri);
             XRLog.cssParse("Removing stylesheet '" + uri + "' from cache by request.");
@@ -265,6 +264,9 @@ public class StyleReference {
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2006/01/03 23:02:37  peterbrant
+ * Remove unused variable
+ *
  * Revision 1.7  2005/12/30 01:32:43  peterbrant
  * First merge of parts of pagination work
  *
