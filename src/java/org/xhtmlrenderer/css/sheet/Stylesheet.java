@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.css.sheet;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -127,6 +126,9 @@ public class Stylesheet {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2006/01/03 23:02:22  peterbrant
+ * Remove unused import
+ *
  * Revision 1.13  2005/12/30 01:32:41  peterbrant
  * First merge of parts of pagination work
  *
