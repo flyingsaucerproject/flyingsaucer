@@ -307,7 +307,6 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
                 setAbsX(parent.getAbsX() + parent.tx + this.x);
                 setAbsY(parent.getAbsY() + parent.ty + this.y);
             } else if (isStyled() && (getStyle().isAbsolute() || getStyle().isFixed())) {
-                // Could be absolute try positioning relative to containing block
                 Box cb = getContainingBlock();
                 if (cb != null) {
                     setAbsX(cb.getAbsX() + this.x);
@@ -411,6 +410,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2006/01/03 23:52:40  peterbrant
+ * Remove unhelpful comment
+ *
  * Revision 1.34  2006/01/03 17:04:50  peterbrant
  * Many pagination bug fixes / Add ability to position absolute boxes in margin area
  *
