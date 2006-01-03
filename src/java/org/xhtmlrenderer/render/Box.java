@@ -471,41 +471,6 @@ public abstract class Box {
         
         return new Dimension(this.x - initialX, this.y - initialY);
     }
-
-    // TODO Finish this!
-    public void positionAbsolute(CssContext cssCtx) {
-        CalculatedStyle style = getStyle().getCalculatedStyle();
-
-        Rectangle boundingBox = null;
-        
-        int cbContentHeight = getContainingBlock().getContentAreaEdge(0, 0, cssCtx).height;
-
-        if (getContainingBlock() instanceof BlockBox) {
-            boundingBox = getContainingBlock().getPaddingEdge(0, 0, cssCtx);
-        } else {
-            boundingBox = getContainingBlock().getContentAreaEdge(0, 0, cssCtx);
-        }
-
-        if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
-            this.x = (int)style.getFloatPropertyProportionalWidth(CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
-        } else if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-            this.x = boundingBox.width -
-                    (int)style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth();
-        }
-
-        if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-            this.y = (int)style.getFloatPropertyProportionalHeight(CSSName.TOP, cbContentHeight, cssCtx);
-        } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-            this.y = boundingBox.height -
-                    (int)style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, cbContentHeight, cssCtx) - getHeight();
-        }
-
-        this.x += boundingBox.x;
-        this.y += boundingBox.y;
-        
-        calcCanvasLocation();
-        calcChildLocations();
-    }
     
     // HACK If a box doesn't have a Style object, NPEs are the likely result
     // However, it begs the question if a Style object is being used in places
@@ -708,8 +673,9 @@ public abstract class Box {
     }
     
     protected void detachChildren() {
-        for (int i = 0; i < getChildCount(); i++) {
-            Box box = getChild(i);
+        int remaining = getChildCount();
+        while (remaining-- > 0) {
+            Box box = getChild(0);
             box.detach();
         }
     }
@@ -745,7 +711,8 @@ public abstract class Box {
 
     public void expandToPageBottom(LayoutContext c) {
         PageBox page = c.getRootLayer().getLastPage(c, this);
-        int delta = page.getBottom() - (getAbsY() + this.height);
+        int delta = page.getBottom() - (getAbsY() + 
+                getStyle().getMarginBorderPadding(c, CalculatedStyle.TOP) + this.height);
         this.height += delta;
         if (page == c.getRootLayer().getLastPage()) {   
             c.getRootLayer().addPage(c);
@@ -766,6 +733,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.99  2006/01/03 02:12:20  peterbrant
+ * Various pagination fixes / Fix fixed positioning
+ *
  * Revision 1.98  2006/01/02 20:59:09  peterbrant
  * Implement page-break-before/after: avoid
  *

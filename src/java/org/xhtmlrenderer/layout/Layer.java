@@ -298,12 +298,12 @@ public class Layer {
         Box fixed = getMaster();
 
         fixed.x = 0;
-        fixed.y = -rect.y;
+        fixed.y = 0;
         fixed.setAbsX(0);
         fixed.setAbsY(0);
 
         fixed.setContainingBlock(new ViewportBox(rect));
-        fixed.positionAbsolute(c);
+        ((BlockBox)fixed).positionAbsolute(c);
     }
 
     private void paintLayerBackgroundAndBorder(RenderingContext c) {
@@ -403,7 +403,7 @@ public class Layer {
     
     private void position(LayoutContext c) {
         if (getMaster().getStyle().isAbsolute() && ! c.isPrint()) {
-            getMaster().positionAbsolute(c);
+            ((BlockBox)getMaster()).positionAbsolute(c);
         } else if (getMaster().getStyle().isRelative() && isInline()) {
             getMaster().positionRelative(c);
         }
@@ -505,38 +505,53 @@ public class Layer {
             for (int i = 0; i < children.size(); i++) {
                 Layer child = (Layer)children.get(i);
                 if (child.isRequiresLayout()) {
-                    if (child.getMaster().getStyle().isBottomAuto()) {
-                        // Set top, left
-                        child.getMaster().positionAbsolute(c);
-                        c.reInit(child.getLayoutData().getParentStyle());
-                        c.setExtents(getExtents(c));
-                        Boxing.layout(c, (BlockBox)child.getMaster(), 
-                                child.getLayoutData().getContent());
-                        // Set right
-                        child.getMaster().positionAbsolute(c);
-                    } else {
-                        // FIXME Not right in the face of pagination, but what
-                        // to do?  Not sure if just laying out and positioning
-                        // repeatedly will converge on the correct position,
-                        // so just guess for now
-                        c.reInit(child.getLayoutData().getParentStyle());
-                        c.setExtents(getExtents(c));
-                        Boxing.layout(c, (BlockBox)child.getMaster(), 
-                                child.getLayoutData().getContent());
-                        
+                    layoutAbsoluteChild(c, child);
+                    if (child.getMaster().getStyle().isAvoidPageBreakInside() &&
+                            child.getMaster().crossesPageBreak(c)) {
+                        ((BlockBox)child.getMaster()).setNeedPageClear(true);
                         child.getMaster().detach();
-                        child.getMaster().positionAbsolute(c);
-                        
-                        c.reInit(child.getLayoutData().getParentStyle());
-                        c.setExtents(getExtents(c));
-                        Boxing.layout(c, (BlockBox)child.getMaster(), 
-                                child.getLayoutData().getContent());
+                        layoutAbsoluteChild(c, child);
+                        ((BlockBox)child.getMaster()).setNeedPageClear(false);
                     }
                     child.setRequiresLayout(false);
                     child.finish(c);
                 }
             }
             c.restoreLayoutState(state);
+        }
+    }
+
+    private void layoutAbsoluteChild(LayoutContext c, Layer child) {
+        BlockBox master = (BlockBox)child.getMaster();
+        if (child.getMaster().getStyle().isBottomAuto()) {
+            // Set top, left
+            master.positionAbsolute(c);
+            master.positionAbsoluteOnPage(c);
+            c.reInit(child.getLayoutData().getParentStyle());
+            c.setExtents(getExtents(c));
+            Boxing.layout(c, (BlockBox)child.getMaster(), 
+                    child.getLayoutData().getContent());
+            // Set right
+            master.positionAbsolute(c);
+            master.positionAbsoluteOnPage(c);
+        } else {
+            // FIXME Not right in the face of pagination, but what
+            // to do?  Not sure if just laying out and positioning
+            // repeatedly will converge on the correct position,
+            // so just guess for now
+            c.reInit(child.getLayoutData().getParentStyle());
+            c.setExtents(getExtents(c));
+            Boxing.layout(c, (BlockBox)child.getMaster(), 
+                    child.getLayoutData().getContent());
+            
+            child.getMaster().detach();
+            master.positionAbsolute(c);
+            master.positionAbsoluteOnPage(c);
+            
+            c.reInit(child.getLayoutData().getParentStyle());
+            c.setExtents(getExtents(c));
+            Boxing.layout(c, (BlockBox)child.getMaster(), 
+                    child.getLayoutData().getContent());
         }
     }
     

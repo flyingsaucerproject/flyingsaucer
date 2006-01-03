@@ -33,6 +33,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -294,11 +295,6 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public void setStaticEquivalent(Box staticEquivalent) {
         this.staticEquivalent = staticEquivalent;
     }
-    
-    public void alignToStaticEquivalent() {
-        this.y = staticEquivalent.getAbsY() - getAbsY();
-        setAbsY(staticEquivalent.getAbsY());
-    }
 
     public boolean isReplaced() {
         return component != null;
@@ -330,11 +326,6 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
                 component.setLocation(getAbsX(), getAbsY());    
             }
         }
-        
-        if (isStyled() && getStyle().isAbsolute() && getStyle().isTopAuto() &&
-                getStyle().isBottomAuto()) {
-            alignToStaticEquivalent();
-        }
     }
     
     public void calcChildLocations() {
@@ -360,12 +351,69 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public void setNeedPageClear(boolean needPageClear) {
         this.needPageClear = needPageClear;
     }
+    
+    
+    private void alignToStaticEquivalent() {
+        this.y = staticEquivalent.getAbsY() - getAbsY();
+        setAbsY(staticEquivalent.getAbsY());
+    }
+
+    // TODO Finish this!
+    public void positionAbsolute(CssContext cssCtx) {
+        CalculatedStyle style = getStyle().getCalculatedStyle();
+
+        Rectangle boundingBox = null;
+        
+        int cbContentHeight = getContainingBlock().getContentAreaEdge(0, 0, cssCtx).height;
+
+        if (getContainingBlock() instanceof BlockBox) {
+            boundingBox = getContainingBlock().getPaddingEdge(0, 0, cssCtx);
+        } else {
+            boundingBox = getContainingBlock().getContentAreaEdge(0, 0, cssCtx);
+        }
+
+        if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
+            this.x = (int)style.getFloatPropertyProportionalWidth(CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
+        } else if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
+            this.x = boundingBox.width -
+                    (int)style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth();
+        }
+
+        if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
+            this.y = (int)style.getFloatPropertyProportionalHeight(CSSName.TOP, cbContentHeight, cssCtx);
+        } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
+            this.y = boundingBox.height -
+                    (int)style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, cbContentHeight, cssCtx) - getHeight();
+        }
+
+        this.x += boundingBox.x;
+        this.y += boundingBox.y;
+        
+        calcCanvasLocation();
+        
+        if (getStyle().isTopAuto() && getStyle().isBottomAuto()) {
+            alignToStaticEquivalent();
+        }
+        
+        calcChildLocations();
+    }
+    
+    public void positionAbsoluteOnPage(LayoutContext c) {
+        if (c.isPrint() && (getStyle().isForcePageBreakBefore() || isNeedPageClear())) {
+            moveToNextPage(c);
+            calcCanvasLocation();
+            calcChildLocations();
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2006/01/03 02:12:21  peterbrant
+ * Various pagination fixes / Fix fixed positioning
+ *
  * Revision 1.32  2006/01/01 02:38:18  peterbrant
  * Merge more pagination work / Various minor cleanups
  *

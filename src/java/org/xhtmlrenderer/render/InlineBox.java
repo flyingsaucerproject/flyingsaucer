@@ -589,7 +589,20 @@ public class InlineBox extends Box implements InlinePaintable {
             Object object = getInlineChild(i);
             if (object instanceof Box) {
                 ((Box)object).detach();
+                i--;
             }
+        }
+    }
+    
+    public void removeChild(Box child) {
+        if (inlineChildren != null) {
+            inlineChildren.remove(child);
+        }
+    }
+    
+    public void removeChild(int i) {
+        if (inlineChildren != null) {
+            inlineChildren.remove(i);
         }
     }
     
