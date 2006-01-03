@@ -118,12 +118,10 @@ public class RectPropertySet {
         }
         if (isAbs) {
             key = new StringBuffer()
-                    .append("side-rect : ")
-                    .append(style.asFloat(sideProperties[0]) + "px ")
-                    .append(style.asFloat(sideProperties[1]) + "px ")
-                    .append(style.asFloat(sideProperties[2]) + "px ")
-                    .append(style.asFloat(sideProperties[3]) + "px")
-                    .append(";")
+                    .append(style.asString(sideProperties[0]))
+                    .append(style.asString(sideProperties[1]))
+                    .append(style.asString(sideProperties[2]))
+                    .append(style.asString(sideProperties[3]))
                     .toString();
         }
         return key;

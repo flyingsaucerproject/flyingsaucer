@@ -144,20 +144,18 @@ public class BorderPropertySet extends RectPropertySet {
         CSSName[] styles = CSSName.BORDER_STYLE_PROPERTIES;
         CSSName[] colors = CSSName.BORDER_COLOR_PROPERTIES;
         key = new StringBuffer()
-                .append("border : ")
-                .append(style.asFloat(sides[0]) + "px ")
-                .append(style.getIdent(styles[0]) + " ")
-                .append(style.asColor(colors[0]) + " ")
-                .append(style.asFloat(sides[1]) + "px ")
-                .append(style.getIdent(styles[1]) + " ")
-                .append(style.asColor(colors[1]) + " ")
-                .append(style.asFloat(sides[2]) + "px ")
-                .append(style.getIdent(styles[2]) + " ")
-                .append(style.asColor(colors[2]) + " ")
-                .append(style.asFloat(sides[3]) + "px ")
-                .append(style.getIdent(styles[3]) + " ")
-                .append(style.asColor(colors[3]) + " ")
-                .append(";")
+                .append(style.asString(sides[0]))
+                .append(style.getIdent(styles[0]))
+                .append(style.asColor(colors[0]))
+                .append(style.asString(sides[1]))
+                .append(style.getIdent(styles[1]))
+                .append(style.asColor(colors[1]))
+                .append(style.asString(sides[2]))
+                .append(style.getIdent(styles[2]))
+                .append(style.asColor(colors[2]))
+                .append(style.asString(sides[3]))
+                .append(style.getIdent(styles[3]))
+                .append(style.asColor(colors[3]))
                 .toString();
         return key;
     }
