@@ -363,11 +363,15 @@ public abstract class BasicPanel extends RootPanel {
             g.setClip(working);
             
             Rectangle overall = page.getOverallPaintingBounds(c, PAGE_PAINTING_CLEARANCE);
+            overall.x -= 1;
+            overall.y -= 1;
+            overall.width += 1;
+            overall.height += 1;
             if (working.intersects(overall)) {
                 Color old = g.getColor();
                 
                 g.setColor(Color.BLACK);
-                g.drawRect(overall.x - 1, overall.y - 1, overall.width + 1, overall.height + 1);
+                g.drawRect(overall.x, overall.y, overall.width, overall.height);
                 g.setColor(old);
                 
                 Rectangle content = page.getContentClippingBounds(c, PAGE_PAINTING_CLEARANCE);
@@ -1076,6 +1080,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.94  2006/01/03 23:54:30  peterbrant
+ * Fix page clip region checking
+ *
  * Revision 1.93  2006/01/03 17:04:52  peterbrant
  * Many pagination bug fixes / Add ability to position absolute boxes in margin area
  *
