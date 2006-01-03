@@ -216,16 +216,15 @@ public class BlockBoxing {
         int startAbsY = block.getAbsY() + block.ty + block.height;
         int endAbsY = 0;
         
-        int offset = start - 1;
         for (int i = start; i <= end; i++) {
             Content currentContent = (Content)contentList.get(i);
-            offset++;
             
             RelayoutData relayoutData = relayoutDataList.get(i);
 
             BlockBox childBox = null;
             //TODO:handle run-ins. For now, treat them as blocks
             
+            c.restoreStateForRelayout(relayoutData.getLayoutState());
             childBox = layoutBlockChild(
                     c, block, styleSetListener, relayoutData.getListIndex(),
                    relayoutData.isResetMargins(), false, currentContent);
@@ -345,7 +344,7 @@ public class BlockBoxing {
                 currentData.setInRun(true);
                 
                 if (offset == _hints.size() - 1) {
-                    previousData.setEndsRun(true);
+                    currentData.setEndsRun(true);
                 }
             } else {
                 if (previousData.isInRun()) {
@@ -463,6 +462,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2006/01/03 17:04:46  peterbrant
+ * Many pagination bug fixes / Add ability to position absolute boxes in margin area
+ *
  * Revision 1.39  2006/01/02 20:59:07  peterbrant
  * Implement page-break-before/after: avoid
  *

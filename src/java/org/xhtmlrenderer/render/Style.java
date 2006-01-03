@@ -233,4 +233,8 @@ public class Style {
         this.marginTopOverride = 0.0f;
         this.marginTopOverrideSet = false;
     }
+    
+    public boolean isAlternateFlow() {
+        return getCalculatedStyle().isAlternateFlow();
+    }
 }

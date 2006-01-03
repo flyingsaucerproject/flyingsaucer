@@ -200,6 +200,61 @@ public final class CSSName {
     /**
      * Unique CSSName instance for CSS2 property.
      */
+    public final static CSSName FS_FLOW_TOP =
+            addProperty(
+                    "-fs-flow-top",
+                    PRIMITIVE,
+                    "none",
+                    NOT_INHERITED
+            );
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_FLOW_RIGHT =
+            addProperty(
+                    "-fs-flow-right",
+                    PRIMITIVE,
+                    "none",
+                    NOT_INHERITED
+            );
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_FLOW_BOTTOM =
+            addProperty(
+                    "-fs-flow-bottom",
+                    PRIMITIVE,
+                    "none",
+                    NOT_INHERITED
+            );
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_FLOW_LEFT =
+            addProperty(
+                    "-fs-flow-left",
+                    PRIMITIVE,
+                    "none",
+                    NOT_INHERITED
+            );    
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
+    public final static CSSName FS_MOVE_TO_FLOW =
+            addProperty(
+                    "-fs-move-to-flow",
+                    PRIMITIVE,
+                    "none",
+                    NOT_INHERITED
+            );    
+    
+    /**
+     * Unique CSSName instance for CSS2 property.
+     */
     public final static CSSName FS_PAGE_WIDTH =
             addProperty(
                     "-fs-page-width",
@@ -1480,6 +1535,9 @@ public final class CSSName {
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2006/01/03 17:04:51  peterbrant
+ * Many pagination bug fixes / Add ability to position absolute boxes in margin area
+ *
  * Revision 1.22  2005/12/28 00:50:51  peterbrant
  * Continue ripping out first try at pagination / Minor method name refactoring
  *

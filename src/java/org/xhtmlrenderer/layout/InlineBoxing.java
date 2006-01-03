@@ -430,6 +430,7 @@ public class InlineBoxing {
                 StrutMetrics strutMetrics = markerData.getStructMetrics();
                 strutMetrics.setBaseline(measurements.getBaseline() - vaContext.getInlineTop());
                 markerData.setReferenceLine(current);
+                current.setMarkerData(markerData);
             }
             
             current.setPaintingTop(paintingTop);
@@ -762,7 +763,9 @@ public class InlineBoxing {
         c.pushStyle(content.getStyle());
         if (content instanceof AbsolutelyPositionedContent) {
             BlockBox abs = LayoutUtil.generateAbsolute(c, content, current);
-            current.addNonFlowContent(abs);
+            if (abs != null) {
+                current.addNonFlowContent(abs);
+            }
         } else if (content instanceof FloatedBlockContent) {
             FloatedBlockBox floater = LayoutUtil.generateFloated(
                     c, (FloatedBlockContent)content, available, current, pendingFloats);

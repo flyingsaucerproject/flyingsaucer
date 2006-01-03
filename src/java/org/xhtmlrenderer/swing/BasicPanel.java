@@ -367,10 +367,7 @@ public abstract class BasicPanel extends RootPanel {
                 Color old = g.getColor();
                 
                 g.setColor(Color.BLACK);
-                overall.translate(PAGE_PAINTING_CLEARANCE - 1, PAGE_PAINTING_CLEARANCE - 1);
-                overall.width -= PAGE_PAINTING_CLEARANCE*2 - 1;
-                overall.height -= PAGE_PAINTING_CLEARANCE*2 - 1;
-                g.drawRect(overall.x, overall.y, overall.width, overall.height);
+                g.drawRect(overall.x - 1, overall.y - 1, overall.width + 1, overall.height + 1);
                 g.setColor(old);
                 
                 Rectangle content = page.getContentClippingBounds(c, PAGE_PAINTING_CLEARANCE);
@@ -378,13 +375,18 @@ public abstract class BasicPanel extends RootPanel {
                 
                 int left = PAGE_PAINTING_CLEARANCE +
                     page.getStyle().getMarginBorderPadding(c, CalculatedStyle.LEFT);
-                int top = page.getPaintingTop() + PAGE_PAINTING_CLEARANCE 
+                int top = page.getPaintingTop() 
                     + page.getStyle().getMarginBorderPadding(c, CalculatedStyle.TOP)
                     - page.getTop();
                 
                 g.translate(left, top);
                 root.paint(c, 0, 0);
                 g.translate(-left, -top);
+                
+                g.setClip(working);
+                page.paintAlternateFlows(c, root, PAGE_PAINTING_CLEARANCE);
+                
+                page.paintBorder(c, PAGE_PAINTING_CLEARANCE);
             } 
         }
         
@@ -1074,6 +1076,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.93  2006/01/03 17:04:52  peterbrant
+ * Many pagination bug fixes / Add ability to position absolute boxes in margin area
+ *
  * Revision 1.92  2006/01/02 20:58:22  peterbrant
  * Fix NPE
  *

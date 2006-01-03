@@ -30,6 +30,7 @@ public class MarkerData {
     private ImageMarker imageMarker;
     
     private LineBox referenceLine;
+    private LineBox previousReferenceLine;
 
     public TextMarker getTextMarker() {
         return textMarker;
@@ -80,7 +81,14 @@ public class MarkerData {
     }
 
     public void setReferenceLine(LineBox referenceLine) {
+        this.previousReferenceLine = this.referenceLine;
         this.referenceLine = referenceLine;
+    }
+    
+    public void restorePreviousReferenceLine(LineBox current) {
+        if (current == this.referenceLine) {
+            this.referenceLine = this.previousReferenceLine;
+        }
     }
     
     public static class ImageMarker {

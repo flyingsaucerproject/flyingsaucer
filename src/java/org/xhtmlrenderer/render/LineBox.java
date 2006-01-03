@@ -57,6 +57,8 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     private int paintingHeight;
     
     private List nonFlowContent;
+    
+    private MarkerData markerData;
 
     /**
      * Constructor for the LineBox object
@@ -219,8 +221,18 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     }
     
     private boolean intersectsLine(CssContext cssCtx, Shape clip) {
-        Rectangle result = new Rectangle(
-                getAbsX(), getAbsY() + paintingTop, contentWidth, paintingHeight);
+        Box parent = getParent();
+        Rectangle result = null;
+        if (parent.getStyle().getCalculatedStyle().isIdent(
+                CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
+            result = new Rectangle(
+                    getAbsX(), getAbsY() + paintingTop, 
+                    parent.getAbsX() + parent.tx + parent.getContentWidth() - getAbsX(), 
+                    paintingHeight);
+        } else {
+            result = new Rectangle(
+                    getAbsX(), getAbsY() + paintingTop, contentWidth, paintingHeight);
+        }
         return clip.intersects(result);
     }
     
@@ -298,6 +310,9 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
             Box content = (Box)getNonFlowContent().get(i);
             content.detach();
         }
+        if (this.markerData != null) {
+            this.markerData.restorePreviousReferenceLine(this);
+        }
         super.detach();
     }
     
@@ -323,12 +338,23 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
             }
         }
     }
+
+    public MarkerData getMarkerData() {
+        return markerData;
+    }
+
+    public void setMarkerData(MarkerData markerData) {
+        this.markerData = markerData;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.47  2006/01/03 17:04:50  peterbrant
+ * Many pagination bug fixes / Add ability to position absolute boxes in margin area
+ *
  * Revision 1.46  2006/01/01 03:14:24  peterbrant
  * Implement page-break-inside: avoid
  *

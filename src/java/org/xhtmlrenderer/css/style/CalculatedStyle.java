@@ -637,7 +637,11 @@ public class CalculatedStyle {
             _lineMetrics = c.getTextRenderer().getLineMetrics(c.getGraphics(), f, "");
         }
         return _lineMetrics;
-    }    
+    }  
+    
+    public boolean isAlternateFlow() {
+        return ! getStringProperty(CSSName.FS_MOVE_TO_FLOW).equals("none");
+    }
     
 }// end class
 
@@ -645,6 +649,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.61  2006/01/03 17:04:54  peterbrant
+ * Many pagination bug fixes / Add ability to position absolute boxes in margin area
+ *
  * Revision 1.60  2006/01/03 02:11:15  peterbrant
  * Expose asString() for all
  *

@@ -33,7 +33,6 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -399,7 +398,8 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
     
     public void positionAbsoluteOnPage(LayoutContext c) {
-        if (c.isPrint() && (getStyle().isForcePageBreakBefore() || isNeedPageClear())) {
+        if (c.isPrint() &&
+                (getStyle().isForcePageBreakBefore() || isNeedPageClear())) {
             moveToNextPage(c);
             calcCanvasLocation();
             calcChildLocations();
@@ -411,6 +411,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2006/01/03 17:04:50  peterbrant
+ * Many pagination bug fixes / Add ability to position absolute boxes in margin area
+ *
  * Revision 1.33  2006/01/03 02:12:21  peterbrant
  * Various pagination fixes / Fix fixed positioning
  *

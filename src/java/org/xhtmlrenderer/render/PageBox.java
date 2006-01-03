@@ -19,11 +19,14 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.layout.Layer;
 
 public class PageBox {
     private Style _style;
@@ -95,23 +98,141 @@ public class PageBox {
     
     public Rectangle getOverallPaintingBounds(CssContext cssCtx, int additionalClearance) {
         return new Rectangle(
-                0, getPaintingTop(),
-                getWidth(cssCtx) + additionalClearance*2, getPaintingBottom()-getPaintingTop());
+                additionalClearance, getPaintingTop(),
+                getWidth(cssCtx), getPaintingBottom()-getPaintingTop());
     }
     
     public Rectangle getContentClippingBounds(CssContext cssCtx, int additionalClearance) {
         Rectangle result = new Rectangle(
                 additionalClearance + 
                     getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.LEFT),
-                getPaintingTop() + additionalClearance +
+                getPaintingTop() + 
                     getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.TOP),
                 getContentWidth(cssCtx),
                 getContentHeight(cssCtx));
 
-        // HACK Work through why this is necessary
-        result.translate(-1, 0);
-        result.width += 1;
-        
         return result;
+    }
+    
+    public Rectangle getFlowBounds(CssContext cssCtx, String name) {
+        CalculatedStyle style = getStyle().getCalculatedStyle();
+        String flow = null; 
+        if (! style.getStringProperty(CSSName.FS_FLOW_TOP).equals("none")) {
+            flow = style.getStringProperty(CSSName.FS_FLOW_TOP);
+            if (name.equals(flow)) {
+                return new Rectangle(
+                        0, 0,
+                        getContentWidth(cssCtx),
+                        (int)getStyle().getMarginWidth(cssCtx).top());
+            }
+        } 
+        if (! style.getStringProperty(CSSName.FS_FLOW_RIGHT).equals("none")) {
+            flow = style.getStringProperty(CSSName.FS_FLOW_RIGHT);
+            if (name.equals(flow)) {
+                return new Rectangle(
+                        0, 0,
+                        (int)getStyle().getMarginWidth(cssCtx).right(),
+                        getContentHeight(cssCtx));
+            }
+        } 
+        if (! style.getStringProperty(CSSName.FS_FLOW_BOTTOM).equals("none")) {
+            flow = style.getStringProperty(CSSName.FS_FLOW_BOTTOM);
+            if (name.equals(flow)) {
+                return new Rectangle(
+                        0, 0,
+                        getContentWidth(cssCtx),
+                        (int)getStyle().getMarginWidth(cssCtx).bottom());
+            }
+        } 
+        if (! style.getStringProperty(CSSName.FS_FLOW_LEFT).equals("none")) {
+            flow = style.getStringProperty(CSSName.FS_FLOW_LEFT);
+            if (name.equals(flow)) {
+                return new Rectangle(
+                        0, 0,
+                        (int)getStyle().getMarginWidth(cssCtx).left(),
+                        getContentHeight(cssCtx));
+            }
+        }
+        
+        return null;
+    }
+    
+    public void paintAlternateFlows(RenderingContext c, Layer root, int additionalClearance) {
+        paintTopFlow(c, root, additionalClearance);
+        paintBottomFlow(c, root, additionalClearance);
+        paintLeftFlow(c, root, additionalClearance);
+        paintRightFlow(c, root, additionalClearance);
+    }
+    
+    private void paintTopFlow(RenderingContext c, Layer root, int additionalClearance) {
+        CalculatedStyle style = getStyle().getCalculatedStyle();
+        String flowName = style.getStringProperty(CSSName.FS_FLOW_TOP);
+        if (! flowName.equals("none")) {
+            int left = additionalClearance + (int)getStyle().getMarginWidth(c).left();
+            int top = getPaintingTop();
+            
+            paintFlow(c, root, c.getGraphics(), flowName, left, top);
+        }
+    }
+    
+    private void paintBottomFlow(RenderingContext c, Layer root, int additionalClearance) {
+        CalculatedStyle style = getStyle().getCalculatedStyle();
+        String flowName = style.getStringProperty(CSSName.FS_FLOW_BOTTOM);
+        if (! flowName.equals("none")) {
+            int left = additionalClearance + (int)getStyle().getMarginWidth(c).left();
+            int top = getPaintingBottom() - (int)getStyle().getMarginWidth(c).bottom();
+            
+            paintFlow(c, root, c.getGraphics(), flowName, left, top);
+        }
+    }
+    
+    private void paintLeftFlow(RenderingContext c, Layer root, int additionalClearance) {
+        CalculatedStyle style = getStyle().getCalculatedStyle();
+        String flowName = style.getStringProperty(CSSName.FS_FLOW_LEFT);
+        if (! flowName.equals("none")) {
+            int left = additionalClearance;
+            int top = getPaintingTop() + (int)getStyle().getMarginWidth(c).top();
+            
+            paintFlow(c, root, c.getGraphics(), flowName, left, top);
+        }
+    }
+    
+    private void paintRightFlow(RenderingContext c, Layer root, int additionalClearance) {
+        CalculatedStyle style = getStyle().getCalculatedStyle();
+        String flowName = style.getStringProperty(CSSName.FS_FLOW_RIGHT);
+        if (! flowName.equals("none")) {
+            int left = additionalClearance + getWidth(c) 
+                - (int)getStyle().getMarginWidth(c).right();
+            int top = getPaintingTop() + (int)getStyle().getMarginWidth(c).top();
+            
+            paintFlow(c, root, c.getGraphics(), flowName, left, top);
+        }
+    }
+    
+    private void paintFlow(RenderingContext c, Layer root,
+            Graphics2D g, String flowName, int left, int top) {
+        Layer flow = root.getAlternateFlow(flowName);
+        if (flow != null) {
+            g.translate(left, top);
+            flow.paint(c, 0, 0, true);
+            g.translate(-left, -top);
+        }
+    }
+    
+    private Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
+        RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
+        Rectangle result = new Rectangle(left + (int) margin.left(),
+                top + (int) margin.top(),
+                getWidth(cssCtx) - (int) margin.left() - (int) margin.right(),
+                getHeight(cssCtx) - (int) margin.top() - (int) margin.bottom());
+        return result;
+    }
+    
+    public void paintBorder(RenderingContext c, int additionalClearance) {
+        BorderPainter.paint(
+                getBorderEdge(additionalClearance, getPaintingTop(), c),
+                BorderPainter.ALL,
+                getStyle().getCalculatedStyle(),
+                c.getGraphics(), c, 0);
     }
 }

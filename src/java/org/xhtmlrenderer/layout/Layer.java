@@ -35,6 +35,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.MarginBox;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.Style;
@@ -215,8 +216,17 @@ public class Layer {
     public Dimension getPaintingDimension(LayoutContext c) {
         return calcPaintingDimension(c);
     }
-
+    
     public void paint(RenderingContext c, int originX, int originY) {
+        paint(c, originX, originY, false);
+    }
+
+    public void paint(RenderingContext c, int originX, int originY, 
+            boolean paintAlternateFlows) {
+        if (! paintAlternateFlows && getMaster().getStyle().isAlternateFlow()) {
+            return;
+        }
+        
         if (getMaster().getStyle().isFixed()) {
             positionFixedLayer(c);
         }
@@ -431,6 +441,20 @@ public class Layer {
     public synchronized List getChildren() {
         return children == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(children);
     }
+    
+    public Layer getAlternateFlow(String name) {
+        List children = getChildren();
+        for (Iterator i = children.iterator(); i.hasNext(); ) {
+            Layer child = (Layer)i.next();
+            if (child.getMaster().getStyle().isAlternateFlow()) {
+                CalculatedStyle cs = child.getMaster().getStyle().getCalculatedStyle();
+                if (cs.getStringProperty(CSSName.FS_MOVE_TO_FLOW).equals(name)) {
+                    return child;
+                }
+            }
+        }
+        return null;
+    }
 
     private void remove(Layer layer) {
         boolean removed = false;
@@ -492,10 +516,51 @@ public class Layer {
     public void finish(LayoutContext c) {
         if (c.isPrint()) {
             layoutAbsoluteChildren(c);
+            if (isRootLayer()) {
+                layoutAlternateFlows(c);
+            }
         }
         if (! isInline()) {
             positionChildren(c);
         }
+    }
+    
+    private void layoutAlternateFlows(LayoutContext c) {
+        List children = getChildren();
+        if (children.size() > 0) {
+            LayoutState state = c.captureLayoutState();
+            for (int i = 0; i < children.size(); i++) {
+                Layer child = (Layer)children.get(i);
+                if (child.isRequiresLayout() && 
+                        child.getMaster().getStyle().isAlternateFlow()) {
+                    CalculatedStyle cs = child.getMaster().getStyle().getCalculatedStyle();
+                    MarginBox cb = createMarginBox(c, 
+                            cs.getStringProperty(CSSName.FS_MOVE_TO_FLOW));
+                    if (cb != null) {
+                        child.getMaster().setContainingBlock(cb);
+                        layoutAlternateFlowChild(c, child);
+                        child.setRequiresLayout(false);
+                        child.finish(c);
+                    } else {
+                        child.setRequiresLayout(false);
+                    }
+                }
+            }
+            c.restoreLayoutState(state);
+        }
+    }
+    
+    private MarginBox createMarginBox(CssContext cssCtx, String flowName) {
+        List pages = getPages();
+        Rectangle bounds =  null;
+        for (Iterator i = pages.iterator(); i.hasNext(); ) {
+            PageBox pageBox = (PageBox)i.next();
+            bounds = pageBox.getFlowBounds(cssCtx, flowName);
+            if (bounds != null) {
+                break;
+            }
+        }
+        return bounds == null ? null : new MarginBox(bounds);
     }
     
     private void layoutAbsoluteChildren(LayoutContext c) {
@@ -504,7 +569,8 @@ public class Layer {
             LayoutState state = c.captureLayoutState();
             for (int i = 0; i < children.size(); i++) {
                 Layer child = (Layer)children.get(i);
-                if (child.isRequiresLayout()) {
+                if (child.isRequiresLayout() && 
+                        ! child.getMaster().getStyle().isAlternateFlow()) {
                     layoutAbsoluteChild(c, child);
                     if (child.getMaster().getStyle().isAvoidPageBreakInside() &&
                             child.getMaster().crossesPageBreak(c)) {
@@ -553,6 +619,18 @@ public class Layer {
             Boxing.layout(c, (BlockBox)child.getMaster(), 
                     child.getLayoutData().getContent());
         }
+    }
+    
+    private void layoutAlternateFlowChild(LayoutContext c, Layer child) {
+        BlockBox master = (BlockBox)child.getMaster();
+        // Set top, left
+        master.positionAbsolute(c);
+        c.reInit(child.getLayoutData().getParentStyle());
+        c.setExtents(child.getMaster().getContainingBlock().getPaddingEdge(0, 0, c));
+        Boxing.layout(c, (BlockBox)child.getMaster(), 
+                child.getLayoutData().getContent());
+        // Set bottom, right
+        master.positionAbsolute(c);
     }
     
     private Rectangle getExtents(CssContext cssCtx) {
@@ -653,13 +731,12 @@ public class Layer {
     
     public void assignPagePaintingPositions(CssContext cssCtx, int additionalClearance) {
         List pages = getPages();
-        int paintingTop = 0;
+        int paintingTop = additionalClearance;
         for (Iterator i = pages.iterator(); i.hasNext(); ) {
             PageBox page = (PageBox)i.next();
             page.setPaintingTop(paintingTop);
-            page.setPaintingBottom(
-                    paintingTop + page.getHeight(cssCtx) + additionalClearance*2);
-            paintingTop = page.getPaintingBottom();
+            page.setPaintingBottom(paintingTop + page.getHeight(cssCtx));
+            paintingTop = page.getPaintingBottom() + additionalClearance;
         }
     }
     

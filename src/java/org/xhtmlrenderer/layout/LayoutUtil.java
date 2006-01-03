@@ -47,7 +47,11 @@ public class LayoutUtil {
         
         // If printing, don't layout until we know where its going
         if (! c.isPrint()) {
-            Boxing.layout(c, box, content);
+            if (! isAlternateFlow(c, content)) {
+                Boxing.layout(c, box, content);
+            } else {
+                box = null;
+            }
         } else {
             c.pushStyle(content.getStyle());
             box.setStyle(new Style(c.getCurrentStyle(), 
@@ -65,6 +69,13 @@ public class LayoutUtil {
         c.setExtents(oe);
         
         return box;
+    }
+    
+    private static boolean isAlternateFlow(LayoutContext c, Content content) {
+        c.pushStyle(content.getStyle());
+        boolean result = c.getCurrentStyle().isAlternateFlow();
+        c.popStyle();
+        return result;
     }
 
     public static FloatedBlockBox generateFloated(
