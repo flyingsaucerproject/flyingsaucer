@@ -24,8 +24,6 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.DerivedValue;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 
-import sun.security.action.GetPropertyAction;
-
 /**
  * User: tobe
  * Date: 2005-nov-12
