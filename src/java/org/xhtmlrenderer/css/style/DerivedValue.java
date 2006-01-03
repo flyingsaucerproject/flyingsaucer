@@ -101,7 +101,7 @@ public abstract class DerivedValue implements FSDerivedValue {
     }
 
     public String asString() {
-        return toString();
+        return getStringValue();
     }
     public String[] asStringArray() {
         throw new XRRuntimeException("asStringArray() needs to be overridden in subclass.");

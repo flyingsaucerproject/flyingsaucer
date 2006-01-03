@@ -190,6 +190,10 @@ public class CalculatedStyle {
     public float asFloat(CSSName cssName) {
         return valueByName(cssName).asFloat();
     }
+    
+    public String asString(CSSName cssName) {
+        return valueByName(cssName).asString();
+    }
 
     public String[] asStringArray(CSSName cssName) {
         return valueByName(cssName).asStringArray();
@@ -527,7 +531,7 @@ public class CalculatedStyle {
                                                      float parentHeight,
                                                      CssContext ctx) {
         String key = null;
-
+        
         if (style._margin == null) {
             key = RectPropertySet.deriveKey(style, sides);
             if (key == null) {
@@ -641,6 +645,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.60  2006/01/03 02:11:15  peterbrant
+ * Expose asString() for all
+ *
  * Revision 1.59  2006/01/01 02:38:22  peterbrant
  * Merge more pagination work / Various minor cleanups
  *
