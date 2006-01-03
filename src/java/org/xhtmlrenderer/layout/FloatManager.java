@@ -58,17 +58,6 @@ public class FloatManager {
         }
     }
 
-    public void floatPending(LayoutContext c, Layer layer, BlockFormattingContext bfc, List pendingFloats) {
-        if (pendingFloats.size() > 0) {
-            for (int i = 0; i < pendingFloats.size(); i++) {
-                FloatedBlockBox block = (FloatedBlockBox) pendingFloats.get(i);
-                floatBox(c, layer, bfc, block);
-                block.setPending(false);
-            }
-            pendingFloats.clear();
-        }
-    }
-
     private void save(FloatedBlockBox current, Layer layer, BlockFormattingContext bfc, int direction) {
         Point p = bfc.getOffset();
         getFloats(direction).add(new BoxOffset(current, p.x, p.y));

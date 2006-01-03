@@ -57,7 +57,7 @@ import org.xhtmlrenderer.render.TextDecoration;
 
 public class InlineBoxing {
 
-    public static void layoutContent(LayoutContext c, Box box, List contentList) {
+    public static void layoutContent(LayoutContext c, BlockBox box, List contentList) {
         int maxAvailableWidth = c.getExtents().width;
         int remainingWidth = maxAvailableWidth;
 
@@ -689,12 +689,6 @@ public class InlineBoxing {
         current.calcChildLocations();
         
         block.addChild(c, current);
-
-        if (pendingFloats.size() > 0) {
-            FloatedBlockBox pending0 = (FloatedBlockBox)pendingFloats.get(0);
-            pending0.y += current.height;
-            c.getBlockFormattingContext().floatPending(c, pendingFloats);
-        }
         
         // new float code
         if (!block.getStyle().isClearLeft()) {
@@ -717,6 +711,17 @@ public class InlineBoxing {
                 c.pushStyle(iBInfo.getCascadedStyle());
                 iBInfo.setCalculatedStyle(c.getCurrentStyle());
             }
+        }
+
+        if (pendingFloats.size() > 0) {
+            for (Iterator i = pendingFloats.iterator(); i.hasNext(); ) {
+                FloatLayoutResult layoutResult = (FloatLayoutResult)i.next();
+                FloatedBlockBox floater =
+                    LayoutUtil.generateFloated(c, layoutResult.getPendingContent(), 
+                        maxAvailableWidth, current, null).getBlock();
+                current.addNonFlowContent(floater);
+            }
+            pendingFloats.clear();
         }
     }
     
@@ -767,12 +772,14 @@ public class InlineBoxing {
                 current.addNonFlowContent(abs);
             }
         } else if (content instanceof FloatedBlockContent) {
-            FloatedBlockBox floater = LayoutUtil.generateFloated(
+            FloatLayoutResult layoutResult = LayoutUtil.generateFloated(
                     c, (FloatedBlockContent)content, available, current, pendingFloats);
-            if (!floater.isPending()) {
-                result = floater.getWidth();
+            if (layoutResult.isPending()) {
+                pendingFloats.add(layoutResult);
+            } else {
+                result = layoutResult.getBlock().getWidth();
+                current.addNonFlowContent(layoutResult.getBlock());
             }
-            current.addNonFlowContent(floater);
         }
         c.popStyle();
 

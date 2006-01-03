@@ -1,6 +1,7 @@
 /*
  * {{{ header & license
  * Copyright (c) 2004, 2005 Joshua Marinacci, Torbjšrn Gannholm
+ * Copyright (c) 2005 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -22,6 +23,7 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.layout.Boxing.StyleSetListener;
+import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FirstLetterStyle;
 import org.xhtmlrenderer.layout.content.FirstLineStyle;
@@ -31,18 +33,20 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.RandomAccess;
+import java.util.logging.Level;
 
 public class BlockBoxing {
     private BlockBoxing() {
     }
 
-    public static void layoutContent(final LayoutContext c, final Box block, 
+    public static void layoutContent(final LayoutContext c, final BlockBox block, 
             List contentList) {
         Boxing.StyleSetListener styleSetListener = new Boxing.StyleSetListener() {
             public void onStyleSet(BlockBox child) {
@@ -108,6 +112,13 @@ public class BlockBoxing {
                 relayoutData.setContent(currentContent);
                 relayoutData.setListIndex(listIndex);
                 relayoutData.setResetMargins(resetMargins);
+                if (o instanceof AnonymousBlockContent) {
+                    List pendingInlineElements = block.getPendingInlineElements();
+                    if (pendingInlineElements != null) {
+                        System.out.println("SETTING");
+                        relayoutData.setHasPendingInlines(true);
+                    }
+                }
             }
 
             BlockBox childBox = null;
@@ -119,17 +130,23 @@ public class BlockBoxing {
             
             if (c.isPrint() && childBox.getStyle().isAvoidPageBreakInside() &&
                     childBox.crossesPageBreak(c)) {
-                c.restoreStateForRelayout(relayoutData.getLayoutState());
-                BlockBox secondTry = layoutBlockChild(
-                        c, block, styleSetListener, listIndex, resetMargins, 
-                        true, currentContent);
-                
-                if (secondTry.crossesPageBreak(c)) {
-                    secondTry.detach();
+                if (o instanceof AnonymousBlockContent && relayoutData.isHasPendingInlines()) {
+                    XRLog.layout(Level.WARNING, 
+                            "Unable to relayout anonymous block with pending inlines. Dropping rule.");
                 } else {
-                    childBox.detach();
-                    childBox = secondTry;
+                    c.restoreStateForRelayout(relayoutData.getLayoutState());
+                    BlockBox secondTry = layoutBlockChild(
+                            c, block, styleSetListener, listIndex, resetMargins, 
+                            true, currentContent);
+                    
+                    if (secondTry.crossesPageBreak(c)) {
+                        secondTry.detach();
+                    } else {
+                        childBox.detach();
+                        childBox = secondTry;
+                    }
                 }
+
             }
             
             if (c.isPrint()) {
@@ -170,7 +187,7 @@ public class BlockBoxing {
         }
     }
 
-    private static void processPageBreakAvoidRun(final LayoutContext c, final Box block, 
+    private static void processPageBreakAvoidRun(final LayoutContext c, final BlockBox block, 
             List contentList, Boxing.StyleSetListener styleSetListener, int offset, 
             RelayoutDataList relayoutDataList, RelayoutData relayoutData, 
             BlockBox childBox) {
@@ -193,23 +210,43 @@ public class BlockBoxing {
                 if (c.getRootLayer().crossesPageBreak(c, 
                         block.getChild(runStart).getAbsY(),
                         block.getChild(runEnd).getAbsY() + childBox.getHeight())) {
-                    boolean fits = relayoutOnNewPage(c, contentList, block, 
+                    RelayoutResult result = relayoutOnNewPage(c, contentList, block, 
                             styleSetListener, relayoutDataList, runStart, offset);
-                    if (fits) {
-                        block.detachChildren(runStart, offset);
-                    } else {
-                        block.detachChildren(offset+1, block.getChildCount()-1);
-                        block.height = heightBeforeRelayout;
+                    if (! result.isCanceled()) {
+                        if (result.isFits()) {
+                            block.detachChildren(runStart, offset);
+                        } else {
+                            block.detachChildren(offset+1, block.getChildCount()-1);
+                            block.height = heightBeforeRelayout;
+                        }
                     }
                 }
             }
         }
     }
     
-    private static boolean relayoutOnNewPage(
-            LayoutContext c, List contentList, Box block, 
+    private static boolean checkForPendingInlines(RelayoutDataList relayoutDataList, 
+            int start, int end) {
+        boolean result = relayoutDataList.get(start).isHasPendingInlines() ||
+            relayoutDataList.get(end).isHasPendingInlines();
+        if (result) {
+            XRLog.layout(Level.WARNING, 
+                "Unable to relayout run with pending inlines. Dropping rule.");
+        }
+        return result;
+    }
+    
+    private static RelayoutResult relayoutOnNewPage(
+            LayoutContext c, List contentList, BlockBox block, 
             StyleSetListener styleSetListener, RelayoutDataList relayoutDataList, 
             int start, int end) {
+        
+        if (checkForPendingInlines(relayoutDataList, start, end)) {
+            RelayoutResult result = new RelayoutResult();
+            result.setCanceled(true);
+            return result;
+        }
+        
         block.height = relayoutDataList.get(start).getInitialParentHeight();
         block.expandToPageBottom(c);
         
@@ -259,7 +296,9 @@ public class BlockBoxing {
             }
         }
         
-        return ! c.getRootLayer().crossesPageBreak(c, startAbsY, endAbsY);
+        RelayoutResult result = new RelayoutResult();
+        result.setFits(! c.getRootLayer().crossesPageBreak(c, startAbsY, endAbsY));
+        return result;
     }
 
     private static BlockBox layoutBlockChild(
@@ -376,9 +415,9 @@ public class BlockBoxing {
         private boolean _endsRun;
         private boolean _inRun;
         
-        private boolean _relayoutFinished;
-        
         private int _initialParentHeight;
+        
+        private boolean _hasPendingInlines;
         
         public RelayoutData() {
         }
@@ -439,20 +478,44 @@ public class BlockBoxing {
             _resetMargins = resetMargins;
         }
 
-        public boolean isRelayoutFinished() {
-            return _relayoutFinished;
-        }
-
-        public void setRelayoutFinished(boolean relayoutFinished) {
-            _relayoutFinished = relayoutFinished;
-        }
-
         public int getListIndex() {
             return _listIndex;
         }
 
         public void setListIndex(int listIndex) {
             _listIndex = listIndex;
+        }
+
+        public boolean isHasPendingInlines() {
+            return _hasPendingInlines;
+        }
+
+        public void setHasPendingInlines(boolean hasPendingInlineElements) {
+            _hasPendingInlines = hasPendingInlineElements;
+        }
+    }
+    
+    private static class RelayoutResult {
+        private boolean _fits;
+        private boolean _canceled;
+        
+        public RelayoutResult() {
+        }
+
+        public boolean isCanceled() {
+            return _canceled;
+        }
+
+        public void setCanceled(boolean canceled) {
+            _canceled = canceled;
+        }
+
+        public boolean isFits() {
+            return _fits;
+        }
+
+        public void setFits(boolean fits) {
+            _fits = fits;
         }
     }
 
@@ -462,6 +525,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2006/01/03 23:55:54  peterbrant
+ * Add support for proper page breaking of floats / More bug fixes to pagination support
+ *
  * Revision 1.40  2006/01/03 17:04:46  peterbrant
  * Many pagination bug fixes / Add ability to position absolute boxes in margin area
  *

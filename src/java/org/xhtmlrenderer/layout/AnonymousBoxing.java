@@ -22,7 +22,6 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.Box;
 
 import java.awt.Rectangle;
 import java.util.List;
@@ -49,7 +48,7 @@ public class AnonymousBoxing {
      * @param content PARAM
      * @return Returns
      */
-    public static Box layout(LayoutContext c, Box block, Content content) {
+    public static BlockBox layout(LayoutContext c, BlockBox block, Content content) {
         // copy the extents
         Rectangle oe = c.getExtents();
         // save height incase fixed height
@@ -85,6 +84,9 @@ public class AnonymousBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2006/01/03 23:55:55  peterbrant
+ * Add support for proper page breaking of floats / More bug fixes to pagination support
+ *
  * Revision 1.12  2006/01/01 02:38:15  peterbrant
  * Merge more pagination work / Various minor cleanups
  *

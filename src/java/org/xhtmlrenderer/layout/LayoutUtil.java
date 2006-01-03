@@ -30,7 +30,6 @@ import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.Style;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
 public class LayoutUtil {
 
@@ -78,9 +77,11 @@ public class LayoutUtil {
         return result;
     }
 
-    public static FloatedBlockBox generateFloated(
-            LayoutContext c, FloatedBlockContent content, int avail, 
+    public static FloatLayoutResult generateFloated(
+            final LayoutContext c, FloatedBlockContent content, int avail, 
             LineBox curr_line, List pendingFloats) {
+        FloatLayoutResult result = new FloatLayoutResult();
+        
         Rectangle oe = c.getExtents();
         c.setExtents(new Rectangle(oe));
         
@@ -90,34 +91,61 @@ public class LayoutUtil {
         FloatedBlockBox block = new FloatedBlockBox();
         block.setContainingBlock(curr_line.getParent());
         block.setContainingLayer(curr_line.getContainingLayer());
-        block.y = curr_line.y + content.getMarginFromPrevious();
+        
+        if (pendingFloats != null) {
+            block.y = curr_line.y + content.getMarginFromPrevious();
+        } else {
+            block.y = curr_line.y + curr_line.height;
+        }
+        
+        block.calcInitialCanvasLocation(c);
+        
+        int initialY = block.y;
+        
         block.element = content.getElement();
+        
         Boxing.layout(c, block, content);
         c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
-        
-        if (! block.getStyle().isFloated()) {
-            throw new XRRuntimeException("Invalid call to generateFloatedBlock(); where float: none ");
+
+        if (pendingFloats != null && 
+                (pendingFloats.size() > 0 || block.getWidth() > avail)) {
+            block.detach();
+            result.setPending(true);
+            result.setPendingContent(content);
+        } else {
+            if (c.isPrint()) {
+                positionFloatOnPage(c, content, curr_line, block, initialY != block.y);
+            }
+            result.setBlock(block);
         }
         
         c.setCurrentMarkerData(markerData);
     
         c.setExtents(oe);
         
-        if (pendingFloats.size() > 0 || block.getWidth() > avail) {
-            if (pendingFloats.size() > 0) {
-                block.y = 0;
-            }
-            pendingFloats.add(block);
-            c.getBlockFormattingContext().getFloatManager().removeFloat(block);
-            c.getLayer().removeFloat(block);
-            // FIXME Not yet, will also detach children.  
-            // Should be laying out again though anyway.
-            /*
+        return result;
+    }
+
+    private static void positionFloatOnPage(
+            final LayoutContext c, FloatedBlockContent content, 
+            LineBox curr_line, FloatedBlockBox block, boolean movedVertically) {
+        boolean didRelayout = false;
+        
+        if (block.getStyle().isForcePageBreakBefore() || 
+                (block.getStyle().isAvoidPageBreakInside() && 
+                        block.crossesPageBreak(c))) {
+            didRelayout = true;
+            block.moveToNextPage(c);
+            block.calcCanvasLocation();
             block.detach();
-            */
-            block.setPending(true);
+            Boxing.layout(c, block, content);
+            c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
         }
         
-        return block;
+        if (! didRelayout && movedVertically) {
+            block.detach();
+            Boxing.layout(c, block, content);
+            c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
+        }
     }
 }

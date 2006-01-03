@@ -658,6 +658,7 @@ public abstract class Box {
         detachChildren();
         if (this.layer != null) {
             this.layer.detach();
+            this.layer = null;
         }
         if (getParent() != null) {
             getParent().removeChild(this);
@@ -733,6 +734,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.100  2006/01/03 23:55:57  peterbrant
+ * Add support for proper page breaking of floats / More bug fixes to pagination support
+ *
  * Revision 1.99  2006/01/03 02:12:20  peterbrant
  * Various pagination fixes / Fix fixed positioning
  *

@@ -253,7 +253,7 @@ public class Boxing {
         return block;
     }
 
-    public static Box layoutChildren(LayoutContext c, Box box, Content content) {
+    public static Box layoutChildren(LayoutContext c, BlockBox box, Content content) {
         List contentList = content.getChildContent(c);
         box.setState(Box.CHILDREN_FLUX);
 
@@ -340,6 +340,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.73  2006/01/03 23:55:56  peterbrant
+ * Add support for proper page breaking of floats / More bug fixes to pagination support
+ *
  * Revision 1.72  2006/01/02 20:59:08  peterbrant
  * Implement page-break-before/after: avoid
  *

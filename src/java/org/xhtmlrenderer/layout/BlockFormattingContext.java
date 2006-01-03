@@ -21,7 +21,6 @@
 package org.xhtmlrenderer.layout;
 
 import java.awt.Point;
-import java.util.List;
 
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.render.BlockBox;
@@ -72,10 +71,6 @@ public class BlockFormattingContext {
     
     public void floatBox(LayoutContext c, FloatedBlockBox floated) {
         getFloatManager().floatBox(c, c.getLayer(), this, floated);
-    }
-    
-    public void floatPending(LayoutContext c, List pending) {
-        getFloatManager().floatPending(c, c.getLayer(), this, pending);
     }
     
     public void clear(LayoutContext c, Box current) {
