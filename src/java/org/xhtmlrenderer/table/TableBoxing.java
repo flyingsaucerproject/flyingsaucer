@@ -78,6 +78,8 @@ public class TableBoxing {
     public static Box layout(LayoutContext c, BlockBox outerBox, Content content, 
             Boxing.StyleSetListener listener) {
         boolean set_bfc = false;
+        
+        c.setLayingOutTable(true);
 
         if (content instanceof TableContent) {
         } else {
@@ -207,19 +209,82 @@ public class TableBoxing {
         if (set_bfc) {
             c.popBFC();
         }
-        outerBox.height = 0;
-        for (Iterator i = outerBox.getChildIterator(); i.hasNext();) {
-            Box child = (Box) i.next();
-            outerBox.height += child.height;
-            outerBox.adjustWidthForChild(child.getWidth());
-        }
+        calculateOuterBoxDimensions(outerBox);
         tableBox.setState(Box.DONE);
         outerBox.setState(Box.DONE);
         
         outerBox.calcCanvasLocation();
         outerBox.calcChildLocations();
         
+        c.setLayingOutTable(false);
+        
+        if (c.isPrint()) {
+            positionRowsOnPage(c, tableBox);
+            calculateOuterBoxDimensions(outerBox);
+            outerBox.calcChildLocations();
+        }
+        
         return outerBox;
+    }
+
+    private static void calculateOuterBoxDimensions(BlockBox outerBox) {
+        outerBox.height = 0;
+        for (Iterator i = outerBox.getChildIterator(); i.hasNext();) {
+            Box child = (Box) i.next();
+            outerBox.height += child.height;
+            outerBox.adjustWidthForChild(child.getWidth());
+        }
+    }
+    
+    private static void positionRowsOnPage(LayoutContext c, TableBox table) {
+        int lastMoved = -1;
+        for (int i = 0; i < table.getChildCount(); i++) {
+            RowBox row = (RowBox)table.getChild(i);
+            
+            if (row.crossesPageBreak(c) && i != lastMoved) {
+                int runStart = findStartOfRun(c, table, i);
+                RowBox start = (RowBox)table.getChild(runStart);
+                int delta = start.moveToNextPage(c);
+                table.height += delta;
+                
+                for (int j = runStart + 1; j < table.getChildCount(); j++) {
+                    RowBox followingSibling = (RowBox)table.getChild(j);
+                    followingSibling.y += delta;
+                    followingSibling.setAbsY(followingSibling.getAbsY() + delta);
+                }
+                
+                i = runStart;
+                lastMoved = runStart;
+            }
+        }
+    }
+    
+    private static int findStartOfRun(LayoutContext c, TableBox table, int end) {
+        if (end > 0) {
+            int offset = end;
+
+            while (offset > 0) {
+                RowBox previous = (RowBox)table.getChild(offset-1);
+                RowBox current = (RowBox)table.getChild(offset);
+                
+                IdentValue after = previous.getStyle().getCalculatedStyle().getIdent(
+                        CSSName.PAGE_BREAK_AFTER);
+                IdentValue before = 
+                    current.getStyle().getCalculatedStyle().getIdent(
+                        CSSName.PAGE_BREAK_BEFORE);
+                
+                if ( (after == IdentValue.AVOID && before == IdentValue.AUTO) ||
+                        (after == IdentValue.AUTO && before == IdentValue.AVOID) ||
+                        (after == IdentValue.AVOID && before == IdentValue.AVOID)) {
+                    offset--;
+                } else {
+                    return offset;
+                }
+            }
+            return 0;
+        } else {
+            return 0;
+        }
     }
     
     private static void alignCellLines(TableBox box) {
@@ -643,6 +708,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.57  2006/01/04 19:50:17  peterbrant
+   More pagination bug fixes / Implement simple pagination for tables
+
    Revision 1.56  2006/01/01 02:38:19  peterbrant
    Merge more pagination work / Various minor cleanups
 

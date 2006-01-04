@@ -76,7 +76,9 @@ public class Graphics2DRenderer {
      */
     public void layout(Graphics2D g2, Dimension dim) {
         this.dim = dim;
-        panel.setSize(dim);
+        if (dim != null) {
+            panel.setSize(dim);
+        }
         panel.doActualLayout(g2);
     }
 
@@ -211,6 +213,9 @@ public class Graphics2DRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2006/01/04 19:50:16  peterbrant
+ * More pagination bug fixes / Implement simple pagination for tables
+ *
  * Revision 1.15  2005/10/27 00:09:07  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

@@ -692,6 +692,10 @@ public abstract class Box {
     }
     
     public int moveToNextPage(LayoutContext c) {
+        if (c.isLayingOutTable()) {
+            return 0;
+        }
+        
         PageBox page = c.getRootLayer().getFirstPage(c, this);
         if (page == null) {
             XRLog.layout(Level.WARNING, "Box has no page");
@@ -711,6 +715,10 @@ public abstract class Box {
     }
 
     public void expandToPageBottom(LayoutContext c) {
+        if (c.isLayingOutTable()) {
+            return;
+        }
+        
         PageBox page = c.getRootLayer().getLastPage(c, this);
         int delta = page.getBottom() - (getAbsY() + 
                 getStyle().getMarginBorderPadding(c, CalculatedStyle.TOP) + this.height);
@@ -721,6 +729,10 @@ public abstract class Box {
     }
     
     public boolean crossesPageBreak(LayoutContext c) {
+        if (c.isLayingOutTable()) {
+            return false;
+        }
+        
         PageBox pageBox = c.getRootLayer().getFirstPage(c, this);
         if (pageBox == null) {
             return false;
@@ -734,6 +746,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.101  2006/01/04 19:50:14  peterbrant
+ * More pagination bug fixes / Implement simple pagination for tables
+ *
  * Revision 1.100  2006/01/03 23:55:57  peterbrant
  * Add support for proper page breaking of floats / More bug fixes to pagination support
  *

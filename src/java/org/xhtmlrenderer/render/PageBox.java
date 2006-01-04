@@ -102,12 +102,22 @@ public class PageBox {
                 getWidth(cssCtx), getPaintingBottom()-getPaintingTop());
     }
     
-    public Rectangle getContentClippingBounds(CssContext cssCtx, int additionalClearance) {
+    public Rectangle getPagedViewClippingBounds(CssContext cssCtx, int additionalClearance) {
         Rectangle result = new Rectangle(
                 additionalClearance + 
                     getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.LEFT),
                 getPaintingTop() + 
                     getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.TOP),
+                getContentWidth(cssCtx),
+                getContentHeight(cssCtx));
+
+        return result;
+    }
+    
+    public Rectangle getPrintingClippingBounds(CssContext cssCtx) {
+        Rectangle result = new Rectangle(
+                getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.LEFT),
+                getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.TOP),
                 getContentWidth(cssCtx),
                 getContentHeight(cssCtx));
 

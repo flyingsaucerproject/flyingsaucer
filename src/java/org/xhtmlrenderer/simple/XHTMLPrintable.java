@@ -3,10 +3,8 @@ package org.xhtmlrenderer.simple;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.util.Uu;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 
@@ -37,7 +35,6 @@ public class XHTMLPrintable implements Printable {
 
     protected XHTMLPanel panel;
     protected Graphics2DRenderer g2r = null;
-    protected int height = 0;
 
 
     /**
@@ -59,28 +56,8 @@ public class XHTMLPrintable implements Printable {
         try {
 
             Graphics2D g2 = (Graphics2D) g;
-            double x = pf.getImageableX();
-            double y = pf.getImageableY();
-            double w = pf.getImageableWidth();
-            double h = pf.getImageableHeight();
-            g2.translate(x, y);
             
-            //Uu.p("printing: page = " + page + " clip = " + g.getClipRect());
-            
-            //quit if this page would put us over the length of the document
-            if (h * page > height) {
-                //Uu.p("quitting: " + h*page);
-                //Uu.p("height = " + height);
-                return Printable.NO_SUCH_PAGE;
-            }
-            int trans = (int) (-h * page);
-            //Uu.p("translating by " + trans);
-            g2.translate(0, trans);
-
-            
-            // lay out the document if it's not already
             if (g2r == null) {
-                //Uu.p("building new Graphics2DRenderer");
                 g2r = new Graphics2DRenderer();
                 g2r.getSharedContext().setPrint(true);
                 g2r.getSharedContext().setInteractive(false);
@@ -88,15 +65,17 @@ public class XHTMLPrintable implements Printable {
                 g2r.getSharedContext().getTextRenderer().setSmoothingThreshold(0);
                 g2r.getSharedContext().getTextRenderer().setSmoothingLevel(TextRenderer.HIGH);
                 g2r.setDocument(panel.getSharedContext().getUac().getBaseURL());
-                Dimension dim = new Dimension((int) w, (int) h);
-                g2r.layout(g2, dim);
-                Rectangle rect = g2r.getMinimumSize();
-                //Uu.p("laid out height = " + rect.getHeight());
-                height = (int) rect.getHeight();
+                g2r.layout(g2, null);
+                g2r.getPanel().assignPagePaintingPositions(g2, 0);
+            }
+            
+            if (page >= g2r.getPanel().getRootLayer().getPages().size()) {
+                return Printable.NO_SUCH_PAGE;
             }
             
             // render the document
-            g2r.render(g2);
+            g2r.getPanel().paintPage(g2, page);
+            
             return Printable.PAGE_EXISTS;
         } catch (Exception ex) {
             Uu.p(ex);

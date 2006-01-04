@@ -67,6 +67,8 @@ public class LayoutContext implements CssContext {
     int renderIndex = 0;
     
     private boolean shouldStop = false;
+    
+    private boolean layingOutTable = false;
 
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
@@ -379,5 +381,13 @@ public class LayoutContext implements CssContext {
 
     public void setCurrentMarkerData(MarkerData currentMarkerData) {
         this.currentMarkerData = currentMarkerData;
+    }
+
+    public boolean isLayingOutTable() {
+        return layingOutTable;
+    }
+
+    public void setLayingOutTable(boolean layingOutTable) {
+        this.layingOutTable = layingOutTable;
     }
 }

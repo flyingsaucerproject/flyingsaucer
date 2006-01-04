@@ -112,12 +112,9 @@ public class BlockBoxing {
                 relayoutData.setContent(currentContent);
                 relayoutData.setListIndex(listIndex);
                 relayoutData.setResetMargins(resetMargins);
-                if (o instanceof AnonymousBlockContent) {
-                    List pendingInlineElements = block.getPendingInlineElements();
-                    if (pendingInlineElements != null) {
-                        System.out.println("SETTING");
-                        relayoutData.setHasPendingInlines(true);
-                    }
+                if (o instanceof AnonymousBlockContent && 
+                        block.getPendingInlineElements() != null) {
+                    relayoutData.setHasPendingInlines(true);
                 }
             }
 
@@ -128,6 +125,11 @@ public class BlockBoxing {
                     c, block, styleSetListener, listIndex, 
                    resetMargins, false, currentContent);
             
+            if (c.isPrint() && o instanceof AnonymousBlockContent && 
+                    block.getPendingInlineElements() != null) {
+                relayoutData.setHasPendingInlines(true);
+            }
+            
             if (c.isPrint() && childBox.getStyle().isAvoidPageBreakInside() &&
                     childBox.crossesPageBreak(c)) {
                 if (o instanceof AnonymousBlockContent && relayoutData.isHasPendingInlines()) {
@@ -135,16 +137,10 @@ public class BlockBoxing {
                             "Unable to relayout anonymous block with pending inlines. Dropping rule.");
                 } else {
                     c.restoreStateForRelayout(relayoutData.getLayoutState());
-                    BlockBox secondTry = layoutBlockChild(
+                    childBox.detach();
+                    childBox = layoutBlockChild(
                             c, block, styleSetListener, listIndex, resetMargins, 
                             true, currentContent);
-                    
-                    if (secondTry.crossesPageBreak(c)) {
-                        secondTry.detach();
-                    } else {
-                        childBox.detach();
-                        childBox = secondTry;
-                    }
                 }
 
             }
@@ -205,21 +201,14 @@ public class BlockBoxing {
                 }
             }
             if (mightNeedRelayout) {
-                int heightBeforeRelayout = block.height;
                 int runStart = relayoutDataList.getRunStart(runEnd);
                 if (c.getRootLayer().crossesPageBreak(c, 
                         block.getChild(runStart).getAbsY(),
-                        block.getChild(runEnd).getAbsY() + childBox.getHeight())) {
-                    RelayoutResult result = relayoutOnNewPage(c, contentList, block, 
+                            block.getChild(runEnd).getAbsY() + childBox.getHeight()) &&
+                        ! checkForPendingInlines(relayoutDataList, runStart, offset)) {
+                    block.detachChildren(runStart, offset);
+                    relayoutOnNewPage(c, contentList, block, 
                             styleSetListener, relayoutDataList, runStart, offset);
-                    if (! result.isCanceled()) {
-                        if (result.isFits()) {
-                            block.detachChildren(runStart, offset);
-                        } else {
-                            block.detachChildren(offset+1, block.getChildCount()-1);
-                            block.height = heightBeforeRelayout;
-                        }
-                    }
                 }
             }
         }
@@ -236,22 +225,12 @@ public class BlockBoxing {
         return result;
     }
     
-    private static RelayoutResult relayoutOnNewPage(
+    private static void relayoutOnNewPage(
             LayoutContext c, List contentList, BlockBox block, 
             StyleSetListener styleSetListener, RelayoutDataList relayoutDataList, 
             int start, int end) {
-        
-        if (checkForPendingInlines(relayoutDataList, start, end)) {
-            RelayoutResult result = new RelayoutResult();
-            result.setCanceled(true);
-            return result;
-        }
-        
         block.height = relayoutDataList.get(start).getInitialParentHeight();
         block.expandToPageBottom(c);
-        
-        int startAbsY = block.getAbsY() + block.ty + block.height;
-        int endAbsY = 0;
         
         for (int i = start; i <= end; i++) {
             Content currentContent = (Content)contentList.get(i);
@@ -266,19 +245,20 @@ public class BlockBoxing {
                     c, block, styleSetListener, relayoutData.getListIndex(),
                    relayoutData.isResetMargins(), false, currentContent);
             
-            if (childBox.getStyle().isAvoidPageBreakInside() && 
+            if (childBox.getStyle().isAvoidPageBreakInside() &&
                     childBox.crossesPageBreak(c)) {
-                c.restoreStateForRelayout(relayoutData.getLayoutState());
-                BlockBox secondTry = layoutBlockChild(
-                        c, block, styleSetListener, relayoutData.getListIndex(),
-                        relayoutData.isResetMargins(), true, currentContent);
-                
-                if (secondTry.crossesPageBreak(c)) {
-                    secondTry.detach();
+                if (currentContent instanceof AnonymousBlockContent 
+                        && relayoutData.isHasPendingInlines()) {
+                    XRLog.layout(Level.WARNING, 
+                            "Unable to relayout anonymous block with pending inlines. Dropping rule.");
                 } else {
+                    c.restoreStateForRelayout(relayoutData.getLayoutState());
                     childBox.detach();
-                    childBox = secondTry;
+                    childBox = layoutBlockChild(
+                            c, block, styleSetListener, relayoutData.getListIndex(), 
+                            relayoutData.isResetMargins(), true, currentContent);
                 }
+
             }
             
             c.getRootLayer().ensureHasPage(c, childBox);
@@ -286,19 +266,10 @@ public class BlockBoxing {
             block.adjustWidthForChild(childBox.getWidth());
             block.height = childBox.y + childBox.height;
             
-            if ((i == end && end == contentList.size()-1) ||
-                    (i == end - 1)) {
-                endAbsY = childBox.getAbsY() + childBox.getHeight();
-            }
-            
             if (childBox.getStyle().isForcePageBreakAfter()) {
                 block.expandToPageBottom(c);
             }
         }
-        
-        RelayoutResult result = new RelayoutResult();
-        result.setFits(! c.getRootLayer().crossesPageBreak(c, startAbsY, endAbsY));
-        return result;
     }
 
     private static BlockBox layoutBlockChild(
@@ -367,7 +338,7 @@ public class BlockBoxing {
             RelayoutData currentData = get(offset);
             
             IdentValue previousAfter = 
-                previousAfter = previous.getStyle().getCalculatedStyle().getIdent(
+                previous.getStyle().getCalculatedStyle().getIdent(
                     CSSName.PAGE_BREAK_AFTER);
             IdentValue currentBefore = 
                 current.getStyle().getCalculatedStyle().getIdent(
@@ -494,37 +465,15 @@ public class BlockBoxing {
             _hasPendingInlines = hasPendingInlineElements;
         }
     }
-    
-    private static class RelayoutResult {
-        private boolean _fits;
-        private boolean _canceled;
-        
-        public RelayoutResult() {
-        }
-
-        public boolean isCanceled() {
-            return _canceled;
-        }
-
-        public void setCanceled(boolean canceled) {
-            _canceled = canceled;
-        }
-
-        public boolean isFits() {
-            return _fits;
-        }
-
-        public void setFits(boolean fits) {
-            _fits = fits;
-        }
-    }
-
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2006/01/04 19:50:15  peterbrant
+ * More pagination bug fixes / Implement simple pagination for tables
+ *
  * Revision 1.41  2006/01/03 23:55:54  peterbrant
  * Add support for proper page breaking of floats / More bug fixes to pagination support
  *

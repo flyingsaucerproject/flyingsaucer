@@ -207,40 +207,6 @@ public abstract class BasicPanel extends RootPanel {
         }
     }
 
-    public void paintPage(Graphics2D g, int pageNo) {
-        Layer root = getRootLayer();
-
-        if (root == null) {
-            throw new RuntimeException("Document needs layout");
-        }
-        
-        if (pageNo < 1 || pageNo > root.getPages().size()) {
-            throw new IllegalArgumentException("Page " + pageNo + " is not between 1 " +
-                    "and " + root.getPages().size());
-        }
-
-        RenderingContext c = newRenderingContext(g);
-
-        PageBox page = (PageBox)root.getPages().get(pageNo-1);
-        
-        Shape working = g.getClip();
-        
-        int leftMBP = page.getStyle().getMarginBorderPadding(c, CalculatedStyle.LEFT);
-        int topMBP = page.getStyle().getMarginBorderPadding(c, CalculatedStyle.TOP);
-
-        g.translate(0, -page.getTop());
-        g.translate(leftMBP, topMBP);
-
-        g.clipRect(0, page.getTop(), page.getContentWidth(c), page.getContentHeight(c));
-
-        root.paint(c, 0, 0);
-
-        g.translate(-leftMBP, -topMBP);
-        g.translate(0, page.getTop());
-
-        g.setClip(working);
-    }
-
     /**
      * Description of the Method
      */
@@ -367,14 +333,18 @@ public abstract class BasicPanel extends RootPanel {
             overall.y -= 1;
             overall.width += 1;
             overall.height += 1;
-            if (working.intersects(overall)) {
+            
+            Rectangle bounds = new Rectangle(overall);
+            bounds.width += 1;
+            bounds.height += 1;
+            if (working.intersects(bounds)) {
                 Color old = g.getColor();
                 
                 g.setColor(Color.BLACK);
                 g.drawRect(overall.x, overall.y, overall.width, overall.height);
                 g.setColor(old);
                 
-                Rectangle content = page.getContentClippingBounds(c, PAGE_PAINTING_CLEARANCE);
+                Rectangle content = page.getPagedViewClippingBounds(c, PAGE_PAINTING_CLEARANCE);
                 g.clip(content);
                 
                 int left = PAGE_PAINTING_CLEARANCE +
@@ -395,6 +365,45 @@ public abstract class BasicPanel extends RootPanel {
         }
         
         g.setClip(working);
+    }
+    
+
+    public void paintPage(Graphics2D g, int pageNo) {
+        Layer root = getRootLayer();
+
+        if (root == null) {
+            throw new RuntimeException("Document needs layout");
+        }
+        
+        if (pageNo < 0 || pageNo >= root.getPages().size()) {
+            throw new IllegalArgumentException("Page " + pageNo + " is not between 0 " +
+                    "and " + root.getPages().size());
+        }
+
+        RenderingContext c = newRenderingContext(g);
+
+        PageBox page = (PageBox)root.getPages().get(pageNo);
+        
+        Shape working = g.getClip();
+        
+        Rectangle content = page.getPrintingClippingBounds(c);
+        g.clip(content);
+        
+        g.translate(0, -page.getPaintingTop());
+        root.paint(c, 0, 0);
+        g.translate(0, page.getPaintingTop());
+        
+        g.setClip(working);
+        page.paintAlternateFlows(c, root, 0);
+        
+        page.paintBorder(c, 0);
+
+        g.setClip(working);
+    }
+    
+    public void assignPagePaintingPositions(Graphics2D g, int additionalClearance) {
+        RenderingContext c = newRenderingContext(g);
+        getRootLayer().assignPagePaintingPositions(c, additionalClearance);
     }
 
     /**
@@ -1080,6 +1089,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.95  2006/01/04 19:50:17  peterbrant
+ * More pagination bug fixes / Implement simple pagination for tables
+ *
  * Revision 1.94  2006/01/03 23:54:30  peterbrant
  * Fix page clip region checking
  *
