@@ -122,7 +122,7 @@ public class PageBox {
             if (name.equals(flow)) {
                 return new Rectangle(
                         0, 0,
-                        getContentWidth(cssCtx),
+                        getWidth(cssCtx) - (int)getStyle().getMarginWidth(cssCtx).width(),
                         (int)getStyle().getMarginWidth(cssCtx).top());
             }
         } 
@@ -132,7 +132,7 @@ public class PageBox {
                 return new Rectangle(
                         0, 0,
                         (int)getStyle().getMarginWidth(cssCtx).right(),
-                        getContentHeight(cssCtx));
+                        getHeight(cssCtx) - (int)getStyle().getMarginWidth(cssCtx).height());
             }
         } 
         if (! style.getStringProperty(CSSName.FS_FLOW_BOTTOM).equals("none")) {
@@ -140,7 +140,7 @@ public class PageBox {
             if (name.equals(flow)) {
                 return new Rectangle(
                         0, 0,
-                        getContentWidth(cssCtx),
+                        getWidth(cssCtx) - (int)getStyle().getMarginWidth(cssCtx).width(),
                         (int)getStyle().getMarginWidth(cssCtx).bottom());
             }
         } 
@@ -150,7 +150,7 @@ public class PageBox {
                 return new Rectangle(
                         0, 0,
                         (int)getStyle().getMarginWidth(cssCtx).left(),
-                        getContentHeight(cssCtx));
+                        getHeight(cssCtx) - (int)getStyle().getMarginWidth(cssCtx).height());
             }
         }
         
