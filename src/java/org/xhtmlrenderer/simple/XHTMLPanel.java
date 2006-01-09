@@ -27,6 +27,7 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
 import java.io.InputStream;
@@ -151,18 +152,22 @@ public class XHTMLPanel extends BasicPanel {
     }
 
     private void setupListeners() {
-        // install a default link listener
-        linkListener = new LinkListener(this);
-        addMouseListener(linkListener);
-        // install a default hover listener
-        hoverListener = new HoverListener(this);
-        addMouseListener(hoverListener);
-        addMouseMotionListener(hoverListener);
+        if (Configuration.isTrue("xr.use.listeners", true)) {
+            // install a default link listener
+            linkListener = new LinkListener(this);
+            addMouseListener(linkListener);
+            // install a default hover listener
+            hoverListener = new HoverListener(this);
+            addMouseListener(hoverListener);
+            addMouseMotionListener(hoverListener);
+        }
     }
 
     private void resetListeners() {
-        linkListener.reset();
-        hoverListener.reset();
+        if (Configuration.isTrue("xr.use.listeners", true)) {
+            linkListener.reset();
+            hoverListener.reset();
+        }
     }
 
     /**
@@ -327,6 +332,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2006/01/09 23:24:53  peterbrant
+ * Provide config key to not use link and hover listeners (one of which currently leaks memory horribly)
+ *
  * Revision 1.30  2005/12/14 22:08:02  peterbrant
  * Make relayout() work again
  *

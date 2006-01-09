@@ -26,6 +26,7 @@ import org.xhtmlrenderer.render.MiniumTextRenderer;
 import org.xhtmlrenderer.swing.DOMInspector;
 import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
@@ -293,18 +294,20 @@ public class BrowserMenuBar extends JMenuBar {
      * Description of the Method
      */
     public void createActions() {
-
-        SelectionMouseListener ma = new SelectionMouseListener();
-        root.panel.view.addMouseListener(ma);
-        root.panel.view.addMouseMotionListener(ma);
-
-        HoverListener hl = new HoverListener(root.panel.view);
-        root.panel.view.addMouseListener(hl);
-        root.panel.view.addMouseMotionListener(hl);
-
-        LinkListener ll = new LinkListener(root.panel.view);
-        root.panel.view.addMouseListener(ll);
-        root.panel.view.addMouseMotionListener(ll);
+        if (Configuration.isTrue("xr.use.listeners", true)) {
+            SelectionMouseListener ma = new SelectionMouseListener();
+            root.panel.view.addMouseListener(ma);
+            root.panel.view.addMouseMotionListener(ma);
+    
+            // XXX Is this necessary?  Basically identical code
+            // appears in XHTMLPanel.setupListeners().
+            HoverListener hl = new HoverListener(root.panel.view);
+            root.panel.view.addMouseListener(hl);
+            root.panel.view.addMouseMotionListener(hl);
+            LinkListener ll = new LinkListener(root.panel.view);
+            root.panel.view.addMouseListener(ll);
+            root.panel.view.addMouseMotionListener(ll);
+        }
     }
 
     /**
@@ -629,6 +632,9 @@ class EmptyAction extends AbstractAction {
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2006/01/09 23:24:53  peterbrant
+ * Provide config key to not use link and hover listeners (one of which currently leaks memory horribly)
+ *
  * Revision 1.36  2005/10/27 00:08:50  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *
