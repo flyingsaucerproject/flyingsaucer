@@ -650,6 +650,8 @@ public abstract class Box {
         
         c.getGraphics().setColor(color);
         Rectangle rect = getBounds(getAbsX(), getAbsY(), c, 0, 0);
+        rect.height -= 1;
+        rect.width -= 1;
         c.getGraphics().drawRect(rect.x, rect.y, rect.width, rect.height);
         c.getGraphics().setColor(oldColor);
     }
@@ -746,6 +748,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.102  2006/01/09 23:25:22  peterbrant
+ * Correct (?) position of debug outline
+ *
  * Revision 1.101  2006/01/04 19:50:14  peterbrant
  * More pagination bug fixes / Implement simple pagination for tables
  *
