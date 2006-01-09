@@ -51,6 +51,8 @@ public class CascadedStyle {
      * Map of PropertyDeclarations, keyed by {@link CSSName}
      */
     private Map cascadedProperties;
+    
+    private String fingerprint;
 
     /**
      * Constructs a new CascadedStyle, given an {@link java.util.Iterator} of
@@ -163,12 +165,15 @@ public class CascadedStyle {
     public int countAssigned() { return cascadedProperties.size(); }
 
     public String getFingerprint() {
-        StringBuffer sb = new StringBuffer();
-        Iterator iter = cascadedProperties.values().iterator();
-        while (iter.hasNext()) {
-            sb.append(((PropertyDeclaration)iter.next()).getDeclarationStandardText());
+        if (this.fingerprint == null) {
+            StringBuffer sb = new StringBuffer();
+            Iterator iter = cascadedProperties.values().iterator();
+            while (iter.hasNext()) {
+                sb.append(((PropertyDeclaration)iter.next()).getDeclarationStandardText());
+            }
+            this.fingerprint = sb.toString();
         }
-        return sb.toString();
+        return this.fingerprint;
     }
 }// end class
 
@@ -176,6 +181,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2006/01/09 23:22:24  peterbrant
+ * Cache fingerprint after initial creation
+ *
  * Revision 1.12  2005/10/20 20:48:02  pdoubleya
  * Updates for refactoring to style classes. CalculatedStyle now has lookup methods to cover all general cases, so propertyByName() is private, which means the backing classes for styling were able to be replaced.
  *
