@@ -88,6 +88,10 @@ public class Layer {
     public int getZIndex() {
         return (int) master.getStyle().getCalculatedStyle().asFloat(CSSName.Z_INDEX);
     }
+    
+    public boolean isAlternateFlow() {
+        return master.getStyle().isAlternateFlow();
+    }
 
     public Box getMaster() {
         return master;
@@ -147,6 +151,9 @@ public class Layer {
         List children = getChildren();
         for (int i = 0; i < children.size(); i++) {
             Layer child = (Layer)children.get(i);
+            if (isRootLayer() && child.isAlternateFlow()) {
+                continue;
+            }
             if (! child.isStackingContext()) {
                 if (which == AUTO) {
                     result.add(child);
@@ -164,6 +171,10 @@ public class Layer {
         List children = getChildren();
         for (int i = 0; i < children.size(); i++) {
             Layer target = (Layer)children.get(i);
+            
+            if (isRootLayer() && target.isAlternateFlow()) {
+                continue;
+            }
 
             if (target.isStackingContext()) {
                 if (which == NEGATIVE && target.getZIndex() < 0) {
@@ -223,7 +234,7 @@ public class Layer {
 
     public void paint(RenderingContext c, int originX, int originY, 
             boolean paintAlternateFlows) {
-        if (! paintAlternateFlows && getMaster().getStyle().isAlternateFlow()) {
+        if (! paintAlternateFlows && isAlternateFlow()) {
             return;
         }
         
@@ -248,7 +259,7 @@ public class Layer {
                 }
             }
             
-            if (isRootLayer() || isStackingContext()) {
+            if (isRootLayer() || isStackingContext() || isAlternateFlow()) {
                 paintLayers(c, getSortedLayers(NEGATIVE));
             }
     
@@ -258,7 +269,7 @@ public class Layer {
             paintInlineContent(c, lines);
             paintReplacedElements(c, blocks);
     
-            if (isRootLayer() || isStackingContext()) {
+            if (isRootLayer() || isStackingContext() || isAlternateFlow()) {
                 paintLayers(c, collectLayers(AUTO));
                 // TODO z-index: 0 layers should be painted atomically
                 paintLayers(c, getSortedLayers(ZERO));
@@ -531,8 +542,7 @@ public class Layer {
             LayoutState state = c.captureLayoutState();
             for (int i = 0; i < children.size(); i++) {
                 Layer child = (Layer)children.get(i);
-                if (child.isRequiresLayout() && 
-                        child.getMaster().getStyle().isAlternateFlow()) {
+                if (child.isRequiresLayout() && child.isAlternateFlow()) {
                     CalculatedStyle cs = child.getMaster().getStyle().getCalculatedStyle();
                     MarginBox cb = createMarginBox(c, 
                             cs.getStringProperty(CSSName.FS_MOVE_TO_FLOW));
@@ -569,8 +579,7 @@ public class Layer {
             LayoutState state = c.captureLayoutState();
             for (int i = 0; i < children.size(); i++) {
                 Layer child = (Layer)children.get(i);
-                if (child.isRequiresLayout() && 
-                        ! child.getMaster().getStyle().isAlternateFlow()) {
+                if (child.isRequiresLayout() && ! child.isAlternateFlow()) {
                     layoutAbsoluteChild(c, child);
                     if (child.getMaster().getStyle().isAvoidPageBreakInside() &&
                             child.getMaster().crossesPageBreak(c)) {

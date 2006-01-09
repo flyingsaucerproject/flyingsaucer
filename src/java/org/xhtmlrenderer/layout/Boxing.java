@@ -108,12 +108,15 @@ public class Boxing {
         }
         
         boolean pushedLayer = false;
-        if ((content instanceof DomToplevelNode || block.getStyle().requiresLayer()) &&
-                block.getLayer() == null) {
+        if ((content instanceof DomToplevelNode || block.getStyle().requiresLayer())) {
             pushedLayer = true;
-            c.pushLayer(block);
-            if (c.isPrint() && content instanceof DomToplevelNode) {
-                c.getLayer().addPage(c);
+            if (block.getLayer() == null) {
+                c.pushLayer(block);
+                if (c.isPrint() && content instanceof DomToplevelNode) {
+                    c.getLayer().addPage(c);
+                }
+            } else {
+                c.pushLayer(block.getLayer());
             }
         }
 
@@ -340,6 +343,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.74  2006/01/09 23:23:16  peterbrant
+ * Fix layers nested inside an "alternate" layer
+ *
  * Revision 1.73  2006/01/03 23:55:56  peterbrant
  * Add support for proper page breaking of floats / More bug fixes to pagination support
  *

@@ -239,7 +239,11 @@ public class LayoutContext implements CssContext {
 
             parent.addChild(layer);
         }
-        
+    
+        pushLayer(layer);
+    }
+    
+    public void pushLayer(Layer layer) {
         layers.push(layer);
     }
     
