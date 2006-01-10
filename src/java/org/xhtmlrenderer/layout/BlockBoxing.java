@@ -153,9 +153,6 @@ public class BlockBoxing {
                 listIndex--;
             }
 
-            // increase the final layout width if the child was greater
-            block.adjustWidthForChild(childBox.getWidth());
-
             // increase the final layout height by the height of the child
             block.height = childBox.y + childBox.height;
 
@@ -263,7 +260,6 @@ public class BlockBoxing {
             
             c.getRootLayer().ensureHasPage(c, childBox);
             
-            block.adjustWidthForChild(childBox.getWidth());
             block.height = childBox.y + childBox.height;
             
             if (childBox.getStyle().isForcePageBreakAfter()) {
@@ -471,6 +467,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2006/01/10 19:55:59  peterbrant
+ * Fix inappropriate box resizing when width: auto
+ *
  * Revision 1.42  2006/01/04 19:50:15  peterbrant
  * More pagination bug fixes / Implement simple pagination for tables
  *

@@ -671,10 +671,6 @@ public class InlineBoxing {
             current.setFloatDistances(distances);
         }
         
-        if (c.shrinkWrap()) {
-        	block.adjustWidthForChild(current.contentWidth);
-        }
-
         current.y = previous == null ? 0 : previous.y + previous.height;
 
         if (current.height != 0 && current.height < minHeight) {//would like to discard it otherwise, but that could lose inline elements

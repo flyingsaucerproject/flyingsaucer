@@ -59,13 +59,21 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public BlockBox() {
         super();
     }
-
-    public void adjustWidthForChild(int childWidth) {
-        if (getStyle().isAutoWidth() && childWidth > contentWidth) {
-            contentWidth = childWidth;
+    
+    public void expandToMaxChildWidth() {
+        int maxChildWidth = 0;
+        for (int i = 0; i < getChildCount(); i++) {
+            Box child = (Box)getChild(i);
+            if (child instanceof BlockBox) {
+                ((BlockBox)child).expandToMaxChildWidth();
+            }
+            int childWidth = child.getWidth();
+            if (childWidth > maxChildWidth) {
+                maxChildWidth = childWidth;
+            }
         }
-        if (getParent() != null) {
-            getParent().adjustWidthForChild(getWidth());
+        if (getStyle().isAutoWidth() && maxChildWidth > this.contentWidth) {
+            this.contentWidth = maxChildWidth;
         }
     }
 
@@ -410,6 +418,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.36  2006/01/10 19:56:01  peterbrant
+ * Fix inappropriate box resizing when width: auto
+ *
  * Revision 1.35  2006/01/03 23:52:40  peterbrant
  * Remove unhelpful comment
  *

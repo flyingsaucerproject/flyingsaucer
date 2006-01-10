@@ -228,11 +228,10 @@ public class TableBoxing {
     }
 
     private static void calculateOuterBoxDimensions(BlockBox outerBox) {
-        outerBox.height = 0;
-        for (Iterator i = outerBox.getChildIterator(); i.hasNext();) {
-            Box child = (Box) i.next();
-            outerBox.height += child.height;
-            outerBox.adjustWidthForChild(child.getWidth());
+        if (outerBox.getChildCount() > 0) {
+            Box table = (Box)outerBox.getChild(0);
+            outerBox.height = table.height;
+            outerBox.contentWidth = table.contentWidth;
         }
     }
     
@@ -433,9 +432,6 @@ public class TableBoxing {
                 // set the child_box location
                 row.x = 0;
                 row.y = tableBox.height + borderSpacingVertical;
-
-                // increase the final layout width if the child was greater
-                tableBox.adjustWidthForChild(row.getWidth());
 
                 // increase the final layout height by the height of the child
                 tableBox.height = row.y + row.height;
@@ -701,6 +697,9 @@ public class TableBoxing {
 
         // Uu.p("BoxLayout: finished with cell: " + cell);
         cell.setState(Box.DONE);
+        
+        cell.expandToMaxChildWidth();
+        
         return cell;
     }
 }
@@ -708,6 +707,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.58  2006/01/10 19:56:01  peterbrant
+   Fix inappropriate box resizing when width: auto
+
    Revision 1.57  2006/01/04 19:50:17  peterbrant
    More pagination bug fixes / Implement simple pagination for tables
 

@@ -122,11 +122,6 @@ public abstract class Box {
         return false;
     }
 
-    public void adjustWidthForChild(int childWidth) {
-        //do nothing, generally
-    }
-
-
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Box: ");
@@ -748,6 +743,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.103  2006/01/10 19:56:00  peterbrant
+ * Fix inappropriate box resizing when width: auto
+ *
  * Revision 1.102  2006/01/09 23:25:22  peterbrant
  * Correct (?) position of debug outline
  *
