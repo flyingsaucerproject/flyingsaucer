@@ -199,9 +199,10 @@ public class BlockBoxing {
             }
             if (mightNeedRelayout) {
                 int runStart = relayoutDataList.getRunStart(runEnd);
+                Box runEndChild = block.getChild(runEnd);
                 if (c.getRootLayer().crossesPageBreak(c, 
                         block.getChild(runStart).getAbsY(),
-                            block.getChild(runEnd).getAbsY() + childBox.getHeight()) &&
+                            runEndChild.getAbsY() + runEndChild.getHeight()) &&
                         ! checkForPendingInlines(relayoutDataList, runStart, offset)) {
                     block.detachChildren(runStart, offset);
                     relayoutOnNewPage(c, contentList, block, 
@@ -467,6 +468,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2006/01/10 20:11:31  peterbrant
+ * Fix bug in page-break-before/avoid: avoid
+ *
  * Revision 1.43  2006/01/10 19:55:59  peterbrant
  * Fix inappropriate box resizing when width: auto
  *
