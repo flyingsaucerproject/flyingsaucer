@@ -167,53 +167,94 @@ public class PageBox {
         return null;
     }
     
-    public void paintAlternateFlows(RenderingContext c, Layer root, int additionalClearance) {
-        paintTopFlow(c, root, additionalClearance);
-        paintBottomFlow(c, root, additionalClearance);
-        paintLeftFlow(c, root, additionalClearance);
-        paintRightFlow(c, root, additionalClearance);
+    public void paintAlternateFlows(RenderingContext c, Layer root, 
+            short mode) {
+        paintAlternateFlows(c, root, mode, 0);
     }
     
-    private void paintTopFlow(RenderingContext c, Layer root, int additionalClearance) {
+    public void paintAlternateFlows(RenderingContext c, Layer root, 
+            short mode, int additionalClearance) {
+        paintTopFlow(c, root, mode, additionalClearance);
+        paintBottomFlow(c, root, mode, additionalClearance);
+        paintLeftFlow(c, root, mode, additionalClearance);
+        paintRightFlow(c, root, mode, additionalClearance);
+    }
+    
+    private void paintTopFlow(RenderingContext c, Layer root, 
+            short mode, int additionalClearance) {
         CalculatedStyle style = getStyle().getCalculatedStyle();
         String flowName = style.getStringProperty(CSSName.FS_FLOW_TOP);
         if (! flowName.equals("none")) {
             int left = additionalClearance + (int)getStyle().getMarginWidth(c).left();
-            int top = getPaintingTop();
+            int top;
+            if (mode == Layer.PAGED_MODE_SCREEN) {
+                top = getPaintingTop();
+            } else if (mode == Layer.PAGED_MODE_PRINT) {
+                top = 0;
+            } else {
+                throw new IllegalArgumentException("Illegal mode");
+            }
             
             paintFlow(c, root, c.getGraphics(), flowName, left, top);
         }
     }
     
-    private void paintBottomFlow(RenderingContext c, Layer root, int additionalClearance) {
+    private void paintBottomFlow(RenderingContext c, Layer root, 
+            short mode, int additionalClearance) {
         CalculatedStyle style = getStyle().getCalculatedStyle();
         String flowName = style.getStringProperty(CSSName.FS_FLOW_BOTTOM);
         if (! flowName.equals("none")) {
             int left = additionalClearance + (int)getStyle().getMarginWidth(c).left();
-            int top = getPaintingBottom() - (int)getStyle().getMarginWidth(c).bottom();
+            int top;
+            
+            if (mode == Layer.PAGED_MODE_SCREEN) {
+                top = getPaintingBottom() - (int)getStyle().getMarginWidth(c).bottom();
+            } else if (mode == Layer.PAGED_MODE_PRINT) {
+                top = getHeight(c) - (int)getStyle().getMarginWidth(c).bottom();
+            } else {
+                throw new IllegalArgumentException("Illegal mode");
+            }
             
             paintFlow(c, root, c.getGraphics(), flowName, left, top);
         }
     }
     
-    private void paintLeftFlow(RenderingContext c, Layer root, int additionalClearance) {
+    private void paintLeftFlow(RenderingContext c, Layer root, 
+            short mode, int additionalClearance) {
         CalculatedStyle style = getStyle().getCalculatedStyle();
         String flowName = style.getStringProperty(CSSName.FS_FLOW_LEFT);
         if (! flowName.equals("none")) {
             int left = additionalClearance;
-            int top = getPaintingTop() + (int)getStyle().getMarginWidth(c).top();
+            int top;
+            
+            if (mode == Layer.PAGED_MODE_SCREEN) {
+                top = getPaintingTop() + (int)getStyle().getMarginWidth(c).top();
+            } else if (mode == Layer.PAGED_MODE_PRINT) {
+                top = (int)getStyle().getMarginWidth(c).top();
+            } else {
+                throw new IllegalArgumentException("Illegal mode");
+            }
             
             paintFlow(c, root, c.getGraphics(), flowName, left, top);
         }
     }
     
-    private void paintRightFlow(RenderingContext c, Layer root, int additionalClearance) {
+    private void paintRightFlow(RenderingContext c, Layer root, 
+            short mode, int additionalClearance) {
         CalculatedStyle style = getStyle().getCalculatedStyle();
         String flowName = style.getStringProperty(CSSName.FS_FLOW_RIGHT);
         if (! flowName.equals("none")) {
             int left = additionalClearance + getWidth(c) 
                 - (int)getStyle().getMarginWidth(c).right();
-            int top = getPaintingTop() + (int)getStyle().getMarginWidth(c).top();
+            int top;
+            
+            if (mode == Layer.PAGED_MODE_SCREEN) {
+                top = getPaintingTop() + (int)getStyle().getMarginWidth(c).top();
+            } else if (mode == Layer.PAGED_MODE_PRINT) {
+                top = (int)getStyle().getMarginWidth(c).top();
+            } else {
+                throw new IllegalArgumentException("Illegal mode");
+            }
             
             paintFlow(c, root, c.getGraphics(), flowName, left, top);
         }

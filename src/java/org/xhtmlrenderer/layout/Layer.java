@@ -42,6 +42,9 @@ import org.xhtmlrenderer.render.Style;
 import org.xhtmlrenderer.render.ViewportBox;
 
 public class Layer {
+    public static final short PAGED_MODE_SCREEN = 1;
+    public static final short PAGED_MODE_PRINT = 2;
+    
     private Layer parent;
     private boolean stackingContext;
     private List children;
@@ -738,13 +741,24 @@ public class Layer {
         }
     }
     
-    public void assignPagePaintingPositions(CssContext cssCtx, int additionalClearance) {
+    public void assignPagePaintingPositions(CssContext cssCtx, short mode) {
+        assignPagePaintingPositions(cssCtx, mode, 0);
+    }
+    
+    public void assignPagePaintingPositions(
+            CssContext cssCtx, int mode, int additionalClearance) {
         List pages = getPages();
         int paintingTop = additionalClearance;
         for (Iterator i = pages.iterator(); i.hasNext(); ) {
             PageBox page = (PageBox)i.next();
             page.setPaintingTop(paintingTop);
-            page.setPaintingBottom(paintingTop + page.getHeight(cssCtx));
+            if (mode == PAGED_MODE_SCREEN) {
+                page.setPaintingBottom(paintingTop + page.getHeight(cssCtx));
+            } else if (mode == PAGED_MODE_PRINT){
+                page.setPaintingBottom(paintingTop + page.getContentHeight(cssCtx));
+            } else {
+                throw new IllegalArgumentException("Illegal mode");
+            }
             paintingTop = page.getPaintingBottom() + additionalClearance;
         }
     }

@@ -19,7 +19,6 @@ import javax.swing.JViewport;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserInterface;
@@ -244,6 +243,11 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         getSharedContext().setCanvas(this);
 
         Rectangle extents = getScreenExtents();
+        
+        // HACK avoid bogus warning
+        if (extents.width == 0 && extents.height == 0) {
+            extents = new Rectangle(0, 0, 1, 1);
+        }
 
         XRLog.layout(Level.FINEST, "new context end");
 

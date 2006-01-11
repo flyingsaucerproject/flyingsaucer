@@ -312,7 +312,8 @@ public abstract class BasicPanel extends RootPanel {
             return;
         }
         
-        root.assignPagePaintingPositions(c, PAGE_PAINTING_CLEARANCE);
+        root.assignPagePaintingPositions(
+                c, Layer.PAGED_MODE_SCREEN, PAGE_PAINTING_CLEARANCE);
 
         setPreferredSize(new Dimension(
                 root.getMaxPageWidth(c, PAGE_PAINTING_CLEARANCE),
@@ -358,7 +359,8 @@ public abstract class BasicPanel extends RootPanel {
                 g.translate(-left, -top);
                 
                 g.setClip(working);
-                page.paintAlternateFlows(c, root, PAGE_PAINTING_CLEARANCE);
+                page.paintAlternateFlows(c, root, 
+                        Layer.PAGED_MODE_SCREEN, PAGE_PAINTING_CLEARANCE);
                 
                 page.paintBorder(c, PAGE_PAINTING_CLEARANCE);
             } 
@@ -389,21 +391,26 @@ public abstract class BasicPanel extends RootPanel {
         Rectangle content = page.getPrintingClippingBounds(c);
         g.clip(content);
         
-        g.translate(0, -page.getPaintingTop());
+        int top = -page.getPaintingTop() + 
+            page.getStyle().getMarginBorderPadding(c, CalculatedStyle.TOP);
+        
+        int left = page.getStyle().getMarginBorderPadding(c, CalculatedStyle.LEFT);
+        
+        g.translate(left, top);
         root.paint(c, 0, 0);
-        g.translate(0, page.getPaintingTop());
+        g.translate(-left, -top);
         
         g.setClip(working);
-        page.paintAlternateFlows(c, root, 0);
+        page.paintAlternateFlows(c, root, Layer.PAGED_MODE_PRINT, 0);
         
         page.paintBorder(c, 0);
 
         g.setClip(working);
     }
     
-    public void assignPagePaintingPositions(Graphics2D g, int additionalClearance) {
+    public void assignPagePrintPositions(Graphics2D g) {
         RenderingContext c = newRenderingContext(g);
-        getRootLayer().assignPagePaintingPositions(c, additionalClearance);
+        getRootLayer().assignPagePaintingPositions(c, Layer.PAGED_MODE_PRINT);
     }
 
     /**
@@ -1089,6 +1096,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.96  2006/01/11 22:21:20  peterbrant
+ * Fixes to print vs. print preview displays
+ *
  * Revision 1.95  2006/01/04 19:50:17  peterbrant
  * More pagination bug fixes / Implement simple pagination for tables
  *
