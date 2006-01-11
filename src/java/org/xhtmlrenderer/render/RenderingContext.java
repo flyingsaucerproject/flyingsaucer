@@ -62,20 +62,6 @@ public class RenderingContext implements CssContext {
         sharedContext.setBaseURL(url);
     }
 
-    /**
-     * Sets the effective DPI (Dots Per Inch) of the screen. You should normally
-     * never need to override the dpi, as it is already set to the system
-     * default by <code>Toolkit.getDefaultToolkit().getScreenResolution()</code>
-     * . You can override the value if you want to scale the fonts for
-     * accessibility or printing purposes. Currently the DPI setting only
-     * affects font sizing.
-     *
-     * @param dpi The new dPI value
-     */
-    public void setDPI(float dpi) {
-        sharedContext.setDPI(dpi);
-    }
-
     public UserAgentCallback getUac() {
         return sharedContext.getUac();
     }
