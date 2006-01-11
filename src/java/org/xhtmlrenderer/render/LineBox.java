@@ -216,8 +216,8 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     }
     
     public boolean intersects(CssContext cssCtx, Shape clip) {
-        return intersectsLine(cssCtx, clip) || 
-            (isContainsBlockLevelContent() && intersectsInlineBlocks(cssCtx, clip));
+        return clip == null || (intersectsLine(cssCtx, clip) || 
+            (isContainsBlockLevelContent() && intersectsInlineBlocks(cssCtx, clip)));
     }
     
     private boolean intersectsLine(CssContext cssCtx, Shape clip) {
@@ -352,6 +352,9 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.48  2006/01/11 22:16:05  peterbrant
+ * Fix NPE when clip region is null
+ *
  * Revision 1.47  2006/01/03 17:04:50  peterbrant
  * Many pagination bug fixes / Add ability to position absolute boxes in margin area
  *
