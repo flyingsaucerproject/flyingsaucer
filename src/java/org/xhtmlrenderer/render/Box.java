@@ -125,7 +125,7 @@ public abstract class Box {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Box: ");
-        sb.append(" (" + x + "," + y + ")->(" + getWidth() + " x " + height + ")");
+        sb.append(" (" + getAbsX() + "," + getAbsY() + ")->(" + getWidth() + " x " + height + ")");
         return sb.toString();
     }
 
@@ -506,7 +506,7 @@ public abstract class Box {
         }
         
         Rectangle borderBounds = getPaintingBorderEdge(c);
-        if (getState() != Box.DONE) {
+        if (! c.isPrint() && getState() != Box.DONE) {
             borderBounds.height += c.getCanvas().getHeight();
         }
     
@@ -545,7 +545,7 @@ public abstract class Box {
         }
     
         Rectangle backgroundBounds = getPaintingBorderEdge(c);
-        if (getState() != Box.DONE) {
+        if (! c.isPrint() && getState() != Box.DONE) {
             backgroundBounds.height += c.getCanvas().getHeight();
         }
         
@@ -743,6 +743,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.104  2006/01/11 22:09:27  peterbrant
+ * toString() uses absolute coordinates now
+ *
  * Revision 1.103  2006/01/10 19:56:00  peterbrant
  * Fix inappropriate box resizing when width: auto
  *
