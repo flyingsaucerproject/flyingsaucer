@@ -149,7 +149,7 @@ public class BlockBoxing {
                 c.getRootLayer().ensureHasPage(c, childBox);
             }
             
-            if (childBox instanceof AnonymousBlockBox) {
+            if (! childBox.getStyle().isListItem()) {
                 listIndex--;
             }
 
@@ -468,6 +468,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.45  2006/01/11 22:08:53  peterbrant
+ * Only increment list "counter" when display: list-item
+ *
  * Revision 1.44  2006/01/10 20:11:31  peterbrant
  * Fix bug in page-break-before/avoid: avoid
  *
