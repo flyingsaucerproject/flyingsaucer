@@ -122,7 +122,7 @@ public class ListItemPainter {
 
         // restore the old AntiAliasing setting
         c.getGraphics().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                aa_key);
+                aa_key == null ? RenderingHints.VALUE_ANTIALIAS_DEFAULT : aa_key);
     }
 
     private static void drawText(RenderingContext c, BlockBox box, IdentValue listStyle) {
@@ -143,6 +143,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2006/01/11 22:16:28  peterbrant
+ * Fix NPE with PdfGraphics2D
+ *
  * Revision 1.29  2005/12/13 20:46:06  peterbrant
  * Improve list support (implement list-style-position: inside, marker "sticks" to first line box even if there are other block boxes in between, plus other minor fixes) / Experimental support for optionally extending text decorations to box edge vs line edge
  *
