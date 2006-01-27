@@ -42,6 +42,7 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.BlockFormattingContext;
 import org.xhtmlrenderer.layout.Boxing;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -53,9 +54,9 @@ import org.xhtmlrenderer.layout.content.TableRowContent;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.Style;
+import org.xhtmlrenderer.swing.SwingReplacedElement;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.swing.*;
 import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
@@ -635,14 +636,13 @@ public class TableBoxing {
             cell.height = setHeight;
         }
         //check if replaced
-        JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c.getUac(), setWidth, setHeight);
-        if (cc != null) {
-            Rectangle bounds = cc.getBounds();
-            //cell.x = bounds.x;
-            //cell.y = bounds.y;
-            cell.contentWidth = bounds.width;
-            cell.height = bounds.height;
-            cell.component = cc;
+        
+        ReplacedElement re = c.getReplacedElementFactory().createReplacedElement(
+                content.getElement(), c.getUac(), setWidth, setHeight);
+        if (re != null) {
+            cell.contentWidth = re.getIntrinsicWidth();
+            cell.height = re.getIntrinsicHeight();
+            cell.setReplacedElement(re);
         }
 
         // save height incase fixed height
@@ -659,13 +659,15 @@ public class TableBoxing {
         
         Rectangle extents =
             c.shrinkExtents(tx + (int) border.right() + (int) padding.right(), ty + (int) border.bottom() + (int) padding.bottom());
-        if (cell.component == null)
+        if (! cell.isReplaced())
             Boxing.layoutChildren(c, cell, content);
         else {
             if (c.isInteractive()) {
-                c.getCanvas().add(cell.component);
+                c.getCanvas().add(
+                        ((SwingReplacedElement)cell.getReplacedElement()).getJComponent());
             }
         }
+        
         c.setExtents(extents);
         c.translate(-tx, -ty);
 
@@ -707,6 +709,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.59  2006/01/27 01:15:42  peterbrant
+   Start on better support for different output devices
+
    Revision 1.58  2006/01/10 19:56:01  peterbrant
    Fix inappropriate box resizing when width: auto
 

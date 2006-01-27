@@ -20,8 +20,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Font;
-import java.awt.font.LineMetrics;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +43,7 @@ import org.xhtmlrenderer.layout.content.WhitespaceStripper;
 import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.FloatDistances;
 import org.xhtmlrenderer.render.FloatedBlockBox;
 import org.xhtmlrenderer.render.InlineBox;
@@ -382,11 +381,11 @@ public class InlineBoxing {
     }
     
     public static StrutMetrics createDefaultStrutMetrics(LayoutContext c, Box container) {
-        LineMetrics strutLM = container.getStyle().getLineMetrics(c);
-        InlineBoxMeasurements measurements = getInitialMeasurements(c, container, strutLM);
+        FSFontMetrics strutM = container.getStyle().getFSFontMetrics(c);
+        InlineBoxMeasurements measurements = getInitialMeasurements(c, container, strutM);
         
         return new StrutMetrics(
-                strutLM.getAscent(), measurements.getBaseline(), strutLM.getDescent());
+                strutM.getAscent(), measurements.getBaseline(), strutM.getDescent());
     }
 
     private static void positionVertically(
@@ -394,13 +393,13 @@ public class InlineBoxing {
         if (current.getChildCount() == 0) {
             current.height = 0;
         } else {
-            LineMetrics strutLM = container.getStyle().getLineMetrics(c);
+            FSFontMetrics strutM = container.getStyle().getFSFontMetrics(c);
             VerticalAlignContext vaContext = new VerticalAlignContext();
-            InlineBoxMeasurements measurements = getInitialMeasurements(c, container, strutLM);
+            InlineBoxMeasurements measurements = getInitialMeasurements(c, container, strutM);
             vaContext.pushMeasurements(measurements);
             
             TextDecoration lBDecoration = calculateTextDecoration(
-                    container, measurements.getBaseline(), strutLM);
+                    container, measurements.getBaseline(), strutM);
             if (lBDecoration != null) {
                 current.setTextDecoration(lBDecoration);
             }
@@ -482,18 +481,18 @@ public class InlineBoxing {
 
     private static InlineBoxMeasurements calculateInlineMeasurements(LayoutContext c, InlineBox iB,
                                                                      VerticalAlignContext vaContext) {
-        LineMetrics lm = iB.getStyle().getLineMetrics(c);
+        FSFontMetrics fm = iB.getStyle().getFSFontMetrics(c);
 
         CalculatedStyle style = iB.getStyle().getCalculatedStyle();
         float lineHeight = style.getLineHeight(c);
 
         int halfLeading = Math.round((lineHeight - 
-                (lm.getAscent() + lm.getDescent())) / 2);
+                (fm.getAscent() + fm.getDescent())) / 2);
 
-        iB.setBaseline(Math.round(lm.getAscent()));
+        iB.setBaseline(Math.round(fm.getAscent()));
 
-        alignInlineContent(c, iB, lm.getAscent(), lm.getDescent(), vaContext);
-        TextDecoration decoration = calculateTextDecoration(iB, iB.getBaseline(), lm);
+        alignInlineContent(c, iB, fm.getAscent(), fm.getDescent(), vaContext);
+        TextDecoration decoration = calculateTextDecoration(iB, iB.getBaseline(), fm);
         if (decoration != null) {
             iB.setTextDecoration(decoration);
         }
@@ -503,14 +502,14 @@ public class InlineBoxing {
         result.setInlineTop(iB.y - halfLeading);
         result.setInlineBottom(Math.round(result.getInlineTop() + lineHeight));
         result.setTextTop(iB.y);
-        result.setTextBottom((int) (result.getBaseline() + lm.getDescent()));
+        result.setTextBottom((int) (result.getBaseline() + fm.getDescent()));
         
         RectPropertySet padding = iB.getStyle().getPaddingWidth(c);
         BorderPropertySet border = style.getBorder(c);
         
         result.setPaintingTop((int)Math.floor(iB.y - border.top() - padding.top()));
         result.setPaintingBottom((int)Math.ceil(iB.y +
-                lm.getAscent() + lm.getDescent() + 
+                fm.getAscent() + fm.getDescent() + 
                 border.bottom() + padding.bottom()));
 
         result.setContainsContent(iB.containsContent());
@@ -519,7 +518,7 @@ public class InlineBoxing {
     }
     
     private static TextDecoration calculateTextDecoration(Box box, int baseline, 
-            LineMetrics lm) {
+            FSFontMetrics fm) {
         CalculatedStyle style = box.getStyle().getCalculatedStyle();
         
         IdentValue val = style.getIdent(CSSName.TEXT_DECORATION);
@@ -528,26 +527,26 @@ public class InlineBoxing {
         if (val == IdentValue.UNDERLINE) {
             decoration = new TextDecoration();
             decoration.setOffset(Math.round((baseline + 
-                    lm.getUnderlineOffset() + lm.getUnderlineThickness())));
-            decoration.setThickness(Math.round(lm.getUnderlineThickness()));
+                    fm.getUnderlineOffset() + fm.getUnderlineThickness())));
+            decoration.setThickness(Math.round(fm.getUnderlineThickness()));
             
             // JDK on Linux returns some goofy values for 
             // LineMetrics.getUnderlineOffset(). Compensate by always
             // making sure underline fits inside the descender
             int maxOffset = 
-                baseline + (int)lm.getDescent() - decoration.getThickness();
+                baseline + (int)fm.getDescent() - decoration.getThickness();
             if (decoration.getOffset() > maxOffset) {
                 decoration.setOffset(maxOffset);
             }
             
         } else if (val == IdentValue.LINE_THROUGH) {
             decoration = new TextDecoration();
-            decoration.setOffset(Math.round(baseline + lm.getStrikethroughOffset()));
-            decoration.setThickness(Math.round(lm.getStrikethroughThickness()));
+            decoration.setOffset(Math.round(baseline + fm.getStrikethroughOffset()));
+            decoration.setThickness(Math.round(fm.getStrikethroughThickness()));
         } else if (val == IdentValue.OVERLINE) {
             decoration = new TextDecoration();
             decoration.setOffset(0);
-            decoration.setThickness(Math.round(lm.getUnderlineThickness()));
+            decoration.setThickness(Math.round(fm.getUnderlineThickness()));
         }
         
         if (decoration != null) {
@@ -593,17 +592,17 @@ public class InlineBoxing {
     }
 
     private static InlineBoxMeasurements getInitialMeasurements(
-            LayoutContext c, Box container, LineMetrics strutLM) {
+            LayoutContext c, Box container, FSFontMetrics strutM) {
         Style style = container.getStyle();
         float lineHeight = style.getCalculatedStyle().getLineHeight(c);
 
         int halfLeading = Math.round((lineHeight - 
-                (strutLM.getAscent() + strutLM.getDescent())) / 2);
+                (strutM.getAscent() + strutM.getDescent())) / 2);
 
         InlineBoxMeasurements measurements = new InlineBoxMeasurements();
-        measurements.setBaseline((int) (halfLeading + strutLM.getAscent()));
+        measurements.setBaseline((int) (halfLeading + strutM.getAscent()));
         measurements.setTextTop((int) halfLeading);
-        measurements.setTextBottom((int) (measurements.getBaseline() + strutLM.getDescent()));
+        measurements.setTextBottom((int) (measurements.getBaseline() + strutM.getDescent()));
         measurements.setInlineTop((int) halfLeading);
         measurements.setInlineBottom((int) (halfLeading + lineHeight));
 
@@ -735,13 +734,11 @@ public class InlineBoxing {
         result = new InlineText();
         result.setMasterText(lbContext.getMaster());
 
-        Font font = c.getCurrentStyle().getAWTFont(c);
-
         if (needFirstLetter) {
-            Breaker.breakFirstLetter(c, lbContext, remainingWidth, font);
+            Breaker.breakFirstLetter(c, lbContext, remainingWidth, c.getCurrentStyle());
         } else {
             Breaker.breakText(c, lbContext, remainingWidth,
-                    c.getCurrentStyle().getWhitespace(), font);
+                    c.getCurrentStyle().getWhitespace(), c.getCurrentStyle());
         }
 
         result.setSubstring(lbContext.getStart(), lbContext.getEnd());

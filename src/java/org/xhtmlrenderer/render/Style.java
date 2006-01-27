@@ -7,8 +7,6 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
 
-import java.awt.font.LineMetrics;
-
 /**
  * Encapuslates anything style related in a Box. A separate bean is used to
  * avoid cluttering up Box more than necessary.
@@ -28,8 +26,8 @@ public class Style {
         this.containingBlockWidth = containingBlockWidth;
     }
     
-    public LineMetrics getLineMetrics(LayoutContext c) {
-        return calculatedStyle.getLineMetrics(c);
+    public FSFontMetrics getFSFontMetrics(LayoutContext c) {
+        return calculatedStyle.getFSFontMetrics(c);
     }
     
     public int getContainingBlockWidth() {

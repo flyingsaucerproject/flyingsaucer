@@ -26,6 +26,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.layout.Layer;
 
 public class PageBox {
@@ -282,7 +283,7 @@ public class PageBox {
     public void paintBorder(RenderingContext c, int additionalClearance) {
         BorderPainter.paint(
                 getBorderEdge(additionalClearance, getPaintingTop(), c),
-                BorderPainter.ALL,
+                OutputDevice.ALL,
                 getStyle().getCalculatedStyle(),
                 c.getGraphics(), c, 0);
     }

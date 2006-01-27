@@ -22,37 +22,24 @@ package org.xhtmlrenderer.render;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.font.LineMetrics;
-import java.awt.geom.Rectangle2D;
 import org.xhtmlrenderer.extend.TextRenderer;
 
-
 /**
- * Description of the Class
- *
  * @author   Joshua Marinacci
  * @author   Torbjörn Gannholm
  */
 public class Java2DTextRenderer implements TextRenderer {
 
-    /** Description of the Field */
     protected float scale = 1.0f;
 
-    /** Description of the Field */
     protected float threshold = 25;
 
-    /** Description of the Field */
     protected int level = HIGH;
 
-    /**
-     * Description of the Method
-     *
-     * @param graphics  PARAM
-     * @param string    PARAM
-     * @param x         PARAM
-     * @param y         PARAM
-     */
-    public void drawString( Graphics2D graphics, String string, float x, float y ) {
+    public void drawString(FontContext fontContext, String string, float x, float y ) {
+        Java2DFSFontContext fs = (Java2DFSFontContext)fontContext;
+        Graphics2D graphics = fs.getGraphics();
+        graphics.setFont(fs.getFont());
         if ( graphics.getFont().getSize() > threshold && level > NONE ) {
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON );
         }
@@ -62,85 +49,45 @@ public class Java2DTextRenderer implements TextRenderer {
         }
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param graphics  PARAM
-     */
-    public void setupGraphics( Graphics2D graphics ) {
+    public void setup(FontContext fontContext) {
         //Uu.p("setup graphics called");
-        graphics.setRenderingHint( RenderingHints.KEY_FRACTIONALMETRICS,
-                RenderingHints.VALUE_FRACTIONALMETRICS_OFF );
+        ((Java2DFSFontContext)fontContext).getGraphics().setRenderingHint( 
+                RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF );
     }
 
-    /**
-     * Sets the fontScale attribute of the Java2DTextRenderer object
-     *
-     * @param scale  The new fontScale value
-     */
     public void setFontScale( float scale ) {
         this.scale = scale;
     }
 
-    /**
-     * Sets the smoothingThreshold attribute of the Java2DTextRenderer object
-     *
-     * @param fontsize  The new smoothingThreshold value
-     */
     public void setSmoothingThreshold( float fontsize ) {
         threshold = fontsize;
     }
 
-    /**
-     * Sets the smoothingLevel attribute of the Java2DTextRenderer object
-     *
-     * @param level  The new smoothingLevel value
-     */
     public void setSmoothingLevel( int level ) {
         this.level = level;
     }
 
-    /**
-     * Gets the lineMetrics attribute of the Java2DTextRenderer object
-     *
-     * @param graphics  PARAM
-     * @param font      PARAM
-     * @param string    PARAM
-     * @return          The lineMetrics value
-     */
-    public LineMetrics getLineMetrics( Graphics2D graphics, Font font, String string ) {
-        return font.getLineMetrics( string, graphics.getFontRenderContext());
+    public FSFontMetrics getFSFontMetrics(FontContext fontContext, String string ) {
+        Java2DFSFontContext fc = (Java2DFSFontContext)fontContext;
+        return new LineMetricsAdapter(
+                fc.getFont().getLineMetrics(
+                        string, fc.getGraphics().getFontRenderContext()));
+    }
+    
+    public int getWidth(FontContext fontContext, String string) {
+        Java2DFSFontContext fc = (Java2DFSFontContext)fontContext;
+        Graphics2D graphics = fc.getGraphics();
+        Font font = fc.getFont();
+        return (int)Math.ceil(
+                graphics.getFontMetrics( font ).getStringBounds( string, graphics ).getWidth());
     }
 
-    /**
-     * Gets the logicalBounds attribute of the Java2DTextRenderer object
-     *
-     * @param graphics  PARAM
-     * @param font      PARAM
-     * @param string    PARAM
-     * @return          The logicalBounds value
-     */
-    public Rectangle2D getLogicalBounds( Graphics2D graphics, Font font, String string ) {
-        return graphics.getFontMetrics( font ).getStringBounds( string, graphics );
-    }
-
-    /**
-     * Gets the fontScale attribute of the Java2DTextRenderer object
-     *
-     * @return   The fontScale value
-     */
     public float getFontScale() {
         return this.scale;
     }
 
-    /**
-     * Gets the smoothingLevel attribute of the Java2DTextRenderer object
-     *
-     * @return   The smoothingLevel value
-     */
     public int getSmoothingLevel() {
         return level;
     }
-
 }
 

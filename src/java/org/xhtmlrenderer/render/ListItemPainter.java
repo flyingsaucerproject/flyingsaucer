@@ -134,7 +134,7 @@ public class ListItemPainter {
         }
         int y = getReferenceBaseline(c, box);
         
-        c.getGraphics().setFont(text.getFont());
+        c.getFontContext().configureFor(c, box.getStyle().getCalculatedStyle(), true);
         c.getGraphics().drawString(text.getText(), x, y);
     }
 }
@@ -143,6 +143,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2006/01/27 01:15:33  peterbrant
+ * Start on better support for different output devices
+ *
  * Revision 1.30  2006/01/11 22:16:28  peterbrant
  * Fix NPE with PdfGraphics2D
  *

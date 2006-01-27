@@ -19,12 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.font.LineMetrics;
-
-import org.xhtmlrenderer.layout.FontUtil;
 import org.xhtmlrenderer.util.Uu;
 
 public class InlineText {
@@ -92,46 +86,7 @@ public class InlineText {
     }
     
     public void paint(RenderingContext c) {
-        InlineBox iB = getParent();
-        
-        String text = getSubstring();
-        Graphics2D g = (Graphics2D) c.getGraphics();
-        //adjust font for current settings
-        Font oldfont = g.getFont();
-        g.setFont(iB.getStyle().getCalculatedStyle().getAWTFont(c));
-        Color oldcolor = g.getColor();
-        g.setColor(iB.getStyle().getCalculatedStyle().getColor());
-
-        if (text != null && text.length() > 0) {
-            c.getTextRenderer().drawString(c.getGraphics(), text, 
-                    iB.getAbsX() + getX(), iB.getAbsY() + iB.getBaseline());
-        }
-
-        g.setColor(oldcolor);
-        
-        if (c.debugDrawFontMetrics()) {
-            paintDebugMetrics(c, iB, text, g);
-        }
-
-        g.setFont(oldfont);
-    }
-
-    private void paintDebugMetrics(RenderingContext c, InlineBox iB, String text, Graphics2D g) {
-        g.setColor(new Color(0xFF, 0x33, 0xFF));
-        
-        LineMetrics lm = iB.getStyle().getLineMetrics(null);
-        int width = FontUtil.len(text, g.getFont(), c.getTextRenderer(), g);
-        int x = iB.getAbsX() + getX();
-        int y = iB.getAbsY() + iB.getBaseline();
-        
-        g.drawLine(x, y, x + width, y);
-        
-        y += (int) Math.ceil(lm.getDescent());
-        g.drawLine(x, y, x + width, y);
-        
-        y -= (int) Math.ceil(lm.getDescent());
-        y -= (int) Math.ceil(lm.getAscent());
-        g.drawLine(x, y, x + width, y);
+        c.getOutputDevice().drawText(c, this);
     }
 
     public InlineBox getParent() {

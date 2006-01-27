@@ -19,11 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;
@@ -39,10 +35,9 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 
 public abstract class Box {
@@ -280,7 +275,6 @@ public abstract class Box {
     public static final int CHILDREN_FLUX = 2;
     public static final int DONE = 3;
 
-    private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
     private int state = NOTHING;
 
     public synchronized int getState() {
@@ -304,34 +298,6 @@ public abstract class Box {
             default:
                 return "unknown";
         }
-    }
-
-    private static void tileFill(Graphics g, Image img, Rectangle rect, int xoff, int yoff, boolean horiz, boolean vert) {
-        int iwidth = img.getWidth(null);
-        int iheight = img.getHeight(null);
-        int rwidth = rect.width;
-        int rheight = rect.height;
-    
-        if (horiz) {
-            xoff = xoff % iwidth - iwidth;
-            rwidth += iwidth;
-        } else {
-            rwidth = iwidth;
-        }
-    
-        if (vert) {
-            yoff = yoff % iheight - iheight;
-            rheight += iheight;
-        } else {
-            rheight = iheight;
-        }
-    
-        for (int i = 0; i < rwidth; i += iwidth) {
-            for (int j = 0; j < rheight; j += iheight) {
-                g.drawImage(img, i + rect.x + xoff, j + rect.y + yoff, null);
-            }
-        }
-    
     }
 
     public final Style getStyle() {
@@ -496,92 +462,16 @@ public abstract class Box {
         return style != null;
     }
     
-    protected int getBorderSides() {
-        return BorderPainter.ALL;
+    public int getBorderSides() {
+        return OutputDevice.ALL;
     }
     
     public void paintBorder(RenderingContext c) {
-        if (! getStyle().isVisible()) {
-            return;
-        }
-        
-        Rectangle borderBounds = getPaintingBorderEdge(c);
-        if (! c.isPrint() && getState() != Box.DONE) {
-            borderBounds.height += c.getCanvas().getHeight();
-        }
-    
-        BorderPainter.paint(borderBounds, getBorderSides(),
-                getStyle().getCalculatedStyle(), c.getGraphics(), c, 0);
-    }
-
-    private Image getBackgroundImage(RenderingContext c) {
-        String uri = getStyle().getCalculatedStyle().getStringProperty(CSSName.BACKGROUND_IMAGE);
-        if (! uri.equals("none")) {
-            try {
-                return c.getUac().getImageResource(uri).getImage();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                Uu.p(ex);
-            }
-        }
-        return null;
+        c.getOutputDevice().paintBorder(c, this);
     }
 
     public void paintBackground(RenderingContext c) {
-        if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
-            return;
-        }
-        
-        if (! getStyle().isVisible()) {
-            return;
-        }
-        
-        Color backgroundColor = getStyle().getCalculatedStyle().getBackgroundColor();
-        Image backgroundImage = getBackgroundImage(c);
-        
-        if ( (backgroundColor == null || backgroundColor.equals(TRANSPARENT)) &&
-                backgroundImage == null) {
-            return;
-        }
-    
-        Rectangle backgroundBounds = getPaintingBorderEdge(c);
-        if (! c.isPrint() && getState() != Box.DONE) {
-            backgroundBounds.height += c.getCanvas().getHeight();
-        }
-        
-        if (backgroundColor != null && ! backgroundColor.equals(TRANSPARENT)) {
-            c.getGraphics().setColor(backgroundColor);
-            c.getGraphics().fillRect(backgroundBounds.x, backgroundBounds.y, backgroundBounds.width, backgroundBounds.height);
-        }
-    
-        int xoff = 0;
-        int yoff = 0;
-        
-        if (backgroundImage != null) {
-            Shape oldclip = (Shape) c.getGraphics().getClip();
-    
-            if (getStyle().isFixedBackground()) {
-                yoff = c.getCanvas().getLocation().y;
-                c.getGraphics().setClip(c.getCanvas().getVisibleRect());
-            }
-    
-            c.getGraphics().clip(backgroundBounds);
-    
-            int imageWidth = backgroundImage.getWidth(null);
-            int imageHeight = backgroundImage.getHeight(null);
-    
-            Point bgOffset = getStyle().getCalculatedStyle().getBackgroundPosition(backgroundBounds.width - imageWidth,
-                    backgroundBounds.height - imageHeight, c);
-            xoff += bgOffset.x;
-            yoff -= bgOffset.y;
-    
-            tileFill(c.getGraphics(), backgroundImage,
-                    backgroundBounds,
-                    xoff, -yoff,
-                    getStyle().isHorizontalBackgroundRepeat(),
-                    getStyle().isVerticalBackgroundRepeat());
-            c.getGraphics().setClip(oldclip);
-        }
+        c.getOutputDevice().paintBackground(c, this);
     }
 
     public void setHeight(int height) {
@@ -638,17 +528,6 @@ public abstract class Box {
             result.addAll(child.getElementBoxes(elem));
         }
         return result;
-    }
-    
-    protected void paintDebugOutline(RenderingContext c, Color color) {
-        Color oldColor = c.getGraphics().getColor();
-        
-        c.getGraphics().setColor(color);
-        Rectangle rect = getBounds(getAbsX(), getAbsY(), c, 0, 0);
-        rect.height -= 1;
-        rect.width -= 1;
-        c.getGraphics().drawRect(rect.x, rect.y, rect.width, rect.height);
-        c.getGraphics().setColor(oldColor);
     }
     
     public void detach() {
@@ -743,6 +622,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.105  2006/01/27 01:15:38  peterbrant
+ * Start on better support for different output devices
+ *
  * Revision 1.104  2006/01/11 22:09:27  peterbrant
  * toString() uses absolute coordinates now
  *

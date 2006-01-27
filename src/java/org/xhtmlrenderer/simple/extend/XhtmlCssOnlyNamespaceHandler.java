@@ -20,21 +20,15 @@ package org.xhtmlrenderer.simple.extend;
 
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.swing.NoNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.swing.*;
-import java.awt.Image;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -42,16 +36,6 @@ import java.util.List;
  * no presentational html attributes (see css 2.1 spec, 6.4.4)
  */
 public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
-
-    /**
-     * Description of the Field
-     */
-    protected HashMap imageComponents;
-
-    /**
-     * Description of the Field
-     */
-    protected LinkedHashMap forms;
 
     /**
      * Description of the Field
@@ -301,121 +285,4 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
 
         return stream;
     }
-
-    /**
-     * Gets the customComponent attribute of the XhtmlNamespaceHandler object
-     *
-     * @param e         PARAM
-     * @param uac       PARAM
-     * @param setWidth
-     * @param setHeight
-     * @return The customComponent value
-     */
-    public JComponent getCustomComponent(Element e, UserAgentCallback uac, int setWidth, int setHeight) {
-        JComponent cc = null;
-        if (e == null) {
-            return null;
-        }
-        if (e.getNodeName().equals("img")) {
-            cc = getImageComponent(e);
-            if (cc != null) {
-                return cc;
-            }
-            JButton jb = null;
-            Image im = null;
-            im = uac.getImageResource(e.getAttribute("src")).getImage();
-            if (im == null) {
-                jb = new JButton("Image unreachable. " + e.getAttribute("alt"));
-            } else {
-                Image i2 = im.getScaledInstance(setWidth, setHeight, Image.SCALE_FAST);
-                ImageIcon ii = new ImageIcon(i2, e.getAttribute("alt"));
-                jb = new JButton(ii);
-            }
-            jb.setBorder(BorderFactory.createEmptyBorder());
-            jb.setSize(jb.getPreferredSize());
-            addImageComponent(e, jb);
-            return jb;
-        }
-        //form components
-        Element parentForm = getParentForm(e);
-        //parentForm may be null! No problem! Assume action is this document and method is get.
-        XhtmlForm form = getForm(parentForm);
-        if (form == null) {
-            form = new XhtmlForm(uac, parentForm);
-            addForm(parentForm, form);
-        }
-        cc = form.addComponent(e);
-        return cc;
-    }
-
-    /**
-     * Adds a feature to the ImageComponent attribute of the
-     * XhtmlNamespaceHandler object
-     *
-     * @param e  The feature to be added to the ImageComponent attribute
-     * @param cc The feature to be added to the ImageComponent attribute
-     */
-    protected void addImageComponent(Element e, JComponent cc) {
-        if (imageComponents == null) {
-            imageComponents = new HashMap();
-        }
-        imageComponents.put(e, cc);
-    }
-
-    /**
-     * Adds a feature to the Form attribute of the XhtmlNamespaceHandler object
-     *
-     * @param e The feature to be added to the Form attribute
-     * @param f The feature to be added to the Form attribute
-     */
-    protected void addForm(Element e, XhtmlForm f) {
-        if (forms == null) {
-            forms = new LinkedHashMap();
-        }
-        forms.put(e, f);
-    }
-
-    /**
-     * Gets the imageComponent attribute of the XhtmlNamespaceHandler object
-     *
-     * @param e PARAM
-     * @return The imageComponent value
-     */
-    protected JComponent getImageComponent(Element e) {
-        if (imageComponents == null) {
-            return null;
-        }
-        return (JComponent) imageComponents.get(e);
-    }
-
-    /**
-     * Gets the form attribute of the XhtmlNamespaceHandler object
-     *
-     * @param e PARAM
-     * @return The form value
-     */
-    protected XhtmlForm getForm(Element e) {
-        if (forms == null) {
-            return null;
-        }
-        return (XhtmlForm) forms.get(e);
-    }
-
-    /**
-     * Gets the parentForm attribute of the XhtmlNamespaceHandler object
-     *
-     * @param e PARAM
-     * @return The parentForm value
-     */
-    protected Element getParentForm(Element e) {
-        Node n = e;
-        do {
-            n = n.getParentNode();
-        } while (n.getNodeType() == Node.ELEMENT_NODE && !n.getNodeName().equals("form"));
-        if (n.getNodeType() != Node.ELEMENT_NODE) {
-            return null;
-        }
-        return (Element) n;
-    }
-
 }

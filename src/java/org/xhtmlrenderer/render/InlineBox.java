@@ -21,10 +21,8 @@ package org.xhtmlrenderer.render;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.font.LineMetrics;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +34,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.layout.BoxCollector;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.Layer;
@@ -86,7 +85,7 @@ public class InlineBox extends Box implements InlinePaintable {
         BorderPropertySet border = getStyle().getCalculatedStyle().getBorder(c);
         RectPropertySet padding = getStyle().getPaddingWidth(c);
         
-        LineMetrics metrics = getStyle().getLineMetrics(c);
+        FSFontMetrics metrics = getStyle().getFSFontMetrics(c);
         
         setHeight((int)Math.ceil(border.top() + padding.top() + metrics.getAscent() + 
                 metrics.getDescent() + padding.bottom() + border.bottom()));
@@ -221,21 +220,6 @@ public class InlineBox extends Box implements InlinePaintable {
             }
         }
     }
-
-    private void paintTextDecoration(RenderingContext c) {
-        Graphics graphics = c.getGraphics();
-        
-        Color oldColor = graphics.getColor();
-        
-        graphics.setColor(getStyle().getCalculatedStyle().getColor());
-        Rectangle edge = getContentAreaEdge(getAbsX(), getAbsY(), c);
-        
-        c.getGraphics().fillRect(
-                edge.x, getAbsY() + textDecoration.getOffset(),
-                edge.width, textDecoration.getThickness());
-        
-        graphics.setColor(oldColor);
-    }
     
     public void paintInline(RenderingContext c) {
         if (! getStyle().isVisible()) {
@@ -253,7 +237,7 @@ public class InlineBox extends Box implements InlinePaintable {
             IdentValue val = 
                 getStyle().getCalculatedStyle().getIdent(CSSName.TEXT_DECORATION);
             if (val == IdentValue.UNDERLINE || val == IdentValue.OVERLINE) {
-                paintTextDecoration(c);
+                c.getOutputDevice().drawTextDecoration(c, this);
             }
         }
         
@@ -268,19 +252,19 @@ public class InlineBox extends Box implements InlinePaintable {
             IdentValue val = 
                 getStyle().getCalculatedStyle().getIdent(CSSName.TEXT_DECORATION);
             if (val == IdentValue.LINE_THROUGH) {
-                paintTextDecoration(c);
+                c.getOutputDevice().drawTextDecoration(c, this);
             }
         }
     }
     
-    protected int getBorderSides() {
-        int result = BorderPainter.TOP + BorderPainter.BOTTOM;
+    public int getBorderSides() {
+        int result = OutputDevice.TOP + OutputDevice.BOTTOM;
         
         if (startsHere) {
-            result += BorderPainter.LEFT;
+            result += OutputDevice.LEFT;
         }
         if (endsHere) {
-            result += BorderPainter.RIGHT;
+            result += OutputDevice.RIGHT;
         }
         
         return result;
@@ -581,7 +565,7 @@ public class InlineBox extends Box implements InlinePaintable {
     }
     
     public void paintDebugOutline(RenderingContext c) {
-        paintDebugOutline(c, Color.BLUE);
+        c.getOutputDevice().drawDebugOutline(c, this, Color.BLUE);
     }
     
     protected void detachChildren() {

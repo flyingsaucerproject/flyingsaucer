@@ -20,20 +20,17 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.List;
 
-import javax.swing.JComponent;
-
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
-import org.xhtmlrenderer.layout.FontUtil;
+import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PersistentBFC;
@@ -51,10 +48,10 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     
     private Box staticEquivalent;
     
-    public JComponent component = null;
-    
     private boolean resetMargins;
     private boolean needPageClear;
+    
+    private ReplacedElement replacedElement;
 
     public BlockBox() {
         super();
@@ -164,7 +161,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
     
     public void paintDebugOutline(RenderingContext c) {
-        paintDebugOutline(c, Color.RED);
+        c.getOutputDevice().drawDebugOutline(c, this, Color.RED);
     }
 
     public MarkerData getMarkerData() {
@@ -244,14 +241,13 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
         
         text += "  ";
 
-        Font font = this.getStyle().getCalculatedStyle().getAWTFont(c);
+        c.getFontContext().configureFor(c, getStyle().getCalculatedStyle(), false);
         
-        int w = FontUtil.len(text, font, c.getTextRenderer(), c.getGraphics());
+        int w = c.getTextRenderer().getWidth(c.getFontContext(), text);
         
         MarkerData.TextMarker result = new MarkerData.TextMarker();
         result.setText(text);
         result.setLayoutWidth(w);
-        result.setFont(font);
         
         return result;
     } 
@@ -304,7 +300,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
 
     public boolean isReplaced() {
-        return component != null;
+        return replacedElement != null;
     }
     
     public void calcCanvasLocation() {
@@ -327,9 +323,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
         }
         
         if (isReplaced()) {
-            Point location = component.getLocation();
+            Point location = getReplacedElement().getLocation();
             if (location.x != getAbsX() || location.y != getAbsY()) {
-                component.setLocation(getAbsX(), getAbsY());    
+                getReplacedElement().setLocation(getAbsX(), getAbsY());    
             }
         }
     }
@@ -412,12 +408,23 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
             calcChildLocations();
         }
     }
+
+    public ReplacedElement getReplacedElement() {
+        return replacedElement;
+    }
+
+    public void setReplacedElement(ReplacedElement replacedElement) {
+        this.replacedElement = replacedElement;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.37  2006/01/27 01:15:35  peterbrant
+ * Start on better support for different output devices
+ *
  * Revision 1.36  2006/01/10 19:56:01  peterbrant
  * Fix inappropriate box resizing when width: auto
  *

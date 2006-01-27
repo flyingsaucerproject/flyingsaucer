@@ -29,6 +29,7 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.Java2DFSFontContext;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.render.RenderQueue;
@@ -233,6 +234,8 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         
         RenderingContext result = getSharedContext().newRenderingContextInstance();
         result.setGraphics(g);
+        result.setFontContext(new Java2DFSFontContext(sharedContext, result.getGraphics()));
+        result.setOutputDevice(new Java2DOutputDevice(g));
 
         return result;
     }
@@ -253,6 +256,8 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
         LayoutContext result = getSharedContext().newLayoutContextInstance(extents);
         result.setGraphics(g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics());
+        result.setFontContext(new Java2DFSFontContext(sharedContext, result.getGraphics()));
+        result.setReplacedElementFactory(new SwingReplacedElementFactory());
         
         if (result.isPrint()) {
             PageBox first = Layer.createPageBox(result, "first");
@@ -293,7 +298,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
         c.setRenderQueue(queue);
         setRenderWidth((int) c.getExtents().getWidth());
-        getSharedContext().getTextRenderer().setupGraphics(c.getGraphics());
+        getSharedContext().getTextRenderer().setup(c.getFontContext());
         
         long start = System.currentTimeMillis();
         

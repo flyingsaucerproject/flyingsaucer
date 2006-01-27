@@ -27,7 +27,6 @@ import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.FirstLetterStyle;
 import org.xhtmlrenderer.layout.content.FirstLineStyle;
-import org.xhtmlrenderer.render.AnonymousBlockBox;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.ReflowEvent;
@@ -468,6 +467,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.46  2006/01/27 01:15:31  peterbrant
+ * Start on better support for different output devices
+ *
  * Revision 1.45  2006/01/11 22:08:53  peterbrant
  * Only increment list "counter" when display: list-item
  *

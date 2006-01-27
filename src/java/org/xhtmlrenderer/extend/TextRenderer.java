@@ -19,67 +19,20 @@
  */
 package org.xhtmlrenderer.extend;
 
-import java.awt.*;
-import java.awt.font.LineMetrics;
-import java.awt.geom.Rectangle2D;
+import org.xhtmlrenderer.render.FSFontMetrics;
+import org.xhtmlrenderer.render.FontContext;
 
-
-/**
- * Description of the Interface
- *
- * @author Who?
- */
 public interface TextRenderer {
+    public void setup(FontContext context);
 
-    /**
-     * Description of the Method
-     *
-     * @param graphics PARAM
-     */
-    public void setupGraphics(Graphics2D graphics);
+    public void drawString(FontContext context, String string, float x, float y);
 
-    /**
-     * Description of the Method
-     *
-     * @param graphics PARAM
-     * @param string   PARAM
-     * @param x        PARAM
-     * @param y        PARAM
-     */
-    public void drawString(Graphics2D graphics, String string, float x, float y);
+    public FSFontMetrics getFSFontMetrics(FontContext context, String string);
 
-    /**
-     * Gets the lineMetrics attribute of the TextRenderer object
-     *
-     * @param graphics PARAM
-     * @param font     PARAM
-     * @param string   PARAM
-     * @return The lineMetrics value
-     */
-    public LineMetrics getLineMetrics(Graphics2D graphics, Font font, String string);
+    public int getWidth(FontContext context, String string);
 
-    /**
-     * Gets the logicalBounds attribute of the TextRenderer object
-     *
-     * @param graphics PARAM
-     * @param font     PARAM
-     * @param string   PARAM
-     * @return The logicalBounds value
-     */
-    public Rectangle2D getLogicalBounds(Graphics2D graphics, Font font, String string);
-
-    /**
-     * Sets the fontScale attribute of the TextRenderer object
-     *
-     * @param scale The new fontScale value
-     */
     public void setFontScale(float scale);
 
-    /**
-     * Gets the fontScale attribute of the TextRenderer object
-     *
-     * @return The fontScale value
-     */
     public float getFontScale();
 
     /*
@@ -87,42 +40,15 @@ public interface TextRenderer {
      * else, set to the threshold font size. does not take font scaling
      * into account.
      */
-    /**
-     * Sets the smoothingThreshold attribute of the TextRenderer object
-     *
-     * @param fontsize The new smoothingThreshold value
-     */
     public void setSmoothingThreshold(float fontsize);
 
-    /**
-     * Gets the smoothingLevel attribute of the TextRenderer object
-     *
-     * @return The smoothingLevel value
-     */
     public int getSmoothingLevel();
 
-    /**
-     * Sets the smoothingLevel attribute of the TextRenderer object
-     *
-     * @param level The new smoothingLevel value
-     */
     public void setSmoothingLevel(int level);
 
-    /**
-     * Description of the Field
-     */
     public static final int NONE = 0;
-    /**
-     * Description of the Field
-     */
     public static final int LOW = 1;
-    /**
-     * Description of the Field
-     */
     public static final int MEDIUM = 2;
-    /**
-     * Description of the Field
-     */
     public static final int HIGH = 3;
 }
 

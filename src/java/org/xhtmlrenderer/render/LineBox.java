@@ -28,7 +28,6 @@ import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;
@@ -94,44 +93,17 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         return result;
     }
     
-    private void paintTextDecoration(RenderingContext c) {
-        Graphics graphics = c.getGraphics();
-        
-        Color oldColor = graphics.getColor();
-        
-        graphics.setColor(getStyle().getCalculatedStyle().getColor());
-        Box parent = getParent();
-        if (parent.getStyle().getCalculatedStyle().isIdent(
-                CSSName.FS_TEXT_DECORATION_EXTENT, IdentValue.BLOCK)) {
-            c.getGraphics().fillRect(
-                    getAbsX(), 
-                    getAbsY() + textDecoration.getOffset(),
-                    parent.getAbsX() + parent.tx + parent.getContentWidth() - getAbsX(), 
-                    textDecoration.getThickness());
-        } else {
-            c.getGraphics().fillRect(
-                    getAbsX(), getAbsY() + textDecoration.getOffset(),
-                    getContentWidth(),
-                    textDecoration.getThickness());
-        }
-        
-        graphics.setColor(oldColor);
-    }
-    
     public void paintInline(RenderingContext c) {
         if (! getParent().getStyle().isVisible()) {
             return;
         }
         
         if (textDecoration != null) {
-            paintTextDecoration(c);
+            c.getOutputDevice().drawTextDecoration(c, this);
         }
         
         if (c.debugDrawLineBoxes()) {
-            Color oldColor = c.getGraphics().getColor();
-            c.getGraphics().setColor(Color.GREEN);
-            c.getGraphics().drawRect(getAbsX(), getAbsY(), getWidth(), getHeight());
-            c.getGraphics().setColor(oldColor);
+            c.getOutputDevice().drawDebugOutline(c, this, Color.GREEN);
         }
     }
     
@@ -352,6 +324,9 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.49  2006/01/27 01:15:33  peterbrant
+ * Start on better support for different output devices
+ *
  * Revision 1.48  2006/01/11 22:16:05  peterbrant
  * Fix NPE when clip region is null
  *

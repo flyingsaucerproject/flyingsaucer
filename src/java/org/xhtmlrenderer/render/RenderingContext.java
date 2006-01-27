@@ -22,12 +22,12 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.context.FontResolver;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
+import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.swing.RootPanel;
 
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
@@ -45,6 +45,10 @@ public class RenderingContext implements CssContext {
     protected SharedContext sharedContext;
 
     private Graphics2D graphics;
+    
+    private FontContext fontContext;
+    
+    private OutputDevice outputDevice;
 
     /**
      * <p/>
@@ -66,10 +70,6 @@ public class RenderingContext implements CssContext {
         return sharedContext.getUac();
     }
 
-    public SharedContext getContext() {
-        return sharedContext;
-    }
-
     public String getBaseURL() {
         return sharedContext.getBaseURL();
     }
@@ -83,15 +83,16 @@ public class RenderingContext implements CssContext {
     }
 
     public float getFontSize2D(FontSpecification font) {
-        return sharedContext.getFontSize2D(font);
+        return getFontContext().getFont(font).getSize2D();
     }
 
     public float getXHeight(FontSpecification parentFont) {
-        return sharedContext.getXHeight(parentFont, graphics);
+        return sharedContext.getXHeight(getFontContext(), parentFont);
     }
 
     public float getFontSizeForXHeight(FontSpecification parent, FontSpecification desired, float xHeight) {
-        return sharedContext.getFontSizeForXHeight(parent, desired, xHeight, graphics);
+        return sharedContext.getFontSizeForXHeight(
+                getFontContext(), parent, desired, xHeight);
     }
 
     public TextRenderer getTextRenderer() {
@@ -127,8 +128,8 @@ public class RenderingContext implements CssContext {
         return sharedContext.getFontResolver();
     }
 
-    public Font getFont(FontSpecification font) {
-        return sharedContext.getFont(font);
+    public FSFont getFont(FontSpecification font) {
+        return getFontContext().getFont(font);
     }
 
     public RootPanel getCanvas() {
@@ -185,6 +186,22 @@ public class RenderingContext implements CssContext {
 
     public boolean isPrint() {
         return sharedContext.isPrint();
+    }
+
+    public FontContext getFontContext() {
+        return fontContext;
+    }
+
+    public void setFontContext(FontContext fontContext) {
+        this.fontContext = fontContext;
+    }
+
+    public OutputDevice getOutputDevice() {
+        return outputDevice;
+    }
+
+    public void setOutputDevice(OutputDevice outputDevice) {
+        this.outputDevice = outputDevice;
     }
 }
 

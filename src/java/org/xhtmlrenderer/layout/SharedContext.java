@@ -19,6 +19,13 @@
  */
 package org.xhtmlrenderer.layout;
 
+import java.awt.Font;
+import java.awt.HeadlessException;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.xhtmlrenderer.context.FontResolver;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.value.FontSpecification;
@@ -26,15 +33,12 @@ import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.FSFontMetrics;
+import org.xhtmlrenderer.render.FontContext;
 import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.swing.RootPanel;
 import org.xhtmlrenderer.util.XRLog;
-
-import java.awt.*;
-import java.awt.font.LineMetrics;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The SharedContext is that which is kept between successive layout and render runs.
@@ -450,13 +454,14 @@ public class SharedContext {
         return this.mm_per_px;
     }
 
-    public float getFontSizeForXHeight(FontSpecification parent, FontSpecification desired, float xHeight, Graphics2D g2) {
-        float bestGuess = getFontSize2D(parent);
-        float bestHeight = getXHeight(parent, g2);
+    public float getFontSizeForXHeight(FontContext fontContext, 
+            FontSpecification parent, FontSpecification desired, float xHeight) {
+        float bestGuess = fontContext.getFont(parent).getSize2D();
+        float bestHeight = getXHeight(fontContext, parent);
         float nextGuess = bestGuess * xHeight / bestHeight;
         while (true) {
             desired.size = nextGuess;
-            float nextHeight = getXHeight(desired, g2);
+            float nextHeight = getXHeight(fontContext, desired);
             //this check is needed in cases where the iteration can hop back and forth between two values
             if (Math.abs(nextHeight - xHeight) < Math.abs(bestHeight - xHeight)) {
                 bestGuess = nextGuess;
@@ -470,19 +475,11 @@ public class SharedContext {
 
     //strike-through offset should always be half of the height of lowercase x...
     //and it is defined even for fonts without 'x'!
-    public float getXHeight(FontSpecification fs, Graphics2D g2) {
-        Font f = getFontResolver().resolveFont(this, fs.families, fs.size, fs.fontWeight, fs.fontStyle, fs.variant);
-        LineMetrics lm = getTextRenderer().getLineMetrics(g2, f, " ");
-        float sto = lm.getStrikethroughOffset();
-        return 2 * Math.abs(sto) + lm.getStrikethroughThickness();
-    }
-
-    public float getFontSize2D(FontSpecification font) {
-        return getFontResolver().resolveFont(this, font).getSize2D();
-    }
-
-    public Font getFont(FontSpecification font) {
-        return getFontResolver().resolveFont(this, font);
+    public float getXHeight(FontContext fontContext, FontSpecification fs) {
+        fontContext.configureFor(fs);
+        FSFontMetrics fm = getTextRenderer().getFSFontMetrics(fontContext, " ");
+        float sto = fm.getStrikethroughOffset();
+        return 2 * Math.abs(sto) + fm.getStrikethroughThickness();
     }
 
     /**
@@ -592,6 +589,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2006/01/27 01:15:30  peterbrant
+ * Start on better support for different output devices
+ *
  * Revision 1.23  2006/01/01 02:38:15  peterbrant
  * Merge more pagination work / Various minor cleanups
  *

@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Font;
 import java.awt.Image;
 
 public class MarkerData {
@@ -133,7 +132,6 @@ public class MarkerData {
     public static class TextMarker {
         private String text;
         private int layoutWidth;
-        private Font font;
         
         public TextMarker() {
         }
@@ -152,14 +150,6 @@ public class MarkerData {
 
         public void setLayoutWidth(int width) {
             this.layoutWidth = width;
-        }
-
-        public Font getFont() {
-            return font;
-        }
-
-        public void setFont(Font font) {
-            this.font = font;
         }
     }    
 }

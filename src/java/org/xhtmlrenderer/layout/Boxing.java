@@ -22,8 +22,6 @@ package org.xhtmlrenderer.layout;
 import java.awt.Rectangle;
 import java.util.List;
 
-import javax.swing.JComponent;
-
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -31,6 +29,7 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
+import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.content.AnonymousBlockContent;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.layout.content.ContentUtil;
@@ -43,6 +42,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.StrutMetrics;
 import org.xhtmlrenderer.render.Style;
+import org.xhtmlrenderer.swing.SwingReplacedElement;
 import org.xhtmlrenderer.table.TableBoxing;
 
 
@@ -163,22 +163,19 @@ public class Boxing {
                 block.height = setHeight;
             }
             //check if replaced
-            JComponent cc = c.getNamespaceHandler().getCustomComponent(content.getElement(), c.getUac(), setWidth, setHeight);
-            if (cc != null) {
-                Rectangle bounds = cc.getBounds();
-                //block.x = bounds.x;
-                //block.y = bounds.y;
-
-                block.contentWidth = bounds.width;
-                block.height = bounds.height;
-                block.component = cc;
+            ReplacedElement re = c.getReplacedElementFactory().createReplacedElement(
+                    content.getElement(), c.getUac(), setWidth, setHeight);
+            if (re != null) {
+                block.contentWidth = re.getIntrinsicWidth();
+                block.height = re.getIntrinsicHeight();
+                block.setReplacedElement(re);
             }
         }
         
         // save height incase fixed height
         int original_height = block.height;
 
-        if (block.component == null) {
+        if (! block.isReplaced()) {
             block.height = 0;
         }
         
@@ -201,11 +198,12 @@ public class Boxing {
         // CLEAN: cast to int
         Rectangle extents = c.shrinkExtents(
                 tx + (int) margin.right() + (int) border.right() + (int) padding.right(), ty + (int) margin.bottom() + (int) border.bottom() + (int) padding.bottom());
-        if (block.component == null)
+        if (! block.isReplaced())
             layoutChildren(c, block, content);//when this is really an anonymous, InlineLayout.layoutChildren is called
         else {
             if (c.isInteractive()) {
-                c.getCanvas().add(block.component);
+                c.getCanvas().add(
+                        ((SwingReplacedElement)block.getReplacedElement()).getJComponent());
             }
             block.setState(Box.DONE);
         }
@@ -343,6 +341,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.75  2006/01/27 01:15:30  peterbrant
+ * Start on better support for different output devices
+ *
  * Revision 1.74  2006/01/09 23:23:16  peterbrant
  * Fix layers nested inside an "alternate" layer
  *

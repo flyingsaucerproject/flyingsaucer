@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.Stack;
@@ -32,10 +31,13 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.EmptyStyle;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.content.Content;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.render.FontContext;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.RenderQueue;
 import org.xhtmlrenderer.swing.RootPanel;
@@ -69,6 +71,9 @@ public class LayoutContext implements CssContext {
     private boolean shouldStop = false;
     
     private boolean layingOutTable = false;
+    
+    private FontContext fontContext;
+    private ReplacedElementFactory replacedElementFactory;
 
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
@@ -348,19 +353,20 @@ public class LayoutContext implements CssContext {
     }
 
     public float getFontSize2D(FontSpecification font) {
-        return sharedContext.getFontSize2D(font);
+        return getFontContext().getFont(font).getSize2D();
     }
 
     public float getXHeight(FontSpecification parentFont) {
-        return sharedContext.getXHeight(parentFont, graphics);
+        return sharedContext.getXHeight(getFontContext(), parentFont);
     }
 
     public float getFontSizeForXHeight(FontSpecification parent, FontSpecification desired, float xHeight) {
-        return sharedContext.getFontSizeForXHeight(parent, desired, xHeight, graphics);
+        return sharedContext.getFontSizeForXHeight(
+                getFontContext(), parent, desired, xHeight);
     }
 
-    public Font getFont(FontSpecification font) {
-        return sharedContext.getFont(font);
+    public FSFont getFont(FontSpecification font) {
+        return getFontContext().getFont(font);
     }
 
     public UserAgentCallback getUac() {
@@ -393,5 +399,22 @@ public class LayoutContext implements CssContext {
 
     public void setLayingOutTable(boolean layingOutTable) {
         this.layingOutTable = layingOutTable;
+    }
+
+    public FontContext getFontContext() {
+        return fontContext;
+    }
+
+    public void setFontContext(FontContext fontContext) {
+        this.fontContext = fontContext;
+    }
+
+    public ReplacedElementFactory getReplacedElementFactory() {
+        return replacedElementFactory;
+    }
+
+    public void setReplacedElementFactory(
+            ReplacedElementFactory replacedElementFactory) {
+        this.replacedElementFactory = replacedElementFactory;
     }
 }

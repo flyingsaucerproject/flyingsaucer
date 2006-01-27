@@ -19,40 +19,24 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.util.Map;
+
 import org.sektor37.minium.TextRendererFactory;
 import org.sektor37.minium.TextRenderingHints;
 
-import java.awt.*;
-import java.awt.font.LineMetrics;
-import java.awt.geom.Rectangle2D;
-import java.util.Map;
-
 
 /**
- * Description of the Class
- *
  * @author Joshua Marinacci
  * @author Torbjörn Gannholm
  */
 public class MiniumTextRenderer implements org.xhtmlrenderer.extend.TextRenderer {
-    /**
-     * Description of the Field
-     */
     public org.sektor37.minium.TextRenderer renderer;
 
-    /**
-     * Description of the Field
-     */
     protected float scale = 1.0f;
-
-    /**
-     * Description of the Field
-     */
     protected int level = HIGH;
 
-    /**
-     * Constructor for the MiniumTextRenderer object
-     */
     public MiniumTextRenderer() {
         TextRendererFactory text_renderer_factory = TextRendererFactory.newOversamplingInstance();
         renderer = text_renderer_factory.newTextRenderer();
@@ -82,31 +66,14 @@ public class MiniumTextRenderer implements org.xhtmlrenderer.extend.TextRenderer
         renderer.setTextRenderingHints(defaultHints);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param graphics PARAM
-     * @param string   PARAM
-     * @param x        PARAM
-     * @param y        PARAM
-     */
-    public void drawString(Graphics2D graphics, String string, float x, float y) {
-        renderer.drawString(graphics, string, x, y);
+    public void drawString(FontContext fontContext, String string, float x, float y ) {
+        Java2DFSFontContext fc = (Java2DFSFontContext)fontContext;
+        renderer.drawString(fc.getGraphics(), string, x, y);
     }
 
-    /**
-     * Description of the Method
-     *
-     * @param graphics PARAM
-     */
-    public void setupGraphics(Graphics2D graphics) {
+    public void setup(FontContext fontContext) {
     }
 
-    /**
-     * Sets the fontScale attribute of the MiniumTextRenderer object
-     *
-     * @param scale The new fontScale value
-     */
     public void setFontScale(float scale) {
         this.scale = scale;
     }
@@ -116,20 +83,10 @@ public class MiniumTextRenderer implements org.xhtmlrenderer.extend.TextRenderer
      * else, set to the threshold font size. does not take font scaling
      * into account.
      */
-    /**
-     * Sets the smoothingThreshold attribute of the MiniumTextRenderer object
-     *
-     * @param fontsize The new smoothingThreshold value
-     */
     public void setSmoothingThreshold(float fontsize) {
         renderer.setTextRenderingHint(TextRenderingHints.KEY_OVERSAMPLING_MIN_FONTSIZE, new Integer((int) fontsize));
     }
 
-    /**
-     * Sets the smoothingLevel attribute of the MiniumTextRenderer object
-     *
-     * @param level The new smoothingLevel value
-     */
     public void setSmoothingLevel(int level) {
         this.level = level;
         Map defaultHints = TextRenderingHints.DEFAULT_HINTS_FASTEST;
@@ -148,44 +105,23 @@ public class MiniumTextRenderer implements org.xhtmlrenderer.extend.TextRenderer
         renderer.setTextRenderingHints(defaultHints);
     }
 
-    /**
-     * Gets the lineMetrics attribute of the MiniumTextRenderer object
-     *
-     * @param graphics PARAM
-     * @param font     PARAM
-     * @param string   PARAM
-     * @return The lineMetrics value
-     */
-    public LineMetrics getLineMetrics(Graphics2D graphics, Font font, String string) {
-        return renderer.getLineMetrics(graphics, font, string);
+    public FSFontMetrics getFSFontMetrics(FontContext fontContext, String string ) {
+        Java2DFSFontContext fc = (Java2DFSFontContext)fontContext;
+        return new LineMetricsAdapter(
+                renderer.getLineMetrics(fc.getGraphics(), fc.getFont(), string));
+    }
+    
+    public int getWidth(FontContext fontContext, String string) {
+        Java2DFSFontContext fc = (Java2DFSFontContext)fontContext;
+        Graphics2D graphics = fc.getGraphics();
+        Font font = fc.getFont();
+        return (int)Math.ceil(renderer.getLogicalBounds(graphics, font, string).getWidth());
     }
 
-    /**
-     * Gets the logicalBounds attribute of the MiniumTextRenderer object
-     *
-     * @param graphics PARAM
-     * @param font     PARAM
-     * @param string   PARAM
-     * @return The logicalBounds value
-     */
-    public Rectangle2D getLogicalBounds(Graphics2D graphics, Font font, String string) {
-        return renderer.getLogicalBounds(graphics, font, string);
-    }
-
-    /**
-     * Gets the fontScale attribute of the MiniumTextRenderer object
-     *
-     * @return The fontScale value
-     */
     public float getFontScale() {
         return this.scale;
     }
 
-    /**
-     * Gets the smoothingLevel attribute of the MiniumTextRenderer object
-     *
-     * @return The smoothingLevel value
-     */
     public int getSmoothingLevel() {
         return level;
     }
