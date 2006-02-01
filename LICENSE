@@ -28,3 +28,9 @@ Ant (for building)
 http://ant.apache.org/
 License: Apache Software License Version 2.0
 Not packaged with release; development using version 1.6.x
+
+iText (PDF generation)
+http://www.lowagie.com/iText/ and http://itextpdf.sourceforge.net/
+License: Mozilla Public License Version 1.1
+Using version itext-paulo 155
+Included as lib/itext-paulo-155.jar
