@@ -2,7 +2,6 @@ package org.xhtmlrenderer.css.style;
 
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.render.FSFont;
-import org.xhtmlrenderer.render.FontContext;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,6 +20,4 @@ public interface CssContext {
     float getFontSizeForXHeight(FontSpecification parent, FontSpecification desired, float xHeight);
 
     FSFont getFont(FontSpecification font);
-    
-    FontContext getFontContext();
 }

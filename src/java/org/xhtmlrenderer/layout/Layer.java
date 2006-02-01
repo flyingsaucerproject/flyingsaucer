@@ -252,7 +252,7 @@ public class Layer {
             List lines = new ArrayList();
     
             BoxCollector collector = new BoxCollector();
-            collector.collect(c, c.getGraphics().getClip(), this, blocks, lines);
+            collector.collect(c, c.getOutputDevice().getClip(), this, blocks, lines);
     
             // TODO root layer needs to be handled correctly (paint over entire canvas)
             if (! isInline()) {
@@ -289,7 +289,7 @@ public class Layer {
             List lines = new ArrayList();
     
             BoxCollector collector = new BoxCollector();
-            collector.collect(c, c.getGraphics().getClip(), 
+            collector.collect(c, c.getOutputDevice().getClip(), 
                     this, startingPoint, blocks, lines);
     
             paintBackgroundsAndBorders(c, blocks);
@@ -340,9 +340,9 @@ public class Layer {
     
     private void paintReplacedElement(RenderingContext c, BlockBox replaced) {
         if (! c.isInteractive()) {
-            c.getGraphics().translate(replaced.getAbsX(), replaced.getAbsY());
+            c.getOutputDevice().translate(replaced.getAbsX(), replaced.getAbsY());
             c.getOutputDevice().paintReplacedElement(c, replaced);
-            c.getGraphics().translate(-replaced.getAbsX(), -replaced.getAbsY());
+            c.getOutputDevice().translate(-replaced.getAbsX(), -replaced.getAbsY());
         }
     }
     

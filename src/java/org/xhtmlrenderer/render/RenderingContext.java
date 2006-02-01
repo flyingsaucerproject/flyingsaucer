@@ -19,16 +19,16 @@
  */
 package org.xhtmlrenderer.render;
 
-import org.xhtmlrenderer.context.FontResolver;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
+import org.xhtmlrenderer.extend.FontContext;
+import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.swing.RootPanel;
 
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 /**
@@ -43,12 +43,8 @@ public class RenderingContext implements CssContext {
      * Description of the Field
      */
     protected SharedContext sharedContext;
-
-    private Graphics2D graphics;
-    
-    private FontContext fontContext;
-    
     private OutputDevice outputDevice;
+    private FontContext fontContext;
 
     /**
      * <p/>
@@ -81,9 +77,9 @@ public class RenderingContext implements CssContext {
     public float getMmPerPx() {
         return sharedContext.getMmPerPx();
     }
-
+    
     public float getFontSize2D(FontSpecification font) {
-        return getFontContext().getFont(font).getSize2D();
+        return sharedContext.getFont(font).getSize2D();
     }
 
     public float getXHeight(FontSpecification parentFont) {
@@ -116,20 +112,12 @@ public class RenderingContext implements CssContext {
         return sharedContext.isPaged();
     }
 
-    public Graphics2D getGraphics() {
-        return graphics;
-    }
-
-    public void setGraphics(Graphics2D graphics) {
-        this.graphics = graphics;
-    }
-
     public FontResolver getFontResolver() {
         return sharedContext.getFontResolver();
     }
-
+    
     public FSFont getFont(FontSpecification font) {
-        return getFontContext().getFont(font);
+        return sharedContext.getFont(font);
     }
 
     public RootPanel getCanvas() {
@@ -188,20 +176,20 @@ public class RenderingContext implements CssContext {
         return sharedContext.isPrint();
     }
 
-    public FontContext getFontContext() {
-        return fontContext;
-    }
-
-    public void setFontContext(FontContext fontContext) {
-        this.fontContext = fontContext;
-    }
-
     public OutputDevice getOutputDevice() {
         return outputDevice;
     }
 
     public void setOutputDevice(OutputDevice outputDevice) {
         this.outputDevice = outputDevice;
+    }
+
+    public FontContext getFontContext() {
+        return fontContext;
+    }
+
+    public void setFontContext(FontContext fontContext) {
+        this.fontContext = fontContext;
     }
 }
 

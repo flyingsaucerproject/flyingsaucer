@@ -34,7 +34,6 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.layout.BoxCollector;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.Layer;
@@ -258,13 +257,13 @@ public class InlineBox extends Box implements InlinePaintable {
     }
     
     public int getBorderSides() {
-        int result = OutputDevice.TOP + OutputDevice.BOTTOM;
+        int result = BorderPainter.TOP + BorderPainter.BOTTOM;
         
         if (startsHere) {
-            result += OutputDevice.LEFT;
+            result += BorderPainter.LEFT;
         }
         if (endsHere) {
-            result += OutputDevice.RIGHT;
+            result += BorderPainter.RIGHT;
         }
         
         return result;

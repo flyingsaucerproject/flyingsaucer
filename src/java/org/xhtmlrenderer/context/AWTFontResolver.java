@@ -21,7 +21,10 @@ package org.xhtmlrenderer.context;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
+import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.render.AWTFSFont;
+import org.xhtmlrenderer.render.FSFont;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -33,7 +36,7 @@ import java.util.HashMap;
  *
  * @author Joshua Marinacci
  */
-public class FontResolver {
+public class AWTFontResolver implements FontResolver {
     /**
      * Description of the Field
      */
@@ -46,7 +49,11 @@ public class FontResolver {
     /**
      * Constructor for the FontResolverTest object
      */
-    public FontResolver() {
+    public AWTFontResolver() {
+        init();
+    }
+    
+    private void init() {
         GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
         String[] available_fonts = gfx.getAvailableFontFamilyNames();
         //Uu.p("available fonts =");
@@ -68,6 +75,10 @@ public class FontResolver {
         //Uu.p("put in sans serif");
         available_fonts_hash.put("Monospaced", new Font("Monospaced", Font.PLAIN, 1));
     }
+    
+    public void flushCache() {
+        init();
+    }
 
     /**
      * Description of the Method
@@ -80,7 +91,7 @@ public class FontResolver {
      * @param variant  PARAM
      * @return Returns
      */
-    public Font resolveFont(SharedContext ctx, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
+    public FSFont resolveFont(SharedContext ctx, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
         //Uu.p("familes = ");
         //Uu.p(families);
         // for each font family
@@ -88,7 +99,7 @@ public class FontResolver {
             for (int i = 0; i < families.length; i++) {
                 Font font = resolveFont(ctx, families[i], size, weight, style, variant);
                 if (font != null) {
-                    return font;
+                    return new AWTFSFont(font);
                 }
             }
         }
@@ -103,7 +114,7 @@ public class FontResolver {
         Font fnt = createFont(ctx, (Font) available_fonts_hash.get(family), size, weight, style, variant);
         instance_hash.put(getFontInstanceHashName(family, size, weight, style, variant), fnt);
         //Uu.p("subbing in base sans : " + fnt);
-        return fnt;
+        return new AWTFSFont(fnt);
     }
 
     /**
@@ -245,7 +256,7 @@ public class FontResolver {
         return name + "-" + size + "-" + weight + "-" + style + "-" + variant;
     }
 
-    public Font resolveFont(SharedContext renderingContext, FontSpecification spec) {
+    public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {
         return resolveFont(renderingContext, spec.families, spec.size, spec.fontWeight, spec.fontStyle, spec.variant);
     }
 }
@@ -254,6 +265,9 @@ public class FontResolver {
  * $Id$
  *
  * $Log$
+ * Revision 1.1  2006/02/01 01:30:15  peterbrant
+ * Initial commit of PDF work
+ *
  * Revision 1.2  2005/10/27 00:08:51  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

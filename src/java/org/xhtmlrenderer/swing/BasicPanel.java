@@ -284,7 +284,7 @@ public abstract class BasicPanel extends RootPanel {
 		
         // paint the normal swing background first
         // but only if we aren't printing.
-        Graphics g = c.getGraphics();
+        Graphics g = ((Java2DOutputDevice)c.getOutputDevice()).getGraphics();
         if (!(g instanceof PrinterGraphics) && explicitlyOpaque) {
             g.setColor(getBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
@@ -320,7 +320,7 @@ public abstract class BasicPanel extends RootPanel {
                 root.getLastPage().getPaintingBottom() + PAGE_PAINTING_CLEARANCE));
         revalidate();
 
-        Graphics2D g = c.getGraphics();
+        Graphics2D g = ((Java2DOutputDevice)c.getOutputDevice()).getGraphics();
         Shape working = g.getClip();
 
         List pages = root.getPages();
@@ -1096,6 +1096,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.97  2006/02/01 01:30:14  peterbrant
+ * Initial commit of PDF work
+ *
  * Revision 1.96  2006/01/11 22:21:20  peterbrant
  * Fixes to print vs. print preview displays
  *

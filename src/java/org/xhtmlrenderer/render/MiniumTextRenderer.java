@@ -25,6 +25,9 @@ import java.util.Map;
 
 import org.sektor37.minium.TextRendererFactory;
 import org.sektor37.minium.TextRenderingHints;
+import org.xhtmlrenderer.extend.FontContext;
+import org.xhtmlrenderer.extend.OutputDevice;
+import org.xhtmlrenderer.swing.Java2DOutputDevice;
 
 
 /**
@@ -66,12 +69,11 @@ public class MiniumTextRenderer implements org.xhtmlrenderer.extend.TextRenderer
         renderer.setTextRenderingHints(defaultHints);
     }
 
-    public void drawString(FontContext fontContext, String string, float x, float y ) {
-        Java2DFSFontContext fc = (Java2DFSFontContext)fontContext;
-        renderer.drawString(fc.getGraphics(), string, x, y);
+    public void drawString(OutputDevice outputDevice, String string, float x, float y ) {
+        renderer.drawString(((Java2DOutputDevice)outputDevice).getGraphics(), string, x, y);
     }
 
-    public void setup(FontContext fontContext) {
+    public void setup(FontContext context) {
     }
 
     public void setFontScale(float scale) {
@@ -105,17 +107,20 @@ public class MiniumTextRenderer implements org.xhtmlrenderer.extend.TextRenderer
         renderer.setTextRenderingHints(defaultHints);
     }
 
-    public FSFontMetrics getFSFontMetrics(FontContext fontContext, String string ) {
-        Java2DFSFontContext fc = (Java2DFSFontContext)fontContext;
+    public FSFontMetrics getFSFontMetrics(
+            FontContext fontContext, FSFont font, String string ) {
+        Java2DFontContext fc = (Java2DFontContext)fontContext;
+        Font awtFont = ((AWTFSFont)font).getAWTFont();
         return new LineMetricsAdapter(
-                renderer.getLineMetrics(fc.getGraphics(), fc.getFont(), string));
+                renderer.getLineMetrics(fc.getGraphics(), awtFont, string));
     }
     
-    public int getWidth(FontContext fontContext, String string) {
-        Java2DFSFontContext fc = (Java2DFSFontContext)fontContext;
+    public int getWidth(FontContext fontContext, FSFont font, String string) {
+        Java2DFontContext fc = (Java2DFontContext)fontContext;
         Graphics2D graphics = fc.getGraphics();
-        Font font = fc.getFont();
-        return (int)Math.ceil(renderer.getLogicalBounds(graphics, font, string).getWidth());
+        Font awtFont = ((AWTFSFont)font).getAWTFont();
+        return (int)Math.ceil(renderer.getLogicalBounds(
+                graphics, awtFont, string).getWidth());
     }
 
     public float getFontScale() {

@@ -35,7 +35,6 @@ import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.XRLog;
@@ -463,7 +462,7 @@ public abstract class Box {
     }
     
     public int getBorderSides() {
-        return OutputDevice.ALL;
+        return BorderPainter.ALL;
     }
     
     public void paintBorder(RenderingContext c) {
@@ -622,6 +621,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.106  2006/02/01 01:30:14  peterbrant
+ * Initial commit of PDF work
+ *
  * Revision 1.105  2006/01/27 01:15:38  peterbrant
  * Start on better support for different output devices
  *

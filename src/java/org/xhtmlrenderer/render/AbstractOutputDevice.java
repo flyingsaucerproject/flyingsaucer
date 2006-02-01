@@ -24,16 +24,22 @@ import java.awt.Rectangle;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.OutputDevice;
 
 public abstract class AbstractOutputDevice implements OutputDevice {
+    protected abstract void drawLine(int x1, int y1, int x2, int y2);
+    
     public void drawText(RenderingContext c, InlineText inlineText) {
         InlineBox iB = inlineText.getParent();
         String text = inlineText.getSubstring();
 
         if (text != null && text.length() > 0) {
-            c.getFontContext().configureFor(c, iB.getStyle().getCalculatedStyle(), true);
-            c.getTextRenderer().drawString(c.getFontContext(), text, 
+            setColor(iB.getStyle().getCalculatedStyle().getColor());
+            setFont(iB.getStyle().getCalculatedStyle().getFSFont(c));
+            c.getTextRenderer().drawString(
+                    c.getOutputDevice(),
+                    text,
                     iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline());
         }
 
@@ -49,7 +55,9 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         setColor(new Color(0xFF, 0x33, 0xFF));
         
         FSFontMetrics fm = iB.getStyle().getFSFontMetrics(null);
-        int width = c.getTextRenderer().getWidth(c.getFontContext(), text);
+        int width = c.getTextRenderer().getWidth(
+                c.getFontContext(), 
+                iB.getStyle().getCalculatedStyle().getFSFont(c), text);
         int x = iB.getAbsX() + inlineText.getX();
         int y = iB.getAbsY() + iB.getBaseline();
         
@@ -97,5 +105,24 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         rect.height -= 1;
         rect.width -= 1;
         drawRect(rect.x, rect.y, rect.width, rect.height);
+    }
+    
+
+    public void paintBorder(RenderingContext c, Box box) {
+        if (! box.getStyle().isVisible()) {
+            return;
+        }
+        
+        Rectangle borderBounds = box.getPaintingBorderEdge(c);
+        if (! c.isPrint() && box.getState() != Box.DONE) {
+            borderBounds.height += c.getCanvas().getHeight();
+        }
+    
+        BorderPainter.paint(borderBounds, box.getBorderSides(),
+                box.getStyle().getCalculatedStyle(), c, 0);
+    }
+    
+    public void paintBorder(RenderingContext c, CalculatedStyle style, Rectangle edge, int sides) {
+        BorderPainter.paint(edge, sides, style, c, 0);
     }    
 }

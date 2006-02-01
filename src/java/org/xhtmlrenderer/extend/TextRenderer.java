@@ -1,6 +1,7 @@
 /*
  * {{{ header & license
- * Copyright (c) 2004, 2005 
+ * Copyright (c) 2004, 2005 Joshua Marinacci
+ * Copyright (c) 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -19,17 +20,18 @@
  */
 package org.xhtmlrenderer.extend;
 
+import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
-import org.xhtmlrenderer.render.FontContext;
 
 public interface TextRenderer {
     public void setup(FontContext context);
 
-    public void drawString(FontContext context, String string, float x, float y);
+    public void drawString(OutputDevice outputDevice, String string, float x, float y);
 
-    public FSFontMetrics getFSFontMetrics(FontContext context, String string);
+    public FSFontMetrics getFSFontMetrics(
+            FontContext context, FSFont font, String string );
 
-    public int getWidth(FontContext context, String string);
+    public int getWidth(FontContext context, FSFont font, String string);
 
     public void setFontScale(float scale);
 

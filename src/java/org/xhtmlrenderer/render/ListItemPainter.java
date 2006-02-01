@@ -23,6 +23,7 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.swing.Java2DOutputDevice;
 
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -41,7 +42,7 @@ public class ListItemPainter {
             CalculatedStyle style = box.getStyle().getCalculatedStyle();
             IdentValue listStyle = style.getIdent(CSSName.LIST_STYLE_TYPE);
             
-            c.getGraphics().setColor(style.getColor());
+            c.getOutputDevice().setColor(style.getColor());
     
             if (markerData.getGlyphMarker() != null) {
                 drawGlyph(c, box, style, listStyle);
@@ -52,6 +53,10 @@ public class ListItemPainter {
     }
 
     private static void drawImage(RenderingContext c, BlockBox box, MarkerData markerData) {
+        if (! (c.getOutputDevice() instanceof Java2DOutputDevice)) {
+            throw new UnsupportedOperationException("list-style-image is not supported");
+        }
+        
         Image img = null;
         MarkerData.ImageMarker marker = markerData.getImageMarker();
         img = marker.getImage();
@@ -64,7 +69,7 @@ public class ListItemPainter {
                 x += -marker.getLayoutWidth() + 
                         (marker.getLayoutWidth() / 2 - img.getWidth(null) / 2);
             }
-            c.getGraphics().drawImage(img, 
+            ((Java2DOutputDevice)c.getOutputDevice()).getGraphics().drawImage(img, 
                     x,
                     (int)(getReferenceBaseline(c, box)
                         - strutMetrics.getAscent() / 2 - img.getHeight(null) / 2),
@@ -96,8 +101,8 @@ public class ListItemPainter {
     private static void drawGlyph(RenderingContext c, BlockBox box, 
             CalculatedStyle style, IdentValue listStyle) {
         // save the old AntiAliasing setting, then force it on
-        Object aa_key = c.getGraphics().getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-        c.getGraphics().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        Object aa_key = c.getOutputDevice().getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+        c.getOutputDevice().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
         // calculations for bullets
@@ -113,15 +118,15 @@ public class ListItemPainter {
         int y = getReferenceBaseline(c, box) 
             - (int)strutMetrics.getAscent() / 2 - marker.getDiameter() / 2;
         if (listStyle == IdentValue.DISC) {
-            c.getGraphics().fillOval(x, y, marker.getDiameter(), marker.getDiameter());
+            c.getOutputDevice().fillOval(x, y, marker.getDiameter(), marker.getDiameter());
         } else if (listStyle == IdentValue.SQUARE) {
-            c.getGraphics().fillRect(x, y, marker.getDiameter(), marker.getDiameter());
+            c.getOutputDevice().fillRect(x, y, marker.getDiameter(), marker.getDiameter());
         } else if (listStyle == IdentValue.CIRCLE) {
-            c.getGraphics().drawOval(x, y, marker.getDiameter(), marker.getDiameter());
+            c.getOutputDevice().drawOval(x, y, marker.getDiameter(), marker.getDiameter());
         }
 
         // restore the old AntiAliasing setting
-        c.getGraphics().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        c.getOutputDevice().setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 aa_key == null ? RenderingHints.VALUE_ANTIALIAS_DEFAULT : aa_key);
     }
 
@@ -134,8 +139,10 @@ public class ListItemPainter {
         }
         int y = getReferenceBaseline(c, box);
         
-        c.getFontContext().configureFor(c, box.getStyle().getCalculatedStyle(), true);
-        c.getGraphics().drawString(text.getText(), x, y);
+        c.getOutputDevice().setColor(box.getStyle().getCalculatedStyle().getColor());
+        c.getOutputDevice().setFont(box.getStyle().getCalculatedStyle().getFSFont(c));
+        c.getTextRenderer().drawString(
+                c.getOutputDevice(), text.getText(), x, y);
     }
 }
 
@@ -143,6 +150,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2006/02/01 01:30:13  peterbrant
+ * Initial commit of PDF work
+ *
  * Revision 1.31  2006/01/27 01:15:33  peterbrant
  * Start on better support for different output devices
  *

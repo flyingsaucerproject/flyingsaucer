@@ -625,8 +625,8 @@ public class CalculatedStyle {
 
     public FSFontMetrics getFSFontMetrics(LayoutContext c) {
         if (_FSFontMetrics == null) {
-            c.getFontContext().configureFor(c, this, false);
-            _FSFontMetrics = c.getTextRenderer().getFSFontMetrics(c.getFontContext(), "");
+            _FSFontMetrics = c.getTextRenderer().getFSFontMetrics(
+                    c.getFontContext(), getFSFont(c), "");
         }
         return _FSFontMetrics;
     }  
@@ -641,6 +641,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.63  2006/02/01 01:30:16  peterbrant
+ * Initial commit of PDF work
+ *
  * Revision 1.62  2006/01/27 01:15:44  peterbrant
  * Start on better support for different output devices
  *

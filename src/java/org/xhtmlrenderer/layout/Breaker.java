@@ -22,9 +22,10 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.WhitespaceStripper;
-import org.xhtmlrenderer.render.FontContext;
+import org.xhtmlrenderer.render.FSFont;
 
 /**
  * @author Torbjörn Gannholm
@@ -33,10 +34,10 @@ public class Breaker {
 
     public static void breakFirstLetter(LayoutContext c, LineBreakContext context,
             int avail, CalculatedStyle style) {
-        c.getFontContext().configureFor(c, style, true);
+        FSFont font = style.getFSFont(c);
         context.setEnd(getFirstLetterEnd(context.getMaster(), context.getStart()));
         context.setWidth(c.getTextRenderer().getWidth(
-                c.getFontContext(), context.getCalculatedSubstring()));
+                c.getFontContext(), font, context.getCalculatedSubstring()));
         
         if (context.getWidth() > avail) {
             context.setNeedsNewLine(true);
@@ -67,14 +68,13 @@ public class Breaker {
     
     public static void breakText(LayoutContext c, 
             LineBreakContext context, int avail, IdentValue whitespace, CalculatedStyle style) {
-        c.getFontContext().configureFor(c, style, false);
-        FontContext fontContext = c.getFontContext();
+        FSFont font = style.getFSFont(c);
         
         // ====== handle nowrap
         if (whitespace == IdentValue.NOWRAP) {
         	context.setEnd(context.getLast());
         	context.setWidth(c.getTextRenderer().getWidth(
-                    fontContext, context.getCalculatedSubstring()));
+                    c.getFontContext(), font, context.getCalculatedSubstring()));
             return;
         }
 
@@ -86,12 +86,12 @@ public class Breaker {
             if (n > -1) {
                 context.setEnd(context.getStart() + n + 1);
                 context.setWidth(c.getTextRenderer().getWidth(
-                        fontContext, context.getCalculatedSubstring()));
+                        c.getFontContext(), font, context.getCalculatedSubstring()));
                 context.setNeedsNewLine(true);
             } else if (whitespace == IdentValue.PRE) {
             	context.setEnd(context.getLast());
                 context.setWidth(c.getTextRenderer().getWidth(
-                        fontContext, context.getCalculatedSubstring()));  
+                        c.getFontContext(), font, context.getCalculatedSubstring()));  
             }
         }
 
@@ -110,7 +110,7 @@ public class Breaker {
         while (right > 0 && graphicsLength <= avail) {
             lastGraphicsLength = graphicsLength;
             graphicsLength += c.getTextRenderer().getWidth(
-                    fontContext, currentString.substring(left, right));
+                    c.getFontContext(), font, currentString.substring(left, right));
             lastWrap = left;
             left = right;
             right = currentString.indexOf(WhitespaceStripper.SPACE, left + 1);
@@ -121,7 +121,7 @@ public class Breaker {
             lastWrap = left;
             lastGraphicsLength = graphicsLength;
             graphicsLength += c.getTextRenderer().getWidth(
-                    fontContext, currentString.substring(left));
+                    c.getFontContext(), font, currentString.substring(left));
         }
 
         if (graphicsLength <= avail) {
@@ -146,7 +146,7 @@ public class Breaker {
             
             if (left == 0) {
                 context.setWidth(c.getTextRenderer().getWidth(
-                        fontContext, context.getCalculatedSubstring()));
+                        c.getFontContext(), font, context.getCalculatedSubstring()));
             } else {
                 context.setWidth(graphicsLength);
             }

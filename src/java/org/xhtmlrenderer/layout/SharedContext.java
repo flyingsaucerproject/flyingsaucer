@@ -26,15 +26,17 @@ import java.awt.Toolkit;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.xhtmlrenderer.context.FontResolver;
+import org.xhtmlrenderer.context.AWTFontResolver;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.value.FontSpecification;
+import org.xhtmlrenderer.extend.FontContext;
+import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
-import org.xhtmlrenderer.render.FontContext;
 import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.swing.RootPanel;
@@ -79,7 +81,7 @@ public class SharedContext {
      * Constructor for the Context object
      */
     public SharedContext(UserAgentCallback uac) {
-        font_resolver = new FontResolver();
+        font_resolver = new AWTFontResolver();
         setMedia("screen");
         this.uac = uac;
         setCss(new StyleReference(uac));
@@ -114,7 +116,7 @@ public class SharedContext {
     }
 
     public void flushFonts() {
-        font_resolver = new FontResolver();
+        font_resolver.flushCache();
     }
 
     /**
@@ -453,10 +455,15 @@ public class SharedContext {
     public float getMmPerPx() {
         return this.mm_per_px;
     }
+    
+    public FSFont getFont(FontSpecification spec) {
+        return getFontResolver().resolveFont(this, spec);
+    }
 
-    public float getFontSizeForXHeight(FontContext fontContext, 
+    public float getFontSizeForXHeight( 
+            FontContext fontContext, 
             FontSpecification parent, FontSpecification desired, float xHeight) {
-        float bestGuess = fontContext.getFont(parent).getSize2D();
+        float bestGuess = getFontResolver().resolveFont(this, parent).getSize2D();
         float bestHeight = getXHeight(fontContext, parent);
         float nextGuess = bestGuess * xHeight / bestHeight;
         while (true) {
@@ -476,8 +483,8 @@ public class SharedContext {
     //strike-through offset should always be half of the height of lowercase x...
     //and it is defined even for fonts without 'x'!
     public float getXHeight(FontContext fontContext, FontSpecification fs) {
-        fontContext.configureFor(fs);
-        FSFontMetrics fm = getTextRenderer().getFSFontMetrics(fontContext, " ");
+        FSFont font = getFontResolver().resolveFont(this, fs);
+        FSFontMetrics fm = getTextRenderer().getFSFontMetrics(fontContext, font, " ");
         float sto = fm.getStrikethroughOffset();
         return 2 * Math.abs(sto) + fm.getStrikethroughThickness();
     }
@@ -581,7 +588,14 @@ public class SharedContext {
      * add a new font mapping, or replace an existing one
      */
     public void setFontMapping(String name, Font font) {
-        getFontResolver().setFontMapping(name, font);
+        FontResolver resolver = getFontResolver();
+        if (resolver instanceof AWTFontResolver) {
+            ((AWTFontResolver)resolver).setFontMapping(name, font);
+        }
+    }
+    
+    public void setFontResolver(FontResolver resolver) {
+        font_resolver = resolver;
     }
 }
 
@@ -589,6 +603,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2006/02/01 01:30:12  peterbrant
+ * Initial commit of PDF work
+ *
  * Revision 1.24  2006/01/27 01:15:30  peterbrant
  * Start on better support for different output devices
  *

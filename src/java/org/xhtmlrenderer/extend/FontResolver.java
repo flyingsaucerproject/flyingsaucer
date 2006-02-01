@@ -1,5 +1,6 @@
 /*
  * {{{ header & license
+ * Copyright (c) 2004, 2005 Joshua Marinacci
  * Copyright (c) 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
@@ -9,7 +10,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -17,14 +18,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * }}}
  */
-package org.xhtmlrenderer.render;
+package org.xhtmlrenderer.extend;
 
-import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.render.FSFont;
 
-public interface FontContext {
-    public FSFont getFont(FontSpecification spec);
-    public void configureFor(FontSpecification spec);
-    public void configureFor(CssContext cssCtx, CalculatedStyle style, boolean drawing);
+public interface FontResolver {
+    public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec);
+    public void flushCache();
 }

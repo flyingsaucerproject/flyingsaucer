@@ -241,9 +241,10 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
         
         text += "  ";
 
-        c.getFontContext().configureFor(c, getStyle().getCalculatedStyle(), false);
-        
-        int w = c.getTextRenderer().getWidth(c.getFontContext(), text);
+        int w = c.getTextRenderer().getWidth(
+                c.getFontContext(),
+                getStyle().getCalculatedStyle().getFSFont(c), 
+                text);
         
         MarkerData.TextMarker result = new MarkerData.TextMarker();
         result.setText(text);
@@ -422,6 +423,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.38  2006/02/01 01:30:13  peterbrant
+ * Initial commit of PDF work
+ *
  * Revision 1.37  2006/01/27 01:15:35  peterbrant
  * Start on better support for different output devices
  *

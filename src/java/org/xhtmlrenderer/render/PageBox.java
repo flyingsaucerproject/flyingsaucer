@@ -19,14 +19,12 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
-import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.layout.Layer;
 
 public class PageBox {
@@ -196,7 +194,7 @@ public class PageBox {
                 throw new IllegalArgumentException("Illegal mode");
             }
             
-            paintFlow(c, root, c.getGraphics(), flowName, left, top);
+            paintFlow(c, root, flowName, left, top);
         }
     }
     
@@ -216,7 +214,7 @@ public class PageBox {
                 throw new IllegalArgumentException("Illegal mode");
             }
             
-            paintFlow(c, root, c.getGraphics(), flowName, left, top);
+            paintFlow(c, root, flowName, left, top);
         }
     }
     
@@ -236,7 +234,7 @@ public class PageBox {
                 throw new IllegalArgumentException("Illegal mode");
             }
             
-            paintFlow(c, root, c.getGraphics(), flowName, left, top);
+            paintFlow(c, root, flowName, left, top);
         }
     }
     
@@ -257,17 +255,17 @@ public class PageBox {
                 throw new IllegalArgumentException("Illegal mode");
             }
             
-            paintFlow(c, root, c.getGraphics(), flowName, left, top);
+            paintFlow(c, root, flowName, left, top);
         }
     }
     
     private void paintFlow(RenderingContext c, Layer root,
-            Graphics2D g, String flowName, int left, int top) {
+            String flowName, int left, int top) {
         Layer flow = root.getAlternateFlow(flowName);
         if (flow != null) {
-            g.translate(left, top);
+            c.getOutputDevice().translate(left, top);
             flow.paint(c, 0, 0, true);
-            g.translate(-left, -top);
+            c.getOutputDevice().translate(-left, -top);
         }
     }
     
@@ -281,10 +279,9 @@ public class PageBox {
     }
     
     public void paintBorder(RenderingContext c, int additionalClearance) {
-        BorderPainter.paint(
-                getBorderEdge(additionalClearance, getPaintingTop(), c),
-                OutputDevice.ALL,
+        c.getOutputDevice().paintBorder(c, 
                 getStyle().getCalculatedStyle(),
-                c.getGraphics(), c, 0);
+                getBorderEdge(additionalClearance, getPaintingTop(), c),
+                BorderPainter.ALL);
     }
 }

@@ -22,7 +22,11 @@ package org.xhtmlrenderer.render;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+
+import org.xhtmlrenderer.extend.FontContext;
+import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.swing.Java2DOutputDevice;
 
 /**
  * @author   Joshua Marinacci
@@ -36,10 +40,8 @@ public class Java2DTextRenderer implements TextRenderer {
 
     protected int level = HIGH;
 
-    public void drawString(FontContext fontContext, String string, float x, float y ) {
-        Java2DFSFontContext fs = (Java2DFSFontContext)fontContext;
-        Graphics2D graphics = fs.getGraphics();
-        graphics.setFont(fs.getFont());
+    public void drawString(OutputDevice outputDevice, String string, float x, float y ) {
+        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
         if ( graphics.getFont().getSize() > threshold && level > NONE ) {
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON );
         }
@@ -51,7 +53,7 @@ public class Java2DTextRenderer implements TextRenderer {
 
     public void setup(FontContext fontContext) {
         //Uu.p("setup graphics called");
-        ((Java2DFSFontContext)fontContext).getGraphics().setRenderingHint( 
+        ((Java2DFontContext)fontContext).getGraphics().setRenderingHint( 
                 RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF );
     }
 
@@ -67,19 +69,18 @@ public class Java2DTextRenderer implements TextRenderer {
         this.level = level;
     }
 
-    public FSFontMetrics getFSFontMetrics(FontContext fontContext, String string ) {
-        Java2DFSFontContext fc = (Java2DFSFontContext)fontContext;
+    public FSFontMetrics getFSFontMetrics(FontContext fc, FSFont font, String string ) {
+        Graphics2D graphics = ((Java2DFontContext)fc).getGraphics();
         return new LineMetricsAdapter(
-                fc.getFont().getLineMetrics(
-                        string, fc.getGraphics().getFontRenderContext()));
+                ((AWTFSFont)font).getAWTFont().getLineMetrics(
+                        string, graphics.getFontRenderContext()));
     }
     
-    public int getWidth(FontContext fontContext, String string) {
-        Java2DFSFontContext fc = (Java2DFSFontContext)fontContext;
-        Graphics2D graphics = fc.getGraphics();
-        Font font = fc.getFont();
+    public int getWidth(FontContext fc, FSFont font, String string) {
+        Graphics2D graphics = ((Java2DFontContext)fc).getGraphics();
+        Font awtFont = ((AWTFSFont)font).getAWTFont();
         return (int)Math.ceil(
-                graphics.getFontMetrics( font ).getStringBounds( string, graphics ).getWidth());
+                graphics.getFontMetrics(awtFont).getStringBounds(string, graphics).getWidth());
     }
 
     public float getFontScale() {

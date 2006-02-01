@@ -29,7 +29,7 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.layout.content.DomToplevelNode;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.Java2DFSFontContext;
+import org.xhtmlrenderer.render.Java2DFontContext;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.ReflowEvent;
 import org.xhtmlrenderer.render.RenderQueue;
@@ -233,9 +233,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         XRLog.layout(Level.FINEST, "new context end");
         
         RenderingContext result = getSharedContext().newRenderingContextInstance();
-        result.setGraphics(g);
-        result.setFontContext(new Java2DFSFontContext(sharedContext, result.getGraphics()));
+        result.setFontContext(new Java2DFontContext(g));
         result.setOutputDevice(new Java2DOutputDevice(g));
+        
+        getSharedContext().getTextRenderer().setup(result.getFontContext());
 
         return result;
     }
@@ -255,9 +256,12 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         XRLog.layout(Level.FINEST, "new context end");
 
         LayoutContext result = getSharedContext().newLayoutContextInstance(extents);
-        result.setGraphics(g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics());
-        result.setFontContext(new Java2DFSFontContext(sharedContext, result.getGraphics()));
+        Graphics2D layoutGraphics = 
+            g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics();
+        result.setFontContext(new Java2DFontContext(layoutGraphics));
         result.setReplacedElementFactory(new SwingReplacedElementFactory());
+        
+        getSharedContext().getTextRenderer().setup(result.getFontContext());
         
         if (result.isPrint()) {
             PageBox first = Layer.createPageBox(result, "first");
@@ -298,7 +302,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
         c.setRenderQueue(queue);
         setRenderWidth((int) c.getExtents().getWidth());
-        getSharedContext().getTextRenderer().setup(c.getFontContext());
         
         long start = System.currentTimeMillis();
         
