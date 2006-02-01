@@ -27,6 +27,20 @@
 		</java>
 	</target>
 
+    <!-- Builds and jars the browser demo, and runs it with a particular page -->
+	<target name="create.pdf" depends="jar">
+		<java classname="org.xhtmlrenderer.pdf.ToPDF"
+				fork="${java-exec.fork.tests}">
+			<arg value="${page}"/>
+			<arg value="${pdf}"/>
+			<classpath refid="libraries-and-dest.all"/>
+			<sysproperty key="show-config" value="${show-config}"/>
+			<syspropertyset>
+				<propertyref prefix="xr."/>
+			</syspropertyset>
+		</java>
+	</target>
+
 	<!-- Builds and jars the about box demo, and runs it -->
 	<target name="aboutbox" depends="jar">
 		<java classname="org.xhtmlrenderer.demo.aboutbox.AboutBox"
