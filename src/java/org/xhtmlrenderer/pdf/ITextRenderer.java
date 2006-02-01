@@ -21,7 +21,6 @@ package org.xhtmlrenderer.pdf;
 
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -136,54 +135,44 @@ public class ITextRenderer {
      * goes wrong.
      */
     public void createPDF(OutputStream os) throws DocumentException {
-        try {
-            List pages = _root.getLayer().getPages();
-            
-            RenderingContext c = newRenderingContext();
-            PageBox firstPage = (PageBox)pages.get(0);
-            com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(
-                    0, 0, 
-                    firstPage.getWidth(c) / PIXELS_PER_POINT, 
-                    firstPage.getHeight(c) / PIXELS_PER_POINT);
-            
-            com.lowagie.text.Document doc = 
-                new com.lowagie.text.Document(firstPageSize, 0, 0, 0, 0);
-            PdfWriter writer = PdfWriter.getInstance(doc, os);
-            
-            doc.open();
-            
-            _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.height());
-            
-            _root.getLayer().assignPagePaintingPositions(c, Layer.PAGED_MODE_PRINT);
-            
-            int pageCount = _root.getLayer().getPages().size();
-            
-            for (int i = 0; i < pageCount; i++) {
-                PageBox currentPage = (PageBox)pages.get(i);
-                paintPage(c, currentPage);
-                _outputDevice.finishPage();
-                if (i != pageCount - 1) {
-                    PageBox nextPage = (PageBox)pages.get(i+1);
-                    com.lowagie.text.Rectangle nextPageSize = new com.lowagie.text.Rectangle(
-                            0, 0, 
-                            nextPage.getWidth(c) / PIXELS_PER_POINT, 
-                            nextPage.getHeight(c) / PIXELS_PER_POINT);
-                    doc.setPageSize(nextPageSize);
-                    doc.newPage();
-                    _outputDevice.initializePage(
-                            writer.getDirectContent(), nextPageSize.height());
-                }
-            }
-            doc.close();
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    // ignore
-                }
+        List pages = _root.getLayer().getPages();
+        
+        RenderingContext c = newRenderingContext();
+        PageBox firstPage = (PageBox)pages.get(0);
+        com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(
+                0, 0, 
+                firstPage.getWidth(c) / PIXELS_PER_POINT, 
+                firstPage.getHeight(c) / PIXELS_PER_POINT);
+        
+        com.lowagie.text.Document doc = 
+            new com.lowagie.text.Document(firstPageSize, 0, 0, 0, 0);
+        PdfWriter writer = PdfWriter.getInstance(doc, os);
+        
+        doc.open();
+        
+        _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.height());
+        
+        _root.getLayer().assignPagePaintingPositions(c, Layer.PAGED_MODE_PRINT);
+        
+        int pageCount = _root.getLayer().getPages().size();
+        
+        for (int i = 0; i < pageCount; i++) {
+            PageBox currentPage = (PageBox)pages.get(i);
+            paintPage(c, currentPage);
+            _outputDevice.finishPage();
+            if (i != pageCount - 1) {
+                PageBox nextPage = (PageBox)pages.get(i+1);
+                com.lowagie.text.Rectangle nextPageSize = new com.lowagie.text.Rectangle(
+                        0, 0, 
+                        nextPage.getWidth(c) / PIXELS_PER_POINT, 
+                        nextPage.getHeight(c) / PIXELS_PER_POINT);
+                doc.setPageSize(nextPageSize);
+                doc.newPage();
+                _outputDevice.initializePage(
+                        writer.getDirectContent(), nextPageSize.height());
             }
         }
+        doc.close();
     }
     
     private void paintPage(RenderingContext c, PageBox page) {
