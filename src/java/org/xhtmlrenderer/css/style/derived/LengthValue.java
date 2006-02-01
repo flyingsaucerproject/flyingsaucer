@@ -255,7 +255,12 @@ public class LengthValue extends DerivedValue {
         }
 
         // round down. (CHECK: Why? Is this always appropriate? - tobe)
+        /*
         double d = Math.floor((double) absVal);
+        */
+        // Round is surely what we want? (previous was 
+        // doing e.g. 6in = 431.9997 = 431 ??? - pmb)
+        double d = Math.round((double) absVal);
         absVal = new Float(d).floatValue();
         return absVal;
     }
