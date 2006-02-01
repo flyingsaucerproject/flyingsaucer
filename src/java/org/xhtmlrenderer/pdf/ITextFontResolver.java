@@ -136,6 +136,12 @@ public class ITextFontResolver implements FontResolver {
             return 800;
         } else if (weight == IdentValue.FONT_WEIGHT_900) {
             return 900;
+        } else if (weight == IdentValue.LIGHTER) {
+            // FIXME
+            return 400;
+        } else if (weight == IdentValue.BOLDER) {
+            // FIXME
+            return 700;
         }
         throw new IllegalArgumentException();
     }
