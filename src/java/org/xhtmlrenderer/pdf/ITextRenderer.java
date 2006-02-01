@@ -46,7 +46,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class ITextRenderer {
-    private static final int PIXELS_PER_POINT = 5;
+    private static final int DEFAULT_PIXELS_PER_POINT = 5;
     
     private SharedContext _sharedContext;
     private ITextOutputDevice _outputDevice;
@@ -54,14 +54,21 @@ public class ITextRenderer {
     private Document _doc;
     private Box _root;
     
+    private int _pixelsPerPoint;
+    
     public ITextRenderer() {
+        this(DEFAULT_PIXELS_PER_POINT);
+    }
+    
+    public ITextRenderer(int pixelsPerPoint) {
+        _pixelsPerPoint = pixelsPerPoint;
         _sharedContext = new SharedContext(new NaiveUserAgent());
         _sharedContext.setFontResolver(new ITextFontResolver());
         _sharedContext.setTextRenderer(new ITextTextRenderer());
-        _sharedContext.setDPI(72*PIXELS_PER_POINT);
+        _sharedContext.setDPI(72*_pixelsPerPoint);
         _sharedContext.setPrint(true);
         
-        _outputDevice = new ITextOutputDevice(PIXELS_PER_POINT);
+        _outputDevice = new ITextOutputDevice(_pixelsPerPoint);
     }
     
     private Document loadDocument(final String uri) {
@@ -141,8 +148,8 @@ public class ITextRenderer {
         PageBox firstPage = (PageBox)pages.get(0);
         com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(
                 0, 0, 
-                firstPage.getWidth(c) / PIXELS_PER_POINT, 
-                firstPage.getHeight(c) / PIXELS_PER_POINT);
+                firstPage.getWidth(c) / _pixelsPerPoint, 
+                firstPage.getHeight(c) / _pixelsPerPoint);
         
         com.lowagie.text.Document doc = 
             new com.lowagie.text.Document(firstPageSize, 0, 0, 0, 0);
@@ -164,8 +171,8 @@ public class ITextRenderer {
                 PageBox nextPage = (PageBox)pages.get(i+1);
                 com.lowagie.text.Rectangle nextPageSize = new com.lowagie.text.Rectangle(
                         0, 0, 
-                        nextPage.getWidth(c) / PIXELS_PER_POINT, 
-                        nextPage.getHeight(c) / PIXELS_PER_POINT);
+                        nextPage.getWidth(c) / _pixelsPerPoint, 
+                        nextPage.getHeight(c) / _pixelsPerPoint);
                 doc.setPageSize(nextPageSize);
                 doc.newPage();
                 _outputDevice.initializePage(
