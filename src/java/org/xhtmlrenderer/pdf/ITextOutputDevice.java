@@ -85,12 +85,12 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _currentPage = currentPage;
         _pageHeight = height;
         
-        _stroke = STROKE_ONE;
-        _originalStroke = STROKE_ONE;
-        _oldStroke = STROKE_ONE;
-        
         _transform = new AffineTransform();
         _transform.scale(1.0d / _pixelsPerPoint, 1.0d / _pixelsPerPoint);
+        
+        _stroke = transformStroke(STROKE_ONE);
+        _originalStroke = _stroke;
+        _oldStroke = _stroke;
         
         setStrokeDiff(_stroke, null);
         
