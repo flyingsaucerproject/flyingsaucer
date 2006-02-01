@@ -138,7 +138,7 @@ public class ITextRenderer {
     }
     
     /**
-     * <B>NOTE:</B> Caller is responsible for cleaning up the OutputStream is something
+     * <B>NOTE:</B> Caller is responsible for cleaning up the OutputStream if something
      * goes wrong.
      */
     public void createPDF(OutputStream os) throws DocumentException {
