@@ -37,10 +37,6 @@ import org.xhtmlrenderer.render.FSFont;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
 
-/**
- * This class is mix of {@link org.xhtmlrenderer.context.FontResolver} and
- * {@link com.lowagie.text.pdf.DefaultFontMapper} 
- */
 public class ITextFontResolver implements FontResolver {
     private Map _fontFamilies = createInitialFontMap();
     
