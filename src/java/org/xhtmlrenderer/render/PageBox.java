@@ -119,6 +119,8 @@ public class PageBox {
                 getStyle().getMarginBorderPadding(cssCtx, CalculatedStyle.TOP),
                 getContentWidth(cssCtx),
                 getContentHeight(cssCtx));
+        
+        result.height -= 1;
 
         return result;
     }
