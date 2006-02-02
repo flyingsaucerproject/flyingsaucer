@@ -66,7 +66,10 @@ public class ITextRenderer {
         ITextUserAgent userAgent = new ITextUserAgent();
         _sharedContext = new SharedContext(userAgent);
         userAgent.setSharedContext(_sharedContext);
-        _sharedContext.setFontResolver(new ITextFontResolver());
+        
+        ITextFontResolver fontResolver = new ITextFontResolver();
+        _sharedContext.setFontResolver(fontResolver);
+        
         _sharedContext.setTextRenderer(new ITextTextRenderer());
         _sharedContext.setDPI(72*_dotsPerPoint);
         _sharedContext.setPixelsPerDot(pixelsPerDot);

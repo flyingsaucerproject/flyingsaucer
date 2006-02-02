@@ -225,7 +225,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         double[] mx = new double[6];
         inverse.getMatrix(mx);
         cb.beginText();
-        cb.setFontAndSize(_font.getFont(), _font.getSize2D() / _pixelsPerPoint);
+        cb.setFontAndSize(_font.getFontDescription().getFont(), _font.getSize2D() / _pixelsPerPoint);
         cb.setTextMatrix((float)mx[0], (float)mx[1], (float)mx[2], (float)mx[3], (float)mx[4], (float)mx[5]);
         cb.showText(s);
         cb.endText();

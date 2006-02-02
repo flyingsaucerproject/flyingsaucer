@@ -22,6 +22,7 @@ package org.xhtmlrenderer.pdf;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
+import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 
@@ -37,24 +38,28 @@ public class ITextTextRenderer implements TextRenderer {
     }
 
     public FSFontMetrics getFSFontMetrics(FontContext context, FSFont font, String string) {
-        BaseFont bf = ((ITextFSFont)font).getFont();
+        FontDescription descr = ((ITextFSFont)font).getFontDescription();
+        BaseFont bf = descr.getFont();
         float size = font.getSize2D();
         ITextFSFontMetrics result = new ITextFSFontMetrics();
         result.setAscent(bf.getFontDescriptor(BaseFont.BBOXURY, size));
         result.setDescent(-bf.getFontDescriptor(BaseFont.BBOXLLY, size));
         
-        // FIXME Should come from font file
-        result.setStrikethroughOffset(result.getAscent() / 4);
-        result.setStrikethroughThickness(0.05f * size);
+        result.setStrikethroughOffset(-descr.getYStrikeoutPosition() / 1000f * size);
+        if (descr.getYStrikeoutSize() != 0) {
+            result.setStrikethroughThickness(descr.getYStrikeoutSize() / 1000f * size);
+        } else {
+            result.setStrikethroughThickness(size / 12.0f);
+        }
         
-        result.setUnderlineOffset(0.1f * size);
-        result.setUnderlineThickness(0.05f * size);
+        result.setUnderlineOffset(-descr.getUnderlinePosition() / 1000f * size);
+        result.setUnderlineThickness(descr.getUnderlineThickness() / 1000f * size);
         
         return result;
     }
 
     public int getWidth(FontContext context, FSFont font, String string) {
-        BaseFont bf = ((ITextFSFont)font).getFont();
+        BaseFont bf = ((ITextFSFont)font).getFontDescription().getFont();
         return (int)Math.ceil(bf.getWidthPoint(string, font.getSize2D()));
     }
 

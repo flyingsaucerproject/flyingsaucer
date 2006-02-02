@@ -19,15 +19,14 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import org.xhtmlrenderer.pdf.ITextFontResolver.FontDescription;
 import org.xhtmlrenderer.render.FSFont;
 
-import com.lowagie.text.pdf.BaseFont;
-
 public class ITextFSFont implements FSFont {
-    private BaseFont _font;
+    private FontDescription _font;
     private float _size;
     
-    public ITextFSFont(BaseFont font, float size) {
+    public ITextFSFont(FontDescription font, float size) {
         _font = font;
         _size = size;
     }
@@ -36,7 +35,7 @@ public class ITextFSFont implements FSFont {
         return _size;
     }
     
-    public BaseFont getFont() {
+    public FontDescription getFontDescription() {
         return _font;
     }
 }

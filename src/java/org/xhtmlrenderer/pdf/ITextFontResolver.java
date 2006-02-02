@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +35,7 @@ import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
@@ -49,6 +52,49 @@ public class ITextFontResolver implements FontResolver {
     public void flushCache() {
         _fontFamilies = createInitialFontMap();
         _fontCache = new HashMap();
+    }
+    
+    public void addFontDirectory(String dir, boolean embedded) 
+            throws DocumentException, IOException {
+        File f = new File(dir);
+        if (f.isDirectory()) {
+            File[] files = f.listFiles(new FilenameFilter() {
+                public boolean accept(File dir, String name) {
+                    String lower = name.toLowerCase();
+                    return lower.endsWith(".otf") || lower.endsWith(".ttf");
+                }
+            });
+            for (int i = 0; i < files.length; i++) {
+                addFont(files[i].getAbsolutePath(), embedded);
+            }
+        }
+    }
+    
+    public void addFont(String path, boolean embedded) 
+            throws DocumentException, IOException {
+        String lower = path.toLowerCase();
+        if (lower.endsWith(".otf") || lower.endsWith(".ttf")) {
+            BaseFont font = BaseFont.createFont(path, BaseFont.CP1252, embedded);
+            
+            String fontFamilyName = TrueTypeUtil.getFamilyName(font);
+            FontFamily fontFamily = (FontFamily)_fontFamilies.get(fontFamilyName);
+            if (fontFamily == null) {
+                fontFamily = new FontFamily();
+                fontFamily.setName(fontFamilyName);
+                _fontFamilies.put(fontFamilyName, fontFamily);
+            }
+            
+            FontDescription descr = new FontDescription(font);
+            try {
+                TrueTypeUtil.populateDescription(path, font, descr);
+            } catch (Exception e) {
+                throw new XRRuntimeException(e.getMessage(), e);
+            }
+            
+            fontFamily.addFontDescription(descr);
+        } else {
+            throw new XRRuntimeException("Unsupported font type");
+        }
     }
     
     private FSFont resolveFont(SharedContext ctx, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
@@ -71,7 +117,7 @@ public class ITextFontResolver implements FontResolver {
             result = result.substring(1);
         }
         if (result.endsWith("\"")) {
-            result = result.substring(0, fontFamily.length() - 1);
+            result = result.substring(0, result.length() - 1);
         }
 
         // normalize the font name
@@ -92,7 +138,7 @@ public class ITextFontResolver implements FontResolver {
         String normalizedFontFamily = normalizeFontFamily(fontFamily);
 
         String cacheKey = getHashName(normalizedFontFamily, weight, style);
-        BaseFont result = (BaseFont)_fontCache.get(cacheKey);
+        FontDescription result = (FontDescription)_fontCache.get(cacheKey);
         if (result != null) {
             return new ITextFSFont(result, size);
         }
@@ -253,7 +299,7 @@ public class ITextFontResolver implements FontResolver {
             _name = name;
         }
         
-        public BaseFont match(int desiredWeight, IdentValue style) {
+        public FontDescription match(int desiredWeight, IdentValue style) {
             if (_fontDescriptions == null) {
                 throw new RuntimeException("fontDescriptions is null");
             }
@@ -280,7 +326,7 @@ public class ITextFontResolver implements FontResolver {
             
             FontDescription[] matches = (FontDescription[]) 
                 candidates.toArray(new FontDescription[candidates.size()]);
-            BaseFont result;
+            FontDescription result;
             
             result = findByWeight(matches, desiredWeight, SM_EXACT);
             
@@ -299,13 +345,13 @@ public class ITextFontResolver implements FontResolver {
         private static final int SM_LIGHTER_OR_DARKER = 2;
         private static final int SM_DARKER_OR_LIGHTER = 3;
         
-        private BaseFont findByWeight(FontDescription[] matches, 
+        private FontDescription findByWeight(FontDescription[] matches, 
                 int desiredWeight, int searchMode) {
             if (searchMode == SM_EXACT) {
                 for (int i = 0; i < matches.length; i++) {
                     FontDescription descr = matches[i];
                     if (descr.getWeight() == desiredWeight) {
-                        return descr.getFont();
+                        return descr;
                     } 
                 }
                 return null;
@@ -320,9 +366,9 @@ public class ITextFontResolver implements FontResolver {
                 }
                 
                 if (offset > 0 && descr.getWeight() > desiredWeight) {
-                    return matches[offset-1].getFont();
+                    return matches[offset-1];
                 } else {
-                    return descr.getFont();
+                    return descr;
                 }
                 
             } else if (searchMode == SM_DARKER_OR_LIGHTER) {
@@ -336,9 +382,9 @@ public class ITextFontResolver implements FontResolver {
                 }
                 
                 if (offset != matches.length - 1 && descr.getWeight() < desiredWeight) {
-                    return matches[offset+1].getFont();
+                    return matches[offset+1];
                 } else {
-                    return descr.getFont();
+                    return descr;
                 }
             }
             
@@ -346,19 +392,30 @@ public class ITextFontResolver implements FontResolver {
         }
     }
     
-    private static class FontDescription {
+    public static class FontDescription {
         private IdentValue _style;
         private int _weight;
         
         private BaseFont _font;
         
+        private float _underlinePosition;
+        private float _underlineThickness;
+        
+        private float _yStrikeoutSize;
+        private float _yStrikeoutPosition;
+        
         public FontDescription() {
+        }
+        
+        public FontDescription(BaseFont font) {
+            this(font, IdentValue.NORMAL, 400);
         }
         
         public FontDescription(BaseFont font, IdentValue style, int weight) {
             _font = font;
             _style = style;
             _weight = weight;
+            setMetricDefaults();
         }
 
         public BaseFont getFont() {
@@ -383,6 +440,58 @@ public class ITextFontResolver implements FontResolver {
 
         public void setStyle(IdentValue style) {
             _style = style;
+        }
+
+        /**
+         * @see #getUnderlinePosition()
+         */
+        public float getUnderlinePosition() {
+            return _underlinePosition;
+        }
+
+        /**
+         * This refers to the top of the underline stroke
+         */
+        public void setUnderlinePosition(float underlinePosition) {
+            _underlinePosition = underlinePosition;
+        }
+
+        public float getUnderlineThickness() {
+            return _underlineThickness;
+        }
+
+        public void setUnderlineThickness(float underlineThickness) {
+            _underlineThickness = underlineThickness;
+        }
+
+        public float getYStrikeoutPosition() {
+            return _yStrikeoutPosition;
+        }
+
+        public void setYStrikeoutPosition(float strikeoutPosition) {
+            _yStrikeoutPosition = strikeoutPosition;
+        }
+
+        public float getYStrikeoutSize() {
+            return _yStrikeoutSize;
+        }
+
+        public void setYStrikeoutSize(float strikeoutSize) {
+            _yStrikeoutSize = strikeoutSize;
+        }
+        
+        private void setMetricDefaults() {
+            _underlinePosition = -50;
+            _underlineThickness = 50;
+            
+            int[] box = _font.getCharBBox('x');
+            if (box != null) {
+                _yStrikeoutPosition = box[3] / 2 + 50;
+                _yStrikeoutSize = 100;
+            } else {
+                // Do what the JDK does, size will be calculated by ITextTextRenderer
+                _yStrikeoutPosition = _font.getFontDescriptor(BaseFont.BBOXURY, 1000f) / 3.0f;
+            }
         }
     }    
 }
