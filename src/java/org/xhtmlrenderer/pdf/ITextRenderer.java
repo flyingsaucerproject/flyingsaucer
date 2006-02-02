@@ -46,8 +46,8 @@ import com.lowagie.text.pdf.PdfWriter;
 
 public class ITextRenderer {
     // These two defaults combine to produce an effective resolution of 96 px to the inch
-    private static final float DEFAULT_DOTS_PER_POINT = 10f * 4f / 3f;
-    private static final int DEFAULT_PIXELS_PER_DOT = 10;
+    private static final float DEFAULT_DOTS_PER_POINT = 20f * 4f / 3f;
+    private static final int DEFAULT_PIXELS_PER_DOT = 20;
     
     private SharedContext _sharedContext;
     private ITextOutputDevice _outputDevice;
