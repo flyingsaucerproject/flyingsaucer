@@ -98,6 +98,10 @@ public class ITextFontResolver implements FontResolver {
     }
     
     private FSFont resolveFont(SharedContext ctx, String[] families, float size, IdentValue weight, IdentValue style, IdentValue variant) {
+        if (! (style == IdentValue.NORMAL || style == IdentValue.OBLIQUE 
+                || style == IdentValue.ITALIC)) {
+            style = IdentValue.NORMAL;
+        }
         if (families != null) {
             for (int i = 0; i < families.length; i++) {
                 FSFont font = resolveFont(ctx, families[i], size, weight, style, variant);
@@ -121,13 +125,13 @@ public class ITextFontResolver implements FontResolver {
         }
 
         // normalize the font name
-        if (result.equals("serif")) {
+        if (result.equalsIgnoreCase("serif")) {
             result = "Serif";
         }
-        else if (result.equals("sans-serif")) {
+        else if (result.equalsIgnoreCase("sans-serif")) {
             result = "SansSerif";
         }
-        else if (result.equals("monospace")) {
+        else if (result.equalsIgnoreCase("monospace")) {
             result = "Monospaced";
         }
         
