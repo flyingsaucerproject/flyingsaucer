@@ -338,8 +338,12 @@ public class LayoutContext implements CssContext {
         return renderIndex++;
     }
 
-    public float getMmPerPx() {
+    public float getMmPerDot() {
         return sharedContext.getMmPerPx();
+    }
+    
+    public int getPixelsPerDot() {
+        return sharedContext.getPixelsPerDot();
     }
 
     public float getFontSize2D(FontSpecification font) {

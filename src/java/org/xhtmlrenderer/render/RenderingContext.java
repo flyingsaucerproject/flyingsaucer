@@ -74,9 +74,13 @@ public class RenderingContext implements CssContext {
         return sharedContext.getDPI();
     }
 
-    public float getMmPerPx() {
+    public float getMmPerDot() {
         return sharedContext.getMmPerPx();
     }
+    
+    public int getPixelsPerDot() {
+        return sharedContext.getPixelsPerDot();
+    }    
     
     public float getFontSize2D(FontSpecification font) {
         return sharedContext.getFont(font).getSize2D();

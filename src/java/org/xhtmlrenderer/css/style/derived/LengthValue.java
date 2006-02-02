@@ -171,22 +171,22 @@ public class LengthValue extends DerivedValue {
         // would seem to obviate the advantage of caching anyway.
         switch (primitiveType) {
             case CSSPrimitiveValue.CSS_PX:
-                absVal = relVal;
+                absVal = relVal * ctx.getPixelsPerDot();
                 break;
             case CSSPrimitiveValue.CSS_IN:
-                absVal = (((relVal * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerPx());
+                absVal = (((relVal * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerDot());
                 break;
             case CSSPrimitiveValue.CSS_CM:
-                absVal = ((relVal * MM__PER__CM) / ctx.getMmPerPx());
+                absVal = ((relVal * MM__PER__CM) / ctx.getMmPerDot());
                 break;
             case CSSPrimitiveValue.CSS_MM:
-                absVal = relVal / ctx.getMmPerPx();
+                absVal = relVal / ctx.getMmPerDot();
                 break;
             case CSSPrimitiveValue.CSS_PT:
-                absVal = (((relVal * PT__PER__IN) * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerPx();
+                absVal = (((relVal * PT__PER__IN) * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerDot();
                 break;
             case CSSPrimitiveValue.CSS_PC:
-                absVal = ((((relVal * PC__PER__PT) * PT__PER__IN) * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerPx();
+                absVal = ((((relVal * PC__PER__PT) * PT__PER__IN) * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerDot();
                 break;
             case CSSPrimitiveValue.CSS_EMS:
                 // EM is equal to font-size of element on which it is used

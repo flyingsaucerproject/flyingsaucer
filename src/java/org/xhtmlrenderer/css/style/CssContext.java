@@ -11,7 +11,9 @@ import org.xhtmlrenderer.render.FSFont;
  * To change this template use File | Settings | File Templates.
  */
 public interface CssContext {
-    float getMmPerPx();
+    float getMmPerDot();
+    
+    int getPixelsPerDot();
 
     float getFontSize2D(FontSpecification font);
 

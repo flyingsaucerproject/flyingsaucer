@@ -72,10 +72,12 @@ public class SharedContext {
     /**
      * dpi in a more usable way
      */
-    private float mm_per_px;
+    private float mm_per_dot;
 
     private final static float DEFAULT_DPI = 72;
     private boolean print;
+    
+    private int pixelsPerDot = 1;
 
     /**
      * Constructor for the Context object
@@ -444,7 +446,7 @@ public class SharedContext {
      */
     public void setDPI(float dpi) {
         this.dpi = dpi;
-        this.mm_per_px = (CM__PER__IN * MM__PER__CM) / dpi;
+        this.mm_per_dot = (CM__PER__IN * MM__PER__CM) / dpi;
     }
 
     /**
@@ -453,7 +455,7 @@ public class SharedContext {
      * @return The dPI value
      */
     public float getMmPerPx() {
-        return this.mm_per_px;
+        return this.mm_per_dot;
     }
     
     public FSFont getFont(FontSpecification spec) {
@@ -597,12 +599,23 @@ public class SharedContext {
     public void setFontResolver(FontResolver resolver) {
         font_resolver = resolver;
     }
+
+    public int getPixelsPerDot() {
+        return pixelsPerDot;
+    }
+
+    public void setPixelsPerDot(int pixelsPerDot) {
+        this.pixelsPerDot = pixelsPerDot;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2006/02/02 13:04:34  peterbrant
+ * Make "dots" the fundamental unit of measure, pixels are now some number of dots
+ *
  * Revision 1.25  2006/02/01 01:30:12  peterbrant
  * Initial commit of PDF work
  *
