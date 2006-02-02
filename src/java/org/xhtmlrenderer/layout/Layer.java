@@ -340,9 +340,7 @@ public class Layer {
     
     private void paintReplacedElement(RenderingContext c, BlockBox replaced) {
         if (! c.isInteractive()) {
-            c.getOutputDevice().translate(replaced.getAbsX(), replaced.getAbsY());
             c.getOutputDevice().paintReplacedElement(c, replaced);
-            c.getOutputDevice().translate(-replaced.getAbsX(), -replaced.getAbsY());
         }
     }
     
