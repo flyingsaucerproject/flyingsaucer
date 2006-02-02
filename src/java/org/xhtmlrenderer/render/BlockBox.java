@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -30,6 +29,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -207,17 +207,17 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     
     private MarkerData.ImageMarker makeImageMarker(
             LayoutContext c, StrutMetrics structMetrics, String image) {
-        Image img = null;
+        FSImage img = null;
         if (! image.equals("none")) {
             img = c.getUac().getImageResource(image).getImage();
             if (img != null) {
                 StrutMetrics strutMetrics = structMetrics;
-                if (img.getHeight(null) > strutMetrics.getAscent()) {
-                    img = img.getScaledInstance(-1, (int)strutMetrics.getAscent(), Image.SCALE_FAST);
+                if (img.getHeight() > strutMetrics.getAscent()) {
+                    img.scale(-1, (int)strutMetrics.getAscent());
                 }
                 MarkerData.ImageMarker result = new MarkerData.ImageMarker();
                 result.setImage(img);
-                result.setLayoutWidth(img.getWidth(null) * 2);
+                result.setLayoutWidth(img.getWidth() * 2);
                 return result;
             }
         }
@@ -423,6 +423,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.39  2006/02/02 02:47:35  peterbrant
+ * Support non-AWT images
+ *
  * Revision 1.38  2006/02/01 01:30:13  peterbrant
  * Initial commit of PDF work
  *

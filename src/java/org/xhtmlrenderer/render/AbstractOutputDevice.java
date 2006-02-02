@@ -20,12 +20,17 @@
 package org.xhtmlrenderer.render;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.Uu;
 
 public abstract class AbstractOutputDevice implements OutputDevice {
     protected abstract void drawLine(int x1, int y1, int x2, int y2);
@@ -124,5 +129,102 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     
     public void paintBorder(RenderingContext c, CalculatedStyle style, Rectangle edge, int sides) {
         BorderPainter.paint(edge, sides, style, c, 0);
+    }
+    
+    private FSImage getBackgroundImage(RenderingContext c, Box box) {
+        String uri = box.getStyle().getCalculatedStyle().getStringProperty(CSSName.BACKGROUND_IMAGE);
+        if (! uri.equals("none")) {
+            try {
+                return c.getUac().getImageResource(uri).getImage();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Uu.p(ex);
+            }
+        }
+        return null;
+    }
+
+    public void paintBackground(RenderingContext c, Box box) {
+        if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
+            return;
+        }
+        
+        if (! box.getStyle().isVisible()) {
+            return;
+        }
+        
+        Color backgroundColor = box.getStyle().getCalculatedStyle().getBackgroundColor();
+        FSImage backgroundImage = getBackgroundImage(c, box);
+        
+        if ( (backgroundColor == null || backgroundColor.equals(TRANSPARENT)) &&
+                backgroundImage == null) {
+            return;
+        }
+    
+        Rectangle backgroundBounds = box.getPaintingBorderEdge(c);
+        if (! c.isPrint() && box.getState() != Box.DONE) {
+            backgroundBounds.height += c.getCanvas().getHeight();
+        }
+        
+        if (backgroundColor != null && ! backgroundColor.equals(TRANSPARENT)) {
+            setColor(backgroundColor);
+            fillRect(backgroundBounds.x, backgroundBounds.y, backgroundBounds.width, backgroundBounds.height);
+        }
+    
+        int xoff = 0;
+        int yoff = 0;
+        
+        if (backgroundImage != null) {
+            Shape oldclip = getClip();
+    
+            if (box.getStyle().isFixedBackground() && ! c.isPrint()) {
+                yoff = c.getCanvas().getLocation().y;
+                setClip(c.getCanvas().getVisibleRect());
+            }
+    
+            clip(backgroundBounds);
+    
+            int imageWidth = backgroundImage.getWidth();
+            int imageHeight = backgroundImage.getHeight();
+    
+            Point bgOffset = box.getStyle().getCalculatedStyle().getBackgroundPosition(backgroundBounds.width - imageWidth,
+                    backgroundBounds.height - imageHeight, c);
+            xoff += bgOffset.x;
+            yoff -= bgOffset.y;
+    
+            tileFill(backgroundImage,
+                    backgroundBounds,
+                    xoff, -yoff,
+                    box.getStyle().isHorizontalBackgroundRepeat(),
+                    box.getStyle().isVerticalBackgroundRepeat());
+            setClip(oldclip);
+        }
+    } 
+    
+    private void tileFill(FSImage img, Rectangle rect, int xoff, int yoff, boolean horiz, boolean vert) {
+        int iwidth = img.getWidth();
+        int iheight = img.getHeight();
+        int rwidth = rect.width;
+        int rheight = rect.height;
+    
+        if (horiz) {
+            xoff = xoff % iwidth - iwidth;
+            rwidth += iwidth;
+        } else {
+            rwidth = iwidth;
+        }
+    
+        if (vert) {
+            yoff = yoff % iheight - iheight;
+            rheight += iheight;
+        } else {
+            rheight = iheight;
+        }
+    
+        for (int i = 0; i < rwidth; i += iwidth) {
+            for (int j = 0; j < rheight; j += iheight) {
+                drawImage(img, i + rect.x + xoff, j + rect.y + yoff);
+            }
+        }
     }    
 }

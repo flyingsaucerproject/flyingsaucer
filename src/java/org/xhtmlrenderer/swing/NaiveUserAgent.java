@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
+import org.xhtmlrenderer.render.AWTFSImage;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
@@ -72,7 +73,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
      * @return The stylesheet value
      */
     //TOdO:implement this with nio.
-    private InputStream getInputStream(String uri) {
+    protected InputStream getInputStream(String uri) {
         java.io.InputStream is = null;
         uri = resolveURI(uri);
         try {
@@ -101,7 +102,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
                 try {
                     Image img = ImageIO.read(is);
                     img = GraphicsUtil.cleanImage(img);
-                    ir = new ImageResource(img);
+                    ir = new ImageResource(new AWTFSImage(img));
                     imageCache.put(uri, ir);
                 } catch (IOException e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
@@ -155,6 +156,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2006/02/02 02:47:33  peterbrant
+ * Support non-AWT images
+ *
  * Revision 1.21  2005/10/25 19:40:38  tobega
  * Suggestion from user to use File.toURI.toURL instead of File.toURL because the latter is buggy
  *

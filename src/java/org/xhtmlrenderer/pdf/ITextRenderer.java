@@ -39,14 +39,13 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
-import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.Configuration;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class ITextRenderer {
-    private static final int DEFAULT_PIXELS_PER_POINT = 5;
+    private static final float DEFAULT_PIXELS_PER_POINT = 4f / 3f; // 96 DPI
     
     private SharedContext _sharedContext;
     private ITextOutputDevice _outputDevice;
@@ -54,19 +53,20 @@ public class ITextRenderer {
     private Document _doc;
     private Box _root;
     
-    private int _pixelsPerPoint;
+    private float _pixelsPerPoint;
     
     public ITextRenderer() {
         this(DEFAULT_PIXELS_PER_POINT);
     }
     
-    public ITextRenderer(int pixelsPerPoint) {
+    public ITextRenderer(float pixelsPerPoint) {
         _pixelsPerPoint = pixelsPerPoint;
-        _sharedContext = new SharedContext(new NaiveUserAgent());
+        _sharedContext = new SharedContext(new ITextUserAgent());
         _sharedContext.setFontResolver(new ITextFontResolver());
         _sharedContext.setTextRenderer(new ITextTextRenderer());
         _sharedContext.setDPI(72*_pixelsPerPoint);
         _sharedContext.setPrint(true);
+        _sharedContext.setInteractive(false);
         
         _outputDevice = new ITextOutputDevice(_pixelsPerPoint);
     }

@@ -195,13 +195,15 @@ public class XMLResource extends AbstractResource {
                 xformFactory = TransformerFactory.newInstance();
                 idTransform = xformFactory.newTransformer();
             } catch (Exception ex) {
-                throw new XRRuntimeException("Failed on configuring SAX to DOM transformer.", ex);
+                throw new XRRuntimeException(
+                        "Failed on configuring SAX to DOM transformer.", ex);
             }
 
             try {
                 idTransform.transform(input, output);
             } catch (Exception ex) {
-                throw new XRRuntimeException("Can't load the XML resource (using TRaX transformer). " + ex.getMessage());
+                throw new XRRuntimeException(
+                        "Can't load the XML resource (using TRaX transformer). " + ex.getMessage(), ex);
             }
 
             long end = System.currentTimeMillis();
@@ -329,6 +331,9 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2006/02/02 02:47:36  peterbrant
+ * Support non-AWT images
+ *
  * Revision 1.17  2005/10/22 00:09:18  peterbrant
  * Rollback to 1.15
  *

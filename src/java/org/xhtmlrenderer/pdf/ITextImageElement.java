@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -19,29 +19,37 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import org.w3c.dom.Element;
+import java.awt.Point;
+
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
-import org.xhtmlrenderer.extend.ReplacedElementFactory;
-import org.xhtmlrenderer.extend.UserAgentCallback;
 
-public class ITextReplacedElementFactory implements ReplacedElementFactory {
-    public ReplacedElement createReplacedElement(
-            Element e, UserAgentCallback uac, int cssWidth, int cssHeight) {
-        if (e == null) {
-            return null;
-        }
-        
-        if (e.getNodeName().equals("img")) {
-            FSImage fsImage = uac.getImageResource(e.getAttribute("src")).getImage();
-            if (fsImage != null) {
-                if (cssWidth != -1 || cssHeight != -1) {
-                    fsImage.scale(cssWidth, cssHeight);
-                }
-                return new ITextImageElement(fsImage);
-            }
-        }
-        
-        return null;
+public class ITextImageElement implements ReplacedElement {
+    private FSImage _image;
+    
+    private Point _location = new Point(0, 0);
+    
+    public ITextImageElement(FSImage image) {
+        _image = image;
+    }
+
+    public int getIntrinsicWidth() {
+        return (int)_image.getWidth();
+    }
+
+    public int getIntrinsicHeight() {
+        return (int)_image.getHeight();
+    }
+
+    public Point getLocation() {
+        return _location;
+    }
+
+    public void setLocation(int x, int y) {
+        _location = new Point(x, y);
+    }
+    
+    public FSImage getImage() {
+        return _image;
     }
 }

@@ -21,6 +21,8 @@ package org.xhtmlrenderer.render;
 
 import java.awt.Image;
 
+import org.xhtmlrenderer.extend.FSImage;
+
 public class MarkerData {
     private StrutMetrics structMetrics;
     
@@ -92,12 +94,12 @@ public class MarkerData {
     
     public static class ImageMarker {
         private int layoutWidth;
-        private Image image;
+        private FSImage image;
         
-        public Image getImage() {
+        public FSImage getImage() {
             return image;
         }
-        public void setImage(Image image) {
+        public void setImage(FSImage image) {
             this.image = image;
         }
         public int getLayoutWidth() {

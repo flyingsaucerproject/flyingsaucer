@@ -19,15 +19,14 @@
  */
 package org.xhtmlrenderer.resource;
 
+import org.xhtmlrenderer.extend.FSImage;
 import org.xml.sax.InputSource;
-
-import java.awt.*;
 
 /**
  * @author Administrator
  */
 public class ImageResource extends AbstractResource {
-    private Image _img;
+    private FSImage _img;
 
     /**
      * Creates a new instance of ImageResource
@@ -37,12 +36,12 @@ public class ImageResource extends AbstractResource {
     }*/
 
     //HACK: at least for now, till we know what we want to do here
-    public ImageResource(Image img) {
+    public ImageResource(FSImage img) {
         super((InputSource) null);
         _img = img;
     }
 
-    public Image getImage() {
+    public FSImage getImage() {
         return _img;
     }
 }
@@ -51,6 +50,9 @@ public class ImageResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2006/02/02 02:47:36  peterbrant
+ * Support non-AWT images
+ *
  * Revision 1.2  2005/06/25 17:23:34  tobega
  * first refactoring of UAC: ImageResource
  *

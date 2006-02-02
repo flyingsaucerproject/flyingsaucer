@@ -20,13 +20,12 @@
  */
 package org.xhtmlrenderer.render;
 
+import java.awt.RenderingHints;
+
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.swing.Java2DOutputDevice;
-
-import java.awt.Image;
-import java.awt.RenderingHints;
+import org.xhtmlrenderer.extend.FSImage;
 
 public class ListItemPainter {
     public static void paint(RenderingContext c, BlockBox box) {
@@ -53,27 +52,18 @@ public class ListItemPainter {
     }
 
     private static void drawImage(RenderingContext c, BlockBox box, MarkerData markerData) {
-        if (! (c.getOutputDevice() instanceof Java2DOutputDevice)) {
-            throw new UnsupportedOperationException("list-style-image is not supported");
-        }
-        
-        Image img = null;
+        FSImage img = null;
         MarkerData.ImageMarker marker = markerData.getImageMarker();
         img = marker.getImage();
         if (img != null) {
             StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
             int x = getReferenceX(c, box);
-            if (box.getStyle().getCalculatedStyle().isIdent(CSSName.LIST_STYLE_POSITION, IdentValue.INSIDE)) {
-                x += marker.getLayoutWidth() / 2 - img.getWidth(null) / 2;
-            } else {
-                x += -marker.getLayoutWidth() + 
-                        (marker.getLayoutWidth() / 2 - img.getWidth(null) / 2);
-            }
-            ((Java2DOutputDevice)c.getOutputDevice()).getGraphics().drawImage(img, 
+            x += -marker.getLayoutWidth() + 
+                    (marker.getLayoutWidth() / 2 - img.getWidth() / 2);
+            c.getOutputDevice().drawImage(img, 
                     x,
                     (int)(getReferenceBaseline(c, box)
-                        - strutMetrics.getAscent() / 2 - img.getHeight(null) / 2),
-                    null);
+                        - strutMetrics.getAscent() / 2 - img.getHeight() / 2));
         }
     }
     
@@ -109,12 +99,8 @@ public class ListItemPainter {
         StrutMetrics strutMetrics = box.getMarkerData().getStructMetrics();
         MarkerData.GlyphMarker marker = box.getMarkerData().getGlyphMarker();
         int x = getReferenceX(c, box);
-        if (box.getStyle().getCalculatedStyle().isIdent(CSSName.LIST_STYLE_POSITION, IdentValue.INSIDE)) {
-            x += marker.getLayoutWidth() / 2 - marker.getDiameter() / 2;
-        } else {
-            x += -marker.getLayoutWidth() + 
-                    (marker.getLayoutWidth() / 2 - marker.getDiameter() / 2);
-        }
+        x += -marker.getLayoutWidth() + 
+                (marker.getLayoutWidth() / 2 - marker.getDiameter() / 2);
         int y = getReferenceBaseline(c, box) 
             - (int)strutMetrics.getAscent() / 2 - marker.getDiameter() / 2;
         if (listStyle == IdentValue.DISC) {
@@ -134,9 +120,7 @@ public class ListItemPainter {
         MarkerData.TextMarker text = box.getMarkerData().getTextMarker();
         
         int x = getReferenceX(c, box);
-        if (! box.getStyle().getCalculatedStyle().isIdent(CSSName.LIST_STYLE_POSITION, IdentValue.INSIDE)) {
-            x += -text.getLayoutWidth();
-        }
+        x += -text.getLayoutWidth();
         int y = getReferenceBaseline(c, box);
         
         c.getOutputDevice().setColor(box.getStyle().getCalculatedStyle().getColor());
@@ -150,6 +134,9 @@ public class ListItemPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2006/02/02 02:47:34  peterbrant
+ * Support non-AWT images
+ *
  * Revision 1.32  2006/02/01 01:30:13  peterbrant
  * Initial commit of PDF work
  *

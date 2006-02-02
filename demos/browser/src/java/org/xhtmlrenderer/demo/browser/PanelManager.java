@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.demo.browser;
 
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.render.AWTFSImage;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
@@ -97,7 +98,7 @@ public class PanelManager implements UserAgentCallback {
                 try {
                     Image img = ImageIO.read(is);
                     img = GraphicsUtil.cleanImage(img);
-                    ir = new ImageResource(img);
+                    ir = new ImageResource(new AWTFSImage(img));
                     imageCache.put(uri, ir);
                 } catch (IOException e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);

@@ -30,9 +30,11 @@ import javax.swing.JComponent;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.render.AWTFSImage;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 public class SwingReplacedElementFactory implements ReplacedElementFactory {
@@ -52,7 +54,10 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
             }
             JButton jb = null;
             Image im = null;
-            im = uac.getImageResource(e.getAttribute("src")).getImage();
+            FSImage fsImage = uac.getImageResource(e.getAttribute("src")).getImage();
+            if (fsImage != null) {
+                im = ((AWTFSImage)fsImage).getImage();
+            }
             if (im == null) {
                 jb = new JButton("Image unreachable. " + e.getAttribute("alt"));
             } else {

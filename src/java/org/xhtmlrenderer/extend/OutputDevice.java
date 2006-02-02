@@ -60,6 +60,8 @@ public interface OutputDevice {
     
     public void drawBorderLine(Rectangle bounds, int side, int width, boolean solid);
     
+    public void drawImage(FSImage image, int x, int y);
+    
     public void fill(Shape s);
     public void fillRect(int x, int y, int width, int height);
     public void fillOval(int x, int y, int width, int height);

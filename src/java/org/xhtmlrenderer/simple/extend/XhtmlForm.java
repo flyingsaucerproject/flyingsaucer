@@ -20,7 +20,9 @@ package org.xhtmlrenderer.simple.extend;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.render.AWTFSImage;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
@@ -102,7 +104,10 @@ public class XhtmlForm {
                 Image im = null;
                 if (e.hasAttribute("src")) {
                     System.out.println("pulling from here: " + e.getAttribute("src"));
-                    im = uac.getImageResource(e.getAttribute("src")).getImage();
+                    FSImage fsImage = uac.getImageResource(e.getAttribute("src")).getImage();
+                    if (fsImage != null) {
+                        im = ((AWTFSImage)fsImage).getImage();
+                    }
                 }
                 if (im == null) {
                     jb = new JButton("Image unreachable. " + e.getAttribute("alt"));

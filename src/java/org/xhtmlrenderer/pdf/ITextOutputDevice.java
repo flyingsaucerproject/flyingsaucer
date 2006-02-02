@@ -21,7 +21,6 @@ package org.xhtmlrenderer.pdf;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -33,15 +32,18 @@ import java.awt.geom.Line2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
 
+import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
+import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.BorderPainter;
-import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.RenderingContext;
-import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Image;
 import com.lowagie.text.pdf.PdfContentByte;
 
 /**
@@ -75,9 +77,9 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     private Area _clip;
     
-    private int _pixelsPerPoint;
+    private float _pixelsPerPoint;
     
-    public ITextOutputDevice(int pixelsPerPoint) {
+    public ITextOutputDevice(float pixelsPerPoint) {
         _pixelsPerPoint = pixelsPerPoint;
     }
 
@@ -100,34 +102,14 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public void finishPage() {
         _currentPage.restoreState();
     }
-
-    // FIXME Refactor to use common implementation in AbstractOutputDevice (need FSImage first)
-    public void paintBackground(RenderingContext c, Box box) {
-        if (!Configuration.isTrue("xr.renderer.draw.backgrounds", true)) {
-            return;
-        }
-        
-        if (! box.getStyle().isVisible()) {
-            return;
-        }
-        
-        Color backgroundColor = box.getStyle().getCalculatedStyle().getBackgroundColor();
-        Image backgroundImage = null;
-        
-        if ( (backgroundColor == null || backgroundColor.equals(TRANSPARENT)) &&
-                backgroundImage == null) {
-            return;
-        }
-    
-        Rectangle backgroundBounds = box.getPaintingBorderEdge(c);
-        
-        if (backgroundColor != null && ! backgroundColor.equals(TRANSPARENT)) {
-            setColor(backgroundColor);
-            fillRect(backgroundBounds.x, backgroundBounds.y, backgroundBounds.width, backgroundBounds.height);
-        }
-    }  
     
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
+        ReplacedElement element = box.getReplacedElement();
+        if (element instanceof ITextImageElement) {
+            drawImage(
+                    ((ITextImageElement)element).getImage(),
+                    box.getAbsX(), box.getAbsY());
+        }
     }
     
     public void drawBorderLine(
@@ -492,5 +474,29 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     public Stroke getStroke() {
         return _originalStroke;
-    }   
+    }
+    
+    public void drawImage(FSImage fsImage, int x, int y) {
+        Image image = ((ITextFSImage)fsImage).getImage();
+        
+        AffineTransform at = AffineTransform.getTranslateInstance(x,y);
+        at.translate(0, fsImage.getHeight());
+        at.scale(fsImage.getWidth(), fsImage.getHeight());
+        
+        AffineTransform inverse = normalizeMatrix(_transform);
+        AffineTransform flipper = AffineTransform.getScaleInstance(1,-1);
+        inverse.concatenate(at);
+        inverse.concatenate(flipper);
+        
+        double[] mx = new double[6];
+        inverse.getMatrix(mx);
+        
+        try {
+            _currentPage.addImage(image, 
+                    (float)mx[0], (float)mx[1], (float)mx[2], 
+                    (float)mx[3], (float)mx[4], (float)mx[5]);
+        } catch (DocumentException e) {
+            throw new XRRuntimeException(e.getMessage(), e);
+        }
+    }    
 }
