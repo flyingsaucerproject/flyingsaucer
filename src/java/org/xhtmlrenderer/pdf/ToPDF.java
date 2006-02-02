@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,7 +33,15 @@ public class ToPDF
             System.err.println("Usage: ... [url] [pdf]");
             System.exit(1);
         }
-        createPDF(args[0], args[1]);
+        String url = args[0];
+        if (url.indexOf("://") == -1) {
+            // maybe it's a file
+            File f = new File(url);
+            if (f.exists()) {
+                url = f.toURI().toURL().toString();
+            }
+        }
+        createPDF(url, args[1]);
     }
     
     public static void createPDF(String url, String pdf) 
