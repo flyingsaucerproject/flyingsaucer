@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.LinkedHashMap;
 
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.util.XRLog;
@@ -35,6 +36,8 @@ import com.lowagie.text.Image;
 public class ITextUserAgent extends NaiveUserAgent {
     private static final int IMAGE_CACHE_CAPACITY = 32;
     
+    private SharedContext _sharedContext;
+    
     private LinkedHashMap _imageCache =
             new LinkedHashMap(IMAGE_CACHE_CAPACITY, 0.75f, true) {
                 static final long serialVersionUID = 1L;
@@ -42,7 +45,7 @@ public class ITextUserAgent extends NaiveUserAgent {
                     return size() > IMAGE_CACHE_CAPACITY;
                 }
             };
-    
+            
     public ImageResource getImageResource(String uri) {
         ImageResource resource = null;
         uri = resolveURI(uri);
@@ -52,6 +55,7 @@ public class ITextUserAgent extends NaiveUserAgent {
             if (is != null) {
                 try {
                     Image image = Image.getInstance(new URL(uri));
+                    scaleToOutputResolution(image);
                     resource = new ImageResource(new ITextFSImage(image));
                     _imageCache.put(uri, resource);
                 } catch (IOException e) {
@@ -65,5 +69,18 @@ public class ITextUserAgent extends NaiveUserAgent {
             resource = new ImageResource(null);
         }
         return resource;
+    }
+    
+    private void scaleToOutputResolution(Image image) {
+        float factor = _sharedContext.getPixelsPerDot();
+        image.scaleAbsolute(image.plainWidth() * factor, image.plainHeight() * factor);
+    }
+
+    public SharedContext getSharedContext() {
+        return _sharedContext;
+    }
+
+    public void setSharedContext(SharedContext sharedContext) {
+        _sharedContext = sharedContext;
     }
 }

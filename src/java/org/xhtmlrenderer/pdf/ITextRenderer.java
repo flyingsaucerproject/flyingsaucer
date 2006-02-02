@@ -45,7 +45,9 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class ITextRenderer {
-    private static final float DEFAULT_PIXELS_PER_POINT = 4f / 3f; // 96 DPI
+    // These two defaults combine to produce an effective resolution of 96 px to the inch
+    private static final float DEFAULT_DOTS_PER_POINT = 10f * 4f / 3f;
+    private static final int DEFAULT_PIXELS_PER_DOT = 10;
     
     private SharedContext _sharedContext;
     private ITextOutputDevice _outputDevice;
@@ -53,22 +55,25 @@ public class ITextRenderer {
     private Document _doc;
     private Box _root;
     
-    private float _pixelsPerPoint;
+    private float _dotsPerPoint;
     
     public ITextRenderer() {
-        this(DEFAULT_PIXELS_PER_POINT);
+        this(DEFAULT_DOTS_PER_POINT, DEFAULT_PIXELS_PER_DOT);
     }
     
-    public ITextRenderer(float pixelsPerPoint) {
-        _pixelsPerPoint = pixelsPerPoint;
-        _sharedContext = new SharedContext(new ITextUserAgent());
+    public ITextRenderer(float dotsPerPoint, int pixelsPerDot) {
+        _dotsPerPoint = dotsPerPoint;
+        ITextUserAgent userAgent = new ITextUserAgent();
+        _sharedContext = new SharedContext(userAgent);
+        userAgent.setSharedContext(_sharedContext);
         _sharedContext.setFontResolver(new ITextFontResolver());
         _sharedContext.setTextRenderer(new ITextTextRenderer());
-        _sharedContext.setDPI(72*_pixelsPerPoint);
+        _sharedContext.setDPI(72*_dotsPerPoint);
+        _sharedContext.setPixelsPerDot(pixelsPerDot);
         _sharedContext.setPrint(true);
         _sharedContext.setInteractive(false);
         
-        _outputDevice = new ITextOutputDevice(_pixelsPerPoint);
+        _outputDevice = new ITextOutputDevice(_dotsPerPoint);
     }
     
     private Document loadDocument(final String uri) {
@@ -148,8 +153,8 @@ public class ITextRenderer {
         PageBox firstPage = (PageBox)pages.get(0);
         com.lowagie.text.Rectangle firstPageSize = new com.lowagie.text.Rectangle(
                 0, 0, 
-                firstPage.getWidth(c) / _pixelsPerPoint, 
-                firstPage.getHeight(c) / _pixelsPerPoint);
+                firstPage.getWidth(c) / _dotsPerPoint, 
+                firstPage.getHeight(c) / _dotsPerPoint);
         
         com.lowagie.text.Document doc = 
             new com.lowagie.text.Document(firstPageSize, 0, 0, 0, 0);
@@ -171,8 +176,8 @@ public class ITextRenderer {
                 PageBox nextPage = (PageBox)pages.get(i+1);
                 com.lowagie.text.Rectangle nextPageSize = new com.lowagie.text.Rectangle(
                         0, 0, 
-                        nextPage.getWidth(c) / _pixelsPerPoint, 
-                        nextPage.getHeight(c) / _pixelsPerPoint);
+                        nextPage.getWidth(c) / _dotsPerPoint, 
+                        nextPage.getHeight(c) / _dotsPerPoint);
                 doc.setPageSize(nextPageSize);
                 doc.newPage();
                 _outputDevice.initializePage(
