@@ -79,6 +79,10 @@ public class ITextRenderer {
         _outputDevice = new ITextOutputDevice(_dotsPerPoint);
     }
     
+    public ITextFontResolver getFontResolver() {
+        return (ITextFontResolver)_sharedContext.getFontResolver();
+    }
+    
     private Document loadDocument(final String uri) {
         return _sharedContext.getUac().getXMLResource(uri).getDocument();
     }
