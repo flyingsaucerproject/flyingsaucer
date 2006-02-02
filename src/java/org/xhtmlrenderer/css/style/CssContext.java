@@ -13,7 +13,7 @@ import org.xhtmlrenderer.render.FSFont;
 public interface CssContext {
     float getMmPerDot();
     
-    int getPixelsPerDot();
+    int getDotsPerPixel();
 
     float getFontSize2D(FontSpecification font);
 

@@ -171,7 +171,7 @@ public class LengthValue extends DerivedValue {
         // would seem to obviate the advantage of caching anyway.
         switch (primitiveType) {
             case CSSPrimitiveValue.CSS_PX:
-                absVal = relVal * ctx.getPixelsPerDot();
+                absVal = relVal * ctx.getDotsPerPixel();
                 break;
             case CSSPrimitiveValue.CSS_IN:
                 absVal = (((relVal * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerDot());

@@ -342,8 +342,8 @@ public class LayoutContext implements CssContext {
         return sharedContext.getMmPerPx();
     }
     
-    public int getPixelsPerDot() {
-        return sharedContext.getPixelsPerDot();
+    public int getDotsPerPixel() {
+        return sharedContext.getDotsPerPixel();
     }
 
     public float getFontSize2D(FontSpecification font) {

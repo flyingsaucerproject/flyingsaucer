@@ -72,7 +72,7 @@ public class ITextUserAgent extends NaiveUserAgent {
     }
     
     private void scaleToOutputResolution(Image image) {
-        float factor = _sharedContext.getPixelsPerDot();
+        float factor = _sharedContext.getDotsPerPixel();
         image.scaleAbsolute(image.plainWidth() * factor, image.plainHeight() * factor);
     }
 

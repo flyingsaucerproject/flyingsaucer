@@ -47,7 +47,7 @@ import com.lowagie.text.pdf.PdfWriter;
 public class ITextRenderer {
     // These two defaults combine to produce an effective resolution of 96 px to the inch
     private static final float DEFAULT_DOTS_PER_POINT = 20f * 4f / 3f;
-    private static final int DEFAULT_PIXELS_PER_DOT = 20;
+    private static final int DEFAULT_DOTS_PER_PIXEL = 20;
     
     private SharedContext _sharedContext;
     private ITextOutputDevice _outputDevice;
@@ -58,10 +58,10 @@ public class ITextRenderer {
     private float _dotsPerPoint;
     
     public ITextRenderer() {
-        this(DEFAULT_DOTS_PER_POINT, DEFAULT_PIXELS_PER_DOT);
+        this(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_PIXEL);
     }
     
-    public ITextRenderer(float dotsPerPoint, int pixelsPerDot) {
+    public ITextRenderer(float dotsPerPoint, int dotsPerPixel) {
         _dotsPerPoint = dotsPerPoint;
         ITextUserAgent userAgent = new ITextUserAgent();
         _sharedContext = new SharedContext(userAgent);
@@ -72,7 +72,7 @@ public class ITextRenderer {
         
         _sharedContext.setTextRenderer(new ITextTextRenderer());
         _sharedContext.setDPI(72*_dotsPerPoint);
-        _sharedContext.setPixelsPerDot(pixelsPerDot);
+        _sharedContext.setDotsPerPixel(dotsPerPixel);
         _sharedContext.setPrint(true);
         _sharedContext.setInteractive(false);
         

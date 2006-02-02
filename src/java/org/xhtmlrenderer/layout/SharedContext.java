@@ -77,7 +77,7 @@ public class SharedContext {
     private final static float DEFAULT_DPI = 72;
     private boolean print;
     
-    private int pixelsPerDot = 1;
+    private int dotsPerPixel = 1;
 
     /**
      * Constructor for the Context object
@@ -600,12 +600,12 @@ public class SharedContext {
         font_resolver = resolver;
     }
 
-    public int getPixelsPerDot() {
-        return pixelsPerDot;
+    public int getDotsPerPixel() {
+        return dotsPerPixel;
     }
 
-    public void setPixelsPerDot(int pixelsPerDot) {
-        this.pixelsPerDot = pixelsPerDot;
+    public void setDotsPerPixel(int pixelsPerDot) {
+        this.dotsPerPixel = pixelsPerDot;
     }
 }
 
@@ -613,6 +613,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2006/02/02 19:25:20  peterbrant
+ * Fix (silly) field name mistake
+ *
  * Revision 1.26  2006/02/02 13:04:34  peterbrant
  * Make "dots" the fundamental unit of measure, pixels are now some number of dots
  *
