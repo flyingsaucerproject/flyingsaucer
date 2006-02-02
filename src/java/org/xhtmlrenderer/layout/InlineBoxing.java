@@ -67,6 +67,8 @@ public class InlineBoxing {
 
         InlineBox currentIB = null;
         InlineBox previousIB = null;
+        
+        int contentStart = 0;
 
         List elementStack = new ArrayList();
         if (box instanceof AnonymousBlockBox) {
@@ -77,24 +79,22 @@ public class InlineBoxing {
                 elementStack = pending;
             }
         }
+        
+        remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
 
         CalculatedStyle parentStyle = c.getCurrentStyle();
         int indent = (int) parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, maxAvailableWidth, c);
         remainingWidth -= indent;
-        currentLine.x = indent;
-        currentLine.calcCanvasLocation();
+        contentStart += indent;
         
         MarkerData markerData = c.getCurrentMarkerData();
         if (markerData != null && 
                 box.getStyle().getCalculatedStyle().isIdent(
                         CSSName.LIST_STYLE_POSITION, IdentValue.INSIDE)) {
             remainingWidth -= markerData.getLayoutWidth();
-            currentLine.x += markerData.getLayoutWidth();
-            currentLine.calcCanvasLocation();
+            contentStart += markerData.getLayoutWidth();
         }
         c.setCurrentMarkerData(null);
-
-        remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
 
         List pendingFloats = new ArrayList();
         int pendingLeftMBP = 0;
@@ -187,8 +187,10 @@ public class InlineBoxing {
                 if (inlineBlock.getWidth() > remainingWidth && currentLine.isContainsContent()) {
                     saveLine(currentLine, previousLine, c, box, minimumLineHeight,
                             maxAvailableWidth, elementStack, pendingFloats, 
-                            hasFirstLinePCs, pendingInlineLayers, markerData);
+                            hasFirstLinePCs, pendingInlineLayers, markerData,
+                            contentStart);
                     markerData = null;
+                    contentStart = 0;
                     previousLine = currentLine;
                     currentLine = newLine(c, previousLine, box);
                     currentIB = addNestedInlineBoxes(c, currentLine, elementStack, 
@@ -255,8 +257,10 @@ public class InlineBoxing {
                     if (lbContext.isNeedsNewLine()) {
                         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
                                 maxAvailableWidth, elementStack, pendingFloats, 
-                                hasFirstLinePCs, pendingInlineLayers, markerData);
+                                hasFirstLinePCs, pendingInlineLayers, markerData,
+                                contentStart);
                         markerData = null;
+                        contentStart = 0;
                         if (currentLine.isFirstLine() && hasFirstLinePCs) {
                             lbContext.setMaster(TextUtil.transformText(
                                     text.getText(), c.getCurrentStyle()));
@@ -276,7 +280,10 @@ public class InlineBoxing {
 
         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
                 maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePCs,
-                pendingInlineLayers, markerData);
+                pendingInlineLayers, markerData, contentStart);
+        if (currentLine.isFirstLine() && currentLine.height == 0 && markerData != null) {
+            c.setCurrentMarkerData(markerData);
+        }
         markerData = null;
 
         if (box instanceof AnonymousBlockBox) {
@@ -639,7 +646,8 @@ public class InlineBoxing {
                                  final LayoutContext c, Box block, int minHeight,
                                  final int maxAvailableWidth, List elementStack, 
                                  List pendingFloats, boolean hasFirstLinePCs,
-                                 List pendingInlineLayers, MarkerData markerData) {
+                                 List pendingInlineLayers, MarkerData markerData,
+                                 int contentStart) {
         current.prunePendingInlineBoxes();
 
         int totalLineWidth = positionHorizontally(c, current, 0);
@@ -671,6 +679,7 @@ public class InlineBoxing {
         }
         
         current.y = previous == null ? 0 : previous.y + previous.height;
+        current.calcCanvasLocation();
 
         if (current.height != 0 && current.height < minHeight) {//would like to discard it otherwise, but that could lose inline elements
             current.height = minHeight;
@@ -681,14 +690,21 @@ public class InlineBoxing {
             current.calcCanvasLocation();
         }
         
-        current.calcChildLocations();
-        
-        block.addChild(c, current);
-        
         // new float code
         if (!block.getStyle().isClearLeft()) {
             current.x += c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth);
+            current.calcCanvasLocation();
         }
+        
+        if (contentStart > 0) {
+            current.x += contentStart;
+            current.calcCanvasLocation();
+        }
+        
+        current.calcChildLocations();
+        
+        block.addChild(c, current);
+
         
         if (pendingInlineLayers.size() > 0) {
             finishPendingInlineLayers(c, pendingInlineLayers);
