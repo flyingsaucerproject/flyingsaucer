@@ -40,6 +40,8 @@ import org.xhtmlrenderer.util.XRLog;
 
 
 public class RootPanel extends JPanel implements ComponentListener, UserInterface {
+    static final long serialVersionUID = 1L;
+    
     protected Dimension intrinsic_size;
 
     private boolean useThreads;
