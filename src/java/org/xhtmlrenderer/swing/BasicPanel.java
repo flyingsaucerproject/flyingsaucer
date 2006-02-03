@@ -324,8 +324,10 @@ public abstract class BasicPanel extends RootPanel {
         Shape working = g.getClip();
 
         List pages = root.getPages();
+        c.setPageCount(pages.size());
         for (int i = 0; i < pages.size(); i++) {
             PageBox page = (PageBox)pages.get(i);
+            c.setCurrentPage(i);
 
             g.setClip(working);
             
@@ -1096,6 +1098,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.98  2006/02/03 23:57:55  peterbrant
+ * Implement counter(page) and counter(pages) / Bug fixes to alignment calculation
+ *
  * Revision 1.97  2006/02/01 01:30:14  peterbrant
  * Initial commit of PDF work
  *

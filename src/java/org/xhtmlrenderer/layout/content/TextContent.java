@@ -34,127 +34,83 @@ import java.util.List;
  * @author Torbjörn Gannholm
  */
 public class TextContent implements Content {
-    /**
-     * Description of the Field
-     */
-    private Element _elem;//will need this for handling dynamic content!
-    /**
-     * Description of the Field
-     */
-    private String _pseudo;
-    /**
-     * Description of the Field
-     */
-    private String _text;
-    /**
-     * Description of the Field
-     */
-    private boolean removableWhitespace = false;
 
-    /**
-     * Constructor for the TextContent object
-     *
-     * @param e    PARAM
-     * @param text PARAM
-     */
+    private Element _elem;//will need this for handling dynamic content!
+    private String _pseudo;
+    private String _text;
+    private boolean removableWhitespace = false;
+    private boolean _generated;
+
     TextContent(Element e, String text) {
         _elem = e;
         _text = text;
     }
 
-    /**
-     * Constructor for the TextContent object
-     *
-     * @param pseudoElement PARAM
-     * @param e             PARAM
-     * @param text          PARAM
-     */
     TextContent(String pseudoElement, Element e, String text) {
         _pseudo = pseudoElement;
         _elem = e;
         _text = text;
     }
+    
+    TextContent(String pseudoElement, Element e, String text, boolean generated) {
+        _pseudo = pseudoElement;
+        _elem = e;
+        _text = text;
+        _generated = generated;
+    }    
 
-    /**
-     * Converts to a String representation of the object.
-     *
-     * @return A string representation of the object.
-     */
     public String toString() {
         return "TextContent: " + _text;
     }
 
-    /**
-     * Sets the text attribute of the TextContent object
-     *
-     * @param text The new text value
-     */
     public void setText(String text) {
         _text = text;
     }
 
-    /**
-     * Sets the removableWhitespace attribute of the TextContent object
-     *
-     * @param removableWhitespace The new removableWhitespace value
-     */
     public void setRemovableWhitespace(boolean removableWhitespace) {
         this.removableWhitespace = removableWhitespace;
     }
 
-    /**
-     * Gets the pseudoElement attribute of the TextContent object
-     *
-     * @return The pseudoElement value
-     */
     public String getPseudoElement() {
         return _pseudo;
     }
 
-    /**
-     * Gets the element attribute of the TextContent object
-     *
-     * @return The element value
-     */
     public Element getElement() {
         return _elem;
     }
 
-    /**
-     * Gets the style attribute of the TextContent object
-     *
-     * @return The style value
-     */
     public CascadedStyle getStyle() {
         return null;
     }
 
-    /**
-     * Gets the childContent attribute of the TextContent object
-     *
-     * @param c PARAM
-     * @return The childContent value
-     */
     public List getChildContent(LayoutContext c) {
         return null;
     }
 
-    /**
-     * Gets the text attribute of the TextContent object
-     *
-     * @return The text value
-     */
     public String getText() {
         return _text;
     }
 
-    /**
-     * Gets the removableWhitespace attribute of the TextContent object
-     *
-     * @return The removableWhitespace value
-     */
     public boolean isRemovableWhitespace() {
         return removableWhitespace;
+    }
+
+    public boolean isGenerated() {
+        return _generated;
+    }
+
+    public void setGenerated(boolean generated) {
+        _generated = generated;
+    }
+    
+    public boolean isPageCounter() {
+        String text = getText();
+        return isGenerated() && (text.equals("counter(pages)") ||
+                text.equals("counter(page)"));
+    }
+    
+    public String getPageCounterName() {
+        return getText().substring("counter(".length(), getText().length()-1);
     }
 }
 

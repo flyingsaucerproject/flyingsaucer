@@ -39,12 +39,12 @@ import java.awt.Rectangle;
  */
 public class RenderingContext implements CssContext {
 
-    /**
-     * Description of the Field
-     */
     protected SharedContext sharedContext;
     private OutputDevice outputDevice;
     private FontContext fontContext;
+    
+    private int pageCount;
+    private int currentPage;
 
     /**
      * <p/>
@@ -194,6 +194,22 @@ public class RenderingContext implements CssContext {
 
     public void setFontContext(FontContext fontContext) {
         this.fontContext = fontContext;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public int getPageCount() {
+        return pageCount;
+    }
+
+    public void setPageCount(int pageCount) {
+        this.pageCount = pageCount;
     }
 }
 

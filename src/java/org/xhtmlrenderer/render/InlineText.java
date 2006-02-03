@@ -22,6 +22,9 @@ package org.xhtmlrenderer.render;
 import org.xhtmlrenderer.util.Uu;
 
 public class InlineText {
+    public static final byte PAGE_COUNTER_PAGE = 1;
+    public static final byte PAGE_COUNTER_PAGES = 2;
+    
     private InlineBox parent;
     
     private int x;
@@ -31,6 +34,8 @@ public class InlineText {
     private int end;
     
     private int width;
+    
+    private byte pageCounterType;
     
     public boolean isEmpty() {
         return start == end;
@@ -95,5 +100,38 @@ public class InlineText {
 
     public void setParent(InlineBox parent) {
         this.parent = parent;
-    }    
+    }
+
+    public void setPageCounterName(String pageCounterName) {
+        if (pageCounterName != null) {
+            if (pageCounterName.equals("page")) {
+                this.pageCounterType = PAGE_COUNTER_PAGE;
+            } else if (pageCounterName.equals("pages")) {
+                this.pageCounterType = PAGE_COUNTER_PAGES;
+            }
+        }
+    }
+    
+    public boolean isPageCounter() {
+        return this.pageCounterType != 0;
+    }
+    
+    public void setPageCounterValue(RenderingContext c) {
+        String s = null;
+        switch (this.pageCounterType) {
+            case PAGE_COUNTER_PAGE:
+                s = Integer.toString(c.getCurrentPage() + 1);
+                break;
+            case PAGE_COUNTER_PAGES:
+                s = Integer.toString(c.getPageCount());
+                break;
+        }
+        if (s != null) {
+            masterText = s;
+            start = 0;
+            end = masterText.length();
+            setWidth(c.getTextRenderer().getWidth(c.getFontContext(), 
+                    parent.getStyle().getCalculatedStyle().getFSFont(c), masterText));
+        }
+    }
 }

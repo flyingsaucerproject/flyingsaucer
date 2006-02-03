@@ -28,6 +28,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.content.AbsolutelyPositionedContent;
@@ -220,6 +221,12 @@ public class InlineBoxing {
                 TextContent text = (TextContent) content;
                 LineBreakContext lbContext = new LineBreakContext();
                 lbContext.setMaster(TextUtil.transformText(text.getText(), c.getCurrentStyle()));
+                
+                String pageCounterName = null;
+                if (c.isPrint() && text.isPageCounter()) {
+                    pageCounterName = text.getPageCounterName();
+                    lbContext.setMaster("999");
+                }
                 do {
                     lbContext.reset();
 
@@ -245,6 +252,8 @@ public class InlineBoxing {
                                 c, remainingWidth - fit, lbContext, false);
                         if (!lbContext.isUnbreakable() ||
                                 (lbContext.isUnbreakable() && ! currentLine.isContainsContent())) {
+                            inlineText.setPageCounterName(pageCounterName);
+                            currentLine.setContainsPageCounter(inlineText.isPageCounter());
                             currentIB.addInlineChild(c, inlineText);
                             currentLine.setContainsContent(true);
                             lbContext.setStart(lbContext.getEnd());
@@ -328,7 +337,7 @@ public class InlineBoxing {
         return inlineBlock;
     }
 
-    private static int positionHorizontally(LayoutContext c, Box current, int start) {
+    public static int positionHorizontally(CssContext c, Box current, int start) {
         int x = start;
 
         InlineBox currentIB = null;
@@ -358,7 +367,7 @@ public class InlineBoxing {
         return x - start;
     }
 
-    private static int positionHorizontally(LayoutContext c, InlineBox current, int start) {
+    private static int positionHorizontally(CssContext c, InlineBox current, int start) {
         int x = start;
 
         x += current.getLeftMarginBorderPadding(c);
@@ -655,6 +664,7 @@ public class InlineBoxing {
                                  List pendingFloats, boolean hasFirstLinePCs,
                                  List pendingInlineLayers, MarkerData markerData,
                                  int contentStart) {
+        current.setContentStart(contentStart);
         current.prunePendingInlineBoxes();
 
         int totalLineWidth = positionHorizontally(c, current, 0);
@@ -662,29 +672,6 @@ public class InlineBoxing {
 
         positionVertically(c, block, current, markerData);
 
-        if (!c.shrinkWrap()) {
-            current.setFloatDistances(new FloatDistances() {
-                public int getLeftFloatDistance() {
-                    return c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth);
-                }
-
-                public int getRightFloatDistance() {
-                    return c.getBlockFormattingContext().getRightFloatDistance(c, current, maxAvailableWidth);
-                }
-            });
-            current.align();
-            current.setFloatDistances(null);
-        } else {
-            // FIXME Not right, but can't calculated float distance yet
-            // because we don't know how wide the line is.  Should save
-            // BFC and BFC offset and use that to calculate float distance
-            // correctly when we're ready to align the line.
-            FloatDistances distances = new FloatDistances();
-            distances.setLeftFloatDistance(0);
-            distances.setRightFloatDistance(0);
-            current.setFloatDistances(distances);
-        }
-        
         current.y = previous == null ? 0 : previous.y + previous.height;
         current.calcCanvasLocation();
 
@@ -697,21 +684,11 @@ public class InlineBoxing {
             current.calcCanvasLocation();
         }
         
-        // new float code
-        if (!block.getStyle().isClearLeft()) {
-            current.x += c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth);
-            current.calcCanvasLocation();
-        }
-        
-        if (contentStart > 0) {
-            current.x += contentStart;
-            current.calcCanvasLocation();
-        }
+        alignLine(c, current, maxAvailableWidth);
         
         current.calcChildLocations();
         
         block.addChild(c, current);
-
         
         if (pendingInlineLayers.size() > 0) {
             finishPendingInlineLayers(c, pendingInlineLayers);
@@ -740,6 +717,44 @@ public class InlineBoxing {
                 current.addNonFlowContent(floater);
             }
             pendingFloats.clear();
+        }
+    }
+
+    private static void alignLine(final LayoutContext c, final LineBox current, final int maxAvailableWidth) {
+        if (!c.shrinkWrap()) {
+            if (! current.isContainsPageCounter()) {
+                current.setFloatDistances(new FloatDistances() {
+                    public int getLeftFloatDistance() {
+                        return c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth);
+                    }
+    
+                    public int getRightFloatDistance() {
+                        return c.getBlockFormattingContext().getRightFloatDistance(c, current, maxAvailableWidth);
+                    }
+                });
+            } else {
+                FloatDistances distances = new FloatDistances();
+                distances.setLeftFloatDistance(
+                        c.getBlockFormattingContext().getLeftFloatDistance(
+                                c, current, maxAvailableWidth));
+                distances.setRightFloatDistance(
+                        c.getBlockFormattingContext().getRightFloatDistance(
+                                c, current, maxAvailableWidth));
+                current.setFloatDistances(distances);
+            }
+            current.align();
+            if (! current.isContainsPageCounter()) {
+                current.setFloatDistances(null);
+            }
+        } else {
+            // FIXME Not right, but can't calculated float distance yet
+            // because we don't know how wide the line is.  Should save
+            // BFC and BFC offset and use that to calculate float distance
+            // correctly when we're ready to align the line.
+            FloatDistances distances = new FloatDistances();
+            distances.setLeftFloatDistance(0);
+            distances.setRightFloatDistance(0);
+            current.setFloatDistances(distances);
         }
     }
     

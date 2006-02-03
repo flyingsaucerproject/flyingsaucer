@@ -297,7 +297,7 @@ public class ContentUtil {
                     c.pushStyle(before);
                     textContent = new StringBuffer();
                     textContent.append(content.replaceAll("\\\\A", "\n"));
-                    inlineList.add(new TextContent("before", parentElement, textContent.toString()));
+                    inlineList.add(new TextContent("before", parentElement, textContent.toString(), true));
                     textContent = null;
                     c.popStyle();
                     inlineList.add(new StylePop("before", parentElement));
@@ -431,7 +431,7 @@ public class ContentUtil {
                     inlineList.add(new StylePush("after", parentElement));
                     textContent = new StringBuffer();
                     textContent.append(content.replaceAll("\\\\A", "\n"));
-                    inlineList.add(new TextContent(parentElement, textContent.toString()));
+                    inlineList.add(new TextContent("after", parentElement, textContent.toString(), true));
                     textContent = null;
                     inlineList.add(new StylePop("after", parentElement));
                 }
@@ -523,6 +523,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.47  2006/02/03 23:57:54  peterbrant
+ * Implement counter(page) and counter(pages) / Bug fixes to alignment calculation
+ *
  * Revision 1.46  2005/12/22 23:18:42  peterbrant
  * Add comment
  *

@@ -23,6 +23,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.layout.BoxCollector;
+import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.util.XRLog;
@@ -58,6 +59,10 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     private List nonFlowContent;
     
     private MarkerData markerData;
+    
+    private boolean containsPageCounter;
+    
+    private int contentStart;
 
     /**
      * Constructor for the LineBox object
@@ -98,12 +103,31 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
             return;
         }
         
+        if (isContainsPageCounter()) {
+            lookForPageCounters(c);
+            int totalLineWidth = InlineBoxing.positionHorizontally(c, this, 0);
+            this.contentWidth = totalLineWidth;
+            calcChildLocations();
+            align();
+        }
+        
         if (textDecoration != null) {
             c.getOutputDevice().drawTextDecoration(c, this);
         }
         
         if (c.debugDrawLineBoxes()) {
             c.getOutputDevice().drawDebugOutline(c, this, Color.GREEN);
+        }
+    }
+    
+    private void lookForPageCounters(RenderingContext c) {
+        if (getChildCount() > 0) {
+            for (int i = 0; i < getChildCount(); i++) {
+                Box b = (Box)getChild(i);
+                if (b instanceof InlineBox) {
+                    ((InlineBox)b).lookForPageCounters(c);
+                }
+            }
         }
     }
     
@@ -147,11 +171,11 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         
         // TODO implement text-align: justify
         
-        int current = this.x;
+        int calcX = 0;
         
         if (align == IdentValue.LEFT || align == IdentValue.JUSTIFY) {
             int floatDistance = getFloatDistances().getLeftFloatDistance();
-            this.x += floatDistance;
+            calcX = getContentStart() + floatDistance;
         } else if (align == IdentValue.CENTER) {
             int leftFloatDistance = getFloatDistances().getLeftFloatDistance();
             int rightFloatDistance = getFloatDistances().getRightFloatDistance();
@@ -159,13 +183,14 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
             int midpoint = leftFloatDistance +
                 (getParent().getContentWidth() - leftFloatDistance - rightFloatDistance) / 2;
             
-            this.x += midpoint - getContentWidth() / 2;
+            calcX = midpoint - (getContentWidth() + getContentStart()) / 2;
         } else if (align == IdentValue.RIGHT) {
             int floatDistance = getFloatDistances().getRightFloatDistance();
-            this.x += getParent().getContentWidth() - floatDistance - getContentWidth();
+            calcX = getParent().getContentWidth() - floatDistance - getContentWidth();
         }
         
-        if (current != this.x) {
+        if (calcX != this.x) {
+            this.x = calcX;
             calcCanvasLocation();
             calcChildLocations();
         }
@@ -318,12 +343,31 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     public void setMarkerData(MarkerData markerData) {
         this.markerData = markerData;
     }
+
+    public boolean isContainsPageCounter() {
+        return containsPageCounter;
+    }
+
+    public void setContainsPageCounter(boolean containsPageCounter) {
+        this.containsPageCounter |= containsPageCounter;
+    }
+
+    public int getContentStart() {
+        return contentStart;
+    }
+
+    public void setContentStart(int contentOffset) {
+        this.contentStart = contentOffset;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.50  2006/02/03 23:57:53  peterbrant
+ * Implement counter(page) and counter(pages) / Bug fixes to alignment calculation
+ *
  * Revision 1.49  2006/01/27 01:15:33  peterbrant
  * Start on better support for different output devices
  *

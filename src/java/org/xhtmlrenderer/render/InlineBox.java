@@ -604,5 +604,19 @@ public class InlineBox extends Box implements InlinePaintable {
                 child.calcChildLocations();
             }
         }
-    } 
+    }
+    
+    public void lookForPageCounters(RenderingContext c) {
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object obj = getInlineChild(i);
+            if (obj instanceof InlineText) {
+                InlineText iT = (InlineText)obj;
+                if (iT.isPageCounter()) {
+                    iT.setPageCounterValue(c);
+                }
+            } else if (obj instanceof InlineBox) {
+                ((InlineBox)obj).lookForPageCounters(c);
+            }
+        } 
+    }
 }

@@ -174,9 +174,10 @@ public class ITextRenderer {
         _root.getLayer().assignPagePaintingPositions(c, Layer.PAGED_MODE_PRINT);
         
         int pageCount = _root.getLayer().getPages().size();
-        
+        c.setPageCount(pageCount);
         for (int i = 0; i < pageCount; i++) {
             PageBox currentPage = (PageBox)pages.get(i);
+            c.setCurrentPage(i);
             paintPage(c, currentPage);
             _outputDevice.finishPage();
             if (i != pageCount - 1) {
