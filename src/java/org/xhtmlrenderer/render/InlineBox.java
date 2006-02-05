@@ -636,7 +636,11 @@ public class InlineBox extends Box implements InlinePaintable {
                 }
                 return result;
             } else if (child instanceof InlineBox) {
-                return ((InlineBox)child).findTrailingText();
+                result = ((InlineBox)child).findTrailingText();
+                if (result != null && result.isEmpty()) {
+                    continue;
+                }
+                return result;
             } else {
                 return null;
             }
