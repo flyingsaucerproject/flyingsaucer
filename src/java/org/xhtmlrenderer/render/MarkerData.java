@@ -19,8 +19,6 @@
  */
 package org.xhtmlrenderer.render;
 
-import java.awt.Image;
-
 import org.xhtmlrenderer.extend.FSImage;
 
 public class MarkerData {
