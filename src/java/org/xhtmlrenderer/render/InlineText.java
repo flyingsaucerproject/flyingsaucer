@@ -120,7 +120,7 @@ public class InlineText {
         String s = null;
         switch (this.pageCounterType) {
             case PAGE_COUNTER_PAGE:
-                s = Integer.toString(c.getCurrentPage() + 1);
+                s = Integer.toString(c.getPageNo() + 1);
                 break;
             case PAGE_COUNTER_PAGES:
                 s = Integer.toString(c.getPageCount());

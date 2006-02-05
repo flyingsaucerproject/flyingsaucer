@@ -327,7 +327,7 @@ public abstract class BasicPanel extends RootPanel {
         c.setPageCount(pages.size());
         for (int i = 0; i < pages.size(); i++) {
             PageBox page = (PageBox)pages.get(i);
-            c.setCurrentPage(i);
+            c.setPage(i, page);
 
             g.setClip(working);
             
@@ -1098,6 +1098,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.99  2006/02/05 00:33:59  peterbrant
+ * Draw fixed layers on every page
+ *
  * Revision 1.98  2006/02/03 23:57:55  peterbrant
  * Implement counter(page) and counter(pages) / Bug fixes to alignment calculation
  *

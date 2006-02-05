@@ -44,7 +44,9 @@ public class RenderingContext implements CssContext {
     private FontContext fontContext;
     
     private int pageCount;
-    private int currentPage;
+    
+    private int pageNo;
+    private PageBox page;
 
     /**
      * <p/>
@@ -129,7 +131,13 @@ public class RenderingContext implements CssContext {
     }
 
     public Rectangle getFixedRectangle() {
-        return sharedContext.getFixedRectangle();
+        if (! isPrint()) {
+            return sharedContext.getFixedRectangle();
+        } else {
+            return new Rectangle(0, -this.page.getTop(), 
+                    this.page.getContentWidth(this),
+                    this.page.getContentHeight(this)-1);
+        }
     }
 
     public boolean debugDrawBoxes() {
@@ -196,12 +204,9 @@ public class RenderingContext implements CssContext {
         this.fontContext = fontContext;
     }
 
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
+    public void setPage(int pageNo, PageBox page) {
+        this.pageNo = pageNo;
+        this.page = page;
     }
 
     public int getPageCount() {
@@ -210,6 +215,14 @@ public class RenderingContext implements CssContext {
 
     public void setPageCount(int pageCount) {
         this.pageCount = pageCount;
+    }
+
+    public PageBox getPage() {
+        return page;
+    }
+
+    public int getPageNo() {
+        return pageNo;
     }
 }
 

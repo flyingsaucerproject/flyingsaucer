@@ -177,7 +177,7 @@ public class ITextRenderer {
         c.setPageCount(pageCount);
         for (int i = 0; i < pageCount; i++) {
             PageBox currentPage = (PageBox)pages.get(i);
-            c.setCurrentPage(i);
+            c.setPage(i, currentPage);
             paintPage(c, currentPage);
             _outputDevice.finishPage();
             if (i != pageCount - 1) {
