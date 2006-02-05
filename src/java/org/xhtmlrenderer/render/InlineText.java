@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.Uu;
 
 public class InlineText {
@@ -36,6 +37,15 @@ public class InlineText {
     private int width;
     
     private byte pageCounterType;
+    
+    public void maybeTrimTrailingSpace(LayoutContext c) {
+        if (! isEmpty() && masterText.charAt(end-1) == ' ') {
+            end--;
+            setWidth(c.getTextRenderer().getWidth(c.getFontContext(), 
+                    getParent().getStyle().getCalculatedStyle().getFSFont(c),
+                    getSubstring()));
+        }
+    }
     
     public boolean isEmpty() {
         return start == end;

@@ -26,6 +26,7 @@ import org.xhtmlrenderer.layout.BoxCollector;
 import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.Layer;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Color;
@@ -359,12 +360,48 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     public void setContentStart(int contentOffset) {
         this.contentStart = contentOffset;
     }
+    
+    public InlineText findTrailingText() {
+        if (getChildCount() == 0) {
+            return null;
+        }
+        
+        for (int offset = getChildCount() - 1; offset >= 0; offset--) {
+            Box child = getChild(offset);
+            if (child instanceof InlineBox) {
+                InlineText result = ((InlineBox)child).findTrailingText();
+                if (result != null && result.isEmpty()) {
+                    continue;
+                }
+                return result;
+            } else {
+                return null;
+            }
+        }
+        
+        return null;
+    }
+    
+    public void maybeTrimTrailingSpace(LayoutContext c) {
+        InlineText text = findTrailingText();
+        
+        if (text != null) {
+            InlineBox iB = text.getParent();
+            IdentValue whitespace = iB.getStyle().getCalculatedStyle().getWhitespace();
+            if (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP) {
+                text.maybeTrimTrailingSpace(c);
+            }
+        }
+    }    
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.51  2006/02/05 01:57:23  peterbrant
+ * Fix bug where final space on the final line of a block was not being collapsed away
+ *
  * Revision 1.50  2006/02/03 23:57:53  peterbrant
  * Implement counter(page) and counter(pages) / Bug fixes to alignment calculation
  *

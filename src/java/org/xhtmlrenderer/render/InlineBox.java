@@ -619,4 +619,29 @@ public class InlineBox extends Box implements InlinePaintable {
             }
         } 
     }
+
+    public InlineText findTrailingText() {
+        if (getInlineChildCount() == 0) {
+            return null;
+        }
+        
+        InlineText result = null;
+        
+        for (int offset = getInlineChildCount() - 1; offset >= 0; offset--) {
+            Object child = getInlineChild(offset);
+            if (child instanceof InlineText) {
+                result = (InlineText)child;
+                if (result.isEmpty()) {
+                    continue;
+                }
+                return result;
+            } else if (child instanceof InlineBox) {
+                return ((InlineBox)child).findTrailingText();
+            } else {
+                return null;
+            }
+        }
+        
+        return result;
+    }
 }

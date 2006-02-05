@@ -287,6 +287,7 @@ public class InlineBoxing {
             }
         }
 
+        currentLine.maybeTrimTrailingSpace(c);
         saveLine(currentLine, previousLine, c, box, minimumLineHeight,
                 maxAvailableWidth, elementStack, pendingFloats, hasFirstLinePCs,
                 pendingInlineLayers, markerData, contentStart);
