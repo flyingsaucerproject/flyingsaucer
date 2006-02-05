@@ -22,7 +22,6 @@ package org.xhtmlrenderer.layout;
 
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.content.WhitespaceStripper;
 import org.xhtmlrenderer.render.FSFont;
