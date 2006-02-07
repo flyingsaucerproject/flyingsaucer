@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.io.OutputStream;
@@ -114,6 +115,8 @@ public class ITextRenderer {
         LayoutContext c = newLayoutContext();
         BlockBox root = Boxing.constructBox(c, new DomToplevelNode(_doc));
         Boxing.layout(c, root, new DomToplevelNode(_doc));
+        Dimension dim = root.getLayer().getPaintingDimension(c);
+        root.getLayer().trimEmptyPages(c, dim.height);
         _root = root;
     }
     

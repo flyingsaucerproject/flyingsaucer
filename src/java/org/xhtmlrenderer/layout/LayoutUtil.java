@@ -117,6 +117,7 @@ public class LayoutUtil {
                 positionFloatOnPage(c, content, curr_line, block, initialY != block.y);
             }
             result.setBlock(block);
+            c.getRootLayer().ensureHasPage(c, block);
         }
         
         c.setCurrentMarkerData(markerData);
@@ -129,20 +130,27 @@ public class LayoutUtil {
     private static void positionFloatOnPage(
             final LayoutContext c, FloatedBlockContent content, 
             LineBox curr_line, FloatedBlockBox block, boolean movedVertically) {
-        boolean didRelayout = false;
+        boolean clearedPage = false;
+        int clearDelta = 0;
         
         if (block.getStyle().isForcePageBreakBefore() || 
                 (block.getStyle().isAvoidPageBreakInside() && 
                         block.crossesPageBreak(c))) {
-            didRelayout = true;
-            block.moveToNextPage(c);
+            clearDelta = block.moveToNextPage(c);
+            clearedPage = true;
             block.calcCanvasLocation();
             block.detach();
             Boxing.layout(c, block, content);
             c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
         }
         
-        if (! didRelayout && movedVertically) {
+        if ((movedVertically || 
+                    (block.getStyle().isAvoidPageBreakInside() && block.crossesPageBreak(c))) && 
+                ! block.getStyle().isForcePageBreakBefore()) {
+            if (clearedPage) {
+                block.y -= clearDelta;
+                block.calcCanvasLocation();
+            }
             block.detach();
             Boxing.layout(c, block, content);
             c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);

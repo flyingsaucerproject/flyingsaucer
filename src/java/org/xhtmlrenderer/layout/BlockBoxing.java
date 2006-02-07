@@ -140,6 +140,14 @@ public class BlockBoxing {
                     childBox = layoutBlockChild(
                             c, block, styleSetListener, listIndex, resetMargins, 
                             true, currentContent);
+                    
+                    if (childBox.crossesPageBreak(c)) {
+                        c.restoreStateForRelayout(relayoutData.getLayoutState());
+                        childBox.detach();
+                        childBox = layoutBlockChild(
+                                c, block, styleSetListener, listIndex, resetMargins, 
+                                false, currentContent);
+                    }
                 }
 
             }
@@ -153,7 +161,12 @@ public class BlockBoxing {
             }
 
             // increase the final layout height by the height of the child
-            block.height = childBox.y + childBox.height;
+            Dimension relativeOffset = childBox.getRelativeOffset();
+            if (relativeOffset == null) {
+                block.height = childBox.y + childBox.height;
+            } else {
+                block.height = childBox.y - relativeOffset.height + childBox.height;
+            }
 
             if (c.isPrint()) {
                 if (childBox.getStyle().isForcePageBreakAfter()) {
@@ -204,8 +217,16 @@ public class BlockBoxing {
                             runEndChild.getAbsY() + runEndChild.getHeight()) &&
                         ! checkForPendingInlines(relayoutDataList, runStart, offset)) {
                     block.detachChildren(runStart, offset);
-                    relayoutOnNewPage(c, contentList, block, 
-                            styleSetListener, relayoutDataList, runStart, offset);
+                    relayoutRun(c, contentList, block, 
+                            styleSetListener, relayoutDataList, runStart, offset, true);
+                    runEndChild = block.getChild(runEnd);
+                    if (c.getRootLayer().crossesPageBreak(c,
+                            block.getChild(runStart).getAbsY(),
+                                runEndChild.getAbsY() + runEndChild.getHeight())) {
+                        block.detachChildren(runStart, offset);
+                        relayoutRun(c, contentList, block, 
+                                styleSetListener, relayoutDataList, runStart, offset, false);
+                    }
                 }
             }
         }
@@ -222,12 +243,15 @@ public class BlockBoxing {
         return result;
     }
     
-    private static void relayoutOnNewPage(
+    private static void relayoutRun(
             LayoutContext c, List contentList, BlockBox block, 
             StyleSetListener styleSetListener, RelayoutDataList relayoutDataList, 
-            int start, int end) {
+            int start, int end, boolean onNewPage) {
         block.height = relayoutDataList.get(start).getInitialParentHeight();
-        block.expandToPageBottom(c);
+        
+        if (onNewPage) {
+            block.expandToPageBottom(c);
+        }
         
         for (int i = start; i <= end; i++) {
             Content currentContent = (Content)contentList.get(i);
@@ -254,13 +278,25 @@ public class BlockBoxing {
                     childBox = layoutBlockChild(
                             c, block, styleSetListener, relayoutData.getListIndex(), 
                             relayoutData.isResetMargins(), true, currentContent);
+                    
+                    if (childBox.crossesPageBreak(c)) {
+                        c.restoreStateForRelayout(relayoutData.getLayoutState());
+                        childBox.detach();
+                        childBox = layoutBlockChild(
+                                c, block, styleSetListener, relayoutData.getListIndex(), 
+                                relayoutData.isResetMargins(), false, currentContent);
+                    }                    
                 }
-
             }
             
             c.getRootLayer().ensureHasPage(c, childBox);
             
-            block.height = childBox.y + childBox.height;
+            Dimension relativeOffset = childBox.getRelativeOffset();
+            if (relativeOffset == null) {
+                block.height = childBox.y + childBox.height;
+            } else {
+                block.height = childBox.y - relativeOffset.height + childBox.height;
+            }
             
             if (childBox.getStyle().isForcePageBreakAfter()) {
                 block.expandToPageBottom(c);
@@ -467,6 +503,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.47  2006/02/07 00:02:51  peterbrant
+ * If "keep together" cannot be satisified, drop rule vs. pushing to next page / Fix bug with incorrect positioning of content following relative block layers
+ *
  * Revision 1.46  2006/01/27 01:15:31  peterbrant
  * Start on better support for different output devices
  *

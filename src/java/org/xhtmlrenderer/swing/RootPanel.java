@@ -336,6 +336,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         
         Dimension intrinsic_size = root.getLayer().getPaintingDimension(c);
         
+        if (c.isPrint()) {
+            root.getLayer().trimEmptyPages(c, intrinsic_size.height);
+        }
+        
         setPreferredSize(intrinsic_size);
         revalidate();
         

@@ -588,9 +588,14 @@ public class Layer {
                         child.getMaster().detach();
                         layoutAbsoluteChild(c, child);
                         ((BlockBox)child.getMaster()).setNeedPageClear(false);
+                        if (child.getMaster().crossesPageBreak(c)) {
+                            child.getMaster().detach();
+                            layoutAbsoluteChild(c, child);
+                        }
                     }
                     child.setRequiresLayout(false);
                     child.finish(c);
+                    c.getRootLayer().ensureHasPage(c, child.getMaster());
                 }
             }
             c.restoreLayoutState(state);
@@ -736,6 +741,20 @@ public class Layer {
         while (position >= last.getBottom()) {
             addPage(c);
             last = (PageBox)pages.get(pages.size()-1);
+        }
+    }
+    
+    public void trimEmptyPages(LayoutContext c, int maxYHeight) {
+        // Empty pages may result when a "keep together" constraint
+        // cannot be satisfied and is dropped
+        List pages = getPages();
+        for (int i = pages.size() - 1; i >= 0; i--) {
+            PageBox page = (PageBox)pages.get(i);
+            if (page.getTop() > maxYHeight) {
+                pages.remove(i);
+            } else {
+                break;
+            }
         }
     }
     

@@ -91,6 +91,8 @@ public abstract class Box {
 
     private Style style;
     private Box containingBlock;
+    
+    private Dimension relativeOffset;
 
     public Box() {
     }
@@ -429,7 +431,8 @@ public abstract class Box {
                     CSSName.TOP, cbContentHeight, cssCtx);
         }
         
-        return new Dimension(this.x - initialX, this.y - initialY);
+        setRelativeOffset(new Dimension(this.x - initialX, this.y - initialY));
+        return getRelativeOffset();
     }
     
     // HACK If a box doesn't have a Style object, NPEs are the likely result
@@ -615,12 +618,23 @@ public abstract class Box {
             return getAbsY() + getHeight() >= pageBox.getBottom();
         }
     }
+
+    public Dimension getRelativeOffset() {
+        return relativeOffset;
+    }
+
+    public void setRelativeOffset(Dimension relativeOffset) {
+        this.relativeOffset = relativeOffset;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.107  2006/02/07 00:02:52  peterbrant
+ * If "keep together" cannot be satisified, drop rule vs. pushing to next page / Fix bug with incorrect positioning of content following relative block layers
+ *
  * Revision 1.106  2006/02/01 01:30:14  peterbrant
  * Initial commit of PDF work
  *
