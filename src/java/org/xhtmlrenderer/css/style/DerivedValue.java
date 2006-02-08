@@ -2,7 +2,6 @@ package org.xhtmlrenderer.css.style;
 
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.ValueConstants;
-import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.util.XRRuntimeException;
 import org.w3c.dom.css.CSSPrimitiveValue;
