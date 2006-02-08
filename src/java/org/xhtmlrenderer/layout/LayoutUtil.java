@@ -115,11 +115,9 @@ public class LayoutUtil {
         } else {
             if (c.isPrint()) {
                 positionFloatOnPage(c, content, curr_line, block, initialY != block.y);
-            }
-            result.setBlock(block);
-            if (c.isPrint()) {
                 c.getRootLayer().ensureHasPage(c, block);
             }
+            result.setBlock(block);
         }
         
         c.setCurrentMarkerData(markerData);
