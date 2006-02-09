@@ -327,7 +327,7 @@ public class Layer {
         fixed.setAbsY(0);
 
         fixed.setContainingBlock(new ViewportBox(rect));
-        ((BlockBox)fixed).positionAbsolute(c);
+        ((BlockBox)fixed).positionAbsolute(c, BlockBox.POSITION_BOTH);
     }
 
     private void paintLayerBackgroundAndBorder(RenderingContext c) {
@@ -425,7 +425,7 @@ public class Layer {
     
     private void position(LayoutContext c) {
         if (getMaster().getStyle().isAbsolute() && ! c.isPrint()) {
-            ((BlockBox)getMaster()).positionAbsolute(c);
+            ((BlockBox)getMaster()).positionAbsolute(c, BlockBox.POSITION_BOTH);
         } else if (getMaster().getStyle().isRelative() && isInline()) {
             getMaster().positionRelative(c);
         }
@@ -606,15 +606,14 @@ public class Layer {
         BlockBox master = (BlockBox)child.getMaster();
         if (child.getMaster().getStyle().isBottomAuto()) {
             // Set top, left
-            master.positionAbsolute(c);
+            master.positionAbsolute(c, BlockBox.POSITION_BOTH);
             master.positionAbsoluteOnPage(c);
             c.reInit(child.getLayoutData().getParentStyle());
             c.setExtents(getExtents(c));
             Boxing.layout(c, (BlockBox)child.getMaster(), 
                     child.getLayoutData().getContent());
             // Set right
-            master.positionAbsolute(c);
-            master.positionAbsoluteOnPage(c);
+            master.positionAbsolute(c, BlockBox.POSITION_HORIZONTALLY);
         } else {
             // FIXME Not right in the face of pagination, but what
             // to do?  Not sure if just laying out and positioning
@@ -626,7 +625,7 @@ public class Layer {
                     child.getLayoutData().getContent());
             
             child.getMaster().detach();
-            master.positionAbsolute(c);
+            master.positionAbsolute(c, BlockBox.POSITION_BOTH);
             master.positionAbsoluteOnPage(c);
             
             c.reInit(child.getLayoutData().getParentStyle());
@@ -639,13 +638,13 @@ public class Layer {
     private void layoutAlternateFlowChild(LayoutContext c, Layer child) {
         BlockBox master = (BlockBox)child.getMaster();
         // Set top, left
-        master.positionAbsolute(c);
+        master.positionAbsolute(c, BlockBox.POSITION_BOTH);
         c.reInit(child.getLayoutData().getParentStyle());
         c.setExtents(child.getMaster().getContainingBlock().getPaddingEdge(0, 0, c));
         Boxing.layout(c, (BlockBox)child.getMaster(), 
                 child.getLayoutData().getContent());
         // Set bottom, right
-        master.positionAbsolute(c);
+        master.positionAbsolute(c, BlockBox.POSITION_BOTH);
     }
     
     private Rectangle getExtents(CssContext cssCtx) {

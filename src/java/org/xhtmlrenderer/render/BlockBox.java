@@ -37,6 +37,10 @@ import org.xhtmlrenderer.layout.PersistentBFC;
 
 public class BlockBox extends Box implements Renderable, InlinePaintable {
 
+    public static final int POSITION_VERTICALLY = 1;
+    public static final int POSITION_HORIZONTALLY = 2;
+    public static final int POSITION_BOTH = POSITION_VERTICALLY | POSITION_HORIZONTALLY;
+    
     public int renderIndex;
     
     private List pendingInlineElements;
@@ -357,12 +361,14 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     
     
     private void alignToStaticEquivalent() {
-        this.y = staticEquivalent.getAbsY() - getAbsY();
-        setAbsY(staticEquivalent.getAbsY());
+        if (staticEquivalent.getAbsY() != getAbsY()) {
+	        this.y = staticEquivalent.getAbsY() - getAbsY();
+	        setAbsY(staticEquivalent.getAbsY());
+        }
     }
 
     // TODO Finish this!
-    public void positionAbsolute(CssContext cssCtx) {
+    public void positionAbsolute(CssContext cssCtx, int direction) {
         CalculatedStyle style = getStyle().getCalculatedStyle();
 
         Rectangle boundingBox = null;
@@ -375,26 +381,31 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
             boundingBox = getContainingBlock().getContentAreaEdge(0, 0, cssCtx);
         }
 
-        if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
-            this.x = (int)style.getFloatPropertyProportionalWidth(CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
-        } else if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
-            this.x = boundingBox.width -
-                    (int)style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth();
+        if ((direction & POSITION_HORIZONTALLY) != 0) {
+	        if (!style.isIdent(CSSName.LEFT, IdentValue.AUTO)) {
+	            this.x = (int)style.getFloatPropertyProportionalWidth(CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
+	        } else if (!style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
+	            this.x = boundingBox.width -
+	                    (int)style.getFloatPropertyProportionalWidth(CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx) - getWidth();
+	        }
         }
-
-        if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-            this.y = (int)style.getFloatPropertyProportionalHeight(CSSName.TOP, cbContentHeight, cssCtx);
-        } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-            this.y = boundingBox.height -
-                    (int)style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, cbContentHeight, cssCtx) - getHeight();
+        
+        if ((direction & POSITION_VERTICALLY) != 0) {
+	        if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
+	            this.y = (int)style.getFloatPropertyProportionalHeight(CSSName.TOP, cbContentHeight, cssCtx);
+	        } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
+	            this.y = boundingBox.height -
+	                    (int)style.getFloatPropertyProportionalWidth(CSSName.BOTTOM, cbContentHeight, cssCtx) - getHeight();
+	        }
         }
-
+	
         this.x += boundingBox.x;
         this.y += boundingBox.y;
         
         calcCanvasLocation();
         
-        if (getStyle().isTopAuto() && getStyle().isBottomAuto()) {
+        if ((direction & POSITION_VERTICALLY) != 0 &&
+                getStyle().isTopAuto() && getStyle().isBottomAuto()) {
             alignToStaticEquivalent();
         }
         
@@ -423,6 +434,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.40  2006/02/09 19:12:25  peterbrant
+ * Fix bad interaction between page-break-inside: avoid and top: auto/bottom: auto for absolute blocks
+ *
  * Revision 1.39  2006/02/02 02:47:35  peterbrant
  * Support non-AWT images
  *
