@@ -76,9 +76,10 @@ public class Java2DOutputDevice extends AbstractOutputDevice implements OutputDe
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
         JComponent component = ((SwingReplacedElement)box.getReplacedElement()).getJComponent();
         
-        translate(box.getAbsX(), box.getAbsY());
+        Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
+        translate(contentBounds.x, contentBounds.y);
         component.paint(_graphics);
-        translate(-box.getAbsX(), -box.getAbsY());
+        translate(-contentBounds.x, -contentBounds.y);
     }
     
     public void setColor(Color color) {

@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.layout;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -339,6 +340,14 @@ public class Layer {
     }
     
     private void paintReplacedElement(RenderingContext c, BlockBox replaced) {
+        Rectangle contentBounds = replaced.getContentAreaEdge(
+                replaced.getAbsX(), replaced.getAbsY(), c); 
+        // Minor hack:  It's inconvenient to adjust for margins, border, padding during
+        // layout so just do it here.
+        Point loc = replaced.getReplacedElement().getLocation();
+        if (contentBounds.x != loc.x || contentBounds.y != loc.y) {
+            replaced.getReplacedElement().setLocation(contentBounds.x, contentBounds.y);
+        }
         if (! c.isInteractive()) {
             c.getOutputDevice().paintReplacedElement(c, replaced);
         }

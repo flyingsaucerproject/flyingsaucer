@@ -378,7 +378,7 @@ public abstract class Box {
         return result;
     }
     
-    protected Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
+    public Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
         RectPropertySet margin = getStyle().getMarginWidth(cssCtx);
         RectPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
         RectPropertySet padding = getStyle().getPaddingWidth(cssCtx);
@@ -632,6 +632,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.108  2006/02/20 23:29:20  peterbrant
+ * Fix positioning of replaced elements with margins, borders, padding
+ *
  * Revision 1.107  2006/02/07 00:02:52  peterbrant
  * If "keep together" cannot be satisified, drop rule vs. pushing to next page / Fix bug with incorrect positioning of content following relative block layers
  *

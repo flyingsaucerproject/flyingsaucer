@@ -45,7 +45,7 @@ public class ViewportBox extends BlockBox {
         return viewport.height;
     }
     
-    protected Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
+    public Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
         return new Rectangle(-viewport.x, -viewport.y, viewport.width, viewport.height);
     }
     

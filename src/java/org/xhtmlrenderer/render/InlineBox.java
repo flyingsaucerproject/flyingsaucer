@@ -319,7 +319,7 @@ public class InlineBox extends Box implements InlinePaintable {
         return result;
     }    
     
-    protected Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
+    public Rectangle getContentAreaEdge(int left, int top, CssContext cssCtx) {
         BorderPropertySet border = getStyle().getCalculatedStyle().getBorder(cssCtx);
         RectPropertySet padding = getStyle().getPaddingWidth(cssCtx);
         
