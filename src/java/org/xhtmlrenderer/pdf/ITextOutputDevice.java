@@ -21,6 +21,7 @@ package org.xhtmlrenderer.pdf;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -31,6 +32,11 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
+import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
@@ -45,6 +51,9 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
 import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfImportedPage;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfWriter;
 
 /**
  * This class is largely based on {@link com.lowagie.text.pdf.PdfGraphics2D}. See
@@ -77,10 +86,22 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     private Area _clip;
     
-    private float _pixelsPerPoint;
+    private float _dotsPerPoint;
     
-    public ITextOutputDevice(float pixelsPerPoint) {
-        _pixelsPerPoint = pixelsPerPoint;
+    private PdfWriter _writer;
+    
+    private Map _readerCache = new HashMap();
+    
+    public ITextOutputDevice(float dotsPerPoint) {
+        _dotsPerPoint = dotsPerPoint;
+    }
+    
+    public void setWriter(PdfWriter writer) {
+        _writer = writer;
+    }
+    
+    private PdfWriter getWriter() {
+        return _writer;
     }
 
     public void initializePage(PdfContentByte currentPage, float height) {
@@ -88,7 +109,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         _pageHeight = height;
         
         _transform = new AffineTransform();
-        _transform.scale(1.0d / _pixelsPerPoint, 1.0d / _pixelsPerPoint);
+        _transform.scale(1.0d / _dotsPerPoint, 1.0d / _dotsPerPoint);
         
         _stroke = transformStroke(STROKE_ONE);
         _originalStroke = _stroke;
@@ -104,11 +125,12 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
     
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
+        Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
         ReplacedElement element = box.getReplacedElement();
         if (element instanceof ITextImageElement) {
             drawImage(
                     ((ITextImageElement)element).getImage(),
-                    box.getAbsX(), box.getAbsY());
+                    contentBounds.x, contentBounds.y);
         }
     }
     
@@ -221,11 +243,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         AffineTransform inverse = normalizeMatrix(at);
         AffineTransform flipper = AffineTransform.getScaleInstance(1, -1);
         inverse.concatenate(flipper);
-        inverse.scale(_pixelsPerPoint, _pixelsPerPoint);
+        inverse.scale(_dotsPerPoint, _dotsPerPoint);
         double[] mx = new double[6];
         inverse.getMatrix(mx);
         cb.beginText();
-        cb.setFontAndSize(_font.getFontDescription().getFont(), _font.getSize2D() / _pixelsPerPoint);
+        cb.setFontAndSize(_font.getFontDescription().getFont(), _font.getSize2D() / _dotsPerPoint);
         cb.setTextMatrix((float)mx[0], (float)mx[1], (float)mx[2], (float)mx[3], (float)mx[4], (float)mx[5]);
         cb.showText(s);
         cb.endText();
@@ -477,26 +499,79 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     }
     
     public void drawImage(FSImage fsImage, int x, int y) {
-        Image image = ((ITextFSImage)fsImage).getImage();
+        if (fsImage instanceof PDFAsImage) {
+            drawPDFAsImage((PDFAsImage)fsImage, x, y);
+        } else {
+	        Image image = ((ITextFSImage)fsImage).getImage();
+	        
+	        AffineTransform at = AffineTransform.getTranslateInstance(x,y);
+	        at.translate(0, fsImage.getHeight());
+	        at.scale(fsImage.getWidth(), fsImage.getHeight());
+	        
+	        AffineTransform inverse = normalizeMatrix(_transform);
+	        AffineTransform flipper = AffineTransform.getScaleInstance(1,-1);
+	        inverse.concatenate(at);
+	        inverse.concatenate(flipper);
+	        
+	        double[] mx = new double[6];
+	        inverse.getMatrix(mx);
+	        
+	        try {
+	            _currentPage.addImage(image, 
+	                    (float)mx[0], (float)mx[1], (float)mx[2], 
+	                    (float)mx[3], (float)mx[4], (float)mx[5]);
+	        } catch (DocumentException e) {
+	            throw new XRRuntimeException(e.getMessage(), e);
+	        }
+	    }    
+    }
+    
+    private void drawPDFAsImage(PDFAsImage image, int x, int y) {
+        URL url = image.getURL();
+        PdfReader reader = null;
+        
+        try {
+            reader = getReader(url);
+        } catch (IOException e) {
+            throw new XRRuntimeException("Could not load " + url + ": " + 
+                    e.getMessage(), e);
+        }
+        
+        PdfImportedPage page = getWriter().getImportedPage(reader, 1);
         
         AffineTransform at = AffineTransform.getTranslateInstance(x,y);
-        at.translate(0, fsImage.getHeight());
-        at.scale(fsImage.getWidth(), fsImage.getHeight());
+        at.translate(0, image.getHeightAsFloat());
         
         AffineTransform inverse = normalizeMatrix(_transform);
         AffineTransform flipper = AffineTransform.getScaleInstance(1,-1);
         inverse.concatenate(at);
         inverse.concatenate(flipper);
         
-        double[] mx = new double[6];
-        inverse.getMatrix(mx);
+        Point2D outputLoc = new Point2D.Float();
+        inverse.transform(new Point(x, y), outputLoc);
         
-        try {
-            _currentPage.addImage(image, 
-                    (float)mx[0], (float)mx[1], (float)mx[2], 
-                    (float)mx[3], (float)mx[4], (float)mx[5]);
-        } catch (DocumentException e) {
-            throw new XRRuntimeException(e.getMessage(), e);
+        AffineTransform outputT = AffineTransform.getTranslateInstance(
+                outputLoc.getX(), outputLoc.getY());
+        outputT.scale(image.scaleWidth(), image.scaleHeight());
+        
+        double[] mx = new double[6];
+        outputT.getMatrix(mx);
+        
+        _currentPage.addTemplate(page,
+                (float)mx[0], (float)mx[1], (float)mx[2],
+                (float)mx[3], (float)mx[4], (float)mx[5]);
+    }
+    
+    public PdfReader getReader(URL url) throws IOException {
+        PdfReader result = (PdfReader) _readerCache.get(url);
+        if (result ==  null) {
+            result = new PdfReader(url);
+            _readerCache.put(url, result);
         }
-    }    
+        return result;
+    }
+    
+    public float getDotsPerPoint() {
+        return _dotsPerPoint;
+    }
 }

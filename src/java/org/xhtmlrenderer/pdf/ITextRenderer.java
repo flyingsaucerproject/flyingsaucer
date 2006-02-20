@@ -64,7 +64,10 @@ public class ITextRenderer {
     
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel) {
         _dotsPerPoint = dotsPerPoint;
-        ITextUserAgent userAgent = new ITextUserAgent();
+        
+        _outputDevice = new ITextOutputDevice(_dotsPerPoint);
+        
+        ITextUserAgent userAgent = new ITextUserAgent(_outputDevice);
         _sharedContext = new SharedContext(userAgent);
         userAgent.setSharedContext(_sharedContext);
         
@@ -76,8 +79,6 @@ public class ITextRenderer {
         _sharedContext.setDotsPerPixel(dotsPerPixel);
         _sharedContext.setPrint(true);
         _sharedContext.setInteractive(false);
-        
-        _outputDevice = new ITextOutputDevice(_dotsPerPoint);
     }
     
     public ITextFontResolver getFontResolver() {
@@ -172,6 +173,7 @@ public class ITextRenderer {
         
         doc.open();
         
+        _outputDevice.setWriter(writer);
         _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.height());
         
         _root.getLayer().assignPagePaintingPositions(c, Layer.PAGED_MODE_PRINT);

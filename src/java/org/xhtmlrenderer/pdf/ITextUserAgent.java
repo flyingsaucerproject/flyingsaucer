@@ -32,11 +32,19 @@ import org.xhtmlrenderer.util.XRLog;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfReader;
 
 public class ITextUserAgent extends NaiveUserAgent {
     private static final int IMAGE_CACHE_CAPACITY = 32;
     
     private SharedContext _sharedContext;
+    
+    private ITextOutputDevice _outputDevice;
+    
+    public ITextUserAgent(ITextOutputDevice outputDevice) {
+        _outputDevice = outputDevice;
+    }
     
     private LinkedHashMap _imageCache =
             new LinkedHashMap(IMAGE_CACHE_CAPACITY, 0.75f, true) {
@@ -54,9 +62,20 @@ public class ITextUserAgent extends NaiveUserAgent {
             InputStream is = getInputStream(uri);
             if (is != null) {
                 try {
-                    Image image = Image.getInstance(new URL(uri));
-                    scaleToOutputResolution(image);
-                    resource = new ImageResource(new ITextFSImage(image));
+                    URL url = new URL(uri);
+                    if (url.getPath() != null && 
+                            url.getPath().toLowerCase().endsWith(".pdf")) {
+                        PdfReader reader = _outputDevice.getReader(url);
+                        PDFAsImage image = new PDFAsImage(url);
+                        Rectangle rect = reader.getPageSizeWithRotation(1);
+                        image.setInitialWidth(rect.width()*_outputDevice.getDotsPerPoint());
+                        image.setInitialHeight(rect.height()*_outputDevice.getDotsPerPoint());
+                        resource = new ImageResource(image);
+                    } else {
+	                    Image image = Image.getInstance(url);
+	                    scaleToOutputResolution(image);
+	                    resource = new ImageResource(new ITextFSImage(image));
+                    }
                     _imageCache.put(uri, resource);
                 } catch (IOException e) {
                     XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
