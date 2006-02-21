@@ -519,8 +519,15 @@ public class CalculatedStyle {
                     putCachedRect(key, style._padding);
                 }
             }
+            
+	        // HACK, would really rather do this earlier in the process to take
+	        // advantage of caching, but this is the lowest impact approach
+	        if (hasNegativeValues(style._padding)) {
+	            style._padding = style._padding.copyOf();
+	            resetNegativeValues(style._padding);
+            }
         }
-
+        
         return style._padding;
     }
 
@@ -574,8 +581,34 @@ public class CalculatedStyle {
                 style._border = BorderPropertySet.newInstance(style, ctx);
                 putCachedRect(key, style._border);
             }
+            
+            // HACK, would really rather do this earlier in the process to take
+            // advantage of caching, but this is the lowest impact approach
+            if (hasNegativeValues(style._border)) {
+                style._border = new BorderPropertySet(style._border);
+                resetNegativeValues(style._border);
+            }
         }
         return style._border;
+    }
+    
+    private static void resetNegativeValues(RectPropertySet rect) {
+        if (rect.top() < 0) {
+            rect.setTop(0);
+        }
+        if (rect.right() < 0) {
+            rect.setRight(0);
+        }
+        if (rect.bottom() < 0) {
+            rect.setBottom(0);
+        }
+        if (rect.left() < 0) {
+            rect.setLeft(0);
+        }
+    }
+    
+    private static boolean hasNegativeValues(RectPropertySet rect) {
+        return rect.top() < 0 || rect.right() < 0 || rect.bottom() < 0 || rect.left() < 0;
     }
     
     public static final int LEFT = 1;
@@ -641,6 +674,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.64  2006/02/21 19:30:34  peterbrant
+ * Reset negative values for padding/border-width to 0
+ *
  * Revision 1.63  2006/02/01 01:30:16  peterbrant
  * Initial commit of PDF work
  *
