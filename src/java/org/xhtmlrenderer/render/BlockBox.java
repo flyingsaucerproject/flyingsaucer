@@ -239,7 +239,7 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
             text = toRoman(getListCounter()).toLowerCase() + ".";
         } else if (listStyle == IdentValue.UPPER_ROMAN) {
             text = toRoman(getListCounter()).toUpperCase() + ".";
-        } else if (listStyle == IdentValue.DECIMAL) {
+        } else /* if (listStyle == IdentValue.DECIMAL) */ {
             text = getListCounter() + ".";
         }
         
@@ -434,6 +434,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.41  2006/02/21 20:41:15  peterbrant
+ * Default to decimal for text list markers
+ *
  * Revision 1.40  2006/02/09 19:12:25  peterbrant
  * Fix bad interaction between page-break-inside: avoid and top: auto/bottom: auto for absolute blocks
  *
