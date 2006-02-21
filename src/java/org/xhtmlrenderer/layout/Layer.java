@@ -247,6 +247,7 @@ public class Layer {
         }
 
         if (! isInline() && ((BlockBox)getMaster()).isReplaced()) {
+            paintLayerBackgroundAndBorder(c);
             paintReplacedElement(c, (BlockBox)getMaster());
         } else {
             List blocks = new ArrayList();
@@ -283,21 +284,17 @@ public class Layer {
     }
     
     public void paintAsLayer(RenderingContext c, BlockBox startingPoint) {
-        if (startingPoint.isReplaced()) {
-            paintReplacedElement(c, startingPoint);
-        } else {
-            List blocks = new ArrayList();
-            List lines = new ArrayList();
+        List blocks = new ArrayList();
+        List lines = new ArrayList();
     
-            BoxCollector collector = new BoxCollector();
-            collector.collect(c, c.getOutputDevice().getClip(), 
-                    this, startingPoint, blocks, lines);
+        BoxCollector collector = new BoxCollector();
+        collector.collect(c, c.getOutputDevice().getClip(), 
+                this, startingPoint, blocks, lines);
     
-            paintBackgroundsAndBorders(c, blocks);
-            paintListMarkers(c, blocks);
-            paintInlineContent(c, lines);
-            paintReplacedElements(c, blocks);
-        }
+        paintBackgroundsAndBorders(c, blocks);
+        paintListMarkers(c, blocks);
+        paintInlineContent(c, lines);
+        paintReplacedElements(c, blocks);
     }    
 
     private void paintListMarkers(RenderingContext c, List blocks) {
