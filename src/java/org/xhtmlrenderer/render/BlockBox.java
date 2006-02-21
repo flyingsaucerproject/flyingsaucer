@@ -177,6 +177,8 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     }
     
     public void createMarkerData(LayoutContext c, StrutMetrics strutMetrics) {
+        boolean imageMarker = false;
+        
         MarkerData result = new MarkerData();
         result.setStructMetrics(strutMetrics);
         
@@ -186,7 +188,10 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
         String image = style.getStringProperty(CSSName.LIST_STYLE_IMAGE);
         if (! image.equals("none")) {
             result.setImageMarker(makeImageMarker(c, strutMetrics, image));
-        } else {
+            imageMarker = result.getImageMarker() != null;
+        } 
+        
+        if (listStyle != IdentValue.NONE && ! imageMarker) {
             if (listStyle == IdentValue.CIRCLE || listStyle == IdentValue.SQUARE ||
                     listStyle == IdentValue.DISC) {
                 result.setGlyphMarker(makeGlyphMarker(strutMetrics));
@@ -434,6 +439,9 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.42  2006/02/21 20:55:45  peterbrant
+ * Handle image marker failover and list-style-type: none
+ *
  * Revision 1.41  2006/02/21 20:41:15  peterbrant
  * Default to decimal for text list markers
  *
