@@ -114,9 +114,9 @@ public class BorderPainter {
             // this may need to be modified to account for rounding errors
             // create a new border only 1/3 the thickness
             BorderPropertySet outer = new BorderPropertySet((int) (border.top() / 3),
+                    (int) (border.right() / 3),
                     (int) (border.bottom() / 3),
-                    (int) (border.left() / 3),
-                    (int) (border.right() / 3));
+                    (int) (border.left() / 3));
             BorderPropertySet center = new BorderPropertySet(outer);
 
             BorderPropertySet inner = new BorderPropertySet(outer);
@@ -356,6 +356,9 @@ public class BorderPainter {
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2006/02/21 18:09:17  peterbrant
+ * Fix call to BorderPropertySet constructor
+ *
  * Revision 1.42  2006/02/01 01:30:14  peterbrant
  * Initial commit of PDF work
  *
