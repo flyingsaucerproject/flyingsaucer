@@ -413,7 +413,7 @@ public abstract class Box {
                     CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
         } else if (! style.isIdent(CSSName.RIGHT, IdentValue.AUTO)) {
             this.x += style.getFloatPropertyProportionalWidth(
-                    CSSName.LEFT, getContainingBlock().getContentWidth(), cssCtx);
+                    CSSName.RIGHT, getContainingBlock().getContentWidth(), cssCtx);
         }
         
         int cbContentHeight = 0;
@@ -428,7 +428,7 @@ public abstract class Box {
                     CSSName.TOP, cbContentHeight, cssCtx);
         } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
             this.y += style.getFloatPropertyProportionalHeight(
-                    CSSName.TOP, cbContentHeight, cssCtx);
+                    CSSName.BOTTOM, cbContentHeight, cssCtx);
         }
         
         setRelativeOffset(new Dimension(this.x - initialX, this.y - initialY));
@@ -632,6 +632,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.109  2006/02/21 20:43:45  peterbrant
+ * right was actually using left, bottom was actually using top (relative positioning)
+ *
  * Revision 1.108  2006/02/20 23:29:20  peterbrant
  * Fix positioning of replaced elements with margins, borders, padding
  *
