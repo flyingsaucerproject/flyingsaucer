@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2005 Torbjörn Gannholm
+ * Copyright (c) 2006 Wisconsin Court System
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -21,137 +22,114 @@ package org.xhtmlrenderer.layout;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.content.ContentUtil;
-import org.xhtmlrenderer.render.*;
-
-import java.util.Iterator;
-import java.util.LinkedList;
+import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.LineBox;
 
 /**
- * Created by IntelliJ IDEA.
  * User: tobe
- * Date: 2005-okt-28
- * Time: 15:51:13
- * To change this template use File | Settings | File Templates.
  */
 public class Restyling {
-    public static void restyle(LayoutContext c, BlockBox box) {
-        /*
+    public static void restyleAll(LayoutContext c, BlockBox box) {
         if (box.element != null) {
             CalculatedStyle parentStyle = box.getStyle().getCalculatedStyle().getParent();
             c.initializeStyles(parentStyle);
         }//else root box, already initialized
-        restyleBox(c, box);
-        */
+        restyle(c, box);
     }
 
-    /*
-    private static void restyleBox(LayoutContext c, Box box) {
-        if (box instanceof AnonymousBlockBox) {
-            //InlineRendering.paintInlineContext(c, block, restyle);
+    private static void restyle(LayoutContext c, BlockBox box) {
+        CascadedStyle style = c.getCss().getCascadedStyle(box.element, true);
+        if (style == null) {
+            style = CascadedStyle.emptyCascadedStyle;
+        }
+        c.pushStyle(style);
+        CalculatedStyle calculatedStyle = c.getCurrentStyle();
+        box.getStyle().setCalculatedStyle(calculatedStyle);
+            
+        CascadedStyle firstLine = null;
+        if (ContentUtil.mayHaveFirstLine(calculatedStyle)) {
+            firstLine = c.getCss().getPseudoElementStyle(box.element, "first-line");
+        }
+        //TODO: first-letter
+        //special style for first line?
+        if (firstLine != null) {
+            c.getFirstLinesTracker().addStyle(firstLine);
+        }
+
+        if (box.containsLineBoxes()) {
+            restyleInlineContext(c, box);
         } else {
-            CascadedStyle style = c.getCss().getCascadedStyle(box.element, true);
-            c.pushStyle(style);
-            CalculatedStyle calculatedStyle = c.getCurrentStyle();
-            box.getStyle().setCalculatedStyle(calculatedStyle);
-            if (ContentUtil.mayHaveFirstLine(calculatedStyle)) {
-                CascadedStyle firstLine = c.getCss().getPseudoElementStyle(box.element, "first-line");
-                box.firstLineStyle = firstLine;
-            }
-            //TODO: first-letter
-            //special style for first line?
-            if (box.firstLineStyle != null) {
-                c.addFirstLineStyle(box.firstLineStyle);
-            }
-
-            if (BoxRendering.isInlineLayedOut(box)) {
-                restyleInlineContext(c, box);
-            } else {
-                restyleBlockContext(c, box);
-            }
-            //pop in case not used
-            if (box.firstLineStyle != null) {
-                c.popFirstLineStyle();
-            }
-
+            restyleBlockContext(c, box);
+        }
+            
+        //pop in case not used
+        if (firstLine != null) {
+            c.getFirstLinesTracker().removeLast();
         }
     }
 
+    private static void restyle(LayoutContext c, LineBox line) {
+        // for each inline box
+        for (int j = 0; j < line.getChildCount(); j++) {
+            Box child = line.getChild(j);
+
+            if (c.getFirstLinesTracker().hasStyles() && line.isFirstLine()) {
+                c.getFirstLinesTracker().pushStyles(c);
+            }
+            if (child instanceof InlineBox) {
+                restyle(c, (InlineBox)child);
+            } else {
+                restyle(c, (BlockBox)child);
+            }
+        }
+        
+        for (int j = 0; j < line.getNonFlowContent().size(); j++) {
+            BlockBox child = (BlockBox)line.getNonFlowContent().get(j); 
+            restyle(c, child);
+        }
+
+        if (c.getFirstLinesTracker().hasStyles() && line.isFirstLine()) {
+            c.getFirstLinesTracker().popStyles(c);
+            c.getFirstLinesTracker().clearStyles();
+        }
+    }
+
+    private static void restyle(LayoutContext c, InlineBox iB) {
+        c.pushStyle(c.getCss().getCascadedStyle(iB.element, true));
+        iB.getStyle().setCalculatedStyle(c.getCurrentStyle());
+        
+        iB.calculateTextDecoration(c);
+       
+        for (int i = 0; i < iB.getInlineChildCount(); i++) {
+            Object child = iB.getInlineChild(i);
+            if (child instanceof InlineBox) {
+                restyle(c, (InlineBox)child);
+            } else if (child instanceof BlockBox) {
+                restyle(c, (BlockBox)child);
+            }
+        }
+        
+        c.popStyle();
+    }
+
+    private static void restyleBlockContext(LayoutContext c, BlockBox box) {
+        if (! box.isReplaced()) {
+            for (int i = 0; i <= box.getChildCount(); i++) {
+                Box child = (Box) box.getChild(i);
+                restyle(c, (BlockBox) child);
+            }
+        }
+
+    }
+    
     private static void restyleInlineContext(LayoutContext c, Box block) {
         for (int i = 0; i < block.getChildCount(); i++) {
             LineBox line = (LineBox) block.getChild(i);
-            restyleLine(line, c);
+            restyle(c, line);
         }
     }
-
-    private static void restyleLine(LineBox line, LayoutContext c) {
-        LinkedList pushedStyles = null;
-
-        // for each inline box
-        InlineBox lastInline = null;
-        int padX = 0;
-        for (int j = 0; j < line.getChildCount(); j++) {
-            Box child = line.getChild(j);
-            if (child.getStyle().isAbsolute()) {
-                restyleBox(c, (BlockBox) child);
-                continue;
-            }
-
-            InlineBox box = (InlineBox) child;
-            lastInline = box;
-            padX = 0;
-            if (c.hasFirstLineStyles() && pushedStyles == null) {
-                //Uu.p("doing first line styles");
-                pushedStyles = new LinkedList();
-                for (Iterator i = c.getFirstLineStyles().iterator(); i.hasNext();) {
-                    CascadedStyle firstLineStyle = (CascadedStyle) i.next();
-                    c.pushStyle(firstLineStyle);
-                }
-            }
-            restyleInlineBox(c, box, pushedStyles);
-        }
-
-        if (c.hasFirstLineStyles() && pushedStyles != null) {
-            for (int i = 0; i < pushedStyles.size(); i++) {
-                c.popStyle();
-            }
-            for (Iterator i = pushedStyles.iterator(); i.hasNext();) {
-                c.pushStyle((CascadedStyle) i.next());
-            }
-            c.clearFirstLineStyles();
-        }
-    }
-
-    private static void restyleInlineBox(LayoutContext c, InlineBox ib, LinkedList pushedStyles) {
-        if (ib.pushstyles != 0) {
-            ib.getInlineElement().restyleStart(c, ib.pushstyles, pushedStyles);
-        }
-
-        if (ib.getStyle().isFloated()) {
-            restyleBox(c, ib);
-        } else if (ib instanceof InlineBlockBox) {
-            c.pushStyle(c.getCss().getCascadedStyle(ib.element, true));
-            restyleBox(c, ((InlineBlockBox) ib).sub_block);
-        }
-
-        ib.getStyle().setCalculatedStyle(c.getCurrentStyle());
-
-        if (ib.popstyles != 0) {
-            ib.getInlineElement().restyleEnd(c, ib.popstyles);
-        }
-    }
-
-    private static void restyleBlockContext(LayoutContext c, Box box) {
-        if (box.component != null) {
-            int start = 0;
-            int end = box.getChildCount() - 1;
-            for (int i = start; i <= end; i++) {
-                Box child = (Box) box.getChild(i);
-                restyleBox(c, (BlockBox) child);
-            }
-        }
-
-    }
-    */
 }
 
 /*

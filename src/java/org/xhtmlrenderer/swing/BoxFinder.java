@@ -13,6 +13,7 @@ import java.awt.Point;
 import java.util.Iterator;
 import java.util.logging.Level;
 
+// XXX Not used anymore
 public class BoxFinder {
     /*
 
@@ -63,7 +64,7 @@ public class BoxFinder {
         return findElementByBox(bx);
     }
 
-    public static Point findCoordsByBox(Box box) {
+    private static Point findCoordsByBox(Box box) {
         if (box.getParent() != null) {
             Point pt = findCoordsByBox(box.getParent());
             pt.translate(box.x, box.y);
@@ -72,7 +73,7 @@ public class BoxFinder {
         return new Point(0, 0);
     }
 
-    public static Box findBox(Layer layer, int x, int y) {
+    private static Box findBox(Layer layer, int x, int y) {
         // XXX Will be wrong once z-index is implemented
         
         if (layer == null) {
@@ -385,7 +386,7 @@ public class BoxFinder {
     /* I'm not exactly sure how this method works. Can it be replaced by the
     findBoxByCoords() method?
     */
-    public static int findBoxX(BasicPanel panel, int x, int y) {
+    private static int findBoxX(BasicPanel panel, int x, int y) {
         return findBoxX(panel.getRootBox(), x, y);
     }
 

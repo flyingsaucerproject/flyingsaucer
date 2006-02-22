@@ -35,6 +35,7 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.BoxCollector;
+import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.InlinePaintable;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -647,5 +648,34 @@ public class InlineBox extends Box implements InlinePaintable {
         }
         
         return result;
+    }
+    
+    public void calculateTextDecoration(LayoutContext c) {
+        TextDecoration tD = 
+            InlineBoxing.calculateTextDecoration(this, getBaseline(), 
+                    getStyle().getFSFontMetrics(c));
+        setTextDecoration(tD);
+    }
+    
+    public Box find(CssContext cssCtx, int absX, int absY) {
+        Box result = null;
+        for (int i = 0; i < getInlineChildCount(); i++) {
+            Object child = getInlineChild(i);
+            if (child instanceof Box) {
+	            result = ((Box)child).find(cssCtx, absX, absY);
+	            if (result != null) {
+	                return result;
+	            }
+            }
+        }
+        
+        Rectangle edge = getContentAreaEdge(getAbsX(), getAbsY(), cssCtx);
+        result = edge.contains(absX, absY) ? this : null;
+        
+        if (result != null && this.element == null) {
+            return getParent().getParent();
+        } else {
+            return result;
+        }
     }
 }

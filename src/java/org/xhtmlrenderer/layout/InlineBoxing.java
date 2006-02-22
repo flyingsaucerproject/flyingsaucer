@@ -139,6 +139,13 @@ public class InlineBoxing {
                     previousIB.addInlineChild(c, currentIB);
                 }
                 
+                if (currentIB.element != null) {
+                    String id = c.getNamespaceHandler().getID(currentIB.element);
+                    if (id != null && ! id.equals("")) {
+                        c.addIDBox(id, currentIB);
+                    }
+                }
+                
                 //To break the line well, assume we don't just want to paint padding on next line
                 pendingLeftMBP += style.getMarginBorderPadding(
                         c, maxAvailableWidth, CalculatedStyle.LEFT);
@@ -534,7 +541,7 @@ public class InlineBoxing {
         return result;
     }
     
-    private static TextDecoration calculateTextDecoration(Box box, int baseline, 
+    public static TextDecoration calculateTextDecoration(Box box, int baseline, 
             FSFontMetrics fm) {
         CalculatedStyle style = box.getStyle().getCalculatedStyle();
         

@@ -393,12 +393,28 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
             }
         }
     }    
+    
+    public Box find(CssContext cssCtx, int absX, int absY) {
+        Box result = null;
+        for (int i = 0; i < getChildCount(); i++) {
+            Box child = getChild(i);
+            result = child.find(cssCtx, absX, absY);
+            if (result != null) {
+                return result;
+            }
+        }
+        
+        return null;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.52  2006/02/22 02:20:19  peterbrant
+ * Links and hover work again
+ *
  * Revision 1.51  2006/02/05 01:57:23  peterbrant
  * Fix bug where final space on the final line of a block was not being collapsed away
  *

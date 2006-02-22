@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.layout.content.Content;
 
 public class AnonymousBlockBox extends BlockBox {
@@ -42,12 +43,24 @@ public class AnonymousBlockBox extends BlockBox {
     public int getContentWidth() {
         return getContainingBlock().getContentWidth();
     }
+    
+    public Box find(CssContext cssCtx, int absX, int absY) {
+        Box result = super.find(cssCtx, absX, absY);
+        if (result == this) {
+            return getParent();
+        } else {
+            return result;
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2006/02/22 02:20:18  peterbrant
+ * Links and hover work again
+ *
  * Revision 1.15  2005/11/25 16:57:19  peterbrant
  * Initial commit of inline content refactoring
  *

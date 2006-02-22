@@ -626,12 +626,29 @@ public abstract class Box {
     public void setRelativeOffset(Dimension relativeOffset) {
         this.relativeOffset = relativeOffset;
     }
+    
+    public Box find(CssContext cssCtx, int absX, int absY) {
+        Box result = null;
+        for (int i = 0; i < getChildCount(); i++) {
+            Box child = getChild(i);
+            result = child.find(cssCtx, absX, absY);
+            if (result != null) {
+                return result;
+            }
+        }
+        
+        Rectangle edge = getContentAreaEdge(getAbsX(), getAbsY(), cssCtx);
+        return edge.contains(absX, absY) ? this : null;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.110  2006/02/22 02:20:19  peterbrant
+ * Links and hover work again
+ *
  * Revision 1.109  2006/02/21 20:43:45  peterbrant
  * right was actually using left, bottom was actually using top (relative positioning)
  *

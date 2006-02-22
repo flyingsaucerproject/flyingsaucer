@@ -281,7 +281,7 @@ public class Boxing {
     }
     
 
-    private static PseudoClassPushStatus pushPseudoClasses(LayoutContext c, List contentList) {
+    public static PseudoClassPushStatus pushPseudoClasses(LayoutContext c, List contentList) {
         PseudoClassPushStatus status = new PseudoClassPushStatus();
         
         Object first = contentList.get(0);
@@ -341,6 +341,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.76  2006/02/22 02:20:18  peterbrant
+ * Links and hover work again
+ *
  * Revision 1.75  2006/01/27 01:15:30  peterbrant
  * Start on better support for different output devices
  *

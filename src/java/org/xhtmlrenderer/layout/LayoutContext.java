@@ -410,4 +410,9 @@ public class LayoutContext implements CssContext {
     public void setFontContext(FontContext fontContext) {
         this.fontContext = fontContext;
     }
+    
+    public void initializeStyles(CalculatedStyle c) {
+        styleStack = new Stack();
+        styleStack.push(c);
+    }
 }

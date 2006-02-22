@@ -1,14 +1,15 @@
 package org.xhtmlrenderer.swing;
 
+import java.awt.event.MouseEvent;
+
+import javax.swing.event.MouseInputAdapter;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.Restyling;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.LineBox;
-
-import javax.swing.event.MouseInputAdapter;
-import java.awt.event.MouseEvent;
 
 public class HoverListener extends MouseInputAdapter {
     private BasicPanel panel;
@@ -17,32 +18,26 @@ public class HoverListener extends MouseInputAdapter {
     public HoverListener(BasicPanel panel) {
         this.panel = panel;
     }
+    
+    private Box find(MouseEvent evt) {
+        Box result = panel.find(evt);
+        return result;
+    }
 
     public void mouseMoved(MouseEvent evt) {
-        Box ib = findBox(evt);
+        Box ib = find(evt);
         restyle(ib);
     }
 
     public void mouseEntered(MouseEvent evt) {
-        Box ib = findBox(evt);
+        Box ib = find(evt);
         restyle(ib);
     }
 
     public void mouseExited(MouseEvent evt) {
-        Box ib = findBox(evt);
+        Box ib = find(evt);
         restyle(ib);
     }
-
-    public Box findBox(MouseEvent evt) {
-        //Box box = panel.findElementBox(evt.getX(), evt.getY());
-        //Uu.p("-----");
-        Box box = BoxFinder.findBox(panel.getRootLayer(), evt.getX(), evt.getY());
-        //Uu.p("-----");
-        if (box == null) return null;
-        if (box instanceof LineBox) return null;
-        return box;
-    }
-
 
     private void restyle(Box ib) {
         //Uu.p("under cursor = " + ib);
@@ -74,6 +69,13 @@ public class HoverListener extends MouseInputAdapter {
         }
         if (needRepaint) panel.repaint();
     }
+    
+    private LayoutContext newLayoutContextInstance() {
+        LayoutContext result = panel.getSharedContext().newLayoutContextInstance(
+                panel.getScreenExtents());
+        result.setFontContext(panel.layout_context.getFontContext());
+        return result;
+    }
 
     private void restyleElementChildBoxes(Element e, Box ib) {
         //HACK:Find the parent block box whose element is self-or-parent of e
@@ -83,7 +85,7 @@ public class HoverListener extends MouseInputAdapter {
                 p = p.getParent();
             }
             if (p == null) {//root box was not a block box! impossible at time of coding
-                Restyling.restyle(panel.getSharedContext().newLayoutContextInstance(panel.getScreenExtents()),
+                Restyling.restyleAll(newLayoutContextInstance(),
                         (BlockBox) panel.getRootBox());
                 return;
             }
@@ -98,8 +100,7 @@ public class HoverListener extends MouseInputAdapter {
                 }
             }
             if (ie == pe) {
-                Restyling.restyle(panel.getSharedContext().newLayoutContextInstance(panel.getScreenExtents()),
-                        (BlockBox) p);
+                Restyling.restyleAll(newLayoutContextInstance(), (BlockBox) p);
                 return;
             }
         }

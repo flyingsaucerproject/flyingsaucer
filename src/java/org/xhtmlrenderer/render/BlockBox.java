@@ -433,12 +433,19 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public void setReplacedElement(ReplacedElement replacedElement) {
         this.replacedElement = replacedElement;
     }
+    
+    public boolean containsLineBoxes() {
+        return this.getChildCount() > 0 && getChild(0) instanceof LineBox;
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.43  2006/02/22 02:20:19  peterbrant
+ * Links and hover work again
+ *
  * Revision 1.42  2006/02/21 20:55:45  peterbrant
  * Handle image marker failover and list-style-type: none
  *

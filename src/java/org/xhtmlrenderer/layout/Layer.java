@@ -283,6 +283,63 @@ public class Layer {
         }
     }
     
+    private List getFloats() {
+        return this.floats == null ? Collections.EMPTY_LIST : this.floats;
+    }
+    
+    public Box find(CssContext cssCtx, int absX, int absY) {
+        Box result = null;
+        if (isRootLayer() || isStackingContext()) {
+            result = find(cssCtx, absX, absY, getSortedLayers(POSITIVE));
+            if (result != null) {
+                return result;
+            }
+            
+            result = find(cssCtx, absX, absY, getSortedLayers(ZERO));
+            if (result != null) {
+                return result;
+            } 
+            result = find(cssCtx, absX, absY, collectLayers(AUTO));
+            if (result != null) {
+                return result;
+            }
+        }
+        
+        result = getMaster().find(cssCtx, absX, absY);
+        if (result != null) {
+            return result;
+        }
+        
+        for (int i = 0; i < getFloats().size(); i++) {
+            Box floater = (Box)getFloats().get(i);
+            result = floater.find(cssCtx, absX, absY);
+            if (result !=  null) {
+                return result;
+            }
+        }
+        
+        if (isRootLayer() || isStackingContext()) {
+            result = find(cssCtx, absX, absY, getSortedLayers(NEGATIVE));
+            if (result != null) {
+                return result;
+            }
+        }
+        
+        return null;
+    }
+    
+    private Box find(CssContext cssCtx, int absX, int absY, List layers) {
+        Box result = null;
+        for (int i = 0; i < layers.size(); i++) {
+            Layer l = (Layer)layers.get(i);
+            result = l.getMaster().find(cssCtx, absX, absY);
+            if (result != null) {
+                return result;
+            }
+        }
+        return result;
+    }
+    
     public void paintAsLayer(RenderingContext c, BlockBox startingPoint) {
         List blocks = new ArrayList();
         List lines = new ArrayList();

@@ -812,7 +812,7 @@ public abstract class BasicPanel extends RootPanel {
             String id = getAnchorID(filename);
             Box bxx = getSharedContext().getIDBox(id);
             if (bxx != null) {
-                Point pt = BoxFinder.findCoordsByBox(bxx);
+                Point pt = new Point(bxx.getAbsX(), bxx.getAbsY());
                 scrollTo(pt);
                 return;
             }
@@ -1098,6 +1098,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.100  2006/02/22 02:20:19  peterbrant
+ * Links and hover work again
+ *
  * Revision 1.99  2006/02/05 00:33:59  peterbrant
  * Draw fixed layers on every page
  *

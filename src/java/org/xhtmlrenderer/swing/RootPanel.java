@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -494,5 +495,17 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
     public synchronized Layer getRootLayer() {
         return getRootBox() == null ? null : getRootBox().getLayer();
+    }
+    
+    public Box find(MouseEvent e) {
+        return find(e.getX(), e.getY());
+    }
+    
+    public Box find(int x, int y) {
+        Layer l = getRootLayer();
+        if (l != null) {
+            return l.find(layout_context, x, y);
+        }
+        return null;
     }
 }

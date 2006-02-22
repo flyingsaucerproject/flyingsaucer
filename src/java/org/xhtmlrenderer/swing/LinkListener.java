@@ -37,12 +37,12 @@ public class LinkListener extends MouseInputAdapter {
     }
 
     public void mouseEntered(MouseEvent evt) {
-        Box box = BoxFinder.findBox(panel.getRootLayer(), evt.getX(), evt.getY());
+        Box box = panel.find(evt);
         setCursor(box);
     }
 
     public void mouseExited(MouseEvent evt) {
-        Box box = BoxFinder.findBox(panel.getRootLayer(), evt.getX(), evt.getY());
+        Box box = panel.find(evt);
         setCursor(box);
     }
 
@@ -50,8 +50,7 @@ public class LinkListener extends MouseInputAdapter {
     }
 
     public void mouseReleased(MouseEvent evt) {
-        //Box box = panel.findBox(evt.getX(), evt.getY());
-        Box box = BoxFinder.findBox(panel.getRootLayer(), evt.getX(), evt.getY());
+        Box box = panel.find(evt);
         //Uu.p("in link listener: box finder returned: " + box);
         if (box == null) {
             return;
@@ -78,13 +77,12 @@ public class LinkListener extends MouseInputAdapter {
     }
 
     public void mouseMoved(MouseEvent evt) {
-        //Box box = panel.findBox(evt.getX(), evt.getY());
-        Box box = BoxFinder.findBox(panel.getRootLayer(), evt.getX(), evt.getY());
+        Box box = panel.find(evt);
         setCursor(box);
     }
     
     public void mouseDragged(MouseEvent evt) {
-        Box box = BoxFinder.findBox(panel.getRootLayer(), evt.getX(), evt.getY());
+        Box box = panel.find(evt);
         setCursor(box);
     }
 
