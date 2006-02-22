@@ -735,7 +735,6 @@ public class Matcher {
                 if (!sel.matches(e, _attRes, _treeRes)) {
                     continue;
                 }
-                key.append(sel.getSelectorID()).append(":");
                 //Assumption: if it is a pseudo-element, it does not also have dynamic pseudo-class
                 String pseudoElement = sel.getPseudoElement();
                 if (pseudoElement != null) {
@@ -762,6 +761,7 @@ public class Matcher {
                 if (!sel.matchesDynamic(e, _attRes, _treeRes)) {
                     continue;
                 }
+                key.append(sel.getSelectorID()).append(":");
                 Selector chain = sel.getChainedSelector();
                 if (chain == null) {
                     mappedSelectors.add(sel);
