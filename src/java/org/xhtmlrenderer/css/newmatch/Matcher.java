@@ -744,6 +744,7 @@ public class Matcher {
                         pseudoSelectors.put(pseudoElement, l);
                     }
                     l.add(sel);
+                    key.append(sel.getSelectorID()).append(":");
                     continue;
                 }
                 if (sel.isPseudoClass(Selector.VISITED_PSEUDOCLASS)) {
