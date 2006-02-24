@@ -327,6 +327,7 @@ public class InlineBoxing {
         
         InlineText text = layoutText(c, remainingWidth, lbContext, true);
         iB.addInlineChild(c, text);
+        iB.setInlineWidth(text.getWidth());
         
         lbContext.setStart(lbContext.getEnd());
         
