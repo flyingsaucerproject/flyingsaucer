@@ -175,7 +175,7 @@ public class VerticalMarginCollapser {
     private static boolean hasTopBorderOrPadding(LayoutContext c, float parentWidth) {
         BorderPropertySet width = c.getCurrentStyle().getBorder(c);
         RectPropertySet padding = c.getCurrentStyle().getPaddingRect(parentWidth, parentWidth, c);
-
+        
         return (int) width.top() != 0 || (int) padding.top() != 0;
     }
 
@@ -398,7 +398,7 @@ public class VerticalMarginCollapser {
             CollapsableContent targetContent = (CollapsableContent) target;
             float nextParentWidth = adjustWidth(parentWidth, c);
 
-            targetContent = collapseAdjoiningIntervening(c, content, parentWidth, targetContent, collapsed, DIR_UP);
+            targetContent = collapseAdjoiningIntervening(c, content, nextParentWidth, targetContent, collapsed, DIR_UP);
             if (targetContent == null) {
                 return;
             }
@@ -565,8 +565,7 @@ public class VerticalMarginCollapser {
         CalculatedStyle style = c.getCurrentStyle();
         BorderPropertySet borderWidth = style.getBorder(c);
         RectPropertySet padding = style.getPaddingRect(parentWidth, parentWidth, c);
-
-        return (int) borderWidth.top() == 0 && (int) borderWidth.bottom() == 0 &&
+        return (int) borderWidth.top() == 0 && (int) borderWidth.bottom() == 0 &&
                 (int) padding.top() == 0 && (int) padding.bottom() == 0 &&
                 (style.isIdent(CSSName.HEIGHT, IdentValue.AUTO) ||
                 style.asFloat(CSSName.HEIGHT) == 0);
