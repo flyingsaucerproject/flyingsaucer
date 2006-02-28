@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.css.style;
 
+import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.render.FSFont;
 
@@ -22,4 +23,9 @@ public interface CssContext {
     float getFontSizeForXHeight(FontSpecification parent, FontSpecification desired, float xHeight);
 
     FSFont getFont(FontSpecification font);
+    
+    // FIXME Doesn't really belong here, but this is
+    // the only common interface of LayoutContext
+    // and RenderingContext
+    StyleReference getCss();
 }

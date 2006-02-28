@@ -728,7 +728,7 @@ public class Layer {
         return this.pages.get(this.pages.size()-1) == pageBox;
     }
     
-    public void addPage(LayoutContext c) {
+    public void addPage(CssContext c) {
         String pseudoPage = null;
         if (this.pages == null) {
             this.pages = new ArrayList();
@@ -750,10 +750,11 @@ public class Layer {
             pageBox.setTopAndBottom(c, previous.getBottom());
         }
         
+        pageBox.setPageNo(pages.size());
         pages.add(pageBox);
     }
     
-    public static PageBox createPageBox(LayoutContext c, String pseudoPage) {
+    public static PageBox createPageBox(CssContext c, String pseudoPage) {
         PageBox result = new PageBox();
         CalculatedStyle cs = new EmptyStyle().deriveStyle(
                 c.getCss().getPageStyle(pseudoPage));
@@ -763,19 +764,19 @@ public class Layer {
         return result;
     }
     
-    public PageBox getFirstPage(LayoutContext c, Box box) {
-        return getPage(c, box, box.getAbsY());
+    public PageBox getFirstPage(CssContext c, Box box) {
+        return getPage(c, box.getAbsY());
     }
     
-    public PageBox getLastPage(LayoutContext c, Box box) {
-        return getPage(c, box, box.getAbsY() + box.getHeight());
+    public PageBox getLastPage(CssContext c, Box box) {
+        return getPage(c, box.getAbsY() + box.getHeight());
     }
     
-    public void ensureHasPage(LayoutContext c, Box box) {
+    public void ensureHasPage(CssContext c, Box box) {
         getLastPage(c, box);
     }
     
-    private PageBox getPage(LayoutContext c, Box box, int yOffset) {
+    public PageBox getPage(CssContext c, int yOffset) {
         List pages = getPages();
         if (yOffset < 0) {
             return null;
@@ -797,7 +798,7 @@ public class Layer {
         throw new RuntimeException("internal error");
     }
     
-    private void addPagesUntilPosition(LayoutContext c, int position) {
+    private void addPagesUntilPosition(CssContext c, int position) {
         List pages = getPages();
         PageBox last = (PageBox)pages.get(pages.size()-1);
         while (position >= last.getBottom()) {
@@ -806,7 +807,7 @@ public class Layer {
         }
     }
     
-    public void trimEmptyPages(LayoutContext c, int maxYHeight) {
+    public void trimEmptyPages(CssContext c, int maxYHeight) {
         // Empty pages may result when a "keep together" constraint
         // cannot be satisfied and is dropped
         List pages = getPages();

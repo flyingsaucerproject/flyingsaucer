@@ -384,6 +384,24 @@ public class SharedContext {
         }
         id_map.put(id, box);
     }
+    
+    private Map namedAnchors;
+    
+    public void addNamedAnchor(String name, Box box) {
+        if (namedAnchors == null) {
+            namedAnchors = new HashMap();
+        }
+        if (! namedAnchors.containsKey(name)) {
+            namedAnchors.put(name, box);
+        }
+    }
+    
+    public Box getNamedAnchor(String name) {
+        if (namedAnchors == null) {
+            return null;
+        }
+        return (Box)namedAnchors.get(name);
+    }
 
     public Box getIDBox(String id) {
         if (id_map == null) {
@@ -613,6 +631,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.28  2006/02/28 01:31:36  peterbrant
+ * Add ability to define PDF bookmarks in header
+ *
  * Revision 1.27  2006/02/02 19:25:20  peterbrant
  * Fix (silly) field name mistake
  *

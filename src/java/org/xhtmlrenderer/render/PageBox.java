@@ -36,6 +36,8 @@ public class PageBox {
     private int _paintingTop;
     private int _paintingBottom;
     
+    private int _pageNo;
+    
     public int getWidth(CssContext cssCtx) {
         return (int)getStyle().getCalculatedStyle().getFloatPropertyProportionalTo(
                 CSSName.FS_PAGE_WIDTH, 0, cssCtx);
@@ -285,5 +287,13 @@ public class PageBox {
                 getStyle().getCalculatedStyle(),
                 getBorderEdge(additionalClearance, getPaintingTop(), c),
                 BorderPainter.ALL);
+    }
+
+    public int getPageNo() {
+        return _pageNo;
+    }
+
+    public void setPageNo(int pageNo) {
+        _pageNo = pageNo;
     }
 }

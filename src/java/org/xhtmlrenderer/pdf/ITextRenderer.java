@@ -70,6 +70,7 @@ public class ITextRenderer {
         ITextUserAgent userAgent = new ITextUserAgent(_outputDevice);
         _sharedContext = new SharedContext(userAgent);
         userAgent.setSharedContext(_sharedContext);
+        _outputDevice.setSharedContext(_sharedContext);
         
         ITextFontResolver fontResolver = new ITextFontResolver();
         _sharedContext.setFontResolver(fontResolver);
@@ -173,6 +174,7 @@ public class ITextRenderer {
         
         doc.open();
         
+        _outputDevice.start(_doc);
         _outputDevice.setWriter(writer);
         _outputDevice.initializePage(writer.getDirectContent(), firstPageSize.height());
         
@@ -197,6 +199,8 @@ public class ITextRenderer {
                         writer.getDirectContent(), nextPageSize.height());
             }
         }
+        
+        _outputDevice.finish(c, _root);
         doc.close();
     }
     

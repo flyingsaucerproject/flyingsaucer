@@ -121,6 +121,14 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         }
         return href;
     }
+    
+    public String getAnchorName(Element e) {
+        if (e != null && e.getNodeName().equalsIgnoreCase("a") &&
+                e.hasAttribute("name")) {
+            return e.getAttribute("name");
+        }
+        return null;
+    }
 
     /**
      * Gets the documentTitle attribute of the XhtmlNamespaceHandler object

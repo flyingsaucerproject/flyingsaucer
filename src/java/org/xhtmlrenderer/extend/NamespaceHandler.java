@@ -19,11 +19,12 @@
  */
 package org.xhtmlrenderer.extend;
 
+import java.io.InputStream;
+
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-
-import java.io.InputStream;
 
 
 /**
@@ -123,6 +124,7 @@ public interface NamespaceHandler {
      * @return The linkUri value
      */
     public String getLinkUri(org.w3c.dom.Element e);
-
+    
+    public String getAnchorName(Element e);
 }
 

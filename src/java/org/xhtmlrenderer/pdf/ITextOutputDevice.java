@@ -35,23 +35,36 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.ReplacedElement;
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.BorderPainter;
+import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.render.InlineBox;
+import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
 import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfDestination;
 import com.lowagie.text.pdf.PdfImportedPage;
+import com.lowagie.text.pdf.PdfOutline;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
 
@@ -86,11 +99,16 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     private Area _clip;
     
+    private SharedContext _sharedContext;
     private float _dotsPerPoint;
     
     private PdfWriter _writer;
     
     private Map _readerCache = new HashMap();
+    
+    private PdfDestination _defaultDestination;
+    
+    private List _bookmarks = new ArrayList();
     
     public ITextOutputDevice(float dotsPerPoint) {
         _dotsPerPoint = dotsPerPoint;
@@ -118,6 +136,11 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         setStrokeDiff(_stroke, null);
         
         _currentPage.saveState();
+        
+        if (_defaultDestination == null) {
+            _defaultDestination = new PdfDestination(PdfDestination.FITH, height);
+            _defaultDestination.addPage(_writer.getPageReference(1));
+        }
     }
     
     public void finishPage() {
@@ -539,6 +562,7 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
         
         PdfImportedPage page = getWriter().getImportedPage(reader, 1);
         
+        // FIXME Life is not that complicated...
         AffineTransform at = AffineTransform.getTranslateInstance(x,y);
         at.translate(0, image.getHeightAsFloat());
         
@@ -573,5 +597,142 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     
     public float getDotsPerPoint() {
         return _dotsPerPoint;
+    }
+    
+    public void start(Document doc) {
+        loadBookmarks(doc);
+    }
+    
+    public void finish(RenderingContext c, Box root) {
+        writeOutline(c, root);
+    }
+    
+    private void writeOutline(RenderingContext c, Box root) {
+        if (_bookmarks.size() > 0) {
+            _writer.setViewerPreferences(PdfWriter.PageModeUseOutlines);
+            writeBookmarks(c, root, _writer.getRootOutline(), _bookmarks);
+        }
+    }
+    
+    private void writeBookmarks(RenderingContext c, 
+            Box root, PdfOutline parent, List bookmarks) {
+        for (Iterator i = bookmarks.iterator(); i.hasNext(); ) {
+            Bookmark bookmark = (Bookmark)i.next();
+            writeBookmark(c, root, parent, bookmark);
+        }
+    }
+    
+    private int getBookmarkRefY(Box box) {
+        if (box instanceof InlineBox) {
+            InlineBox iB = (InlineBox)box;
+            return iB.getAbsY() + iB.getBaseline();
+        } else {
+            return box.getAbsY();
+        }
+    }
+    
+    private void writeBookmark(RenderingContext c, Box root, PdfOutline parent, Bookmark bookmark) {
+        String href = bookmark.getHRef();
+        PdfDestination target = null;
+        if (href.length() > 0 && href.charAt(0) == '#') {
+            Box box = _sharedContext.getNamedAnchor(href.substring(1));
+            if (box != null) {
+                PageBox page = root.getLayer().getPage(c,  getBookmarkRefY(box));
+                int distanceFromTop =
+                    page.getStyle().getMarginBorderPadding(c, CalculatedStyle.TOP);
+                distanceFromTop += box.getAbsY() - page.getTop();
+                target = new PdfDestination(PdfDestination.FITH, 
+                        normalizeY(distanceFromTop / _dotsPerPoint));
+                target.addPage(_writer.getPageReference(page.getPageNo()+1));
+            }
+        }
+        if (target == null) {
+            target = _defaultDestination;
+        }
+        PdfOutline outline = new PdfOutline(parent, target, bookmark.getName());
+        writeBookmarks(c, root, outline, bookmark.getChildren());
+    }
+    
+    private void loadBookmarks(Document doc) {
+        Element head = DOMUtil.getChild(doc.getDocumentElement(), "head");
+        if (head != null) {
+            Element bookmarks = DOMUtil.getChild(head, "bookmarks");
+            if (bookmarks != null) {
+                List l = DOMUtil.getChildren(bookmarks, "bookmark");
+                if (l != null) {
+                    for (Iterator i = l.iterator(); i.hasNext(); ) {
+                        Element e = (Element)i.next();
+                        loadBookmark(null, e);
+                    }
+                }
+            }
+        }
+    }
+    
+    private void loadBookmark(Bookmark parent, Element bookmark) {
+        Bookmark us = new Bookmark(bookmark.getAttribute("name"),
+                bookmark.getAttribute("href"));
+        if (parent == null) {
+            _bookmarks.add(us);
+        } else {
+            parent.addChild(us);
+        }
+        List l = DOMUtil.getChildren(bookmark, "bookmark");
+        if (l != null) {
+            for (Iterator i = l.iterator(); i.hasNext(); ) {
+                Element e = (Element)i.next();
+                loadBookmark(us, e);
+            }
+        }
+    }
+    
+    private static class Bookmark {
+        private String _name;
+        private String _HRef;
+        
+        private List _children;
+        
+        public Bookmark() {
+        }
+        
+        public Bookmark(String name, String href) {
+            _name = name;
+            _HRef = href;
+        }
+
+        public String getHRef() {
+            return _HRef;
+        }
+
+        public void setHRef(String href) {
+            _HRef = href;
+        }
+
+        public String getName() {
+            return _name;
+        }
+
+        public void setName(String name) {
+            _name = name;
+        }
+        
+        public void addChild(Bookmark child) {
+            if (_children == null) {
+                _children = new ArrayList();
+            }
+            _children.add(child);
+        }
+        
+        public List getChildren() {
+            return _children == null ? Collections.EMPTY_LIST : _children;
+        }
+    }
+
+    public SharedContext getSharedContext() {
+        return _sharedContext;
+    }
+
+    public void setSharedContext(SharedContext sharedContext) {
+        _sharedContext = sharedContext;
     }
 }

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontContext;
@@ -223,6 +224,10 @@ public class RenderingContext implements CssContext {
 
     public int getPageNo() {
         return pageNo;
+    }
+    
+    public StyleReference getCss() {
+        return sharedContext.getCss();
     }
 }
 

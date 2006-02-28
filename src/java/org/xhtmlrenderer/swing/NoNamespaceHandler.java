@@ -27,9 +27,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 import org.xhtmlrenderer.css.sheet.InlineStyleInfo;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
-import org.xhtmlrenderer.extend.UserAgentCallback;
 
-import javax.swing.*;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +80,10 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
     }
 
     public InlineStyleInfo[] getInlineStyle(org.w3c.dom.Document doc) {
+        return null;
+    }
+    
+    public String getAnchorName(Element e) {
         return null;
     }
 
