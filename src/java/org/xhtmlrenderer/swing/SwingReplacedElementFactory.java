@@ -34,7 +34,9 @@ import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.AWTFSImage;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 public class SwingReplacedElementFactory implements ReplacedElementFactory {
@@ -42,44 +44,54 @@ public class SwingReplacedElementFactory implements ReplacedElementFactory {
     protected LinkedHashMap forms;
     
     public ReplacedElement createReplacedElement(
-            Element e, UserAgentCallback uac, int setWidth, int setHeight) {
+            LayoutContext c, BlockBox box,
+            UserAgentCallback uac, int cssWidth, int cssHeight) {
+        Element e = box.element;
         JComponent cc = null;
         if (e == null) {
             return null;
         }
         if (e.getNodeName().equals("img")) {
             cc = getImageComponent(e);
-            if (cc != null) {
-                return new SwingReplacedElement(cc);
+            if (cc == null) {
+	            JButton jb = null;
+	            Image im = null;
+	            FSImage fsImage = uac.getImageResource(e.getAttribute("src")).getImage();
+	            if (fsImage != null) {
+	                im = ((AWTFSImage)fsImage).getImage();
+	            }
+	            if (im == null) {
+	                jb = new JButton("Image unreachable. " + e.getAttribute("alt"));
+	            } else {
+	                Image i2 = im.getScaledInstance(cssWidth, cssHeight, Image.SCALE_FAST);
+	                ImageIcon ii = new ImageIcon(i2, e.getAttribute("alt"));
+	                jb = new JButton(ii);
+	            }
+	            jb.setBorder(BorderFactory.createEmptyBorder());
+	            jb.setSize(jb.getPreferredSize());
+	            addImageComponent(e, jb);
+                cc = jb;
             }
-            JButton jb = null;
-            Image im = null;
-            FSImage fsImage = uac.getImageResource(e.getAttribute("src")).getImage();
-            if (fsImage != null) {
-                im = ((AWTFSImage)fsImage).getImage();
-            }
-            if (im == null) {
-                jb = new JButton("Image unreachable. " + e.getAttribute("alt"));
-            } else {
-                Image i2 = im.getScaledInstance(setWidth, setHeight, Image.SCALE_FAST);
-                ImageIcon ii = new ImageIcon(i2, e.getAttribute("alt"));
-                jb = new JButton(ii);
-            }
-            jb.setBorder(BorderFactory.createEmptyBorder());
-            jb.setSize(jb.getPreferredSize());
-            addImageComponent(e, jb);
-            return new SwingReplacedElement(jb);
+        } else {
+	        //form components
+	        Element parentForm = getParentForm(e);
+	        //parentForm may be null! No problem! Assume action is this document and method is get.
+	        XhtmlForm form = getForm(parentForm);
+	        if (form == null) {
+	            form = new XhtmlForm(uac, parentForm);
+	            addForm(parentForm, form);
+	        }
+	        cc = form.addComponent(e);
         }
-        //form components
-        Element parentForm = getParentForm(e);
-        //parentForm may be null! No problem! Assume action is this document and method is get.
-        XhtmlForm form = getForm(parentForm);
-        if (form == null) {
-            form = new XhtmlForm(uac, parentForm);
-            addForm(parentForm, form);
+        if (cc == null) {
+            return null;
+        } else {
+            SwingReplacedElement result = new SwingReplacedElement(cc);
+            if (c.isInteractive()) {
+                c.getCanvas().add(cc);
+            }
+            return result;
         }
-        cc = form.addComponent(e);
-        return cc == null ? null : new SwingReplacedElement(cc);
     }
     
     protected void addImageComponent(Element e, JComponent cc) {
