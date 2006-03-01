@@ -24,6 +24,7 @@ import java.awt.Point;
 import javax.swing.JComponent;
 
 import org.xhtmlrenderer.extend.ReplacedElement;
+import org.xhtmlrenderer.layout.LayoutContext;
 
 public class SwingReplacedElement implements ReplacedElement {
     private JComponent _component;
@@ -50,5 +51,11 @@ public class SwingReplacedElement implements ReplacedElement {
     
     public Point getLocation() {
         return _component.getLocation();
+    }
+    
+    public void detach(LayoutContext c) {
+        if (c.isInteractive()) {
+            c.getCanvas().remove(getJComponent());
+        }
     }
 }
