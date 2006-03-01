@@ -566,6 +566,11 @@ public class Matcher {
                     s.setPseudoClass(Selector.ACTIVE_PSEUDOCLASS);
                 } else if (attr.getValue().equals("focus")) {
                     s.setPseudoClass(Selector.FOCUS_PSEUDOCLASS);
+                } else if (attr.getValue().equals("first-child")) {
+                    // With SS CSS parser, :first-child is reported here
+                    // and not above.  Seems like a bug, but easy enough
+                    // to work around here
+                    s.addFirstChildCondition();
                 } else {//it must be a pseudo-element
                     s.setPseudoElement(attr.getValue());
                 }
