@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -21,25 +21,19 @@ package org.xhtmlrenderer.pdf;
 
 import java.awt.Point;
 
-import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
 
-public class ITextImageElement implements ReplacedElement {
-    private FSImage _image;
-    
+public class BookmarkElement implements ReplacedElement {
     private Point _location = new Point(0, 0);
+    private String _anchorName;
     
-    public ITextImageElement(FSImage image) {
-        _image = image;
-    }
-
     public int getIntrinsicWidth() {
-        return (int)_image.getWidth();
+        return 0;
     }
 
     public int getIntrinsicHeight() {
-        return (int)_image.getHeight();
+        return 0;
     }
 
     public Point getLocation() {
@@ -50,10 +44,15 @@ public class ITextImageElement implements ReplacedElement {
         _location = new Point(x, y);
     }
     
-    public FSImage getImage() {
-        return _image;
-    }
-    
     public void detach(LayoutContext c) {
+        c.removeNamedAnchor(getAnchorName());
+    }
+
+    public String getAnchorName() {
+        return _anchorName;
+    }
+
+    public void setAnchorName(String anchorName) {
+        _anchorName = anchorName;
     }
 }

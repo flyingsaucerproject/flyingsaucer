@@ -24,10 +24,14 @@ import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.BlockBox;
 
 public class ITextReplacedElementFactory implements ReplacedElementFactory {
     public ReplacedElement createReplacedElement(
-            Element e, UserAgentCallback uac, int cssWidth, int cssHeight) {
+            LayoutContext c, BlockBox box,
+            UserAgentCallback uac, int cssWidth, int cssHeight) {
+        Element e = box.element;
         if (e == null) {
             return null;
         }
@@ -40,6 +44,15 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
                 }
                 return new ITextImageElement(fsImage);
             }
+        } else if (e.getNodeName().equals("bookmark")) {
+            // HACK Add box as named anchor and return placeholder
+            BookmarkElement result = new BookmarkElement();
+            if (e.hasAttribute("name")) {
+                String name = e.getAttribute("name");
+                c.addNamedAnchor(name, box);
+                result.setAnchorName(name);
+            }
+            return result;
         }
         
         return null;
