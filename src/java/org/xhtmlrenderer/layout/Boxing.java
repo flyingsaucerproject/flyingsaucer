@@ -42,7 +42,6 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.StrutMetrics;
 import org.xhtmlrenderer.render.Style;
-import org.xhtmlrenderer.swing.SwingReplacedElement;
 import org.xhtmlrenderer.table.TableBoxing;
 
 
@@ -164,7 +163,7 @@ public class Boxing {
             }
             //check if replaced
             ReplacedElement re = c.getReplacedElementFactory().createReplacedElement(
-                    content.getElement(), c.getUac(), setWidth, setHeight);
+                    c, block, c.getUac(), setWidth, setHeight);
             if (re != null) {
                 block.contentWidth = re.getIntrinsicWidth();
                 block.height = re.getIntrinsicHeight();
@@ -201,10 +200,6 @@ public class Boxing {
         if (! block.isReplaced())
             layoutChildren(c, block, content);//when this is really an anonymous, InlineLayout.layoutChildren is called
         else {
-            if (c.isInteractive()) {
-                c.getCanvas().add(
-                        ((SwingReplacedElement)block.getReplacedElement()).getJComponent());
-            }
             block.setState(Box.DONE);
         }
         c.setExtents(extents);
@@ -341,6 +336,9 @@ public class Boxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.77  2006/03/01 00:40:54  peterbrant
+ * Remove reference to SwingReplacedElement / Adjust to detach() API change
+ *
  * Revision 1.76  2006/02/22 02:20:18  peterbrant
  * Links and hover work again
  *
