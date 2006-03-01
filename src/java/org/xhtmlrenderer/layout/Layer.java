@@ -648,11 +648,11 @@ public class Layer {
                     if (child.getMaster().getStyle().isAvoidPageBreakInside() &&
                             child.getMaster().crossesPageBreak(c)) {
                         ((BlockBox)child.getMaster()).setNeedPageClear(true);
-                        child.getMaster().detach();
+                        child.getMaster().detach(c);
                         layoutAbsoluteChild(c, child);
                         ((BlockBox)child.getMaster()).setNeedPageClear(false);
                         if (child.getMaster().crossesPageBreak(c)) {
-                            child.getMaster().detach();
+                            child.getMaster().detach(c);
                             layoutAbsoluteChild(c, child);
                         }
                     }
@@ -687,7 +687,7 @@ public class Layer {
             Boxing.layout(c, (BlockBox)child.getMaster(), 
                     child.getLayoutData().getContent());
             
-            child.getMaster().detach();
+            child.getMaster().detach(c);
             master.positionAbsolute(c, BlockBox.POSITION_BOTH);
             master.positionAbsoluteOnPage(c);
             

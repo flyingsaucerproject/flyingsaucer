@@ -215,7 +215,7 @@ public class InlineBoxing {
                     remainingWidth = maxAvailableWidth;
                     remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
                     
-                    inlineBlock.detach();
+                    inlineBlock.detach(c);
                     inlineBlock = layoutInlineBlock(c, box, content);
                 }
 

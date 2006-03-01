@@ -437,12 +437,22 @@ public class BlockBox extends Box implements Renderable, InlinePaintable {
     public boolean containsLineBoxes() {
         return this.getChildCount() > 0 && getChild(0) instanceof LineBox;
     }
+    
+    public void detach(LayoutContext c) {
+        super.detach(c);
+        if (isReplaced()) {
+            getReplacedElement().detach(c);
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.44  2006/03/01 00:45:03  peterbrant
+ * Provide LayoutContext when calling detach() and friends
+ *
  * Revision 1.43  2006/02/22 02:20:19  peterbrant
  * Links and hover work again
  *

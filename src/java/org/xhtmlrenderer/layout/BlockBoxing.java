@@ -136,14 +136,14 @@ public class BlockBoxing {
                             "Unable to relayout anonymous block with pending inlines. Dropping rule.");
                 } else {
                     c.restoreStateForRelayout(relayoutData.getLayoutState());
-                    childBox.detach();
+                    childBox.detach(c);
                     childBox = layoutBlockChild(
                             c, block, styleSetListener, listIndex, resetMargins, 
                             true, currentContent);
                     
                     if (childBox.crossesPageBreak(c)) {
                         c.restoreStateForRelayout(relayoutData.getLayoutState());
-                        childBox.detach();
+                        childBox.detach(c);
                         childBox = layoutBlockChild(
                                 c, block, styleSetListener, listIndex, resetMargins, 
                                 false, currentContent);
@@ -216,14 +216,14 @@ public class BlockBoxing {
                         block.getChild(runStart).getAbsY(),
                             runEndChild.getAbsY() + runEndChild.getHeight()) &&
                         ! checkForPendingInlines(relayoutDataList, runStart, offset)) {
-                    block.detachChildren(runStart, offset);
+                    block.detachChildren(c, runStart, offset);
                     relayoutRun(c, contentList, block, 
                             styleSetListener, relayoutDataList, runStart, offset, true);
                     runEndChild = block.getChild(runEnd);
                     if (c.getRootLayer().crossesPageBreak(c,
                             block.getChild(runStart).getAbsY(),
                                 runEndChild.getAbsY() + runEndChild.getHeight())) {
-                        block.detachChildren(runStart, offset);
+                        block.detachChildren(c, runStart, offset);
                         relayoutRun(c, contentList, block, 
                                 styleSetListener, relayoutDataList, runStart, offset, false);
                     }
@@ -274,14 +274,14 @@ public class BlockBoxing {
                             "Unable to relayout anonymous block with pending inlines. Dropping rule.");
                 } else {
                     c.restoreStateForRelayout(relayoutData.getLayoutState());
-                    childBox.detach();
+                    childBox.detach(c);
                     childBox = layoutBlockChild(
                             c, block, styleSetListener, relayoutData.getListIndex(), 
                             relayoutData.isResetMargins(), true, currentContent);
                     
                     if (childBox.crossesPageBreak(c)) {
                         c.restoreStateForRelayout(relayoutData.getLayoutState());
-                        childBox.detach();
+                        childBox.detach(c);
                         childBox = layoutBlockChild(
                                 c, block, styleSetListener, relayoutData.getListIndex(), 
                                 relayoutData.isResetMargins(), false, currentContent);
@@ -503,6 +503,9 @@ public class BlockBoxing {
  * $Id$
  *
  * $Log$
+ * Revision 1.48  2006/03/01 00:45:03  peterbrant
+ * Provide LayoutContext when calling detach() and friends
+ *
  * Revision 1.47  2006/02/07 00:02:51  peterbrant
  * If "keep together" cannot be satisified, drop rule vs. pushing to next page / Fix bug with incorrect positioning of content following relative block layers
  *

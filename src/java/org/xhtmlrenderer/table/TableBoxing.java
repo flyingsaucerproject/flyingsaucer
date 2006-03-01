@@ -638,7 +638,7 @@ public class TableBoxing {
         //check if replaced
         
         ReplacedElement re = c.getReplacedElementFactory().createReplacedElement(
-                content.getElement(), c.getUac(), setWidth, setHeight);
+                c, cell, c.getUac(), setWidth, setHeight);
         if (re != null) {
             cell.contentWidth = re.getIntrinsicWidth();
             cell.height = re.getIntrinsicHeight();
@@ -709,6 +709,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.60  2006/03/01 00:45:03  peterbrant
+   Provide LayoutContext when calling detach() and friends
+
    Revision 1.59  2006/01/27 01:15:42  peterbrant
    Start on better support for different output devices
 

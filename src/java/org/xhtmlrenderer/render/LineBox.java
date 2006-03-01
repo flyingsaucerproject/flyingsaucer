@@ -303,15 +303,15 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         nonFlowContent.add(box);
     }
     
-    public void detach() {
+    public void detach(LayoutContext c) {
         for (int i = 0; i < getNonFlowContent().size(); i++) {
             Box content = (Box)getNonFlowContent().get(i);
-            content.detach();
+            content.detach(c);
         }
         if (this.markerData != null) {
             this.markerData.restorePreviousReferenceLine(this);
         }
-        super.detach();
+        super.detach(c);
     }
     
     public void calcCanvasLocation() {
@@ -412,6 +412,9 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.53  2006/03/01 00:45:02  peterbrant
+ * Provide LayoutContext when calling detach() and friends
+ *
  * Revision 1.52  2006/02/22 02:20:19  peterbrant
  * Links and hover work again
  *

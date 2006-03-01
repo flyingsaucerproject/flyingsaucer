@@ -568,11 +568,11 @@ public class InlineBox extends Box implements InlinePaintable {
         c.getOutputDevice().drawDebugOutline(c, this, Color.BLUE);
     }
     
-    protected void detachChildren() {
+    protected void detachChildren(LayoutContext c) {
         for (int i = 0; i < getInlineChildCount(); i++) {
             Object object = getInlineChild(i);
             if (object instanceof Box) {
-                ((Box)object).detach();
+                ((Box)object).detach(c);
                 i--;
             }
         }

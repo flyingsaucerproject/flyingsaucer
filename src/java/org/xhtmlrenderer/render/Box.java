@@ -532,8 +532,8 @@ public abstract class Box {
         return result;
     }
     
-    public void detach() {
-        detachChildren();
+    public void detach(LayoutContext c) {
+        detachChildren(c);
         if (this.layer != null) {
             this.layer.detach();
             this.layer = null;
@@ -541,21 +541,25 @@ public abstract class Box {
         if (getParent() != null) {
             getParent().removeChild(this);
         }
+        String anchorName = c.getNamespaceHandler().getAnchorName(this.element);
+        if (anchorName != null) {
+            c.removeNamedAnchor(anchorName);
+        }
         setParent(null);
     }
     
-    public void detachChildren(int start, int end) {
+    public void detachChildren(LayoutContext c, int start, int end) {
         for (int i = start; i <= end; i++) {
             Box box = getChild(start);
-            box.detach();
+            box.detach(c);
         }
     }
     
-    protected void detachChildren() {
+    protected void detachChildren(LayoutContext c) {
         int remaining = getChildCount();
         while (remaining-- > 0) {
             Box box = getChild(0);
-            box.detach();
+            box.detach(c);
         }
     }
     
@@ -646,6 +650,9 @@ public abstract class Box {
  * $Id$
  *
  * $Log$
+ * Revision 1.111  2006/03/01 00:45:02  peterbrant
+ * Provide LayoutContext when calling detach() and friends
+ *
  * Revision 1.110  2006/02/22 02:20:19  peterbrant
  * Links and hover work again
  *

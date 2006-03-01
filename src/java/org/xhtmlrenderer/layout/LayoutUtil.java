@@ -109,7 +109,7 @@ public class LayoutUtil {
 
         if (pendingFloats != null && 
                 (pendingFloats.size() > 0 || block.getWidth() > avail)) {
-            block.detach();
+            block.detach(c);
             result.setPending(true);
             result.setPendingContent(content);
         } else {
@@ -139,7 +139,7 @@ public class LayoutUtil {
             clearDelta = block.moveToNextPage(c);
             clearedPage = true;
             block.calcCanvasLocation();
-            block.detach();
+            block.detach(c);
             Boxing.layout(c, block, content);
             c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
         }
@@ -151,7 +151,7 @@ public class LayoutUtil {
                 block.y -= clearDelta;
                 block.calcCanvasLocation();
             }
-            block.detach();
+            block.detach(c);
             Boxing.layout(c, block, content);
             c.getBlockFormattingContext().floatBox(c, (FloatedBlockBox) block);
         }

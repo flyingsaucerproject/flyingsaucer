@@ -45,8 +45,8 @@ public class FloatedBlockBox extends BlockBox {
         this.drawingLayer = drawingLayer;
     }
     
-    public void detach() {
-        super.detach();
+    public void detach(LayoutContext c) {
+        super.detach(c);
         manager.removeFloat(this);
         drawingLayer.removeFloat(this);
     }
