@@ -396,6 +396,12 @@ public class SharedContext {
         }
     }
     
+    public void removeNamedAnchor(String name) {
+        if (namedAnchors != null) {
+            namedAnchors.remove(name);
+        }
+    }
+    
     public Box getNamedAnchor(String name) {
         if (namedAnchors == null) {
             return null;
@@ -631,6 +637,9 @@ public class SharedContext {
  * $Id$
  *
  * $Log$
+ * Revision 1.29  2006/03/01 00:42:52  peterbrant
+ * Provide ability to remove named anchors
+ *
  * Revision 1.28  2006/02/28 01:31:36  peterbrant
  * Add ability to define PDF bookmarks in header
  *

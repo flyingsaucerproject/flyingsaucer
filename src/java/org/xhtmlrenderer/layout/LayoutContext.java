@@ -313,6 +313,10 @@ public class LayoutContext implements CssContext {
     public void addNamedAnchor(String name, Box box) {
         this.sharedContext.addNamedAnchor(name, box);
     }
+    
+    public void removeNamedAnchor(String name) {
+        this.sharedContext.removeNamedAnchor(name);
+    }
 
     public boolean isInteractive() {
         return sharedContext.isInteractive();
