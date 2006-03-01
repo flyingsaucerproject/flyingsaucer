@@ -19,7 +19,8 @@
  */
 package org.xhtmlrenderer.extend;
 
-import org.w3c.dom.Element;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.render.BlockBox;
 
 public interface ReplacedElementFactory {
     /**
@@ -30,5 +31,6 @@ public interface ReplacedElementFactory {
      *         in place of this element and its descendants.
      */
     public ReplacedElement createReplacedElement(
-            Element e, UserAgentCallback uac, int cssWidth, int cssHeight);
+            LayoutContext c, BlockBox box,
+            UserAgentCallback uac, int cssWidth, int cssHeight);
 }
