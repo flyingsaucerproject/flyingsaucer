@@ -21,10 +21,14 @@ package org.xhtmlrenderer.extend;
 
 import java.awt.Point;
 
+import org.xhtmlrenderer.layout.LayoutContext;
+
 public interface ReplacedElement {
     public int getIntrinsicWidth();
     public int getIntrinsicHeight();
     
     public Point getLocation();
     public void setLocation(int x, int y);
+    
+    public void detach(LayoutContext c);
 }
