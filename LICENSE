@@ -10,8 +10,8 @@ Java projects that are used for building and running Flying Saucer are:
 CSSParser
 http://cssparser.sourceforge.net/
 License: LGPL
-Using version 0.9.4
-Included as lib/ss_css2.jar
+Using version 0.9.4 with our own bug-fixes
+Included as lib/cssparser-0-9-4-fs.jar
 
 Minium Anti-Aliasing
 Direct submission from Julian Scheid julian at sektor37 de
