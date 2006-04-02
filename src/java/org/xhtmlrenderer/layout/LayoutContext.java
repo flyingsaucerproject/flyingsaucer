@@ -23,6 +23,7 @@ import java.awt.Rectangle;
 import java.util.Stack;
 import java.util.logging.Level;
 
+import org.xhtmlrenderer.context.ContentFunctionFactory;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -72,6 +73,8 @@ public class LayoutContext implements CssContext {
     private ReplacedElementFactory replacedElementFactory;
     
     private FontContext fontContext;
+    
+    private ContentFunctionFactory contentFunctionFactory = new ContentFunctionFactory();
 
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
@@ -422,5 +425,9 @@ public class LayoutContext implements CssContext {
     public void initializeStyles(CalculatedStyle c) {
         styleStack = new Stack();
         styleStack.push(c);
+    }
+    
+    public ContentFunctionFactory getContentFunctionFactory() {
+        return contentFunctionFactory;
     }
 }

@@ -875,4 +875,12 @@ public class Layer {
         }
         throw new RuntimeException("Could not find page");
     }
+    
+    public Layer findRoot() {
+        if (isRootLayer()) {
+            return this;
+        } else {
+            return getParent().findRoot();
+        }
+    }
 }

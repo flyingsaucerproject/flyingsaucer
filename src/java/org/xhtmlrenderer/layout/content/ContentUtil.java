@@ -31,6 +31,8 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.constants.Idents;
+import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -297,7 +299,18 @@ public class ContentUtil {
                     c.pushStyle(before);
                     textContent = new StringBuffer();
                     textContent.append(content.replaceAll("\\\\A", "\n"));
-                    inlineList.add(new TextContent("before", parentElement, textContent.toString(), true));
+                    ContentFunction contentFunction = null;
+                    if (Idents.looksLikeAFunction(content)) {
+                        contentFunction = c.getContentFunctionFactory().lookupFunction(
+                                c, textContent.toString());
+                        if (contentFunction !=  null && contentFunction.isStatic()) {
+                            String value = contentFunction.calculate(c, textContent.toString());
+                            textContent = new StringBuffer(value);
+                            contentFunction = null;
+                        }
+                    }
+                    inlineList.add(new TextContent("before", parentElement, 
+                            textContent.toString(), contentFunction));
                     textContent = null;
                     c.popStyle();
                     inlineList.add(new StylePop("before", parentElement));
@@ -431,7 +444,18 @@ public class ContentUtil {
                     inlineList.add(new StylePush("after", parentElement));
                     textContent = new StringBuffer();
                     textContent.append(content.replaceAll("\\\\A", "\n"));
-                    inlineList.add(new TextContent("after", parentElement, textContent.toString(), true));
+                    ContentFunction contentFunction = null;
+                    if (Idents.looksLikeAFunction(content)) {
+                        contentFunction = c.getContentFunctionFactory().lookupFunction(
+                                c, textContent.toString());
+                        if (contentFunction !=  null && contentFunction.isStatic()) {
+                            String value = contentFunction.calculate(c, textContent.toString());
+                            textContent = new StringBuffer(value);
+                            contentFunction = null;
+                        }
+                    }
+                    inlineList.add(new TextContent("after", parentElement, 
+                            textContent.toString(), contentFunction));
                     textContent = null;
                     inlineList.add(new StylePop("after", parentElement));
                 }
@@ -523,6 +547,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.48  2006/04/02 22:22:32  peterbrant
+ * Add function interface for generated content / Implement page counters in terms of this, removing previous hack / Add custom page numbering functions
+ *
  * Revision 1.47  2006/02/03 23:57:54  peterbrant
  * Implement counter(page) and counter(pages) / Bug fixes to alignment calculation
  *

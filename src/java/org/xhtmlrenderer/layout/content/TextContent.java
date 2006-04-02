@@ -20,6 +20,7 @@
 package org.xhtmlrenderer.layout.content;
 
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.layout.LayoutContext;
 
@@ -39,8 +40,9 @@ public class TextContent implements Content {
     private String _pseudo;
     private String _text;
     private boolean removableWhitespace = false;
-    private boolean _generated;
-
+    
+    private ContentFunction _contentFunction;
+    
     TextContent(Element e, String text) {
         _elem = e;
         _text = text;
@@ -52,11 +54,11 @@ public class TextContent implements Content {
         _text = text;
     }
     
-    TextContent(String pseudoElement, Element e, String text, boolean generated) {
+    TextContent(String pseudoElement, Element e, String text, ContentFunction contentFunction) {
         _pseudo = pseudoElement;
         _elem = e;
         _text = text;
-        _generated = generated;
+        _contentFunction = contentFunction;
     }    
 
     public String toString() {
@@ -94,23 +96,13 @@ public class TextContent implements Content {
     public boolean isRemovableWhitespace() {
         return removableWhitespace;
     }
-
-    public boolean isGenerated() {
-        return _generated;
-    }
-
-    public void setGenerated(boolean generated) {
-        _generated = generated;
-    }
     
-    public boolean isPageCounter() {
-        String text = getText();
-        return isGenerated() && (text.equals("counter(pages)") ||
-                text.equals("counter(page)"));
+    public ContentFunction getContentFunction() {
+        return _contentFunction;
     }
-    
-    public String getPageCounterName() {
-        return getText().substring("counter(".length(), getText().length()-1);
+
+    public boolean isDynamicFunction() {
+        return _contentFunction != null;
     }
 }
 

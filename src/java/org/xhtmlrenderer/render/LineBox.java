@@ -61,7 +61,7 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
     
     private MarkerData markerData;
     
-    private boolean containsPageCounter;
+    private boolean containsDynamicFunction;
     
     private int contentStart;
 
@@ -104,8 +104,8 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
             return;
         }
         
-        if (isContainsPageCounter()) {
-            lookForPageCounters(c);
+        if (isContainsDynamicFunction()) {
+            lookForDynamicFunctions(c);
             int totalLineWidth = InlineBoxing.positionHorizontally(c, this, 0);
             this.contentWidth = totalLineWidth;
             calcChildLocations();
@@ -121,12 +121,12 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         }
     }
     
-    private void lookForPageCounters(RenderingContext c) {
+    private void lookForDynamicFunctions(RenderingContext c) {
         if (getChildCount() > 0) {
             for (int i = 0; i < getChildCount(); i++) {
                 Box b = (Box)getChild(i);
                 if (b instanceof InlineBox) {
-                    ((InlineBox)b).lookForPageCounters(c);
+                    ((InlineBox)b).lookForDynamicFunctions(c);
                 }
             }
         }
@@ -345,12 +345,12 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
         this.markerData = markerData;
     }
 
-    public boolean isContainsPageCounter() {
-        return containsPageCounter;
+    public boolean isContainsDynamicFunction() {
+        return containsDynamicFunction;
     }
 
-    public void setContainsPageCounter(boolean containsPageCounter) {
-        this.containsPageCounter |= containsPageCounter;
+    public void setContainsDynamicFunction(boolean containsPageCounter) {
+        this.containsDynamicFunction |= containsPageCounter;
     }
 
     public int getContentStart() {
@@ -412,6 +412,9 @@ public class LineBox extends Box implements Renderable, InlinePaintable {
  * $Id$
  *
  * $Log$
+ * Revision 1.54  2006/04/02 22:22:34  peterbrant
+ * Add function interface for generated content / Implement page counters in terms of this, removing previous hack / Add custom page numbering functions
+ *
  * Revision 1.53  2006/03/01 00:45:02  peterbrant
  * Provide LayoutContext when calling detach() and friends
  *

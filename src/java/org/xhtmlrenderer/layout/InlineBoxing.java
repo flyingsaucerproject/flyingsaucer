@@ -236,10 +236,8 @@ public class InlineBoxing {
                 LineBreakContext lbContext = new LineBreakContext();
                 lbContext.setMaster(TextUtil.transformText(text.getText(), c.getCurrentStyle()));
                 
-                String pageCounterName = null;
-                if (c.isPrint() && text.isPageCounter()) {
-                    pageCounterName = text.getPageCounterName();
-                    lbContext.setMaster("999");
+                if (text.isDynamicFunction()) {
+                    lbContext.setMaster(text.getContentFunction().getLayoutReplacementText());
                 }
                 do {
                     lbContext.reset();
@@ -266,8 +264,11 @@ public class InlineBoxing {
                                 c, remainingWidth - fit, lbContext, false);
                         if (!lbContext.isUnbreakable() ||
                                 (lbContext.isUnbreakable() && ! currentLine.isContainsContent())) {
-                            inlineText.setPageCounterName(pageCounterName);
-                            currentLine.setContainsPageCounter(inlineText.isPageCounter());
+                            if (text.isDynamicFunction()) {
+                                inlineText.setFunctionData(new FunctionData(
+                                        text.getContentFunction(), text.getText()));
+                            }
+                            currentLine.setContainsDynamicFunction(inlineText.isDynamicFunction());
                             currentIB.addInlineChild(c, inlineText);
                             currentLine.setContainsContent(true);
                             lbContext.setStart(lbContext.getEnd());
@@ -738,7 +739,7 @@ public class InlineBoxing {
 
     private static void alignLine(final LayoutContext c, final LineBox current, final int maxAvailableWidth) {
         if (!c.shrinkWrap()) {
-            if (! current.isContainsPageCounter()) {
+            if (! current.isContainsDynamicFunction()) {
                 current.setFloatDistances(new FloatDistances() {
                     public int getLeftFloatDistance() {
                         return c.getBlockFormattingContext().getLeftFloatDistance(c, current, maxAvailableWidth);
@@ -759,7 +760,7 @@ public class InlineBoxing {
                 current.setFloatDistances(distances);
             }
             current.align();
-            if (! current.isContainsPageCounter()) {
+            if (! current.isContainsDynamicFunction()) {
                 current.setFloatDistances(null);
             }
         } else {

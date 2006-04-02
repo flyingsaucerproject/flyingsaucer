@@ -19,13 +19,11 @@
  */
 package org.xhtmlrenderer.render;
 
+import org.xhtmlrenderer.layout.FunctionData;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.util.Uu;
 
 public class InlineText {
-    public static final byte PAGE_COUNTER_PAGE = 1;
-    public static final byte PAGE_COUNTER_PAGES = 2;
-    
     private InlineBox parent;
     
     private int x;
@@ -36,7 +34,7 @@ public class InlineText {
     
     private int width;
     
-    private byte pageCounterType;
+    private FunctionData functionData;
     
     public void maybeTrimTrailingSpace(LayoutContext c) {
         if (! isEmpty() && masterText.charAt(end-1) == ' ') {
@@ -112,36 +110,26 @@ public class InlineText {
         this.parent = parent;
     }
 
-    public void setPageCounterName(String pageCounterName) {
-        if (pageCounterName != null) {
-            if (pageCounterName.equals("page")) {
-                this.pageCounterType = PAGE_COUNTER_PAGE;
-            } else if (pageCounterName.equals("pages")) {
-                this.pageCounterType = PAGE_COUNTER_PAGES;
-            }
-        }
+    public boolean isDynamicFunction() {
+        return this.functionData != null;
+    }
+
+    public FunctionData getFunctionData() {
+        return functionData;
+    }
+
+    public void setFunctionData(FunctionData functionData) {
+        this.functionData = functionData;
     }
     
-    public boolean isPageCounter() {
-        return this.pageCounterType != 0;
-    }
-    
-    public void setPageCounterValue(RenderingContext c) {
-        String s = null;
-        switch (this.pageCounterType) {
-            case PAGE_COUNTER_PAGE:
-                s = Integer.toString(c.getPageNo() + 1);
-                break;
-            case PAGE_COUNTER_PAGES:
-                s = Integer.toString(c.getPageCount());
-                break;
-        }
-        if (s != null) {
-            masterText = s;
-            start = 0;
-            end = masterText.length();
-            setWidth(c.getTextRenderer().getWidth(c.getFontContext(), 
-                    parent.getStyle().getCalculatedStyle().getFSFont(c), masterText));
-        }
+    public void updateDynamicValue(RenderingContext c) {
+        String value = this.functionData.getContentFunction().calculate(c, 
+                this.functionData.getDeclaration(), this);
+        this.start = 0;
+        this.end = value.length();
+        this.masterText = value;
+        this.width = c.getTextRenderer().getWidth(
+                c.getFontContext(), getParent().getStyle().getCalculatedStyle().getFSFont(c),
+                value);
     }
 }

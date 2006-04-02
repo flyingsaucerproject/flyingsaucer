@@ -73,6 +73,11 @@ public final class Idents {
      * Pattern instance, for Hex-colors
      */
     private final static Pattern COLOR_HEX_PATTERN = Pattern.compile("#((((\\d)|[a-fA-F]){6})|(((\\d)|[a-fA-F]){3}))");
+    
+    /**
+     * Pattern instance for functions (not quite right [e.g no escapes], but good enough)
+     */
+    private final static Pattern FUNCTION_PATTERN = Pattern.compile("^-?[_a-z][_a-z0-9-]+\\(");
 
     /**
      * Description of the Field
@@ -206,6 +211,11 @@ public final class Idents {
      */
     public static boolean looksLikeAURI(String val) {
         return val.startsWith("url(") && val.endsWith(")");
+    }
+    
+    public static boolean looksLikeAFunction(String value)
+    {
+        return FUNCTION_PATTERN.matcher(value).find();
     }
 
     /**
@@ -514,6 +524,9 @@ public final class Idents {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2006/04/02 22:22:35  peterbrant
+ * Add function interface for generated content / Implement page counters in terms of this, removing previous hack / Add custom page numbering functions
+ *
  * Revision 1.12  2005/11/12 21:55:25  tobega
  * Inline enhancements: block box text decorations, correct line-height when it is a number, better first-letter handling
  *
