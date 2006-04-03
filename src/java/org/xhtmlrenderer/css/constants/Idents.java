@@ -129,6 +129,10 @@ public final class Idents {
      * @return Returns
      */
     public static String convertIdent(CSSName cssName, String ident) {
+        if (ident.equals("inherit")) {
+            return ident;
+        }
+        
         String val = ident;
 
         if (cssName == CSSName.FONT_SIZE) {
@@ -524,6 +528,9 @@ public final class Idents {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2006/04/03 00:01:59  peterbrant
+ * Fix color: inherit
+ *
  * Revision 1.13  2006/04/02 22:22:35  peterbrant
  * Add function interface for generated content / Implement page counters in terms of this, removing previous hack / Add custom page numbering functions
  *
