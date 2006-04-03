@@ -357,7 +357,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
                     this.revalidate();
                 }
                 //Uu.p("need to do the body hack");
-                if (root != null) {
+                if (root != null && ! c.isPrint()) {
                     root.height = enclosingScrollPane.getViewport().getHeight();
                     bodyExpandHack(root, root.height);
                     intrinsic_size.height = root.height;
