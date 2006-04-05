@@ -107,9 +107,6 @@ public class XHTMLPanel extends BasicPanel {
      * Instantiates an XHTMLPanel with no {@link Document} loaded by default.
      */
     public XHTMLPanel() {
-        // jmm: moved to field def. fontScalingFactor = 1.2F;
-        //minFontScale = 0.50F;
-        //maxFontScale = 3.0F;
         setupListeners();
     }
 
@@ -132,9 +129,6 @@ public class XHTMLPanel extends BasicPanel {
      */
     public XHTMLPanel(boolean useThreads) {
         super(useThreads);
-        // jmm: moved to field def. fontScalingFactor = 1.2F;
-        //minFontScale = 0.50F;
-        //maxFontScale = 3.0F;
         setupListeners();
     }
 
@@ -156,6 +150,7 @@ public class XHTMLPanel extends BasicPanel {
             // install a default link listener
             linkListener = new LinkListener(this);
             addMouseListener(linkListener);
+
             // install a default hover listener
             hoverListener = new HoverListener(this);
             addMouseListener(hoverListener);
@@ -174,7 +169,6 @@ public class XHTMLPanel extends BasicPanel {
      * Lays out the current document again, and re-renders.
      */
     public void relayout() {
-        //super.calcLayout();
         sharedContext.flushFonts();
         relayout(null);
     }
@@ -348,6 +342,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.33  2006/04/05 09:40:32  pdoubleya
+ * Removed commented code.
+ *
  * Revision 1.32  2006/04/05 09:36:59  pdoubleya
  * Added overloaded setDocument(File).
  *
