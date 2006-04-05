@@ -28,8 +28,8 @@ import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -225,6 +225,22 @@ public class XHTMLPanel extends BasicPanel {
     }
 
     /**
+     * Renders a Document read from an InputStream using a URL
+     * as a base URL for relative paths.
+     *
+     * @param file The file to read the Document from. Relative paths
+     *             will be resolved based on the file's parent directory.
+     */
+    public void setDocument(File file)
+            throws Exception {
+        resetListeners();
+        setDocument(
+                loadDocument(file.toURI().toURL().toExternalForm()),
+                file.getParentFile().toURI().toURL().toExternalForm()
+        );
+    }
+
+    /**
      * Sets the {@link RenderingContext} attribute of the XHTMLPanel object. Generally
      * you should not use this unless you have a heavily customized context to
      * use. To modify just some rendering behavior, consider using
@@ -332,6 +348,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2006/04/05 09:36:59  pdoubleya
+ * Added overloaded setDocument(File).
+ *
  * Revision 1.31  2006/01/09 23:24:53  peterbrant
  * Provide config key to not use link and hover listeners (one of which currently leaks memory horribly)
  *
