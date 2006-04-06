@@ -210,7 +210,7 @@ The size property as documented in the "CSS3 Paged Media module":http://www.w3.o
 
 h4. How do you control page margins on PDF output?
 
-_What CSS attributes correspond to "margin" as we understand that in a word processor, e.g. left and right margin of 1inch? is this padding or margin on the @<body>@?_
+_What CSS attributes correspond to "margin" as we understand that in a word processor, e.g. left and right margin of 1inch? is this padding or margin on the @body@ element?_
 
 You can set margin, padding, and border in a @page rule (also part of the CSS3 Paged Media module) i.e.
 
