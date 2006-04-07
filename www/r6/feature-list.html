@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+</head>
+<body>
+
+<h1 id="id1">Flying Saucer Supported Features from <span class="caps">CSS</span> 2.1</h1>
+
+<p>Flying Saucer supports the bulk of the strict <span class="caps">XHTML</span> and <span class="caps">CSS</span> 2.1 standards. We are working towards complete (and correct) feature support of these standards, but not everything works yet. Most of it is there, though.</p>
+
+<h3 id="id2">General <span class="caps">XHTML</span> / <span class="caps">CSS</span> features</h3>
+
+<ul>
+  <li>Formatted text: basically everything: paragraphs and spans, bold, italic, font sizes, text alignment, horizontal alignment, different fonts</li>
+  <li>Box model: border, padding, margin, colors, background images, styled borders</li>
+  <li>Full positioning support: static, relative, absolute, and fixed, and floats. <del>There are still some issues dealing with multiple stacked floats. This code is being rewritten.</del></li>
+  <li>Tables: Table support is currently being rewritten so check on the mailing list to see what works.</li>
+  <li>Forms: Every standard form control is represented. There are still some bugs with alignment.</li>
+  <li>Images: both as inline images with the <img> tag and with background images.</li>
+  <li>:hover styles for (dynamic) rollover effects</li>
+  <li>Anchors, both external and in-document</li>
+  <li>Lists: lists with proper positioning and</li>
+  <li>CSS selectors. All <span class="caps">CSS</span> selectors in the spec should be supported, even the sibling/child ones</li>
+  <li>Pagination</li>
+  <li>Margin Collapsing</li>
+</ul>
+
+<h3 id="id3">Special Features</h3>
+
+<ul>
+  <li>Speed. We are fast enough to render all of Hamlet in under 4 seconds on a 1.5 <span class="caps">GHZ</span> Pentium. We are working to improve speed and memory usage all the time.</li>
+  <li>Embedded fonts. You can embed a truetype font in your application (in the jar file), and use it in pages rendered in your application.</li>
+  <li>Printing. You can print anything you can see on screen. You can even use special print stylesheets. pagination is not currently supported!</li>
+</ul>
+
+<h3 id="id4">What's not Supported (yet)</h3>
+
+<ul>
+  <li>Parts of absolute, fixed, and float positioning. Things like setting a left and right with width = auto. There are probably a lot of bugs when you nest positioned boxes too.</li>
+  <li>Shrink-to-fit sizing. You need an explicit width on any positioned for floated box.</li>
+  <li>Auto-fit tables. You must use explicit table widths and sizes (%,px, em, etc).</li>
+  <li>Incremental rendering and dynamic layout</li>
+</ul>
+
+<p>There are undoubtedly many bugs as well. If you find one please report it to us.</p>
+
+<p>Thanks!<br />
+   &#8211; <em>The Flying Saucer Team</em></p>
+
+</body>
+</html>
+

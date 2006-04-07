@@ -12,15 +12,46 @@ define. style
   font-size: 18pt; 
   text-align: center;
 }
-#printOnly {
+.printOnly, #footer {
   display: none;
 }
 @page {
-  size: letter;
-  margin-top: 1.0in; 
-  margin-bottom: 1.0in; 
-  margin-left: 1.0in; 
-  margin-right: 1.0in; 
+  size: A4;
+  margin: 1in;
+  padding: 0.25in;
+  -fs-flow-top: header;
+  -fs-flow-bottom: footer;
+  -fs-flow-left: left;
+  -fs-flow-right: right;
+}
+@page :first {
+  border: thin solid black;
+  -fs-flow-bottom: none;
+}
+pagenumber:before {
+  content: counter(page); 
+}
+pagecount:before {
+  content: counter(pages);
+}
+table { 
+  width: 100%;
+  border: thin solid black; 
+  padding: 0; 
+  margin: 0;
+  empty-cells: show;
+  border-collapse: collapse;
+}
+tr:first-child {
+  background: teal;
+  font-weight: bold;
+}
+td { 
+  font-size: 8pt;
+  border: thin solid black; 
+  padding: 4pt; 
+  margin: 0;
+  empty-cells: show;
 }
 @media print {
   #toc {
@@ -32,7 +63,7 @@ define. style
   h3, h4 {
     page-break-after: avoid;
   }
-  #printOnly {
+  .printOnly, #footer {
     display: block;
   }
   body { 
@@ -47,38 +78,52 @@ define. style
 
 h1{text-align: center;}. The Flying Saucer User's Guide
 
-  divStart(#printOnly).
+  divStart(printOnly).
   
-  p{font-size: 10pt; text-align: center}. _Getting Started with Flying Saucer_
-
-  p{font-size: 12pt; text-align: center}. Release R6
-
-  p{font-size: 12pt; text-align: center}. May 2006
+    p{font-size: 10pt; text-align: center}. _Getting Started with Flying Saucer_
   
+    p{font-size: 12pt; text-align: center}. Release R6
+  
+    p{font-size: 12pt; text-align: center}. May 2006
+    
   divEnd.
 
-
+  divStart(#footer){position: absolute; top: 0; left: 0; -fs-move-to-flow: footer;}. 
+  
+  ==<span style="font-size: 8pt;"><em>Page <pagenumber /> of <pagecount /></em></span>==
+    
+  divEnd.
+  
+  
 p(#toc). Table of Contents
 
 toc. 2 3 #
 
-h2. What it is and How it Works
+h2. An Introduction to Flying Saucer
 
 >xil>{{{h3. What it is 
-h3. What it is
+h3. What It Is
 
-Flying Saucer is a _renderer_, which means it takes XML files as input, and generates a rendered representation of that XML as output. Because we believe most people will rely on conventional practices, our main target for content is XHTML, an XML document format that standardizes HTML. However, we accept any well-formed XML for rendering as long as CSS is provided that tells us how to lay it out. In the case of XHTML, default stylesheets are provided out of the box. 
+==
+<img src="snap-browse-fs-thumb.png" style="float: right; margin-left: 10px;" /> 
+==
+
+Flying Saucer is a _renderer_, which means it takes XML files as input, and generates a rendered representation of that XML as output. The output may go to the screen (in a GUI), to an image, or to a PDF file. Because we believe most people will rely on conventional practices, our main target for content is XHTML, an XML document format that standardizes HTML. However, we accept any well-formed XML for rendering as long as CSS is provided that tells us how to lay it out. In the case of XHTML, default stylesheets are provided out of the box. 
 
 Internally, ${fs} works with an XML document and uses CSS to determine how to lay it out visually. The rules for layout come from the ${css21}, and according to that spec, element nodes and attributes are matched to CSS selectors, where each selector identifies some formatting rules. We can't cover how to use CSS here--it's a long and complex specification--but there are many good books available, and tutorials on the web. Check out the "W3Schools CSS Tutorial":http://www.w3schools.com/css/default.asp for a starting point. 
 >xil>}}}
 
 
 >xil>{{{h3. What it does 
-h3. What it does
+h3. What It Does
+
+==
+<img src="snap-browse-alice-thumb.png" style="float: left; margin-right: 10px;" /> 
+==
 
 ${fs} takes XML and CSS as input (where the CSS might be embedded in the document, or linked from it) and generates rendered content. Our current major output formats are in a GUI interface (a panel) and in PDF; we can also render to image formats, e.g. render the page and save as an image.
 
-If rendering to a GUI, hyperlinks work so you can navigate between pages. As with HTML, you can also render forms, capture output, and create applications that way. In a GUI, ${fs} provides a _read-only_ view of the output; we cannot replace Swing's @JEditorPane@ or @JTextPane@. However, for static content, or content created by you, ${fs} can be used for help documents, tutorials, books, splash screens, presentations, and much more.
+If rendering to a GUI, hyperlinks work so you can navigate between pages. As with HTML, you can also render forms, capture output, and create applications that way. In a GUI, ${fs} provides a _read-only_ view of the output; we cannot replace a text area, say, or Swing's @JEditorPane@ or @JTextPane@. However, for static content, or content created by you, ${fs} can be used for help documents, tutorials, books, splash screens, presentations, and much more.
 
 We can also render to PDF. For PDF, the layout rules come from the CSS. The difference is the rendered output uses the ${itext} library to generate PDF.
 
@@ -86,7 +131,11 @@ Last, we have utility classes to render output to an image file. With this, you 
 >xil>}}}
 
 >xil>{{{h3. What you can do with it 
-h3. What you can do with it
+h3. What It's Good For
+
+==
+<img src="snap-browse-hover-thumb.png" style="float: right; margin-left: 10px;" /> 
+==
 
 Flying Saucer can be used for any Java application that requires some sort of styled text. This can be as simple as a chat program or as complicated as a complete ebook reader with dynamic stylesheets. Flying Saucer is very forward thinking and is designed to be a part of the next generation of applications that combine rich desktop clients with web content. Some examples of application types are:
 
@@ -109,7 +158,8 @@ Flying Saucer can be used for any Java application that requires some sort of st
 
 
 >xil>{{{h3. What it does not do 
-h3. What it does not do
+h3. Where the Saucer Does not Fly (what it can't do)
+
 
 Being honorable people, we must admit what ${fs} cannot do for you:
 
@@ -119,7 +169,12 @@ Being honorable people, we must admit what ${fs} cannot do for you:
 * Scripting (e.g. JavaScript) is not supported. We ignore script tags.
 * Dynamic changes to the content requires a re-layout (quick, but noticeable), that is, you can't dynamically change the DOM and see results live.
 * Most DOM callbacks used in JavaScript are not yet implemented (onLoad, onClick, onBlur, etc.).
+* Tables can be rendered, but support is limited to fairly simple table structures. @<thead>@ and @<tbody>@ are not supported and will raise errors if present.
    
+==
+<img src="snap-browse-report-thumb.png" style="float: left; margin-right: 10px;" /> 
+==
+
 These limitations all have a pragmatic origin. Josh Marinacci, the founder of and original lead developer for the ${fs} project, realized that writing a fully capable HTML browser component (like Firefox's Gecko engine) could take many man-years of development. But if one focused on well-formed XHTML only, and stuck to the CSS spec, you could cover most of the useful stuff you want to do with a rendering engine, and do it in a reasonable amount of time. So it's not impossible to add scripting, DHTML, plugins to ${fs}, we've just deferred this until someone has the time and energy to get it to work--that way, we stay focused on the goal, which is pure CSS 2.1 support for well-formed XML.
    
 Of course, you can help fix any of these things. Contributors welcome!
@@ -127,6 +182,10 @@ Of course, you can help fix any of these things. Contributors welcome!
 
 >xil>{{{h3. License and Dependencies 
 h3. License and Dependencies
+
+==
+<img src="snap-browse-fluid-thumb.png" style="float: right; margin-left: 10px;" /> 
+==
 
 ${fs} itself is licensed under the "GNU Lesser General Public License":http://www.gnu.org/copyleft/lesser.html. You can use ${fs} in any way you want as long as you respect the terms of the license. A copy of the LGPL is provided under LGPL.txt in our distribution.
 
@@ -137,7 +196,7 @@ ${fs} uses a couple of FOSS packages to get the job done. A list of these, along
 >xil>{{{h3. Requirements for Running and Using ${fs} 
 h3. Requirements for Running and Using ${fs}
 
-${fs} is built and tested on Java 1.4 and has some dependencies on libraries only available in 1.4. In principle, you should be able to backport it to 1.3, but we've not tried that and don't maintain a 1.3 branch.
+${fs} is built and tested on Java 1.4 and has some dependencies on libraries only available in 1.4. In principle, you should be able to backport it to 1.3 (or earlier?), but we've not tried that and don't maintain a 1.3 branch.
 
 Basic requirements:
 
@@ -151,6 +210,8 @@ Basic requirements:
 ${itext} is not necessary at runtime if you are not generating PDFs, but is necessary for the build to satisfy compile-time dependencies.
 
 In theory, you could substitute another CSS parser that is "SAC":http://www.w3.org/Style/CSS/SAC (Simple API for CSS) compliant, but we've had little success with this due to variations in implementation. 
+
+Most of ${fs} does not rely on advanced Java features. It should be usable on alternate Java implementations, such as GNU Classpath.
 >xil>}}}
 
 
@@ -187,24 +248,22 @@ h4. Rendering to a Swing Panel
 
 In fact, to make it really easy, both @org.xhtmlrenderer.swing.BasicPanel@, and its child @org.xhtmlrenderer.simple.XHTMLPanel@, allow you to set the document in one call. In fact, to display a page in a Swing @JFrame@, the code is very simple. Take a look at out our @SinglePageFrame@ example in the samples directory. The important stuff happens in the @run()@ method. 
 
-bcx. private void run(String[] args) throws Exception {
+bcx.. 
+private void run(String[] args) throws Exception {
     loadAndCheckArgs(args);
-    //
+
     // Create a JPanel subclass to render the page
-    //
     XHTMLPanel panel = new XHTMLPanel();
-    //
+
     // Set the XHTML document to render. We use the simplest form
     // of the API call, which uses a File reference. There
     // are a variety of overloads for setDocument().
-    //
     panel.setDocument(new File(fileName));
-    //
+
     // Put our panel in a scrolling pane. You can use
     // a regular JScrollPane here, or our FSScrollPane.
     // FSScrollPane is already set up to move the correct
     // amount when scrolling 1 line or 1 page
-    //
     FSScrollPane scroll = new FSScrollPane(panel);
     JFrame frame = new JFrame("Flying Saucer Single Page Demo");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -214,7 +273,7 @@ bcx. private void run(String[] args) throws Exception {
     frame.setVisible(true);
 }
 
-The basic process is:
+p. The basic process is:
 
 * create a @BasicPanel@ or @XHTMLPanel@ instance
 * add it to a Swing @JScrollPane@ or an @FSScrollPane@ (unless your pages will fit without scrolling
@@ -231,7 +290,8 @@ The AboutBox is a prefab component which displays an XHTML document and automati
 
 Here is an example of adding an about box to a menu item's action listener.
 
-bcx. import org.xhtmlrenderer.demo.aboutbox.AboutBox;
+bcx.. 
+import org.xhtmlrenderer.demo.aboutbox.AboutBox;
 ......
 JMenuItem about = new JMenuItem("About...");
 about.addActionListener(new ActionListener() {
@@ -240,15 +300,25 @@ about.addActionListener(new ActionListener() {
 			           "demos/about/index.xhtml");
         ab.setVisible(true);
     }
- });  
+ });
+
+p.  
+ 
  >xil>}}}
 
 >xil>{{{h3. Creating PDF Files 
 h3. Creating PDF Files
 
+==
+<img src="snap-pdf-sample-thumb.png" style="float: left; margin-right: 10px;" /> 
+==
+
 In release R6, we added the ability to generate PDF files from XML/CSS input. This means that just by starting with XHTML and CSS, you can create portable PDF documents that will are readable by the standard "Adobe Acrobat Reader":http://www.adobe.com/products/acrobat/readermain.html
 
+
 PDF files are treated as _paged_ media, as defined by the ${css21}, in the section "Paged media":http://www.w3.org/TR/CSS21/page.html. This means that some CSS attributes that apply to paged media (as opposed to visual media, like a browser) are used to control PDF output. ${fs} supports the @@page@ rule, which means that page size, page margins and page break controls are all supported for PDF output.  
+
+clear. 
 
 Questions and answers about using ${fs} for PDF output:
 
@@ -350,6 +420,52 @@ h4. Eeze
 >xil>}}}
 
 
+h2. Flying Saucer Extensions to the CSS 2.1 Specification
+
+As per section "4.1.2.1":http://www.w3.org/TR/CSS21/syndata.html#q4 of the ${css21}, "Vendor-specific extensions":http://www.w3.org/TR/CSS21/syndata.html#q4, ${fs} includes some extensions to work around limitations in our current implementation, or limitations in the 2.1 spec. All of these are properties you can use in your CSS when rendering with ${fs}, but which will not be recognized by other renderers. While we can't recommend that you deviate from the spec, you may find some cases where you need to add a property to get something special done.
+
+All of the properties in the following table are used just like regular properties, within a set of property declarations.
+
+h3. Table of Extensions
+
+>xil> skipping Xilize syntax for tables, generates tbody and theads we can't proc in R6
+
+@-fs-flow-top@
+@-fs-flow-right@
+@-fs-flow-bottom@
+@-fs-flow-left@ -String value or none.  String value should refer to an absolute box
+named with an -fs-move-to-flow property. Used in an @page rule to define headers and footers.  Has no meaning outside of @page. -right, -bottom and -left are all described below
+  
+@-fs-move-to-flow@ -String value. Names an absolute box for reference in one of the -fs-flow-* properties. See below.
+  
+@-fs-text-decoration-extent@ -Either line (default) or block. It controls how text decorations are drawn on a block level element.  With line, the spec compliant behavior is used: text decoration is drawn across line box.  With block, text decoration is drawn across entire content area of block.
+  
+@-fs-table-cell-colspan@ -Whole number. Replaces use of legacy rowspan attribute for table columns.
+  
+@-fs-table-cell-rowspan@ -Whole number. Replaces use of legacy rowspan attribute for table columns.
+
+h3. Extensions: using the @-fs-flow-<top|right|bottom|left>@ Properties
+
+The @-fs-flow-<top|right|bottom|left>@ properties are used within an @@page@ declaration to allow some content--say, a div--to appear outside the normal flow, but to control the position relative to the main body. This is essentially an absolute positioned box where you don't know the actual coordinates for the box, because they are relative to the rendered content.
+
+This may sound contradictory, but a good use for this is to create headers and footers in PDF documents. There are two properties that you coordinate. First, define an absolutely-positioned div at location 0,0 and assign it a unique name with the @-fs-move-to-flow@ property. Then, assign this property name as the value for one of the @-fs-flow-<top|right|bottom|left>@ in the @@page@ block.
+
+For example, to create a footer in your printed PDF:
+
+bcx.. 
+<style>
+  @page {
+    -fs-flow-bottom: my_footer;
+  }
+</style>
+<body>
+  <div style="position: absolute; top: 0; left: 0; -fs-move-to-flow: my_footer;" >
+  Copyright 2006 The Flying Saucer Team
+  </div>
+</body>
+
+p. The name of the div, my_footer, matches the flow property and it is positioned below the rendered content (the page) on layout.
+
 h2. Configuration
 
 >xil>{{{h3. The ${fs} Configuration File 
@@ -389,16 +505,21 @@ h4. Looking up Configuration at Runtime
 
 To access a parameter from Configuration at runtime, just use on of the many static methods on the Configuration class. All of these just take the full name of the property:
 
-* String Configuration.valueFor(String)
-* String Configuration.valueFor(String key, String default)
-* byte Configuration.valueAsByte(String key, byte default)
-* double Configuration.valueAsDouble(String key, double default)
-* float Configuration.valueAsFloat(String key, float default)
-* int Configuration.valueAsInt(String key, int default)
-* long Configuration.valueAsLong(String key, long default)
-* short Configuration.valueAsShort(String key, short default)
-* boolean Configuration.isTrue(String key, boolean default)
-* boolean Configuration.isFalse(String key, boolean default) 
+divStart{font-size: 8pt;}.
+
+* @String Configuration.valueFor(String)@
+* @String Configuration.valueFor(String key, String default)@
+* @byte Configuration.valueAsByte(String key, byte default)@
+* @double Configuration.valueAsDouble(String key, double default)@
+* @float Configuration.valueAsFloat(String key, float default)@
+* @int Configuration.valueAsInt(String key, int default)@
+* @long Configuration.valueAsLong(String key, long default)@
+* @short Configuration.valueAsShort(String key, short default)@
+* @boolean Configuration.isTrue(String key, boolean default)@
+* @boolean Configuration.isFalse(String key, boolean default)@
+
+divEnd.
+
 >xil>}}}
 
 >xil>{{{h3. Logging 
@@ -412,4 +533,32 @@ Please review the ${jlogging} package docs before proceeding.
 We log to a set of hierarchies. The internal code--everything between a request to load a page and the page rendering--is logged to a subhierarchy of "plumbing", e.g. plumbing.load. Our convention is that WARNING and SEVERE levels are very important and should always be logged. INFO messages are useful and but can be excluded if you want a quiet ride. Anything below INFO (FINE, FINER, FINEST) is generally only interesting for core renderer developers. We don't guarrantee that anything below INFO will be useful, correct, practical or informative. You can usually leave log levels at INFO for most purposes.
 
 If you are modifying the renderer core code and want to add log messages, we recommend you always use the @org.xhtmlrenderer.XRLog@ class. Using this class ensures that our log configuration is read properly before we write anything out to the log system. The class is pretty self-explanatory, and all logging methods in it are static. If for some reason you need to use the @java.util.logging.Logger@ class directly, please use XRLog.getLogger() to retrieve the instance to use. 
+
+bcx{font-size: 8pt;}.. 
+[java] app.browser INFO:: Loading Page: demo:demos/splash/splash.html
+[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/splash/splash.html
+[java] plumbing.load INFO:: SAX XMLReader in use (parser): com.sun.org.apache.xerces.internal.parsers.SAXParser
+[java] plumbing.load FINE:: SAX Parser: by request, not changing any parser features.
+[java] plumbing.load INFO:: Loaded document in ~16ms
+[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/splash/splash.html
+[java] plumbing.load INFO:: TIME: parse stylesheets  15ms
+[java] plumbing.match INFO:: media = screen
+[java] plumbing.load INFO:: Requesting stylesheet: http://www.w3.org/1999/xhtml
+[java] plumbing.match INFO:: Matcher created with 147 selectors
+[java] plumbing.layout INFO:: Layout took 156ms
+[java] app.browser INFO:: Loading Page: demo:demos/new/formattedtext.xhtml
+[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/new/formattedtext.xhtml
+[java] plumbing.load INFO:: SAX XMLReader in use (parser): com.sun.org.apache.xerces.internal.parsers.SAXParser
+[java] plumbing.load FINE:: SAX Parser: by request, not changing any parser features.
+[java] plumbing.load INFO:: Loaded document in ~16ms
+[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/new/formattedtext.xhtml
+[java] plumbing.load INFO:: TIME: parse stylesheets  0ms
+[java] plumbing.match INFO:: media = screen
+[java] plumbing.load INFO:: Requesting stylesheet: http://www.w3.org/1999/xhtml
+[java] plumbing.load INFO:: Requesting stylesheet: jar:file:/X:/build/browser.jar!/demos/new/general.css
+[java] plumbing.match INFO:: Matcher created with 156 selectors
+[java] plumbing.layout INFO:: Layout took 63ms
+
+p. 
+
 >xil>}}}
