@@ -248,7 +248,7 @@ public abstract class BasicPanel extends RootPanel {
                 page.paintAlternateFlows(c, root, 
                         Layer.PAGED_MODE_SCREEN, PAGE_PAINTING_CLEARANCE);
                 
-                page.paintBorder(c, PAGE_PAINTING_CLEARANCE);
+                page.paintBorder(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
             } 
         }
         
@@ -288,7 +288,7 @@ public abstract class BasicPanel extends RootPanel {
         g.setClip(working);
         page.paintAlternateFlows(c, root, Layer.PAGED_MODE_PRINT, 0);
         
-        page.paintBorder(c, 0);
+        page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
 
         g.setClip(working);
     }
@@ -686,6 +686,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.102  2006/04/07 14:48:31  peterbrant
+ * Fix page border in print mode (vs. paged screen mode)
+ *
  * Revision 1.101  2006/04/07 07:30:56  pdoubleya
  * Store reference to loaded XMLResource. Removed commented code. Javadoc.
  *

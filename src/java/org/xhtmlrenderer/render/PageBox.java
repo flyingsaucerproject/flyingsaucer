@@ -282,10 +282,14 @@ public class PageBox {
         return result;
     }
     
-    public void paintBorder(RenderingContext c, int additionalClearance) {
+    public void paintBorder(RenderingContext c, int additionalClearance, short mode) {
+        int top = 0;
+        if (mode == Layer.PAGED_MODE_SCREEN) {
+            top = getPaintingTop();
+        }
         c.getOutputDevice().paintBorder(c, 
                 getStyle().getCalculatedStyle(),
-                getBorderEdge(additionalClearance, getPaintingTop(), c),
+                getBorderEdge(additionalClearance, top, c),
                 BorderPainter.ALL);
     }
 
