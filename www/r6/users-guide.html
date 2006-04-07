@@ -2,14 +2,65 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <style type="text/css">
+#toc {
+  page-break-before: always; 
+  font-size: 18pt; 
+  text-align: center;
+}
+#printOnly {
+  display: none;
+}
+@page {
+  size: letter;
+  margin-top: 1.0in; 
+  margin-bottom: 1.0in; 
+  margin-left: 1.0in; 
+  margin-right: 1.0in; 
+}
+@media print {
+  #toc {
+    page-break-before: always; 
+  }
+  h2 {
+    page-break-before: always;
+  }
+  h3, h4 {
+    page-break-after: avoid;
+  }
+  #printOnly {
+    display: block;
+  }
+  body { 
+    margin: 0; 
+    padding: 0; 
+  }
+  a:link {
+    text-decoration: none;
+    color: black;
+  }
+}
+  </style>
 </head>
 <body>
 
-<h1 id="id1">Getting Started with Flying Saucer</h1>
+<h1 id="id1" style="text-align: center;">The Flying Saucer User's Guide</h1>
 
-<ul class="toc">
+<div id="printOnly">
+
+<p style="font-size: 10pt; text-align: center;"><em>Getting Started with Flying Saucer</em></p>
+
+<p style="font-size: 12pt; text-align: center;">Release R6</p>
+
+<p style="font-size: 12pt; text-align: center;">May 2006</p>
+
+</div>
+
+<p id="toc">Table of Contents</p>
+
+<ol class="toc">
   <li><a href="#id2"> What it is and How it Works </a>
-    <ul>
+    <ol>
       <li><a href="#id3"> What it is </a></li>
       <li><a href="#id4"> What it does </a></li>
       <li><a href="#id5"> What you can do with it </a></li>
@@ -17,23 +68,23 @@
       <li><a href="#id7"> License and Dependencies </a></li>
       <li><a href="#id8"> Requirements for Running and Using Flying Saucer </a></li>
       <li><a href="#id9"> Setting your Classpath </a></li>
-    </ul>
+    </ol>
   </li>
   <li><a href="#id10"> Using Flying Saucer </a>
-    <ul>
+    <ol>
       <li><a href="#id11"> Basic Usage </a></li>
       <li><a href="#id14"> Creating <span class="caps">PDF</span> Files </a></li>
-      <li><a href="#id21"> Rendering to an Image </a></li>
-      <li><a href="#id22"> Sample Applications </a></li>
-    </ul>
+      <li><a href="#id22"> Rendering to an Image </a></li>
+      <li><a href="#id23"> Sample Applications </a></li>
+    </ol>
   </li>
-  <li><a href="#id26"> Configuration </a>
-    <ul>
-      <li><a href="#id27"> The Flying Saucer Configuration File </a></li>
-      <li><a href="#id31"> Logging </a></li>
-    </ul>
+  <li><a href="#id27"> Configuration </a>
+    <ol>
+      <li><a href="#id28"> The Flying Saucer Configuration File </a></li>
+      <li><a href="#id32"> Logging </a></li>
+    </ol>
   </li>
-</ul>
+</ol>
 
 <h2 id="id2">What it is and How it Works</h2>
 
@@ -218,11 +269,12 @@ about.addActionListener(new ActionListener() {
 
 <ul class="toc">
   <li><a href="#id15"> How do you control page size? </a></li>
-  <li><a href="#id16"> How do you control page margins on <span class="caps">PDF</span> output? </a></li>
-  <li><a href="#id17"> What controls pagination? </a></li>
-  <li><a href="#id18"> What about <span class="caps">PDF</span> bookmarks? </a></li>
-  <li><a href="#id19"> What about embedded images? Are images downscaled? </a></li>
-  <li><a href="#id20"> Does Flying Saucer support <span class="caps">PDF</span> form components? </a></li>
+  <li><a href="#id16"> How do you control page size on <span class="caps">PDF</span> output? </a></li>
+  <li><a href="#id17"> How do you control page margins on <span class="caps">PDF</span> output? </a></li>
+  <li><a href="#id18"> What controls pagination? </a></li>
+  <li><a href="#id19"> What about <span class="caps">PDF</span> bookmarks? </a></li>
+  <li><a href="#id20"> What about embedded images? Are images downscaled? </a></li>
+  <li><a href="#id21"> Does Flying Saucer support <span class="caps">PDF</span> form components? </a></li>
 </ul>
 
 <h4 id="id15">How do you control page size?</h4>
@@ -231,7 +283,25 @@ about.addActionListener(new ActionListener() {
 
 <p>The size property as documented in the <a href="http://www.w3.org/TR/css3-page/">CSS3 Paged Media module</a>.  Everything in the spec is implemented except auto page handling (the default stylesheet currently sets letter sized paper with a half inch margin)</p>
 
-<h4 id="id16">How do you control page margins on <span class="caps">PDF</span> output?</h4>
+<h4 id="id16">How do you control page size on <span class="caps">PDF</span> output?</h4>
+
+<p><em>What <span class="caps">CSS</span> attributes correspond to "page size" as we understand that in a word processor, e.g. US Letter, Legal, or A4?</em></p>
+
+<p>CSS 2.1 does not support a page size output. Although Flying Saucer currently targets the 2.1 spec, in this case we brought in a <span class="caps">CSS3</span> property, <em>size</em>. You specify this as part of the <code>@page</code> rule.</p>
+
+<pre><code>@page {
+ size: 8.5in 11in;
+}</code></pre>
+
+<p>or </p>
+
+<pre><code>@page {
+ size: letter;
+}</code></pre>
+
+<p>It's described in more details in the <a href="http://www.w3.org/TR/css3-page/#page-size">CSS3 specification.</a></p>
+
+<h4 id="id17">How do you control page margins on <span class="caps">PDF</span> output?</h4>
 
 <p><em>What <span class="caps">CSS</span> attributes correspond to "margin" as we understand that in a word processor, e.g. left and right margin of 1inch? is this padding or margin on the <code>body</code> element?</em></p>
 
@@ -245,7 +315,7 @@ about.addActionListener(new ActionListener() {
 
 <p>For purposes of pagination, there's nothing special about <code>&lt;body&gt;</code> (e.g. if <code>&lt;body&gt;</code> spans 20 pages, your top and bottom margins will appear on pages 1 and 20 respectively).</p>
 
-<h4 id="id17">What controls pagination?</h4>
+<h4 id="id18">What controls pagination?</h4>
 
 <p><em>Is there a default pagination (whatever fits in the renderable page boundaries)&#8212;but then what is a "page" size? how can I (in the current code) implement a forced break? which page-break... does Flying Saucer support right now?</em></p>
 
@@ -257,7 +327,7 @@ about.addActionListener(new ActionListener() {
 
 <p>With the exception of relatively positioned inline content, positioned/floated content will paginate just like content in the normal flow.</p>
 
-<h4 id="id18">What about <span class="caps">PDF</span> bookmarks?</h4>
+<h4 id="id19">What about <span class="caps">PDF</span> bookmarks?</h4>
 
 <p><em>For <span class="caps">PDF</span>, what sorts of <span class="caps">PDF</span>-specific things does Flying Saucer support, e.g. do bookmarks work? is there support for TOCs, footnotes?</em></p>
 
@@ -268,7 +338,7 @@ internal links in the document itself to establish a target.</p>
 <p>The <a href="http://www.lowagie.com/iText/">iText</a> library has a really dizzying array of features so we can get a lot<br />
 stuff for free just by providing the <span class="caps">XML</span> "API" for it (see <code>AcroForms</code> comment below).</p>
 
-<h4 id="id19">What about embedded images? Are images downscaled?</h4>
+<h4 id="id20">What about embedded images? Are images downscaled?</h4>
 
 <p><em>Are referenced images altered when embedded in the course of generating <span class="caps">PDF</span>?</em></p>
 
@@ -276,33 +346,33 @@ stuff for free just by providing the <span class="caps">XML</span> "API" for it 
 
 <p>For intrinsic width/height calculations we assume a resolution of 96 <span class="caps">DPI</span>, but setting an explicit width/height makes it possible to use an arbitrary <span class="caps">DPI</span>.</p>
 
-<h4 id="id20">Does Flying Saucer support <span class="caps">PDF</span> form components?</h4>
+<h4 id="id21">Does Flying Saucer support <span class="caps">PDF</span> form components?</h4>
 
 <p><em>What happens with form components when generating a <span class="caps">PDF</span>? Is this supported at all (if I can't a non-editable form in my <span class="caps">PDF</span> output, say, printable form for handwritten entry?</em></p>
 
 <p>Replaced elements are @OutputDevice@-specific.  The <span class="caps">PDF</span> renderer doesn't use Graphics2D.  At this point, an <code>&lt;input&gt;</code> element will be treated like regular content.  Adding AcroForm support is high on the list of priorities for the Flying Saucer team. </p>
 
-<h3 id="id21">Rendering to an Image</h3>
+<h3 id="id22">Rendering to an Image</h3>
 
 <p>Graphics2DRenderer </p>
 
-<h3 id="id22">Sample Applications</h3>
+<h3 id="id23">Sample Applications</h3>
 
 <ul class="toc">
-  <li><a href="#id23"> The Browser </a></li>
-  <li><a href="#id24"> The About Box </a></li>
-  <li><a href="#id25"> Eeze </a></li>
+  <li><a href="#id24"> The Browser </a></li>
+  <li><a href="#id25"> The About Box </a></li>
+  <li><a href="#id26"> Eeze </a></li>
 </ul>
 
-<h4 id="id23">The Browser</h4>
+<h4 id="id24">The Browser</h4>
 
-<h4 id="id24">The About Box</h4>
+<h4 id="id25">The About Box</h4>
 
-<h4 id="id25">Eeze</h4>
+<h4 id="id26">Eeze</h4>
 
-<h2 id="id26">Configuration</h2>
+<h2 id="id27">Configuration</h2>
 
-<h3 id="id27">The Flying Saucer Configuration File</h3>
+<h3 id="id28">The Flying Saucer Configuration File</h3>
 
 <p>The renderer works with a simple, <code>java.util.Properties</code> -based configuration system&#8212;no <span class="caps">XML</span>! Our <code>org.xhtmlrenderer.util.Confuration</code> class loads properties on first access and makes them available at runtime.</p>
 
@@ -310,7 +380,7 @@ stuff for free just by providing the <span class="caps">XML</span> "API" for it 
 
 <p>You can change the default properties for the application right in the .conf file. However, this is not a good idea, as you will have to merge your changes back on new releases. Plus, it will make reporting bugs more complicated. Instead, you can use one of two override mechanisms for changing the value of individual properties.</p>
 
-<h4 id="id28">Override with Second Conf File</h4>
+<h4 id="id29">Override with Second Conf File</h4>
 
 <p>Your override file should just re-assign values for properties originally given in xhtmlrenderer.conf. Please see the documentation in that file for a description of what each property affects. As of R3, we look for a specific override file in a specific location, e.g.</p>
 
@@ -318,7 +388,7 @@ stuff for free just by providing the <span class="caps">XML</span> "API" for it 
 
 <p>The user.home variable is a system property. If you call the <code>System.getProperty("user.home")</code> from within any Java program on your machine, you will find out where this is. The location is usually <code>c:\Documents And Settings\{username}</code> and under the <code>/usr</code> directory on <span class="caps">UNIX</span> systems. Try that method call to see where it is on your machine.</p>
 
-<h4 id="id29">Override with System Properties</h4>
+<h4 id="id30">Override with System Properties</h4>
 
 <p>You can also override properties one-by-one on the command line, using System properties. To override a property using the System properties, just re-define the property on the command line. e.g.</p>
 
@@ -334,7 +404,7 @@ stuff for free just by providing the <span class="caps">XML</span> "API" for it 
 
 <p>We have just started using the Configuration system late in preparing release R4. Some runtime behavior that should be configurable (like <span class="caps">XHTML</span> parser) is not. If you would like to see some behavior made configurable, shoot us an email.</p>
 
-<h4 id="id30">Looking up Configuration at Runtime</h4>
+<h4 id="id31">Looking up Configuration at Runtime</h4>
 
 <p>To access a parameter from Configuration at runtime, just use on of the many static methods on the Configuration class. All of these just take the full name of the property:</p>
 
@@ -351,7 +421,7 @@ stuff for free just by providing the <span class="caps">XML</span> "API" for it 
   <li>boolean Configuration.isFalse(String key, boolean default)</li>
 </ul>
 
-<h3 id="id31">Logging</h3>
+<h3 id="id32">Logging</h3>
 
 <p>The renderer uses the <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/package-summary.html">java.util.logging</a> package for logging information and exceptions at runtime. Logging behavior (output) is controlled via the main configuration file. The defaults may be overridden just like any other configuration properties.</p>
 

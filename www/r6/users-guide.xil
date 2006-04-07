@@ -6,9 +6,61 @@ define. itext "iText":http://www.lowagie.com/iText/
 
 define. jlogging "java.util.logging":http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/package-summary.html
 
-h1. Getting Started with Flying Saucer
+define. style
+#toc {
+  page-break-before: always; 
+  font-size: 18pt; 
+  text-align: center;
+}
+#printOnly {
+  display: none;
+}
+@page {
+  size: letter;
+  margin-top: 1.0in; 
+  margin-bottom: 1.0in; 
+  margin-left: 1.0in; 
+  margin-right: 1.0in; 
+}
+@media print {
+  #toc {
+    page-break-before: always; 
+  }
+  h2 {
+    page-break-before: always;
+  }
+  h3, h4 {
+    page-break-after: avoid;
+  }
+  #printOnly {
+    display: block;
+  }
+  body { 
+    margin: 0; 
+    padding: 0; 
+  }
+  a:link {
+    text-decoration: none;
+    color: black;
+  }
+}
 
-toc. 2 3 *
+h1{text-align: center;}. The Flying Saucer User's Guide
+
+  divStart(#printOnly).
+  
+  p{font-size: 10pt; text-align: center}. _Getting Started with Flying Saucer_
+
+  p{font-size: 12pt; text-align: center}. Release R6
+
+  p{font-size: 12pt; text-align: center}. May 2006
+  
+  divEnd.
+
+
+p(#toc). Table of Contents
+
+toc. 2 3 #
 
 h2. What it is and How it Works
 
@@ -207,6 +259,24 @@ h4. How do you control page size?
 _What CSS attributes correspond to "page size" (e.g. letter, legal, A4) in CSS and XHTML?_
 
 The size property as documented in the "CSS3 Paged Media module":http://www.w3.org/TR/css3-page/.  Everything in the spec is implemented except auto page handling (the default stylesheet currently sets letter sized paper with a half inch margin)
+
+h4. How do you control page size on PDF output?
+
+_What CSS attributes correspond to "page size" as we understand that in a word processor, e.g. US Letter, Legal, or A4?_
+
+CSS 2.1 does not support a page size output. Although ${fs} currently targets the 2.1 spec, in this case we brought in a CSS3 property, _size_. You specify this as part of the @@page@ rule.
+
+bcx. @page {
+ size: 8.5in 11in;
+}
+
+or 
+
+bcx. @page {
+ size: letter;
+}
+
+It's described in more details in the "CSS3 specification.":http://www.w3.org/TR/css3-page/#page-size
 
 h4. How do you control page margins on PDF output?
 
