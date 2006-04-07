@@ -92,7 +92,6 @@ public class NoNamespaceHandler implements org.xhtmlrenderer.extend.NamespaceHan
     private Pattern _titlePattern = Pattern.compile("title\\s?=\\s?");
     private Pattern _alternatePattern = Pattern.compile("alternate\\s?=\\s?");
     private Pattern _mediaPattern = Pattern.compile("media\\s?=\\s?");
-    private Pattern _charsetPattern = Pattern.compile("charset\\s?=\\s?");
 
     public StylesheetInfo[] getStylesheetLinks(org.w3c.dom.Document doc) {
         List list = new ArrayList();
