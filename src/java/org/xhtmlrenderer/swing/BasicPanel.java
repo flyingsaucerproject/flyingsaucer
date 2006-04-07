@@ -19,22 +19,6 @@
  */
 package org.xhtmlrenderer.swing;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.LayoutManager;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.print.PrinterGraphics;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.event.DocumentListener;
@@ -51,6 +35,15 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.ErrorHandler;
 
+import java.awt.*;
+import java.awt.print.PrinterGraphics;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+
 //hmm, IntelliJ sees references to Xx below as being Xx in Component!
 
 /**
@@ -60,21 +53,7 @@ import org.xml.sax.ErrorHandler;
  * @author Joshua Marinacci
  */
 public abstract class BasicPanel extends RootPanel {
-    /**
-     * Description of the Field
-     */
-     
-    //public Element hovered_element = null;
-
-    /**
-     * Description of the Field
-     */
-    //public Element active_element = null;
-
-    /**
-     * Description of the Field
-     */
-    //public Element focus_element = null;
+    private static final int PAGE_PAINTING_CLEARANCE = 10;
 
     /**
      * Description of the Field
@@ -84,37 +63,19 @@ public abstract class BasicPanel extends RootPanel {
     /**
      * Description of the Field
      */
-    //protected RenderingContext ctx;
-
-    /**
-     * Description of the Field
-     */
-    //protected LayoutThread layout_thread;
-
-    /**
-     * Description of the Field
-     */
-    //private Map documentListeners;
-
-    /**
-     * Description of the Field
-     */
-    /* DEAD: joshy
-   private Dimension intrinsic_size;
-*/
-
-    /**
-     * Description of the Field
-     */
     private boolean anti_aliased = true;
 
     private boolean explicitlyOpaque;
-
 
     /**
      * Message used while layout is in progress and panel is being redrawn.
      */
     private String layoutInProgressMsg = "Layout in progress...";
+
+    private boolean interactive = true;
+
+    // The XMLResource proxing the current document in the BasicPanel
+    private XMLResource xmlResource;
 
     /**
      * Returns the string message drawn on the panel while rendering a page. For most pages, this will be barely visible
@@ -135,9 +96,6 @@ public abstract class BasicPanel extends RootPanel {
     public void setLayoutInProgressMsg(String layoutInProgressMsg) {
         this.layoutInProgressMsg = layoutInProgressMsg;
     }
-
-
-    private boolean interactive = true;
 
     public BasicPanel() {
         sharedContext = new SharedContext(new NaiveUserAgent());
@@ -187,7 +145,6 @@ public abstract class BasicPanel extends RootPanel {
             return;
         }
         
-        //Uu.p("paint component () called");
         // if this is the first time painting this document, then calc layout
         Layer root = getRootLayer();
         if (root == null && !isUseThreads()) {
@@ -206,77 +163,6 @@ public abstract class BasicPanel extends RootPanel {
             XRLog.render(Level.FINE, "RENDERING TOOK " + (end - start) + " ms");
         }
     }
-
-    /**
-     * Description of the Method
-     */
-
-    /*
-   public void startLayout(Graphics g) {
-       Uu.p("shouldn't be calling this method");
-       doActualLayout(g);
-
-       this.removeAll();
-       if (g == null) {
-           return;
-       }
-       if (doc == null) {
-           return;
-       }
-
-       // set up CSS
-       Context c = newContext((Graphics2D) g);
-       //getSharedContext().setMaxWidth(0);
-       this.layout_context = c;
-       getRenderingContext().getTextRenderer().setupGraphics(c.getGraphics());
-       //TODO: maybe temporary hack
-       if (c.getPersistentBFC() != null) c.popBFC();//we set one for the top level before
-       // do the actual layout
-       body_box = Boxing.layout(c, new DomToplevelNode(doc));
-       if (!c.isStylesAllPopped()) {
-           XRLog.layout(Level.SEVERE, "mismatch in style popping and pushing");
-       }
-
-       XRLog.layout(Level.FINEST, "is a fixed child: " + body_box.isChildrenExceedBounds());
-
-       // if there is a fixed child then we need to set opaque to false
-       // so that the entire viewport will be repainted. this is slower
-       // but that's the hit you get from using fixed layout
-       if (body_box.isChildrenExceedBounds()) {
-           super.setOpaque(false);
-       } else {
-           super.setOpaque(true);
-       }
-
-       getRenderingContext().setRootBox(body_box);
-
-       XRLog.layout(Level.FINEST, "after layout: " + body_box);
-
-       intrinsic_size = new Dimension(getSharedContext().getMaxWidth(), body_box.height);
-       //Uu.p("intrinsic size = " + intrinsic_size);
-       if (enclosingScrollPane != null) {
-           XRLog.layout(Level.FINEST, "enclosing scroll pane = " + this.enclosingScrollPane);
-           int view_height = this.enclosingScrollPane.getViewport().getHeight();
-           // resize the outter most box incase it is too small for the viewport
-           if (intrinsic_size.getHeight() < view_height) {
-               if (body_box != null) {
-                   body_box.height = view_height;
-                   bodyExpandHack(body_box, view_height);
-                   intrinsic_size.height = view_height;
-               }
-           }
-       }
-
-       if (!intrinsic_size.equals(this.getSize())) {
-           this.setPreferredSize(intrinsic_size);
-           this.revalidate();
-       }
-
-       this.fireDocumentLoaded();
-
-   }
-   */
-
 
     protected void executeRenderThread(RenderingContext c, Layer root) {
         //Uu.p("do render called");
@@ -305,8 +191,6 @@ public abstract class BasicPanel extends RootPanel {
 
     }
     
-    private static final int PAGE_PAINTING_CLEARANCE = 10;
-
     private void paintPagedView(RenderingContext c, Layer root) {
         if (root.getLastPage() == null) {
             return;
@@ -370,7 +254,6 @@ public abstract class BasicPanel extends RootPanel {
         
         g.setClip(working);
     }
-    
 
     public void paintPage(Graphics2D g, int pageNo) {
         Layer root = getRootLayer();
@@ -414,248 +297,6 @@ public abstract class BasicPanel extends RootPanel {
         RenderingContext c = newRenderingContext(g);
         getRootLayer().assignPagePaintingPositions(c, Layer.PAGED_MODE_PRINT);
     }
-
-    /**
-     * Description of the Method
-     *
-     * @param box PARAM
-     * @param x   PARAM
-     * @param y   PARAM
-     * @return Returns
-     */
-    /*
-   public Box findBox(Box box, int x, int y, BlockFormattingContext bfc) {
-
-       if (box == null) {
-           return null;
-       }
-       Iterator it = box.getChildIterator();
-       while (it.hasNext()) {
-           Box bx = (Box) it.next();
-           int tx = x;
-           int ty = y;
-           tx -= bx.x;
-           //is this needed?
-           tx -= bx.tx;
-           ty -= bx.y;
-           //is this needed?
-           ty -= bx.ty;
-
-           // test the contents
-           Box retbox = null;
-           retbox = findBox(bx, tx, ty, bfc);
-           if (retbox != null) {
-               return retbox;
-           }
-
-           // test the box itself
-           int tty = y;
-           if (bx instanceof InlineBox) {
-               InlineBox ibx = (InlineBox) bx;
-               LineBox lbx = (LineBox) box;
-               int off = lbx.getBaseline() + ibx.y - ibx.height;//this is not really correct, what about vertical align?
-               tty -= off;
-           }
-
-           if (bx.contains(x - bx.x, tty - bx.y)) {
-               return bx;
-           }
-       }
-
-       return null;
-   }
-   */
-
-    /**
-     * Description of the Method
-     *
-     * @param box PARAM
-     * @param x   PARAM
-     * @param y   PARAM
-     * @return Returns
-     */
-    /*
-   public Box findElementBox(Box box, int x, int y) {
-       return findElementBox(box, x, y, null);
-   }
-   */
-/*
-    public Box findElementBox(Box box, int x, int y,
-                              BlockFormattingContext bfc) {//TODO: why is this used? A better way? should be in a render util?
-        
-        if (box == null) {
-            return null;
-        }
-
-        //Uu.p("bfc blah = " + box.getPersistentBFC());
-
-        // go down to the next bfc
-        if (box.getPersistentBFC() != null) {
-            bfc = box.getPersistentBFC();
-        }
-
-        // loop through the children first
-        Iterator it = box.getChildIterator();
-        while (it.hasNext()) {
-            Box bx = (Box) it.next();
-            int tx = x;
-            int ty = y;
-            tx -= bx.x;
-            tx -= bx.tx;
-            ty -= bx.y;
-            ty -= bx.ty;
-*/
-    /*
-    if(bx.getPersistentBFC() != null) {
-        Uu.p("current bfc = " + bfc);
-        bfc = bx.getPersistentBFC();
-        Uu.p("setting bfc" + bfc);
-    }
-
-    */
-/*            //Uu.p("bfc = " + box.getPersistentBFC());
-            if (bx.absolute) {
-                int[] adj = adjustForAbsolute(bx, tx, ty, bfc);
-                tx = adj[0];
-                ty = adj[1];
-            }
-
-
-            // test the contents
-            Box retbox = null;
-            retbox = findElementBox(bx, tx, ty, bfc);
-            if (retbox != null) {
-                return retbox;
-            }
-            
-            // test the box itself
-            
-            // skip if it's text only so that we can
-            // hit the parent instead
-            // skip line boxes
-            if (bx instanceof LineBox) {
-                continue;
-            }
-
-            int tty = y;
-            if (bx instanceof InlineBox) {
-                InlineBox ibx = (InlineBox) bx;
-                LineBox lbx = (LineBox) box;
-                int off = lbx.getBaseline() + ibx.y - ibx.height;//not really correct
-                tty -= off;
-            }
-            
-            //Uu.p("bx = " + bx);
-            //Uu.p("tx = " + tx + " ty = " + ty);
-            if (bx.contains(x - bx.x, tty - bx.y)) {
-                //TODO: if this is InlineBox, we need to find the first previous sibling with a pushStyle
-                //Uu.p("matches box: " + bx);
-                return bx;
-            }
-        }
-
-        return null;
-    }
-    */
-
-    /*
-    private int[] adjustForAbsolute(Box bx, int tx, int ty, BlockFormattingContext bfc) {
-        //Uu.p("testing: " + bx);
-        //Uu.p("is abs");
-        //Uu.p("bfc = " + bfc);
-        BlockFormattingContext obfc = bx.getPersistentBFC();
-        //Uu.p("own bfc = " + obfc);
-        if (bfc != null) {
-            //int adj_x = tx += bfc.getX();
-            //Uu.p("x = " + adj_x);
-            //Uu.p("x = " + tx);
-            if (bx.left_set) {
-                tx -= bx.left;
-            }
-            if (bx.right_set) {
-                int off = (bfc.getWidth() - bx.width - bx.right);
-                //Uu.p("offset = " + off);
-                tx -= off;
-            }
-            //Uu.p("final x = " + tx);
-
-            //Uu.p("y = " + ty);
-            if (bx.top_set) {
-                ty -= bx.top;
-            }
-            if (bx.bottom_set) {
-                int off = (bfc.getHeight() - bx.height - bx.bottom);
-                //Uu.p("offset = " + off);
-                ty -= off;
-            }
-            //Uu.p("final y = " + ty);
-      
-        }
-
-        int[] adjs = new int[2];
-        adjs[0] = tx;
-        adjs[1] = ty;
-        return adjs;
-    }
-    */
-
-
-
-    /**
-     * Description of the Method
-     *
-     * @param box PARAM
-     * @param x   PARAM
-     * @param y   PARAM
-     * @return Returns
-     */
-    /*
-   public int findBoxX(Box box, int x, int y) {
-       XRLog.layout(Level.FINEST, "findBox(" + box + " at (" + x + "," + y + ")");
-       Iterator it = box.getChildIterator();
-
-       while (it.hasNext()) {
-           Box bx = (Box) it.next();
-           int tx = x;
-           int ty = y;
-           tx -= bx.x;
-           //is this needed? tx -= bx.totalLeftPadding(c.getCurrentStyle());
-           ty -= bx.y;
-           //is this needed? ty -= bx.totalTopPadding(c.getCurrentStyle());
-
-           // test the contents
-           int retbox = findBoxX(bx, tx, ty);
-           if (retbox != -1) {
-               return retbox;
-           }
-
-           int tty = y;
-           if (bx instanceof InlineBox) {
-               InlineBox ibx = (InlineBox) bx;
-               LineBox lbx = (LineBox) box;
-               XRLog.layout(Level.FINEST, "inline = " + ibx);
-               XRLog.layout(Level.FINEST, "inline y = " + ibx.y);
-               XRLog.layout(Level.FINEST, "inline height = " + ibx.height);
-               XRLog.layout(Level.FINEST, "line = " + lbx);
-               int off = lbx.getBaseline() + ibx.y - ibx.height;//not really correct
-               XRLog.layout(Level.FINEST, "off = " + off);
-               tty -= off;
-           }
-
-           // test the box itself
-           XRLog.layout(Level.FINEST, "bx test = " + bx + " " + x + "," + y);
-           if (bx.contains(x - bx.x, tty - bx.y)) {
-               return x - bx.x;
-           }
-       }
-
-       return -1;
-   }
-   */
-
-
-
-
 
     /**
      * Description of the Method
@@ -727,7 +368,7 @@ public abstract class BasicPanel extends RootPanel {
     public void setSize(Dimension d) {
         XRLog.layout(Level.FINEST, "set size called");
         super.setSize(d);
-        /* do we need this?
+        /* CLEAN: do we need this?
         if (doc != null && body_box != null) {
             if(body_box.width != d.width)
             RenderQueue.getInstance().dispatchLayoutEvent(new ReflowEvent(ReflowEvent.CANVAS_RESIZED, d));
@@ -737,15 +378,8 @@ public abstract class BasicPanel extends RootPanel {
     } */
     }
 
-
-
-
-
-
     /* =========== set document utility methods =============== */
-    
-    
-    
+
     /**
      * Sets the document attribute of the BasicPanel object
      *
@@ -890,20 +524,12 @@ public abstract class BasicPanel extends RootPanel {
      * @return Returns
      */
     protected Document loadDocument(final String uri) {
-        return sharedContext.getUac().getXMLResource(uri).getDocument();
+        xmlResource = sharedContext.getUac().getXMLResource(uri);
+        return this.xmlResource.getDocument();
     }
 
-
-
-
-
-
-    
-    
-    
     /* ====== hover and active utility methods ========= */
-    
-    
+
 
     /**
      * Gets the hover attribute of the BasicPanel object
@@ -1015,44 +641,6 @@ public abstract class BasicPanel extends RootPanel {
     }
 
     /**
-     * Recalculate the layout of the panel. Only called by paintComponent(). Use
-     * calcLayout() instead.
-     *
-     * @param g PARAM
-     */
-    /*
-   protected void calcLayout(Graphics g, Dimension d) {
-       //Uu.p("calc layout with graphics called: " + d);
-       layout_thread.startLayout(g, d);
-       explicitlyOpaque = super.isOpaque();
-   }
-   */
-
-    /**
-     * Description of the Method
-     *
-     * @param c
-     */
-    /*
-   protected void doRender(Context c) {
-       // paint the normal swing background first
-       // but only if we aren't printing.
-       Graphics g = c.getGraphics();
-       if (!(g instanceof PrinterGraphics) && explicitlyOpaque) {
-           g.setColor(getBackground());
-           g.fillRect(0, 0, getWidth(), getHeight());
-       }
-       // start painting the box tree
-       if (body_box != null) {
-           BoxRendering.paint(c, body_box, false, false);//no restyle demanded on top level
-       }
-       if (!c.isStylesAllPopped()) {
-           XRLog.render(Level.SEVERE, "mismatch in style popping and pushing");
-       }
-   }
-   */
-
-    /**
      * Description of the Method
      */
     protected void fireDocumentLoaded() {
@@ -1098,6 +686,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.101  2006/04/07 07:30:56  pdoubleya
+ * Store reference to loaded XMLResource. Removed commented code. Javadoc.
+ *
  * Revision 1.100  2006/02/22 02:20:19  peterbrant
  * Links and hover work again
  *
