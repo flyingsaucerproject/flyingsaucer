@@ -60,10 +60,11 @@ import java.net.URL;
  * </pre>
  * <p/>
  * <p>XHTMLPanel renders XHTML and XML which can be loaded as valid {@link Document}
- * instances. You should make sure the document you want to render is valid. For XHTML,
+ * instances. You should make sure the document you want to render is well-formed. For XHTML,
  * there is always a default stylesheet available, even if no CSS is attached to the
  * XHTML you are loading. For XML, there is no default stylesheet, so you should have
- * one attached to your XML before trying to render it. XHTMLPanel has methods to load
+ * one attached to your XML before trying to render it using the xml-stylesheer processing
+ * instruction. XHTMLPanel has methods to load
  * documents from a uri ({@link #setDocument(String uri)}),
  * from a Document instance ({@link #setDocument(Document)}) or from an InputStream
  * ({@link org.xhtmlrenderer.swing.BasicPanel#setDocument(java.io.InputStream,String)}).</p>
@@ -342,6 +343,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.34  2006/04/07 07:29:05  pdoubleya
+ * JavaDoc
+ *
  * Revision 1.33  2006/04/05 09:40:32  pdoubleya
  * Removed commented code.
  *

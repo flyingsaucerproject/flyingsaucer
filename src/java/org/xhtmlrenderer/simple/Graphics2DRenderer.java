@@ -51,16 +51,17 @@ import java.awt.image.BufferedImage;
 
 public class Graphics2DRenderer {
     /**
-     * Description of the Field
+     * The panel we are using to render the document.
      */
     protected XHTMLPanel panel;
+
     /**
-     * Description of the Field
+     * Dimensions of the image to render, in pixels.
      */
     protected Dimension dim;
 
     /**
-     * Constructor for the Graphics2DRenderer object
+     * Creates a new renderer with no document specified.
      */
     public Graphics2DRenderer() {
         panel = new XHTMLPanel(false);
@@ -69,10 +70,11 @@ public class Graphics2DRenderer {
 
     // ASK maybe we could change the graphics2d to be a font rendering context?
     /**
-     * lay out the document with the desired size. don't paint though.
+     * Lay out the document with the specified dimensions,
+     * without rendering.
      *
-     * @param g2  PARAM
-     * @param dim PARAM
+     * @param g2  the canvas to layout on.
+     * @param dim dimensions of the container for the document
      */
     public void layout(Graphics2D g2, Dimension dim) {
         this.dim = dim;
@@ -84,9 +86,9 @@ public class Graphics2DRenderer {
 
 
     /**
-     * actually draw the
+     * Renders the document to the given canvas. Call layout() first.
      *
-     * @param g2 PARAM
+     * @param g2 Canvas to render to.
      */
     public void render(Graphics2D g2) {
         if (g2.getClip() == null) {
@@ -97,26 +99,27 @@ public class Graphics2DRenderer {
 
 
     /**
-     * set the document to be rendered.
+     * Set the document to be rendered, lays it out, and
+     * renders it.
      *
-     * @param url The new document value
+     * @param url the URL for the document to render.
      */
     public void setDocument(String url) {
         panel.setDocument(url);
     }
 
     /**
-     * Sets the document attribute of the Graphics2DRenderer object
+     * Sets the document to render, lays it out, and renders it.
      *
-     * @param doc      The new document value
-     * @param base_url The new document value
+     * @param doc      the Document to render
+     * @param base_url base URL for relative links within the Document.
      */
     public void setDocument(Document doc, String base_url) {
         panel.setDocument(doc, base_url);
     }
 
     /**
-     * Sets the renderingContext attribute of the Graphics2DRenderer object
+     * Sets the SharedContext for rendering.
      *
      * @param ctx The new renderingContext value
      */
@@ -125,12 +128,13 @@ public class Graphics2DRenderer {
     }
 
     /**
-     * return the size image needed to render the document without anything
-     * going off the side. *could be different than the dimensions passed into
+     * Returns the size image needed to render the document without anything
+     * going off the side. Could be different than the dimensions passed into
      * layout because of text that couldn't break or a table that's set to be
-     * too big
+     * too big.
      *
-     * @return The minimumSize value
+     * @return A rectangle sized to the minimum size required for the
+     * document.
      */
     public Rectangle getMinimumSize() {
         if (panel.getIntrinsicSize() != null) {
@@ -143,26 +147,27 @@ public class Graphics2DRenderer {
     }
 
     /**
-     * Gets the renderingContext attribute of the Graphics2DRenderer object
+     * Gets the SharedContext for layout and rendering.
      *
-     * @return The renderingContext value
+     * @return see desc
      */
     public SharedContext getSharedContext() {
         return panel.getSharedContext();
     }
 
+    /** Returns the panel used internally for rendering. */
     public XHTMLPanel getPanel() {
         return panel;
     }
 
     /**
-     * a static utility method to automatically create an image the right size,
-     * then layout and render the document
+     * A static utility method to automatically create an image from a
+     * document.
      *
-     * @param url    PARAM
-     * @param width  PARAM
-     * @param height PARAM
-     * @return Returns
+     * @param url    URL for the document to render.
+     * @param width  Width in pixels of the layout container
+     * @param height Height in pixels of the layout container
+     * @return Returns an Image containing the rendered document.
      */
     public static BufferedImage renderToImage(String url, int width, int height) {
         Graphics2DRenderer g2r = new Graphics2DRenderer();
@@ -177,11 +182,14 @@ public class Graphics2DRenderer {
     }
 
     /**
-     * Description of the Method
+     * A static utility method to automatically create an image from a
+     * document, where height is determined based on document content.
+     * To estimate a size before rendering, use {@link setDocument(String)}
+     * and then {@link getMinimumSize()}.
      *
-     * @param url   PARAM
-     * @param width PARAM
-     * @return Returns
+     * @param url    java.net.URL for the document to render.
+     * @param width  Width in pixels of the layout container
+     * @return Returns an java.awt.Image containing the rendered document.
      */
     public static BufferedImage renderToImage(String url, int width) {
         Graphics2DRenderer g2r = new Graphics2DRenderer();
@@ -213,6 +221,9 @@ public class Graphics2DRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2006/04/07 07:28:39  pdoubleya
+ * JavaDoc
+ *
  * Revision 1.16  2006/01/04 19:50:16  peterbrant
  * More pagination bug fixes / Implement simple pagination for tables
  *
