@@ -19,12 +19,8 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.io.OutputStream;
-import java.util.List;
-
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -42,8 +38,11 @@ import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.Configuration;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
+import java.awt.*;
+import java.io.File;
+import java.io.OutputStream;
+import java.io.IOException;
+import java.util.List;
 
 public class ITextRenderer {
     // These two defaults combine to produce an effective resolution of 96 px to the inch
@@ -96,6 +95,16 @@ public class ITextRenderer {
     
     public void setDocument(Document doc, String url) {
         setDocument(doc, url, new XhtmlNamespaceHandler());
+    }
+
+    public void setDocument(File file)
+            throws IOException {
+        
+        File parent = file.getParentFile();
+        setDocument(
+                loadDocument(file.toURI().toURL().toExternalForm()),
+                (parent == null ? "" : parent.toURI().toURL().toExternalForm())
+        );
     }
     
     public void setDocument(Document doc, String url, NamespaceHandler nsh) {
