@@ -1,0 +1,572 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <style type="text/css">
+#toc {
+  page-break-before: always; 
+  font-size: 18pt; 
+  text-align: center;
+}
+.printOnly, #footer {
+  display: none;
+}
+@page {
+  size: A4;
+  margin: 1in;
+  padding: 0.25in;
+  -fs-flow-top: header;
+  -fs-flow-bottom: footer;
+  -fs-flow-left: left;
+  -fs-flow-right: right;
+}
+@page :first {
+  border: thin solid black;
+  -fs-flow-bottom: none;
+}
+pagenumber:before {
+  content: counter(page); 
+}
+pagecount:before {
+  content: counter(pages);
+}
+table { 
+  width: 100%;
+  border: thin solid black; 
+  padding: 0; 
+  margin: 0;
+  empty-cells: show;
+  border-collapse: collapse;
+}
+tr:first-child {
+  background: teal;
+  font-weight: bold;
+}
+td { 
+  font-size: 8pt;
+  border: thin solid black; 
+  padding: 4pt; 
+  margin: 0;
+  empty-cells: show;
+}
+@media print {
+  #toc {
+    page-break-before: always; 
+  }
+  h2 {
+    page-break-before: always;
+  }
+  h3, h4 {
+    page-break-after: avoid;
+  }
+  .printOnly, #footer {
+    display: block;
+  }
+  body { 
+    margin: 0; 
+    padding: 0; 
+  }
+  a:link {
+    text-decoration: none;
+    color: black;
+  }
+}
+  </style>
+</head>
+<body>
+
+<h1 id="id1" style="text-align: center;">The Flying Saucer User's Guide</h1>
+
+<div class="printOnly">
+
+<p style="font-size: 10pt; text-align: center;"><em>Getting Started with Flying Saucer</em></p>
+
+<p style="font-size: 12pt; text-align: center;">Release R6</p>
+
+<p style="font-size: 12pt; text-align: center;">May 2006</p>
+
+</div>
+
+<div id="footer" style="position: absolute; top: 0; left: 0; -fs-move-to-flow: footer;">
+
+<p>  <span style="font-size: 8pt;"><em>Page <pagenumber /> of <pagecount /></em></span></p>
+
+</div>
+
+<p id="toc">Table of Contents</p>
+
+<ol class="toc">
+  <li><a href="#id2"> An Introduction to Flying Saucer </a>
+    <ol>
+      <li><a href="#id3"> What It Is </a></li>
+      <li><a href="#id4"> What It Does </a></li>
+      <li><a href="#id5"> What It's Good For </a></li>
+      <li><a href="#id6"> Where the Saucer Does not Fly (what it can't do) </a></li>
+      <li><a href="#id7"> License and Dependencies </a></li>
+      <li><a href="#id8"> Requirements for Running and Using Flying Saucer </a></li>
+      <li><a href="#id9"> Setting your Classpath </a></li>
+    </ol>
+  </li>
+  <li><a href="#id10"> Using Flying Saucer </a>
+    <ol>
+      <li><a href="#id11"> Basic Usage </a></li>
+      <li><a href="#id14"> Creating <span class="caps">PDF</span> Files </a></li>
+      <li><a href="#id22"> Rendering to an Image </a></li>
+      <li><a href="#id23"> Sample Applications </a></li>
+    </ol>
+  </li>
+  <li><a href="#id27"> Flying Saucer Extensions to the <span class="caps">CSS</span> 2.1 Specification </a>
+    <ol>
+      <li><a href="#id28"> Table of Extensions </a></li>
+      <li><a href="#id29"> Extensions: using the <code>-fs-flow-&lt;top|right|bottom|left&gt;</code> Properties </a></li>
+    </ol>
+  </li>
+  <li><a href="#id30"> Configuration </a>
+    <ol>
+      <li><a href="#id31"> The Flying Saucer Configuration File </a></li>
+      <li><a href="#id35"> Logging </a></li>
+    </ol>
+  </li>
+</ol>
+
+<h2 id="id2">An Introduction to Flying Saucer</h2>
+
+<h3 id="id3">What It Is</h3>
+
+<img src="snap-browse-fs-thumb.png" style="float: right; margin-left: 10px;" /> 
+
+<p>Flying Saucer is a <em>renderer</em>, which means it takes <span class="caps">XML</span> files as input, and generates a rendered representation of that <span class="caps">XML</span> as output. The output may go to the screen (in a <span class="caps">GUI</span>), to an image, or to a <span class="caps">PDF</span> file. Because we believe most people will rely on conventional practices, our main target for content is <span class="caps">XHTML</span>, an <span class="caps">XML</span> document format that standardizes <span class="caps">HTML</span>. However, we accept any well-formed <span class="caps">XML</span> for rendering as long as <span class="caps">CSS</span> is provided that tells us how to lay it out. In the case of <span class="caps">XHTML</span>, default stylesheets are provided out of the box. </p>
+
+<p>Internally, Flying Saucer works with an <span class="caps">XML</span> document and uses <span class="caps">CSS</span> to determine how to lay it out visually. The rules for layout come from the <a href="http://www.w3.org/TR/CSS21/">CSS 2.1 Specification</a>, and according to that spec, element nodes and attributes are matched to <span class="caps">CSS</span> selectors, where each selector identifies some formatting rules. We can't cover how to use <span class="caps">CSS</span> here&#8212;it's a long and complex specification&#8212;but there are many good books available, and tutorials on the web. Check out the <a href="http://www.w3schools.com/css/default.asp">W3Schools <span class="caps">CSS</span> Tutorial</a> for a starting point. </p>
+
+<h3 id="id4">What It Does</h3>
+
+<img src="snap-browse-alice-thumb.png" style="float: left; margin-right: 10px;" /> 
+
+<p>Flying Saucer takes <span class="caps">XML</span> and <span class="caps">CSS</span> as input (where the <span class="caps">CSS</span> might be embedded in the document, or linked from it) and generates rendered content. Our current major output formats are in a <span class="caps">GUI</span> interface (a panel) and in <span class="caps">PDF</span>; we can also render to image formats, e.g. render the page and save as an image.</p>
+
+<p>If rendering to a <span class="caps">GUI</span>, hyperlinks work so you can navigate between pages. As with <span class="caps">HTML</span>, you can also render forms, capture output, and create applications that way. In a <span class="caps">GUI</span>, Flying Saucer provides a <em>read-only</em> view of the output; we cannot replace a text area, say, or Swing's <code>JEditorPane</code> or <code>JTextPane</code>. However, for static content, or content created by you, Flying Saucer can be used for help documents, tutorials, books, splash screens, presentations, and much more.</p>
+
+<p>We can also render to <span class="caps">PDF</span>. For <span class="caps">PDF</span>, the layout rules come from the <span class="caps">CSS</span>. The difference is the rendered output uses the <a href="http://www.lowagie.com/iText/">iText</a> library to generate <span class="caps">PDF</span>.</p>
+
+<p>Last, we have utility classes to render output to an image file. With this, you could use <span class="caps">XML</span> and <span class="caps">CSS</span> to layout printable content&#8212;for example, a flyer, a poster, business cards, etc.&#8212;and save them as images you can print out or email. It's also a nice way to create thumbnail or reduced-size images of pages.</p>
+
+<h3 id="id5">What It's Good For</h3>
+
+<img src="snap-browse-hover-thumb.png" style="float: right; margin-left: 10px;" /> 
+
+<p>Flying Saucer can be used for any Java application that requires some sort of styled text. This can be as simple as a chat program or as complicated as a complete ebook reader with dynamic stylesheets. Flying Saucer is very forward thinking and is designed to be a part of the next generation of applications that combine rich desktop clients with web content. Some examples of application types are:</p>
+
+<ul>
+  <li>chat programs</li>
+  <li>online music stores</li>
+  <li>a Gutenberg eBook reader</li>
+  <li>a distributed dictionary application</li>
+  <li>Sherlock style map and movie search</li>
+  <li>Konfabulator and Dashboard components</li>
+  <li>an <span class="caps">RSS</span> reader</li>
+  <li>a Friendster client</li>
+  <li>an eBay client</li>
+  <li>a splash screen</li>
+  <li>an about box</li>
+  <li>a helpfile viewer</li>
+  <li>a javadoc viewer</li>
+  <li>report generation and viewing</li>
+  <li>a stock ticker / weather reporter</li>
+</ul>
+
+<h3 id="id6">Where the Saucer Does not Fly (what it can't do)</h3>
+
+<p>Being honorable people, we must admit what Flying Saucer cannot do for you:</p>
+
+<ul>
+  <li>It cannot be used for user-editable content; output is read-only.</li>
+  <li>We render well-formed <span class="caps">XML</span>; <span class="caps">XHTML</span> is a well-formed document standard. We can't render most <span class="caps">HTML</span> "in the wild". At best, you can "clean up" old <span class="caps">HTML</span> with TagSoup or JTidy and hope for the best. But without a bunch of work, you won't be able to use Flying Saucer for a real web browser component. However, note that's not a technical limitation, just a lack of time and resources.</li>
+  <li>HTML plugins, like applets, Flash programs, etc. are not supported.</li>
+  <li>Scripting (e.g. JavaScript) is not supported. We ignore script tags.</li>
+  <li>Dynamic changes to the content requires a re-layout (quick, but noticeable), that is, you can't dynamically change the <span class="caps">DOM</span> and see results live.</li>
+  <li>Most <span class="caps">DOM</span> callbacks used in JavaScript are not yet implemented (onLoad, onClick, onBlur, etc.).</li>
+  <li>Tables can be rendered, but support is limited to fairly simple table structures. <code>&lt;thead&gt;</code> and <code>&lt;tbody&gt;</code> are not supported and will raise errors if present.</li>
+</ul>
+
+<img src="snap-browse-report-thumb.png" style="float: left; margin-right: 10px;" /> 
+
+<p>These limitations all have a pragmatic origin. Josh Marinacci, the founder of and original lead developer for the Flying Saucer project, realized that writing a fully capable <span class="caps">HTML</span> browser component (like Firefox's Gecko engine) could take many man-years of development. But if one focused on well-formed <span class="caps">XHTML</span> only, and stuck to the <span class="caps">CSS</span> spec, you could cover most of the useful stuff you want to do with a rendering engine, and do it in a reasonable amount of time. So it's not impossible to add scripting, <span class="caps">DHTML</span>, plugins to Flying Saucer, we've just deferred this until someone has the time and energy to get it to work&#8212;that way, we stay focused on the goal, which is pure <span class="caps">CSS</span> 2.1 support for well-formed <span class="caps">XML</span>.</p>
+
+<p>Of course, you can help fix any of these things. Contributors welcome!</p>
+
+<h3 id="id7">License and Dependencies</h3>
+
+<img src="snap-browse-fluid-thumb.png" style="float: right; margin-left: 10px;" /> 
+
+<p>Flying Saucer itself is licensed under the <a href="http://www.gnu.org/copyleft/lesser.html">GNU Lesser General Public License</a>. You can use Flying Saucer in any way you want as long as you respect the terms of the license. A copy of the <span class="caps">LGPL</span> is provided under <span class="caps">LGPL</span>.txt in our distribution.</p>
+
+<p>Flying Saucer uses a couple of <span class="caps">FOSS</span> packages to get the job done. A list of these, along with the license they each have, is listed in the <span class="caps">LICENSE</span> file in our distribution.  </p>
+
+<h3 id="id8">Requirements for Running and Using Flying Saucer</h3>
+
+<p>Flying Saucer is built and tested on Java 1.4 and has some dependencies on libraries only available in 1.4. In principle, you should be able to backport it to 1.3 (or earlier?), but we've not tried that and don't maintain a 1.3 branch.</p>
+
+<p>Basic requirements:</p>
+
+<ul>
+  <li>Java Runtime Environment 1.4 or above (or <span class="caps">JDK</span> of course)</li>
+  <li>core-renderer.jar (our distribution)</li>
+  <li><a href="http://cssparser.sourceforge.net">CSS Parser</a> Our distribution includes a modified version, redistributed as allowed by the <span class="caps">CSS</span> Parser license</li>
+  <li><a href="http://www.lowagie.com/iText/">iText</a> (also at <a href="http://itextpdf.sourceforge.net)">iText <span class="caps">PDF</span></a>, distributed unmodified</li>
+  <li><a href="http://ant.apache.org">Ant</a> if you want to build from source</li>
+  <li><a href="http://www.junit.org/index.htm">JUnit</a> if you want to run unit tests on source</li>
+</ul>
+
+<p><a href="http://www.lowagie.com/iText/">iText</a> is not necessary at runtime if you are not generating PDFs, but is necessary for the build to satisfy compile-time dependencies.</p>
+
+<p>In theory, you could substitute another <span class="caps">CSS</span> parser that is <a href="http://www.w3.org/Style/CSS/SAC">SAC</a> (Simple <span class="caps">API</span> for <span class="caps">CSS</span>) compliant, but we've had little success with this due to variations in implementation. </p>
+
+<p>Most of Flying Saucer does not rely on advanced Java features. It should be usable on alternate Java implementations, such as <span class="caps">GNU</span> Classpath.</p>
+
+<h3 id="id9">Setting your Classpath</h3>
+
+<p>You only need the <code>core-renderer.jar</code> and the <code>cssparser-0-9-4-fs.jar</code> in your <span class="caps">CLASSPATH</span>. If you want <span class="caps">PDF</span> output, add <code>itext-paulo-155.jar</code>. If you want anti-aliasing using the Minium toolkit, add <code>minium.jar</code>. That is all you need for your own programs. You also need an <span class="caps">XML</span> parser to be in your classpath, but this already included in recent versions of the <span class="caps">JRE</span>. To run the browser or use any of it's support classes you will need the <code>browser.jar</code> file.</p>
+
+<p>To summarize, the easiest <span class="caps">CLASSPATH</span> to set is:</p>
+
+<ul>
+  <li><code>core-renderer.jar</code>  (required)</li>
+  <li><code>cssparser-0-9-4-fs.jar</code> (required)</li>
+  <li><code>itext-paulo-155.jar</code></li>
+  <li><code>minium.jar</code></li>
+</ul>
+
+<h2 id="id10">Using Flying Saucer</h2>
+
+<h3 id="id11">Basic Usage</h3>
+
+<ul class="toc">
+  <li><a href="#id12"> Rendering to a Swing Panel </a></li>
+  <li><a href="#id13"> Showing an About Box </a></li>
+</ul>
+
+<p>To make life easier for our end-users, we have created a special Java package, <code>org.xhtmlrenderer.simple</code>, which contains classes you can use to get up and running without any hassle.</p>
+
+<p>In addition, in a separate branch of our source tree, we created some sample single-class Java programs to show different uses of Flying Saucer. </p>
+
+<p>To understand where to start, you have to look at how Flying Saucer works. The input is a document, identifed by a Uniform Resource Identifier (URL) or Uniform Resource Locator (URI). That document must be well-formed <span class="caps">XML</span>. The document is loaded and elements are matched against the <span class="caps">CSS</span> provided for the document. For <span class="caps">XHTML</span>, we have specifications for how <span class="caps">CSS</span> is specified&#8212;as linked stylesheets, as inline styles, and as style attributes. For <span class="caps">XML</span>, we support linked stylesheets via the xml-stylesheet processing instruction.</p>
+
+<p>Once we've matched <span class="caps">CSS</span>, we run through a layout phase, where we calculate the size and position, as well as display attributes, of all visible elements. The layout is then used to render to some output sink. The standard output sink is a Swing <code>JPanel</code> subclass we call <code>org.xhtmlrenderer.swing.BasicPanel</code>, or its extended (and more powerful) child, <code>XHTMLPanel</code>. </p>
+
+<h4 id="id12">Rendering to a Swing Panel</h4>
+
+<p>In fact, to make it really easy, both <code>org.xhtmlrenderer.swing.BasicPanel</code>, and its child <code>org.xhtmlrenderer.simple.XHTMLPanel</code>, allow you to set the document in one call. In fact, to display a page in a Swing <code>JFrame</code>, the code is very simple. Take a look at out our <code>SinglePageFrame</code> example in the samples directory. The important stuff happens in the <code>run()</code> method. </p>
+
+<pre><code>
+private void run(String[] args) throws Exception {
+    loadAndCheckArgs(args);
+
+// Create a JPanel subclass to render the page
+    XHTMLPanel panel = new XHTMLPanel();
+
+// Set the XHTML document to render. We use the simplest form
+    // of the API call, which uses a File reference. There
+    // are a variety of overloads for setDocument().
+    panel.setDocument(new File(fileName));
+
+// Put our panel in a scrolling pane. You can use
+    // a regular JScrollPane here, or our FSScrollPane.
+    // FSScrollPane is already set up to move the correct
+    // amount when scrolling 1 line or 1 page
+    FSScrollPane scroll = new FSScrollPane(panel);
+    JFrame frame = new JFrame("Flying Saucer Single Page Demo");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.getContentPane().add(scroll);
+    frame.pack();
+    frame.setSize(1024, 768);
+    frame.setVisible(true);
+}</code></pre>
+
+<p>The basic process is:</p>
+
+<ul>
+  <li>create a <code>BasicPanel</code> or <code>XHTMLPanel</code> instance</li>
+  <li>add it to a Swing <code>JScrollPane</code> or an <code>FSScrollPane</code> (unless your pages will fit without scrolling</li>
+  <li>add the panel to a container&#8212;a <code>JFrame</code>, another panel, etc.</li>
+  <li>call <code>setDocument()</code> to load and render your document</li>
+</ul>
+
+<p>That's it! You can now display <span class="caps">XHTML</span> and <span class="caps">CSS</span> in your Swing applications.</p>
+
+<p>What about <span class="caps">AWT</span> or alternate <span class="caps">GUI</span> toolkits for Java? Our basic rendering routine writes to a "renderer". Right now we support the concept of rendering to an <em>output device</em>. We have two output device implementations: one for Java2D (essentially a canvas, or <code>Graphics2D</code> instance) and the other for <span class="caps">PDF</span> (using iText). When we render to a Swing panel, we are still painting on a Java2D canvas, so in principle, you should be able to port this rendering to other 2D output surfaces. If you do, we'd like to hear from you! Just note there is no explicit technical limitation that forces you to use Swing&#8212;it's just easy, and easy to make it look good. </p>
+
+<h4 id="id13">Showing an About Box</h4>
+
+<p>The AboutBox is a prefab component which displays an <span class="caps">XHTML</span> document and automatically scrolls it. It is primarily useful for Help-&gt;About menu items and splash screens.</p>
+
+<p>Here is an example of adding an about box to a menu item's action listener.</p>
+
+<pre><code>
+import org.xhtmlrenderer.demo.aboutbox.AboutBox;
+......
+JMenuItem about = new JMenuItem("About...");
+about.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent evt) {
+        AboutBox ab = new AboutBox("About Flying Saucer",
+            "demos/about/index.xhtml");
+        ab.setVisible(true);
+    }
+ });</code></pre>
+
+<p></p>
+
+<h3 id="id14">Creating <span class="caps">PDF</span> Files</h3>
+
+<img src="snap-pdf-sample-thumb.png" style="float: left; margin-right: 10px;" /> 
+
+<p>In release R6, we added the ability to generate <span class="caps">PDF</span> files from <span class="caps">XML</span>/CSS input. This means that just by starting with <span class="caps">XHTML</span> and <span class="caps">CSS</span>, you can create portable <span class="caps">PDF</span> documents that will are readable by the standard <a href="http://www.adobe.com/products/acrobat/readermain.html">Adobe Acrobat Reader</a></p>
+
+<p>PDF files are treated as <em>paged</em> media, as defined by the <a href="http://www.w3.org/TR/CSS21/">CSS 2.1 Specification</a>, in the section <a href="http://www.w3.org/TR/CSS21/page.html">Paged media</a>. This means that some <span class="caps">CSS</span> attributes that apply to paged media (as opposed to visual media, like a browser) are used to control <span class="caps">PDF</span> output. Flying Saucer supports the <code>@page</code> rule, which means that page size, page margins and page break controls are all supported for <span class="caps">PDF</span> output.  </p>
+
+<div style="clear:both" ></div>
+
+<p>Questions and answers about using Flying Saucer for <span class="caps">PDF</span> output:</p>
+
+<ul class="toc">
+  <li><a href="#id15"> How do you control page size? </a></li>
+  <li><a href="#id16"> How do you control page size on <span class="caps">PDF</span> output? </a></li>
+  <li><a href="#id17"> How do you control page margins on <span class="caps">PDF</span> output? </a></li>
+  <li><a href="#id18"> What controls pagination? </a></li>
+  <li><a href="#id19"> What about <span class="caps">PDF</span> bookmarks? </a></li>
+  <li><a href="#id20"> What about embedded images? Are images downscaled? </a></li>
+  <li><a href="#id21"> Does Flying Saucer support <span class="caps">PDF</span> form components? </a></li>
+</ul>
+
+<h4 id="id15">How do you control page size?</h4>
+
+<p><em>What <span class="caps">CSS</span> attributes correspond to "page size" (e.g. letter, legal, A4) in <span class="caps">CSS</span> and <span class="caps">XHTML</span>?</em></p>
+
+<p>The size property as documented in the <a href="http://www.w3.org/TR/css3-page/">CSS3 Paged Media module</a>.  Everything in the spec is implemented except auto page handling (the default stylesheet currently sets letter sized paper with a half inch margin)</p>
+
+<h4 id="id16">How do you control page size on <span class="caps">PDF</span> output?</h4>
+
+<p><em>What <span class="caps">CSS</span> attributes correspond to "page size" as we understand that in a word processor, e.g. US Letter, Legal, or A4?</em></p>
+
+<p>CSS 2.1 does not support a page size output. Although Flying Saucer currently targets the 2.1 spec, in this case we brought in a <span class="caps">CSS3</span> property, <em>size</em>. You specify this as part of the <code>@page</code> rule.</p>
+
+<pre><code>@page {
+ size: 8.5in 11in;
+}</code></pre>
+
+<p>or </p>
+
+<pre><code>@page {
+ size: letter;
+}</code></pre>
+
+<p>It's described in more details in the <a href="http://www.w3.org/TR/css3-page/#page-size">CSS3 specification.</a></p>
+
+<h4 id="id17">How do you control page margins on <span class="caps">PDF</span> output?</h4>
+
+<p><em>What <span class="caps">CSS</span> attributes correspond to "margin" as we understand that in a word processor, e.g. left and right margin of 1inch? is this padding or margin on the <code>body</code> element?</em></p>
+
+<p>You can set margin, padding, and border in a @page rule (also part of the <span class="caps">CSS3</span> Paged Media module) i.e.</p>
+
+<pre><code>@page {
+ margin: 1in;
+}</code></pre>
+
+<p><code>:first</code>, <code>:right</code>, <code>:left</code> pseudo-pages are supported. <span class="caps">CSS3</span> named pages are not supported in release R6.</p>
+
+<p>For purposes of pagination, there's nothing special about <code>&lt;body&gt;</code> (e.g. if <code>&lt;body&gt;</code> spans 20 pages, your top and bottom margins will appear on pages 1 and 20 respectively).</p>
+
+<h4 id="id18">What controls pagination?</h4>
+
+<p><em>Is there a default pagination (whatever fits in the renderable page boundaries)&#8212;but then what is a "page" size? how can I (in the current code) implement a forced break? which page-break... does Flying Saucer support right now?</em></p>
+
+<p>Flying Saucer supports all of the <span class="caps">CSS</span> page-break properties.</p>
+
+<p>The only limitation is that page-break-before/after: avoid only considers siblings vs. all margins which meet at that location (as the spec dictates).</p>
+
+<p>If a rule cannot be satisfied (e.g. a prex. <code>&lt;div style="page-break-inside: avoid;"&gt;</code> spans three pages), the rule is simply dropped as if it never existed.</p>
+
+<p>With the exception of relatively positioned inline content, positioned/floated content will paginate just like content in the normal flow.</p>
+
+<h4 id="id19">What about <span class="caps">PDF</span> bookmarks?</h4>
+
+<p><em>For <span class="caps">PDF</span>, what sorts of <span class="caps">PDF</span>-specific things does Flying Saucer support, e.g. do bookmarks work? is there support for TOCs, footnotes?</em></p>
+
+<p>In release R6, Flying Saucer supports bookmarks.  <span class="caps">TODO</span>: I'll send an example later, but<br />
+basically you define the bookmark structure in <code>&lt;head&gt;</code> and then define<br />
+internal links in the document itself to establish a target.</p>
+
+<p>The <a href="http://www.lowagie.com/iText/">iText</a> library has a really dizzying array of features so we can get a lot<br />
+stuff for free just by providing the <span class="caps">XML</span> "API" for it (see <code>AcroForms</code> comment below).</p>
+
+<h4 id="id20">What about embedded images? Are images downscaled?</h4>
+
+<p><em>Are referenced images altered when embedded in the course of generating <span class="caps">PDF</span>?</em></p>
+
+<p>No.  <span class="caps">PDF</span> has its own way of representing image data, but no image fidelity is lost and the image isn't otherwise modified (e.g. GIFs are stored in a compressed, lossless format; the size of a <span class="caps">JPEG</span> on disk will be the same size as the embedded image in the <span class="caps">PDF</span>).</p>
+
+<p>For intrinsic width/height calculations we assume a resolution of 96 <span class="caps">DPI</span>, but setting an explicit width/height makes it possible to use an arbitrary <span class="caps">DPI</span>.</p>
+
+<h4 id="id21">Does Flying Saucer support <span class="caps">PDF</span> form components?</h4>
+
+<p><em>What happens with form components when generating a <span class="caps">PDF</span>? Is this supported at all (if I can't a non-editable form in my <span class="caps">PDF</span> output, say, printable form for handwritten entry?</em></p>
+
+<p>Replaced elements are @OutputDevice@-specific.  The <span class="caps">PDF</span> renderer doesn't use Graphics2D.  At this point, an <code>&lt;input&gt;</code> element will be treated like regular content.  Adding AcroForm support is high on the list of priorities for the Flying Saucer team. </p>
+
+<h3 id="id22">Rendering to an Image</h3>
+
+<p>Graphics2DRenderer </p>
+
+<h3 id="id23">Sample Applications</h3>
+
+<ul class="toc">
+  <li><a href="#id24"> The Browser </a></li>
+  <li><a href="#id25"> The About Box </a></li>
+  <li><a href="#id26"> Eeze </a></li>
+</ul>
+
+<h4 id="id24">The Browser</h4>
+
+<h4 id="id25">The About Box</h4>
+
+<h4 id="id26">Eeze</h4>
+
+<h2 id="id27">Flying Saucer Extensions to the <span class="caps">CSS</span> 2.1 Specification</h2>
+
+<p>As per section <a href="http://www.w3.org/TR/CSS21/syndata.html#q4">4.1.2.1</a> of the <a href="http://www.w3.org/TR/CSS21/">CSS 2.1 Specification</a>, <a href="http://www.w3.org/TR/CSS21/syndata.html#q4">Vendor-specific extensions</a>, Flying Saucer includes some extensions to work around limitations in our current implementation, or limitations in the 2.1 spec. All of these are properties you can use in your <span class="caps">CSS</span> when rendering with Flying Saucer, but which will not be recognized by other renderers. While we can't recommend that you deviate from the spec, you may find some cases where you need to add a property to get something special done.</p>
+
+<p>All of the properties in the following table are used just like regular properties, within a set of property declarations.</p>
+
+<h3 id="id28">Table of Extensions</h3>
+
+<p><code>-fs-flow-top</code><br />
+<code>-fs-flow-right</code><br />
+<code>-fs-flow-bottom</code><br />
+<code>-fs-flow-left</code> -String value or none.  String value should refer to an absolute box<br />
+named with an -fs-move-to-flow property. Used in an @page rule to define headers and footers.  Has no meaning outside of @page. -right, -bottom and -left are all described below</p>
+
+<p><code>-fs-move-to-flow</code> -String value. Names an absolute box for reference in one of the -fs-flow-* properties. See below.</p>
+
+<p><code>-fs-text-decoration-extent</code> -Either line (default) or block. It controls how text decorations are drawn on a block level element.  With line, the spec compliant behavior is used: text decoration is drawn across line box.  With block, text decoration is drawn across entire content area of block.</p>
+
+<p><code>-fs-table-cell-colspan</code> -Whole number. Replaces use of legacy rowspan attribute for table columns.</p>
+
+<p><code>-fs-table-cell-rowspan</code> -Whole number. Replaces use of legacy rowspan attribute for table columns.</p>
+
+<h3 id="id29">Extensions: using the <code>-fs-flow-&lt;top|right|bottom|left&gt;</code> Properties</h3>
+
+<p>The <code>-fs-flow-&lt;top|right|bottom|left&gt;</code> properties are used within an <code>@page</code> declaration to allow some content&#8212;say, a div&#8212;to appear outside the normal flow, but to control the position relative to the main body. This is essentially an absolute positioned box where you don't know the actual coordinates for the box, because they are relative to the rendered content.</p>
+
+<p>This may sound contradictory, but a good use for this is to create headers and footers in <span class="caps">PDF</span> documents. There are two properties that you coordinate. First, define an absolutely-positioned div at location 0,0 and assign it a unique name with the <code>-fs-move-to-flow</code> property. Then, assign this property name as the value for one of the <code>-fs-flow-&lt;top|right|bottom|left&gt;</code> in the <code>@page</code> block.</p>
+
+<p>For example, to create a footer in your printed <span class="caps">PDF</span>:</p>
+
+<pre><code>
+&lt;style&gt;
+  @page {
+    -fs-flow-bottom: my_footer;
+  }
+&lt;/style&gt;
+&lt;body&gt;
+  &lt;div style="position: absolute; top: 0; left: 0; -fs-move-to-flow: my_footer;" &gt;
+  Copyright 2006 The Flying Saucer Team
+  &lt;/div&gt;
+&lt;/body&gt;</code></pre>
+
+<p>The name of the div, my_footer, matches the flow property and it is positioned below the rendered content (the page) on layout.</p>
+
+<h2 id="id30">Configuration</h2>
+
+<h3 id="id31">The Flying Saucer Configuration File</h3>
+
+<p>The renderer works with a simple, <code>java.util.Properties</code> -based configuration system&#8212;no <span class="caps">XML</span>! Our <code>org.xhtmlrenderer.util.Confuration</code> class loads properties on first access and makes them available at runtime.</p>
+
+<p>When you are using the renderer, <code>Configuration</code> needs to know where to find the properties file. If you are running from the renderer <span class="caps">JAR</span> file, our default properties will be read from there. If you have unpacked, or re-packed, the <span class="caps">JAR</span>, the location of the file is currently hard-coded as /resources/conf/xhtmlrenderer.conf. This path must be on the <span class="caps">CLASSPATH</span> as it is loaded as a system resource using a ClassLoader. You need to add the parent directory for /resources to your classpath, or include /resources in your <span class="caps">JAR</span> with no parent directory.</p>
+
+<p>You can change the default properties for the application right in the .conf file. However, this is not a good idea, as you will have to merge your changes back on new releases. Plus, it will make reporting bugs more complicated. Instead, you can use one of two override mechanisms for changing the value of individual properties.</p>
+
+<h4 id="id32">Override with Second Conf File</h4>
+
+<p>Your override file should just re-assign values for properties originally given in xhtmlrenderer.conf. Please see the documentation in that file for a description of what each property affects. As of R3, we look for a specific override file in a specific location, e.g.</p>
+
+<pre><code>$user.home/.flyingsaucer/local.xhtmlrenderer.conf</code></pre>
+
+<p>The user.home variable is a system property. If you call the <code>System.getProperty("user.home")</code> from within any Java program on your machine, you will find out where this is. The location is usually <code>c:\Documents And Settings\{username}</code> and under the <code>/usr</code> directory on <span class="caps">UNIX</span> systems. Try that method call to see where it is on your machine.</p>
+
+<h4 id="id33">Override with System Properties</h4>
+
+<p>You can also override properties one-by-one on the command line, using System properties. To override a property using the System properties, just re-define the property on the command line. e.g.</p>
+
+<pre><code>java -Dxr.property-name=new_value org.xhtmlrenderer.HTMLPanel</code></pre>
+
+<p>You can override as many properties as you like. Note that overrides are driven by the property names in the default configuration file. Specifying a property name not in that file will have no effect&#8212;the property will not be loaded or available for lookup. Logging output is also controlled in this Configuration file.</p>
+
+<p>If you think an override is not taking, you can change the logging behavior of the Configuration class. Because of inter-dependencies between Configuration and the logging system, this is a special-case key, using the System property show-config. The allowed values are from the <code>java.util.logging.Level</code> class. Use <span class="caps">ALL</span> to show a lot of detail about Configuration startup, <span class="caps">OFF</span> for none, and <span class="caps">INFO</span> for regular output, like this</p>
+
+<pre><code>java -Dshow-config=ALL org.xhtmlrenderer.HTMLPanel</code></pre>
+
+<p>This will output messages to the console as Configuration is loading and looking for overrides to the default property values for the renderer.</p>
+
+<p>We have just started using the Configuration system late in preparing release R4. Some runtime behavior that should be configurable (like <span class="caps">XHTML</span> parser) is not. If you would like to see some behavior made configurable, shoot us an email.</p>
+
+<h4 id="id34">Looking up Configuration at Runtime</h4>
+
+<p>To access a parameter from Configuration at runtime, just use on of the many static methods on the Configuration class. All of these just take the full name of the property:</p>
+
+<div style="font-size: 8pt;">
+
+<ul>
+  <li><code>String Configuration.valueFor(String)</code></li>
+  <li><code>String Configuration.valueFor(String key, String default)</code></li>
+  <li><code>byte Configuration.valueAsByte(String key, byte default)</code></li>
+  <li><code>double Configuration.valueAsDouble(String key, double default)</code></li>
+  <li><code>float Configuration.valueAsFloat(String key, float default)</code></li>
+  <li><code>int Configuration.valueAsInt(String key, int default)</code></li>
+  <li><code>long Configuration.valueAsLong(String key, long default)</code></li>
+  <li><code>short Configuration.valueAsShort(String key, short default)</code></li>
+  <li><code>boolean Configuration.isTrue(String key, boolean default)</code></li>
+  <li><code>boolean Configuration.isFalse(String key, boolean default)</code></li>
+</ul>
+
+</div>
+
+<h3 id="id35">Logging</h3>
+
+<p>The renderer uses the <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/package-summary.html">java.util.logging</a> package for logging information and exceptions at runtime. Logging behavior (output) is controlled via the main configuration file. The defaults may be overridden just like any other configuration properties.</p>
+
+<p>Please review the <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/package-summary.html">java.util.logging</a> package docs before proceeding.</p>
+
+<p>We log to a set of hierarchies. The internal code&#8212;everything between a request to load a page and the page rendering&#8212;is logged to a subhierarchy of "plumbing", e.g. plumbing.load. Our convention is that <span class="caps">WARNING</span> and <span class="caps">SEVERE</span> levels are very important and should always be logged. <span class="caps">INFO</span> messages are useful and but can be excluded if you want a quiet ride. Anything below <span class="caps">INFO</span> (FINE, <span class="caps">FINER</span>, <span class="caps">FINEST</span>) is generally only interesting for core renderer developers. We don't guarrantee that anything below <span class="caps">INFO</span> will be useful, correct, practical or informative. You can usually leave log levels at <span class="caps">INFO</span> for most purposes.</p>
+
+<p>If you are modifying the renderer core code and want to add log messages, we recommend you always use the <code>org.xhtmlrenderer.XRLog</code> class. Using this class ensures that our log configuration is read properly before we write anything out to the log system. The class is pretty self-explanatory, and all logging methods in it are static. If for some reason you need to use the <code>java.util.logging.Logger</code> class directly, please use XRLog.getLogger() to retrieve the instance to use. </p>
+
+<pre style="font-size: 8pt;"><code>
+[java] app.browser INFO:: Loading Page: demo:demos/splash/splash.html
+[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/splash/splash.html
+[java] plumbing.load INFO:: SAX XMLReader in use (parser): com.sun.org.apache.xerces.internal.parsers.SAXParser
+[java] plumbing.load FINE:: SAX Parser: by request, not changing any parser features.
+[java] plumbing.load INFO:: Loaded document in ~16ms
+[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/splash/splash.html
+[java] plumbing.load INFO:: TIME: parse stylesheets  15ms
+[java] plumbing.match INFO:: media = screen
+[java] plumbing.load INFO:: Requesting stylesheet: http://www.w3.org/1999/xhtml
+[java] plumbing.match INFO:: Matcher created with 147 selectors
+[java] plumbing.layout INFO:: Layout took 156ms
+[java] app.browser INFO:: Loading Page: demo:demos/new/formattedtext.xhtml
+[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/new/formattedtext.xhtml
+[java] plumbing.load INFO:: SAX XMLReader in use (parser): com.sun.org.apache.xerces.internal.parsers.SAXParser
+[java] plumbing.load FINE:: SAX Parser: by request, not changing any parser features.
+[java] plumbing.load INFO:: Loaded document in ~16ms
+[java] plumbing.general INFO:: ref = jar:file:/X:/build/browser.jar!/demos/new/formattedtext.xhtml
+[java] plumbing.load INFO:: TIME: parse stylesheets  0ms
+[java] plumbing.match INFO:: media = screen
+[java] plumbing.load INFO:: Requesting stylesheet: http://www.w3.org/1999/xhtml
+[java] plumbing.load INFO:: Requesting stylesheet: jar:file:/X:/build/browser.jar!/demos/new/general.css
+[java] plumbing.match INFO:: Matcher created with 156 selectors
+[java] plumbing.layout INFO:: Layout took 63ms</code></pre>
+
+<p></p>
+
+</body>
+</html>
+
