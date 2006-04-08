@@ -1,8 +1,8 @@
-include. common-includes.inc
+include. ../include/common-includes.inc
 
 divStart(#fs).
 
-include. menu.xil
+include. ../include/menu.xil
 
 h1. Demo Applications
 

@@ -1,0 +1,70 @@
+include. ../include/common-includes.inc
+
+define. css base.css
+
+divStart(#fs).
+
+include. include/menu.xil
+
+h1. !images/new_saucer.png! Flying
+Saucer: The 100% Java XHTML Renderer
+
+
+h2. News
+
+p{font-size: 18pt}. *Flying Saucer: R6* - Now in Beta!
+
+*April 5, 2006*: The Flying Saucer team is happy to announce we are starting the Release 6 beta cycle of the Flying Saucer 100% Java XHTML+CSS renderer. This release includes major improvements in performance and stability--plus we've taken big strides in our CSS 2.1 support. Our package now includes:
+
+# Vertical margin collapsing; spec
+# Z-index property and stacking contexts; spec
+# Vertical-align: top/bottom; spec
+# PDF rendering via the iText library; support for PDF bookmarks
+# Pagination support
+# Rewritten "float" implementation
+# Improved list marker positioning 
+
+Plus there are lots of bug fixes and improvements all around; check out our complete feature list. We have one user community using Flying Saucer to render PDF output from XML+CSS via over 30K lines of XSL. Things are looking good!
+
+We need your feedback, eyes, reports and bug fixes :). Download now:
+
+* R6-pre1
+* R6-pre1 - Source, Samples, Docs
+
+Take the saucer for a spin!
+
+*Sept 6, 2005*: The Flying Saucer team is proud to present Release 5 of the Flying Saucer 100% Java XHTML+CSS renderer. This release brings tremendous speed improvements in both style parsing and document renderering. Other improvements include:
+
+* numerous improvments to float and clear support
+* better absolute positioning support
+* absolute units like inches and centimeters
+* multiple borders and row spanning improvements
+* directory listing in the browser
+* image browsing
+* percentage width and height values
+* proper DTD support
+* :hover and rollover support
+* a revised homepage and documentation
+* tons and tonnes of bug fixes
+
+Please download Release 5 and let us know what you think. We are busily working on Release 6 which feature incremental layout, pagination, and many more bug fixes.
+
+*July 30, 2005*: We've just updated our homepage and reorganized the documentation. This is in preparation for the R5 release coming soon. Let us know what you think of the new look.
+
+*June 22, 2005*: The Flying Saucer Team is proud to present Release 5 of our 100% Java library for rendering XHTML + CSS2.1 including tables, forms, formatted text, images, and the complete box model. (see "complete list":r5/featurelist.html)
+
+The "Java Web Start Browser Demo":http://joshy.org/flyingsaucer/downloads/fs.jnlp
+
+The new "Getting Started Guide":http://localhost/xr-web/gettingstarted.html
+
+This release introduces a better implementation of the CSS box model and greatly improved parsing and rendering speed.
+
+This release paves the way for the new features and speed increases coming in R5. Thanks for all of your support and please send us your feedback.
+
+We need help!
+
+If you want to contribute or just see what's going on then please join the dev ${mailing-list}! We need developers, beta testers, doc writers, evangelists, and users. Even if you are just curious please join in.
+
+Keep up with new releases: !https://java-net.dev.java.net/branding/images/xml.gif!:http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS
+
+divEnd.

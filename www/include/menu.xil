@@ -1,38 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-  <link href="../base.css" rel="stylesheet" type="text/css" />
-  <style type="text/css">
-#logo { float: left;
-  }
-.clearit { clear: both;
-  }
-h2 { width: 500px;
-  }
-ul#m2 { border: 1px solid black;
-  float: right;
-  }
-block { border: 0px solid black;
-  display: block;
-  padding-left: 4em;
-  }
-.axial { border: 1px solid black; display: none;}
-p.screenshot { text-align: center; }
-p.screenshot img { border-width: 0px; }
-  </style>
-</head>
-<body>
-
-<div id="fs">
-
+==
 <ul id="menu">
 <li><b>About Flying Saucer</b>
 <ul>
- <li><a href="https://xhtmlrenderer.dev.java.net/index.html">Home Page</a></li>
- <li><a href="https://xhtmlrenderer.dev.java.net/r6/featurelist.html">Feature List</a></li>
- <li><a href="https://xhtmlrenderer.dev.java.net/r6/faq.html">The FAQ</a></li>
- <li><a href="http://www.gnu.org/copyleft/lesser.html">License (LGPL)</a></li>
+	<li><a href="https://xhtmlrenderer.dev.java.net/index.html">Home Page</a></li>
+	<li><a href="https://xhtmlrenderer.dev.java.net/r6/featurelist.html">Feature List</a></li>
+	<li><a href="https://xhtmlrenderer.dev.java.net/r6/faq.html">The FAQ</a></li>
+	<li><a href="http://www.gnu.org/copyleft/lesser.html">License (LGPL)</a></li>
 </ul>
 </li>
 <li><b>Download</b>
@@ -76,23 +49,4 @@ p.screenshot img { border-width: 0px; }
 <li id="newsfeed"><b><a href="http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS" border="0">News Feed<img src="https://java-net.dev.java.net/branding/images/xml.gif" border="0"></a></b>
 </li>
 </ul>
-
-<h1 id="id1">Demo Applications</h1>
-
-<p>There will be more demos on this page coming soon, but we've got a few already. </p>
-
-<p><strong>Note. These demos all require you to have Java Web Start and Java 1.4 or higher installed</strong></p>
-
-<ul>
-  <li><a href="http://joshy.org/flyingsaucer/downloads/fs.jnlp">Browser</a>, a complete <span class="caps">XHTML</span> browser with scrolling, back button, link support, etc.</li>
-</ul>
-
-<ul>
-  <li><a href="http://joshy.org/flyingsaucer/downloads/aboutbox.jnlp">About Box</a>, a prefab scrolling about box that you can easily embed in your own programs</li>
-</ul>
-
-</div>
-
-</body>
-</html>
-
+==

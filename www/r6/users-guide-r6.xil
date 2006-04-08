@@ -1,4 +1,4 @@
-include. common-defines.inc
+include. ../include/common-defines.inc
 
 define. style 
 #toc {
