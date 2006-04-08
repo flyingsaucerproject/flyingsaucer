@@ -1,6 +1,6 @@
 include. common-defines.inc
 
-define. css base.css
+define. css ../base.css
 
 define. style
 #logo { float: left;

@@ -19,6 +19,10 @@
     font-style: italic;
     }
 
+  h2.fs_heading {
+    clear: none;
+  }
+    
   body, #fs { background: rgb(255, 255, 255) none repeat scroll 0% 50%;
     -moz-background-clip: initial;
     -moz-background-origin: initial;

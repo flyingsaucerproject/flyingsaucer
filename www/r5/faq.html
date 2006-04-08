@@ -86,7 +86,7 @@
 </ul>   
 
 <a name="what_is"></a>
-<h2>What is Flying Saucer?</h2>
+<h2 class="fs_heading">What is Flying Saucer?</h2>
 
 <p>Flying Saucer is an XHTML renderer written in Java. It's 100% Java, not a
 native wrapper, and it only handles valid XHTML + CSS. It is intended for
@@ -98,7 +98,7 @@ do what you need. See JTidy integration</p>
 
 
 <a name="legacy_html"></a>
-<h2>Does Flying Saucer support legacy HTML?</h2>
+<h2 class="fs_heading">Does Flying Saucer support legacy HTML?</h2>
 <p>Flying Saucer is not an HTML component. It is a rendering component for XHTML
   content, but it cannot handle the malformed HTML 4.0 of general webpages,
   and it has no support for purely stylistic markup like FONT and CENTER. You
@@ -109,7 +109,7 @@ do what you need. See JTidy integration</p>
   component.</p>
   
 <!--
-<h2>What about the JavaDoc browser?</h2>
+<h2 class="fs_heading">What about the JavaDoc browser?</h2>
 <p>Okay, you got me. The JavaDoc browser reads the older, non-compliant html
   output of the javadoc program. This was accomplished using the JTidy parser
   and a newly developed compatibility library. Join the mailing list if you want
@@ -117,7 +117,7 @@ do what you need. See JTidy integration</p>
 -->
   
 <a name="web_browser"></a>
-<h2>Is Flying Saucer a web browser?</h2>
+<h2 class="fs_heading">Is Flying Saucer a web browser?</h2>
 <p>The core renderer just handles XHTML and CSS. It doesn't know anything about
   form submission, managing cookies, or tracking the browsing history. It
   just renders XHTML/CSS to the screen. However, Flying Saucer does include
@@ -127,7 +127,7 @@ do what you need. See JTidy integration</p>
   
   
 <a name="applications"></a>
-<h2>What kind of applications
+<h2 class="fs_heading">What kind of applications
 can I use Flying Saucer for?</h2>
 <p>Flying Saucer can be used for any Java application
   that requires some sort of styled text. This can be as simple as a chat program
@@ -157,7 +157,7 @@ can I use Flying Saucer for?</h2>
 </ul>
 
 <a name="xhtml_css_support"></a>
-<h2>What XHTML/CSS features does Flying Saucer currently support?</h2>
+<h2 class="fs_heading">What XHTML/CSS features does Flying Saucer currently support?</h2>
 <p>With our third release it supports most of
   the common XHTML and CSS features. This includes:</p>
 <ul>
@@ -172,7 +172,7 @@ can I use Flying Saucer for?</h2>
 
 
 <a name="xhtml_css_missing"></a>
-<h2>What XHTML/CSS features is Flying Saucer missing?</h2>
+<h2 class="fs_heading">What XHTML/CSS features is Flying Saucer missing?</h2>
 <p>The only major feature missing as of R5 is the automatic table model (the
   old Netscape style of tables where the size of the content determined the size
   of the cells.) Fixed layout tables are supported. Other than that it's just a matter of squashing more bugs and getting more speed.</p>
@@ -182,13 +182,13 @@ can I use Flying Saucer for?</h2>
 
 
 <a name="hyperlinks"></a>
-<h2>How do I make my program follow hyperlinks?</h2>
+<h2 class="fs_heading">How do I make my program follow hyperlinks?</h2>
 
 <p>You need a mouse listener that detects link clicks and does the 
 HTTP request.  The XHTMLPanel includes a built in mouse listener to do this, but you can override it if you wish.</p>
 
 <a name="forms_and_swing"></a>
-<h2>How do I get access to the Swing components that make up my form fields?</h2>
+<h2 class="fs_heading">How do I get access to the Swing components that make up my form fields?</h2>
 
 <p> You can use the form accessor methods on the context. See 
 <a href="gettingstarted.html#formaccess">Form Field Access</a> in the 
@@ -202,13 +202,13 @@ HTTP request.  The XHTMLPanel includes a built in mouse listener to do this, but
 <h3>Developer's FAQ</h3>
 
 <a name="classpath"></a>
-<h2>How do I set up my CLASSPATH?</h2>
+<h2 class="fs_heading">How do I set up my CLASSPATH?</h2>
 <p>You only need the <code>core-renderer.jar</code> and the <code>ss_css2.jar</code>. That is all you need for your own programs. You also need an XML parser to be in your classpath, but this already included in recent versions of the JRE. To run the browser or use any of it's support classes you will need the <code>browser.jar</code> file.</p>
 
 
 
 <a name="without_ant"></a>
-<h2>How do I build XR without Ant? How do I build XR from within my IDE?</h2>
+<h2 class="fs_heading">How do I build XR without Ant? How do I build XR from within my IDE?</h2>
 <p>Our Ant <code>build.xml</code> file includes all JAR files in the <code>/lib</code>
 directory, plus the <code>/resources</code> directory tree in the classpath. The 
 <b>compile</b> target also copies CSS and properties resources from <code>/src/css</code> and 
@@ -218,7 +218,7 @@ will need to synchronize this yourself.</p>
 
 
 <a name="configuration"></a>
-<h2>How do I change the runtime configuration for XR?</h2>
+<h2 class="fs_heading">How do I change the runtime configuration for XR?</h2>
 <p>The renderer works with a simple, <code>java.util.Properties</code>-based 
 configuration system--no XML! Our <code>org.xhtmlrenderer.util.Confuration</code> class 
 loads properties on first access and makes them available at runtime.</p>
@@ -301,7 +301,7 @@ of the property:
 </p>
 
 <a name="logging"></a>
-<h2>How do I write to the log within XR?</h2>
+<h2 class="fs_heading">How do I write to the log within XR?</h2>
 <p>The renderer uses the <code>java.util.logging</code> package for logging information and 
 exceptions at runtime. Logging behavior (output) is controlled via the main 
 <a href="#configuration">configuration file</a>. The defaults may be overridden just like

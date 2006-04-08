@@ -77,7 +77,7 @@ However, the simple use of <code>BasicPanel</code> and <code>XHTMLPanel</code> s
 <li><a href="#jars">What jars do I need?</a></li>
 </ul>
 
-<h2><a name="show_page"></a>The Basics: Showing a Page</h2>
+<h2 class="fs_heading"><a name="show_page"></a>The Basics: Showing a Page</h2>
 <p>If you just want to show a webpage in your application then  start
   with the <code>XHTMLPanel</code>, in <code>org.xhtmlrenderer.swing</code>. Here is a simple example: </p>
 <pre>import javax.swing.*;
@@ -105,7 +105,7 @@ public class test {
 
 
 
-<h2><a name="about_box"></a>Creating an About Box in 60 seconds</h2>
+<h2 class="fs_heading"><a name="about_box"></a>Creating an About Box in 60 seconds</h2>
 <p>The  <code>AboutBox </code>is a prefab component which displays an html document and automatically
   scrolls it. It is primarily useful for <em>Help-&gt;About</em> menu items and splash screens.</p>
 <p>Here is an example of adding an about box to a menu item's action listener. </p>
@@ -121,14 +121,14 @@ about.addActionListener(new ActionListener() {
  });
 </pre>
 
-<h2><a name="formsubmission"></a>Doing Form Submission.</h2>
+<h2 class="fs_heading"><a name="formsubmission"></a>Doing Form Submission.</h2>
 <p>Since network access is outside the scope of the core renderer, form submission
     is currently implemented as an <code>ActionListener</code> attached to the submit button
     in the browser application. Depending on your needs you can probably modify
   that code. Take a look at <code>org.xhtmlrenderer.demo.browser.SubmitAction.</code></p>
 
   
-<h2><a name="formaccess"></a>Getting Access to Form Components</h2>
+<h2 class="fs_heading"><a name="formaccess"></a>Getting Access to Form Components</h2>
 <p>  If you want to access the Swing components for each form input field you
     can use the accessors on the <code>Context </code>object. <code>HTMLPanel.getContext().getFormFieldComponents()</code>.
     Take a look at <code>org.xhtmlrenderer.demo.browser.ResetAction.setupResets()</code> for
@@ -137,10 +137,10 @@ about.addActionListener(new ActionListener() {
   have to paw through your document tree (start with <code>HTMLPanel.getDocument()</code>).</p>
   
   
-<h2><a name="hyperlinks"></a>Following Hyperlinks</h2>
+<h2 class="fs_heading"><a name="hyperlinks"></a>Following Hyperlinks</h2>
 <p>By default the XHTMLPanel has a pre-fab mouse listener to follow hyperlinks. You can override this <code>MouseListener </code> to change it's behavior if you want. See <code>org.xhtmlrenderer.swing.LinkListener</code>  for the complete code.</p>
 
-<h2><a name="jars"></a>What Jars do I need</h2>
+<h2 class="fs_heading"><a name="jars"></a>What Jars do I need</h2>
 <p>
 	The core of Flying Saucer is the <b>core-renderer.jar</b> and <b>cssparser-0-9-4-fs.jar</b>. That's all you need. All of the other
 	jars are only for use by the demo programs.

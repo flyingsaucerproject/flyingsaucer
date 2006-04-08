@@ -9,10 +9,10 @@ include. include/menu.xil
 h1. !images/new_saucer.png! Flying
 Saucer: The 100% Java XHTML Renderer
 
-p. _Our website is under (re)construction while we prepare the upcoming R6 release. For the stable R5 release, please see the links under Download labeled "R5". Thanks!
+p{font-size: 14pt}. _Our website is under (re)construction while we prepare the upcoming R6 release. For the stable R5 release, please see the links under Download labeled "R5". Thanks!_
 
 
-h2. News
+h2(fs_heading). News
 
 p{font-size: 18pt}. *Flying Saucer: R6* - Now in Beta!
 

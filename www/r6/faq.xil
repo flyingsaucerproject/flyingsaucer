@@ -8,11 +8,11 @@ h1. The ${fs} FAQ
 
 This is our list of frequently-asked questions. With release R6, we moved a bunch of the material from here into our "Flying Saucer User's Guide":users-guide-r6#.pdf. Please contact us on our ${mailing-list.user} if you have more questions.
 
-h2. General Questions
+h2(fs_heading). General Questions
 
 toc. 3 3 #
 
-h3. What is ${fs}?
+h3(fs_heading). What is ${fs}?
 
 ${fs} is an XHTML renderer written in Java. It's 100% Java, not a native wrapper, and it only handles valid XHTML + CSS. It is intended for embedding web-based user interfaces into Java applications (ex. web photo album generator, help viewer, iTunes Music Store clone). It cannot be used as a general purpose webbrowser since it does not support the malformed legacy HTML found on the web, though recent work on compatibility libraries may be enough to do what you need. See JTidy integration
 
@@ -73,7 +73,7 @@ h3. How do I get access to the Swing components that make up my form fields?
 You can use the form accessor methods on the context. See Form Field Access in the Getting Started Guide.
 
 
-h2. Developer's FAQ
+h2(fs_heading). Developer's FAQ
 
 toc. 3 3 #
 
