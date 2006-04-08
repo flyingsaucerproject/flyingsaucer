@@ -3,26 +3,29 @@
 
     <head>
         <title>Test: Hyperlinks</title>
-        <!-- link rel="stylesheet" href="demos/test1.css" type="text/css" -->
-        <style type="text/css">
+        <link rel="stylesheet" href="link.css" type="text/css"/>
+        <!--<style type="text/css">
             a { color: #cc4444; }
             p.hovered a { text-decoration: none; }
             p.hovered a:hover { text-decoration: underline; }
-        </style>
+        </style>-->
     </head>
     <body>
         <h1>Link Test</h1>
-        
+
         <p>The browser uses a LinkListener class to look for links, change the cursor,
         and follow the links.
         </p>
-        
-        <p> This is a link <a href="alice/alice.xhtml">to the alice demo</a>. The cursor
+
+        <p> This is a link
+            <a href="alice/alice.xhtml">to the alice demo</a>. The cursor
         should change when the cursor is over it.
         </p>
-        
-        <p class="hovered">This is a link 
-        <a href="">with hovering</a> using the <code>:hover</code> css</p>
-        
+
+        <p class="hovered">This is a link
+            <a href="">with hovering</a> using the
+            <code>:hover</code> css
+        </p>
+
     </body>
 </html>

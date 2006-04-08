@@ -134,9 +134,13 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
 
     public String resolveURI(String uri) {
         URL result;
-        try {
-            result = new URL(uri);
-        } catch (MalformedURLException e) {
+        if (baseURL == null) {
+            try {
+                result = new URL(uri);
+            } catch (MalformedURLException e) {
+                return null;
+            }
+        } else {
             try {
                 result = new URL(new URL(baseURL), uri);
             } catch (MalformedURLException e1) {
@@ -156,6 +160,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2006/04/08 08:21:24  tobega
+ * relative urls and linked stylesheets
+ *
  * Revision 1.22  2006/02/02 02:47:33  peterbrant
  * Support non-AWT images
  *

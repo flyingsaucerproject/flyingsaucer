@@ -1,0 +1,3 @@
+a { color: #cc4444; }
+p.hovered a { text-decoration: none; }
+p.hovered a:hover { text-decoration: underline; }
