@@ -77,8 +77,8 @@ toc. 2 3 #
 
 h2. An Introduction to Flying Saucer
 
->xil>{{{h3. What it is 
-h3. What It Is
+>xil>{{{h3(fs_heading). What it is 
+h3(fs_heading). What It Is
 
 ==
 <img src="snap-browse-fs-thumb.png" style="float: right; margin-left: 10px;" /> 
@@ -90,8 +90,8 @@ Internally, ${fs} works with an XML document and uses CSS to determine how to la
 >xil>}}}
 
 
->xil>{{{h3. What it does 
-h3. What It Does
+>xil>{{{h3(fs_heading). What it does 
+h3(fs_heading). What It Does
 
 ==
 <img src="snap-browse-alice-thumb.png" style="float: left; margin-right: 10px;" /> 
@@ -106,8 +106,8 @@ We can also render to PDF. For PDF, the layout rules come from the CSS. The diff
 Last, we have utility classes to render output to an image file. With this, you could use XML and CSS to layout printable content--for example, a flyer, a poster, business cards, etc.--and save them as images you can print out or email. It's also a nice way to create thumbnail or reduced-size images of pages.
 >xil>}}}
 
->xil>{{{h3. What you can do with it 
-h3. What It's Good For
+>xil>{{{h3(fs_heading). What you can do with it 
+h3(fs_heading). What It's Good For
 
 ==
 <img src="snap-browse-hover-thumb.png" style="float: right; margin-left: 10px;" /> 
@@ -133,8 +133,8 @@ Flying Saucer can be used for any Java application that requires some sort of st
 >xil>}}}
 
 
->xil>{{{h3. What it does not do 
-h3. Where the Saucer Does not Fly (what it can't do)
+>xil>{{{h3(fs_heading). What it does not do 
+h3(fs_heading). Where the Saucer Does not Fly (what it can't do)
 
 
 Being honorable people, we must admit what ${fs} cannot do for you:
@@ -156,8 +156,8 @@ These limitations all have a pragmatic origin. Josh Marinacci, the founder of an
 Of course, you can help fix any of these things. Contributors welcome!
 >xil>}}}
 
->xil>{{{h3. License and Dependencies 
-h3. License and Dependencies
+>xil>{{{h3(fs_heading). License and Dependencies 
+h3(fs_heading). License and Dependencies
 
 ==
 <img src="snap-browse-fluid-thumb.png" style="float: right; margin-left: 10px;" /> 
@@ -169,8 +169,8 @@ ${fs} uses a couple of FOSS packages to get the job done. A list of these, along
 >xil>}}}
 
 
->xil>{{{h3. Requirements for Running and Using ${fs} 
-h3. Requirements for Running and Using ${fs}
+>xil>{{{h3(fs_heading). Requirements for Running and Using ${fs} 
+h3(fs_heading). Requirements for Running and Using ${fs}
 
 ${fs} is built and tested on Java 1.4 and has some dependencies on libraries only available in 1.4. In principle, you should be able to backport it to 1.3 (or earlier?), but we've not tried that and don't maintain a 1.3 branch.
 
@@ -191,8 +191,8 @@ Most of ${fs} does not rely on advanced Java features. It should be usable on al
 >xil>}}}
 
 
->xil>{{{h3. Setting your Classpath 
-h3. Setting your Classpath
+>xil>{{{h3(fs_heading). Setting your Classpath 
+h3(fs_heading). Setting your Classpath
 
 You only need the @core-renderer.jar@ and the @cssparser-0-9-4-fs.jar@ in your CLASSPATH. If you want PDF output, add @itext-paulo-155.jar@. If you want anti-aliasing using the Minium toolkit, add @minium.jar@. That is all you need for your own programs. You also need an XML parser to be in your classpath, but this already included in recent versions of the JRE. To run the browser or use any of it's support classes you will need the @browser.jar@ file.
 
@@ -207,8 +207,8 @@ To summarize, the easiest CLASSPATH to set is:
 
 h2. Using ${fs}
 
->xil>{{{h3. Basic Usage 
-h3. Basic Usage
+>xil>{{{h3(fs_heading). Basic Usage 
+h3(fs_heading). Basic Usage
 
 toc. 4 4 *
 
@@ -220,7 +220,7 @@ To understand where to start, you have to look at how ${fs} works. The input is 
 
 Once we've matched CSS, we run through a layout phase, where we calculate the size and position, as well as display attributes, of all visible elements. The layout is then used to render to some output sink. The standard output sink is a Swing @JPanel@ subclass we call @org.xhtmlrenderer.swing.BasicPanel@, or its extended (and more powerful) child, @XHTMLPanel@. 
 
-h4. Rendering to a Swing Panel
+h4(fs_heading). Rendering to a Swing Panel
 
 In fact, to make it really easy, both @org.xhtmlrenderer.swing.BasicPanel@, and its child @org.xhtmlrenderer.simple.XHTMLPanel@, allow you to set the document in one call. In fact, to display a page in a Swing @JFrame@, the code is very simple. Take a look at out our @SinglePageFrame@ example in the samples directory. The important stuff happens in the @run()@ method. 
 
@@ -260,7 +260,7 @@ That's it! You can now display XHTML and CSS in your Swing applications.
 
 What about AWT or alternate GUI toolkits for Java? Our basic rendering routine writes to a "renderer". Right now we support the concept of rendering to an _output device_. We have two output device implementations: one for Java2D (essentially a canvas, or @Graphics2D@ instance) and the other for PDF (using iText). When we render to a Swing panel, we are still painting on a Java2D canvas, so in principle, you should be able to port this rendering to other 2D output surfaces. If you do, we'd like to hear from you! Just note there is no explicit technical limitation that forces you to use Swing--it's just easy, and easy to make it look good. 
 
-h4. Showing an About Box
+h4(fs_heading). Showing an About Box
 
 The AboutBox is a prefab component which displays an XHTML document and automatically scrolls it. It is primarily useful for Help->About menu items and splash screens.
 
@@ -282,8 +282,8 @@ p.
  
  >xil>}}}
 
->xil>{{{h3. Creating PDF Files 
-h3. Creating PDF Files
+>xil>{{{h3(fs_heading). Creating PDF Files 
+h3(fs_heading). Creating PDF Files
 
 ==
 <img src="snap-pdf-sample-thumb.png" style="float: left; margin-right: 10px;" /> 
@@ -300,13 +300,13 @@ Questions and answers about using ${fs} for PDF output:
 
 toc. 4 4 *
 
-h4. How do you control page size? 
+h4(fs_heading). How do you control page size? 
 
 _What CSS attributes correspond to "page size" (e.g. letter, legal, A4) in CSS and XHTML?_
 
 The size property as documented in the "CSS3 Paged Media module":http://www.w3.org/TR/css3-page/.  Everything in the spec is implemented except auto page handling (the default stylesheet currently sets letter sized paper with a half inch margin)
 
-h4. How do you control page size on PDF output?
+h4(fs_heading). How do you control page size on PDF output?
 
 _What CSS attributes correspond to "page size" as we understand that in a word processor, e.g. US Letter, Legal, or A4?_
 
@@ -324,7 +324,7 @@ bcx. @page {
 
 It's described in more details in the "CSS3 specification.":http://www.w3.org/TR/css3-page/#page-size
 
-h4. How do you control page margins on PDF output?
+h4(fs_heading). How do you control page margins on PDF output?
 
 _What CSS attributes correspond to "margin" as we understand that in a word processor, e.g. left and right margin of 1inch? is this padding or margin on the @body@ element?_
 
@@ -338,7 +338,7 @@ bcx. @page {
 
 For purposes of pagination, there's nothing special about @<body>@ (e.g. if @<body>@ spans 20 pages, your top and bottom margins will appear on pages 1 and 20 respectively).
 
-h4. What controls pagination? 
+h4(fs_heading). What controls pagination? 
 
 _Is there a default pagination (whatever fits in the renderable page boundaries)--but then what is a "page" size? how can I (in the current code) implement a forced break? which page-break... does ${fs} support right now?_
 
@@ -350,7 +350,7 @@ If a rule cannot be satisfied (e.g. a prex. @<div style="page-break-inside: avoi
 
 With the exception of relatively positioned inline content, positioned/floated content will paginate just like content in the normal flow.
 
-h4. What about PDF bookmarks? 
+h4(fs_heading). What about PDF bookmarks? 
 
 _For PDF, what sorts of PDF-specific things does ${fs} support, e.g. do bookmarks work? is there support for TOCs, footnotes?_
 
@@ -361,7 +361,7 @@ internal links in the document itself to establish a target.
 The ${itext} library has a really dizzying array of features so we can get a lot
 stuff for free just by providing the XML "API" for it (see @AcroForms@ comment below).
 
-h4. What about embedded images? Are images downscaled?
+h4(fs_heading). What about embedded images? Are images downscaled?
 
 _Are referenced images altered when embedded in the course of generating PDF?_
 
@@ -369,30 +369,30 @@ No.  PDF has its own way of representing image data, but no image fidelity is lo
 
 For intrinsic width/height calculations we assume a resolution of 96 DPI, but setting an explicit width/height makes it possible to use an arbitrary DPI.
 
-h4. Does ${fs} support PDF form components?
+h4(fs_heading). Does ${fs} support PDF form components?
 
 _What happens with form components when generating a PDF? Is this supported at all (if I can't a non-editable form in my PDF output, say, printable form for handwritten entry?_
 
 Replaced elements are @OutputDevice@-specific.  The PDF renderer doesn't use Graphics2D.  At this point, an @<input>@ element will be treated like regular content.  Adding AcroForm support is high on the list of priorities for the ${fs} team. 
 >xil>}}}
 
->xil>{{{h3. Rendering to an Image 
-h3. Rendering to an Image
+>xil>{{{h3(fs_heading). Rendering to an Image 
+h3(fs_heading). Rendering to an Image
 
 Graphics2DRenderer 
 >xil>}}}
 
 
->xil>{{{h3. Sample Applications 
-h3. Sample Applications
+>xil>{{{h3(fs_heading). Sample Applications 
+h3(fs_heading). Sample Applications
 
 toc. 4 4 *
 
-h4. The Browser
+h4(fs_heading). The Browser
 
-h4. The About Box
+h4(fs_heading). The About Box
 
-h4. Eeze 
+h4(fs_heading). Eeze 
 >xil>}}}
 
 
@@ -402,7 +402,7 @@ As per section "4.1.2.1":http://www.w3.org/TR/CSS21/syndata.html#q4 of the ${css
 
 All of the properties in the following table are used just like regular properties, within a set of property declarations.
 
-h3. Table of Extensions
+h3(fs_heading). Table of Extensions
 
 >xil> skipping Xilize syntax for tables, generates tbody and theads we can't proc in R6
 
@@ -420,7 +420,7 @@ named with an -fs-move-to-flow property. Used in an @page rule to define headers
   
 @-fs-table-cell-rowspan@ -Whole number. Replaces use of legacy rowspan attribute for table columns.
 
-h3. Extensions: using the @-fs-flow-<top|right|bottom|left>@ Properties
+h3(fs_heading). Extensions: using the @-fs-flow-<top|right|bottom|left>@ Properties
 
 The @-fs-flow-<top|right|bottom|left>@ properties are used within an @@page@ declaration to allow some content--say, a div--to appear outside the normal flow, but to control the position relative to the main body. This is essentially an absolute positioned box where you don't know the actual coordinates for the box, because they are relative to the rendered content.
 
@@ -444,8 +444,8 @@ p. The name of the div, my_footer, matches the flow property and it is positione
 
 h2. Configuration
 
->xil>{{{h3. The ${fs} Configuration File 
-h3. The ${fs} Configuration File
+>xil>{{{h3(fs_heading). The ${fs} Configuration File 
+h3(fs_heading). The ${fs} Configuration File
 
 The renderer works with a simple, @java.util.Properties@ -based configuration system--no XML! Our @org.xhtmlrenderer.util.Confuration@ class loads properties on first access and makes them available at runtime.
 
@@ -453,7 +453,7 @@ When you are using the renderer, @Configuration@ needs to know where to find the
 
 You can change the default properties for the application right in the .conf file. However, this is not a good idea, as you will have to merge your changes back on new releases. Plus, it will make reporting bugs more complicated. Instead, you can use one of two override mechanisms for changing the value of individual properties.
 
-h4. Override with Second Conf File 
+h4(fs_heading). Override with Second Conf File 
 
 Your override file should just re-assign values for properties originally given in xhtmlrenderer.conf. Please see the documentation in that file for a description of what each property affects. As of R3, we look for a specific override file in a specific location, e.g.
 
@@ -461,7 +461,7 @@ bc. $user.home/.flyingsaucer/local.xhtmlrenderer.conf
 
 The user.home variable is a system property. If you call the @System.getProperty("user.home")@ from within any Java program on your machine, you will find out where this is. The location is usually @c:\Documents And Settings\{username}@ and under the @/usr@ directory on UNIX systems. Try that method call to see where it is on your machine.
 
-h4. Override with System Properties
+h4(fs_heading). Override with System Properties
 
 You can also override properties one-by-one on the command line, using System properties. To override a property using the System properties, just re-define the property on the command line. e.g.
 
@@ -477,7 +477,7 @@ This will output messages to the console as Configuration is loading and looking
 
 We have just started using the Configuration system late in preparing release R4. Some runtime behavior that should be configurable (like XHTML parser) is not. If you would like to see some behavior made configurable, shoot us an email.
 
-h4. Looking up Configuration at Runtime
+h4(fs_heading). Looking up Configuration at Runtime
 
 To access a parameter from Configuration at runtime, just use on of the many static methods on the Configuration class. All of these just take the full name of the property:
 
@@ -498,9 +498,9 @@ divEnd.
 
 >xil>}}}
 
->xil>{{{h3. Logging 
+>xil>{{{h3(fs_heading). Logging 
 
-h3. Logging
+h3(fs_heading). Logging
 
 The renderer uses the ${jlogging} package for logging information and exceptions at runtime. Logging behavior (output) is controlled via the main configuration file. The defaults may be overridden just like any other configuration properties.
 

@@ -8,7 +8,7 @@ h1. Flying Saucer Supported Features from CSS 2.1
 
 Flying Saucer supports the bulk of the strict XHTML and CSS 2.1 standards. We are working towards complete (and correct) feature support of these standards, but not everything works yet. Most of it is there, though.
 
-h3. General XHTML / CSS features
+h3(fs_heading). General XHTML / CSS features
 
 * Formatted text: basically everything: paragraphs and spans, bold, italic, font sizes, text alignment, horizontal alignment, different fonts
 * Box model: border, padding, margin, colors, background images, styled borders
@@ -23,13 +23,13 @@ h3. General XHTML / CSS features
 * Pagination
 * Margin Collapsing
 
-h3. Special Features
+h3(fs_heading). Special Features
 
 * Speed. We are fast enough to render all of Hamlet in under 4 seconds on a 1.5 GHZ Pentium. We are working to improve speed and memory usage all the time.
 * Embedded fonts. You can embed a truetype font in your application (in the jar file), and use it in pages rendered in your application.
 * Printing. You can print anything you can see on screen. You can even use special print stylesheets. pagination is not currently supported!
 
-h3. What's not Supported (yet)
+h3(fs_heading). What's not Supported (yet)
 
 * Parts of absolute, fixed, and float positioning. Things like setting a left and right with width = auto. There are probably a lot of bugs when you nest positioned boxes too.
 * Shrink-to-fit sizing. You need an explicit width on any positioned for floated box.
