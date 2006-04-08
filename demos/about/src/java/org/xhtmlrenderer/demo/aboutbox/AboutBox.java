@@ -65,7 +65,7 @@ public class AboutBox extends JDialog implements Runnable {
         super();
         Uu.p("starting the about box");
         setTitle(text);
-        XHTMLPanel panel = new XHTMLPanel();
+        XHTMLPanel panel = new XHTMLPanel(new DemoUserAgent());
         int w = 400;
         int h = 500;
         panel.setPreferredSize(new Dimension(w, h));
@@ -194,6 +194,9 @@ public class AboutBox extends JDialog implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2006/04/08 22:01:04  pdoubleya
+ * Hack, workaround direct file access in NaiveUserAgent, required explicit security in webstart app.
+ *
  * Revision 1.8  2005/06/15 11:53:44  tobega
  * Changed UserAgentCallback to getInputStream instead of getReader. Fixed up some consequences of previous change.
  *
