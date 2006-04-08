@@ -560,16 +560,17 @@ p.
 
 h2. About this Document
 
-==
-<img src="xilbox.png" style="float: right" />
-==
-
-This User's Guide was produced using the "Xilize":http://www.centeredwork.com/xilize2/index.html syntax and rendering engine. The document (and the rest of the website in R6) was written in Xilize text markup, then converted to XHTML using the Xilize converter. We'd like to thank the Xilize team at CenteredWork for sharing this library. Try it out! It's a great way to write websites quickly, without losing control over formatting. Go and "download Xilize":http://www.centeredwork.com/xilize2/download.html and get started!
+This User's Guide was produced using the "Xilize":http://www.centeredwork.com/xilize2 (http://www.centeredwork.com/xilize2) syntax and rendering engine. The document (and the rest of the website in R6) was written in Xilize text markup, then converted to XHTML using the Xilize converter. We'd like to thank the Xilize team at CenteredWork for sharing this library. Try it out! It's a great way to write websites quickly, without losing control over formatting. Go and download Xilize from "http://www.centeredwork.com/xilize2/download.html":http://www.centeredwork.com/xilize2/download.html and get started!
 
 ==
 <img src="made-with-jedit-9.png" style="float: left; margin-right: 10px;" />
 ==
 
-Editing took place using the legendary "jEdit Editor":http://www.jedit.org/ editor. Xilize produces a plugin for jEdit which you can download "here":http://www.centeredwork.com/xilize2/download.html. You get syntax highlighting for the Xilize markup, quick markup controls, and a XIL converter all built-in to the editor.
+Editing took place using the legendary "jEdit editor":http://www.jedit.org/ (http://www.jedit.org/) editor. Xilize produces a plugin for jEdit, where you get syntax highlighting for the Xilize markup, quick markup controls, and a XIL converter all built-in to the editor.
 
 Last, the XHTML files were converted to PDF using the ${fs} PDF renderer straight from R6! No post-processing of the document was done. The formatting, style and all were read from CSS, so if it's ugly, it's this author's fault!
+
+Links:
+
+* "Xilize":http://www.centeredwork.com/xilize2/download.html http://www.centeredwork.com/xilize2/download.html
+* "jEdit":http://www.jedit.org http://www.jedit.org
