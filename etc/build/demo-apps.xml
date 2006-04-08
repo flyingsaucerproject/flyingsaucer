@@ -29,7 +29,7 @@
 
     <!-- Builds and jars the browser demo, and runs it with a particular page -->
 	<target name="create.pdf" depends="jar">
-		<java classname="org.xhtmlrenderer.pdf.ToPDF"
+		<java classname="org.xhtmlrenderer.simple.PDFRenderer"
 				fork="${java-exec.fork.tests}">
 			<arg value="${page}"/>
 			<arg value="${pdf}"/>
