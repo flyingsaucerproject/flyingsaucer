@@ -1,0 +1,24 @@
+include. common-includes.inc
+
+divStart(#fs).
+
+include. menu.xil
+
+h1. Have You Seen the Saucer? 
+
+Here are screenshots of ${fs} in action.
+
+A variety of styled text.
+!../images/text.png!
+
+Some examples of CSS positioning. Notice the fixed position block in the bottom. That will stay there while you scroll.
+!../images/positioned.png!
+
+The first chapter of Alice in Wonderland, showing off floats and text wrapping.
+!../images/alice.png!
+
+The same section of Alice, only this time we use the Minium anti-aliasing library instead of the default Swing anti-aliasing.
+!../images/alice.smooth.png!
+
+
+divEnd.
