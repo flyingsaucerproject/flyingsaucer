@@ -73,7 +73,7 @@ h3. How do I get access to the Swing components that make up my form fields?
 You can use the form accessor methods on the context. See Form Field Access in the Getting Started Guide.
 
 
-h2(fs_heading). Developer's FAQ
+h2. Developer's FAQ
 
 toc. 3 3 #
 
