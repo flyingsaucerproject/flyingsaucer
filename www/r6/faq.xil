@@ -1,10 +1,8 @@
-define. fs Flying Saucer
+include. common-includes.inc
 
-define. css21 "CSS 2.1 Specification":http://www.w3.org/TR/CSS21/
+divStart(#fs).
 
-define. itext "iText":http://www.lowagie.com/iText/
-
-define. jlogging "java.util.logging":http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/package-summary.html
+include. menu.xil
 
 h1. The ${fs} FAQ
 
@@ -97,3 +95,5 @@ h3. How do I build XR without Ant?
 h3. How do I build XR from within my IDE?
 
 Our Ant @build.xml@ file includes all JAR files in the @/lib@ directory, plus the @/resources@ directory tree in the classpath. The compile target also copies CSS and properties resources from @/src/css@ and @src/conf@ to @/build/resources@. If running from an IDE, you will need to synchronize this yourself.
+
+divEnd.
