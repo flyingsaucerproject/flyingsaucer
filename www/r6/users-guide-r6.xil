@@ -28,25 +28,6 @@ pagenumber:before {
 pagecount:before {
   content: counter(pages);
 }
-table { 
-  width: 100%;
-  border: thin solid black; 
-  padding: 0; 
-  margin: 0;
-  empty-cells: show;
-  border-collapse: collapse;
-}
-tr:first-child {
-  background: teal;
-  font-weight: bold;
-}
-td { 
-  font-size: 8pt;
-  border: thin solid black; 
-  padding: 4pt; 
-  margin: 0;
-  empty-cells: show;
-}
 @media print {
   #toc {
     page-break-before: always; 

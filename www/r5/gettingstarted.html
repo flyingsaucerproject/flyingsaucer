@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Untitled Document</title>
+  <link href="base.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<div id="fs">
+
+<ul id="menu">
+<li><b>About Flying Saucer</b>
+<ul>
+	<li><a href="index.html">Home Page</a></li>
+	<li><a href="featurelist.html">Feature List</a></li>
+	<li><a href="faq.html">The FAQ</a></li>
+	<li><a href="http://www.gnu.org/copyleft/lesser.html">License (LGPL)</a></li>
+	<li><a href="screenshots.html">Screenshots</a></li>
+</ul>
+</li>
+<li><b>Download</b>
+<ul>
+<li><a href="http://joshy.org/flyingsaucer/downloads/flyingsaucer.src.zip">R5 beta</a></li>
+<li><a href="demos.html">demo apps</a></li>
+</ul>
+</li>
+<li><b>Documentation</b>
+<ul>
+<li><a href="gettingstarted.html"><b>Getting Started</b></a></li>
+<li><a href="advanced.html">Developer Guide</a></li>
+<li><a href="http://joshy.org/flyingsaucer/doc/user/api/">Simple JavaDocs (R5)</a></li>
+<li><a href="http://joshy.org/flyingsaucer/doc/full/api/">Full JavaDocs (R5)</a></li>
+<li><a href="references.html">References</a></li>
+</ul>
+</li>
+<li><b>Contribute</b>
+<ul>
+<li><a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">dev mailing list</a></li>
+<li><a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">user mailing list</a></li>
+<li><a href="http://wiki.java.net/bin/view/Javadesktop/XHTMLRenderer">The
+Wiki</a></li>
+</ul>
+</li>
+<li id="newsfeed"><b><a href="http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS" border="0">News Feed<img src="https://java-net.dev.java.net/branding/images/xml.gif" border="0"></a></b>
+</li>
+</ul>
+
+<h1>Getting Started with Flying Saucer</h1>
+
+<p>Note that Flying Saucer is still under intensive development and the way to use it may still change.
+However, the simple use of <code>BasicPanel</code> and <code>XHTMLPanel</code> should be fairly stable</p>
+
+<p>Please give feedback and help us improve the usability of Flying Saucer</p>
+
+<ul>
+<li><a href="#show_page">The Basics: Showing a Page</a></li>
+<li><a href="#about_box">Creating an About Box in 60 seconds</a></li>
+<li><a href="#formsubmission">Doing Form Submission</a></li>
+<li><a href="#formaccess">Getting Access to Form Components</a></li>
+<li><a href="#hyperlinks">Following Hyperlinks</a></li>
+<li><a href="#jars">What jars do I need?</a></li>
+</ul>
+
+<h2><a name="show_page"></a>The Basics: Showing a Page</h2>
+<p>If you just want to show a webpage in your application then  start
+  with the <code>XHTMLPanel</code>, in <code>org.xhtmlrenderer.swing</code>. Here is a simple example: </p>
+<pre>import javax.swing.*;
+import org.xhtmlrenderer.simple.XHTMLPanel;
+public class test {
+   public static void main(String[] args) throws Exception {
+       
+      XHTMLPanel panel = new XHTMLPanel();
+      panel.setDocument("test.xhtml");
+   
+      JScrollPane scroll = new JScrollPane(panel);
+   
+      JFrame frame = new JFrame();
+      frame.getContentPane().add(scroll);
+      frame.pack();
+      frame.setSize(400,400);
+      frame.setVisible(true);
+   }   
+}
+</pre>
+<p><br>
+    First create an XHTMLPanel and set it's preferred size. Call <code>setDocument()</code>  to set the path of
+    the xhtml file that should be displayed (relative to the current working directory). Then drop it into a 
+    <code>JScrollPane</code> and add the pane to a <code>JFrame</code>.</p>
+
+
+
+<h2><a name="about_box"></a>Creating an About Box in 60 seconds</h2>
+<p>The  <code>AboutBox </code>is a prefab component which displays an html document and automatically
+  scrolls it. It is primarily useful for <em>Help-&gt;About</em> menu items and splash screens.</p>
+<p>Here is an example of adding an about box to a menu item's action listener. </p>
+<pre>import org.xhtmlrenderer.demo.aboutbox.AboutBox;
+......
+JMenuItem about = new JMenuItem(&quot;About...&quot;);
+about.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent evt) {
+        AboutBox ab = new AboutBox(&quot;About Flying Saucer&quot;,
+			           &quot;demos/about/index.xhtml&quot;);
+        ab.setVisible(true);
+    }
+ });
+</pre>
+
+<h2><a name="formsubmission"></a>Doing Form Submission.</h2>
+<p>Since network access is outside the scope of the core renderer, form submission
+    is currently implemented as an <code>ActionListener</code> attached to the submit button
+    in the browser application. Depending on your needs you can probably modify
+  that code. Take a look at <code>org.xhtmlrenderer.demo.browser.SubmitAction.</code></p>
+
+  
+<h2><a name="formaccess"></a>Getting Access to Form Components</h2>
+<p>  If you want to access the Swing components for each form input field you
+    can use the accessors on the <code>Context </code>object. <code>HTMLPanel.getContext().getFormFieldComponents()</code>.
+    Take a look at <code>org.xhtmlrenderer.demo.browser.ResetAction.setupResets()</code> for
+  an example of pulling out each reset button and adding a standard AWT <code>ActionListener</code>  to them.</p>
+<p>If you want to access the actual DOM elements that make up the form you'll
+  have to paw through your document tree (start with <code>HTMLPanel.getDocument()</code>).</p>
+  
+  
+<h2><a name="hyperlinks"></a>Following Hyperlinks</h2>
+<p>By default the XHTMLPanel has a pre-fab mouse listener to follow hyperlinks. You can override this <code>MouseListener </code> to change it's behavior if you want. See <code>org.xhtmlrenderer.swing.LinkListener</code>  for the complete code.</p>
+
+<h2><a name="jars"></a>What Jars do I need</h2>
+<p>
+	The core of Flying Saucer is the <b>core-renderer.jar</b> and <b>cssparser-0-9-4-fs.jar</b>. That's all you need. All of the other
+	jars are only for use by the demo programs.
+</p>
+
+</body>
+</html>
