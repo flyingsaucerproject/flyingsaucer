@@ -6,7 +6,7 @@ include. menu.xil
 
 h1. The ${fs} FAQ
 
-This is our list of frequently-asked questions. With release R6, we moved a bunch of the material from here into our "Flying Saucer User's Guide":users-guide.pdf. Please contact us on our TODO:mailing-list if you have more questions.
+This is our list of frequently-asked questions. With release R6, we moved a bunch of the material from here into our "Flying Saucer User's Guide":users-guide-r6.pdf. Please contact us on our ${mailing-list.user} if you have more questions.
 
 h2. General Questions
 
