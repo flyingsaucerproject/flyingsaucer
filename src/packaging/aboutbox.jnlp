@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="http://joshy.org/flyingsaucer/downloads/" href="aboutbox.jnlp">
+<jnlp codebase="http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/" href="aboutbox.jnlp">
 
     <information>
         <title>XHTML About Box Demo</title>
@@ -19,12 +19,8 @@
         <jar href="about.jar"/>
         <jar href="core-renderer.jar"/>
         <jar href="cssparser-0-9-4-fs.jar"/>
+        <jar href="itext-paulo-155.jar"/>
     </resources>
     
     <application-desc main-class="org.xhtmlrenderer.demo.aboutbox.AboutBox"/>
-    <!--
-    <security>
-        <all-permissions/>
-    </security>
-	-->
 </jnlp>
