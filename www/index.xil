@@ -2,6 +2,18 @@ include. ../include/common-includes.inc
 
 define. css base.css
 
+define. style
+.downloadbox {
+  width: 150px; 
+  font-weight: bold; 
+  font-size: 8pt; 
+  border: 1px solid blue; 
+  margin: 0px 10px 15px 0px; 
+  float: left; 
+  padding: 10px 5px 10px 5px; 
+  text-align: center;
+}
+
 divStart(#fs).
 
 include. include/menu.xil
@@ -26,16 +38,26 @@ p{font-size: 18pt}. *Flying Saucer: R6* - Now in Beta!
 # Rewritten "float" implementation
 # Improved list marker positioning 
 
-Plus there are lots of bug fixes and improvements all around; check out our complete feature list. We have one user community using Flying Saucer to render PDF output from XML+CSS via over 30K lines of XSL. Things are looking good!
+Plus there are lots of bug fixes and improvements all around; check out our complete "feature list":r6/feature-list.html. We have one user community using Flying Saucer to render PDF output from XML+CSS via over 30K lines of XSL. Things are looking good!
 
 We need your feedback, eyes, reports and bug fixes :). Download now:
 
-* *"R6-pre1 Binaries":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre1.zip*
-* *"R6-pre1 - Source, Samples, Docs":http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre1-src.zip*
-
+==
+<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre1.zip">  
+  <div class="downloadbox">
+  Binaries
+  </div>
+</a>
+<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre1-src.zip">  
+  <div class="downloadbox">
+  Source Bundle
+  </div>
+</a>
+==
+  
 Take the saucer for a spin!
 
-*Sept 6, 2005*: The Flying Saucer team is proud to present Release 5 of the Flying Saucer 100% Java XHTML+CSS renderer. This release brings tremendous speed improvements in both style parsing and document renderering. Other improvements include:
+p{clear: left;}. *Sept 6, 2005*: The Flying Saucer team is proud to present Release 5 of the Flying Saucer 100% Java XHTML+CSS renderer. This release brings tremendous speed improvements in both style parsing and document renderering. Other improvements include:
 
 * numerous improvments to float and clear support
 * better absolute positioning support
