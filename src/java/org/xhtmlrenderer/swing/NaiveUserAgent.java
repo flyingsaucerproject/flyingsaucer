@@ -58,12 +58,6 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
      * Creates a new instance of NaiveUserAgent
      */
     public NaiveUserAgent() {
-        try {
-            //File.toURL is buggy
-            setBaseURL(new File(".").toURI().toURL().toExternalForm());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
     }
 
     /**
@@ -137,15 +131,22 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
         if (baseURL == null) {
             try {
                 result = new URL(uri);
+                setBaseURL(result.toExternalForm());
+                return result.toExternalForm();
             } catch (MalformedURLException e) {
-                return null;
+                try {
+                    setBaseURL(new File(".").toURI().toURL().toExternalForm());
+                } catch (MalformedURLException e1) {
+                    XRLog.exception("The default NaiveUserAgent doesn't know how to resolve the base URL for " + uri);
+                    return null;
+                }
             }
-        } else {
-            try {
-                result = new URL(new URL(baseURL), uri);
-            } catch (MalformedURLException e1) {
-                return null;
-            }
+        }
+        try {
+            result = new URL(new URL(baseURL), uri);
+        } catch (MalformedURLException e1) {
+            XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + baseURL);
+            return null;
         }
         return result.toString();
 
@@ -160,6 +161,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2006/04/09 04:41:30  tobega
+ * Friendlier URL handling
+ *
  * Revision 1.23  2006/04/08 08:21:24  tobega
  * relative urls and linked stylesheets
  *
