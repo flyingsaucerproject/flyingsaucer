@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -288,21 +288,22 @@ public class TableBoxing {
     }
     
     private static void alignCellLines(TableBox box) {
-    	for (int i = 0; i < box.getChildCount(); i++) {
-    		RowBox row = (RowBox)box.getChild(i);
-    		
-    		for (int j = 0; j < row.getChildCount(); j++) {
-    			CellBox cell = (CellBox)row.getChild(j);
-    			
-    			cell.alignLines();
-    		}
-    	}
+        for (int i = 0; i < box.getChildCount(); i++) {
+            RowBox row = (RowBox)box.getChild(i);
+            
+            for (int j = 0; j < row.getChildCount(); j++) {
+                CellBox cell = (CellBox)row.getChild(j);
+                
+                cell.alignLines();
+            }
+        }
     }
 
     /**
      * increases cell size without re-layout.
      */
     private static void fixWidths(TableBox tableBox, int borderSpacingHorizontal) {
+       if ((tableBox != null) && (tableBox.columns != null)) {
         int sum = borderSpacingHorizontal;
         for (int i = 0; i < tableBox.columns.length; i++) sum += tableBox.columns[i] + borderSpacingHorizontal;
         if (sum < tableBox.contentWidth) {
@@ -325,12 +326,12 @@ public class TableBoxing {
                     }
                     CellBox cb = (CellBox) cbi.next();
                     cb.contentWidth = 0;
-                    for (int i = 0; i < cb.colspan; i++) cb.contentWidth += tableBox.columns[col + i];
+                       for (int i = 0; (i < cb.colspan) && (col + i < tableBox.columns.length); i++) cb.contentWidth += tableBox.columns[col + i];
                     cb.contentWidth += borderSpacingHorizontal * (cb.colspan - 1);
                     cb.contentWidth -= cb.leftMBP + cb.rightMBP;
                     cb.x = x;
                     x += cb.getWidth() + borderSpacingHorizontal;
-                    for (int j = 0; j < cb.colspan; j++) {
+                       for (int j = 0; (j < cb.colspan) && (col + j < tableBox.columns.length); j++) {
                         tableBox.columnRows[col + j] = cb.rowspan;
                     }
                     col += cb.colspan;
@@ -342,6 +343,7 @@ public class TableBoxing {
                 XRLog.layout(Level.WARNING, "Can't fix widths of " + tc.getClass().getName() + " yet!");
         }
     }
+    }
 
     private static void fixHeights(TableBox tableBox, int borderSpacingVertical) {
         tableBox.height += borderSpacingVertical;
@@ -351,14 +353,14 @@ public class TableBoxing {
                 RowBox row = (RowBox) tc;
                 int col = 0;
                 for (Iterator cbi = row.getChildIterator(); cbi.hasNext();) {
-                    while (tableBox.columnRows[col] != 0) {
+                    while ((col < tableBox.columnRows.length) && (tableBox.columnRows[col] != 0)) {
                         if (tableBox.columnCell != null && tableBox.columnCell[col] != null) {
                             tableBox.columnCell[col].height += borderSpacingVertical + row.height;
                         }
                         col = col + 1;
                     }
                     CellBox cb = (CellBox) cbi.next();
-                    for (int j = 0; j < cb.colspan; j++) {
+                    for (int j = 0; (j < cb.colspan) && (col + j < tableBox.columnRows.length); j++) {
                         tableBox.columnRows[col + j] = cb.rowspan;
                         if (j == 0)
                             tableBox.columnCell[col + j] = cb;
@@ -543,12 +545,14 @@ public class TableBoxing {
         }
         for (int j = 0; j < table.columns.length; j++) {
             // increase the final layout height if the child was greater
+            if (table.columnRows[j] != 0) {
             int height = table.columnHeight[j] / table.columnRows[j];
             if (height > row.height) {
                 row.height = height;
             }
             table.columnHeight[j] -= height;
             table.columnRows[j]--;
+        }
         }
         for (int j = 0; j < table.columns.length; j++) {
             if (table.columnCell[j] == null) continue;
@@ -709,6 +713,9 @@ public class TableBoxing {
 /*
    $Id$
    $Log$
+   Revision 1.61  2006/04/24 23:58:13  peterbrant
+   Fixes from Mike Curtis
+
    Revision 1.60  2006/03/01 00:45:03  peterbrant
    Provide LayoutContext when calling detach() and friends
 
