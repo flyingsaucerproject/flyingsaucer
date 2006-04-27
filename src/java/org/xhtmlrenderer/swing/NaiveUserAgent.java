@@ -58,12 +58,6 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
      * Creates a new instance of NaiveUserAgent
      */
     public NaiveUserAgent() {
-        try {
-            //File.toURL is buggy
-            setBaseURL(new File(".").toURI().toURL().toExternalForm());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
     }
 
     /**
@@ -110,7 +104,7 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
             }
         }
         if (ir == null) {
-           ir = new ImageResource(null);
+            ir = new ImageResource(null);
         }
         return ir;
     }
@@ -135,24 +129,28 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
     }
 
     public String resolveURI(String uri) {
+        if (uri == null) return null;
         String ret = null;
-        if (uri != null) {
+        if (baseURL == null) {//first try to set a base URL
             try {
                 URL result = new URL(uri);
-                ret = result.toString();
-            }
-            catch (MalformedURLException e) {
-                if (baseURL != null) {
-                    try {
-                        URL result = new URL(new URL(baseURL), uri);
-                        ret = result.toString();
-                    }
-                    catch (MalformedURLException e1) {
-                    }
+                setBaseURL(result.toExternalForm());
+            } catch (MalformedURLException e) {
+                try {
+                    setBaseURL(new File(".").toURI().toURL().toExternalForm());
+                } catch (Exception e1) {
+                    XRLog.exception("The default NaiveUserAgent doesn't know how to resolve the base URL for " + uri);
+                    return null;
                 }
             }
         }
-       return ret;
+        try {
+            URL result = new URL(new URL(baseURL), uri);
+            ret = result.toString();
+        } catch (MalformedURLException e1) {
+            XRLog.exception("The default NaiveUserAgent cannot resolve the URL " + uri + " with base URL " + baseURL);
+        }
+        return ret;
     }
 
     public String getBaseURL() {
@@ -164,6 +162,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2006/04/27 13:28:48  tobega
+ * Handle situations without base url and no file access gracefully
+ *
  * Revision 1.25  2006/04/25 00:23:20  peterbrant
  * Fixes from Mike Curtis
  *
