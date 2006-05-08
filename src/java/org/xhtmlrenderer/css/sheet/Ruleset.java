@@ -29,6 +29,7 @@ import org.xhtmlrenderer.util.XRLog;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 
 /**
@@ -51,7 +52,7 @@ public class Ruleset {
      * initialize this Ruleset
      */
     private org.w3c.css.sac.SelectorList sacSelectorList;
-    
+
     private String _selectorText;
 
     /**
@@ -139,7 +140,7 @@ public class Ruleset {
         }
         // HACK, but right now we already depend on Steady State classes
         sacSelectorList = ((CSSStyleRuleImpl) sacRule).getSelectorList();
-        
+
         /*
         // note, we parse the selector for this instance, not the one from the CSS Style, which
         // might still be multi-part; selector for TODO is always single (no commas)
@@ -171,16 +172,25 @@ public class Ruleset {
                 // TODO: didn't we used to accept unknown properties?
                 XRLog.cascade("Unknown property in stylesheet: " + propName + ", skipping it.");
             } else {
+                try {
                 Iterator iter = PropertyDeclaration.newFactory(cssName).buildDeclarations(decl, cssName, _origin);
 
                 while (iter.hasNext()) {
                     // the cast is just for doc purposes
                     _props.add((PropertyDeclaration) iter.next());
                 }
+                } catch (Exception ex) {
+                    XRLog.cascade(
+                            Level.WARNING,
+                            "Property " + cssName + " could not be parsed while creating PropertyDeclarations. " +
+                            "Assigned value might be: " + decl.getPropertyValue(cssName.toString()) + ". " +
+                            "Exception was " + ex + ". Property is being IGNORED and skipped."
+                    );
+                }
             }
         }
     }
-    
+
     public String getSelectorText() {
         return _selectorText;
     }
@@ -191,6 +201,9 @@ public class Ruleset {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2006/05/08 21:36:03  pdoubleya
+ * Log and skip properties we can't parse into declarations...
+ *
  * Revision 1.12  2005/12/30 01:32:41  peterbrant
  * First merge of parts of pagination work
  *

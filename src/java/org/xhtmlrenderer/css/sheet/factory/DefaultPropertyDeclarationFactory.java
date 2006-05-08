@@ -68,7 +68,7 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
 
         if (primVals.length > 1) {
             throw new XRRuntimeException("Tried to use " + this.getClass().getName() +
-                    " to create PropertyDeclarations for " + cssName + ", but the" +
+                    " to create PropertyDeclarations for '" + cssName + "', but the" +
                     " CSS style information is not primitive--is a list of values." +
                     " Should be handled by a shorthand property factory.");
         }
@@ -95,6 +95,9 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2006/05/08 21:36:02  pdoubleya
+ * Log and skip properties we can't parse into declarations...
+ *
  * Revision 1.6  2005/05/08 13:02:37  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
  *
