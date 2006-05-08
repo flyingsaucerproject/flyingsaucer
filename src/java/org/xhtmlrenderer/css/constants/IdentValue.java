@@ -23,8 +23,7 @@ import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.Color;
-import java.awt.Point;
+import java.awt.*;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -620,7 +619,9 @@ public class IdentValue implements FSDerivedValue {
     }
 
     public boolean hasAbsoluteUnit() {
-        throw new XRRuntimeException("Ident value is never an absolute unit; wrong class used for derived value.");
+        // log and return false
+        throw new XRRuntimeException("Ident value is never an absolute unit; wrong class used for derived value; this " +
+                "ident value is a " + this.asString());
     }
 
     public boolean isIdent() {
@@ -632,6 +633,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2006/05/08 21:24:24  pdoubleya
+ * Log, don't throw exception, if we check for an absolute unit but it doesn't make sense to do so (IdentValue.hasAbsoluteUnit()).
+ *
  * Revision 1.19  2005/12/28 00:50:51  peterbrant
  * Continue ripping out first try at pagination / Minor method name refactoring
  *
