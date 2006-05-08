@@ -32,6 +32,7 @@ import javax.imageio.ImageIO;
 import javax.xml.transform.sax.SAXSource;
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -72,6 +73,8 @@ public class PanelManager implements UserAgentCallback {
             is = uc.getInputStream();
         } catch (MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
+        } catch (FileNotFoundException e11) {
+                XRLog.exception("Can't load CSS from URI (not found): " + uri);
         } catch (IOException e) {
             XRLog.exception("IO problem for " + uri, e);
         }
@@ -91,6 +94,8 @@ public class PanelManager implements UserAgentCallback {
                 is = uc.getInputStream();
             } catch (MalformedURLException e1) {
                 XRLog.exception("bad URL given: " + uri, e1);
+            } catch (FileNotFoundException e11) {
+                XRLog.exception("Can't load image from URI (not found): " + uri);
             } catch (IOException e11) {
                 XRLog.exception("IO problem for " + uri, e11);
             }
