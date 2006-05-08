@@ -21,10 +21,9 @@
 package org.xhtmlrenderer.util;
 
 
-import java.io.File;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.URL;
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -32,11 +31,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
+import java.io.File;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.net.URL;
 
 
 /**
@@ -157,7 +156,7 @@ public class XMLUtil {
         DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = fact.newDocumentBuilder();
         builder.setErrorHandler( null );
-        return builder.parse( documentContents );
+        return builder.parse( new InputSource(new StringReader(documentContents)));
     }
 
     /**
@@ -310,6 +309,9 @@ public class XMLUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2006/05/08 20:55:08  pdoubleya
+ * Parse input source from string using a reader, to handle encoding.
+ *
  * Revision 1.4  2005/01/29 20:18:38  pdoubleya
  * Clean/reformat code. Removed commented blocks, checked copyright.
  *
