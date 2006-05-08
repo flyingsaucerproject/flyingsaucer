@@ -36,12 +36,14 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.util.XRRuntimeException;
+import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 
 
 /**
@@ -83,12 +85,12 @@ public class CalculatedStyle {
     private BorderPropertySet _border;
     private RectPropertySet _margin;
     private RectPropertySet _padding;
-    
+
     private float _lineHeight;
     private boolean _lineHeightResolved;
-    
+
     private FSFont _FSFont;
-    private FSFontMetrics _FSFontMetrics;    
+    private FSFontMetrics _FSFontMetrics;
 
     /**
      * Cache child styles of this style that have the same cascaded properties
@@ -190,7 +192,7 @@ public class CalculatedStyle {
     public float asFloat(CSSName cssName) {
         return valueByName(cssName).asFloat();
     }
-    
+
     public String asString(CSSName cssName) {
         return valueByName(cssName).asString();
     }
@@ -450,7 +452,7 @@ public class CalculatedStyle {
         RGBColor rgb = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_RGBCOLOR ? value.getRGBColorValue() : null);
         String s = (value.getPrimitiveType() == CSSPrimitiveValue.CSS_STRING ? value.getStringValue() : null);
         String cssText = value.getCssText();
-        
+
         String converted = Idents.convertIdent(cssName, value.getCssText());
         if (! converted.equals(value.getCssText())) {
             cssText = converted;
@@ -458,12 +460,48 @@ public class CalculatedStyle {
         }
 
         // derive the value, will also handle "inherit"
-        FSDerivedValue dval = DerivedValueFactory.newDerivedValue(this,
-                cssName,
-                value.getPrimitiveType(),
-                cssText,
-                s,
-                rgb);
+        FSDerivedValue dval = null;
+        try {
+            dval = DerivedValueFactory.newDerivedValue(this,
+                    cssName,
+                    value.getPrimitiveType(),
+                    cssText,
+                    s,
+                    rgb);
+        } catch (Exception e) {
+            dval = assignInitialValue(cssName);
+            XRLog.cascade(
+                    Level.WARNING,
+                    "Property " + cssName + " had an illegal or unexpected value. " +
+                    "This may actually be a limitation or bug in the Flying Saucer code, so please report " +
+                    "it. The assigned text was '" + cssText + "'." +
+                            (s == null ? "" : " (or possibly there was a problem with" +
+                    "our interpretation of the value (once converted) '" + s + "').") +
+                    "The property is being assigned its valid _initial_ value as defined by the CSS 2.1 spec." +
+                    "Original exception message: " + e.getMessage());
+        }
+        return dval;
+    }
+
+    private FSDerivedValue assignInitialValue(CSSName cssName) {
+        String initialValue = CSSName.initialValue(cssName);
+        FSDerivedValue dval = null;
+        try {
+            dval = DerivedValueFactory.newDerivedValue(this,
+                    cssName,
+                    CSSPrimitiveValue.CSS_STRING,
+                    initialValue,
+                    initialValue,
+                    null);
+        } catch (Exception e) {
+            XRLog.cascade(
+                    Level.WARNING,
+                    "Property " + cssName + " had an initial value of " + initialValue + " which " +
+                    "could not be converted for use in styling. Have no option but to assign a " +
+                    "null at this point, which may cause the render or layout to break. Exception " +
+                    "message was: " + e.getMessage());
+        }
+
         return dval;
     }
 
@@ -519,15 +557,15 @@ public class CalculatedStyle {
                     putCachedRect(key, style._padding);
                 }
             }
-            
-	        // HACK, would really rather do this earlier in the process to take
-	        // advantage of caching, but this is the lowest impact approach
-	        if (hasNegativeValues(style._padding)) {
-	            style._padding = style._padding.copyOf();
-	            resetNegativeValues(style._padding);
+
+            // HACK, would really rather do this earlier in the process to take
+            // advantage of caching, but this is the lowest impact approach
+            if (hasNegativeValues(style._padding)) {
+                style._padding = style._padding.copyOf();
+                resetNegativeValues(style._padding);
             }
         }
-        
+
         return style._padding;
     }
 
@@ -538,7 +576,7 @@ public class CalculatedStyle {
                                                      float parentHeight,
                                                      CssContext ctx) {
         String key = null;
-        
+
         if (style._margin == null) {
             key = RectPropertySet.deriveKey(style, sides);
             if (key == null) {
@@ -581,7 +619,7 @@ public class CalculatedStyle {
                 style._border = BorderPropertySet.newInstance(style, ctx);
                 putCachedRect(key, style._border);
             }
-            
+
             // HACK, would really rather do this earlier in the process to take
             // advantage of caching, but this is the lowest impact approach
             if (hasNegativeValues(style._border)) {
@@ -591,7 +629,7 @@ public class CalculatedStyle {
         }
         return style._border;
     }
-    
+
     private static void resetNegativeValues(RectPropertySet rect) {
         if (rect.top() < 0) {
             rect.setTop(0);
@@ -606,23 +644,23 @@ public class CalculatedStyle {
             rect.setLeft(0);
         }
     }
-    
+
     private static boolean hasNegativeValues(RectPropertySet rect) {
         return rect.top() < 0 || rect.right() < 0 || rect.bottom() < 0 || rect.left() < 0;
     }
-    
+
     public static final int LEFT = 1;
     public static final int RIGHT = 2;
-    
+
     public static final int TOP = 3;
     public static final int BOTTOM = 4;
-    
+
     public int getMarginBorderPadding(
             CssContext cssCtx, int containingBlockWidth, int which) {
         BorderPropertySet border = getBorder(cssCtx);
         RectPropertySet margin = getMarginRect(containingBlockWidth, containingBlockWidth, cssCtx);
         RectPropertySet padding = getPaddingRect(containingBlockWidth, containingBlockWidth, cssCtx);
-        
+
         switch (which) {
             case LEFT:
                 return (int)(margin.left() + border.left() + padding.left());
@@ -636,25 +674,25 @@ public class CalculatedStyle {
                 throw new IllegalArgumentException();
         }
     }
-    
+
     public IdentValue getWhitespace() {
         return getIdent(CSSName.WHITE_SPACE);
     }
-    
+
     private static final synchronized Object getCachedRect(String key) {
         return _cachedRects.get(key);
     }
-    
+
     private static final synchronized void putCachedRect(String key, Object value) {
         _cachedRects.put(key, value);
     }
-    
+
     public FSFont getFSFont(CssContext cssContext) {
         if (_FSFont == null) {
             _FSFont = cssContext.getFont(getFont(cssContext));
         }
         return _FSFont;
-    }    
+    }
 
     public FSFontMetrics getFSFontMetrics(LayoutContext c) {
         if (_FSFontMetrics == null) {
@@ -662,18 +700,21 @@ public class CalculatedStyle {
                     c.getFontContext(), getFSFont(c), "");
         }
         return _FSFontMetrics;
-    }  
-    
+    }
+
     public boolean isAlternateFlow() {
         return ! getStringProperty(CSSName.FS_MOVE_TO_FLOW).equals("none");
     }
-    
+
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.65  2006/05/08 20:56:09  pdoubleya
+ * Clean exception handling for case where assigned property value is not understood as a valid value; use initial value instead.
+ *
  * Revision 1.64  2006/02/21 19:30:34  peterbrant
  * Reset negative values for padding/border-width to 0
  *

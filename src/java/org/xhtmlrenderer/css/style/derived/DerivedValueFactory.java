@@ -6,7 +6,6 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.Idents;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
-import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,7 +69,9 @@ public class DerivedValueFactory {
             } else if (IDENT_PROPERTIES.contains(cssName) || IdentValue.looksLikeIdent(cssText)) {
                 val = IdentValue.getByIdentString(cssText);
             } else {
-                throw new XRRuntimeException("Can't determine the dervived value type to use for property " +
+                // use regular RuntimeException; XRRuntimeException auto-logs, which we don't need
+                // in this case.
+                throw new RuntimeException("Can't determine the dervived value type to use for property " +
                         "named '" + cssName + "' with value " + cssText);
             }
         }
