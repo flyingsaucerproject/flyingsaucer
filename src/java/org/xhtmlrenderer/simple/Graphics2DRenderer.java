@@ -137,10 +137,10 @@ public class Graphics2DRenderer {
      * document.
      */
     public Rectangle getMinimumSize() {
-        if (panel.getIntrinsicSize() != null) {
+        if (panel.getPreferredSize() != null) {
             return new Rectangle(0, 0,
-                    (int) panel.getIntrinsicSize().getWidth(),
-                    (int) panel.getIntrinsicSize().getHeight());
+                    (int) panel.getPreferredSize().getWidth(),
+                    (int) panel.getPreferredSize().getHeight());
         } else {
             return new Rectangle(0, 0, panel.getWidth(), panel.getHeight());
         }
@@ -221,6 +221,9 @@ public class Graphics2DRenderer {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2006/05/12 18:18:10  peterbrant
+ * Remove dead code
+ *
  * Revision 1.17  2006/04/07 07:28:39  pdoubleya
  * JavaDoc
  *

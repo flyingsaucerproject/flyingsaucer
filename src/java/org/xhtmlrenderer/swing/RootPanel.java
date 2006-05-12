@@ -43,8 +43,6 @@ import org.xhtmlrenderer.util.XRLog;
 public class RootPanel extends JPanel implements ComponentListener, UserInterface {
     static final long serialVersionUID = 1L;
     
-    protected Dimension intrinsic_size;
-
     private boolean useThreads;
 
     public RootPanel(boolean useThreads) {
@@ -53,10 +51,6 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
 
     public RootPanel() {
         this(Configuration.isTrue("xr.use.threads", true));
-    }
-
-    public Dimension getIntrinsicSize() {
-        return intrinsic_size;
     }
 
     protected Map documentListeners;

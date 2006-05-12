@@ -88,8 +88,8 @@ public class LayoutThread implements Runnable {
                 second_set = false;
                 //Uu.p("calling layout again. dim = " + d);
                 //Uu.p("panel intrinsic =  " + panel.getIntrinsicSize());
-                if (panel.getIntrinsicSize() != null &&
-                        panel.getIntrinsicSize().equals(d)) {
+                if (panel.getPreferredSize() != null &&
+                        panel.getPreferredSize().equals(d)) {
                     //Uu.p("the old intrinsic size matches. skiping the extra repaint");
                     return;
                 }
