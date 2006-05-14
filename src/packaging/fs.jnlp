@@ -17,7 +17,7 @@
         <j2se version="1.4+"/>
         <jar href="browser.jar"/>
         <jar href="core-renderer.jar"/>
-	<jar href="cssparser-0-9-4-fs.jar"/>
+      	<jar href="cssparser-0-9-4-fs.jar"/>
         <jar href="itext-paulo-155.jar"/>
         <jar href="minium.jar"/>
     </resources>

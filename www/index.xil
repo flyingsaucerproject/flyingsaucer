@@ -26,9 +26,11 @@ p{font-size: 14pt}. _Our website is under (re)construction while we prepare the 
 
 h2(fs_heading). News
 
-p{font-size: 18pt}. *Flying Saucer: R6* - Now in Beta!
+p{font-size: 18pt}. *Flying Saucer: R6* - Now in Second Beta Release!
 
-*April 5, 2006*: The Flying Saucer team is happy to announce we are starting the Release 6 beta cycle of the Flying Saucer 100% Java XHTML+CSS renderer. This release includes major improvements in performance and stability--plus we've taken big strides in our CSS 2.1 support. Our package now includes:
+*May 14, 2006*: The Flying Saucer team is happy to announce the release of the second beta for Release 6 of the Flying Saucer 100% Java XHTML+CSS renderer. This release includes bug fixes since we started this beta phase. 
+
+Release 6 includes major improvements in performance and stability--plus we've taken big strides in our CSS 2.1 support. Our package now includes:
 
 # Vertical margin collapsing; "CSS 2.1 specification":http://www.w3.org/TR/CSS21/box.html#collapsing-margins
 # Z-index property and stacking contexts; "CSS 2.1 specification":http://www.w3.org/TR/CSS21/visuren.html#z-index
@@ -43,18 +45,34 @@ Plus there are lots of bug fixes and improvements all around; check out our comp
 We need your feedback, eyes, reports and bug fixes :). Download now:
 
 ==
-<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre1.zip">  
+<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre2.zip">  
   <div class="downloadbox">
   Binaries
   </div>
 </a>
-<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre1-src.zip">  
+<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre2-src.zip">  
   <div class="downloadbox">
   Source Bundle
   </div>
 </a>
 ==
   
+Take the saucer for a spin!
+
+p{font-size: 18pt}. *Flying Saucer: R6* - Now in Beta!
+
+*April 5, 2006*: The Flying Saucer team is happy to announce we are starting the Release 6 beta cycle of the Flying Saucer 100% Java XHTML+CSS renderer. This release includes major improvements in performance and stability--plus we've taken big strides in our CSS 2.1 support. Our package now includes:
+
+# Vertical margin collapsing; "CSS 2.1 specification":http://www.w3.org/TR/CSS21/box.html#collapsing-margins
+# Z-index property and stacking contexts; "CSS 2.1 specification":http://www.w3.org/TR/CSS21/visuren.html#z-index
+# Vertical-align: top/bottom; "CSS 2.1 specification":http://www.w3.org/TR/CSS21/visudet.html#line-height
+# PDF rendering via the iText library; support for PDF bookmarks, pagination and breaks, and more
+# Pagination support, automatic and explicit: "CSS 2.1 specification":http://www.w3.org/TR/CSS21/page.html#page-breaks
+# Rewritten "float" implementation
+# Improved list marker positioning 
+
+Plus there are lots of bug fixes and improvements all around; check out our complete "feature list":r6/feature-list.html. We have one user community using Flying Saucer to render PDF output from XML+CSS via over 30K lines of XSL. Things are looking good!
+
 Take the saucer for a spin!
 
 p{clear: left;}. *Sept 6, 2005*: The Flying Saucer team is proud to present Release 5 of the Flying Saucer 100% Java XHTML+CSS renderer. This release brings tremendous speed improvements in both style parsing and document renderering. Other improvements include:

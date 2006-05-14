@@ -60,7 +60,7 @@ With our R6 release it supports most of the common XHTML and CSS features. This 
 
 h3(fs_heading). What XHTML/CSS features is ${fs} missing?
 
-The only major feature missing as of R5 is the automatic table model (the old Netscape style of tables where the size of the content determined the size of the cells.) Fixed layout tables are supported. Other than that it's just a matter of squashing more bugs and getting more speed.
+The only major feature missing as of R6 is the automatic table model (the old Netscape style of tables where the size of the content determined the size of the cells.) Fixed layout tables are supported. Other than that it's just a matter of squashing more bugs and getting more speed.
 
 There is also no support for things outside the scope of XHTML/CSS such as Javascript, printing, Flash, SVG, or legacy HTML (though there is interest in all of those).
 
@@ -72,6 +72,24 @@ h3(fs_heading). How do I get access to the Swing components that make up my form
 
 You can use the form accessor methods on the context. See Form Field Access in the Getting Started Guide.
 
+h3(fs_heading). I have XML or XHTML stored in a Java String, not a file--how do I load this into an XHTMLPanel?
+
+It's been tricky for us to come up with a decent set of method calls to cover initilizing the panel without creating tons of little methods.
+
+In Java APIs, there is some confusion on usage between a String that represents an address (like a URI or a file path) and strings that represent content. Our API tends to expect that Strings will represent addresses.
+
+In the current codebase you can use our utility class @org.xhtmlrenderer.util.XMLUtil@ to load a DOM Document from a String, like
+
+bcx.. 
+import org.xhtmlrenderer.util.XMLUtil;
+
+XHTMLPanel panel = new XHTMLPanel();
+panel.setDocument(XMLUtil.loadDocumentFromString("xhtml conformant string"));
+
+
+p. There's (actually) no magic in the @XMLUtil.loadDocumentFromString()@; if you know your way around the XML DOM APIs, you can do this sort of thing yourself. We're just chaining the right calls together using the standard Java XML APIs.
+
+It's important to remember that FS expects well-formed XML documents, and we don't have an extremely friendly relationship with the XML parsers; it's always a good idea to test that your document can be loaded outside of FS, without error, using Java XML APIs, before loading them in FS.
 
 h2(fs_heading). Developer's FAQ
 

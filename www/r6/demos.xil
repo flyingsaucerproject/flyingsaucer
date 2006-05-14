@@ -6,12 +6,12 @@ include. ../include/menu.xil
 
 h1. Demo Applications
 
-There will be more demos on this page coming soon, but we've got a few already. 
+There will be more demos on this page coming soon, but we've got a few already. All of these are available if you download our binaries--we're linking them here in case you want to webstart them. 
 
 *Note. These demos all require you to have Java Web Start and Java 1.4 or higher installed*
 
-* "Browser":http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/fs.jnlp, a complete XHTML browser with scrolling, back button, link support, etc.
+* "Browser":http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/fs.jnlp, a simple XHTML browser with scrolling, back button, link support, etc. This is not a "real" browser--but it shows you some of what Flying Saucer is capable of.
 
-* "About Box":http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/aboutbox.jnlp, a prefab scrolling about box that you can easily embed in your own programs
+* "About Box":http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/aboutbox.jnlp, a prefab scrolling about box that you can easily embed in your own programs.
 
 divEnd.
