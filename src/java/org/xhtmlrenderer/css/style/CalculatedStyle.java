@@ -205,7 +205,7 @@ public class CalculatedStyle {
     public boolean hasAbsoluteUnit(CSSName cssName) {
         boolean isAbs = false;
         try {
-            valueByName(cssName).hasAbsoluteUnit();
+            isAbs = valueByName(cssName).hasAbsoluteUnit();
         } catch (Exception e) {
             XRLog.layout(Level.WARNING, "Property " + cssName + " has an assignment we don't understand, " +
                     "and can't tell if it's an absolute unit or not. Assuming it is not. Exception was: " +
@@ -721,6 +721,9 @@ public class CalculatedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.67  2006/05/15 05:46:51  pdoubleya
+ * Return value from abs value check never assigned!
+ *
  * Revision 1.66  2006/05/08 21:24:24  pdoubleya
  * Log, don't throw exception, if we check for an absolute unit but it doesn't make sense to do so (IdentValue.hasAbsoluteUnit()).
  *
