@@ -305,17 +305,17 @@ public class Layer {
             }
         }
         
-        result = getMaster().find(cssCtx, absX, absY);
-        if (result != null) {
-            return result;
-        }
-        
         for (int i = 0; i < getFloats().size(); i++) {
             Box floater = (Box)getFloats().get(i);
             result = floater.find(cssCtx, absX, absY);
-            if (result !=  null) {
+            if (result != null) {
                 return result;
             }
+        }
+        
+        result = getMaster().find(cssCtx, absX, absY);
+        if (result != null) {
+            return result;
         }
         
         if (isRootLayer() || isStackingContext()) {
