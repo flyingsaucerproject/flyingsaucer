@@ -1,3 +1,5 @@
+package utilities;
+
 import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
@@ -17,8 +19,8 @@ import java.util.Hashtable;
 public class Ppm2Jpeg {
     public static void main(String[] args) {
         File f = new File(args[0]);
-        if ( f.exists()) {
-            if ( f.isFile()) {
+        if (f.exists()) {
+            if (f.isFile()) {
                 ppm2Jpeg(f);
             } else {
                 File[] list = f.listFiles(new FileFilter() {
@@ -41,7 +43,7 @@ public class Ppm2Jpeg {
             System.out.print("Converting " + file);
             String fileName = file.getAbsolutePath();
             String outname = "";
-            if ( fileName.endsWith("ppm")) {
+            if (fileName.endsWith("ppm")) {
                 outname = fileName.substring(0, fileName.length() - 4) + ".jpg";
             } else {
                 outname = fileName + ".jpg";
