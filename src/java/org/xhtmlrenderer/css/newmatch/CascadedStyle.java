@@ -96,7 +96,7 @@ public class CascadedStyle {
      * properties.
      */
     private CascadedStyle() {
-        cascadedProperties = new HashMap();
+        cascadedProperties = new TreeMap();
     }
 
     /**
@@ -181,6 +181,9 @@ public class CascadedStyle {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2006/06/15 20:02:39  tobega
+ * Using a TreeMap to get properties in sorted order should be able to reduce the size of the caches in CalculatedStyle when styles are the same apart from order of declaration of properties.
+ *
  * Revision 1.13  2006/01/09 23:22:24  peterbrant
  * Cache fingerprint after initial creation
  *
