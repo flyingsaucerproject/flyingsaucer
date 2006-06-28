@@ -1,6 +1,6 @@
 /*
  * NaiveUserAgent.java
- * Copyright (c) 2004, 2005 Torbjörn Gannholm
+ * Copyright (c) 2004, 2005 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -36,7 +36,7 @@ import java.net.URL;
 
 
 /**
- * @author Torbjörn Gannholm
+ * @author Torbjï¿½rn Gannholm
  */
 public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallback {
 
@@ -95,6 +95,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
             if (is != null) {
                 try {
                     Image img = ImageIO.read(is);
+                    if (img == null) {
+                        throw new IOException("ImageIO.read() returned null");
+                    }
                     img = GraphicsUtil.cleanImage(img);
                     ir = new ImageResource(new AWTFSImage(img));
                     imageCache.put(uri, ir);
@@ -162,6 +165,9 @@ public class NaiveUserAgent implements org.xhtmlrenderer.extend.UserAgentCallbac
  * $Id$
  *
  * $Log$
+ * Revision 1.27  2006/06/28 13:46:59  peterbrant
+ * ImageIO.read() can apparently return sometimes null instead of throwing an exception when processing an invalid image
+ *
  * Revision 1.26  2006/04/27 13:28:48  tobega
  * Handle situations without base url and no file access gracefully
  *

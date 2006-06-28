@@ -1,6 +1,6 @@
 /*
  * PanelManager.java
- * Copyright (c) 2005 Torbjörn Gannholm
+ * Copyright (c) 2005 Torbjï¿½rn Gannholm
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -102,6 +102,9 @@ public class PanelManager implements UserAgentCallback {
             if (is != null) {
                 try {
                     Image img = ImageIO.read(is);
+                    if (img == null) {
+                        throw new IOException("ImageIO.read() returned null");
+                    }
                     img = GraphicsUtil.cleanImage(img);
                     ir = new ImageResource(new AWTFSImage(img));
                     imageCache.put(uri, ir);
