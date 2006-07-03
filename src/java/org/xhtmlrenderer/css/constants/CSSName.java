@@ -35,7 +35,7 @@ import java.util.TreeMap;
  *
  * @author Patrick Wright
  */
-public final class CSSName {
+public final class CSSName implements Comparable {
     /**
      * marker var, used for initialization
      */
@@ -196,7 +196,7 @@ public final class CSSName {
                     "0",
                     NOT_INHERITED
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -207,7 +207,7 @@ public final class CSSName {
                     "none",
                     NOT_INHERITED
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -218,7 +218,7 @@ public final class CSSName {
                     "none",
                     NOT_INHERITED
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -229,7 +229,7 @@ public final class CSSName {
                     "none",
                     NOT_INHERITED
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -239,8 +239,8 @@ public final class CSSName {
                     PRIMITIVE,
                     "none",
                     NOT_INHERITED
-            );    
-    
+            );
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -250,8 +250,8 @@ public final class CSSName {
                     PRIMITIVE,
                     "none",
                     NOT_INHERITED
-            );    
-    
+            );
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -261,8 +261,8 @@ public final class CSSName {
                     PRIMITIVE,
                     "auto",
                     NOT_INHERITED
-            ); 
-    
+            );
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -273,7 +273,7 @@ public final class CSSName {
                     "auto",
                     NOT_INHERITED
             );
-    
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -283,8 +283,8 @@ public final class CSSName {
                     PRIMITIVE,
                     "auto",
                     NOT_INHERITED
-            );    
-    
+            );
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -294,7 +294,7 @@ public final class CSSName {
                     PRIMITIVE,
                     "line",
                     NOT_INHERITED
-            );    
+            );
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1342,7 +1342,7 @@ public final class CSSName {
                     "0",
                     NOT_INHERITED
             );
-    
+
 
     /**
      * Unique CSSName instance for CSS2 property.
@@ -1353,7 +1353,7 @@ public final class CSSName {
                     SHORTHAND,
                     "auto",
                     NOT_INHERITED
-            );    
+            );
 
     public final static CSSName[] MARGIN_SIDE_PROPERTIES =
             new CSSName[]{
@@ -1487,9 +1487,8 @@ public final class CSSName {
      * @return The byPropertyName value
      */
     public static CSSName getByPropertyName(String propName) {
-        CSSName cssName = (CSSName) ALL_PROPERTY_NAMES.get(propName);
 
-        return cssName;
+        return (CSSName) ALL_PROPERTY_NAMES.get(propName);
     }
 
     public static CSSName getByID(int id) {
@@ -1529,12 +1528,23 @@ public final class CSSName {
             ALL_PROPERTIES[name.FS_ID] = name;
         }
     }
+
+    //Assumed to be consistent with equals because CSSName is in essence an enum
+    public int compareTo(Object object) {
+        if (object == null) throw new NullPointerException();//required by Comparable
+        return FS_ID - ((CSSName) object).FS_ID;//will throw ClassCastException according to Comparable if not a CSSName
+    }
+
+
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2006/07/03 23:37:09  tobega
+ * fixed Comparable so that the previous TreeMap change works. TreeMap does not seem to affect performance but assures that CalculatedStyles get shared properly as intended.
+ *
  * Revision 1.23  2006/01/03 17:04:51  peterbrant
  * Many pagination bug fixes / Add ability to position absolute boxes in margin area
  *
