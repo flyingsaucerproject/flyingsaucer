@@ -108,7 +108,7 @@ public class Configuration {
             } catch (Exception ex) {
                 System.out.println("error getting show-config property");
             }
-            logLevel = Level.INFO;
+            logLevel = Level.OFF;
             if (val != null) {
                 if ("ALL".equals(val)) {
                     logLevel = Level.ALL;
@@ -182,10 +182,9 @@ public class Configuration {
      * @param msg PARAM
      */
     private void info(String msg) {
-        System.out.println("log level = " + logLevel);/*
         if (logLevel.intValue() <= Level.INFO.intValue()) {
             println(Level.INFO, msg);
-        }*/
+        }
     }
 
     /**
@@ -647,6 +646,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2006/07/17 22:15:59  pdoubleya
+ * Added loggingEnabled switch to XRLog and config file; default logging to off there and in Configuration. Fix for Issue Tracker #123.
+ *
  * Revision 1.12  2005/09/29 21:34:06  joshy
  * minor updates to a lot of files. pulling in more incremental rendering code.
  * fixed another resize bug

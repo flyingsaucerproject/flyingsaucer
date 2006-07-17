@@ -90,6 +90,8 @@ public class XRLog {
      */
     private static boolean initPending = true;
 
+    private static boolean loggingEnabled = true;
+
     /**
      * Description of the Method
      *
@@ -420,7 +422,7 @@ public class XRLog {
         if (initPending) {
             init();
         }
-        getLogger(where).log(level, msg);
+        if ( isLoggingEnabled()) getLogger(where).log(level, msg);
     }
 
     /**
@@ -485,7 +487,12 @@ public class XRLog {
                 while (iter.hasNext()) {
                     String fullkey = (String) iter.next();
                     String lmkey = fullkey.substring(prefix.length());
-                    props.setProperty(lmkey, Configuration.valueFor(fullkey));
+                    String value = Configuration.valueFor(fullkey);
+                    props.setProperty(lmkey, value);
+
+                    if ( lmkey.equals("loggingEnabled")) {
+                        setLoggingEnabled(Configuration.isTrue(fullkey, true));
+                    }
                 }
 
                 // load our properties into our log manager
@@ -529,12 +536,36 @@ public class XRLog {
 
     static {
     }// end main()
+
+    /**
+     * Whether logging is on or off.
+     * @return Returns true if logging is enabled, false if not. Corresponds
+     * to configuration file property xr.util-logging.loggingEnabled, or to
+     * value passed to setLoggingEnabled(bool).
+     */
+    public static boolean isLoggingEnabled() {
+        return loggingEnabled;
+    }
+
+    /**
+     * Turns logging on or off, without affecting logging configuration.
+     *
+     * @param loggingEnabled Flag whether logging is enabled or not;
+     * if false, all logging calls fail silently. Corresponds
+     * to configuration file property xr.util-logging.loggingEnabled
+     */
+    public static void setLoggingEnabled(boolean loggingEnabled) {
+        XRLog.loggingEnabled = loggingEnabled;
+    }
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2006/07/17 22:15:59  pdoubleya
+ * Added loggingEnabled switch to XRLog and config file; default logging to off there and in Configuration. Fix for Issue Tracker #123.
+ *
  * Revision 1.12  2005/07/13 22:49:15  joshy
  * updates to get the jnlp to work without being signed
  *
