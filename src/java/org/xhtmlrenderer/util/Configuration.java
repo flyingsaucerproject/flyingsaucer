@@ -143,7 +143,13 @@ public class Configuration {
         }
 
         loadDefaultProperties();
-        loadOverrideProperties();
+
+        String sysOverrideFile = getSystemPropertyOverrideFileName();
+        if ( sysOverrideFile != null ) {
+            loadOverrideProperties(sysOverrideFile);
+        } else {
+            loadOverrideProperties(getUserHomeOverrideFileName());
+        }
         loadSystemProperties();
         logAfterLoad();
     }
@@ -257,14 +263,13 @@ public class Configuration {
     /**
      * Loads overriding property values from a second configuration file; this
      * is optional. See class documentation.
+     * @param overrideFileName
      */
-    private void loadOverrideProperties() {
+    private void loadOverrideProperties(String overrideFileName) {
         try {
-            String overrideName = System.getProperty("user.home") + File.separator + ".flyingsaucer" + File.separator + "local.xhtmlrenderer.conf";
-
-            File f = new File(overrideName);
+            File f = new File(overrideFileName);
             if (f.exists()) {
-                fine("Found local config override file " + f.getAbsolutePath());
+                info("Found config override file " + f.getAbsolutePath());
                 Properties temp = new Properties();
                 try {
                     InputStream readStream = new BufferedInputStream(new FileInputStream(f));
@@ -290,10 +295,21 @@ public class Configuration {
                     }
                 }
                 finer("Configuration: " + cnt + " properties overridden from override properties file.");
+            } else {
+                info("Could not find local override file " + f.getAbsolutePath());
             }
         } catch (SecurityException e) {
             System.err.println(e.getLocalizedMessage());
         }
+    }
+
+    private String getSystemPropertyOverrideFileName() {
+        return System.getProperty("xr.conf");
+    }
+
+    private String getUserHomeOverrideFileName() {
+        String overrideName = System.getProperty("user.home") + File.separator + ".flyingsaucer" + File.separator + "local.xhtmlrenderer.conf";
+        return overrideName;
     }
 
     /**
@@ -646,6 +662,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2006/07/17 23:21:46  pdoubleya
+ * Fix for #128 in issue tracker; adder system property xr.conf to specify an override file by name. Changed some log levels, too.
+ *
  * Revision 1.13  2006/07/17 22:15:59  pdoubleya
  * Added loggingEnabled switch to XRLog and config file; default logging to off there and in Configuration. Fix for Issue Tracker #123.
  *
