@@ -20,7 +20,7 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -213,12 +213,54 @@ public class GeneralUtil {
         }
         return false;
     }
+
+    public static StringBuffer htmlEscapeSpace(String uri) {
+        StringBuffer sbURI = new StringBuffer((int) (uri.length() * 1.5));
+        char ch;
+        for (int i = 0; i < uri.length(); ++i) {
+            ch = uri.charAt(i);
+            if (ch == ' ') {
+                sbURI.append("%20");
+            } else if (ch == '\\'){
+                sbURI.append('/');
+            } else {
+                sbURI.append(ch);
+            }
+        }
+        return sbURI;
+    }
+
+    public static String inputStreamToString(InputStream is) throws IOException {
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        StringWriter sw = new StringWriter();
+        char c[] = new char[1024];
+        while (true) {
+            int n = br.read(c, 0, c.length);
+            if ( n < 0 ) break;
+            sw.write(c, 0, n);
+        }
+        isr.close();
+        return sw.toString();
+    }
+
+    public static void main(String[] args) {
+        File f = new File(args[0]);
+        try {
+            System.out.println(GeneralUtil.inputStreamToString(new FileInputStream(f)));
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2006/07/17 22:16:31  pdoubleya
+ * Added utility methods, InputStream to String, and simple HTML escaping.
+ *
  * Revision 1.11  2005/06/26 01:02:22  tobega
  * Now checking for SecurityException on System.getProperty
  *
