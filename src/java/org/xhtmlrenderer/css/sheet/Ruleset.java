@@ -66,7 +66,7 @@ public class Ruleset {
             org.w3c.css.sac.Parser psr = (org.w3c.css.sac.Parser) obj;
             CSOM_PARSER = new com.steadystate.css.parser.CSSOMParser(psr);
         } catch (Exception ex) {
-            throw new XRRuntimeException("Bad!  Couldn't load the CSS parser. Everything after this will fail.");
+            throw new XRRuntimeException("Bad!  Couldn't load the CSS parser. Everything after this will fail.", ex);
         }
         //CSOM_PARSER = new com.steadystate.css.parser.CSSOMParser();
     }
@@ -169,7 +169,7 @@ public class Ruleset {
             CSSName cssName = CSSName.getByPropertyName(propName);
 
             if ( cssName == null ) {
-                // TODO: didn't we used to accept unknown properties?
+                // TODO: we don't pass unknown properties through. Right now new properties need to be declared in CSSName, and there is no dynamic way to do this (outside of a compile)
                 XRLog.cascade("Unknown property in stylesheet: " + propName + ", skipping it.");
             } else {
                 try {
@@ -201,6 +201,9 @@ public class Ruleset {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2006/07/26 18:05:05  pdoubleya
+ * Clean exception throw.
+ *
  * Revision 1.13  2006/05/08 21:36:03  pdoubleya
  * Log and skip properties we can't parse into declarations...
  *

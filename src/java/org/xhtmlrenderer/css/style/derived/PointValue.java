@@ -112,7 +112,7 @@ public class PointValue extends DerivedValue {
             if (pos.length == 2) {
                 msg.append(" background-position y-pos is " + pos[1]);
             }
-            throw new XRRuntimeException(msg.toString());
+            throw new XRRuntimeException(msg.toString(), ex);
         }
     }
 }
