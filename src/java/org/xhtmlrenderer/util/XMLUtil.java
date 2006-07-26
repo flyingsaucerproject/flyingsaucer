@@ -117,6 +117,7 @@ public class XMLUtil {
      * @return               Returns
      * @exception Exception  Throws
      */
+    // TODO: should throw more specific exception (PWW 25/07/2006)
     public static Document documentFromURL( final URL docURL )
         throws Exception {
 
@@ -133,6 +134,7 @@ public class XMLUtil {
      * @return               Returns
      * @exception Exception  Throws
      */
+    // TODO: should throw more specific exception (PWW 25/07/2006)
     public static Document documentFromFile( final File docFile )
         throws Exception {
 
@@ -150,6 +152,7 @@ public class XMLUtil {
      * @return                  Returns
      * @exception Exception     Throws
      */
+    // TODO: should throw more specific exception (PWW 25/07/2006)
     public static Document documentFromString( final String documentContents )
         throws Exception {
 
@@ -166,6 +169,7 @@ public class XMLUtil {
      * @return               Returns
      * @exception Exception  Throws
      */
+    // TODO: should throw more specific exception (PWW 25/07/2006)
     public static Document loadDocument( String string )
         throws Exception {
         Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( string );
@@ -194,6 +198,7 @@ public class XMLUtil {
      * @return               Returns
      * @exception Exception  Throws
      */
+    // TODO: should throw more specific exception (PWW 25/07/2006)
     public static Document newDocument()
         throws Exception {
         Document output = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
@@ -238,6 +243,7 @@ public class XMLUtil {
      * @param pw             PARAM
      * @exception Exception  Throws
      */
+    // TODO: should throw more specific exception (PWW 25/07/2006)
     public static void transform( Document doc, String xsl, PrintWriter pw )
         throws Exception {
         //System.out.println("transforming with xsl: " + xsl);
@@ -309,6 +315,9 @@ public class XMLUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2006/07/26 18:18:16  pdoubleya
+ * TODOs
+ *
  * Revision 1.5  2006/05/08 20:55:08  pdoubleya
  * Parse input source from string using a reader, to handle encoding.
  *
