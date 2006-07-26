@@ -76,12 +76,12 @@ public class XhtmlNamespaceHandler extends XhtmlCssOnlyNamespaceHandler {
             }
             if (!(s = e.getAttribute("align")).equals("")) {
                 style.append("text-align: ");
-                style.append(s);
+                style.append(s.toLowerCase());
                 style.append(";");
             }
             if (!(s = e.getAttribute("valign")).equals("")) {
                 style.append("vertical-align: ");
-                style.append(s);
+                style.append(s.toLowerCase());
                 style.append(";");
             }
         }
