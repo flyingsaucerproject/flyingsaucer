@@ -6,7 +6,7 @@ frame, frameset,
 h1, h2, h3, h4,
 h5, h6, noframes,
 ol, p, ul, center,
-dir, hr, menu, pre   { display: block }
+dir, hr, menu, pre, object   { display: block }
 li              { display: list-item }
 head            { display: none }
 table           { display: table }
@@ -116,4 +116,3 @@ h5, h6, b, strong {
 pre {
   margin: 1em 0;
 }
-
