@@ -69,7 +69,7 @@ public class TrueTypeUtil {
     }
     
     public static void populateDescription(String path, BaseFont font, FontDescription descr) 
-            throws Exception {
+            throws IOException, NoSuchFieldException, IllegalAccessException, DocumentException {
         RandomAccessFileOrArray rf = null;
         try {
             rf = new RandomAccessFileOrArray(path);
