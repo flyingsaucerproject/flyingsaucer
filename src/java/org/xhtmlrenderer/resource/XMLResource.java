@@ -251,6 +251,9 @@ public class XMLResource extends AbstractResource {
                 // perf: namespaces
                 xmlReader.setFeature("http://xml.org/sax/features/namespaces", true);
             } catch (SAXException s) {
+                // nothing to do--some parsers will not allow setting features
+                XRLog.load(Level.WARNING, "Could not set validation/namespace features for XML parser," +
+                        "exception thrown.", s);
             }
             if (Configuration.isFalse("xr.load.configure-features", false)) {
                 XRLog.load(Level.FINE, "SAX Parser: by request, not changing any parser features.");
@@ -309,7 +312,7 @@ public class XMLResource extends AbstractResource {
             try {
                 idTransform.transform(source, output);
             } catch (Exception ex) {
-                throw new XRRuntimeException("Can't load the XML resource (using TRaX transformer). " + ex.getMessage());
+                throw new XRRuntimeException("Can't load the XML resource (using TRaX transformer). " + ex.getMessage(), ex);
             }
 
             long end = System.currentTimeMillis();
@@ -331,6 +334,9 @@ public class XMLResource extends AbstractResource {
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2006/07/26 18:09:42  pdoubleya
+ * Clean exception throws.
+ *
  * Revision 1.18  2006/02/02 02:47:36  peterbrant
  * Support non-AWT images
  *
