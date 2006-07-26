@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp codebase="http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/svg/" href="svg_demo.jnlp">
+    <information>
+        <title>XHTML Embedded SVG Demo</title>
+        <vendor>Flying Saucer</vendor>
+        <offline-allowed/>
+        <homepage href="http://xhtmlrenderer.dev.java.net/"/>
+        <description kind="one-line">Flying Saucer Embedded SVG Demo</description>
+        <description kind="short">A demonstration of the Flying Saucer XHTML
+        renderer with a page containing embedded SVG references. This shows a single
+        fixed page rendering SVG content..</description>
+        <description kind="tooltip">FS SVG Demo</description>
+        <icon kind="splash" href="flyingsaucer.png"/>
+        <icon href="flyingsaucer.png"/>
+    </information>
+    <resources>
+        <j2se version="1.4+"/>
+        <jar href="svg.jar"/>
+        <jar href="core-renderer.jar"/>
+      	<jar href="cssparser-0-9-4-fs.jar"/>
+        <jar href="svgSalamander.jar"/>
+    </resources>
+    <application-desc main-class="org.xhtmlrenderer.demo.svg.ShowSVGPage"/>
+</jnlp>
