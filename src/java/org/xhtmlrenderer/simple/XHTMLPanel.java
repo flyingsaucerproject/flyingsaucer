@@ -213,6 +213,7 @@ public class XHTMLPanel extends BasicPanel {
      * @param stream The stream to read the Document from.
      * @param url    The URL used to resolve relative path references.
      */
+    // TODO: should throw more specific exception (PWW 25/07/2006)
     public void setDocument(InputStream stream, String url)
             throws Exception {
         resetListeners();
@@ -226,6 +227,7 @@ public class XHTMLPanel extends BasicPanel {
      * @param file The file to read the Document from. Relative paths
      *             will be resolved based on the file's parent directory.
      */
+    // TODO: should throw more specific exception (PWW 25/07/2006)
     public void setDocument(File file)
             throws Exception {
         resetListeners();
@@ -343,6 +345,9 @@ public class XHTMLPanel extends BasicPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.35  2006/07/26 18:11:21  pdoubleya
+ * TODO
+ *
  * Revision 1.34  2006/04/07 07:29:05  pdoubleya
  * JavaDoc
  *
