@@ -511,9 +511,9 @@ public class XRLog {
             } catch (SecurityException e) {
                 //throw new XRRuntimeException("Could not initialize logs. " + e.getLocalizedMessage());
             } catch (FileNotFoundException e) {
-                throw new XRRuntimeException("Could not initialize logs. " + e.getLocalizedMessage());
+                throw new XRRuntimeException("Could not initialize logs. " + e.getLocalizedMessage(), e);
             } catch (IOException e) {
-                throw new XRRuntimeException("Could not initialize logs. " + e.getLocalizedMessage());
+                throw new XRRuntimeException("Could not initialize logs. " + e.getLocalizedMessage(), e);
             }
         }
     }
@@ -563,6 +563,9 @@ public class XRLog {
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2006/07/26 17:59:01  pdoubleya
+ * Use proper form for logging exceptions.
+ *
  * Revision 1.13  2006/07/17 22:15:59  pdoubleya
  * Added loggingEnabled switch to XRLog and config file; default logging to off there and in Configuration. Fix for Issue Tracker #123.
  *
