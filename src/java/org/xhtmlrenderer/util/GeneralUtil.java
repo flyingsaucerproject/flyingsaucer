@@ -252,12 +252,30 @@ public class GeneralUtil {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
+
+    public static void writeStringToFile(String content, String encoding, String fileName)
+            throws IOException, UnsupportedEncodingException {
+        File f = new File (fileName);
+        FileOutputStream fos = new FileOutputStream(f);
+        OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
+
+        BufferedWriter bw = new BufferedWriter(osw);
+        PrintWriter pw = new PrintWriter(bw);
+        pw.print(content);
+        pw.flush();
+        bw.flush();
+        fos.close();
+        System.out.println("Wrote file: " + f.getAbsolutePath());
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2006/07/26 18:17:09  pdoubleya
+ * Added convenience method, write string to file.
+ *
  * Revision 1.12  2006/07/17 22:16:31  pdoubleya
  * Added utility methods, InputStream to String, and simple HTML escaping.
  *
