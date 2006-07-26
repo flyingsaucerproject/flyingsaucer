@@ -1,11 +1,24 @@
 package org.xhtmlrenderer.swing;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xhtmlrenderer.event.DocumentListener;
+import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.UserInterface;
+import org.xhtmlrenderer.extend.ReplacedElementFactory;
+import org.xhtmlrenderer.layout.Boxing;
+import org.xhtmlrenderer.layout.Layer;
+import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.layout.content.DomToplevelNode;
+import org.xhtmlrenderer.render.*;
+import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XRLog;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -13,31 +26,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xhtmlrenderer.event.DocumentListener;
-import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.UserInterface;
-import org.xhtmlrenderer.layout.Boxing;
-import org.xhtmlrenderer.layout.Layer;
-import org.xhtmlrenderer.layout.LayoutContext;
-import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.layout.content.DomToplevelNode;
-import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.Java2DFontContext;
-import org.xhtmlrenderer.render.PageBox;
-import org.xhtmlrenderer.render.ReflowEvent;
-import org.xhtmlrenderer.render.RenderQueue;
-import org.xhtmlrenderer.render.RenderingContext;
-import org.xhtmlrenderer.util.Configuration;
-import org.xhtmlrenderer.util.Uu;
-import org.xhtmlrenderer.util.XRLog;
 
 
 public class RootPanel extends JPanel implements ComponentListener, UserInterface {
@@ -256,7 +244,7 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         Graphics2D layoutGraphics = 
             g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics();
         result.setFontContext(new Java2DFontContext(layoutGraphics));
-        result.setReplacedElementFactory(new SwingReplacedElementFactory());
+        result.setReplacedElementFactory(newReplacedElementFactory());
         
         getSharedContext().getTextRenderer().setup(result.getFontContext());
         
@@ -268,6 +256,10 @@ public class RootPanel extends JPanel implements ComponentListener, UserInterfac
         }
         
         return result;
+    }
+
+    public ReplacedElementFactory newReplacedElementFactory() {
+        return new SwingReplacedElementFactory();
     }
 
     public Rectangle getScreenExtents() {
