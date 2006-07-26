@@ -5,6 +5,11 @@
 		<javac-full srcdir="${src.browser.java.dir}"/>
 	</target>
 
+    <!-- Compiles the Flying Saucer SVG sample along with the main codebase -->
+    <target name="compile.svg" depends="compile,resources.svg">
+        <javac-full srcdir="${src.svg.java.dir}"/>
+    </target>
+
     <!-- Compiles the eeze tool -->
 	<target name="compile.eeze" depends="init">
 		<javac-full srcdir="${src.java.dir}/eeze"/>

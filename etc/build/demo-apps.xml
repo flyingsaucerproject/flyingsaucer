@@ -13,6 +13,20 @@
 		</java>
 	</target>
 
+    <!-- Builds and jars the browser demo, and runs it -->
+	<target name="svg" depends="jar.svg">
+		<java classname="org.xhtmlrenderer.demo.svg.ShowSVGPage"
+				fork="${java-exec.fork.tests}">
+			<classpath refid="libraries-and-dest-svg.all"/>
+            <arg value="/svg/svg.xhtml"/>
+			<sysproperty key="show-config" value="${show-config}"/>
+			<syspropertyset>
+				<propertyref prefix="xr."/>
+			</syspropertyset>
+			<sysproperty key="sun.java2D.opengl" value="true"/>
+		</java>
+	</target>
+
     <!-- Builds and jars the browser demo, and runs it with a particular page -->
 	<target name="view.page" depends="jar.browser">
 		<java classname="org.xhtmlrenderer.demo.browser.BrowserStartup"

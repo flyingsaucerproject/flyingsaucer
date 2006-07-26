@@ -68,6 +68,7 @@
     <antcall target="jar.core" />
     <antcall target="jar.browser" />
     <antcall target="jar.about" />
+    <antcall target="jar.svg" />
     <antcall target="jar.photogallery" />
     <antcall target="jar.filebrowser" />
   </target>
@@ -162,7 +163,20 @@
     </copy>
   </target>
 
-    
+    <!-- Copies the resources needed to run the browser into the build tree -->
+  <target name="resources.svg" depends="compile">
+    <mkdir dir="build/classes/demos"/>
+    <copy todir="build/classes/svg">
+      <fileset dir="demos/svg/xhtml">
+        <include name="*.xhtml"/>
+        <include name="*.css"/>
+        <include name="*.gif"/>
+        <include name="*.png"/>
+        <include name="dat/**"/>
+      </fileset>
+    </copy>
+  </target>
+
     <!-- =======================================
          General
          ======================================= -->
@@ -245,6 +259,9 @@
 $Id$
 
 $Log$
+Revision 1.93  2006/07/26 18:19:16  pdoubleya
+Added SVG build stuff.
+
 Revision 1.92  2005/08/02 01:43:37  joshy
 fixed doc generation for simple docs
 

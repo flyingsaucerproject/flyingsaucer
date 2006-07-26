@@ -1,7 +1,7 @@
 <project name="build.jars">
     <!-- Compiles main codebase, and builds jar for it -->
     <target name="jar.core" depends="compile" description="build core jar">
-        <jar jarfile="${dest.dir}/core-renderer.jar" compress="true">
+        <jar jarfile="${dest.dir}/core-renderer.jar" compress="true" index="true">
             <fileset dir="${dest.java.dir}">
                 <include name="**/*.class"/>
                 <exclude name="org/joshy/html/app"/>
@@ -23,6 +23,7 @@
         <jar jarfile="${dest.dir}/browser.jar" compress="true"
             manifest="${src.packaging.dir}/manifest"
             duplicate="preserve"
+            index="true"
             >
             <fileset dir="${dest.java.dir}">
                 <include name="org/xhtmlrenderer/demo/browser/**"/>
@@ -35,11 +36,26 @@
         </jar>
     </target>
     
+    <!-- Compiles SVG sample and main codebase, and builds jar for browser -->
+    <target name="jar.svg" depends="compile.svg, jar.core" description="build SVG jar">
+        <jar jarfile="${dest.dir}/svg.jar" compress="true"
+            manifest="${src.packaging.dir}/manifest"
+            duplicate="preserve"
+            index="true"
+            >
+            <fileset dir="${dest.java.dir}">
+                <include name="org/xhtmlrenderer/demo/svg/**"/>
+            </fileset>
+            <zipfileset refid="xhtml.svg"/>
+        </jar>
+    </target>
+
     <!-- Compiles about box and main codebase, and builds jar for about box -->
     <target name="jar.about" depends="compile.about" description="build about jar">
         <jar jarfile="${dest.dir}/about.jar" compress="true"
             manifest="${src.packaging.dir}/manifest"
             duplicate="preserve"
+            index="true"
             >
             <fileset dir="${dest.java.dir}">
                 <include name="org/xhtmlrenderer/demo/aboutbox/**"/>
@@ -54,6 +70,7 @@
         <jar jarfile="${dest.dir}/photogallery.jar" compress="true"
             manifest="${src.packaging.dir}/manifest"
             duplicate="preserve"
+            index="true"
             >
             <fileset dir="${dest.java.dir}">
                 <include name="org/xhtmlrenderer/demo/photogallery/**"/>
@@ -66,6 +83,7 @@
         <jar jarfile="${dest.dir}/filebrowser.jar" compress="true"
             manifest="${src.packaging.dir}/manifest"
             duplicate="preserve"
+            index="true"
             >
             <fileset dir="${dest.java.dir}">
                 <include name="org/xhtmlrenderer/demo/filebrowser/**"/>

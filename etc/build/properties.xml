@@ -26,11 +26,13 @@
 	-->
 	<!-- Directories -->
   <property name="libraries.dir" location="lib"/>
+  <property name="libraries.dev.dir" location="lib/dev"/>
   <property name="src.dir" location="src"/>
   <property name="doc.dir" location="doc"/>
   <property name="src.junit-test.java.dir" location="${src.dir}/junit"/>
   <property name="src.browser.java.dir" location="demos/browser/src/java"/>
   <property name="src.browser.icons.dir" location="demos/browser/src/icons"/>
+  <property name="src.svg.java.dir" location="demos/svg/src/java"/>
   <property name="src.blower.java.dir" location="${src.java.dir}"/>
   <property name="src.about.java.dir" location="demos/about/src/java"/>
   <property name="src.photogallery.java.dir" location="demos/photogallery/src/java"/>
@@ -49,6 +51,7 @@
   <property name="dest.resources.schema.dir" location="${dest.java.dir}/resources/schema"/>
   <property name="src.packaging.dir" location="${src.dir}/packaging"/>
   <property name="src.demo.xhtml.dir" location="demos/browser/xhtml"/>
+  <property name="src.demo.svg.dir" location="demos/svg/xhtml"/>
   <property name="src.demo.splash.dir" location="demos/splash"/>
   <property name="src.about.xhtml.dir" location="demos/about/xhtml"/>
 	
@@ -94,13 +97,21 @@
     </fileset>
   </path>
         
-    <!-- path reference for all JAR files in /lib, plus all our built jars -->
+  <!-- path reference for all JAR files in /lib, plus all our built jars -->
   <path id="libraries-and-dest.all">
     <path refid="libraries.all"/>
     <fileset dir="${dest.dir}">
       <include name="*.jar"/>
     </fileset>
   </path>
+
+    <!-- path reference for all JAR files in /lib, plus all our built jars -->
+    <path id="libraries-and-dest-svg.all">
+      <path refid="libraries-and-dest.all"/>
+      <fileset dir="${libraries.dev.dir}">
+        <include name="svgSalamander.jar"/>
+      </fileset>
+    </path>
 
   <patternset id="org-java-files">
     <include name="org/xhtmlrenderer/**"/>
@@ -131,9 +142,18 @@
     -->
   </patternset>
       
-    <!-- zip file reference for all XHTML in the demos directory, and supporting files -->
+  <!-- zip file reference for all XHTML in the demos directory, and supporting files -->
   <zipfileset id="xhtml.demos" dir="${src.demo.xhtml.dir}" prefix="demos/">
     <patternset refid="xhtml-files"/>
+  </zipfileset>
+
+  <zipfileset id="xhtml.svg" dir="${src.demo.svg.dir}" prefix="svg/">
+      <include name="**/*.css"/>
+      <include name="*.xhtml"/>
+      <include name="*.gif"/>
+      <include name="*.jpg"/>
+      <include name="*.png"/>
+      <include name="dat/**"/>
   </zipfileset>
 
   <zipfileset id="xhtml.about.demos" dir="${src.about.xhtml.dir}" prefix="demos/">
