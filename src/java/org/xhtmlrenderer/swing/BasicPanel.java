@@ -34,10 +34,13 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
 
 import java.awt.*;
 import java.awt.print.PrinterGraphics;
 import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
@@ -128,6 +131,17 @@ public abstract class BasicPanel extends RootPanel {
      */
     public void addDocumentListener(DocumentListener listener) {
         this.documentListeners.put(listener, listener);
+    }
+
+    /**
+     * Removes the specified Document listener from receive Document events from this
+     * component. If listener l is null, no exception is thrown and no action is
+     * performed.
+     *
+     * @param listener Contains the DocumentListener to remove.
+     */
+    public void removeDocumentListener(DocumentListener listener) {
+        this.documentListeners.remove(listener);
     }
 
     /**
@@ -393,6 +407,19 @@ public abstract class BasicPanel extends RootPanel {
         setDocument(dom, url, nsh);
     }
 
+    /**
+     * Sets the document attribute of the BasicPanel object
+     *
+     * @param content The new document value
+     * @param url    The new document value
+     * @param nsh    The new document value
+     */
+    public void setDocumentFromString(String content, String url, NamespaceHandler nsh) {
+        InputSource is = new InputSource(new BufferedReader(new StringReader(content)));
+        Document dom = XMLResource.load(is).getDocument();
+
+        setDocument(dom, url, nsh);
+    }
 
     /**
      * Sets the document attribute of the BasicPanel object
@@ -429,6 +456,7 @@ public abstract class BasicPanel extends RootPanel {
      * @param url    The new document value
      * @throws Exception Throws
      */
+    // TODO: should throw more specific exception (PWW 25/07/2006)
     protected void setDocument(InputStream stream, String url)
             throws Exception {
         setDocument(stream, url, new NoNamespaceHandler());
@@ -686,6 +714,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.103  2006/07/26 18:12:15  pdoubleya
+ * Add removeDocListener and setDocFromString.
+ *
  * Revision 1.102  2006/04/07 14:48:31  peterbrant
  * Fix page border in print mode (vs. paged screen mode)
  *
