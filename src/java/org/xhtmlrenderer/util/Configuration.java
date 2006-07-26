@@ -105,8 +105,8 @@ public class Configuration {
             String val = null;
             try {
                 val = System.getProperty("show-config");
-            } catch (Exception ex) {
-                System.out.println("error getting show-config property");
+            } catch (SecurityException ex) {
+                val = null;
             }
             logLevel = Level.OFF;
             if (val != null) {
@@ -148,7 +148,10 @@ public class Configuration {
         if ( sysOverrideFile != null ) {
             loadOverrideProperties(sysOverrideFile);
         } else {
-            loadOverrideProperties(getUserHomeOverrideFileName());
+            String userHomeOverrideFileName = getUserHomeOverrideFileName();
+            if ( userHomeOverrideFileName != null ) {
+                loadOverrideProperties(userHomeOverrideFileName);
+            }
         }
         loadSystemProperties();
         logAfterLoad();
@@ -304,12 +307,20 @@ public class Configuration {
     }
 
     private String getSystemPropertyOverrideFileName() {
-        return System.getProperty("xr.conf");
+        try {
+            return System.getProperty("xr.conf");
+        } catch (SecurityException e) {
+            return null;
+        }
     }
 
     private String getUserHomeOverrideFileName() {
-        String overrideName = System.getProperty("user.home") + File.separator + ".flyingsaucer" + File.separator + "local.xhtmlrenderer.conf";
-        return overrideName;
+        try {
+            String overrideName = System.getProperty("user.home") + File.separator + ".flyingsaucer" + File.separator + "local.xhtmlrenderer.conf";
+            return overrideName;
+        } catch (SecurityException e) {
+            return null;
+        }
     }
 
     /**
@@ -337,7 +348,7 @@ public class Configuration {
                     cnt++;
                 }
             } catch (SecurityException e) {
-                System.err.println(e.getLocalizedMessage());
+                // skip, this will happen in WebStart
             }
         }
         fine("Configuration: " + cnt + " properties overridden from System properties.");
@@ -662,6 +673,9 @@ public class Configuration {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2006/07/26 18:15:50  pdoubleya
+ * Check for SecurityExceptions to avoid WebStart problems.
+ *
  * Revision 1.14  2006/07/17 23:21:46  pdoubleya
  * Fix for #128 in issue tracker; adder system property xr.conf to specify an override file by name. Changed some log levels, too.
  *
