@@ -1,0 +1,48 @@
+@charset "utf-8";
+/*
+ * l10n/en.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of the Docbook-CSS stylesheet
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ */
+
+/* Generated content for English documents */
+
+question:before {
+	content: "Q: ";
+}
+answer:before {
+	content: "A: ";
+}
+
+example > title:before {
+	content: "Example: ";
+}
+
+quote {
+	quotes: "“" "”";
+}
+quote quote {
+	quotes: "‘" "’";
+}
+
+/* Admonitions */
+
+warning:before {
+	content: "Warning: ";
+}
+caution:before {
+	content: "Caution: ";
+}
+important:before {
+	content: "Important: ";
+}
+tip:before {
+	content: "Tip: ";
+}
+note:before {
+	content: "Note: ";
+}

@@ -1,0 +1,122 @@
+<!-- ...................................................................... -->
+<!-- DocBook EBNF Module V1.2CR1 ............................................. -->
+<!-- File dbebnf.dtd ...................................................... -->
+
+<!-- Copyright (C) 2000, 2001, 2002, 2003, 2004 Organization for the Advancement
+     of Structured Information Standards (OASIS).
+
+     $Id$
+
+     Permission to use, copy, modify and distribute the DocBook EBNF
+     Module and its accompanying documentation for any purpose and
+     without fee is hereby granted in perpetuity, provided that the
+     above copyright notice and this paragraph appear in all copies.
+     The copyright holders make no representation about the
+     suitability of the DTD for any purpose.  It is provided "as is"
+     without expressed or implied warranty.
+
+     If you modify the DocBook EBNF Module in any way, label your DTD
+     as a variant of DocBook.  See the maintenance documentation for
+     more information.
+
+     Please direct all questions, bug reports, or suggestions for 
+     changes to the docbook@lists.oasis-open.org mailing list. For more
+     information, see http://www.oasis-open.org/docbook/.
+-->
+
+<!-- ...................................................................... -->
+
+<!-- This is the driver file for V1.2CR1 of the DocBook EBNF Module.
+     Please use the following formal public identifier to identify it:
+
+     "-//OASIS//DTD DocBook EBNF Module V1.2CR1//EN"
+
+     For example, if your document's top-level element is Book, and
+     you are using DocBook directly, use the FPI in the DOCTYPE
+     declaration:
+
+     <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook EBNF Module V1.2CR1//EN"
+                    "http://www.oasis-open.org/docbook/xml/ebnf/1.2CR1/dbebnf.dtd"
+                    [...]>
+
+     Or, if you have a higher-level driver file that customizes DocBook,
+     use the FPI in the parameter entity declaration:
+
+     <!ENTITY % DocBookEBNFDTD PUBLIC "-//OASIS//DTD DocBook EBNF Module V1.2CR1//EN"
+                "http://www.oasis-open.org/docbook/xml/ebnf/1.2CR1/dbebnf.dtd">
+     %DocBookEBNFDTD;
+
+     See the documentation for detailed information on the parameter
+     entity and module scheme used in DocBook, customizing DocBook and
+     planning for interchange, and changes made since the last release
+     of DocBook.
+-->
+
+<!ENTITY % ebnf.inline.hook "|nonterminal">
+<!ENTITY % ebnf.block.hook "|productionset|constraintdef">
+<!ENTITY % docbook PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+                   "docbookx.dtd">
+%docbook;
+
+<!ELEMENT productionset
+	((%formalobject.title.content;)?, (production|productionrecap)+)>
+<!ATTLIST productionset
+	%common.attrib;
+        %role.attrib;
+>
+
+<!ELEMENT production (lhs, rhs, constraint*)>
+<!ATTLIST production
+	%idreq.common.attrib;
+        %role.attrib;
+>
+
+<!ELEMENT lhs (#PCDATA)>
+<!ATTLIST lhs
+	%common.attrib;
+        %role.attrib;
+>
+
+<!ELEMENT rhs (#PCDATA|nonterminal|lineannotation|sbr)*>
+<!ATTLIST rhs
+	%common.attrib;
+        %role.attrib;
+>
+
+<!-- Allowed to be an xpointer: you can point to non-terminals in -->
+<!-- other specifications. -->
+<!ENTITY % required-XLink-to-production-ID "def CDATA #REQUIRED">
+<!ELEMENT nonterminal (#PCDATA)>
+<!ATTLIST nonterminal
+	%common.attrib;
+	%required-XLink-to-production-ID;
+        %role.attrib;
+>
+
+<!-- Must be an IDREF: constraints identified in your spec must be -->
+<!-- represented in your spec. -->
+<!ENTITY % required-IDREF-to-constraintdef-ID "linkend IDREF #REQUIRED">
+<!ELEMENT constraint EMPTY>
+<!ATTLIST constraint
+	%common.attrib;
+	%required-IDREF-to-constraintdef-ID;
+        %role.attrib;
+>
+
+<!-- Must be an IDREF: you can only recap productions in your spec -->
+<!ENTITY % required-IDREF-to-production-ID "linkend IDREF #REQUIRED">
+<!ELEMENT productionrecap EMPTY>
+<!ATTLIST productionrecap
+	%common.attrib;
+        %role.attrib;
+	%required-IDREF-to-production-ID;
+>
+
+<!ELEMENT constraintdef (title, (%admon.mix;))>
+<!ATTLIST constraintdef
+	%idreq.common.attrib;
+        %role.attrib;
+>
+
+<!-- End of dbebnf.dtd V1.2CR1 ............................................... -->
+<!-- ...................................................................... -->

@@ -1,0 +1,35 @@
+/*
+ * driver.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * Copyright (c) 2005 Michael Thiele, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of wysiwygDocBook 1.01, a developed DocBook CSS stylesheet based on version 0.4 from
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ *
+ * This is the 'driver' file of the stylesheet.  It imports all the major
+ * stylesheet components.  If you want to make use of this stylesheet in your
+ * XML document (e.g. for display in a web browser), include a line like this
+ * at the top of the XML file (replacing <ver> with the version number):
+ *
+ *   <?xml-stylesheet href="wysiwygdocbook1.0/driver.css" type="text/css"?>
+ *
+ * If you want to customise the stylesheet, a customisation layer can be
+ * created by simply witing a new CSS file, and including a declaration to
+ * import this file at the top. The customisation layer can then override any
+ * of the existing stylesheet rules, or create new ones.
+ */
+
+@import "display.css";
+@import "structures.css";
+@import "lists.css";
+@import "admonitions.css";
+@import "linespec.css";
+@import "exampfigequ.css";
+@import "tables.css";
+@import "miscblock.css";
+@import "inline.css";
+@import "l10n.css";
+@import "mozilla.css";
+@import "opera.css";

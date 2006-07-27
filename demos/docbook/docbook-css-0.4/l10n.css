@@ -1,0 +1,24 @@
+/*
+ * i10n.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of the Docbook-CSS stylesheet
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ *
+ * This file deals with localisation ('l10n') of CSS generated content by
+ * delegating to each of the locale-specific files in the l10n directory.
+ */
+
+
+/*
+ * 'en' doesn't specify 'lang()' selectors, so its settings will be the
+ * default where no localisation is available for a particular language.
+ * It must come first; other lauguages override it.
+ */
+@import "l10n/en.css";
+
+@import "l10n/pl.css";
+@import "l10n/de.css";
+@import "l10n/es.css";

@@ -1,0 +1,133 @@
+/*
+ * display.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * Copyright (c) 2005 Michael Thiele, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of wysiwygDocBook 1.01, a developed DocBook CSS stylesheet based on version 0.4 from
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ * 
+ * This file sets the display property for most elements of the DocBook DTD.
+ */
+
+/* TODO: Some elements can't be considered always inline, block or suppressed, many are considered
+ * to be context depending inline, block or suppressed. These elements are missing and therefore
+ * treated as inline elements in web browsers.
+ */
+
+/* inline elements */
+abbrev, accel, acronym, action, application, artpagenums, authorinitials, bibliocoverage, biblioid,
+bibliomisc, bibliorelation, bibliosource, citation, citebiblioid, citerefentry, citetitle, city,
+classname, co, code, command, computeroutput, constant, constraint, coref, country, database, date,
+email, emphasis, envar, errorcode, errorname, errortext, errortype, exceptionname, fax, filename,
+firstname, firstterm, footnote, footnoteref, foreignphrase, formalpara > *, funcdef, funcparams,
+function, glossterm, group, guibutton, guiicon, guilabel, guimenu, guimenuitem, guisubmenu,
+hardware, holder, honorific, initializer, inlineequation, inlinegraphic, inlinemediaobject,
+interface, interfacename, invpartnumber, isbn, issn, keycap, keycode, keycombo, keysym, lhs,
+lineage, lineannotation, link, literal, manvolnum, markup, medialabel, menuchoice, methodname,
+methodparam, modifier, mousebutton, msgtext, nonterminal, olink, ooclass, ooexception, oointerface,
+option, optional, orgdiv, orgname, otheraddr, othername, pagenums, paramdef, parameter, phone,
+phrase, pob, postcode, productname, productnumber, prompt, property, pubdate, pubsnumber, quote,
+refpurpose, replaceable, returnvalue, revnumber, rhs, seriesvolnums, sgmltag, shortcut, state,
+street, structfield, structname, subscript, superscript, surname, symbol, systemitem, term, token,
+trademark, type, ulink, uri, userinput, varargs, varname, void, volumenum, wordasword, xref, year {
+	display:inline;
+}
+
+/* block elements */
+abstract, ackno, address, answer, appendix, article, attribution, authorblurb, beginpage, bibliodiv,
+biblioentry, bibliography, bibliomixed, bibliomset, biblioset, blockquote, book, bridgehead,
+callout, calloutlist, caption, caution, chapter, classsynopsis, classsynopsisinfo, cmdsynopsis,
+colophon, constraintdef, constructorsynopsis, dedication, destructorsynopsis, epigraph, equation,
+example, fieldsynopsis, figure, formalpara, funcprototype, funcsynopsis, funcsynopsisinfo, glossary,
+glossdef, glossdiv, glossentry, glossentry glossterm, glosslist, glosssee, glossseealso, graphic,
+graphicco, highlights, imagedata, imageobjectco, important, index, indexdiv, indexentry,
+informalequation, informalexample, informalfigure, informaltable, itemizedlist, label, legalnotice,
+listitem, literallayout, lot, lotentry, mediaobject, mediaobjectco, member, methodsynopsis, msg,
+msgaud, msgentry, msgexplan, msginfo, msglevel, msgmain, msgorig, msgrel, msgset, msgsub, note,
+orderedlist, para, part, partintro, personblurb, preface, primaryie, printhistory, procedure,
+production, productionrecap, programlisting, programlistingco, qandadiv, qandaentry, qandaset,
+question, refentry, refentrytitle, reference, refnamediv, refsect1, refsect2, refsect3, refsection,
+refsynopsisdiv, revhistory, revision, sbr, screen, screenco, screenshot, secondaryie, sect1, sect2,
+sect3, sect4, sect5, section, seealsoie, seeie, set, setindex, sidebar, simpara, simplelist,
+simplemsgentry, simplesect, step, stepalternatives, substeps, subtitle, synopfragment,
+synopfragmentref, synopsis, task, taskprerequisites, taskrelated, tasksummary, tertiaryie, tip,
+title, toc, tocback, tocchap, tocentry, tocfront, toclevel1, toclevel2, toclevel3, toclevel4,
+toclevel5, tocpart, variablelist, varlistentry, warning {
+	display:block;
+}
+
+/* some inline elements redefined */
+simplelist[type="horiz"] > member, simplelist[type="inline"] > member, warning > title,
+caution > title, tip > title, note > title, important > title {
+	display:inline;
+}
+
+/* suppressed elements (e.g. meta data elements) */
+anchor, appendixinfo, area, areaset, areaspec, articleinfo, bibliographyinfo, blockinfo, bookinfo,
+chapterinfo, colspec, footnote > *, glossaryinfo, indexinfo, indexterm, itermset, keyword, modespec,
+objectinfo, partinfo, prefaceinfo, primary, refentryinfo, referenceinfo, refmeta, refsect1info,
+refsect2info, refsect3info, refsectioninfo, refsynopsisdivinfo, screeninfo, secondary, sect1info,
+sect2info, sect3info, sect4info, sect5info, sectioninfo, see, seealso, setindexinfo, setinfo,
+sidebarinfo, spanspec, tertiary {
+	display:none;
+}
+
+/* table elements */
+table, tgroup, entrybl {
+	display: table;
+}
+row, tr {
+	display: table-row;
+}
+col {
+	display: table-column;
+}
+thead, table>caption {
+	display: table-header-group;
+}
+tfoot {
+	display: table-footer-group;
+}
+tbody {
+	display: table-row-group;
+}
+colgroup {
+	display: table-column-group;
+}
+entry, td, th {
+	display: table-cell;
+}
+
+/* segmented lists are defined as tables here since lists of repeated headings and elements can't be
+ * easily done in CSS, maybe Mozilla's XBL can do it
+ */
+segmentedlist {
+	display: table;
+}
+
+seglistitem {
+	display: table-row;
+}
+
+seg, segtitle {
+	display: table-cell;
+}
+
+segmentedlist>title {
+	display: table-caption;
+}
+
+/* EBNF production sets should be viewed as a table, each production as a row, subsequent elements
+ * as cells. This way you get each production viewed flush
+ */
+productionset {
+	display: table;
+}
+productionset>production, productionset>productionrecap {
+	display: table-row;
+}
+productionset lhs, productionset rhs, productionset constraint {
+	display: table-cell;
+}

@@ -1,0 +1,259 @@
+/*
+ * structures.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * Copyright (c) 2005 Michael Thiele, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of wysiwygDocBook 1.01, a developed DocBook CSS stylesheet based on version 0.4 from
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ *
+ * This file contains the formatting of structural elements from 'set' down to paragraph-level
+ * elements.
+ */
+
+set, book, part, appendix, article, bibliography, chapter, glossary, preface, colophon, toc,
+dedication, lot, reference, index, setindex {
+	font-family:sans-serif;
+	font-size:medium;
+	padding-top:20px;
+}
+
+/* Since nesting of padding around all top elements would lead to too much spacing around the text,
+ * just component-level elements get padding around them. */
+appendix, article, chapter, preface, colophon, reference, dedication, setindex, set>toc, book>toc,
+part>toc, set>lot, book>lot, part>lot, set>glossary, book>glossary, part>glossary, set>bibliography,
+book>bibliography, part>bibliography, set>index, book>index, part>index {
+	padding:20px;
+}
+
+set>title {
+	font-size:50pt;
+	font-weight:bolder;
+	text-align:center;
+}
+set>subtitle {
+	font-size:40pt;
+	font-weight:bolder;
+	text-align:center;
+}
+set>title + * {
+	border-top:solid 3px black;
+}
+set>title + subtitle {
+	border-top: 0px;
+}
+set>subtitle + * {
+	border-top:solid 3px black;
+}
+
+book>title {
+	font-size:40pt;
+	font-weight:bolder;
+	text-align:center;
+}
+book>subtitle {
+	font-size:30pt;
+	font-weight:bolder;
+	text-align:center;
+}
+book>title + * {
+	border-top:solid 3px black;
+}
+book>title + subtitle {
+	border-top: 0px;
+}
+book>subtitle + * {
+	border-top:solid 3px black;
+}
+
+part>title {
+	font-size:30pt;
+	font-weight:bolder;
+	text-align:center;
+}
+part>subtitle {
+	font-size:20pt;
+	font-weight:bolder;
+	text-align:center;
+}
+part>title + * {
+	border-top:solid 3px black;
+}
+part>title + subtitle {
+	border-top: 0px;
+}
+part>subtitle + * {
+	border-top:solid 3px black;
+}
+
+appendix>title, bibliography>title, chapter>title, colophon>title, dedication>title, glossary>title,
+preface>title, article>title, toc>title, lot>title, index>title {
+	font-size:xx-large;
+	font-weight:bolder;
+	text-align:center;
+	margin-bottom:1em;
+}
+appendix>subtitle, bibliography>subtitle, chapter>subtitle, colophon>subtitle,
+dedication>subtitle, glossary>subtitle, preface>subtitle, article>subtitle, toc>subtitle,
+lot>subtitle, index>title {
+	font-size:x-large;
+	font-weight:bolder;
+	text-align:center;
+	margin-bottom:1em;
+}
+appendix>title + subtitle, bibliography>title + subtitle, chapter>title + subtitle,
+colophon>title + subtitle, dedication>title + subtitle, glossary>title + subtitle,
+preface>title + subtitle, article>title + subtitle, toc>title + subtitle, lot>title + subtitle,
+index>title + subtitle {
+	margin-top:-1em;
+}
+
+section>title, sect1>title, bibliodiv>title, indexdiv>title, glossdiv>title, simplesect>title {
+	font-size:x-large;
+	font-weight:bolder;
+	text-align:left;
+}
+section>toc>title, section>lot>title, section>bibliography>title, section>glossary>title,
+section>index>title, sect1>toc>title, sect1>lot>title, sect1>bibliography>title,
+sect1>glossary>title, sect1>index>title, section>section>title, sect2>title,
+simplesect>simplesect>title {
+	font-size:large;
+	font-weight:bolder;
+	text-align:left;
+}
+section>section>toc>title, section>section>lot>title, section>section>bibliography>title,
+section>section>glossary>title, section>section>index>title, sect2>toc>title, sect2>lot>title,
+sect2>bibliography>title, sect2>glossary>title, sect2>index>title, section>section>section>title,
+sect3>title, simplesect>simplesect>simplesect>title {
+	font-size:medium;
+	font-weight:bolder;
+	text-align:left;
+}
+section>section>section>toc>title, section>section>section>lot>title,
+section>section>section>bibliography>title, section>section>section>glossary>title,
+section>section>section>index>title, sect3>toc>title, sect3>lot>title, sect3>bibliography>title,
+sect3>glossary>title, sect3>index>title, section>section>section>section>title, sect4>title,
+simplesect>simplesect>simplesect>simplesect>title {
+	font-size:medium;
+	font-weight:normal;
+	text-align:left;
+}
+section>section>section>section>toc>title, section>section>section>section>lot>title,
+section>section>section>section>bibliography>title, section>section>section>section>glossary>title,
+section>section>section>section>index>title,sect4>toc>title, sect4>lot>title, sect4>bibliography>title,
+sect4>glossary>title, sect4>index>title, section>section>section>section>section>toc>title,
+section>section>section>section>section>lot>title,
+section>section>section>section>section>bibliography>title,
+section>section>section>section>section>glossary>title,
+section>section>section>section>section>index>title, sect5>toc>title, sect5>lot>title,
+sect5>bibliography>title, sect5>glossary>title, sect5>index>title,
+section>section>section>section>section>title, sect5>title,
+simplesect>simplesect>simplesect>simplesect>simplesect>title {
+	font-size:medium;
+	font-weight:normal;
+	text-align:left;
+}
+
+section>subtitle, sect1>subtitle, bibliodiv>subtitle, indexdiv>subtitle, glossdiv>subtitle,
+simplesect>subtitle {
+	font-size:large;
+	font-weight:bolder;
+	text-align:left;
+}
+section>toc>subtitle, section>lot>subtitle, section>bibliography>subtitle,
+section>glossary>subtitle, section>index>subtitle, sect1>toc>subtitle, sect1>lot>subtitle,
+sect1>bibliography>subtitle, sect1>glossary>subtitle, sect1>index>subtitle,
+section>section>subtitle, sect2>subtitle, simplesect>simplesect>subtitle {
+	font-size:medium;
+	font-weight:bolder;
+	text-align:left;
+}
+section>section>toc>subtitle, section>section>lot>subtitle, section>section>bibliography>subtitle,
+section>section>glossary>subtitle, section>section>index>subtitle, sect2>toc>subtitle,
+sect2>lot>subtitle, sect2>bibliography>subtitle, sect2>glossary>subtitle, sect2>index>subtitle,
+section>section>section>subtitle, sect3>subtitle, simplesect>simplesect>simplesect>subtitle {
+	font-size:medium;
+	font-weight:normal;
+	text-align:left;
+}
+section>section>section>toc>subtitle, section>section>section>lot>subtitle,
+section>section>section>bibliography>subtitle, section>section>section>glossary>subtitle,
+section>section>section>index>subtitle, sect3>toc>subtitle, sect3>lot>subtitle,
+sect3>bibliography>subtitle, sect3>glossary>subtitle, sect3>index>subtitle,
+section>section>section>section>subtitle, sect4>subtitle,
+simplesect>simplesect>simplesect>simplesect>subtitle {
+	font-size:medium;
+	font-weight:normal;
+	text-align:left;
+}
+section>section>section>section>toc>subtitle, section>section>section>section>lot>subtitle,
+section>section>section>section>bibliography>subtitle,
+section>section>section>section>glossary>subtitle,
+section>section>section>section>index>subtitle,sect4>toc>subtitle, sect4>lot>subtitle,
+sect4>bibliography>subtitle, sect4>glossary>subtitle, sect4>index>subtitle,
+section>section>section>section>section>toc>subtitle,
+section>section>section>section>section>lot>subtitle,
+section>section>section>section>section>bibliography>subtitle,
+section>section>section>section>section>glossary>subtitle,
+section>section>section>section>section>index>subtitle, sect5>toc>subtitle, sect5>lot>subtitle,
+sect5>bibliography>subtitle, sect5>glossary>subtitle, sect5>index>subtitle,
+section>section>section>section>section>subtitle, sect5>subtitle,
+simplesect>simplesect>simplesect>simplesect>simplesect>subtitle {
+	font-size:medium;
+	font-weight:normal;
+	text-align:left;
+}
+
+/* Give vertical spacing between compoments/sections of the document */
+*+section, *+simplesect, *+sect1, *+chapter, *+bibliography, *+bibliodiv, *+appendix, *+glossary {
+	margin-top: 3em;
+}
+title+chapter, title+bibliography, title+appendix, title+glossary, subtitle+chapter,
+subtitle+bibliography, subtitle+appendix, subtitle+glossary {
+	margin-top: 0em;
+}
+section>*+section, simplesect>*+simplesect, *+sect2 {
+	margin-top: 2em;
+}
+section>section>*+section, simplesect>simplesect>*+simplesect, *+sect3, *+sect4, *+sect5 {
+	margin-top: 1em;
+}
+
+
+/*
+ * Give paragraph-level elements some leading and following space when they aren't the first
+ * item in their containing block.
+ */
+*+calloutlist, *+glosslist, *+itemizedlist, *+orderedlist, *+segmentedlist, *+simplelist,
+*+variablelist, *+caution, *+important, *+note, *+tip, *+warning, *+literallayout, *+programlisting,
+*+programlistingco, *+screen, *+screenco, *+screenshot, *+synopsis, *+cmdsynopsis, *+funcsynopsis,
+*+classsynopsis, *+fieldsynopsis, *+constructorsynopsis, *+destructorsynopsis, *+methodsynopsis,
+*+formalpara, *+para, *+simpara, *+address, *+blockquote, *+graphic, *+graphicco, *+mediaobject,
+*+mediaobjectco, *+informalequation, *+informalexample, *+informalfigure, *+informaltable,
+*+equation, *+example, *+figure, *+table, *+msgset, *+procedure, *+sidebar, *+qandaset, *+task,
+*+productionset, *+constraintdef, *+anchor, *+bridgehead, *+remark, *+highlights, *+abstract,
+*+authorblurb, *+epigraph, *+indexterm, *+beginpage {
+	margin-top:.5em;
+	margin-bottom:.5em;
+}
+
+/*
+ * BiblioEntry blocks need a bit more space, since they may contain multiple
+ * paragraphs, and so need greater-than-paragraph spacing to make it clear
+ * which gap is the end just of a paragraph, and which gap is the end of the
+ * entry
+ */
+*+biblioentry, *+bibliomixed, *+glossentry {
+	margin-top:1.5em;
+}
+
+/* FormalPara gets non-bold font weight. */
+formalpara>title {
+	font-weight:normal;
+}
+
+/* view text justified in para elements */
+para, formalpara, simpara {
+	text-align: justify;
+}

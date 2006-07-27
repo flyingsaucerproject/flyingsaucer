@@ -1,0 +1,172 @@
+/*
+ * miscblock.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * Copyright (c) 2005 Michael Thiele, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of wysiwygDocBook 1.01, a developed DocBook CSS stylesheet based on version 0.4 from
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ *
+ * This file contains formatting for miscellaneous block elements
+ */
+
+qandaentry {
+	padding-left: 1em;
+}
+question, answer {
+	margin-top:.5em;
+	display:list-item;
+}
+question>para, answer>para {
+	display:inline;
+}
+/* see language specific files for content */
+question:before {
+	display:marker;
+	font-weight:bolder;
+}
+answer:before {
+	display:marker;
+	font-weight: bolder;
+}
+
+blockquote+* {
+	padding-top:1em;
+}
+blockquote {
+	margin-left:3em;
+	padding-bottom: 1em;
+	position: relative;
+}
+blockquote>blockinfo+para:before, blockquote>title+para:before, blockquote>attribution+para:before {
+	content: open-quote;
+}
+blockquote>para:after {
+	content: no-close-quote;
+}
+blockquote>para:last-child:after {
+	content: close-quote;
+}
+
+epigraph+* {
+	padding-top:1em;
+}
+epigraph {
+	margin-left:3em;
+	padding-bottom: 1em;
+	position: relative;
+}
+epigraph>attribution+para:before, epigraph>para:first-child:before {
+	content: open-quote;
+}
+epigraph>para:last-child:after {
+	content: close-quote;
+}
+
+attribution {
+	text-align:right;
+	width:50%;
+	font-style: italic;
+	position: absolute;
+	top: 100%;
+	right: 0%;
+}
+
+procedure {
+	list-style-type: decimal;
+	padding-left: 1.5em;
+}
+procedure > *, substeps > *, stepalternatives > * {
+	margin-left: -1.5em;
+}
+procedure > step, substeps > step, stepalternatives > step {
+	margin-left: 0em;
+}
+substeps, stepalternatives {
+	padding-left: 1.5em;
+	padding-top: .5em;
+	list-style-type: lower-alpha;
+}
+substeps step substeps, stepalternatives step substeps, substeps step stepalternatives,
+stepalternatives step stepalternatives {
+	padding-top: .5em;
+	list-style-type: upper-alpha;
+}
+substeps step substeps step substeps, substeps step substeps step stepalternatives,
+substeps step stepalternatives step substeps, substeps step stepalternatives step stepalternatives,
+stepalternatives step substeps step substeps, stepalternatives step substeps step stepalternatives,
+stepalternatives step stepalternatives step substeps,
+stepalternatives step stepalternatives step stepalternatives {
+	padding-top: .5em;
+	list-style-type: decimal;
+}
+step {
+	display: list-item;
+}
+step+step {
+	padding-top: .5em;
+}
+
+sidebar {
+	position: relative;
+	width: 20%;
+	padding-left: 10px;
+	padding-top: .5em;
+	padding-bottom: .5em;
+	border-left: 1px solid grey;
+	float: right;
+}
+
+classsynopsisinfo, funcsynopsisinfo, funcprototype, programlisting, cmdsynopsis, production {
+	font-family: monospace;
+}
+
+classsynopsisinfo, funcsynopsisinfo, funcprototype, programlisting {
+	white-space:pre;
+}
+
+funcprototype:after {
+	content: ");";
+}
+funcdef > function {
+	font-weight: bold;
+}
+funcdef > function:after {
+	content: "(";
+	font-weight: normal;
+}
+varargs:after {
+	content: "\2026";
+}
+void:after {
+	content: "void";
+}
+paramdef + paramdef:before{
+	content: ", ";
+}
+
+rhs:before {
+	content: "\A0\A0::=\A0\A0";
+}
+rhs>lineannotation {
+	padding-left: 10em;
+	font-family: sans-serif;
+	font-size: 10pt;
+}
+
+msglevel:before, msgorig:before, msgaud:before {
+	font-weight: bold;
+}
+msg + msg, msg + msginfo, msg + msgexplan, msginfo + msgexplan, msgtext + msgexplan {
+	margin-top: .5em;
+}
+
+tocpart>tocchap, tocpart>tocchap>toclevel1, tocpart>tocchap>toclevel1>toclevel2, tocpart>tocchap>toclevel1>toclevel2>toclevel3,
+tocpart>tocchap>toclevel1>toclevel2>toclevel3>toclevel4, tocpart>tocchap>toclevel1>toclevel2>toclevel3>toclevel4>toclevel5 {
+	margin-left: 1.5em;
+}
+tocpart>*+*, tocchap>*+*, toclevel1>*+*, toclevel2>*+*, toclevel3>*+*, toclevel4>*+*,
+toclevel5>*+* {
+	margin-top: .5em;
+}

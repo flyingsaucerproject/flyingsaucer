@@ -1,0 +1,71 @@
+﻿@charset "utf-8";
+/*
+ * l10n/de.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * Copyright (c) 2005 Michael Thiele, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of wysiwygDocBook 1.0, a developed DocBook CSS stylesheet based on version 0.4 from
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ * 
+ * This file contains language specific formatting for documents written in German using
+ * localisation ('l10n').
+ */
+
+/* language specific customization for Q&A sets */
+question:lang(de):before {
+	content: "F: ";
+}
+answer:lang(de):before {
+	content: "A: ";
+}
+
+/* language specific customization for examples */
+example > title:lang(de):before {
+	content: "Beispiel: ";
+}
+
+/* language specific customization for figures */
+figure > title:lang(de):before {
+	content: "Figur: ";
+}
+
+/* language specific customization for equations */
+equation > title:lang(de):before {
+	content: "Formel: ";
+}
+
+/* language specific customization for quoted areas */
+:lang(de) > * {
+	quotes: "\201E" "\201D";
+}
+:lang(de) > quote quote, :lang(de) > blockquote quote, :lang(de) > quote blockquote,
+:lang(de) > blockquote blockquote {
+	quotes: "\201A" "\2019";
+}
+
+/* language specific customization for admonitions */
+warning:lang(de):before {
+	content: "Warnung: ";
+}
+caution:lang(de):before {
+	content: "Achtung: ";
+}
+important:lang(de):before {
+	content: "Wichtig: ";
+}
+tip:lang(de):before {
+	content: "Tipp: ";
+}
+note:lang(de):before {
+	content: "Hinweis: ";
+}
+
+/* language specific customization for glossary reference elements */
+glosssee:lang(de):before {
+	content: " siehe: ";
+}
+glossseealso:lang(de):before {
+	content: " siehe auch: ";
+}

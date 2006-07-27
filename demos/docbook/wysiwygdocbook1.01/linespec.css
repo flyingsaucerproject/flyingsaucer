@@ -1,0 +1,29 @@
+/*
+ * linespec.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * Copyright (c) 2005 Michael Thiele, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of wysiwygDocBook 1.01, a developed DocBook CSS stylesheet based on version 0.4 from
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ *
+ * This file contains formatting for line-specific environments
+ */
+
+address, literallayout, screen, screenshot, synopsis {
+	white-space:pre;
+}
+screen, screenshot, synopsis {
+	font-family:monospace;
+}
+synopsis optional:before {
+	content: "[";
+}
+synopsis optional:after {
+	content: "]";
+}
+programlisting, programlistingco {
+	padding: .5em;
+	background-color: #dddddd;
+}

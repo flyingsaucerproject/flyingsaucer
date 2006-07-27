@@ -1,0 +1,44 @@
+@charset "utf-8";
+/*
+ * l10n/pl.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of the Docbook-CSS stylesheet
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ */
+
+question:lang(pl):before {
+	content: "P: ";
+}
+answer:lang(pl):before {
+	content: "O: ";
+}
+
+example > title:lang(pl):before {
+	content: "Przykład: ";
+}
+
+:lang(pl) > quote {
+	quotes: "„" "”";
+}
+:lang(pl) > quote quote {
+	quotes: "«" "»";
+}
+
+warning:lang(pl):before {
+	content: "Ostrzeżenie: ";
+}
+caution:lang(pl):before {
+	content: "Uwaga: ";
+}
+important:lang(pl):before {
+	content: "Ważne: ";
+}
+tip:lang(pl):before {
+	content: "Pomoc: ";
+}
+note:lang(pl):before {
+	content: "Notatka: ";
+}

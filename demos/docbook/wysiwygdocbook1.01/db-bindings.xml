@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<bindings xmlns="http://www.mozilla.org/xbl"
+     xmlns:html="http://www.w3.org/1999/xhtml">
+  <binding id="ulink">
+  	<handlers>
+      <handler event="click" button="0"
+               action="window.location=this.attributes.url.value;"/>
+      <handler event="mouseover"
+               action="window.status=this.attributes.url.value;"/>
+      <handler event="mouseout"
+               action="window.status=null;"/>
+    </handlers>
+  </binding>
+  
+  <binding id="email">
+  	<handlers>
+      <handler event="click" button="0"
+               action="window.location='mailto:'+this.firstChild.data;"/>
+      <handler event="mouseover"
+               action="window.status='mailto:'+this.firstChild.data;"/>
+      <handler event="mouseout"
+               action="window.status=null;"/>
+    </handlers>
+  </binding>
+
+	<binding id="image">
+    <content>
+      <html:img xbl:inherits="src=fileref"/>
+    </content>
+
+    <implementation>
+      <constructor>
+	var img = document.getAnonymousNodes(this)[0];
+	var file = this.getAttribute("fileref");
+	// HACK: using img.src=file 'inline' doesn't seem to work
+	//       but it does when called from a setTimeout()
+	var f = function() { img.src = file; }
+	setTimeout(f, 0);
+      </constructor>
+    </implementation>
+  </binding>
+  
+  <binding id="footnoteref">
+  	<implementation>
+  		<method name="showfootnote">
+  			<parameter name="show"/>
+  			<body>
+  			//Doesn't work...
+    		footnotes = document.getElementsByTagName("footnote");
+    		footnote = null;
+    		for(i=0;i&lt;footnotes.length;i++){
+    			if(footnotes[i].attributes.id.value == this.attributes.linkend.value){
+    				footnote = footnotes[i];
+    				break;
+    			}
+    		}
+    		attr = document.createAttribute("style");
+    		if(show){
+    			attr.nodeValue = "display: block;z-index: 100;position: fixed;border-top: 1px solid black;background-color: #ffffe1;padding: .5em;left: 0px;bottom: 0px;font: sans-serif medium;font-weight: normal;font-style: normal;width: 100%;";
+    		}
+    		else{
+    			attr.nodeValue = "display: none;z-index: 100;position: fixed;border-top: 1px solid black;background-color: #ffffe1;padding: .5em;left: 0px;bottom: 0px;font: sans-serif medium;font-weight: normal;font-style: normal;width: 100%;";
+    		}
+    		footnote.firstChild.setAttributeNode(attr);
+  			</body>
+			</method>
+  	</implementation>
+  	
+  	<handlers>
+  		<handler event="mouseover"
+               action="this.showfootnote(true);"/>
+      <handler event="mouseout"
+               action="this.showfootnote(false);"/>
+    </handlers>
+  </binding>
+</bindings>

@@ -1,0 +1,43 @@
+/*
+ * admonitions.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * Copyright (c) 2005 Michael Thiele, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of wysiwygDocBook 1.01, a developed DocBook CSS stylesheet based on version 0.4 from
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ *
+ * This file contains formatting for admonition elements
+ */
+
+warning:before, caution:before, tip:before, note:before, important:before {
+	font-weight: bolder;
+	font-family: sans-serif;
+}
+
+warning {
+	border-top: 1px solid #ff0000;
+	border-bottom: 1px solid #ff0000;
+	padding: .5em .5em;
+}
+caution {
+	border-top: 1px solid #ff0000;
+	border-bottom: 1px solid #ff0000;
+	padding: .5em .5em;
+}
+tip {
+	border-top: 1px solid #000000;
+	border-bottom: 1px solid #000000;
+	padding: .5em .5em;
+}
+note {
+	border-top: 1px solid #000000;
+	border-bottom: 1px solid #000000;
+	padding: .5em .5em;
+}
+important {
+	border-top: 1px solid #ff0000;
+	border-bottom: 1px solid #ff0000;
+	padding: .5em .5em;
+}

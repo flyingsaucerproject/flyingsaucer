@@ -1,0 +1,159 @@
+/*
+ * lists.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * Copyright (c) 2005 Michael Thiele, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of wysiwygDocBook 1.01, a developed DocBook CSS stylesheet based on version 0.4 from
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ *
+ * This file contains formatting for all DocBook list types
+ */
+
+/* itemized lists */
+itemizedlist {
+	padding-left: 1em;
+	list-style-type: disc;
+}
+itemizedlist > * {
+	margin-left: -1em;
+}
+itemizedlist[spacing="compact"]>listitem + listitem {
+	padding-top: 0em;
+}
+/* 2 deep nested lists */
+itemizedlist itemizedlist {
+	list-style-type: circle;
+	padding-top: .5em;
+}
+/* 3 or more deep nested lists */
+itemizedlist itemizedlist itemizedlist {
+	list-style-type: square;
+	padding-top: .5em;
+}
+itemizedlist[spacing="compact"]>listitem>itemizedlist {
+	padding-top: 0em;
+}
+/*
+ * The list of possible mark names is not defined by Docbook, but "opencircle"
+ * and "bullet" are used in T.D.G. example, secondly CSS specific names are used.
+ */
+itemizedlist[mark="bullet"], listitem[override="bullet"], listitem[override="disc"],
+itemizedlist[mark="disc"] {
+	list-style-type: disc;
+}
+itemizedlist[mark="opencircle"], listitem[override="opencircle"], listitem[override="circle"],
+itemizedlist[mark="circle"] {
+	list-style-type: circle;
+}
+listitem[override="square"], itemizedlist[mark="square"] {
+	list-style-type: square;
+}
+itemizedlist>listitem {
+	display:list-item;
+	margin-left: 0em;
+}
+
+/* ordered lists */
+orderedlist {
+	padding-left: 1.5em;
+	list-style-type: decimal;
+}
+orderedlist > * {
+	margin-left: -1.5em;
+}
+orderedlist[numeration="lowerroman"], listitem[override="lowerroman"] {
+	list-style-type: lower-roman;
+}
+orderedlist[numeration="upperroman"], listitem[override="upperroman"] {
+	list-style-type: upper-roman;
+}
+orderedlist[numeration="loweralpha"], listitem[override="loweralpha"] {
+	list-style-type: lower-alpha;
+}
+orderedlist[numeration="upperalpha"], listitem[override="upperalpha"] {
+	list-style-type: upper-alpha;
+}
+orderedlist[spacing="compact"]>listitem + listitem {
+	padding-top: 0em;
+}
+orderedlist[spacing="compact"]>listitem>orderedlist {
+	padding-top: 0em;
+}
+orderedlist>listitem {
+	display:list-item;
+	padding-top: .5em;
+	margin-left: 0em;
+}
+
+/* call-out lists: We've got no way of properly implementing call-out lists with CSS, so just
+ * present as a list of bullet points.
+ * TODO: find a way to do this.
+ */
+calloutlist {
+	padding-left: 1em;
+	list-style-type: disc;
+}
+calloutlist>callout {
+	display:list-item;
+}
+
+/* for itemized, ordered and call-out lists */
+listitem+listitem {
+	padding-top: .5em;
+}
+
+/* variable lists */ 
+varlistentry>listitem {
+	margin-left: 2em;
+}
+varlistentry+varlistentry {
+	margin-top: .5em;
+}
+term + term:before {
+	content: ",\A0";
+}
+term {
+	font-family: monospace;
+}
+
+/* simple lists: There's no way using just CSS to create vertical or horizontal simple lists with a given number
+ * of columns, so all elements are in one column or row.
+ * TODO: find a way to do that.
+ */
+simplelist[type="inline"]>member+member:before {
+	content: ",\A0";
+}
+simplelist[type="horiz"]>member+member:before {
+	content: "\A0";
+}
+
+/* segmented lists: They are presented in a tabular way. */
+segmentedlist {
+	border-collapse: collapse;
+}
+seg, segtitle {
+	padding: .2em;
+	border-bottom: 1px solid grey;
+}
+seglistitem:first-child > seg {
+	border-top: 1px solid grey;
+}
+segtitle {
+	font-weight: bolder;
+	background-color: #dadada;
+}
+segtitle {
+	border-top: 1px solid grey;
+	border-bottom: 2px solid black;
+}
+
+/* gloss lists (though defined elements are in glossaries, too) */
+glossentry>glossterm {
+	font-weight: bolder;
+	font-style: italic;
+}
+glosssee, glossseealso {
+	font-style: italic;
+}

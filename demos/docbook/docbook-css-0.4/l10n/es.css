@@ -1,0 +1,39 @@
+@charset "utf-8";
+/*
+ * l10n/es.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of the Docbook-CSS stylesheet
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ */
+
+question:lang(es):before {
+	content: "P: ";
+}
+answer:lang(es):before {
+	content: "R: ";
+}
+
+example > title:lang(es):before {
+	content: "Ejemplo: ";
+}
+
+
+warning:lang(es):before {
+	content: "Aviso: ";
+}
+caution:lang(es):before {
+	content: "Atención: ";
+}
+important:lang(es):before {
+	content: "Importante: ";
+}
+tip:lang(es):before {
+	content: "Consejo: ";
+}
+note:lang(es):before {
+	content: "Nota: ";
+}
+

@@ -1,0 +1,261 @@
+/*
+ * inline.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * Copyright (c) 2005 Michael Thiele, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of wysiwygDocBook 1.01, a developed DocBook CSS stylesheet based on version 0.4 from
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ *
+ * This file contains formatting for inline elements independent from special block elements
+ */
+
+quote:before {
+	content: open-quote;
+}
+quote:after {
+	content: close-quote;
+}
+
+emphasis {
+	font-style:italic;
+}
+emphasis[role="strong"] {
+	font-weight:bolder;
+}
+emphasis[role="bold"] {
+	font-weight:bolder;
+	font-style:normal;
+}
+emphasis[role="underline"] {
+	text-decoration:underline;
+	font-style:normal;
+}
+emphasis[role="strikethrough"] {
+	text-decoration:line-through;
+	font-style:normal;
+}
+emphasis>emphasis {
+	font-weight:bolder;
+}
+
+application, foreignphrase, wordasword, productname, medialabel, replaceable, remark,
+lineannotation {
+	font-style:italic;
+}
+
+code, command, computeroutput, envar, filename, keycode, keysym, literal, option, parameter,
+sgmltag, systemitem, classname, constant, function, property, returnvalue, structfield, structname,
+varname, prompt, systemitem, exceptionname, interfacename, methodname, ooclass, ooexception,
+oointerface, userinput {
+	font-family: monospace;
+}
+
+guimenu, guimenuitem, guisubmenu {
+	background-color: #dddddd;
+	padding: 2px;
+}
+
+/*
+ * ensure there's some whitespace between elements of an author's or person name
+ */
+author>* + *:before, personname>* + *:before {
+	content: " ";
+}
+
+/* give keycaps a '3D' shaded look */
+keycap {
+	border-style: solid;
+	border-top-width: 2px;
+	border-left-width: 2px;
+	border-right-width: 2px;
+	border-bottom-width: 2px;
+	border-top-color: #eeeecc;
+	border-left-color: #eeeecc;
+	border-right-color: #999977;
+	border-bottom-color: #999977;
+	background-color: #ddddbb;
+	/* All these borders may interfere with text on the line bellow.  Make
+	   the text a little smaller to try and 'pull up' the bottom edge, */
+	font-size: smaller;
+}
+keycombo>keycap+keycap {
+	border-left-width: 0px;
+}
+keycap:before {
+	content:"\A0";
+}
+keycap:after {
+	content:"\A0";
+}
+keycombo>keycap+keycap:before {
+	content: "+\A0";
+	margin-right: 4px;
+	border-style: solid;
+	border-top-width: 2px;
+	border-left-width: 2px;
+	border-right-width: 2px;
+	border-bottom-width: 2px;
+	border-top-color: #ffffff;
+	border-left-color: #ffffff;
+	border-right-color: #eeeecc;
+	border-bottom-color: #ffffff;
+	background-color: #ffffff;
+}
+
+menuchoice>guimenu+guimenuitem:before,
+menuchoice>guimenuitem+guimenuitem:before,
+menuchoice>guimenuitem+guisubmenu:before {
+	/* a 'proper' left-arrow character */
+	content: "\A0\2192\A0";
+	font-family:sans-serif;
+	background-color: #ffffff;
+	margin-right: 2px;
+}
+
+guibutton {
+	border: 2px outset #dddddd;
+	background-color: #dddddd;
+	font-size: smaller;
+}
+
+
+/* render link-like elements per HTML's normal styling */
+link, ulink, email {
+	/* When ulink contains no body text, the url should be rendered
+	 * at this point in the document.  Can't see how to do this with CSS */
+	color:#0000ff;
+	text-decoration:underline;
+}
+/* ulink:after {
+	content: " <" attr(url) ">";
+} */
+
+xref {
+	color:#0000ff;
+	text-decoration: underline;
+}
+link:before, xref:before {
+	content: "\2192";
+}
+
+email:before {
+	content: "<";
+}
+email:after {
+	content: ">";
+}
+
+citation:before {
+	content: "[";
+}
+citation:after {
+	content: "]";
+}
+
+personname, author {
+	font-variant: small-caps;
+}
+
+productname:after, trademark:after {
+	content: "\A0\2122";
+	font-style: normal;
+}
+productname[class="copyright"]:after, trademark[class="copyright"]:after {
+	content: "\A0\A9";
+	font-style: normal;
+}
+productname[class="registered"]:after, trademark[class="registered"]:after {
+	content: "\A0\AE";
+	font-style: normal;
+}
+productname[class="service"]:after, trademark[class="service"]:after {
+	content: "\A0\2120";
+	font-style: normal;
+}
+
+/* Footnotes: Attempt to display footnotes on-mouseover.  Only first child of a footnote is shown
+ * though.
+ * TODO: fix this problem
+ */
+footnote, footnoteref {
+	position: relative;
+	cursor: help;
+}
+footnote>*:first-child {
+	z-index: 100;
+	position: fixed;
+	border-top: 1px solid black;
+	background-color: #ffffe1;
+	padding: .5em;
+	left: 0px;
+	bottom: 0px;
+	font: sans-serif medium;
+	font-weight: normal;
+	font-style: normal;
+	width: 100%;
+}
+footnote:hover>*:first-child {
+	display: block;
+}
+footnote:before, footnoteref:before {
+	content: "["attr(label)"]";
+	font-size: .6em;
+	text-decoration: underline;
+	vertical-align: top;
+}
+
+computeroutput, literal, userinput {
+	white-space:pre;
+}
+userinput {
+	font-weight: bolder;
+}
+
+sgmltag[class="starttag"]:before, sgmltag[class="emptytag"]:before {
+	content: "<";
+}
+sgmltag[class="starttag"]:after, sgmltag[class="endtag"]:after {
+	content: ">";
+}
+sgmltag[class="endtag"]:before {
+	content: "</";
+}
+sgmltag[class="emptytag"]:after {
+	content: "/>";
+}
+sgmltag[class="attribute"]+sgmltag[class="attvalue"]:before {
+	content: '="';
+}
+sgmltag[class="attribute"]+sgmltag[class="attvalue"]:after {
+	content: '"';
+}
+sgmltag[class="genentity"]:before {
+	content: "&";
+}
+sgmltag[class="genentity"]:after {
+	content: ";";
+}
+sgmltag[class="sgmlcomment"]:before {
+	content: "<!--";
+}
+sgmltag[class="sgmlcomment"]:after {
+	content: "-->";
+}
+sgmltag[class="xmlpi"]:before {
+	content: "<?";
+}
+sgmltag[class="xmlpi"]:after {
+	content: "?>";
+}
+
+subscript {
+	font-size: .6em;
+	vertical-align: bottom;
+}
+
+superscript {
+	font-size: .6em;
+	vertical-align: top;
+}

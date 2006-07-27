@@ -1,0 +1,89 @@
+/*
+ * tables.css
+ *
+ * Copyright (c) 2004 David Holroyd, and contributors
+ * Copyright (c) 2005 Michael Thiele, and contributors
+ * See the file 'COPYING' for terms of use
+ *
+ * Part of wysiwygDocBook 1.01, a developed DocBook CSS stylesheet based on version 0.4 from
+ *   http://www.badgers-in-foil.co.uk/projects/docbook-css/
+ *
+ * This file contains formatting for table elements
+ */
+
+table {
+	border-collapse: collapse;
+}
+
+entry, td, th {
+	padding: .2em;
+	text-align: left;
+}
+entrytbl {
+	padding: .2em;
+}
+entry[valign=top], td[valign=top], th[valign=top] {
+	vertical-align: top;
+}
+entry[valign=bottom], td[valign=bottom], th[valign=bottom], entry[valign=baseline],
+td[valign=baseline], th[valign=baseline] {
+	vertical-align: bottom;
+}
+entry[align=center], td[align=center], th[align=center] {
+	text-align: center;
+}
+entry[valign=right], td[valign=right], th[valign=right] {
+	text-align: right;
+}
+entry[align=justify], td[align=justify], th[align=justify] {
+	text-align: justify;
+}
+
+tfoot, thead, th {
+	font-weight: bolder;
+	background-color: #dadada;
+}
+
+table[rowsep="1"] entry, table[rowsep="1"] entrytbl, table[rowsep="1"] td, table[rowsep="1"] th {
+	border-bottom: 1px solid grey;
+}
+table[rowsep="1"] row:last-child entry, table[rowsep="1"] row:last-child entrytbl,
+table[rowsep="1"] tr:last-child td, table[rowsep="1"] tr:last-child th {
+	border-bottom: 0px;
+}
+table[colsep="1"] entry, table[colsep="1"] entrytbl, table[colsep="1"] td, table[colsep="1"] th {
+	border-right: 1px solid grey;
+}
+table[colsep="1"] entry:last-child, table[colsep="1"] entrytbl:last-child,
+table[colsep="1"] td:last-child, table[colsep="1"] th:last-child {
+	border-right: 0px;
+}
+
+table[frame="sides"] entry:first-child, table[frame="sides"] entrytbl:first-child,
+table[frame="sides"] td:first-child, table[frame="sides"] th:first-child,
+table[frame="all"] entry:first-child, table[frame="all"] entrytbl:first-child,
+table[frame="all"] td:first-child, table[frame="all"] th:first-child {
+	border-left: 1px solid grey;
+}
+table[frame="sides"] entry:last-child, table[frame="sides"] entrytbl:last-child,
+table[frame="sides"] td:last-child, table[frame="sides"] th:last-child,
+table[frame="all"] entry:last-child, table[frame="all"] entrytbl:last-child,
+table[frame="all"] td:last-child, table[frame="all"] th:last-child {
+	border-right: 1px solid grey;
+}
+table[frame="topbot"] row:first-child entry, table[frame="topbot"] row:first-child entrytbl,
+table[frame="topbot"] tr:first-child td, table[frame="topbot"] tr:first-child th,
+table[frame="all"] row:first-child entry, table[frame="all"] row:first-child entrytbl,
+table[frame="all"] tr:first-child td, table[frame="all"] tr:first-child th,
+table[frame="top"] row:first-child entry, table[frame="top"] row:first-child entrytbl,
+table[frame="top"] tr:first-child td, table[frame="top"] tr:first-child th {
+	border-top: 1px solid grey;
+}
+table[frame="topbot"] row:last-child entry, table[frame="topbot"] row:last-child entrytbl,
+table[frame="topbot"] tr:last-child td, table[frame="topbot"] tr:last-child th,
+table[frame="all"] row:last-child entry, table[frame="all"] row:last-child entrytbl,
+table[frame="all"] tr:last-child td, table[frame="all"] tr:last-child th,
+table[frame="bottom"] row:last-child entry, table[frame="bottom"] row:last-child entrytbl,
+table[frame="bottom"] tr:last-child td, table[frame="bottom"] tr:last-child th {
+	border-bottom: 1px solid grey;
+}
