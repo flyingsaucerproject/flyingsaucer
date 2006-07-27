@@ -39,7 +39,7 @@ public class SVGSalamanderReplacedElementFactory implements ReplacedElementFacto
 
             // HACK: the easiest way to integrate with Salamander is to have it read
             // our SVG from a file--so, push the content to a temporary file, yuck!
-            content = elem.getFirstChild().getNodeValue();
+            content = getSVGElementContent(elem);
 
             String path = elem.getAttribute("data");
             XRLog.general(Level.FINE, "Rendering embedded SVG via object tag from: " + path);
@@ -80,6 +80,14 @@ public class SVGSalamanderReplacedElementFactory implements ReplacedElementFacto
                 c.getCanvas().add(cc);
             }
             return result;
+        }
+    }
+
+    private String getSVGElementContent(Element elem) {
+        if ( elem.getChildNodes().getLength() > 0 ) {
+            return elem.getFirstChild().getNodeValue();
+        } else {
+            return "SVG";
         }
     }
 
