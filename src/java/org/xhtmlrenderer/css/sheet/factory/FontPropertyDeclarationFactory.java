@@ -92,6 +92,10 @@ public class FontPropertyDeclarationFactory extends AbstractPropertyDeclarationF
                 continue;
             }
 
+            if ( names[0] == CSSName.FONT_SIZE ) {
+                primitives[0] = FontSizeHackHelper.fontSizeAbsoluteHack(primitives[0]);
+            }
+
             addProperties(declarations, primitives, names, origin, important);
         }
 
@@ -160,6 +164,9 @@ public class FontPropertyDeclarationFactory extends AbstractPropertyDeclarationF
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2006/07/27 15:18:15  pdoubleya
+ * Added workaround for font-sizes with idents such as medium, large, etc.
+ *
  * Revision 1.5  2005/05/08 13:02:37  tobega
  * Fixed a bug whereby styles could get lost for inline elements, notably if root element was inline. Did a few other things which probably has no importance at this moment, e.g. refactored out some unused stuff.
  *

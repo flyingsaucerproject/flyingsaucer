@@ -25,9 +25,7 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.value.FSCssValue;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -72,11 +70,20 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
                     " CSS style information is not primitive--is a list of values." +
                     " Should be handled by a shorthand property factory.");
         }
-        FSCssValue fsCssValue = new FSCssValue(primVals[0]);
+        FSCssValue fsCssValue = null;
+
+        // HACK: font-size <absolute-size> ident workaround
+        if (cssName == CSSName.FONT_SIZE) {
+            fsCssValue = FontSizeHackHelper.fontSizeAbsoluteHack(primVals[0]);
+        } else {
+            fsCssValue = new FSCssValue(primVals[0]);
+        }
         List declarations = new ArrayList(1);
+
         declarations.add(newPropertyDeclaration(cssName, fsCssValue, origin, important));
         return declarations.iterator();
     }
+
 
     /**
      * Returns the singleton instance.
@@ -89,12 +96,16 @@ public class DefaultPropertyDeclarationFactory extends AbstractPropertyDeclarati
         }
         return _instance;
     }
+
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2006/07/27 15:18:15  pdoubleya
+ * Added workaround for font-sizes with idents such as medium, large, etc.
+ *
  * Revision 1.7  2006/05/08 21:36:02  pdoubleya
  * Log and skip properties we can't parse into declarations...
  *
