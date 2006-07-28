@@ -19,12 +19,6 @@
  */
 package org.xhtmlrenderer.layout.content;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -36,6 +30,8 @@ import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.layout.LayoutContext;
+
+import java.util.*;
 
 
 /**
@@ -294,6 +290,10 @@ public class ContentUtil {
                 String content = ((CSSPrimitiveValue) before.propertyByName(CSSName.CONTENT).getValue()).getStringValue();
                 // FIXME Don't think this test is right. Even empty inline content
                 // should force a line box to be created.  Leave for now though.
+                // TODO: need to handle hex values in CSS--\2192 is the Unicode for an arrow (HTML &8594;), though this
+                // is a general string problem, anywhere strings can appear in CSS, not just content
+
+
                 if (!content.equals("")) {
                     inlineList.add(new StylePush("before", parentElement));
                     c.pushStyle(before);
@@ -308,6 +308,11 @@ public class ContentUtil {
                             textContent = new StringBuffer(value);
                             contentFunction = null;
                         }
+                    } else if ( Idents.looksLikeAQuote(content) ) {
+                        // TODO: if the content is one of the quote idents, then look up the value of the quotes property
+                        textContent = new StringBuffer("\"");
+                    } else if ( Idents.looksLikeASkipQuote(content) ) {
+                        // TODO: no content, but increment nesting level for quotes
                     }
                     inlineList.add(new TextContent("before", parentElement, 
                             textContent.toString(), contentFunction));
@@ -453,6 +458,11 @@ public class ContentUtil {
                             textContent = new StringBuffer(value);
                             contentFunction = null;
                         }
+                    } else if ( Idents.looksLikeAQuote(content) ) {
+                        // TODO: if the content is one of the quote idents, then look up the value of the quotes property
+                        textContent = new StringBuffer("\"");                        
+                    } else if ( Idents.looksLikeASkipQuote(content) ) {
+                        // TODO: no content, but decrement nesting level for quotes
                     }
                     inlineList.add(new TextContent("after", parentElement, 
                             textContent.toString(), contentFunction));
@@ -547,6 +557,9 @@ public class ContentUtil {
  * $Id$
  *
  * $Log$
+ * Revision 1.49  2006/07/28 10:10:41  pdoubleya
+ * Basic support for open and close quotes.
+ *
  * Revision 1.48  2006/04/02 22:22:32  peterbrant
  * Add function interface for generated content / Implement page counters in terms of this, removing previous hack / Add custom page numbering functions
  *
