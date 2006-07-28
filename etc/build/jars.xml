@@ -50,6 +50,21 @@
         </jar>
     </target>
 
+    <!-- Compiles DocBook sample and main codebase, and builds jar for browser -->
+    <target name="jar.docbook" depends="compile.docbook, jar.core" description="build DocBook jar">
+        <jar jarfile="${dest.dir}/docbook.jar"
+            compress="true"
+            manifest="${src.packaging.dir}/manifest"
+            duplicate="preserve"
+            index="true"
+            >
+            <fileset dir="${dest.java.dir}">
+                <include name="org/xhtmlrenderer/demo/docbook/**"/>
+            </fileset>
+            <zipfileset refid="files.docbook"/>
+        </jar>
+    </target>
+
     <!-- Compiles about box and main codebase, and builds jar for about box -->
     <target name="jar.about" depends="compile.about" description="build about jar">
         <jar jarfile="${dest.dir}/about.jar" compress="true"

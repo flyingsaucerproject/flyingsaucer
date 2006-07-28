@@ -33,6 +33,7 @@
   <property name="src.browser.java.dir" location="demos/browser/src/java"/>
   <property name="src.browser.icons.dir" location="demos/browser/src/icons"/>
   <property name="src.svg.java.dir" location="demos/svg/src/java"/>
+  <property name="src.docbook.java.dir" location="demos/docbook/src/java"/>
   <property name="src.blower.java.dir" location="${src.java.dir}"/>
   <property name="src.about.java.dir" location="demos/about/src/java"/>
   <property name="src.photogallery.java.dir" location="demos/photogallery/src/java"/>
@@ -52,6 +53,7 @@
   <property name="src.packaging.dir" location="${src.dir}/packaging"/>
   <property name="src.demo.xhtml.dir" location="demos/browser/xhtml"/>
   <property name="src.demo.svg.dir" location="demos/svg/xhtml"/>
+  <property name="src.demo.docbook.dir" location="demos/docbook"/>
   <property name="src.demo.splash.dir" location="demos/splash"/>
   <property name="src.about.xhtml.dir" location="demos/about/xhtml"/>
 	
@@ -155,6 +157,14 @@
       <include name="*.png"/>
       <include name="dat/**"/>
   </zipfileset>
+
+    <zipfileset id="files.docbook" dir="${src.demo.docbook.dir}" prefix="docbook/">
+        <include name="xhtml/*"/>
+        <include name="xml/*"/>
+        <exclude name="dtd/*"/>
+        <include name="wysiwygdocbook1.01/**"/>
+        <include name="docbook-css-0.4/**"/>
+    </zipfileset>
 
   <zipfileset id="xhtml.about.demos" dir="${src.about.xhtml.dir}" prefix="demos/">
     <patternset refid="xhtml-files"/>

@@ -69,6 +69,7 @@
     <antcall target="jar.browser" />
     <antcall target="jar.about" />
     <antcall target="jar.svg" />
+    <antcall target="jar.docbook" />
     <antcall target="jar.photogallery" />
     <antcall target="jar.filebrowser" />
   </target>
@@ -163,7 +164,7 @@
     </copy>
   </target>
 
-    <!-- Copies the resources needed to run the browser into the build tree -->
+  <!-- Copies the resources needed to run the svg demo -->
   <target name="resources.svg" depends="compile">
     <mkdir dir="build/classes/demos"/>
     <copy todir="build/classes/svg">
@@ -176,6 +177,31 @@
       </fileset>
     </copy>
   </target>
+
+    <!-- Copies the resources needed to run the docbook demo -->
+    <target name="resources.docbook" depends="compile">
+      <mkdir dir="build/classes/demos"/>
+      <copy todir="build/classes/docbook/xml">
+        <fileset dir="demos/docbook/xml" >
+          <include name="*.xml"/>
+        </fileset>
+      </copy>
+      <copy todir="build/classes/docbook/dtd">
+        <fileset dir="demos/docbook/dtd">
+          <include name="**/*"/>
+        </fileset>
+      </copy>
+      <copy todir="build/classes/docbook/docbook-css-0.4">
+        <fileset dir="demos/docbook/docbook-css-0.4">
+          <include name="**/*"/>
+        </fileset>
+      </copy>
+      <copy todir="build/classes/docbook/wysiwygdocbook1.01">
+        <fileset dir="demos/docbook/wysiwygdocbook1.01">
+          <include name="**/*"/>
+        </fileset>
+      </copy>
+    </target>
 
     <!-- =======================================
          General
@@ -259,6 +285,9 @@
 $Id$
 
 $Log$
+Revision 1.94  2006/07/28 10:17:32  pdoubleya
+Added support for docbook demo.
+
 Revision 1.93  2006/07/26 18:19:16  pdoubleya
 Added SVG build stuff.
 
