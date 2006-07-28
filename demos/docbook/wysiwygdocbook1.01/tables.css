@@ -45,14 +45,14 @@ tfoot, thead, th {
 }
 
 table[rowsep="1"] entry, table[rowsep="1"] entrytbl, table[rowsep="1"] td, table[rowsep="1"] th {
-	border-bottom: 1px solid grey;
+	border-bottom: 1px solid gray;
 }
 table[rowsep="1"] row:last-child entry, table[rowsep="1"] row:last-child entrytbl,
 table[rowsep="1"] tr:last-child td, table[rowsep="1"] tr:last-child th {
 	border-bottom: 0px;
 }
 table[colsep="1"] entry, table[colsep="1"] entrytbl, table[colsep="1"] td, table[colsep="1"] th {
-	border-right: 1px solid grey;
+	border-right: 1px solid gray;
 }
 table[colsep="1"] entry:last-child, table[colsep="1"] entrytbl:last-child,
 table[colsep="1"] td:last-child, table[colsep="1"] th:last-child {
@@ -63,13 +63,13 @@ table[frame="sides"] entry:first-child, table[frame="sides"] entrytbl:first-chil
 table[frame="sides"] td:first-child, table[frame="sides"] th:first-child,
 table[frame="all"] entry:first-child, table[frame="all"] entrytbl:first-child,
 table[frame="all"] td:first-child, table[frame="all"] th:first-child {
-	border-left: 1px solid grey;
+	border-left: 1px solid gray;
 }
 table[frame="sides"] entry:last-child, table[frame="sides"] entrytbl:last-child,
 table[frame="sides"] td:last-child, table[frame="sides"] th:last-child,
 table[frame="all"] entry:last-child, table[frame="all"] entrytbl:last-child,
 table[frame="all"] td:last-child, table[frame="all"] th:last-child {
-	border-right: 1px solid grey;
+	border-right: 1px solid gray;
 }
 table[frame="topbot"] row:first-child entry, table[frame="topbot"] row:first-child entrytbl,
 table[frame="topbot"] tr:first-child td, table[frame="topbot"] tr:first-child th,
@@ -77,7 +77,7 @@ table[frame="all"] row:first-child entry, table[frame="all"] row:first-child ent
 table[frame="all"] tr:first-child td, table[frame="all"] tr:first-child th,
 table[frame="top"] row:first-child entry, table[frame="top"] row:first-child entrytbl,
 table[frame="top"] tr:first-child td, table[frame="top"] tr:first-child th {
-	border-top: 1px solid grey;
+	border-top: 1px solid gray;
 }
 table[frame="topbot"] row:last-child entry, table[frame="topbot"] row:last-child entrytbl,
 table[frame="topbot"] tr:last-child td, table[frame="topbot"] tr:last-child th,
@@ -85,5 +85,5 @@ table[frame="all"] row:last-child entry, table[frame="all"] row:last-child entry
 table[frame="all"] tr:last-child td, table[frame="all"] tr:last-child th,
 table[frame="bottom"] row:last-child entry, table[frame="bottom"] row:last-child entrytbl,
 table[frame="bottom"] tr:last-child td, table[frame="bottom"] tr:last-child th {
-	border-bottom: 1px solid grey;
+	border-bottom: 1px solid gray;
 }

@@ -135,17 +135,17 @@ segmentedlist {
 }
 seg, segtitle {
 	padding: .2em;
-	border-bottom: 1px solid grey;
+	border-bottom: 1px solid gray;
 }
 seglistitem:first-child > seg {
-	border-top: 1px solid grey;
+	border-top: 1px solid gray;
 }
 segtitle {
 	font-weight: bolder;
 	background-color: #dadada;
 }
 segtitle {
-	border-top: 1px solid grey;
+	border-top: 1px solid gray;
 	border-bottom: 2px solid black;
 }
 
