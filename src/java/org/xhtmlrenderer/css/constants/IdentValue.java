@@ -74,6 +74,7 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue CENTER = addValue("center");
     public final static IdentValue CIRCLE = addValue("circle");
     public final static IdentValue CJK_IDEOGRAPHIC = addValue("cjk-ideographic");
+    public final static IdentValue CLOSE_QUOTE = addValue("close-quote");
     public final static IdentValue COLLAPSE = addValue("collapse");
     public final static IdentValue COMPACT = addValue("compact");
     public final static IdentValue DASHED = addValue("dashed");
@@ -123,11 +124,14 @@ public class IdentValue implements FSDerivedValue {
     public final static IdentValue LTR = addValue("ltr");
     public final static IdentValue MARKER = addValue("marker");
     public final static IdentValue MIDDLE = addValue("middle");
+    public final static IdentValue NO_CLOSE_QUOTE = addValue("no-close-quote");
+    public final static IdentValue NO_OPEN_QUOTE = addValue("no-open-quote");
     public final static IdentValue NO_REPEAT = addValue("no-repeat");
     public final static IdentValue NONE = addValue("none");
     public final static IdentValue NORMAL = addValue("normal");
     public final static IdentValue NOWRAP = addValue("nowrap");
     public final static IdentValue OBLIQUE = addValue("oblique");
+    public final static IdentValue OPEN_QUOTE = addValue("open-quote");
     public final static IdentValue OUTSET = addValue("outset");
     public final static IdentValue OUTSIDE = addValue("outside");
     public final static IdentValue OVERLINE = addValue("overline");
@@ -323,6 +327,9 @@ public class IdentValue implements FSDerivedValue {
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2006/07/28 10:08:55  pdoubleya
+ * Additional work for support of parsing content and quotes.
+ *
  * Revision 1.21  2006/07/27 15:17:26  pdoubleya
  * Added missing idents for cursor and font-size, removed useless comments to make sorting easier.
  *

@@ -522,12 +522,23 @@ public final class Idents {
         FONT_STYLES.add("oblique");
 
     }// end static
+
+    public static boolean looksLikeAQuote(String content) {
+        return content.equals("open-quote") || content.equals("close-quote");
+    }
+
+    public static boolean looksLikeASkipQuote(String content) {
+        return content.equals("no-open-quote") || content.equals("no-close-quote");
+    }
 }// end class
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2006/07/28 10:08:55  pdoubleya
+ * Additional work for support of parsing content and quotes.
+ *
  * Revision 1.14  2006/04/03 00:01:59  peterbrant
  * Fix color: inherit
  *

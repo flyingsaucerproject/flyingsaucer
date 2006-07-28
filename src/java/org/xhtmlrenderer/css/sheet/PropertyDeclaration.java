@@ -265,6 +265,8 @@ public class PropertyDeclaration {
         PROPERTY_FACTORIES[CSSName.OUTLINE_SHORTHAND.FS_ID] = OutlinePropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.PADDING_SHORTHAND.FS_ID] = PaddingPropertyDeclarationFactory.instance();
         PROPERTY_FACTORIES[CSSName.SIZE_SHORTHAND.FS_ID] = SizePropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.QUOTES.FS_ID] = QuotesPropertyDeclarationFactory.instance();
+        PROPERTY_FACTORIES[CSSName.CONTENT.FS_ID] = ContentPropertyDeclarationFactory.instance();
     }
 }// end class
 
@@ -272,6 +274,9 @@ public class PropertyDeclaration {
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2006/07/28 10:08:56  pdoubleya
+ * Additional work for support of parsing content and quotes.
+ *
  * Revision 1.17  2005/12/28 00:50:53  peterbrant
  * Continue ripping out first try at pagination / Minor method name refactoring
  *
