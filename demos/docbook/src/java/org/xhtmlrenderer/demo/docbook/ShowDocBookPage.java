@@ -1,8 +1,11 @@
 package org.xhtmlrenderer.demo.docbook;
 
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.extend.TextRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,18 +47,21 @@ public class ShowDocBookPage {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         XHTMLPanel introPanel = new XHTMLPanel();
-
+        setAntiAlias(introPanel);
         URL url = ShowDocBookPage.class.getResource("/docbook/xhtml/intro.xhtml");
         introPanel.setDocument(url.toExternalForm());
 
-        introPanel.setPreferredSize(new Dimension(1024, 225));
+        introPanel.setPreferredSize(new Dimension(1024, 260));
+
 
         JScrollPane comp = new JScrollPane(introPanel);
         comp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        comp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         frame.getContentPane().add(comp, BorderLayout.NORTH);
 
         final XHTMLPanel panel = new XHTMLPanel();
+        setAntiAlias(panel);
 
         FSScrollPane fsp = new FSScrollPane(panel);
         frame.getContentPane().add(fsp, BorderLayout.CENTER);
@@ -72,5 +78,11 @@ public class ShowDocBookPage {
                 panel.setDocument(urls);
             }
         });
+    }
+
+    private void setAntiAlias(XHTMLPanel introPanel) {
+        SharedContext sharedContext = introPanel.getSharedContext();
+        sharedContext.setTextRenderer(new Java2DTextRenderer());
+        sharedContext.getTextRenderer().setSmoothingLevel(TextRenderer.HIGH);
     }
 }
