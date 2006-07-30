@@ -4,9 +4,9 @@ import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.value.FSCssValue;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * A PropertyDeclarationFactory for CSS 2 quote property, which, although not a shorthand,
@@ -48,9 +48,14 @@ public class ContentPropertyDeclarationFactory extends AbstractPropertyDeclarati
         String suffix = " ";
         for (int i = 0; i < primVals.length; i++) {
             CSSPrimitiveValue primVal = primVals[i];
-            pos.append(primVal.getCssText().trim() + suffix);
+            StringBuffer s = new StringBuffer(primVal.getCssText().trim());
+            if (s.charAt(0) == '"') s.deleteCharAt(0);
+            if (s.charAt(s.length() - 1) == '"') s.deleteCharAt(s.length() - 1);
+
+            pos.append(s + suffix);
         }
         pos.deleteCharAt(pos.length() - suffix.length());// remove ,spc
+
         FSCssValue fsCssValue = new FSCssValue(primVals[0], pos.toString().trim());
         List declarations = new ArrayList(1);
         declarations.add(newPropertyDeclaration(cssName, fsCssValue, origin, important));
