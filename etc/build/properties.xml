@@ -144,6 +144,13 @@
     <include name="fonts/**"/>
   </patternset>
 
+  <patternset id="xhtml-about-files">
+      <include name="*.xhtml"/>
+      <include name="*.gif"/>
+      <include name="*.jpg"/>
+      <include name="*.png"/>
+  </patternset>
+
   <!-- zip file reference for all XHTML in the demos directory, and supporting files -->
   <zipfileset id="xhtml.demos" dir="${src.demo.xhtml.dir}" prefix="demos/">
     <patternset refid="xhtml-files"/>
@@ -168,7 +175,7 @@
     </zipfileset>
 
   <zipfileset id="xhtml.about.demos" dir="${src.about.xhtml.dir}" prefix="demos/">
-    <patternset refid="xhtml-files"/>
+    <patternset refid="xhtml-about-files"/>
   </zipfileset>
 
     <!-- zip file reference for all splash XHTML in the demos directory, and supporting files -->
