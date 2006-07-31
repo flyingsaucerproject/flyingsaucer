@@ -29,6 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URL;
+import java.net.MalformedURLException;
 
 
 /**
@@ -102,35 +103,33 @@ public class AboutBox extends JDialog implements Runnable {
      *
      * @param url_text PARAM
      * @param panel    PARAM
-     * @throws Exception Throws
      */
-    public void loadPage(String url_text, XHTMLPanel panel)
-            throws Exception {
-        Document doc = null;
+    public void loadPage(String url_text, XHTMLPanel panel) throws MalformedURLException {
+Document doc = null;
 
-        URL ref = null;
+URL ref = null;
 
-        if (url_text.startsWith("demo:")) {
-            Uu.p("starts with demo");
-            DemoMarker marker = new DemoMarker();
-            Uu.p("url text = " + url_text);
-            String short_url = url_text.substring(5);
-            if (!short_url.startsWith("/")) {
-                short_url = "/" + short_url;
-            }
-            Uu.p("short url = " + short_url);
-            ref = marker.getClass().getResource(short_url);
-            Uu.p("ref = " + ref);
-            panel.setDocument(ref.toExternalForm());
-        } else if (url_text.startsWith("http")) {
-            panel.setDocument(url_text);
-        } else {
-            ref = new File(url_text).toURL();
-            panel.setDocument(ref.toExternalForm());
-        }
-        Uu.p("ref = " + ref);
-        Uu.p("url_text = " + url_text);
+if (url_text.startsWith("demo:")) {
+    Uu.p("starts with demo");
+    DemoMarker marker = new DemoMarker();
+    Uu.p("url text = " + url_text);
+    String short_url = url_text.substring(5);
+    if (!short_url.startsWith("/")) {
+        short_url = "/" + short_url;
     }
+    Uu.p("short url = " + short_url);
+    ref = marker.getClass().getResource(short_url);
+    Uu.p("ref = " + ref);
+    panel.setDocument(ref.toExternalForm());
+} else if (url_text.startsWith("http")) {
+    panel.setDocument(url_text);
+} else {
+    ref = new File(url_text).toURL();
+    panel.setDocument(ref.toExternalForm());
+}
+Uu.p("ref = " + ref);
+Uu.p("url_text = " + url_text);
+}
 
     /**
      * Description of the Method
@@ -194,6 +193,9 @@ public class AboutBox extends JDialog implements Runnable {
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2006/07/31 14:32:40  pdoubleya
+ * Fix throw claiuse
+ *
  * Revision 1.9  2006/04/08 22:01:04  pdoubleya
  * Hack, workaround direct file access in NaiveUserAgent, required explicit security in webstart app.
  *
