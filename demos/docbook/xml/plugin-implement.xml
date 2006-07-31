@@ -8,8 +8,8 @@
 
 <!-- This chapter of the jEdit 3.2 Plugin Guide               -->
 <!-- discusses how to implement a plugin                      -->
-<!-- ?xml-stylesheet href="/docbook/wysiwygdocbook1.01/driver.css" type="text/css"? -->
-<?xml-stylesheet href="/docbook/MozBook/MozBook.css" type="text/css"?>
+<?xml-stylesheet href="/docbook/wysiwygdocbook1.01/driver.css" type="text/css"?>
+<!-- ?xml-stylesheet href="/docbook/MozBook/MozBook.css" type="text/css"? -->
 <chapter id="plugin-implement"><title>Implementing a Simple Plugin</title>
 
 <para>
