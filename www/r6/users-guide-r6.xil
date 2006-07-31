@@ -84,7 +84,7 @@ h3(fs_heading). What It Is
 <img src="snap-browse-fs-thumb.png" style="float: right; margin-left: 10px;" /> 
 ==
 
-Flying Saucer is a _renderer_, which means it takes XML files as input, and generates a rendered representation of that XML as output. The output may go to the screen (in a GUI), to an image, or to a PDF file. Because we believe most people will rely on conventional practices, our main target for content is XHTML, an XML document format that standardizes HTML. However, we accept any well-formed XML for rendering as long as CSS is provided that tells us how to lay it out. In the case of XHTML, default stylesheets are provided out of the box. 
+Flying Saucer is an XML/CSS _renderer_, which means it takes XML files as input, applies formatting and styling using CSS, and generates a rendered representation of that XML as output. The output may go to the screen (in a GUI), to an image, or to a PDF file. Because we believe most people will rely on conventional practices, our main target for content is XHTML, an XML document format that standardizes HTML. However, we accept any well-formed XML for rendering as long as CSS is provided that tells us how to lay it out. In the case of XHTML, default stylesheets are provided out of the box. 
 
 Internally, ${fs} works with an XML document and uses CSS to determine how to lay it out visually. The rules for layout come from the ${css21}, and according to that spec, element nodes and attributes are matched to CSS selectors, where each selector identifies some formatting rules. We can't cover how to use CSS here--it's a long and complex specification--but there are many good books available, and tutorials on the web. Check out the "W3Schools CSS Tutorial":http://www.w3schools.com/css/default.asp for a starting point. 
 >xil>}}}
@@ -98,6 +98,8 @@ h3(fs_heading). What It Does
 ==
 
 ${fs} takes XML and CSS as input (where the CSS might be embedded in the document, or linked from it) and generates rendered content. Our current major output formats are in a GUI interface (a panel) and in PDF; we can also render to image formats, e.g. render the page and save as an image.
+
+When rendering to a GUI, ${fs} uses Java2D interfaces. This in turn allows us to easily "draw to" Swing and AWT components. In our internal development, we most often target Swing, but it should be possible to port this to other Java GUI toolkits that either use Graphics/2D, or else can provide an analogue.
 
 If rendering to a GUI, hyperlinks work so you can navigate between pages. As with HTML, you can also render forms, capture output, and create applications that way. In a GUI, ${fs} provides a _read-only_ view of the output; we cannot replace a text area, say, or Swing's @JEditorPane@ or @JTextPane@. However, for static content, or content created by you, ${fs} can be used for help documents, tutorials, books, splash screens, presentations, and much more.
 
@@ -113,7 +115,7 @@ h3(fs_heading). What It's Good For
 <img src="snap-browse-hover-thumb.png" style="float: right; margin-left: 10px;" /> 
 ==
 
-Flying Saucer can be used for any Java application that requires some sort of styled text. This can be as simple as a chat program or as complicated as a complete ebook reader with dynamic stylesheets. Flying Saucer is very forward thinking and is designed to be a part of the next generation of applications that combine rich desktop clients with web content. Some examples of application types are:
+Flying Saucer can be used for any Java application that requires some sort of styled text. This can be as simple as a chat program or as complicated as a complete ebook reader with dynamic stylesheets. Flying Saucer is very forward-thinking and designed to be a part of the next generation of applications that combine rich desktop clients with web content. Some examples of application types are:
 
 * chat programs
 * online music stores
@@ -141,7 +143,7 @@ Being honorable people, we must admit what ${fs} cannot do for you:
 
 * It cannot be used for user-editable content; output is read-only.
 * We render well-formed XML; XHTML is a well-formed document standard. We can't render most HTML "in the wild". At best, you can "clean up" old HTML with TagSoup or JTidy and hope for the best. But without a bunch of work, you won't be able to use ${fs} for a real web browser component. However, note that's not a technical limitation, just a lack of time and resources.
-* HTML plugins, like applets, Flash programs, etc. are not supported.
+* HTML plugins, like applets, Flash programs, etc. are not supported. However, these could potentially be addressed using replaced element content (such as we use for HTML forms), at least for Java applets.
 * Scripting (e.g. JavaScript) is not supported. We ignore script tags.
 * Dynamic changes to the content requires a re-layout (quick, but noticeable), that is, you can't dynamically change the DOM and see results live.
 * Most DOM callbacks used in JavaScript are not yet implemented (onLoad, onClick, onBlur, etc.).
@@ -151,7 +153,7 @@ Being honorable people, we must admit what ${fs} cannot do for you:
 <img src="snap-browse-report-thumb.png" style="float: left; margin-right: 10px;" /> 
 ==
 
-These limitations all have a pragmatic origin. Josh Marinacci, the founder of and original lead developer for the ${fs} project, realized that writing a fully capable HTML browser component (like Firefox's Gecko engine) could take many man-years of development. But if one focused on well-formed XHTML only, and stuck to the CSS spec, you could cover most of the useful stuff you want to do with a rendering engine, and do it in a reasonable amount of time. So it's not impossible to add scripting, DHTML, plugins to ${fs}, we've just deferred this until someone has the time and energy to get it to work--that way, we stay focused on the goal, which is pure CSS 2.1 support for well-formed XML.
+These limitations all have a pragmatic origin. Josh Marinacci, the founder of and original lead developer for the ${fs} project, realized that writing a fully capable HTML browser component (like Firefox's Gecko engine) could take many man-years of development. But if one focused on well-formed XML/XHTML only, and stuck to the CSS spec, you could cover most of the useful stuff you want to do with a rendering engine, and do it in a reasonable amount of time. So it's not impossible to add scripting, DHTML, plugins to ${fs}, we've just deferred this until someone has the time and energy to get it to work--that way, we stay focused on the goal, which is pure CSS 2.1 support for well-formed XML.
    
 Of course, you can help fix any of these things. Contributors welcome!
 >xil>}}}
@@ -182,6 +184,7 @@ Basic requirements:
 * ${itext} (also at "iText PDF":http://itextpdf.sourceforge.net), distributed unmodified
 * "Ant":http://ant.apache.org if you want to build from source
 * "JUnit":http://www.junit.org/index.htm if you want to run unit tests on source
+* Minium antialiasing: Minimum is an anti-aliasing library donated by Julian Scheid. We distribute the JAR for this; don't know of it being posted elsewhere. This is only necessary if you want to use this anti-aliasing approach; the Browser demo shows it in practice, and you may like it better than the Java anti-aliasing support.
 
 ${itext} is not necessary at runtime if you are not generating PDFs, but is necessary for the build to satisfy compile-time dependencies.
 
@@ -216,13 +219,13 @@ To make life easier for our end-users, we have created a special Java package, @
 
 In addition, in a separate branch of our source tree, we created some sample single-class Java programs to show different uses of ${fs}. 
 
-To understand where to start, you have to look at how ${fs} works. The input is a document, identifed by a Uniform Resource Identifier (URL) or Uniform Resource Locator (URI). That document must be well-formed XML. The document is loaded and elements are matched against the CSS provided for the document. For XHTML, we have specifications for how CSS is specified--as linked stylesheets, as inline styles, and as style attributes. For XML, we support linked stylesheets via the xml-stylesheet processing instruction.
+To understand where to start, you have to look at how ${fs} works. The input is a DOM Document, identifed by a Uniform Resource Identifier (URL) or Uniform Resource Locator (URI). You can provide this as a DOM Document instance, or as one of several identifiers (URI, URI, File, etc.) That document must be well-formed XML. The document is loaded and elements are matched against the CSS provided by the document, either linked or inline. For XHTML, we have specifications for how CSS is specified--as linked stylesheets, as inline styles, and as style attributes. For XML, we support linked stylesheets via the @xml-stylesheet@ processing instruction.
 
 Once we've matched CSS, we run through a layout phase, where we calculate the size and position, as well as display attributes, of all visible elements. The layout is then used to render to some output sink. The standard output sink is a Swing @JPanel@ subclass we call @org.xhtmlrenderer.swing.BasicPanel@, or its extended (and more powerful) child, @XHTMLPanel@. 
 
 h4(fs_heading). Rendering to a Swing Panel
 
-In fact, to make it really easy, both @org.xhtmlrenderer.swing.BasicPanel@, and its child @org.xhtmlrenderer.simple.XHTMLPanel@, allow you to set the document in one call. In fact, to display a page in a Swing @JFrame@, the code is very simple. Take a look at out our @SinglePageFrame@ example in the samples directory. The important stuff happens in the @run()@ method. 
+In fact, to make it really easy, both @org.xhtmlrenderer.swing.BasicPanel@, and its child @org.xhtmlrenderer.simple.XHTMLPanel@, allow you to set the document in one call. In fact, to display a page in a Swing @JFrame@, the code is very simple. Take a look at out our @SinglePageFrame@ example in the @demos/samples@ directory. The important stuff happens in the @run()@ method. 
 
 bcx.. 
 private void run(String[] args) throws Exception {
@@ -252,31 +255,13 @@ private void run(String[] args) throws Exception {
 p. The basic process is:
 
 * create a @BasicPanel@ or @XHTMLPanel@ instance
-* add it to a Swing @JScrollPane@ or an @FSScrollPane@ (unless your pages will fit without scrolling
+* add it to a Swing @JScrollPane@ or an @FSScrollPane@ (unless your pages will fit without scrolling)
 * add the panel to a container--a @JFrame@, another panel, etc.
 * call @setDocument()@ to load and render your document
 
 That's it! You can now display XHTML and CSS in your Swing applications.
 
 What about AWT or alternate GUI toolkits for Java? Our basic rendering routine writes to a "renderer". Right now we support the concept of rendering to an _output device_. We have two output device implementations: one for Java2D (essentially a canvas, or @Graphics2D@ instance) and the other for PDF (using iText). When we render to a Swing panel, we are still painting on a Java2D canvas, so in principle, you should be able to port this rendering to other 2D output surfaces. If you do, we'd like to hear from you! Just note there is no explicit technical limitation that forces you to use Swing--it's just easy, and easy to make it look good. 
-
-h4(fs_heading). Showing an About Box
-
-The AboutBox is a prefab component which displays an XHTML document and automatically scrolls it. It is primarily useful for Help->About menu items and splash screens.
-
-Here is an example of adding an about box to a menu item's action listener.
-
-bcx.. 
-import org.xhtmlrenderer.demo.aboutbox.AboutBox;
-......
-JMenuItem about = new JMenuItem("About...");
-about.addActionListener(new ActionListener() {
-    public void actionPerformed(ActionEvent evt) {
-        AboutBox ab = new AboutBox("About Flying Saucer",
-			           "demos/about/index.xhtml");
-        ab.setVisible(true);
-    }
- });
 
 p.  
  
@@ -390,9 +375,46 @@ toc. 4 4 *
 
 h4(fs_heading). The Browser
 
+The Flying Saucer Browser demo, located under @demos/browser@ is *not* intended to be a real web browser--there are lots of things it can't do. But it can show you how to use Flying Saucer in a "real" application.
+
+The Browser hosts the FS renderer (XHTMLPanel class) inside a scrollpane inside an application JFrame. You can move between pages using hyperlinks, menu items (see the list under the Demo menu), via File/Open File, or by entering a URL in the location bar. URLs in the location bar have to either http:// format, or the standard nonsense format for local files (if you aren't running in a sandbox. If you want to browse open files, use File/Open File to open one first, then use the same URL format to type in other file names.
+
+In the location bar, you can enter a directory name, and a simple page with the directory contents will show up. It's not a complete file browser, but should give you and idea of how to create XHTML on the fly.
+
+
 h4(fs_heading). The About Box
 
-h4(fs_heading). Eeze 
+The About Box demo shows how to open a single dialog box with auto-scrolling enabled--to gradually show the user the information about your app.
+
+The AboutBox is a prefab component which displays an XHTML document and automatically scrolls it. It is primarily useful for Help->About menu items and splash screens.
+
+Here is an example of adding an about box to a menu item's action listener.
+
+bcx.. 
+import org.xhtmlrenderer.demo.aboutbox.AboutBox;
+......
+JMenuItem about = new JMenuItem("About...");
+about.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent evt) {
+        AboutBox ab = new AboutBox("About Flying Saucer",
+			           "demos/about/index.xhtml");
+        ab.setVisible(true);
+    }
+ });
+
+p. If you've downloaded the source code, you can run the about box demo by using our Ant build file, and typing @ant aboutbox@ from the command line. 
+
+h4(fs_heading). DocBook
+
+Our DocBook demo, under @demos/docbook@, shows how a DocBook XML document can be rendered using only CSS, without converting it to XHTML first. This relies on an CSS which we've packaged here--there are three different versions available in our source tree; your mileage may vary with each one, as there is really no active work in this direction.
+
+To run the demo once you have our sources downloaded, just use our Ant build file and type @ant docbook@. The DocBook sample (taken from the jEdit User's Guide) is rendered in a single JFrame. The demo doesn't actually demonstrate anything new--the DocBook contains the reference to the CSS of choice (in the demo, wysiwygdocbook1.01).  
+
+h4(fs_heading). SVG
+
+Our SVG demo, @ant svg@, shows how SVG references can be embedded in an XHTML page and rendered as images at runtime. This demonstrates how a @org.xhtmlrenderer.extend.ReplacedElementFactory@ can swap any XML content in the Document with another visual element--in this case, the SVG elements are parsed using the SVGSalamander library and returned as panels to the renderer. You could try using another Java SVG library, such as Batik--but the more important principle is that you are in control of how the elements are rendered to the screen. The code is available in @demos/svg@.
+
+
 >xil>}}}
 
 
@@ -455,7 +477,11 @@ You can change the default properties for the application right in the .conf fil
 
 h4(fs_heading). Override with Second Conf File 
 
-Your override file should just re-assign values for properties originally given in xhtmlrenderer.conf. Please see the documentation in that file for a description of what each property affects. As of R3, we look for a specific override file in a specific location, e.g.
+Your override file should just re-assign values for properties originally given in xhtmlrenderer.conf. Please see the documentation in that file for a description of what each property affects. 
+
+You can override either by dropping a configuration file in a specific location in your home directory, or by specifying an override file path using the @-Dxr.conf=<filename>@ System property. If you specify the name of the override file on the command line, we do *not* look for an override file in your home directory.
+
+In your home directory, we look for a specific override file in a specific location, e.g.
 
 bc. $user.home/.flyingsaucer/local.xhtmlrenderer.conf
 
@@ -503,6 +529,8 @@ divEnd.
 h3(fs_heading). Logging
 
 The renderer uses the ${jlogging} package for logging information and exceptions at runtime. Logging behavior (output) is controlled via the main configuration file. The defaults may be overridden just like any other configuration properties.
+
+You can turn off *ALL* logging from the Flying Saucer library by setting the property @xr.util-logging.loggingEnabled@ to false; as described above, you can specify a value for this on the command line, or in a configuration override file. With this property set to false, Flying Saucer will be completely silent, but other logging configuration is not affected, meaning you can "flip the switch" for logging on or off. As of R6, we ship with logging disabled. 
 
 Please review the ${jlogging} package docs before proceeding.
 
