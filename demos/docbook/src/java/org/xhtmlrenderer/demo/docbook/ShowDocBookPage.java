@@ -82,9 +82,7 @@ public class ShowDocBookPage {
 
         XHTMLPanel panel = new XHTMLPanel();
         setAntiAlias(panel);
-
-        FSScrollPane fsp = new FSScrollPane(panel);
-        fsp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        panel.setOpaque(false);
 
         URL url = ShowDocBookPage.class.getResource("/docbook/xhtml/intro.xhtml");
         panel.setDocument(url.toExternalForm());
@@ -94,11 +92,6 @@ public class ShowDocBookPage {
         final JButton btn = new JButton(new AbstractAction("OK") {
             public void actionPerformed(ActionEvent e) {
                 aboutDlg.dispose();
-            }
-        });
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                btn.requestFocusInWindow();
             }
         });
         JPanel control = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -117,6 +110,15 @@ public class ShowDocBookPage {
         int yy = (frame.getHeight() - aboutDlg.getHeight()) / 2;
         aboutDlg.setLocation(xx, yy);
         aboutDlg.setModal(true);
-        aboutDlg.setVisible(true);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                aboutDlg.setVisible(true);
+            }
+        });
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                btn.requestFocusInWindow();
+            }
+        });
     }
 }
