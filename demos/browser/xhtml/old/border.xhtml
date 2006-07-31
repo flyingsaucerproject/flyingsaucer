@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+
+    <head>
+
+        <title>Test: CSS Borders</title>
+
+        <style type="text/css">
+
+            div {
+
+                background-color: #ccff00;
+
+                border-style: solid;
+
+                border-width: 1px;
+
+                padding: 5px;
+
+                margin: 5px;
+
+            }
+
+            div.test2 { border-style: solid; border-width: 3px; border-color: #aaffaa;}
+
+            div.test3 { border-style: solid; border-width: 1px 10px 1px 10px; border-color: red;}
+
+            div.test4 { border-style: solid; border-width: 3px; border-color: red; padding: 13px; }
+
+            div.test5 { border-style: inset; border-width: 10px; border-color: red;}
+
+            div.test6 { border-style: outset; border-width: 10px; border-color: red;}
+
+            div.test7 { border-style: ridge; border-width: 10px; border-color: red;}
+            div.test7a { border-style: groove; border-width: 10px; border-color: red;}
+            div.test7b { border-style: dashed; border-width: 10px; border-color: red;}
+
+            div.test8 { border-style: inset; border-width: 10px 20px 30px 40px; border-color: red;}
+
+            div.test9 { border-style: ridge; border-width: 10px 20px 30px 40px; border-color: red;}
+
+            div.test9a { border-style: dashed; border-width: 10px 20px 30px 40px; border-color: red;}
+
+
+
+            div.test10 { margin: 0px; }
+
+            div.test11 { margin: 20px; }
+
+            div.test12 { margin: 10px 20px 30px 40px; }
+
+
+
+            div.test20 { padding: 0px; }
+
+            div.test21 { padding: 20px; }
+
+            div.test22 { padding: 10px 20px 30px 40px; }
+
+            div.test23 { border: 4px solid red; }
+
+            div.test24 { border: outset #ff0000 20px ; }
+            
+            div.test25 { border: 1px dashed red; }
+            div.test26 { border: 1px dotted red; }
+
+            div.p1 {
+                border-width: 1px;
+                border-style: solid;
+                border-color: #000000;
+                border-bottom-color: #ff0000;
+		border-bottom-style: dashed;
+		border-bottom-width: 5px;
+                }
+            div.p2 {
+                border: 1px solid black;
+                border-bottom-color: #ff0000;
+		border-bottom-style: dashed;
+		border-bottom-width: 5px;
+                }
+        </style>
+
+    </head>
+
+    <body>
+
+
+        <h3>Border</h3>
+
+        <div>box with default borders, margins, and padding</div>
+
+        <div class="test2">box with uniform border</div>
+
+        <div class="test3">A Box with non-uniform border</div>
+
+        <div class="test4">A Box With Uniform Padding and Border</div>
+
+        <div class="test5">border = inset 10px</div>
+
+        <div class="test6">border = outset 10px</div>
+
+        <div class="test7">border = ridge 10px</div>
+
+        <div class="test7a">border = groove 10px</div>
+
+        <div class="test7b">border = dashed 10px</div>
+
+        <div class="test8">border = inset w/ uneven sides, 10,20,30,40</div>
+
+        <div class="test9">border = ridge w/ uneven sides, 10,20,30,40</div>
+
+        <div class="test9a">border = dashed w/ uneven sides, 10,20,30,40</div>
+
+        <h3>margins</h3>
+
+        <div class="test10">margins = 0</div>
+
+        <div class="test11">margins = 20px</div>
+
+        <div class="test12">margins = 10,20,30,40</div>
+
+
+        <h3>padding</h3>
+
+        <div class="test20">padding = 0</div>
+
+        <div class="test21">padding = 20px</div>
+
+        <div class="test22">padding = 10,20,30,40</div>
+
+
+        <h3>shorthand</h3>
+
+        <div class="test23">border = 4px solid red; </div>
+
+        <div class="test24">border: outset #ff0000 20px ; </div>
+
+        <div class="test25">border: 1px dashed red; </div>
+        <div class="test26">border: 1px dotted red; </div>
+
+        <h3>different styles</h3>
+        <div style="border-style: solid dotted dashed groove; border-width: 5px; border-color: red; padding: 13px;">border-style: solid dotted dashed groove; border-width: 5px; border-color: red; padding: 13px;</div>
+
+        <div style="border-style: dotted solid groove dashed; border-width: 5px; border-color: red; padding: 13px;">border-style: dotted solid groove dashed; border-width: 5px; border-color: red; padding: 13px;</div>
+
+        <div style="border-style: solid dotted dashed groove; border-width: 40px 10px 20px 30px; border-color: red; padding: 13px;">border-style: solid dotted dashed groove; border-width: 40px 10px 20px 30px; border-color: red; padding: 13px;</div>
+
+        <h3>overriding bottom color</h3>
+        <div class="p1">bottom border should be red, dashed, 5px</div>
+        <div class="p2">bottom border should be red, dashed, 5px</div>
+
+    </body>
+
+</html>
+
+
+

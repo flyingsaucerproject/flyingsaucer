@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+    <head>
+        <title>Form Test</title>
+        <link rel="stylesheet" type="text/css" href="general.css" title="Style" media="screen" />
+        <link rel="stylesheet" type="text/css" href="print.css" title="Style" media="print" />
+        <style>
+        </style>
+    </head>
+    <body>
+        
+        <p class="link left-link"><a href="report.xhtml">Previous Page</a></p>
+        <p class="link right-link"><a href="../game/index.xhtml">Next Page</a></p>
+
+        <h3>Forms</h3>
+        <p>Complete support for all HTML forms elements. You can even
+        access the underlying Swing components programmatically from your code.</p>
+        
+        <form>
+            <input type="button" value="Panic!"/> normal button<br/>
+            <input type="checkbox" value="radio" checked="checked"/> checked<br/>
+            <input name="rad" type="radio" value="radio"/>not checked<br/>
+            <input name="rad" type="radio" value="radio" checked="checked"/>checked<br/>
+            <input name="rad" type="radio" value="radio" checked="checked" disabled="disabled"/>checked and disabled<br/>
+            <select>
+                <option>option 1</option>
+                <option>option 2</option>
+                <option>option 3</option>
+            </select>
+            <select>
+                <option>option1</option>
+                <option>option 2</option>
+                <option selected="selected">pre selected</option>
+            </select>
+            empty <input type="text" value=""/><br/>
+            with value <input type="text" value="my value"/><br/>
+            empty with size = 6<input type="text" size="6"/><br/>
+            empty with maxlength = 6 <input type="text" maxlength="6"/><br/>
+            readonly = readonly <input type="text" readonly="readonly" value="can't touch this"/><br/>
+        </form>
+        
+        <h3>TextArea Test</h3>
+        <form>
+            <textarea>some text</textarea> default size<br/>
+            <textarea rows="10" cols="10"></textarea> empty with
+            rows = 10, cols = 10<br/>
+        </form>
+        
+    </body>
+        
+</html>
+

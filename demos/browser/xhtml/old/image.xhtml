@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--<!DOCTYPE html
+
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+
+    <head>
+
+        <title>Test: Images</title>
+
+        <style type="text/css">
+
+            img {
+
+                vertical-align: baseline;
+
+                margin: 5px;
+
+                border-width: 5px;
+
+                padding: 5px;
+
+                background-color: #ccffcc;
+
+                }
+
+            img.i1 { vertical-align: baseline; }
+
+            img.i2 { vertical-align: sub; }
+
+            img.i3 { vertical-align: super; }
+
+            img.i4 { vertical-align: top; }
+
+            img.i5 { vertical-align: bottom; }
+
+            p.huge { font-size: 150pt; }
+	    
+	    img.w { width: 50px; }
+	    
+	    img.h { height: 100px; }
+	    
+	    img.wh { width: 50px; height: 100px; }
+	    
+	    img.auto { width: auto; height: auto; }
+
+        </style>
+
+    </head>
+
+    <body>
+
+
+        <p> before
+            <img src="image.png" alt="test image"/>asdf
+            <img src="image.png" alt="test image"/> after
+        </p>
+
+        <p> auto-scaled
+            <img class="auto" src="image.png" alt="test image"/>, width-scaled
+            <img class="w" src="image.png" alt="test image"/>, height-scaled
+            <img class="h" src="image.png" alt="test image"/>, both-scaled
+            <img class="wh" src="image.png" alt="test image"/>
+        </p>
+
+        <p class="huge">B
+
+            <img class="i1" src="image.png" alt="test image"/>
+
+            <img class="i2" src="image.png" alt="test image"/>
+
+            <img class="i3" src="image.png" alt="test image"/>
+
+            <img class="i4" src="image.png" alt="test image"/>
+
+            <img class="i5" src="image.png" alt="test image"/>
+
+        </p>
+
+    </body>
+
+</html>
+

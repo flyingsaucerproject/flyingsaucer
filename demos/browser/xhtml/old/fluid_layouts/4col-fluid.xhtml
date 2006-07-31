@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Flying Saucer: 3 Column Fluid Layout</title>
+    <style type="text/css" media="screen">
+        html {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        body {
+            background-color: #e1ddd9;
+            font-size: 12px;
+            font-family: Verdana;
+            color: #564b47;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        p, h1, h3, pre {
+            padding: 5px 15px;
+            margin: 0px;
+        }
+
+        #left {
+            position: absolute;
+            left: 2%;
+            width: 19%;
+            background-color: #ffffff;
+        }
+
+        #content-left {
+            position: absolute;
+            left: 22%;
+            width: 28%;
+            background-color: #ffffff;
+            overflow: auto;
+        }
+
+        #content-right {
+            position: absolute;
+            left: 51%;
+            width: 28%;
+            background-color: #ffffff;
+            overflow: auto;
+        }
+
+        #right {
+            position: absolute;
+            left: 80%;
+            width: 18%;
+            background-color: #ffffff;
+            overflow: auto;
+        }
+
+        #right, #content-right, #content-left, #left {
+            border: 1px solid #564b47;
+            padding: 0px;
+            margin: 0px;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 11px;
+            text-transform: uppercase;
+            text-align: right;
+            color: #564b47;
+            background-color: #90897a;
+            padding: 5px 15px;
+            margin: 0px
+        }
+
+        /* push content below the banner header*/
+        #left, #content-left, #content-right, #right {
+            top: 25px;
+        }
+    </style>
+</head>
+
+<body>
+<h1>Flying Saucer: Layouts</h1>
+
+<div id="left">
+    <h3>
+        Menu (Left)
+    </h3>
+    <ul>
+        <li>
+            Item 1
+        </li>
+        <li>
+            Item 2
+        </li>
+        <li>
+            Item 3
+        </li>
+        <li>
+            Item 4
+        </li>
+        <li>
+            Item 5
+        </li>
+    </ul>
+    <br/>
+    <br/>
+</div>
+
+<div id="content-left">
+    <h3>
+        CONTENT (Left Block)
+    </h3>
+
+    <p>
+        Uses ideas from <b>Intensiv Station
+        Templates http://www.intensivstation.ch</b>
+    </p>
+
+    <p>
+        A 4-column fluid layout. The trick here is positioning each block
+        absolutely, but with % for left and width position. This should resize
+        fluidly, but will break at some small sizes, particularly on this
+        sample page as we have &lt;pre&gt; blocks
+    </p>
+
+
+    <p>
+        A downside of this is that vertical height is based on the content in this
+        layout, so the blocks may appear different heights, depending on the viewport
+        size.
+    </p>
+</div>
+
+<div id="content-right">
+    <h3>
+        CONTENT (Right Block)
+    </h3>
+
+    <pre>
+    #left {
+    position: absolute;
+    left: 2%;
+    width: 19%;
+    }
+
+    #content-left {
+    position: absolute;
+    left: 22%;
+    width: 28%;
+    overflow: auto;
+    }
+
+    #content-right {
+    position: absolute;
+    left: 51%;
+    width: 28%;
+    overflow: auto;
+    }
+
+    #right {
+    position: absolute;
+    left: 80%;
+    width: 18%;
+    overflow: auto;
+    }
+    </pre>
+
+</div>
+
+<div id="right">
+    <h3>
+        Menu (right)
+    </h3>
+    <ul>
+        <li>
+            Item 1
+        </li>
+        <li>
+            Item 2
+        </li>
+        <li>
+            Item 3
+        </li>
+        <li>
+            Item 4
+        </li>
+        <li>
+            Item 5
+        </li>
+    </ul>
+    <br/>
+    <br/>
+</div>
+</body>
+</html>
+

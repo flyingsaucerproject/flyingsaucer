@@ -1,0 +1,61 @@
+
+	.left-link { 
+		width: 10em; 
+		margin: 10px;
+		padding: 5px;
+		position: absolute;
+		top: 0px;
+		left: 0px; 
+		
+	}
+	
+	.right-link {
+		width: 10em; 
+		margin: 10px;
+		padding: 5px;
+		
+		position: absolute;
+		top: 0px;
+		right: 0px; 
+		text-align: right; 
+	}
+	
+	
+	.left-link, .right-link {
+		background-color: white;
+		border: 1px dotted blue;
+		font-weight: normal;
+		/*
+		font-size: 10pt;
+		text-indent: 0px;
+		*/
+	}
+	.left-link a, .right-link a {
+		font-family: sans-serif;
+		text-decoration: none;
+		font-weight: normal;
+		border: 0px solid red;
+	}
+	.left-link a:hover, .right-link a:hover {
+		border-color: black;
+		text-decoration: underline;
+	}
+	
+	.left-link:hover, .right-link:hover {
+	}
+	
+	
+	
+	body {
+		background: white;
+		padding: 20px;
+		border: 1px solid #c0c0ff;
+		margin: 10px;
+		margin-top: 50px;
+		
+		}
+		
+	html {
+		background: #efefff; 
+	}
+
