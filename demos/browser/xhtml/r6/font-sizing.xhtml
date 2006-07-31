@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+    <title>Flying Saucer: CSS Font Sizing Support</title>
+    <link rel="stylesheet" type="text/css" href="general.css" title="Style" media="screen" />
+    <link rel="stylesheet" type="text/css" href="print.css" title="Style" media="print" />
+    <style>
+      body {
+        font-family: tahoma, verdana, arial;
+      }
+
+      td, th {
+          padding: 5;
+      }
+      .label {
+          text-align: left;
+          background-color: silver; 
+          font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <p class="link left-link"><a href="demoNav:back">Previous Page</a></p>
+    <p class="link right-link"><a href="demoNav:forward">Next Page</a></p>
+    <p id="fslogo">Flying Saucer XML/CSS2 Renderer</p>
+    <span id="pagebyline">
+      <span style="font-size: xx-large">CSS</span> 
+      <span style="font-size: large">Font</span> 
+      <span style="font-size: medium">Sizing</span> 
+      <span style="font-size: xx-small">Support</span>
+    </span>
+      <br />
+      <p><b>Font sizing support includes</b>: Apart from the standard XHTML h1-h6 elements, you can also size
+      fonts using the <b>xx-small</b> through <b>xx-large</b> styling attributes, as well as proportionately-sized elements
+      using em, %, and ex.</p>
+      <br />
+      <h3>Table of Absolute versus HX Sizes</h3>
+      <table border="1" style="width: 100%">
+      <tr>
+        <th class="label" style="width: 10%; ">CSS abs-size</th>
+        <td style="width: 8%; font-size: xx-small;">xx-small</td>
+        <td style="width: 5%; font-size: x-small;">x-small</td>
+        <td style="width: 5%; font-size: small;">small</td>
+        <td style="width: 8%; font-size: medium;">medium</td>
+        <td style="width: 8%; font-size: large;">large</td>
+        <td style="width: 12%; font-size: x-large;">x-large</td>
+        <td style="width: 15%; font-size: xx-large;">xx-large</td>
+      </tr>
+      <tr>
+        <th class="label" style="width: 10%; ">HTML Headings</th>
+        <td style="width: 8%;"><h6>h6</h6></td>
+        <td style="width: 5%;">{n/a}</td>
+        <td style="width: 5%;"><h5>h5</h5></td>
+        <td style="width: 8%;"><h4>h4</h4></td>
+        <td style="width: 8%;"><h3>h3</h3></td>
+        <td style="width: 12%;"><h2>h2</h2></td>
+        <td style="width: 15%;"><h1>h1</h1></td>
+      </tr>
+      <tr>
+        <th class="label" style="width: 10%; ">HTML Font</th>
+        <td style="width: 8%;">1</td>
+        <td style="width: 5%;">{n/a}</td>
+        <td style="width: 5%;">2</td>
+        <td style="width: 8%;">3</td>
+        <td style="width: 8%;">4</td>
+        <td style="width: 12%;">5</td>
+        <td style="width: 15%;">6</td>
+      </tr>
+      </table>
+
+      <h3>Proportional Sizing using EM Square, EX, and %</h3>
+      <table border="1" style="width: 100%">
+      <tr>
+      <td width="33%">
+      <p style="font-size: 0.6em">0.6em</p>
+      <p style="font-size: 0.7em">0.7em</p>
+      <p style="font-size: 0.8em">0.8em</p>
+      <p style="font-size: 0.9em">0.9em</p>
+      <p style="font-size: 1.0em">1.0em</p>
+      <p style="font-size: 1.1em">1.1em</p>
+      <p style="font-size: 1.2em">1.2em</p>
+      <p style="font-size: 1.3em">1.3em</p>
+      <p style="font-size: 1.4em">1.4em</p>
+      <p style="font-size: 1.5em">1.5em</p>
+      <p style="font-size: 1.6em">1.6em</p>
+      <p style="font-size: 1.7em">1.7em</p>
+      <p style="font-size: 1.8em">1.8em</p>
+      <p style="font-size: 1.9em">1.9em</p>
+      <p style="font-size: 2.0em">2.0em</p>
+      <p style="font-size: 3.0em">3.0em</p>
+      </td>
+      <td width="33%">
+      <p style="font-size: 0.6ex">0.6ex</p>
+      <p style="font-size: 0.7ex">0.7ex</p>
+      <p style="font-size: 0.8ex">0.8ex</p>
+      <p style="font-size: 0.9ex">0.9ex</p>
+      <p style="font-size: 1.0ex">1.0ex</p>
+      <p style="font-size: 1.1ex">1.1ex</p>
+      <p style="font-size: 1.2ex">1.2ex</p>
+      <p style="font-size: 1.3ex">1.3ex</p>
+      <p style="font-size: 1.4ex">1.4ex</p>
+      <p style="font-size: 1.5ex">1.5ex</p>
+      <p style="font-size: 1.6ex">1.6ex</p>
+      <p style="font-size: 1.7ex">1.7ex</p>
+      <p style="font-size: 1.8ex">1.8ex</p>
+      <p style="font-size: 1.9ex">1.9ex</p>
+      <p style="font-size: 2.0ex">2.0ex</p>
+      <p style="font-size: 3.0ex">3.0ex</p>
+      </td>
+      <td width="33%">
+      <p style="font-size: 60%">60%</p>
+      <p style="font-size: 70%">70%</p>
+      <p style="font-size: 80%">80%</p>
+      <p style="font-size: 90%">90%</p>
+      <p style="font-size: 100%">100%</p>
+      <p style="font-size: 110%">110%</p>
+      <p style="font-size: 120%">120%</p>
+      <p style="font-size: 130%">130%</p>
+      <p style="font-size: 140%">140%</p>
+      <p style="font-size: 150%">150%</p>
+      <p style="font-size: 160%">160%</p>
+      <p style="font-size: 170%">170%</p>
+      <p style="font-size: 180%">180%</p>
+      <p style="font-size: 190%">190%</p>
+      <p style="font-size: 200%">200%</p>
+      <p style="font-size: 300%">300%</p>
+      </td>
+      </tr>
+      </table>
+  </body>
+</html>

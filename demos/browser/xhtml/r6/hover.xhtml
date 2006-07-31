@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Flying Saucer: CSS :hover Support</title>
+    <link rel="stylesheet" type="text/css" href="general.css" title="Style" media="screen" />
+    <link rel="stylesheet" type="text/css" href="print.css" title="Style" media="print" />
+    <style type="text/css">
+        body { font-size: 14pt; font-family: Verdana, Arial, sans-serif; }
+        
+        ul { padding: 1em; }
+        li { padding: 10px; font-weight: bold; font-size: 20pt; 
+            list-style-type: none;}
+        li a { 
+            color: black; 
+            background-color: #cccccc; 
+            border: 1px solid #444444;
+            padding: 5px;
+            text-decoration: none;
+            }
+        li a:hover { color: #4444ff; background-color: #ccccff; border-color: #4444ff}
+        
+        p a { text-decoration: none; color: #884444; }
+        p a:hover { text-decoration: underline; color: #ff0000; }
+        .color:hover { color: green; text-decoration: none; }
+        .border { border: 2px solid white; padding: 0px; }
+        .border:hover { border: 2px solid blue; text-decoration: none;  }
+        .back:hover { background-color: #ddddff; text-decoration: none;  }
+        .decoration:hover { text-decoration: line-through; }
+        
+        div.hover-div { border: 4px solid gray; }
+        div.hover-div:hover { border-color: blue; background-color: #ddddff; }
+    </style>
+  </head>
+  <body>
+    <p class="link left-link"><a href="demoNav:back">Previous Page</a></p>
+    <p class="link right-link"><a href="demoNav:forward">Next Page</a></p>
+    <p id="fslogo">Flying Saucer XML/CSS2 Renderer</p>
+    <span id="pagebyline">
+      CSS :hover Support 
+    </span>
+      <br />
+      <p><b>:hover support includes</b>: Changing the colors, backgrounds, text-decoration and other styling attributes
+      when a user hovers over an element.</p>
+    
+      <ul>
+          <li><a href="#">A set of</a></li>
+          <li><a href="#">cool hovered</a></li>
+          <li><a href="#">list items</a></li>
+      </ul>
+      
+      <p>In <b>Flying Saucer</b>
+      you can create <a href="#">hovered</a> elements that
+      change their <a href="#" class="color">colors</a>, 
+      <a href="#" class="border">borders</a>, 
+      <a href="#" class="back">backgrounds</a>, and
+      <a href="#" class="decoration">text-decoration</a>.
+      </p>
+      
+      <p>You
+      can even do a hover on a block element</p>
+      
+      <div class="hover-div">This is a hover div</div>
+    </body>
+</html>

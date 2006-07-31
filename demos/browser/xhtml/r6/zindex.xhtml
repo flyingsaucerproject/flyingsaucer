@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+    <title>Flying Saucer: CSS Z-index Support</title>
+	<link rel="stylesheet" type="text/css" href="general.css" title="Style" media="screen" />
+    <link rel="stylesheet" type="text/css" href="print.css" title="Style" media="print" />
+
+<style>
+	body {
+		font-family: verdana;
+		height: 700;
+	}
+	div.zlayer {
+		position: absolute;
+		border: 1px solid black; 
+		width: 50; 
+		height: 50; 
+	}
+
+</style>
+</head>
+
+<body>
+    <p class="link left-link"><a href="demoNav:back">Previous Page</a></p>
+    <p class="link right-link"><a href="demoNav:forward">Next Page</a></p>
+	<p id="fslogo">Flying Saucer XML/CSS2 Renderer</p>
+	<span id="pagebyline">CSS Z-index Support</span><br />
+    <p><b>Z-index support includes</b>: assigning the z-index to any block-level element. In this example,
+	we have a series of divisions, each with a colored background, with a decreasing index so that each
+	subsequent element shows up on top of the previous one. There is then a fixed element in the middle of
+	the page which has z-index of 0, and shows up behind all the others. If you resize the page to enable
+	the scrollbars, you can scroll and watch the fixed-position divisions scroll nicely <em>behind</em>
+	the colored boxes.</p>
+	<div class="zlayer" style="background-color: aqua; top: 275; left: 25; z-index: 200;" />
+	<div class="zlayer" style="background-color: black; top: 300; left: 50; z-index: 195;" />
+	<div class="zlayer" style="background-color: blue; top: 325; left: 75; z-index: 190;" />
+	<div class="zlayer" style="background-color: fuchsia; top: 350; left: 100; z-index: 185;" />
+	<div class="zlayer" style="background-color: gray; top: 375; left: 125; z-index: 180;" />
+	<div class="zlayer" style="background-color: green; top: 400; left: 150; z-index: 175;" />
+	<div class="zlayer" style="background-color: lime; top: 425; left: 175; z-index: 170;" />
+	<div class="zlayer" style="background-color: maroon; top: 450; left: 200; z-index: 165;" />
+	<div class="zlayer" style="background-color: navy; top: 475; left: 225; z-index: 160;" />
+	<div class="zlayer" style="background-color: olive; top: 500; left: 250; z-index: 155;" />
+	<div class="zlayer" style="background-color: purple; top: 525; left: 275; z-index: 150;" />
+	<div class="zlayer" style="background-color: red; top: 550; left: 300; z-index: 145;" />
+	<div class="zlayer" style="background-color: silver; top: 575; left: 325; z-index: 140;" />
+	<div class="zlayer" style="background-color: teal; top: 600; left: 350; z-index: 135;" />
+	<div class="zlayer" style="background-color: white; top: 625; left: 375; z-index: 130;" />
+	<div class="zlayer" style="background-color: yellow; top: 650; left: 400; z-index: 125;" />
+
+	<div class="zlayer" style="position: fixed; background-color: gray; top: 450; left: 25; width: 400; height: 20; z-index: 0;" />
+	<div class="zlayer" style="border: 0px; text-align: center; position: fixed; background-color: white; top: 500; left: 25; width: 400; height: 20; z-index: 0;">This is behind</div>
+	<div class="zlayer" style="position: fixed; background-color: gray; top: 550; left: 25; width: 400; height: 20; z-index: 0;" />
+
+</body>
+</html>
