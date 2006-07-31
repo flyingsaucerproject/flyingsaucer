@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/" href="browser.jnlp">
+<jnlp codebase="http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/browser/" href="browser.jnlp">
     <information>
         <title>XHTML Browser Demo</title>
         <vendor>Flying Saucer</vendor>
@@ -10,17 +10,17 @@
         renderer. This demo is a simple webbrowser that can load XHTML from the
         web or it's internal demo files.</description>
         <description kind="tooltip">FS Demo</description>
-        <icon kind="splash" href="flyingsaucer.png"/>
-        <icon href="flyingsaucer.png"/>
+        <icon kind="splash" href="../flyingsaucer.png"/>
+        <icon href="../flyingsaucer.png"/>
     </information>
     <resources>
         <j2se version="1.4+"/>
         <jar href="browser.jar"/>
-        <jar href="looks-2.0.4.jar"/>
-        <jar href="core-renderer.jar"/>
-      	<jar href="cssparser-0-9-4-fs.jar"/>
-        <jar href="itext-paulo-155.jar"/>
-        <jar href="minium.jar"/>
+        <jar href="../looks-2.0.4.jar"/>
+        <jar href="../core-renderer.jar"/>
+      	<jar href="../cssparser-0-9-4-fs.jar"/>
+        <jar href="../itext-paulo-155.jar"/>
+        <jar href="../minium.jar"/>
     </resources>
     <application-desc main-class="org.xhtmlrenderer.demo.browser.BrowserStartup"/>
 </jnlp>
