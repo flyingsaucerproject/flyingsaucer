@@ -1,0 +1,379 @@
+/*
+
+MozBook.css - by David Horton
+
+MozBook is a CSS generated approximation of formatted DocBook XML
+for use with the Mozilla browser.
+
+
+How to use MozBook-
+
+MozBook can be used by putting the following line in a Docbook XML
+document:
+
+<?xml-stylesheet href="MozBook.css" type="text/css"?>
+
+just below <?xml version="1.0" encoding="ISO-8859-1"?>
+
+The XML file must then be viewed in the Mozilla web browser to see
+the results of the CSS styling.
+
+
+Why use MozBook-
+
+Normally one would use an XSL stylesheet to transform a DocBook
+XML document into an HTML and then display the result in a web
+browser.  MozBook allows styled DocBook XML to be displayed directly
+in the Mozilla browser without the need for the intermediate XSL
+transformation.
+
+The purpose of MozBook is two-fold:
+
+1.  Hopefully MozBook will provide an easy transition to DocBook
+    XML for those who already possess the mad HTML skillz.
+
+2.  Also MozBook may also help to speed document development for
+    those already familiar with DocBook XML by providing a sort of
+    poor man's WYSIWYG tool.
+
+
+Limitations of MozBook-
+
+* MozBook can only be used with the Mozilla browser and possibly
+  with Mozilla derivatives.
+
+* MozBook cannot make hypertext links out of <ulink> tags.  Link
+  URL's are displayed in brackets instead.
+
+* MozBook cannot currently do automatic section numbering.  This
+  was due to a bug in the Mozilla browser at the time this
+  stylesheet was created.
+
+* MozBook is sensitive to the position of elements within an XML
+  document.  This goes against the idea that an element's position
+  in the DocBook source should not dictate its position in the
+  output.  In other words, just because <bibliography> is at the
+  top of the XML document does not mean it should be displayed
+  there.  Generally bibliographies go at the end of a document.
+  True DocBook parsers handle this automatically, MozBook cannot.
+
+
+How MozBook was created-
+
+The DocBook manual [http://www.docbook.org/tdg/en/html/docbook.html]
+has an element reference section that gives some detail on typical
+styling of various DocBook tags.  For example, the processing 
+expectations listed for the <note> tag say that <note> is displayed
+as a block and often has the word "Note:" associated with it.  This
+abstract styling information is translated into concrete CSS markup.
+Similarly styled tags are grouped together and the cascading aspect
+of CSS is leveraged so not every tag has to be defined in order to
+achieve a nicely styled look.
+
+*/
+
+
+
+/* Top-level elements */
+
+book
+
+{
+  display: block;
+  /* Do not define global styling here.  See component level elements. */
+}
+
+
+
+
+/* Top-level meta-information */
+
+abstract, para
+
+{
+  display: block;
+  margin-bottom: 12pt;
+  margin-top: 12pt;
+}
+
+abstract:before
+
+{
+  content: "Abstract";
+  font-weight: bold;
+  margin-bottom: 12pt;
+}
+
+book>title
+
+{
+  display: block;
+  font-size: 24pt;
+  font-family: sans-serif;
+  font-weight: bold;
+  margin: 48pt;
+  text-align: center;
+}
+
+bookinfo
+
+{
+  background-color: lightsteelblue;
+  border: 1px solid black;
+  display: block;
+  font-family: sans-serif;
+  font-size: 12pt;
+  margin: 48pt;
+  padding: 3px;
+}
+
+author, address, revision
+
+{
+  display: block;
+}
+
+author:before
+
+{
+  content: "Author";
+  display: block;
+  font-weight: bold;
+  margin-bottom: 12pt;
+}
+
+revhistory
+
+{
+  display: block;
+  margin-bottom: 12pt;
+  margin-top: 12pt;
+}
+
+revhistory:before
+
+{
+  content: "Revision History";
+  display: block;
+  font-weight: bold;
+  margin-bottom: 12pt;
+}
+
+revremark
+
+{
+  display: block;
+  margin-left: 24pt;
+}
+
+
+
+/* Divisions */
+
+part, reference {
+  display: block;
+  /* Do not define global styling here.  See component level elements */
+}
+
+
+
+/* Components - the chapters and chapter-like elements
+
+   Components like chapter, article, appendix and so on may often stand
+   alone as top level elements of a physical file.  Therefore the global
+   styling of fonts and margins is defined at this level rather than at
+   the the higher levels of book or part.
+
+*/
+
+appendix, article, bibliography, chapter, glossary, preface
+
+{
+  display: block;
+  font-family: sans-serif;
+  font-size: 12pt;
+  margin: 48pt;
+}
+
+
+appendix>title,article>title, bibliography>title, chapter>title, glossary>title, preface>title
+
+{
+  display: block;
+  font-size: 24pt;
+  font-weight: bold;
+  margin-bottom: 24pt;
+  text-align: center;
+}
+
+
+
+/* Sections */
+
+sect1, sect2, sect3, sect4, sect5, section
+
+{
+  display: block;
+}
+
+
+sect1>title
+
+{
+  display: block;
+  font-size: 24pt;
+  margin-bottom: 12pt;
+  padding-top: 24pt;
+}
+
+sect2>title
+
+{
+  display: block;
+  font-size: 20pt;
+  margin-bottom: 12pt;
+  padding-top: 24pt;
+}
+
+sect3>title
+
+{
+  display: block;
+  font-size: 16pt;
+  margin-bottom: 12pt;
+  padding-top: 24pt;
+}
+
+sect4>title
+
+{
+  display: block;
+  font-size: 14pt;
+  margin-bottom: 12pt;
+  padding-top: 24pt;
+}
+
+sect5>title
+
+{
+  display: block;
+  font-size: 12pt;
+  margin-bottom: 12pt;
+  padding-top: 24pt;
+}
+
+
+
+
+/* Block elements */
+
+/* Paragraphs and paragraph like elements */
+
+blockquote
+
+{
+  display: block;
+  margin-left: 24pt;
+  margin-right: 24pt;
+}
+
+note
+
+{
+  border: 1px solid black;
+  display: block;
+  margin-bottom: 12pt;
+  margin-left: 24pt;
+  margin-right: 24pt;
+  padding: 6pt;
+}
+
+note:before
+
+{
+  content: "Note: ";
+  font-weight: bold;
+}
+
+para
+
+{
+  display: block;
+  margin-bottom: 12pt;
+  margin-top: 12pt;
+}
+
+/* Lists */
+
+listitem
+
+{
+  display: list-item;
+  margin-left: 24pt;
+}
+
+itemizedlist
+
+{
+  list-style: disc outside none;
+}
+
+orderedlist
+
+{
+  /* Unfortunately this is a bulleted list rather than numbered
+     because of CSS2 counters not being fully implemented in Mozilla */
+  list-style: disc outside none;
+}
+
+/* Pre-formatted block elements */
+
+programlisting, screen
+
+{
+  background-color: lightgrey;
+  display: block;
+  font-family: monospace;
+  font-size: 10pt;
+  margin-left: 24pt;
+  margin-bottom: 12pt;
+  margin-top: 12pt;
+  padding: 3pt;
+  white-space: pre;
+}
+
+
+
+/* Inline elements */
+
+command
+
+{
+  font-family: monospace;
+  font-size: 10pt;
+  font-weight: bold;
+}
+
+emphasis
+
+{
+  font-weight: bold;
+
+}
+
+filename
+
+{
+  font-family: monospace;
+  font-size: 10pt;
+}
+
+ulink:after
+
+/* Links don't actually work, so the url is printed in brackets. */
+
+{
+  content: " [" attr(url) "]";
+  font-size: 10pt;
+}
+
