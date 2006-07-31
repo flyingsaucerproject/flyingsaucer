@@ -56,7 +56,8 @@
   <property name="src.demo.docbook.dir" location="demos/docbook"/>
   <property name="src.demo.splash.dir" location="demos/splash"/>
   <property name="src.about.xhtml.dir" location="demos/about/xhtml"/>
-	
+  <property name="www.dir" location="www"/>
+
   <property name="nb_profile" location="nb_profile"/>
 	
 	<!-- Compiler flags -->
@@ -126,24 +127,23 @@
     <include name="org/xhtmlrenderer/simple/**"/>
   </patternset>
 
+    <!--include name="**/*.css"/>
+        <include name="*.xhtml"/>
+        <include name="*.gif"/>
+        <include name="*.jpg"/>
+        <include name="*.png"/>
+        <include name="splash/**"/>
+        <include name="about/**"/>
+        <include name="alice/**"/>
+        <include name="game/**"/>
+        <include name="fonts/**"/>
+        <include name="layout/**/*.xhtml"/ -->
+
   <patternset id="xhtml-files">
-    <include name="**/*.css"/>
-    <include name="*.xhtml"/>
-    <include name="*.gif"/>
-    <include name="*.jpg"/>
-    <include name="*.png"/>
-    <include name="splash/**"/>
-    <include name="about/**"/>
-    <include name="alice/**"/>
-    <include name="new/**"/>
-    <include name="game/**"/>
+    <include name="r6/**"/>
     <include name="fonts/**"/>
-    <include name="layout/**/*.xhtml"/>
-    <!--
-    <exclude name="*.xhtml"/>
-    -->
   </patternset>
-      
+
   <!-- zip file reference for all XHTML in the demos directory, and supporting files -->
   <zipfileset id="xhtml.demos" dir="${src.demo.xhtml.dir}" prefix="demos/">
     <patternset refid="xhtml-files"/>
@@ -164,6 +164,7 @@
         <exclude name="dtd/*"/>
         <include name="wysiwygdocbook1.01/**"/>
         <include name="docbook-css-0.4/**"/>
+        <include name="MozBook/**"/>
     </zipfileset>
 
   <zipfileset id="xhtml.about.demos" dir="${src.about.xhtml.dir}" prefix="demos/">
