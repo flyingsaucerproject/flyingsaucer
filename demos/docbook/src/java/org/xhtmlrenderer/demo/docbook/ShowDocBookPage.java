@@ -19,7 +19,7 @@ public class ShowDocBookPage {
     public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                String uri = "/xml/plugin-implement.xml";
+                String uri = "/docbook/xml/plugin-implement.xml";
                 if (args.length > 0) uri = args[0];
 
                 new ShowDocBookPage().run(uri);
