@@ -24,7 +24,6 @@ import org.xhtmlrenderer.demo.browser.actions.FontSizeAction;
 import org.xhtmlrenderer.demo.browser.actions.GenerateDiffAction;
 import org.xhtmlrenderer.demo.browser.actions.PrintAction;
 import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Uu;
 
@@ -299,14 +298,12 @@ public class BrowserActions {
         aboutDlg.setSize(new Dimension(500, 450));
 
         XHTMLPanel panel = new XHTMLPanel(new PanelManager());
-
-        FSScrollPane fsp = new FSScrollPane(panel);
-        fsp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        panel.setOpaque(false);
 
         panel.setDocument("demo:/demos/r6/about.xhtml");
 
         JPanel outer = new JPanel(new BorderLayout());
-        outer.add(fsp, BorderLayout.CENTER);
+        outer.add(panel, BorderLayout.CENTER);
         final JButton btn = new JButton(new AbstractAction("OK") {
             public void actionPerformed(ActionEvent e) {
                 aboutDlg.dispose();
@@ -408,6 +405,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.24  2006/07/31 15:29:22  pdoubleya
+ * Remove scrollb, make pane transp, remove external ref to XML dtd.
+ *
  * Revision 1.23  2006/07/31 14:20:54  pdoubleya
  * Bunch of cleanups and fixes. Now using a toolbar for actions, added Home button, next/prev navigation actions to facilitate demo file browsing, loading demo pages from a list, about dlg and link to user's manual.
  *
