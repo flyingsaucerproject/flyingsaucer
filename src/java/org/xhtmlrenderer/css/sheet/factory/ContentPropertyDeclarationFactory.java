@@ -56,7 +56,7 @@ public class ContentPropertyDeclarationFactory extends AbstractPropertyDeclarati
         }
         pos.deleteCharAt(pos.length() - suffix.length());// remove ,spc
 
-        FSCssValue fsCssValue = new FSCssValue(primVals[0], pos.toString().trim());
+        FSCssValue fsCssValue = new FSCssValue(primVals[0], pos.toString());
         List declarations = new ArrayList(1);
         declarations.add(newPropertyDeclaration(cssName, fsCssValue, origin, important));
         return declarations.iterator();
