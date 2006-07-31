@@ -19,7 +19,13 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import org.xhtmlrenderer.util.GeneralUtil;
+
 import java.io.File;
+import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
+import java.util.Date;
 
 
 /**
@@ -40,10 +46,11 @@ public class DirectoryLister {
 
         sb.append("<html>");
         sb.append("<head>");
-        sb.append("<title>Directory listing of ");
+        sb.append("<title>Directory listing for ");
         sb.append(file.getPath());
         sb.append("</title>");
         sb.append("<style>");
+        sb.append("body { font-family: monospaced; }");
         sb.append("ul { background-color: #ddffdd; }");
         sb.append("li { list-style-type: none; }");
         sb.append("a { text-decoration: none; }");
@@ -52,25 +59,55 @@ public class DirectoryLister {
         sb.append("</style>");
         sb.append("</head>");
         sb.append("<body>");
-        sb.append("<p>the contents of ");
+        sb.append("<h2>Index of ");
         sb.append(file.toString());
-        sb.append(" are:</p>");
+        sb.append("</h2>");
+        sb.append("<hr />");
 
         if (file.isDirectory()) {
-            sb.append("<ul>");
-            File[] files = file.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                sb.append("<li>");
-                if (files[i].isDirectory()) {
-                    sb.append("<a class='dir' href='" + files[i].getAbsolutePath() + "'>" + files[i].getName() + "</a>");
-                } else {
-                    sb.append("<a class='file' href='" + files[i].getAbsolutePath() + "'>" + files[i].getName() + "</a>");
+            String loc = null;
+            try {
+                File parent = file.getParentFile();
+                if ( parent != null ) {
+                    loc = GeneralUtil.htmlEscapeSpace(file.getParentFile().toURL().toExternalForm()).toString();
+                    sb.append("<a class='dir' href='" + loc + "'>Up to higher level directory</a>");
                 }
-                sb.append("</li>");
+            } catch (MalformedURLException e) {
+                // skip
             }
-            sb.append("</ul>");
+            sb.append("<table style='width: 75%'>");
+            File[] files = file.listFiles();
+            String cls = "";
+            String img = "";
+            for (int i = 0; i < files.length; i++) {
+                File f = files[i];
+                if ( f.isHidden() ) continue;
+                long len = f.length();
+                String lenDesc = ( len > 1024 ? new DecimalFormat("#,###KB").format(len / 1024) : "");
+                String lastMod = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a").format(new Date(f.lastModified()));
+                sb.append("<tr>");
+                if (files[i].isDirectory()) {
+                    cls = "dir";
+                } else {
+                    cls = "file";
+                }
+                try {
+                    loc = GeneralUtil.htmlEscapeSpace(files[i].toURL().toExternalForm()).toString();
+                    sb.append("<td><a class='" + cls + "' href='" + loc + "'>" +
+                            files[i].getName() +
+                            "</a></td>" +
+                            "<td>" + lenDesc + "</td>" +
+                            "<td>" + lastMod + "</td>"
+                    );
+                } catch (MalformedURLException e) {
+                    sb.append(files[i].getAbsolutePath());
+                }
+                sb.append("</tr>");
+            }
+            sb.append("</table>");
         }
 
+        sb.append("<hr />");
         sb.append("</body></html>");
 
         return sb.toString();
@@ -82,6 +119,9 @@ public class DirectoryLister {
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2006/07/31 14:20:54  pdoubleya
+ * Bunch of cleanups and fixes. Now using a toolbar for actions, added Home button, next/prev navigation actions to facilitate demo file browsing, loading demo pages from a list, about dlg and link to user's manual.
+ *
  * Revision 1.8  2005/06/25 15:33:44  tobega
  * fixed Directory listings in browser
  *

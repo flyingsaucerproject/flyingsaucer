@@ -25,20 +25,17 @@ import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.GraphicsUtil;
+import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.GeneralUtil;
 import org.xml.sax.InputSource;
 
 import javax.imageio.ImageIO;
 import javax.xml.transform.sax.SAXSource;
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
-import org.xhtmlrenderer.util.Uu;
 
 
 /**
@@ -74,7 +71,7 @@ public class PanelManager implements UserAgentCallback {
         } catch (MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
         } catch (FileNotFoundException e11) {
-                XRLog.exception("Can't load CSS from URI (not found): " + uri);
+            XRLog.exception("Can't load CSS from URI (not found): " + uri);
         } catch (IOException e) {
             XRLog.exception("IO problem for " + uri, e);
         }
@@ -122,9 +119,14 @@ public class PanelManager implements UserAgentCallback {
         if (uri != null && uri.startsWith("file:")) {
             File file = null;
             try {
-                file = new File(new URI(uri));
-            } catch (URISyntaxException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                StringBuffer sbURI = GeneralUtil.htmlEscapeSpace(uri);
+
+                XRLog.general("Encoded URI: " + sbURI);
+                file = new File(new URI(sbURI.toString()));
+            } catch (URISyntaxException
+                    e) {
+                XRLog.exception("Invalid file URI " + uri, e);
+                return getNotFoundDocument(uri);
             }
             if (file.isDirectory()) {
                 String dirlist = DirectoryLister.list(file);
@@ -152,19 +154,32 @@ public class PanelManager implements UserAgentCallback {
             XRLog.exception("IO problem for " + uri, e);
         }
         if (xr == null) {
-            String notFound = "<h1>Document not found</h1>";
-            xr = XMLResource.load(new StringReader(notFound));
+            xr = getNotFoundDocument(uri);
         }
         return xr;
     }
 
-    public boolean isVisited(String uri) {
+    private XMLResource getNotFoundDocument
+            (String
+                    uri) {
+        XMLResource xr;
+        String notFound = "<html><h1>Document not found</h1><p>Could not access URI <pre>" + uri + "</pre></p></html>";
+        System.out.println(notFound);
+        xr = XMLResource.load(new StringReader(notFound));
+        return xr;
+    }
+
+    public boolean isVisited
+            (String
+                    uri) {
         if (uri == null) return false;
         uri = resolveURI(uri);
         return history.contains(uri);
     }
 
-    public void setBaseURL(String url) {
+    public void setBaseURL (String url) {
+        if(baseUrl !=null &&  baseUrl.startsWith("error:")) baseUrl = null;
+        
         baseUrl = resolveURI(url);
         if (baseUrl == null) baseUrl = "error:FileNotFound";
         //setBaseURL is called by view when document is loaded
@@ -177,13 +192,23 @@ public class PanelManager implements UserAgentCallback {
         history.add(index, baseUrl);
     }
 
-    public String resolveURI(String uri) {
+    public String resolveURI
+            (String
+                    uri) {
         URL ref = null;
         if (uri == null) return baseUrl;
         if (uri.trim().equals("")) return baseUrl;//jar URLs don't resolve this right
         if (uri.startsWith("demo:")) {
             DemoMarker marker = new DemoMarker();
             String short_url = uri.substring(5);
+            if (!short_url.startsWith("/")) {
+                short_url = "/" + short_url;
+            }
+            ref = marker.getClass().getResource(short_url);
+            Uu.p("ref = " + ref);
+        } else if (uri.startsWith("demoNav:")) {
+            DemoMarker marker = new DemoMarker();
+            String short_url = uri.substring("demoNav:".length());
             if (!short_url.startsWith("/")) {
                 short_url = "/" + short_url;
             }
@@ -209,22 +234,26 @@ public class PanelManager implements UserAgentCallback {
             return ref.toExternalForm();
     }
 
-    public String getBaseURL() {
+    public String getBaseURL
+            () {
         return baseUrl;
     }
 
 
-    public String getForward() {
+    public String getForward
+            () {
         index++;
         return (String) history.get(index);
     }
 
-    public String getBack() {
+    public String getBack
+            () {
         index--;
         return (String) history.get(index);
     }
 
-    public boolean hasForward() {
+    public boolean hasForward
+            () {
         if (index + 1 < history.size() && index >= 0) {
             return true;
         } else {
@@ -232,7 +261,8 @@ public class PanelManager implements UserAgentCallback {
         }
     }
 
-    public boolean hasBack() {
+    public boolean hasBack
+            () {
         if (index >= 0) {
             return true;
         } else {

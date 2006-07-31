@@ -28,6 +28,8 @@ import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,6 +57,10 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Field
      */
     JButton reload;
+    /**
+     * Description of the Field
+     */
+    JButton goHome;
     /**
      * Description of the Field
      */
@@ -100,6 +106,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     public static Logger logger = Logger.getLogger("app.browser");
 
     private PanelManager manager;
+    private JButton goToPage;
+    public JToolBar toolbar;
 
     /**
      * Constructor for the BrowserPanel object
@@ -116,18 +124,64 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
     /**
      * Description of the Method
+     * @param startPage
      */
-    public void init() {
+    public void init(String startPage) {
         forward = new JButton();
         backward = new JButton();
         stop = new JButton();
         reload = new JButton();
+        goToPage = new JButton();
+        goHome = new JButton();
+
         url = new JTextField();
+        url.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                super.focusGained(e);
+                url.selectAll();
+            }
+
+            public void focusLost(FocusEvent e) {
+                super.focusLost(e);
+                url.select(0, 0);
+            }
+        });
+
+
         manager = new PanelManager();
         view = new XHTMLPanel(manager);
         scroll = new FSScrollPane(view);
         print_preview = new JButton();
+        print_preview.setRolloverEnabled(true);
 
+        loadCustomFonts();
+
+        view.setErrorHandler(root.error_handler);
+        status = new BrowserStatus();
+        status.init();
+
+        initToolbar();
+
+        int text_width = 200;
+        view.setPreferredSize(new Dimension(text_width, text_width));
+
+        setLayout(new BorderLayout());
+        this.add(scroll, BorderLayout.CENTER);
+    }
+
+    private void initToolbar() {
+        toolbar = new JToolBar();
+        toolbar.setRollover(true);
+        toolbar.add(backward);
+        toolbar.add(forward);
+        toolbar.add(reload);
+        toolbar.add(goHome);
+        toolbar.add(url);
+        toolbar.add(goToPage);
+        toolbar.add(print_preview);
+    }
+
+    private void loadCustomFonts() {
         SharedContext rc = view.getSharedContext();
         try {
             rc.setFontMapping("Fuzz", Font.createFont(Font.TRUETYPE_FONT,
@@ -135,13 +189,6 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         } catch (Exception ex) {
             Uu.p(ex);
         }
-        view.setErrorHandler(root.error_handler);
-        status = new BrowserStatus();
-        status.init();
-
-        int text_width = 200;
-        view.setPreferredSize(new Dimension(text_width, text_width));
-
     }
 
     /**
@@ -155,26 +202,29 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         c.gridx = 0;
         c.gridy = 0;
         c.weightx = c.weighty = 0.0;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        gbl.setConstraints(toolbar, c);
+        add(toolbar);
+
+        //c.gridx = 0;
+        c.gridx++;
+        c.gridy++;
+        c.weightx = c.weighty = 0.0;
+        c.insets = new Insets(5, 0, 5, 5);
         gbl.setConstraints(backward, c);
         add(backward);
 
         c.gridx++;
         gbl.setConstraints(forward, c);
         add(forward);
-        
+
         /* c.gridx++;
-        gbl.setConstraints(stop, c);
-        add(stop); */
-        
+       gbl.setConstraints(stop, c);
+       add(stop); */
+
         c.gridx++;
         gbl.setConstraints(reload, c);
         add(reload);
-
-        c.gridx++;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 10.0;
-        gbl.setConstraints(url, c);
-        add(url);
 
         c.gridx++;
         c.fill = GridBagConstraints.NONE;
@@ -182,8 +232,27 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         gbl.setConstraints(print_preview, c);
         add(print_preview);
 
+        c.gridx++;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.ipadx = 5;
+        c.ipady = 5;
+        c.weightx = 10.0;
+        c.insets = new Insets(5, 0, 5, 0);
+        gbl.setConstraints(url, c);
+        url.setBorder(BorderFactory.createLoweredBevelBorder());
+        add(url);
+
+        c.gridx++;
+        c.fill = GridBagConstraints.NONE;
+        c.weightx = c.weighty = 0.0;
+        c.insets = new Insets(0, 5, 0, 0);
+        gbl.setConstraints(goToPage, c);
+        add(goToPage);
+
         c.gridx = 0;
         c.gridy++;
+        c.ipadx = 0;
+        c.ipady = 0;
         c.fill = GridBagConstraints.BOTH;
         c.gridwidth = 7;
         c.weightx = c.weighty = 10.0;
@@ -203,11 +272,20 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Method
      */
     public void createActions() {
+        // set text to "" to avoid showing action text in button--
+        // we only want it in menu items
         backward.setAction(root.actions.backward);
+        backward.setText("");
         forward.setAction(root.actions.forward);
+        forward.setText("");
         reload.setAction(root.actions.reload);
+        reload.setText("");
+        goHome.setAction(root.actions.goHome);
+        goHome.setText("");
         print_preview.setAction(root.actions.print_preview);
+        print_preview.setText("");
         url.setAction(root.actions.load);
+        goToPage.setAction(root.actions.goToPage);
         updateButtons();
     }
 
@@ -246,40 +324,43 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * @param url_text PARAM
      */
     //TODO: make this part of an implementation of UserAgentCallback instead
-    public void loadPage(String url_text) {
+    public void loadPage(final String url_text) {
         try {
-
             logger.info("Loading Page: " + url_text);
             view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             view.setDocument(url_text);
-            view.addDocumentListener(this);
+            view.addDocumentListener(BrowserPanel.this);
+
             updateButtons();
 
             setStatus("Successfully loaded: " + url_text);
+
             if (listener != null) {
                 listener.pageLoadSuccess(url_text, view.getDocumentTitle());
             }
-        } catch (Exception ex) {
+        } catch (Exception
+                ex) {
             XRLog.general(Level.SEVERE, "Could not load page for display.", ex);
             ex.printStackTrace();
         }
     }
 
-
     /**
      * Description of the Method
      */
-    public void documentLoaded() {
+    public void documentLoaded
+            () {
         view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
-
 
     /**
      * Sets the status attribute of the BrowserPanel object
      *
      * @param txt The new status value
      */
-    public void setStatus(String txt) {
+    public void setStatus
+            (String
+                    txt) {
         status.text.setText(txt);
     }
 
@@ -308,6 +389,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.30  2006/07/31 14:20:54  pdoubleya
+ * Bunch of cleanups and fixes. Now using a toolbar for actions, added Home button, next/prev navigation actions to facilitate demo file browsing, loading demo pages from a list, about dlg and link to user's manual.
+ *
  * Revision 1.29  2005/10/27 00:08:50  tobega
  * Sorted out Context into RenderingContext and LayoutContext
  *

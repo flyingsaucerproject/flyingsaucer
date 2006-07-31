@@ -30,14 +30,15 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.awt.event.MouseListener;
+import java.io.*;
+import java.net.URL;
+import java.util.*;
+import java.util.List;
 
 /**
  * Description of the Class
@@ -87,6 +88,7 @@ public class BrowserMenuBar extends JMenuBar {
      * Description of the Field
      */
     private Map allDemos;
+    private JMenu help;
 
     /**
      * Constructor for the BrowserMenuBar object
@@ -115,6 +117,9 @@ public class BrowserMenuBar extends JMenuBar {
 
         view = new JMenu("View");
         view.setMnemonic('V');
+
+        help = new JMenu("Help");
+        help.setMnemonic('H');
 
         view_source = new JMenuItem("Page Source");
         view_source.setEnabled(false);
@@ -163,46 +168,12 @@ public class BrowserMenuBar extends JMenuBar {
         demos.add(new JSeparator());
         allDemos = new LinkedHashMap();
 
-        allDemos.put("Splash Screen", "demo:demos/splash/splash.html");
-        allDemos.put("Formatted Text", "demo:demos/new/formattedtext.xhtml");
-        allDemos.put("Box Model and Backgrounds", "demo:demos/new/box.xhtml");
-        allDemos.put("CSS 2 Border Support", "demo:demos/new/borders.xhtml");
-        allDemos.put("Positioned Content", "demo:demos/new/position.xhtml");
-        allDemos.put("Alice In Wonderland", "demo:demos/new/alice/alice.xhtml");
-        allDemos.put("Weblog", "demo:demos/new/blog.xhtml");
-        allDemos.put("Report Table", "demo:demos/new/report.xhtml");
-        allDemos.put("Forms", "demo:demos/new/forms.xhtml");
-        allDemos.put("Video Game", "demo:demos/game/index.xhtml");
-        allDemos.put("Hamlet (the whole thing)", "demo:demos/new/hamlet.xhtml");
-        allDemos.put("Unsupported Features", "demo:demos/new/unsupported.xhtml");
+        populateDemoList();
 
-        /*
-        allDemos.put("Nested Float", "demo:demos/layout/multicol/glish/nested-float.xhtml");
-
-        allDemos.put("Paragraph", "demo:demos/paragraph.xhtml");
-        allDemos.put("Line Breaking", "demo:demos/breaking.xhtml");
-        allDemos.put("Selectors", "demo:demos/selectors.xhtml");
-        allDemos.put("Inheritance", "demo:demos/inherit.xhtml");
-        allDemos.put("Borders", "demo:demos/border.xhtml");
-        allDemos.put("Headers", "demo:demos/header.xhtml");
-        allDemos.put("Lists", "demo:demos/list.xhtml");
-        allDemos.put("Backgrounds", "demo:demos/background.xhtml");
-        allDemos.put("Images", "demo:demos/image.xhtml");
-        allDemos.put("Nested Divs", "demo:demos/nested.xhtml");
-        allDemos.put("Rollovers with :hover ", "demo:demos/hover.xhtml");
-        allDemos.put("Pseudo-elements ", "demo:demos/pseudo-elements.xhtml");
-        allDemos.put("Forms", "demo:demos/forms.xhtml");
-        allDemos.put("Link", "demo:demos/link.xhtml");
-        allDemos.put("Game Screen", "demo:demos/game/index.xhtml");
-        allDemos.put("Financial Report", "demo:demos/report.xhtml");
-        allDemos.put("Alice", "demo:demos/alice/alice.xhtml");
-        allDemos.put("Hamlet (the whole thing)", "demo:demos/hamlet.xhtml");
-        */
         for (Iterator iter = allDemos.keySet().iterator(); iter.hasNext();) {
             String s = (String) iter.next();
             demos.add(new LoadAction(s, (String) allDemos.get(s)));
         }
-
 
         add(demos);
 
@@ -280,6 +251,36 @@ public class BrowserMenuBar extends JMenuBar {
 
         debug.add(root.actions.generate_diff);
         add(debug);
+
+        help.add(root.actions.usersManual);
+        help.add(new JSeparator());
+        help.add(root.actions.aboutPage);
+        add(help);
+    }
+
+    private void populateDemoList() {
+        List demoList = new ArrayList();
+        URL url = BrowserMenuBar.class.getResource("/demos/r6/file-list.txt");
+        try {
+            String urls = url.toExternalForm();
+            InputStream is = url.openStream();
+            InputStreamReader reader = new InputStreamReader(is);
+            LineNumberReader lnr = new LineNumberReader(reader);
+            String line = null;
+            while ((line = lnr.readLine()) != null) {
+                demoList.add(line);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        for (Iterator itr = demoList.iterator(); itr.hasNext();) {
+            String s = (String) itr.next();
+            String s1[] = s.split(",");
+            allDemos.put(s1[0], s1[1]);
+        }
     }
 
     private JRadioButtonMenuItem addLevel(JMenu menu, ButtonGroup group, String title, int level) {
@@ -295,16 +296,37 @@ public class BrowserMenuBar extends JMenuBar {
      */
     public void createActions() {
         if (Configuration.isTrue("xr.use.listeners", true)) {
+            MouseListener[] lls = root.panel.view.getMouseListeners();
+            for (int i = 0; i < lls.length; i++) {
+                MouseListener ll = lls[i];
+                if ( ll instanceof LinkListener ) {
+                    root.panel.view.removeMouseListener(ll);
+                }
+            }
+                                                                        
             SelectionMouseListener ma = new SelectionMouseListener();
             root.panel.view.addMouseListener(ma);
             root.panel.view.addMouseMotionListener(ma);
-    
+
             // XXX Is this necessary?  Basically identical code
             // appears in XHTMLPanel.setupListeners().
             HoverListener hl = new HoverListener(root.panel.view);
             root.panel.view.addMouseListener(hl);
             root.panel.view.addMouseMotionListener(hl);
-            LinkListener ll = new LinkListener(root.panel.view);
+            LinkListener ll = new LinkListener(root.panel.view) {
+                public void linkClicked(String uri) {
+                    if (uri.startsWith("demoNav")) {
+                        String pg = uri.split(":")[1];
+                        if (pg.equals("back")) {
+                            navigateToPriorDemo();
+                        } else {
+                            navigateToNextDemo();
+                        }
+                    } else {
+                        super.linkClicked(uri);
+                    }
+                }
+            };
             root.panel.view.addMouseListener(ll);
             root.panel.view.addMouseMotionListener(ll);
         }
@@ -464,32 +486,36 @@ public class BrowserMenuBar extends JMenuBar {
          * Invoked when an action occurs.
          */
         public void actionPerformed(ActionEvent e) {
-            String nextPage = null;
-            for (Iterator iter = allDemos.keySet().iterator(); iter.hasNext();) {
-                String s = (String) iter.next();
-                if (s.equals(lastDemoOpened)) {
-                    if (iter.hasNext()) {
-                        nextPage = (String) iter.next();
-                        break;
-                    }
-                }
-            }
-            if (nextPage == null) {
-                // go to first page
-                Iterator iter = allDemos.keySet().iterator();
-                nextPage = (String) iter.next();
-            }
-
-            try {
-                root.panel.loadPage((String) allDemos.get(nextPage));
-                lastDemoOpened = nextPage;
-            } catch (Exception ex) {
-                Uu.p(ex);
-            }
+            navigateToNextDemo();
         }
+
 
     }
 
+    public void navigateToNextDemo() {
+        String nextPage = null;
+        for (Iterator iter = allDemos.keySet().iterator(); iter.hasNext();) {
+            String s = (String) iter.next();
+            if (s.equals(lastDemoOpened)) {
+                if (iter.hasNext()) {
+                    nextPage = (String) iter.next();
+                    break;
+                }
+            }
+        }
+        if (nextPage == null) {
+            // go to first page
+            Iterator iter = allDemos.keySet().iterator();
+            nextPage = (String) iter.next();
+        }
+
+        try {
+            root.panel.loadPage((String) allDemos.get(nextPage));
+            lastDemoOpened = nextPage;
+        } catch (Exception ex) {
+            Uu.p(ex);
+        }
+    }
 
     class PriorDemoAction extends AbstractAction {
 
@@ -503,28 +529,32 @@ public class BrowserMenuBar extends JMenuBar {
          * Invoked when an action occurs.
          */
         public void actionPerformed(ActionEvent e) {
-            String priorPage = null;
-            for (Iterator iter = allDemos.keySet().iterator(); iter.hasNext();) {
-                String s = (String) iter.next();
-                if (s.equals(lastDemoOpened)) {
-                    break;
-                }
-                priorPage = s;
-            }
-            if (priorPage == null) {
-                // go to last page
-                Iterator iter = allDemos.keySet().iterator();
-                while (iter.hasNext()) {
-                    priorPage = (String) iter.next();
-                }
-            }
+            navigateToPriorDemo();
+        }
+    }
 
-            try {
-                root.panel.loadPage((String) allDemos.get(priorPage));
-                lastDemoOpened = priorPage;
-            } catch (Exception ex) {
-                Uu.p(ex);
+    public void navigateToPriorDemo() {
+        String priorPage = null;
+        for (Iterator iter = allDemos.keySet().iterator(); iter.hasNext();) {
+            String s = (String) iter.next();
+            if (s.equals(lastDemoOpened)) {
+                break;
             }
+            priorPage = s;
+        }
+        if (priorPage == null) {
+            // go to last page
+            Iterator iter = allDemos.keySet().iterator();
+            while (iter.hasNext()) {
+                priorPage = (String) iter.next();
+            }
+        }
+
+        try {
+            root.panel.loadPage((String) allDemos.get(priorPage));
+            lastDemoOpened = priorPage;
+        } catch (Exception ex) {
+            Uu.p(ex);
         }
     }
 
@@ -593,7 +623,12 @@ public class BrowserMenuBar extends JMenuBar {
  */
 class EmptyAction extends AbstractAction {
     public EmptyAction(String name, Icon icon) {
+        this(name, "", icon);
+    }
+
+    public EmptyAction(String name, String shortDesc, Icon icon) {
         super(name, icon);
+        putValue(Action.SHORT_DESCRIPTION, shortDesc);
     }
 
     /**
@@ -627,194 +662,196 @@ class EmptyAction extends AbstractAction {
     }
 }
 
-
 /*
- * $Id$
- *
- * $Log$
- * Revision 1.37  2006/01/09 23:24:53  peterbrant
- * Provide config key to not use link and hover listeners (one of which currently leaks memory horribly)
- *
- * Revision 1.36  2005/10/27 00:08:50  tobega
- * Sorted out Context into RenderingContext and LayoutContext
- *
- * Revision 1.35  2005/10/20 20:31:04  pdoubleya
- * Cleaned imports.
- *
- * Revision 1.34  2005/08/16 22:46:27  joshy
- * added new demos, streamlined downloads
- *
- * Revision 1.33  2005/07/31 01:12:29  joshy
- * updated browser demos, about box demos, and added pack200 to the distro
- *
- * Revision 1.32  2005/07/21 21:51:07  joshy
- * added new demos to browser
- *
- * Revision 1.31  2005/07/13 22:49:14  joshy
- * updates to get the jnlp to work without being signed
- *
- * Revision 1.30  2005/03/28 20:03:14  pdoubleya
- * Icon/menu bar assignments.
- *
- * Revision 1.29  2005/03/28 19:04:17  pdoubleya
- * Moved text size controls on menu, cleaned list of pages.
- *
- * Revision 1.28  2005/01/29 12:24:57  pdoubleya
- * .
- *
- * Revision 1.27  2005/01/25 11:51:39  pdoubleya
- * Added next and prior page; refactored demos into Map for manipulation.
- *
- * Revision 1.26  2004/12/29 10:39:38  tobega
- * Separated current state Context into LayoutContext and the rest into SharedContext.
- *
- * Revision 1.25  2004/12/29 07:35:40  tobega
- * Prepared for cloned Context instances by encapsulating fields
- *
- * Revision 1.24  2004/12/12 16:11:04  tobega
- * Fixed bug concerning order of inline content. Added a demo for pseudo-elements.
- *
- * Revision 1.23  2004/12/12 03:33:06  tobega
- * Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
- *
- * Revision 1.22  2004/12/12 02:53:49  tobega
- * Making progress
- *
- * Revision 1.21  2004/12/09 18:03:11  joshy
- * added game screen to browser
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.20  2004/11/17 00:45:58  joshy
- * added link demo
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.18  2004/11/16 03:43:25  joshy
- * first pass at printing support
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.17  2004/11/15 14:50:45  joshy
- * removed text code
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.16  2004/11/15 14:50:26  joshy
- * font threshold support
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.15  2004/11/14 21:33:46  joshy
- * new font rendering interface support
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.14  2004/11/12 20:25:16  joshy
- * added hover support to the browser
- * created hover demo
- * fixed bug with inline borders
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.13  2004/11/10 17:28:53  joshy
- * initial support for anti-aliased text w/ minium
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.12  2004/11/10 04:53:59  tobega
- * cleaned up
- *
- * Revision 1.11  2004/11/09 15:53:47  joshy
- * initial support for hover (currently disabled)
- * moved justification code into it's own class in a new subpackage for inline
- * layout (because it's so blooming complicated)
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.10  2004/11/09 03:52:25  joshy
- * added financial report demo
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.9  2004/11/09 00:36:07  joshy
- * fixed more text alignment
- * added menu item to show font metrics
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.8  2004/11/07 23:24:19  joshy
- * added menu item to generate diffs
- * added diffs for multi-colored borders and inline borders
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.7  2004/11/05 18:48:42  joshy
- * added alice demo to the browser
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.6  2004/11/03 23:54:32  joshy
- * added hamlet and tables to the browser
- * more support for absolute layout
- * added absolute layout unit tests
- * removed more dead code and moved code into layout factory
- *
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.5  2004/10/28 14:18:22  joshy
- * cleaned up the htmlpanel and made more of the variables protected
- * fixed the bug where the body is too small for the viewport
- * fixed the bug where the screen isn't re-laid out when the window is resized
- *
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Revision 1.4  2004/10/23 14:38:58  pdoubleya
- * Re-formatted using JavaStyle tool.
- * Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
- * Added CVS log comments at bottom.
- *
- *
- */
+* $Id$
+*
+* $Log$
+* Revision 1.38  2006/07/31 14:20:54  pdoubleya
+* Bunch of cleanups and fixes. Now using a toolbar for actions, added Home button, next/prev navigation actions to facilitate demo file browsing, loading demo pages from a list, about dlg and link to user's manual.
+*
+* Revision 1.37  2006/01/09 23:24:53  peterbrant
+* Provide config key to not use link and hover listeners (one of which currently leaks memory horribly)
+*
+* Revision 1.36  2005/10/27 00:08:50  tobega
+* Sorted out Context into RenderingContext and LayoutContext
+*
+* Revision 1.35  2005/10/20 20:31:04  pdoubleya
+* Cleaned imports.
+*
+* Revision 1.34  2005/08/16 22:46:27  joshy
+* added new demos, streamlined downloads
+*
+* Revision 1.33  2005/07/31 01:12:29  joshy
+* updated browser demos, about box demos, and added pack200 to the distro
+*
+* Revision 1.32  2005/07/21 21:51:07  joshy
+* added new demos to browser
+*
+* Revision 1.31  2005/07/13 22:49:14  joshy
+* updates to get the jnlp to work without being signed
+*
+* Revision 1.30  2005/03/28 20:03:14  pdoubleya
+* Icon/menu bar assignments.
+*
+* Revision 1.29  2005/03/28 19:04:17  pdoubleya
+* Moved text size controls on menu, cleaned list of pages.
+*
+* Revision 1.28  2005/01/29 12:24:57  pdoubleya
+* .
+*
+* Revision 1.27  2005/01/25 11:51:39  pdoubleya
+* Added next and prior page; refactored demos into Map for manipulation.
+*
+* Revision 1.26  2004/12/29 10:39:38  tobega
+* Separated current state Context into LayoutContext and the rest into SharedContext.
+*
+* Revision 1.25  2004/12/29 07:35:40  tobega
+* Prepared for cloned Context instances by encapsulating fields
+*
+* Revision 1.24  2004/12/12 16:11:04  tobega
+* Fixed bug concerning order of inline content. Added a demo for pseudo-elements.
+*
+* Revision 1.23  2004/12/12 03:33:06  tobega
+* Renamed x and u to avoid confusing IDE. But that got cvs in a twist. See if this does it
+*
+* Revision 1.22  2004/12/12 02:53:49  tobega
+* Making progress
+*
+* Revision 1.21  2004/12/09 18:03:11  joshy
+* added game screen to browser
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.20  2004/11/17 00:45:58  joshy
+* added link demo
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.18  2004/11/16 03:43:25  joshy
+* first pass at printing support
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.17  2004/11/15 14:50:45  joshy
+* removed text code
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.16  2004/11/15 14:50:26  joshy
+* font threshold support
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.15  2004/11/14 21:33:46  joshy
+* new font rendering interface support
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.14  2004/11/12 20:25:16  joshy
+* added hover support to the browser
+* created hover demo
+* fixed bug with inline borders
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.13  2004/11/10 17:28:53  joshy
+* initial support for anti-aliased text w/ minium
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.12  2004/11/10 04:53:59  tobega
+* cleaned up
+*
+* Revision 1.11  2004/11/09 15:53:47  joshy
+* initial support for hover (currently disabled)
+* moved justification code into it's own class in a new subpackage for inline
+* layout (because it's so blooming complicated)
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.10  2004/11/09 03:52:25  joshy
+* added financial report demo
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.9  2004/11/09 00:36:07  joshy
+* fixed more text alignment
+* added menu item to show font metrics
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.8  2004/11/07 23:24:19  joshy
+* added menu item to generate diffs
+* added diffs for multi-colored borders and inline borders
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.7  2004/11/05 18:48:42  joshy
+* added alice demo to the browser
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.6  2004/11/03 23:54:32  joshy
+* added hamlet and tables to the browser
+* more support for absolute layout
+* added absolute layout unit tests
+* removed more dead code and moved code into layout factory
+*
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.5  2004/10/28 14:18:22  joshy
+* cleaned up the htmlpanel and made more of the variables protected
+* fixed the bug where the body is too small for the viewport
+* fixed the bug where the screen isn't re-laid out when the window is resized
+*
+* Issue number:
+* Obtained from:
+* Submitted by:
+* Reviewed by:
+*
+* Revision 1.4  2004/10/23 14:38:58  pdoubleya
+* Re-formatted using JavaStyle tool.
+* Cleaned imports to resolve wildcards except for common packages (java.io, java.util, etc)
+* Added CVS log comments at bottom.
+*
+*
+*/
 

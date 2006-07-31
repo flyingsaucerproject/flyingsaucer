@@ -19,14 +19,15 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.Uu;
 
 import javax.swing.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.util.logging.Logger;
+import javax.swing.border.EtchedBorder;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.awt.*;
 
 /**
  * Description of the Class
@@ -73,8 +74,6 @@ public class BrowserStartup {
      */
     public BrowserStartup() {
         this("demo:demos/splash/splash.html");
-        //this("demo:demos/paragraph.xhtml");
-        //this("demo:demos/layout/multicol/glish/nested-float.xhtml");
     }
 
     /**
@@ -84,7 +83,7 @@ public class BrowserStartup {
         logger.info("starting up");
         this.startPage = startPage;
     }
-    
+
     /**
      * Description of the Method
      */
@@ -94,8 +93,8 @@ public class BrowserStartup {
         actions.init();
 
         panel = new BrowserPanel(this, new FrameBrowserPanelListener());
-        panel.init();
-        panel.createLayout();
+        panel.init(startPage);
+        //panel.createLayout();
         panel.createActions();
 
         menu = new BrowserMenuBar(this);
@@ -116,6 +115,8 @@ public class BrowserStartup {
      * @param args The command line arguments
      */
     public static void main(String[] args) {
+        setLookAndFeel();
+
         if (GeneralUtil.isMacOSX()) {
             try {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -137,14 +138,34 @@ public class BrowserStartup {
         bs.frame = frame;
         if (args.length > 0) {
             bs.startPage = args[0];
-        }        
+        }
         bs.init();
         frame.setJMenuBar(bs.menu);
-        frame.getContentPane().add(bs.panel);
+
+        frame.getContentPane().add(bs.panel.toolbar, BorderLayout.PAGE_START);
+        frame.getContentPane().add(bs.panel, BorderLayout.CENTER);
+        bs.panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        frame.getContentPane().add(bs.panel.status, BorderLayout.PAGE_END);
         frame.pack();
         frame.setSize(700, 600);
 
         frame.show();
+    }
+
+    private static void setLookAndFeel() {
+        boolean lnfSet = false;
+        try {
+            UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
+            lnfSet = true;
+        } catch (Exception e) {}
+        if (!lnfSet) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                lnfSet = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -171,6 +192,9 @@ public class BrowserStartup {
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2006/07/31 14:20:54  pdoubleya
+ * Bunch of cleanups and fixes. Now using a toolbar for actions, added Home button, next/prev navigation actions to facilitate demo file browsing, loading demo pages from a list, about dlg and link to user's manual.
+ *
  * Revision 1.19  2006/01/01 04:01:07  peterbrant
  * Avoid double layout on component resize / Don't relayout if print mode and window size changes
  *
