@@ -1,20 +1,22 @@
 package org.xhtmlrenderer.demo.docbook;
 
+import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.Java2DTextRenderer;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.XRLog;
-import org.xhtmlrenderer.extend.TextRenderer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.net.URL;
 
 /**
  *
  */
 public class ShowDocBookPage {
+    public JFrame frame;
 
     public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -43,22 +45,8 @@ public class ShowDocBookPage {
     }
 
     private void run(final String uri) {
-        JFrame frame = new JFrame("Show Sample DocBook XML Rendered with Pure CSS");
+        frame = new JFrame("Show Sample DocBook XML Rendered with Pure CSS");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        XHTMLPanel introPanel = new XHTMLPanel();
-        setAntiAlias(introPanel);
-        URL url = ShowDocBookPage.class.getResource("/docbook/xhtml/intro.xhtml");
-        introPanel.setDocument(url.toExternalForm());
-
-        introPanel.setPreferredSize(new Dimension(1024, 260));
-
-
-        JScrollPane comp = new JScrollPane(introPanel);
-        comp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        comp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-        frame.getContentPane().add(comp, BorderLayout.NORTH);
 
         final XHTMLPanel panel = new XHTMLPanel();
         setAntiAlias(panel);
@@ -76,6 +64,8 @@ public class ShowDocBookPage {
                 String urls = url.toExternalForm();
                 XRLog.general("Loading URI: " + urls);
                 panel.setDocument(urls);
+
+                showAboutDialog();
             }
         });
     }
@@ -84,5 +74,49 @@ public class ShowDocBookPage {
         SharedContext sharedContext = introPanel.getSharedContext();
         sharedContext.setTextRenderer(new Java2DTextRenderer());
         sharedContext.getTextRenderer().setSmoothingLevel(TextRenderer.HIGH);
+    }
+
+    private void showAboutDialog() {
+        final JDialog aboutDlg = new JDialog(frame);
+        aboutDlg.setSize(new Dimension(500, 450));
+
+        XHTMLPanel panel = new XHTMLPanel();
+        setAntiAlias(panel);
+
+        FSScrollPane fsp = new FSScrollPane(panel);
+        fsp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        URL url = ShowDocBookPage.class.getResource("/docbook/xhtml/intro.xhtml");
+        panel.setDocument(url.toExternalForm());
+
+        JPanel outer = new JPanel(new BorderLayout());
+        outer.add(panel, BorderLayout.CENTER);
+        final JButton btn = new JButton(new AbstractAction("OK") {
+            public void actionPerformed(ActionEvent e) {
+                aboutDlg.dispose();
+            }
+        });
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                btn.requestFocusInWindow();
+            }
+        });
+        JPanel control = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        control.add(btn);
+        outer.add(control, BorderLayout.SOUTH);
+
+        aboutDlg.getContentPane().setLayout(new BorderLayout());
+        aboutDlg.getContentPane().add(outer, BorderLayout.CENTER);
+
+        aboutDlg.setTitle("About the Browser Demo");
+
+        int x = (int) frame.getLocationOnScreen().getX();
+        int y = (int) frame.getLocationOnScreen().getX();
+
+        int xx = (frame.getWidth() - aboutDlg.getWidth()) / 2;
+        int yy = (frame.getHeight() - aboutDlg.getHeight()) / 2;
+        aboutDlg.setLocation(xx, yy);
+        aboutDlg.setModal(true);
+        aboutDlg.setVisible(true);
     }
 }
