@@ -73,6 +73,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
      * Description of the Field
      */
     JButton font_dec;
+    JButton print;
     /**
      * Description of the Field
      */
@@ -152,7 +153,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         view = new XHTMLPanel(manager);
         scroll = new FSScrollPane(view);
         print_preview = new JButton();
-        print_preview.setRolloverEnabled(true);
+        print = new JButton();
 
         loadCustomFonts();
 
@@ -179,6 +180,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         toolbar.add(url);
         toolbar.add(goToPage);
         toolbar.add(print_preview);
+        toolbar.add(print);
     }
 
     private void loadCustomFonts() {
@@ -284,6 +286,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         goHome.setText("");
         print_preview.setAction(root.actions.print_preview);
         print_preview.setText("");
+        print.setAction(root.actions.print);
+        print.setText("");
         url.setAction(root.actions.load);
         goToPage.setAction(root.actions.goToPage);
         updateButtons();
@@ -389,6 +393,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.31  2006/08/03 14:15:01  pdoubleya
+ * Print action
+ *
  * Revision 1.30  2006/07/31 14:20:54  pdoubleya
  * Bunch of cleanups and fixes. Now using a toolbar for actions, added Home button, next/prev navigation actions to facilitate demo file browsing, loading demo pages from a list, about dlg and link to user's manual.
  *
