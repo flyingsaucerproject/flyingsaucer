@@ -12,8 +12,8 @@ import java.awt.print.PrinterJob;
 public class PrintAction extends AbstractAction {
     protected BrowserStartup root;
 
-    public PrintAction(BrowserStartup root) {
-        super("Print");
+    public PrintAction(BrowserStartup root, ImageIcon icon) {
+        super("Print", icon);
         this.root = root;
     }
 
