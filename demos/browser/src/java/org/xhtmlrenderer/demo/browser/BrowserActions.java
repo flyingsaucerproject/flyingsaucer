@@ -84,7 +84,7 @@ public class BrowserActions {
      */
     public void init() {
         URL url = null;
-        url = this.getClass().getClassLoader().getResource("images/process-stop.png");
+        url = getImageUrl("images/process-stop.png");
         stop = new AbstractAction("Stop", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 // TODO: stop not coded
@@ -106,7 +106,8 @@ public class BrowserActions {
         setAccel(open_file, KeyEvent.VK_O);
         setMnemonic(open_file, new Integer(KeyEvent.VK_O));
 
-        print = new PrintAction(root);
+        url = getImageUrl("images/document-print.png");
+        print = new PrintAction(root, new ImageIcon(url));
         setAccel(print, KeyEvent.VK_P);
         setMnemonic(print, new Integer(KeyEvent.VK_P));
 
@@ -138,7 +139,7 @@ public class BrowserActions {
         setMnemonic(paste, new Integer(KeyEvent.VK_P));
 
 
-        url = this.getClass().getClassLoader().getResource("images/go-previous.png");
+        url = getImageUrl("images/go-previous.png");
         backward = new EmptyAction("Back", "Go back one page", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 try {
@@ -156,7 +157,7 @@ public class BrowserActions {
                         InputEvent.ALT_MASK));
 
 
-        url = this.getClass().getClassLoader().getResource("images/go-next.png");
+        url = getImageUrl("images/go-next.png");
         forward = new EmptyAction("Forward", "Go forward one page", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 try {
@@ -172,7 +173,7 @@ public class BrowserActions {
                 KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
                         InputEvent.ALT_MASK));
 
-        url = this.getClass().getClassLoader().getResource("images/view-refresh.png");
+        url = getImageUrl("images/view-refresh.png");
         refresh = new EmptyAction("Refresh", "Refresh page", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 try {
@@ -186,7 +187,7 @@ public class BrowserActions {
         refresh.putValue(Action.ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke("F5"));
 
-        url = this.getClass().getClassLoader().getResource("images/view-refresh.png");
+        url = getImageUrl("images/view-refresh.png");
         reload = new EmptyAction("Reload", "Reload page", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 try {
@@ -202,7 +203,7 @@ public class BrowserActions {
                         InputEvent.SHIFT_MASK));
         reload.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_R));
 
-        url = this.getClass().getClassLoader().getResource("images/document-print-preview.png");
+        url = getImageUrl("images/document-print-preview.png");
         print_preview = new EmptyAction("Print Preview", "Print preview", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 togglePrintPreview();
@@ -222,7 +223,7 @@ public class BrowserActions {
             }
         };
 
-        url = this.getClass().getClassLoader().getResource("images/media-playback-start_16x16.png");
+        url = getImageUrl("images/media-playback-start_16x16.png");
         goToPage = new EmptyAction("Go", "Go to URL in address bar", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 try {
@@ -235,7 +236,7 @@ public class BrowserActions {
             }
         };
 
-        url = this.getClass().getClassLoader().getResource("images/go-home.png");
+        url = getImageUrl("images/go-home.png");
         goHome = new EmptyAction("Go Home", "Browser homepage", new ImageIcon(url)) {
             public void actionPerformed(ActionEvent evt) {
                 try {
@@ -399,12 +400,19 @@ public class BrowserActions {
     public static void setMnemonic(Action act, Integer mnem) {
         act.putValue(Action.MNEMONIC_KEY, mnem);
     }
+
+    public static URL getImageUrl(String url) {
+        return BrowserActions.class.getClassLoader().getResource(url);
+    }
 }
 
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.25  2006/08/03 14:14:36  pdoubleya
+ * Added print action, refactor for clarity.
+ *
  * Revision 1.24  2006/07/31 15:29:22  pdoubleya
  * Remove scrollb, make pane transp, remove external ref to XML dtd.
  *
