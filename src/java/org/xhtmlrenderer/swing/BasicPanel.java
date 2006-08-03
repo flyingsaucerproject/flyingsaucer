@@ -75,8 +75,6 @@ public abstract class BasicPanel extends RootPanel {
      */
     private String layoutInProgressMsg = "Layout in progress...";
 
-    private boolean interactive = true;
-
     // The XMLResource proxing the current document in the BasicPanel
     private XMLResource xmlResource;
 
@@ -702,11 +700,11 @@ public abstract class BasicPanel extends RootPanel {
 
 
     public boolean isInteractive() {
-        return interactive;
+        return this.getSharedContext().isInteractive();
     }
 
     public void setInteractive(boolean interactive) {
-        this.interactive = interactive;
+        this.getSharedContext().setInteractive(interactive);
     }
 }
 
@@ -714,6 +712,9 @@ public abstract class BasicPanel extends RootPanel {
  * $Id$
  *
  * $Log$
+ * Revision 1.104  2006/08/03 14:12:36  pdoubleya
+ * Interactivity flag now belongs to shared context, should not be a private field anymore.
+ *
  * Revision 1.103  2006/07/26 18:12:15  pdoubleya
  * Add removeDocListener and setDocFromString.
  *
