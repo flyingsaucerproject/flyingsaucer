@@ -3,6 +3,9 @@ package org.xhtmlrenderer.demo.filebrowser;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.util.Uu;
+import org.xhtmlrenderer.util.XMLUtil;
+import org.xhtmlrenderer.util.XRLog;
+import org.xhtmlrenderer.util.GeneralUtil;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -12,26 +15,24 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringBufferInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class FileBrowser extends JPanel {
 
-    public FileBrowser() throws Exception {
+    public XHTMLPanel xhtml;
+    public FileListModel filelistmodel;
+    public JList filelist;
+
+    public FileBrowser() {
         createComponents();
         createLayout();
         createEvents();
     }
 
-
-    public XHTMLPanel xhtml;
-    public FileListModel filelistmodel;
-    public JList filelist;
-
     public void createComponents() {
         xhtml = new XHTMLPanel();
-        Uu.p("url = " + getClass().getResource("main.xhtml"));
+        XRLog.general("url = " + getClass().getResource("main.xhtml"));
         xhtml.setDocument(getClass().getResource("main.xhtml").toExternalForm());
 
         filelistmodel = new FileListModel();
@@ -70,20 +71,24 @@ public class FileBrowser extends JPanel {
             SimpleDateFormat df = new SimpleDateFormat("EEEE, MMMM dd, yyyy,hh:mm aa");
             p("displaying: " + file);
             InputStream input = this.getClass().getResourceAsStream("main.xhtml");
-            String main = Uu.inputstream_to_string(input);
-            //String main = u.file_to_string("main.xhtml");
+            String main = GeneralUtil.inputStreamToString(input);
+
             main = main.replaceAll("\\$filename", file.getName());
+
             String name = file.getName();
             int ext_index = name.lastIndexOf(".");
             String ext = "";
             if (ext_index > 0) {
                 ext = name.substring(ext_index + 1, name.length());
             }
+
             ext = ext.toUpperCase();
+
             main = main.replaceAll("\\$extension", ext);
             main = main.replaceAll("\\$date", df.format(new Date(file.lastModified())));
             main = main.replaceAll("\\$size", "" + file.length() + " bytes");
-            xhtml.setDocument(new StringBufferInputStream(main), new File(".").toURL().toString());
+
+            xhtml.setDocument(XMLUtil.documentFromString(main), new File(".").toURL().toString());
         } catch (Exception ex) {
             p("exception: " + ex);
             Uu.p(ex);
@@ -93,14 +98,23 @@ public class FileBrowser extends JPanel {
 
     public void start() {
         JFrame frame = new JFrame("File Browser Test");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(this);
         frame.pack();
         frame.show();
     }
 
 
-    public static void main(String[] args) throws Exception {
-        new FileBrowser().start();
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    new FileBrowser().start();
+                } catch (Exception e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+        });
     }
 
     public static void p(String s) {
