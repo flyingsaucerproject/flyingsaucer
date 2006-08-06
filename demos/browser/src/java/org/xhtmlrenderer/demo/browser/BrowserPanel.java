@@ -180,7 +180,8 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         toolbar.add(url);
         toolbar.add(goToPage);
         toolbar.add(print_preview);
-        toolbar.add(print);
+        // disabled for R6
+        // toolbar.add(print);
     }
 
     private void loadCustomFonts() {
@@ -286,8 +287,11 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         goHome.setText("");
         print_preview.setAction(root.actions.print_preview);
         print_preview.setText("");
+
+        /*
         print.setAction(root.actions.print);
         print.setText("");
+        */
         url.setAction(root.actions.load);
         goToPage.setAction(root.actions.goToPage);
         updateButtons();
@@ -393,6 +397,9 @@ public class BrowserPanel extends JPanel implements DocumentListener {
  * $Id$
  *
  * $Log$
+ * Revision 1.32  2006/08/06 21:27:00  pdoubleya
+ * Removed printing for R6.
+ *
  * Revision 1.31  2006/08/03 14:15:01  pdoubleya
  * Print action
  *

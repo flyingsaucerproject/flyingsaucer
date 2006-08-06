@@ -22,7 +22,6 @@ package org.xhtmlrenderer.demo.browser;
 import org.xhtmlrenderer.demo.browser.actions.CopySelectionAction;
 import org.xhtmlrenderer.demo.browser.actions.FontSizeAction;
 import org.xhtmlrenderer.demo.browser.actions.GenerateDiffAction;
-import org.xhtmlrenderer.demo.browser.actions.PrintAction;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.util.Uu;
@@ -106,10 +105,12 @@ public class BrowserActions {
         setAccel(open_file, KeyEvent.VK_O);
         setMnemonic(open_file, new Integer(KeyEvent.VK_O));
 
+        /* printing disabled for R6
         url = getImageUrl("images/document-print.png");
         print = new PrintAction(root, new ImageIcon(url));
         setAccel(print, KeyEvent.VK_P);
         setMnemonic(print, new Integer(KeyEvent.VK_P));
+        */
 
         quit =
                 new AbstractAction() {
@@ -410,6 +411,9 @@ public class BrowserActions {
  * $Id$
  *
  * $Log$
+ * Revision 1.26  2006/08/06 21:27:00  pdoubleya
+ * Removed printing for R6.
+ *
  * Revision 1.25  2006/08/03 14:14:36  pdoubleya
  * Added print action, refactor for clarity.
  *

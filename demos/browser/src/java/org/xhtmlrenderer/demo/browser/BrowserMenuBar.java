@@ -145,7 +145,6 @@ public class BrowserMenuBar extends JMenuBar {
      */
     public void createLayout() {
         file.add(root.actions.open_file);
-        file.add(root.actions.print);
         file.add(new JSeparator());
         file.add(root.actions.quit);
         add(file);
@@ -666,6 +665,9 @@ class EmptyAction extends AbstractAction {
 * $Id$
 *
 * $Log$
+* Revision 1.39  2006/08/06 21:27:00  pdoubleya
+* Removed printing for R6.
+*
 * Revision 1.38  2006/07/31 14:20:54  pdoubleya
 * Bunch of cleanups and fixes. Now using a toolbar for actions, added Home button, next/prev navigation actions to facilitate demo file browsing, loading demo pages from a list, about dlg and link to user's manual.
 *
