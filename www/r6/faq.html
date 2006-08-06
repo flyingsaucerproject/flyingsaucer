@@ -37,32 +37,19 @@ p.screenshot img { border-width: 0px; }
 </li>
 <li><b>Download</b>
 <ul>
-<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre2.zip"><strong>R6-pre2</strong></a></li>
-<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre2-src.zip"><strong>R6-pre2&nbsp;-&nbsp;Source, Samples, Docs</strong></a></li>
-<li><a href="http://joshy.org/flyingsaucer/downloads/flyingsaucer_R5-final.zip">R5&nbsp;-&nbsp;Binaries</a></li>
-<li><a href="http://joshy.org/flyingsaucer/downloads/flyingsaucer_R5-src.zip">R5&nbsp;-&nbsp;Source, Samples, Docs</a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6.zip"><strong>Release 6</strong></a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-src.zip"><strong>Release 6-Source, Samples, Docs</strong></a></li>
 </ul>
 </li>
-<li><b>Documentation&nbsp;-&nbsp;Upcoming R6 Release</b>
+<li><b>Documentation&nbsp;-&nbsp;R6 Release</b>
 <ul>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/users-guide-r6.html"><b>User's Guide (HTML)</b></a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/users-guide-r6.pdf"><b>User's Guide (PDF)</b></a></li>
-<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/doc/user/api/">Simple JavaDocs (R6pre2)</a></li>
-<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/doc/full/api/">Full JavaDocs (R6pre2)</a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/doc/user/api/">Simple JavaDocs (R6)</a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/doc/full/api/">Full JavaDocs (R6)</a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/screenshots.html">Screenshots</a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/demos.html">Demo apps</a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/references.html">References</a></li>
-</ul>
-</li>
-<li><b>Documentation&nbsp;-&nbsp;R5 Release</b>
-<ul>
-<li><a href="https://xhtmlrenderer.dev.java.net/r5/gettingstarted.html">Getting Started</a></li>
-<li><a href="https://xhtmlrenderer.dev.java.net/r5/advanced.html">Developer Guide</a></li>
-<li><a href="http://joshy.org/flyingsaucer/doc/user/api/">Simple JavaDocs (R5)</a></li>
-<li><a href="http://joshy.org/flyingsaucer/doc/full/api/">Full JavaDocs (R5)</a></li>
-<li><a href="https://xhtmlrenderer.dev.java.net/r5/screenshots.html">Screenshots</a></li>
-<li><a href="https://xhtmlrenderer.dev.java.net/r5/demos.html">Demo apps</a></li>
-<li><a href="https://xhtmlrenderer.dev.java.net/r5/references.html">References</a></li>
 </ul>
 </li>
 <li><b>Contribute</b>
@@ -154,11 +141,11 @@ p.screenshot img { border-width: 0px; }
 
 <h3 class="fs_heading" id="id13">How do I make my program follow hyperlinks?</h3>
 
-<p>You need a mouse listener that detects link clicks and does the <span class="caps">HTTP</span> request. The XHTMLPanel includes a built in mouse listener to do this, but you can override it if you wish.</p>
+<p>You need a mouse listener that detects link clicks and does the <span class="caps">HTTP</span> request. The XHTMLPanel includes a built in mouse listener to do this, but you can override it if you wish. See the <code>org.xhtmlrenderer.swing.LinkListener</code> class for an example.</p>
 
 <h3 class="fs_heading" id="id14">How do I get access to the Swing components that make up my form fields?</h3>
 
-<p>You can use the form accessor methods on the context. See Form Field Access in the Getting Started Guide.</p>
+<p>Take a look at the <code>org.xhtmlrenderer.simple.extend.XhtmlForm</code> class. Form elements are "replaced" at runtime by the <code>org.xhtmlrenderer.swing.SwingReplacedElementFactory</code> if you're using the <code>XHTMLPanel</code> class for rendering. The factory actually creates a new XhtmlForm class which creates and tracks the components. There is a <code>submit()</code> method in there that you can follow as an starting point.</p>
 
 <h3 class="fs_heading" id="id15">I have <span class="caps">XML</span> or <span class="caps">XHTML</span> stored in a Java String, not a file&#8212;how do I load this into an XHTMLPanel?</h3>
 
@@ -166,15 +153,7 @@ p.screenshot img { border-width: 0px; }
 
 <p>In Java APIs, there is some confusion on usage between a String that represents an address (like a <span class="caps">URI</span> or a file path) and strings that represent content. Our <span class="caps">API</span> tends to expect that Strings will represent addresses.</p>
 
-<p>In the current codebase you can use our utility class <code>org.xhtmlrenderer.util.XMLUtil</code> to load a <span class="caps">DOM</span> Document from a String, like</p>
-
-<pre><code>
-import org.xhtmlrenderer.util.XMLUtil;
-
-XHTMLPanel panel = new XHTMLPanel();
-panel.setDocument(XMLUtil.loadDocumentFromString("xhtml conformant string"));</code></pre>
-
-<p>There's (actually) no magic in the <code>XMLUtil.loadDocumentFromString()</code>; if you know your way around the <span class="caps">XML</span> <span class="caps">DOM</span> APIs, you can do this sort of thing yourself. We're just chaining the right calls together using the standard Java <span class="caps">XML</span> APIs.</p>
+<p>In the R6 codebase you can use <code>panel.setDocumentFromString()</code> to do this. The String will be passed to the standard <span class="caps">XML</span> parser and treated as a regular document.</p>
 
 <p>It's important to remember that FS expects well-formed <span class="caps">XML</span> documents, and we don't have an extremely friendly relationship with the <span class="caps">XML</span> parsers; it's always a good idea to test that your document can be loaded outside of FS, without error, using Java <span class="caps">XML</span> APIs, before loading them in FS.</p>
 

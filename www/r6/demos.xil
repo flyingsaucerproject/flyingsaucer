@@ -6,12 +6,16 @@ include. ../include/menu.xil
 
 h1. Demo Applications
 
-There will be more demos on this page coming soon, but we've got a few already. All of these are available if you download our binaries--we're linking them here in case you want to webstart them. 
+All of these demos are available if you download our binaries--we're linking them here in case you want to webstart them. 
 
 *Note. These demos all require you to have Java Web Start and Java 1.4 or higher installed*
 
-* "Browser":http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/fs.jnlp, a simple XHTML browser with scrolling, back button, link support, etc. This is not a "real" browser--but it shows you some of what Flying Saucer is capable of.
+* "Browser":http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/browser/browser_demo.jnlp, a simple XHTML browser with scrolling, back button, link support, etc. This is not a "real" browser--but you can get an idea of how Flying Saucer can be used in a Real Application.
 
-* "About Box":http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/aboutbox.jnlp, a prefab scrolling about box that you can easily embed in your own programs.
+* "SVG":http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/svg/svg_demo.jnlp, renders an XHTML page with embedded references to SVG icons--the references are resolved and passed to the SVGSalamander library for rendering--in-document SVG! This demo shows how Flying Saucer can include content that is replaced at runtime under your control.
+
+* "DocBook":http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/docbook/docbook_demo.jnlp, renders a DocBook XML page using only CSS--the XML is not converted to XHTML, but rather, CSS is applied to the DocBook XML format. This shows you how pure XML/CSS rendering is possible by just providing the right stylesheet.
+
+* "About Box":http://www.pdoubleya.com/projects/flyingsaucer/demo/r6/aboutbox/aboutbox_demo.jnlp, a prefab scrolling about box that you can easily embed in your own programs.
 
 divEnd.

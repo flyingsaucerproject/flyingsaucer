@@ -4,6 +4,22 @@
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link href="base.css" rel="stylesheet" type="text/css" />
   <style type="text/css">
+#logo { float: left;
+  }
+.clearit { clear: both;
+  }
+h2 { width: 500px;
+  }
+ul#m2 { border: 1px solid black;
+  float: right;
+  }
+block { border: 0px solid black;
+  display: block;
+  padding-left: 4em;
+  }
+.axial { border: 1px solid black; display: none;}
+p.screenshot { text-align: center; }
+p.screenshot img { border-width: 0px; }
 .downloadbox {
   width: 150px; 
   font-weight: bold; 
@@ -31,32 +47,19 @@
 </li>
 <li><b>Download</b>
 <ul>
-<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre2.zip"><strong>R6-pre2</strong></a></li>
-<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre2-src.zip"><strong>R6-pre2&nbsp;-&nbsp;Source, Samples, Docs</strong></a></li>
-<li><a href="http://joshy.org/flyingsaucer/downloads/flyingsaucer_R5-final.zip">R5&nbsp;-&nbsp;Binaries</a></li>
-<li><a href="http://joshy.org/flyingsaucer/downloads/flyingsaucer_R5-src.zip">R5&nbsp;-&nbsp;Source, Samples, Docs</a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6.zip"><strong>Release 6</strong></a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-src.zip"><strong>Release 6-Source, Samples, Docs</strong></a></li>
 </ul>
 </li>
-<li><b>Documentation&nbsp;-&nbsp;Upcoming R6 Release</b>
+<li><b>Documentation&nbsp;-&nbsp;R6 Release</b>
 <ul>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/users-guide-r6.html"><b>User's Guide (HTML)</b></a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/users-guide-r6.pdf"><b>User's Guide (PDF)</b></a></li>
-<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/doc/user/api/">Simple JavaDocs (R6pre2)</a></li>
-<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/doc/full/api/">Full JavaDocs (R6pre2)</a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/doc/user/api/">Simple JavaDocs (R6)</a></li>
+<li><a href="http://www.pdoubleya.com/projects/flyingsaucer/doc/full/api/">Full JavaDocs (R6)</a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/screenshots.html">Screenshots</a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/demos.html">Demo apps</a></li>
 <li><a href="https://xhtmlrenderer.dev.java.net/r6/references.html">References</a></li>
-</ul>
-</li>
-<li><b>Documentation&nbsp;-&nbsp;R5 Release</b>
-<ul>
-<li><a href="https://xhtmlrenderer.dev.java.net/r5/gettingstarted.html">Getting Started</a></li>
-<li><a href="https://xhtmlrenderer.dev.java.net/r5/advanced.html">Developer Guide</a></li>
-<li><a href="http://joshy.org/flyingsaucer/doc/user/api/">Simple JavaDocs (R5)</a></li>
-<li><a href="http://joshy.org/flyingsaucer/doc/full/api/">Full JavaDocs (R5)</a></li>
-<li><a href="https://xhtmlrenderer.dev.java.net/r5/screenshots.html">Screenshots</a></li>
-<li><a href="https://xhtmlrenderer.dev.java.net/r5/demos.html">Demo apps</a></li>
-<li><a href="https://xhtmlrenderer.dev.java.net/r5/references.html">References</a></li>
 </ul>
 </li>
 <li><b>Contribute</b>
@@ -74,13 +77,11 @@
 <h1 id="id1"><img src="images/new_saucer.png" /> Flying<br />
 Saucer: The 100% Java <span class="caps">XHTML</span> Renderer</h1>
 
-<p style="font-size: 14pt;"><em>Our website is under (re)construction while we prepare the upcoming R6 release. For the stable R5 release, please see the links under Download labeled "R5". Thanks!</em></p>
-
 <h2 class="fs_heading" id="id2">News</h2>
 
-<p style="font-size: 18pt;"><strong>Flying Saucer: R6</strong> &#8211; Now in Second Beta Release!</p>
+<p style="font-size: 18pt;"><strong>Flying Saucer: Release 6 Now Available!</strong></p>
 
-<p><strong>May 14, 2006</strong>: The Flying Saucer team is happy to announce the release of the second beta for Release 6 of the Flying Saucer 100% Java <span class="caps">XHTML</span>+CSS renderer. This release includes bug fixes since we started this beta phase. </p>
+<p><strong>August 6, 2006</strong>: The Flying Saucer team is happy to announce Release 6 of the Flying Saucer 100% Java <span class="caps">XHTML</span>+CSS renderer.  </p>
 
 <p>Release 6 includes major improvements in performance and stability&#8212;plus we've taken big strides in our <span class="caps">CSS</span> 2.1 support. Our package now includes:</p>
 
@@ -96,72 +97,26 @@ Saucer: The 100% Java <span class="caps">XHTML</span> Renderer</h1>
 
 <p>Plus there are lots of bug fixes and improvements all around; check out our complete <a href="r6/feature-list.html">feature list</a>. We have one user community using Flying Saucer to render <span class="caps">PDF</span> output from <span class="caps">XML</span>+CSS via over 30K lines of <span class="caps">XSL</span>. Things are looking good!</p>
 
-<p>We need your feedback, eyes, reports and bug fixes :). Download now:</p>
+<p>Download now:</p>
 
-<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre2.zip">  
+<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6.zip">  
   <div class="downloadbox">
   Binaries
   </div>
 </a>
-<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-pre2-src.zip">  
+<a href="http://www.pdoubleya.com/projects/flyingsaucer/downloads/r6/flyingsaucer_R6-src.zip">  
   <div class="downloadbox">
   Source Bundle
   </div>
 </a>
 
-<p>Take the saucer for a spin!</p>
+<p>And check out our spiffy <a href="r6/demos.html">demo apps</a>.</p>
 
-<p style="font-size: 18pt;"><strong>Flying Saucer: R6</strong> &#8211; Now in Beta!</p>
-
-<p><strong>April 5, 2006</strong>: The Flying Saucer team is happy to announce we are starting the Release 6 beta cycle of the Flying Saucer 100% Java <span class="caps">XHTML</span>+CSS renderer. This release includes major improvements in performance and stability&#8212;plus we've taken big strides in our <span class="caps">CSS</span> 2.1 support. Our package now includes:</p>
-
-<ol>
-  <li>Vertical margin collapsing; <a href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins">CSS 2.1 specification</a></li>
-  <li>Z-index property and stacking contexts; <a href="http://www.w3.org/TR/CSS21/visuren.html#z-index">CSS 2.1 specification</a></li>
-  <li>Vertical-align: top/bottom; <a href="http://www.w3.org/TR/CSS21/visudet.html#line-height">CSS 2.1 specification</a></li>
-  <li>PDF rendering via the iText library; support for <span class="caps">PDF</span> bookmarks, pagination and breaks, and more</li>
-  <li>Pagination support, automatic and explicit: <a href="http://www.w3.org/TR/CSS21/page.html#page-breaks">CSS 2.1 specification</a></li>
-  <li>Rewritten "float" implementation</li>
-  <li>Improved list marker positioning</li>
-</ol>
-
-<p>Plus there are lots of bug fixes and improvements all around; check out our complete <a href="r6/feature-list.html">feature list</a>. We have one user community using Flying Saucer to render <span class="caps">PDF</span> output from <span class="caps">XML</span>+CSS via over 30K lines of <span class="caps">XSL</span>. Things are looking good!</p>
-
-<p>Take the saucer for a spin!</p>
-
-<p style="clear: left;"><strong>Sept 6, 2005</strong>: The Flying Saucer team is proud to present Release 5 of the Flying Saucer 100% Java <span class="caps">XHTML</span>+CSS renderer. This release brings tremendous speed improvements in both style parsing and document renderering. Other improvements include:</p>
-
-<ul>
-  <li>numerous improvments to float and clear support</li>
-  <li>better absolute positioning support</li>
-  <li>absolute units like inches and centimeters</li>
-  <li>multiple borders and row spanning improvements</li>
-  <li>directory listing in the browser</li>
-  <li>image browsing</li>
-  <li>percentage width and height values</li>
-  <li>proper <span class="caps">DTD</span> support</li>
-  <li>:hover and rollover support</li>
-  <li>a revised homepage and documentation</li>
-  <li>tons and tonnes of bug fixes</li>
-</ul>
-
-<p>Please download Release 5 and let us know what you think. We are busily working on Release 6 which feature incremental layout, pagination, and many more bug fixes.</p>
-
-<p><strong>July 30, 2005</strong>: We've just updated our homepage and reorganized the documentation. This is in preparation for the R5 release coming soon. Let us know what you think of the new look.</p>
-
-<p><strong>June 22, 2005</strong>: The Flying Saucer Team is proud to present Release 5 of our 100% Java library for rendering <span class="caps">XHTML</span> + <span class="caps">CSS2</span>.1 including tables, forms, formatted text, images, and the complete box model. (see <a href="r5/featurelist.html)">complete list</a></p>
-
-<p>The <a href="http://joshy.org/flyingsaucer/downloads/fs.jnlp">Java Web Start Browser Demo</a></p>
-
-<p>The new <a href="http://localhost/xr-web/gettingstarted.html">Getting Started Guide</a></p>
-
-<p>This release introduces a better implementation of the <span class="caps">CSS</span> box model and greatly improved parsing and rendering speed.</p>
-
-<p>This release paves the way for the new features and speed increases coming in R5. Thanks for all of your support and please send us your feedback.</p>
+<p>As part of our final release, the older and pre-release binaries have been removed from our download servers. If you are still using the pre1 or pre2 releases, please upgrade to the final release, as we can no longer support changes to the pre-releases or to Release 5.</p>
 
 <p>We need help!</p>
 
-<p>If you want to contribute or just see what's going on then please join the dev ${mailing-list}! We need developers, beta testers, doc writers, evangelists, and users. Even if you are just curious please join in.</p>
+<p>If you want to contribute or just see what's going on then please join the dev <a href="https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList">mailing list</a>! We need developers, beta testers, doc writers, evangelists, and users. Even if you are just curious please join in.</p>
 
 <p>Keep up with new releases: <a href="http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS"><img src="https://java-net.dev.java.net/branding/images/xml.gif" /></a></p>
 

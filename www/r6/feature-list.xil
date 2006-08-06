@@ -25,9 +25,9 @@ h3(fs_heading). General XHTML / CSS features
 
 h3(fs_heading). Special Features
 
-* Speed. We are fast enough to render all of Hamlet in under 4 seconds on a 1.5 GHZ Pentium. We are working to improve speed and memory usage all the time.
+* Speed. We are fast enough to render all of Hamlet (the play, not the dish) in under 4 seconds on a 1.5 GHZ Pentium. We are working to improve speed and memory usage all the time.
 * Embedded fonts. You can embed a truetype font in your application (in the jar file), and use it in pages rendered in your application.
-* Printing. You can print anything you can see on screen. You can even use special print stylesheets. pagination is not currently supported!
+* Render direct to PDF. You can create PDF documents directly from XML/CSS or XHTML/CSS, and even use the print media type in CSS to control margins. Using a couple of custom properties described in our User's Guide, you can even create headers and footers.
 
 h3(fs_heading). What's not Supported (yet)
 

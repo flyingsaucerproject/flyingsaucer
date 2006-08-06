@@ -10,3 +10,5 @@ define. cssparser "CSSParser":http://cssparser.sourceforge.net/
 
 define. mailing-list.user "mailing list":https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList
 
+define. mailing-list "mailing list":https://xhtmlrenderer.dev.java.net/servlets/ProjectMailingListList
+

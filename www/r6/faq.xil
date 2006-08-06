@@ -66,11 +66,11 @@ There is also no support for things outside the scope of XHTML/CSS such as Javas
 
 h3(fs_heading). How do I make my program follow hyperlinks?
 
-You need a mouse listener that detects link clicks and does the HTTP request. The XHTMLPanel includes a built in mouse listener to do this, but you can override it if you wish.
+You need a mouse listener that detects link clicks and does the HTTP request. The XHTMLPanel includes a built in mouse listener to do this, but you can override it if you wish. See the @org.xhtmlrenderer.swing.LinkListener@ class for an example.
 
 h3(fs_heading). How do I get access to the Swing components that make up my form fields?
 
-You can use the form accessor methods on the context. See Form Field Access in the Getting Started Guide.
+Take a look at the @org.xhtmlrenderer.simple.extend.XhtmlForm@ class. Form elements are "replaced" at runtime by the @org.xhtmlrenderer.swing.SwingReplacedElementFactory@ if you're using the @XHTMLPanel@ class for rendering. The factory actually creates a new XhtmlForm class which creates and tracks the components. There is a @submit()@ method in there that you can follow as an starting point.
 
 h3(fs_heading). I have XML or XHTML stored in a Java String, not a file--how do I load this into an XHTMLPanel?
 
@@ -78,16 +78,7 @@ It's been tricky for us to come up with a decent set of method calls to cover in
 
 In Java APIs, there is some confusion on usage between a String that represents an address (like a URI or a file path) and strings that represent content. Our API tends to expect that Strings will represent addresses.
 
-In the current codebase you can use our utility class @org.xhtmlrenderer.util.XMLUtil@ to load a DOM Document from a String, like
-
-bcx.. 
-import org.xhtmlrenderer.util.XMLUtil;
-
-XHTMLPanel panel = new XHTMLPanel();
-panel.setDocument(XMLUtil.loadDocumentFromString("xhtml conformant string"));
-
-
-p. There's (actually) no magic in the @XMLUtil.loadDocumentFromString()@; if you know your way around the XML DOM APIs, you can do this sort of thing yourself. We're just chaining the right calls together using the standard Java XML APIs.
+In the R6 codebase you can use @panel.setDocumentFromString()@ to do this. The String will be passed to the standard XML parser and treated as a regular document.
 
 It's important to remember that FS expects well-formed XML documents, and we don't have an extremely friendly relationship with the XML parsers; it's always a good idea to test that your document can be loaded outside of FS, without error, using Java XML APIs, before loading them in FS.
 

@@ -60,7 +60,7 @@ h1{text-align: center;}. The Flying Saucer User's Guide
   
     p{font-size: 12pt; text-align: center}. Release R6
   
-    p{font-size: 12pt; text-align: center}. May 2006
+    p{font-size: 12pt; text-align: center}. August 2006
     
   divEnd.
 
@@ -290,9 +290,29 @@ h2. Using ${fs}
 
 h3(fs_heading). Important Concepts
 
-NamespaceHandler TODO
-UserAgentCallback TODO
-ReplacedElementFactory TODO
+The Flying Saucer library is meant to be fairly easy to use, which means you shouldn't have to do much to integrate it into your applications. This means that a number of aspects of the library are configured for you out-of-the-box; some other things you can modify via our "configuration system":#configuration. However, there are some characteristics of the library that you can't modify via configuration, but which you may want to modify for advanced use of the renderer.
+
+h4(fs_heading). NamespaceHandler
+
+The @org.xhtmlrenderer.extend.NamespaceHandler@ interface provides the renderer with knowledge about a document that is specific to that document type. The renderer just knows that its input is XML; it doesn't know how that particular XML format might include CSS styles, for example (XML and XHTML have different mechanisms for that).
+
+Flying Saucer includes pre-built implementations of @NamespaceHandler@ for plain XML, XHTML, and a special version for converting legacy HTML element styling into valid CSS styles. 
+
+You can provide a @NamespaceHandler@ instance to a @BasicPanel@ during calls to @setDocument()@, or you can set it via the @SharedContext@ that the panel uses during rendering.
+
+h4(fs_heading). UserAgentCallback 
+
+The @org.xhtmlrenderer.extend.UserAgentCallback@ interface allows some control over the "user agent", a concept introduced by the W3C to abstract the notion of the "agent" responsible for rendering content to a user; you can think of the "user agent" in Flying Saucer as the UI component rendering a document.
+
+In Flying Saucer, the @UserAgentCallback@ is used by the library for retrieving XML, CSS and image data, and for resolving URIs and base URIs, among other things. For example, this means that when the library encounters a reference to a CSS file, there is no built-in knowledge of how to retrieve that; the user agent is asked to retrieve the CSS using the URI. The user agent can then look in a local cache, in-memory, or just retrieve it over the network. 
+
+You can provide a new @UserAgentCallback@ instance in a constructor for the @BasicPanel@.
+
+h4(fs_heading). ReplacedElementFactory 
+
+The @org.xhtmlrenderer.extend.ReplacedElementFactory@ provides XML-element replacement during the layout and render cycle. The most obvious use for this is for elements that point to content which is not itself part of the document, like images; with just an @<img>@ element, the library has no way to actually render an image (or an icon, or whatever). To do this, it uses a @ReplacedElementFactory@, which resolves the @<img>@ to, for example, an @ImageIcon@, and returns this (wrapped in an interface) as a pre-sized component that the library can render in-place. In our SVG demo, this same technique is used to render specific @<object>@ elements referencing SVG data files as images in the document. It is also used to render XHTML form elements as Swing components when using the @XHTMLPanel@.
+
+As of R6, there is no way to directly swap in a new factory of this type; in the SVG demo, the @newReplacedElementFactory()@ factory method on @RootPanel@ is overridden to provide a factory that contains a REF for Swing and for SVG. We'll improve this feature in future releases.
 
 >xil>{{{h3(fs_heading). Basic Usage 
 
