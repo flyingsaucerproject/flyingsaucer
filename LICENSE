@@ -10,7 +10,7 @@ Java projects that are used for building and running Flying Saucer are:
 CSSParser
 http://cssparser.sourceforge.net/
 License: LGPL
-Using version 0.9.4 with our own bug-fixes
+Using version 0.9.4 with our own bug fixes
 Included as lib/cssparser-0-9-4-fs.jar
 
 Minium Anti-Aliasing
@@ -34,3 +34,15 @@ http://www.lowagie.com/iText/ and http://itextpdf.sourceforge.net/
 License: Mozilla Public License Version 1.1
 Using version itext-paulo 155
 Included as lib/itext-paulo-155.jar
+
+SVGSalamander (SVG rendering in demo)
+https://svgsalamander.dev.java.net/
+License: LGPL
+Using version 1, released on the project website
+
+DocBook CSS (DocBook XML Rendering with CSS)
+  MozBook CSS (public domain, released by David Horton)
+  WSIWYGDocBook 1.01 -- see demos\docbook\wysiwygdocbook1.01, and COPYING therein
+  docbook-css-0.4 -- see demos\docbook\docbook-css-0.4, and COPYING therein
+
+
