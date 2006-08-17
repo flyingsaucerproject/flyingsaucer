@@ -494,6 +494,12 @@ public class XRLog {
                         setLoggingEnabled(Configuration.isTrue(fullkey, true));
                     }
                 }
+                
+                if(!isLoggingEnabled()) {
+                    System.out.println("logging isn't enabled");
+                    Configuration.setConfigLogger(Logger.getLogger(CONFIG));
+                    return;
+                }
 
                 // load our properties into our log manager
                 // log manager can only read properties from an InputStream
@@ -563,6 +569,10 @@ public class XRLog {
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2006/08/17 17:32:25  joshy
+ * intial patch to fix the logging config issues
+ * https://xhtmlrenderer.dev.java.net/issues/show_bug.cgi?id=130
+ *
  * Revision 1.14  2006/07/26 17:59:01  pdoubleya
  * Use proper form for logging exceptions.
  *
